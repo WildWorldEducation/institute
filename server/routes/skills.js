@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    password: 'password',
+    // password: 'password',
     database: 'skill_tree'
 });
 
@@ -52,7 +52,7 @@ router.post('/add', (req, res, next) => {
             name: req.body.name, description: req.body.description, parent: req.body.parent,
             image: req.body.image, mastery_requirements: req.body.mastery_requirements,
             first_ancestor: req.body.first_ancestor, hierarchy_level: req.body.hierarchy_level
-            , is_sub_skilll: req.body.is_sub_skill
+            , is_sub_skill: req.body.is_sub_skill
         };
 
         let sqlQuery1 = `INSERT INTO skills SET ?;`;
@@ -63,26 +63,6 @@ router.post('/add', (req, res, next) => {
                     throw err;
                 }
                 else {
-                    //     if (req.body.other_skill_requirements.length > 0) {
-                    //         // Get the newly created skill id.
-                    //         var skillId = results.insertId;
-                    //         // Then, add the skill-parents.                    
-                    //         for (let i = 0; i < req.body.other_skill_requirements.length; i++) {
-                    //             let sqlQuery2 = `INSERT INTO skill_other_skill_requirements (skill_id, other_skill_requirement_id)
-                    // VALUES(` + skillId + `, ` + req.body.other_skill_requirements[i] + `);`;
-
-                    //             let query = conn.query(sqlQuery2, (err, results) => {
-                    //                 try {
-                    //                     if (err) {
-                    //                         throw err;
-                    //                     }
-                    //                 } catch (err) {
-                    //                     next(err)
-                    //                 }
-                    //             });
-                    //         }
-                    //     }
-
                     res.end();
                 }
             } catch (err) {
