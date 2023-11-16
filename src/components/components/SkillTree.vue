@@ -36,10 +36,11 @@ export default {
             firstLevelNodeRadius: 36,
             otherLevelNodeRadius: 17,
             // Radius's of the different skill levels.
-            firstLevelCircleRadius: 500,
-            secondLevelNodeDistance: 450,
-            thirdLevelNodeDistance: 200,
-            fourthLevelNodeDistance: 150,
+            firstLevelCircleRadius: 200,
+            secondLevelNodeDistance: 300,
+            thirdLevelNodeDistance: 300,
+            fourthLevelNodeDistance: 300,
+            subSkillDistance: 75,
             // Arrays to position the nodes and for the filters.            
             firstLevelSkillsArray: [],
             firstLevelSkillsConnectingLinesArray: [],
@@ -312,13 +313,13 @@ export default {
                     // Currently, if there is one child, the angle will copy that of the parent,
                     // If there are 2 children, there will be and offset of 45 degrees.
                     // The offset changes the more nodes there are.
-                    var increment = 180 / userSkill.children.length
+                    var increment = 90 / userSkill.children.length
 
                     // The parent skill's angle.
                     var startAngle = (angle * 60)
 
                     // This is the placement of the first of the child nodes.
-                    startAngle = startAngle - 90 + (90 / userSkill.children.length)
+                    startAngle = startAngle - 45 + (45 / userSkill.children.length)
                     // Each child node is then placed.
                     var newAngle = startAngle + increment * j
 
@@ -391,7 +392,8 @@ export default {
                         name: userSkill.children[j].skill_name,
                         description: userSkill.children[j].description,
                         tagIDs: [],
-                        parentTagIDs: firstLevelSkill.tagIDs
+                        parentTagIDs: firstLevelSkill.tagIDs,
+                        angle: newAngle
                     }
 
                     // Add interactivity.            
@@ -439,25 +441,35 @@ export default {
                     /* Third level skills.*/
                     for (let k = 0; k < userSkill.children[j].children.length; k++) {
                         var thirdLevelSkillContainer = new PIXI.Container();
-
-                        // Working out the placement of the nodes, in relation to their parent.
-                        // They need to spread outwards, like a tree.
-                        // Currently, if there is one child, the angle will copy that of the parent,
-                        // If there are 2 children, there will be and offset of 45 degrees.
-                        // The offset changes the more nodes there are.
-                        var increment = 180 / userSkill.children[j].children.length
-
                         // The parent skill's angle.
-                        var startAngle = (angle * 60)
-
+                        var startAngle = secondLevelSkill.angle
                         // This is the placement of the first of the child nodes.
-                        startAngle = startAngle - 90 + (90 / userSkill.children[j].children.length)
-                        // Each child node is then placed.
-                        var newAngle = startAngle + increment * k
-
-                        var rads = newAngle * Math.PI / 180
-                        var x = thirdLevelSkillContainer.x + this.thirdLevelNodeDistance * Math.cos(rads)
-                        var y = thirdLevelSkillContainer.y + this.thirdLevelNodeDistance * Math.sin(rads)
+                        startAngle = startAngle - 45 + (45 / userSkill.children[j].children.length)
+                        // If not a sub skill, nodes go around 90 degrees forward.
+                        // The distance is further.
+                        if (userSkill.children[j].children[k].is_sub_skill == 0) {
+                            // Working out the placement of the nodes, in relation to their parent.
+                            // They need to spread outwards, like a tree.
+                            // Currently, if there is one child, the angle will copy that of the parent,
+                            // If there are 2 children, there will be and offset of 45 degrees.
+                            // The offset changes the more nodes there are.
+                            var increment = 90 / userSkill.children[j].children.length
+                            // Each child node is then placed.
+                            var newAngle = startAngle + increment * k
+                            var rads = newAngle * Math.PI / 180
+                            var x = thirdLevelSkillContainer.x + this.thirdLevelNodeDistance * Math.cos(rads)
+                            var y = thirdLevelSkillContainer.y + this.thirdLevelNodeDistance * Math.sin(rads)
+                        }
+                        // If is a subskill, the nodes go around 30 degrees
+                        // The distance is nearer.
+                        else {
+                            var increment = 360 / userSkill.children[j].children.length
+                            // Each child node is then placed.
+                            var newAngle = startAngle + increment * k
+                            var rads = newAngle * Math.PI / 180
+                            var x = thirdLevelSkillContainer.x + this.subSkillDistance * Math.cos(rads)
+                            var y = thirdLevelSkillContainer.y + this.subSkillDistance * Math.sin(rads)
+                        }
 
                         thirdLevelSkillContainer.x = thirdLevelSkillContainer.x + x
                         thirdLevelSkillContainer.y = thirdLevelSkillContainer.y + y
@@ -523,7 +535,8 @@ export default {
                             name: userSkill.children[j].children[k].skill_name,
                             description: userSkill.children[j].children[k].description,
                             tagIDs: [],
-                            parentTagIDs: secondLevelSkill.tagIDs
+                            parentTagIDs: secondLevelSkill.tagIDs,
+                            angle: newAngle
                         }
 
                         // Add interactivity.     
@@ -565,24 +578,36 @@ export default {
                         for (let l = 0; l < userSkill.children[j].children[k].children.length; l++) {
                             var fourthLevelSkillContainer = new PIXI.Container();
 
-                            // Working out the placement of the nodes, in relation to their parent.
-                            // They need to spread outwards, like a tree.
-                            // Currently, if there is one child, the angle will copy that of the parent,
-                            // If there are 2 children, there will be and offset of 45 degrees.
-                            // The offset changes the more nodes there are.
-                            var increment = 180 / userSkill.children[j].children[k].children.length
-
                             // The parent skill's angle.
-                            var startAngle = (angle * 60)
-
+                            var startAngle = thirdLevelSkill.angle
                             // This is the placement of the first of the child nodes.
-                            startAngle = startAngle - 90 + (90 / userSkill.children[j].children[k].children.length)
-                            // Each child node is then placed.
-                            var newAngle = startAngle + increment * l
+                            startAngle = startAngle - 45 + (45 / userSkill.children[j].children[k].children.length)
 
-                            var rads = newAngle * Math.PI / 180
-                            var x = fourthLevelSkillContainer.x + this.fourthLevelNodeDistance * Math.cos(rads)
-                            var y = fourthLevelSkillContainer.y + this.fourthLevelNodeDistance * Math.sin(rads)
+                            // If not a sub skill, nodes go around 90 degrees forward.
+                            // The distance is further.
+                            if (userSkill.children[j].children[k].children[l].is_sub_skill == 0) {
+                                // Working out the placement of the nodes, in relation to their parent.
+                                // They need to spread outwards, like a tree.
+                                // Currently, if there is one child, the angle will copy that of the parent,
+                                // If there are 2 children, there will be and offset of 45 degrees.
+                                // The offset changes the more nodes there are.
+                                var increment = 90 / userSkill.children[j].children[k].children.length
+                                // Each child node is then placed.
+                                var newAngle = startAngle + increment * l
+                                var rads = newAngle * Math.PI / 180
+                                var x = fourthLevelSkillContainer.x + this.fourthLevelNodeDistance * Math.cos(rads)
+                                var y = fourthLevelSkillContainer.y + this.fourthLevelNodeDistance * Math.sin(rads)
+                            }
+                            // If is a subskill, the nodes go around 30 degrees
+                            // The distance is nearer.
+                            else {
+                                var increment = 360 / userSkill.children[j].children[k].children.length
+                                // Each child node is then placed.
+                                var newAngle = startAngle + increment * l
+                                var rads = newAngle * Math.PI / 180
+                                var x = fourthLevelSkillContainer.x + this.subSkillDistance * Math.cos(rads)
+                                var y = fourthLevelSkillContainer.y + this.subSkillDistance * Math.sin(rads)
+                            }
 
                             fourthLevelSkillContainer.x = fourthLevelSkillContainer.x + x
                             fourthLevelSkillContainer.y = fourthLevelSkillContainer.y + y
