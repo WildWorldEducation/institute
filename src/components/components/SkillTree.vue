@@ -304,37 +304,71 @@ export default {
                 // Add the first level skills connecting lines to the array, for the filter.
                 this.firstLevelSkillsConnectingLinesArray.push(firstLevelSkillConnectingLine)
 
-                // Recursive function to render all descendant nodes.
+                /*
+                 * Recursive function to render all descendant nodes.
+                 */
 
                 function renderDescendantNodes(userSkillChildren, parentContainer) {
                     for (let [index, child] of userSkillChildren.entries()) {
-                        console.log(child)
+                        // console.log(child)
 
                         let nodeContainer = new PIXI.Container();
                         let nodeDistance = 200
+                        let subNodeDistance = 100
                         let nodeRadius = 17
 
-                        // Working out the placement of the nodes, in relation to their parent.
-                        // They need to spread outwards, like a tree.
-                        // Currently, if there is one child, the angle will copy that of the parent,
-                        // If there are 2 children, there will be and offset of 45 degrees.
-                        // The offset changes the more nodes there are.
-                        let increment = 90 / userSkillChildren.length
+                        // Sort the children into subskills and actual child skills.                        
+                        let numChildren = 0
+                        let numSubSkills = 0
+                        for (let i = 0; i < userSkillChildren.length; i++) {
+                            if (userSkillChildren[i].is_sub_skill == 0) {
 
-                        // The parent skill's angle.
-                        let startAngle = (angle * 60)
+                                numChildren++
+                            }
+                            else {
+                                numSubSkills++
+                            }
+                        }
 
-                        // This is the placement of the first of the child nodes.
-                        startAngle = startAngle - 45 + (45 / userSkillChildren.length)
-                        // Each child node is then placed.
-                        let newAngle = startAngle + increment * index
+                        if (child.is_sub_skill == 0) {
+                            // Working out the placement of the nodes, in relation to their parent.
+                            // They need to spread outwards, like a tree.
+                            // Currently, if there is one child, the angle will copy that of the parent,
+                            // If there are 2 children, there will be and offset of 45 degrees.
+                            // The offset changes the more nodes there are.
+                            let increment = 90 / numChildren
 
-                        let rads = newAngle * Math.PI / 180
-                        let x = nodeContainer.x + nodeDistance * Math.cos(rads)
-                        let y = nodeContainer.y + nodeDistance * Math.sin(rads)
+                            // The parent skill's angle.
+                            let startAngle = (angle * 60)
 
-                        nodeContainer.x = nodeContainer.x + x
-                        nodeContainer.y = nodeContainer.y + y
+                            // This is the placement of the first of the child nodes.
+                            startAngle = startAngle - 45 + (45 / numChildren)
+                            // Each child node is then placed.
+                            let newAngle = startAngle + increment * index
+
+                            let rads = newAngle * Math.PI / 180
+                            let x = nodeContainer.x + nodeDistance * Math.cos(rads)
+                            let y = nodeContainer.y + nodeDistance * Math.sin(rads)
+
+                            nodeContainer.x = nodeContainer.x + x
+                            nodeContainer.y = nodeContainer.y + y
+                        }
+                        else {
+                            let increment = 360 / numSubSkills
+                            // Each child node is then placed.
+                            let angle = increment * index
+                            let rads = angle * Math.PI / 180
+                            let x = nodeContainer.x + subNodeDistance * Math.cos(rads)
+                            let y = nodeContainer.y + subNodeDistance * Math.sin(rads)
+
+                            nodeContainer.x = nodeContainer.x + x
+                            nodeContainer.y = nodeContainer.y + y
+                        }
+
+
+
+
+
                         // -----------------------------------------------
 
 
@@ -362,6 +396,17 @@ export default {
 
                         // Make the second-level skill a child of the first-level skill.
                         parentContainer.addChild(nodeContainer);
+
+
+                        // Connecting lines.
+                        const connectingLine = new PIXI.Graphics();
+                        connectingLine.lineStyle(2, color, 1);
+                        connectingLine.position.x = parentContainer.x;
+                        connectingLine.position.y = parentContainer.y;
+                        connectingLine.lineTo(nodeContainer.x, nodeContainer.y);
+                        // Put the connecting line behind the skill nodes.
+                        connectingLine.zIndex = -1
+                        viewport.addChild(connectingLine);
 
 
                         if (child.children && Array.isArray(child.children) && child.children.length > 0)
