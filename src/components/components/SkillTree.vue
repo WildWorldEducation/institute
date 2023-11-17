@@ -314,7 +314,7 @@ export default {
 
                         let nodeContainer = new PIXI.Container();
                         let nodeDistance = 200
-                        let subNodeDistance = 100
+                        let subNodeDistance = 75
                         let nodeRadius = 17
 
                         // Sort the children into subskills and actual child skills.                        
@@ -341,15 +341,15 @@ export default {
                             // from the previous node.
                             let increment = 90 / numChildren
 
-                            // Work out each chind node angle, based on the aprent angle, and the increment, and which child it is.
-                            nodeAngle = parentAngle + increment * index
+                            // Get the correct index number, excluding sub skills.
+                            let mainSkillsIndex = index - numSubSkills
+                            // Work out each chind node angle, based on the parent angle, and the increment, and which child it is.
+                            nodeAngle = parentAngle + increment * mainSkillsIndex
 
                             // This is the placement of the first of the child nodes.
                             // We have to change the angle so that the child nodes dont start incrememting
                             // from the parent node angle.
                             nodeAngle = nodeAngle - 45 + (45 / numChildren)
-
-                            console.log(nodeAngle)
 
                             let rads = nodeAngle * Math.PI / 180
                             let x = nodeContainer.x + nodeDistance * Math.cos(rads)
@@ -360,9 +360,12 @@ export default {
                         }
                         // For subskills, they just go around the super skill (360 degrees).
                         else {
+                            // Calculate the increment of the subskills, around a circle.
                             let increment = 360 / numSubSkills
-                            // Each child node is then placed.
-                            let angle = increment * index
+                            // Get the correct index number, excluding sub skills.
+                            let subSkillsIndex = index - numChildren
+                            // Calculate the nodes angle.
+                            let angle = increment * subSkillsIndex
                             let rads = angle * Math.PI / 180
                             let x = nodeContainer.x + subNodeDistance * Math.cos(rads)
                             let y = nodeContainer.y + subNodeDistance * Math.sin(rads)
@@ -400,9 +403,10 @@ export default {
                          */
                         const connectingLine = new PIXI.Graphics();
                         connectingLine.lineStyle(2, color, 1);
-                        // Need to make this recursive maybe?                        
-                        connectingLine.position.x = parentContainer.x + parentContainer.parent.x + parentContainer.parent.parent.x;
-                        connectingLine.position.y = parentContainer.y + parentContainer.parent.y + parentContainer.parent.parent.y;
+                        // Need to make this recursive maybe?                                                
+                        // First x and y values to add are for second level skills, then next is for thrird, etc
+                        connectingLine.position.x = parentContainer.x + parentContainer.parent.x + parentContainer.parent.parent.x
+                        connectingLine.position.y = parentContainer.y + parentContainer.parent.y + parentContainer.parent.parent.y
                         connectingLine.lineTo(nodeContainer.x, nodeContainer.y);
                         // Put the connecting line behind the skill nodes.
                         connectingLine.zIndex = -1
