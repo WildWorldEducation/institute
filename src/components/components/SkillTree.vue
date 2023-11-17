@@ -308,10 +308,12 @@ export default {
                  * Recursive function to render all descendant nodes.
                  */
 
-                function renderDescendantNodes(userSkillChildren, parentContainer, parentAngle) {
-                    for (let [index, child] of userSkillChildren.entries()) {
-                        // console.log(child)
+                function renderDescendantNodes(parentChildren, parentContainer, parentAngle, totalAncestorXPos, totalAncestorYPos) {
+                    // We tally the ancestor node positions to calculate the connecting lines.
+                    totalAncestorXPos = totalAncestorXPos + parentContainer.x
+                    totalAncestorYPos = totalAncestorYPos + parentContainer.y
 
+                    for (let [index, child] of parentChildren.entries()) {
                         let nodeContainer = new PIXI.Container();
                         let nodeDistance = 200
                         let subNodeDistance = 75
@@ -320,8 +322,8 @@ export default {
                         // Sort the children into subskills and actual child skills.                        
                         let numChildren = 0
                         let numSubSkills = 0
-                        for (let i = 0; i < userSkillChildren.length; i++) {
-                            if (userSkillChildren[i].is_sub_skill == 0) {
+                        for (let i = 0; i < parentChildren.length; i++) {
+                            if (parentChildren[i].is_sub_skill == 0) {
                                 numChildren++
                             }
                             else {
@@ -380,10 +382,10 @@ export default {
                         let nodeGraphic = new PIXI.Graphics();
                         // Colour depending on mastery and whether skill is unlocked.
                         var color;
-                        if (userSkillChildren[index].is_mastered == 1) {
+                        if (parentChildren[index].is_mastered == 1) {
                             color = '0x' + userSkill.mastered_color;
                         }
-                        else if (userSkillChildren[index].is_accessible == 1) {
+                        else if (parentChildren[index].is_accessible == 1) {
                             nodeGraphic.lineStyle(1, '0x' + userSkill.mastered_color, 1);
                             color = '0x' + userSkill.unlocked_color;
                         }
@@ -403,25 +405,26 @@ export default {
                          */
                         const connectingLine = new PIXI.Graphics();
                         connectingLine.lineStyle(2, color, 1);
-                        // Need to make this recursive maybe?                                                
-                        // First x and y values to add are for second level skills, then next is for thrird, etc
-                        connectingLine.position.x = parentContainer.x + parentContainer.parent.x + parentContainer.parent.parent.x
-                        connectingLine.position.y = parentContainer.y + parentContainer.parent.y + parentContainer.parent.parent.y
+
+                        connectingLine.position.x = totalAncestorXPos
+                        connectingLine.position.y = totalAncestorYPos
                         connectingLine.lineTo(nodeContainer.x, nodeContainer.y);
                         // Put the connecting line behind the skill nodes.
                         connectingLine.zIndex = -1
                         viewport.addChild(connectingLine);
-
-
                         /*
                          * Run the above function again recursively.
                          */
                         if (child.children && Array.isArray(child.children) && child.children.length > 0)
-                            renderDescendantNodes(child.children, nodeContainer, nodeAngle)
+                            renderDescendantNodes(child.children, nodeContainer, nodeAngle, totalAncestorXPos, totalAncestorYPos)
                     }
                 }
 
-                renderDescendantNodes(userSkill.children, firstLevelSkillContainer, angle * 60);
+                // Run the recursive function.
+                // For each first level skill...
+                // Pass the child nodes, the container, the angle.
+                // The 2 zeros are to begin to tally the sum of all the ancesotr position values, for the connecting lines.
+                renderDescendantNodes(userSkill.children, firstLevelSkillContainer, angle * 60, 0, 0);
 
                 /* Second level skills.*/
                 // for (let j = 0; j < userSkill.children.length; j++) {
