@@ -1,0 +1,1 @@
+import{d as t,u as r}from"./main-3fb2e3eb.js";const a=t("skillTree",{state:()=>({userSkills:[]}),actions:{async getUserSkills(){const s=await r().getUserDetails(),e=await fetch("/user-skills/"+s.userId);this.userSkills=await e.json()}}});export{a as u};
