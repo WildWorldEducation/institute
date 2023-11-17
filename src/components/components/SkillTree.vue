@@ -397,7 +397,35 @@ export default {
                         // Add components to the container.
                         nodeContainer.addChild(nodeGraphic);
 
-                        // Make the second-level skill a child of the first-level skill.
+                        /*
+                         * Write the skill names.
+                         */
+                        let fontSize = 40;
+                        // Split name into an array.
+                        const nodeNameArray = parentChildren[index].skill_name.split(" ");
+                        for (let i = 0; i < nodeNameArray.length; i++) {
+                            // Check if any of the strings are too long.
+                            if (nodeNameArray[i].length > 9) {
+                                fontSize = 37;
+                            }
+                        }
+
+                        // Add line break if skill name is more than one word.
+                        parentChildren[index].skill_name = parentChildren[index].skill_name.replace(/(.*?\s)/g, '$1' + '\n')
+                        // Note that the fontSize is 5 times higher than encessary, to deal with pixellation on zoom.
+                        let nodeName = new PIXI.Text(parentChildren[index].skill_name.toUpperCase(),
+                            { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xffffff, align: 'center' });
+                        // Text to centre of container.
+                        nodeName.anchor.set(0.5)
+
+                        // This is to deal with the artificially high fontSize mentioned above.
+                        nodeName.scale.x = 0.1
+                        nodeName.scale.y = 0.1
+
+                        // Add components to the container.                        
+                        nodeContainer.addChild(nodeName);
+
+                        // Add the child node to the parent node.
                         parentContainer.addChild(nodeContainer);
 
                         /*
