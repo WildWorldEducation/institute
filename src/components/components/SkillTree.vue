@@ -36,10 +36,8 @@ export default {
             firstLevelNodeRadius: 36,
             otherLevelNodeRadius: 17,
             // Radius's of the different skill levels.
-            firstLevelCircleRadius: 200,
-            secondLevelNodeDistance: 300,
-            thirdLevelNodeDistance: 300,
-            fourthLevelNodeDistance: 300,
+            firstLevelCircleRadius: 300,
+            nodeDistance: 300,
             subSkillDistance: 75,
             // Arrays to position the nodes and for the filters.            
             firstLevelSkillsArray: [],
@@ -308,14 +306,16 @@ export default {
                  * Recursive function to render all descendant nodes.
                  */
 
-                function renderDescendantNodes(parentChildren, parentContainer, parentAngle, totalAncestorXPos, totalAncestorYPos) {
+                function renderDescendantNodes(parentChildren, parentContainer, parentAngle, totalAncestorXPos, totalAncestorYPos, depth) {
+                    // Increase the depth each recursion.
+                    depth++
                     // We tally the ancestor node positions to calculate the connecting lines.
                     totalAncestorXPos = totalAncestorXPos + parentContainer.x
                     totalAncestorYPos = totalAncestorYPos + parentContainer.y
 
                     for (let [index, child] of parentChildren.entries()) {
                         let nodeContainer = new PIXI.Container();
-                        let nodeDistance = 200
+                        let nodeDistance = 300
                         let subNodeDistance = 75
                         let nodeRadius = 17
 
@@ -340,8 +340,12 @@ export default {
 
                             // Work out the increment.
                             // 90 degrees is the total range outwards the tree angles can go,
-                            // from the previous node.
-                            let increment = 90 / numChildren
+                            // from the previous node.                           
+                            let increment = 0
+                            if (depth == 1)
+                                increment = 135 / numChildren
+                            else
+                                increment = 60 / numChildren
 
                             // Get the correct index number, excluding sub skills.
                             let mainSkillsIndex = index - numSubSkills
@@ -351,7 +355,10 @@ export default {
                             // This is the placement of the first of the child nodes.
                             // We have to change the angle so that the child nodes dont start incrememting
                             // from the parent node angle.
-                            nodeAngle = nodeAngle - 45 + (45 / numChildren)
+                            if (depth == 1)
+                                nodeAngle = nodeAngle - 67.5 + (67.5 / numChildren)
+                            else
+                                nodeAngle = nodeAngle - 30 + (30 / numChildren)
 
                             let rads = nodeAngle * Math.PI / 180
                             let x = nodeContainer.x + nodeDistance * Math.cos(rads)
@@ -444,15 +451,16 @@ export default {
                          * Run the above function again recursively.
                          */
                         if (child.children && Array.isArray(child.children) && child.children.length > 0)
-                            renderDescendantNodes(child.children, nodeContainer, nodeAngle, totalAncestorXPos, totalAncestorYPos)
+                            renderDescendantNodes(child.children, nodeContainer, nodeAngle, totalAncestorXPos, totalAncestorYPos, depth)
                     }
                 }
 
                 // Run the recursive function.
                 // For each first level skill...
                 // Pass the child nodes, the container, the angle.
-                // The 2 zeros are to begin to tally the sum of all the ancesotr position values, for the connecting lines.
-                renderDescendantNodes(userSkill.children, firstLevelSkillContainer, angle * 60, 0, 0);
+                // The 2 zeros are to begin to tally the sum of all the ancestor position values, for the connecting lines.
+                // The other zero is for the depth.
+                renderDescendantNodes(userSkill.children, firstLevelSkillContainer, angle * 60, 0, 0, 0);
 
                 /* Second level skills.*/
                 // for (let j = 0; j < userSkill.children.length; j++) {
