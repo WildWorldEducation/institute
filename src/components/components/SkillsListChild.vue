@@ -18,7 +18,7 @@ export default {
             subSkills: []
         };
     },
-    props: ['id', 'children', 'name', 'firstAncestor', 'isUnlocked', 'isMastered', 'isSubSkill', 'depth', 'role', 'DeleteSkill'],
+    props: ['id', 'children', 'name', 'firstAncestor', 'isUnlocked', 'isMastered', 'type', 'depth', 'role', 'DeleteSkill'],
     computed: {
         indent() {
             var amount = 0;
@@ -35,7 +35,7 @@ export default {
             }
 
             // For regular skills.
-            if (this.isSubSkill == 0) {
+            if (this.type != 'sub') {
                 return { transform: `translate(${(this.depth * amount) - 35.2}px)` }
             }
             // For subskills. They should be indented to the same amount as their main skill.
@@ -50,7 +50,7 @@ export default {
         }
 
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            if (this.skillsStore.skillsList[i].is_sub_skill == 1) {
+            if (this.skillsStore.skillsList[i].type == 'sub') {
                 var superSkillId = this.skillsStore.skillsList[i].parent
                 for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
                     if (this.id == superSkillId) {
@@ -61,7 +61,7 @@ export default {
         }
 
         for (let i = 0; i < this.children.length; i++) {
-            if (this.children[i].is_sub_skill == 1) {
+            if (this.children[i].type == 'sub') {
                 this.subSkills.push(this.children[i])
             }
             else {
@@ -99,7 +99,7 @@ export default {
         'locked': isUnlocked != 1,
         'unlocked': isUnlocked == 1,
         'mastered': isMastered == 1,
-        'sub-skill-button': isSubSkill == 1
+        'sub-skill-button': type == 'sub'
 
     }" class="skill-button d-flex justify-content-between" @click="toggleChildren">
         <!-- Emoticons -->
@@ -239,15 +239,15 @@ export default {
     <!-- Sub skills -->
     <SkillsListChild v-if="showSubskills" v-for="    subSkill     in     subSkills    " :id="subSkill.id"
         :children="subSkill.children" :firstAncestor="firstAncestor" :isUnlocked="subSkill.is_accessible"
-        :isMastered="subSkill.is_mastered" :isSubSkill="subSkill.is_sub_skill" :name="subSkill.skill_name" :role="role"
+        :isMastered="subSkill.is_mastered" :type="subSkill.type" :name="subSkill.skill_name" :role="role"
         :DeleteSkill="DeleteSkill" :depth="depth + 1">
     </SkillsListChild>
 
     <!-- Recursive nesting of component -->
     <SkillsListChild v-if="showChildren" v-for="    child     in     childrenNotSubskills    " :id="child.id"
         :children="child.children" :firstAncestor="firstAncestor" :isUnlocked="child.is_accessible"
-        :isMastered="child.is_mastered" :isSubSkill="child.is_sub_skill" :name="child.skill_name" :role="role"
-        :DeleteSkill="DeleteSkill" :depth="depth + 1">
+        :isMastered="child.is_mastered" :type="child.type" :name="child.skill_name" :role="role" :DeleteSkill="DeleteSkill"
+        :depth="depth + 1">
     </SkillsListChild>
 </template>
  

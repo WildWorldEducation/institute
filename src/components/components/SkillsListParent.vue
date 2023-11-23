@@ -42,7 +42,7 @@ export default {
         <div v-for="skill in userSkills">
             <SkillsListChild :id="skill.id" :children="skill.children" :depth="1" :name="skill.skill_name"
                 :firstAncestor="skill.first_ancestor" :isUnlocked="skill.is_accessible" :isMastered="skill.is_mastered"
-                :isSubSkill="skill.is_sub_skill" :role="userDetailsStore.role" :DeleteSkill="skillsStore.deleteSkill">
+                :type="skill.type" :role="userDetailsStore.role" :DeleteSkill="skillsStore.deleteSkill">
             </SkillsListChild>
         </div>
     </div>

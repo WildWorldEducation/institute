@@ -323,7 +323,7 @@ export default {
                         let numChildren = 0
                         let numSubSkills = 0
                         for (let i = 0; i < parentChildren.length; i++) {
-                            if (parentChildren[i].is_sub_skill == 0) {
+                            if (parentChildren[i].type != 'sub') {
                                 numChildren++
                             }
                             else {
@@ -335,7 +335,7 @@ export default {
                          * The angle of the node from its parent.
                          */
                         let nodeAngle = 0;
-                        if (child.is_sub_skill == 0) {
+                        if (child.type != 'sub') {
                             // Working out the placement of the nodes, in relation to their parent.
 
                             // Work out the increment.
