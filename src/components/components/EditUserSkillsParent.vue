@@ -70,12 +70,27 @@ export default {
                     const childSkills = []
                     for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
                         if (this.skillsStore.skillsList[i].parent == skillId) {
-                            childSkills.push(this.skillsStore.skillsList[i].id)
+                            childSkills.push(this.skillsStore.skillsList[i])
                         }
                     }
-                    // Make them accessible/unlocked.
+                    let subSkills = []
+                    // Make them accessible/unlocked if regular type skills.
                     for (let i = 0; i < childSkills.length; i++) {
-                        this.MakeAccessible(childSkills[i])
+                        if (childSkills[i].type == 'regular') {
+                            this.MakeAccessible(childSkills[i].id)
+                        }
+                        // If super type skills, make their subskills accessible.
+                        else if (childSkills[i].type == 'super') {
+                            for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
+                                if (this.skillsStore.skillsList[j].parent == childSkills[i].id
+                                    && this.skillsStore.skillsList[j].type == 'sub') {
+                                    subSkills.push(this.skillsStore.skillsList[j].id)
+                                }
+                            }
+                        }
+                    }
+                    for (let i = 0; i < subSkills.length; i++) {
+                        this.MakeAccessible(subSkills[i])
                     }
                 })
                 .then(response => this.GetStudentSkills());

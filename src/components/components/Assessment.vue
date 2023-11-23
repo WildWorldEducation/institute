@@ -179,14 +179,33 @@ export default {
                     const childSkills = []
                     for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
                         if (this.skillsStore.skillsList[i].parent == skillId) {
-                            childSkills.push(this.skillsStore.skillsList[i].id)
+                            childSkills.push(this.skillsStore.skillsList[i])
                         }
                     }
-                    // Make them accessible/unlocked.
+                    let subSkills = []
+                    // Make them accessible/unlocked if regular type skills.
                     for (let i = 0; i < childSkills.length; i++) {
-                        this.MakeAccessible(childSkills[i])
+                        if (childSkills[i].type == 'regular') {
+                            this.MakeAccessible(childSkills[i].id)
+                        }
+                        // If super type skills, make their subskills accessible.
+                        else if (childSkills[i].type == 'super') {
+                            for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
+                                if (this.skillsStore.skillsList[j].parent == childSkills[i].id
+                                    && this.skillsStore.skillsList[j].type == 'sub') {
+                                    subSkills.push(this.skillsStore.skillsList[j].id)
+                                }
+                            }
+                        }
+                    }
+                    for (let i = 0; i < subSkills.length; i++) {
+                        this.MakeAccessible(subSkills[i])
                     }
                 });
+        },
+        MakeAccessible(skillId) {
+            var url = "/user-skills/accessible/" + this.userDetailsStore.userId + "/" + skillId;
+            fetch(url)
         },
         UserAnswer() {
             for (let i = 0; i < this.questions.length; i++) {
@@ -198,13 +217,17 @@ export default {
                     this.isAllQuestionsAnswered = true
                 }
             }
-        }
+        },
+        // TestPass() {
+        //     this.MakeMastered(this.skillId)
+        // }
     }
 }
 </script>
 
 <template>
     <div class="container mt-3">
+        <!-- <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
         <!-- To wait for questions to be loaded, before the DOM renders. -->
         <div v-if="!isFetching" class="row mt-3">
             <h2>Question {{ this.questionNumber + 1 }}</h2>
