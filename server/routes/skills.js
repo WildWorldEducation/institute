@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -35,15 +35,6 @@ conn.connect((err) => {
  *
  * @return response()
  */
-
-
-
-
-
-
-
-
-
 router.post('/add', (req, res, next) => {
     if (req.session.userName) {
         // First, add the skill.
@@ -52,7 +43,7 @@ router.post('/add', (req, res, next) => {
             name: req.body.name, description: req.body.description, parent: req.body.parent,
             image: req.body.image, mastery_requirements: req.body.mastery_requirements,
             first_ancestor: req.body.first_ancestor, hierarchy_level: req.body.hierarchy_level
-            , is_sub_skill: req.body.is_sub_skill
+            , type: req.body.type
         };
 
         let sqlQuery1 = `INSERT INTO skills SET ?;`;
@@ -228,7 +219,8 @@ router.put('/:id/edit', (req, res, next) => {
         sqlQuery = `UPDATE skills SET name = '` + req.body.name + `', parent = '` + req.body.parent +
             `', description = '` + req.body.description + `', image = '` + req.body.image + `', mastery_requirements = '`
             + req.body.mastery_requirements + `', first_ancestor = '` + req.body.first_ancestor +
-            `', hierarchy_level = '` + req.body.hierarchy_level + `', is_pass_through = '` + req.body.is_pass_through + `' WHERE id = ` + req.params.id;
+            `', hierarchy_level = '` + req.body.hierarchy_level + `', is_pass_through = '` + req.body.is_pass_through + `', type = '` + req.body.type +
+            `' WHERE id = ` + req.params.id;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {

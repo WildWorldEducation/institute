@@ -1,6 +1,4 @@
 <script>
-import router from "../../router";
-
 // Import the store.
 import { useTagsStore } from '../../stores/TagsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
@@ -33,6 +31,7 @@ export default {
                 is_pass_through: 0,
                 first_ancestor: null,
                 hierarchy_level: null,
+                type: null,
             },
             image: '',
             // Array used to show which tags, of all the tags, are already assigned to this skill.
@@ -141,7 +140,8 @@ export default {
                         mastery_requirements: masteryRequirementsData,
                         is_pass_through: this.skill.is_pass_through,
                         first_ancestor: this.skill.first_ancestor,
-                        hierarchy_level: this.skill.hierarchy_level
+                        hierarchy_level: this.skill.hierarchy_level,
+                        type: this.skill.type
                     })
             };
 
@@ -177,12 +177,32 @@ export default {
     <div class="container mt-3">
         <h1>Edit Skill</h1>
         <div class="mb-3">
-            <label for="id" class="form-label">Id</label>
-            <input type="text" class="form-control" id="id" aria-describedby="id" name="id" :value="skill.id" disabled>
-        </div>
-        <div class="mb-3">
             <label for="name" class="form-label">Name</label>
             <input v-model="skill.name" type="text" class="form-control">
+        </div>
+        <label class="form-label">Node Type</label>
+        <div class="container row mb-3">
+            <div class="form-check col-4">
+                <input class="form-check-input" type="radio" name="nodeType" id="regularSkillRadio" value="regular"
+                    v-model="skill.type">
+                <label class="form-check-label" for="regularSkillRadio">
+                    Regular
+                </label>
+            </div>
+            <div class="form-check col-4">
+                <input class="form-check-input" type="radio" name="nodeType" id="superSkillRadio" value="super"
+                    v-model="skill.type">
+                <label class="form-check-label" for="superSkillRadio">
+                    Super
+                </label>
+            </div>
+            <div class="form-check col-4">
+                <input class="form-check-input" type="radio" name="nodeType" id="subSkillRadio" value="sub"
+                    v-model="skill.type">
+                <label class="form-check-label" for="subSkillRadio">
+                    Sub
+                </label>
+            </div>
         </div>
         <div class="mb-3">
             <label for="parent" class="form-label">Parent</label>

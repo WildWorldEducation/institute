@@ -26,7 +26,7 @@ export default {
                 first_ancestor: null,
                 hierarchy_level: null,
                 other_skill_requirements: [],
-                is_sub_skill: 0
+                type: 'regular'
             },
             image: '',
             skills: [],
@@ -108,7 +108,7 @@ export default {
                         mastery_requirements: this.skill.mastery_requirements,
                         first_ancestor: this.skill.first_ancestor,
                         hierarchy_level: this.skill.hierarchy_level,
-                        is_sub_skill: this.skill.is_sub_skill
+                        type: this.skill.type
                     })
             }).then(() => {
                 this.$router.push("/skills");
@@ -128,17 +128,32 @@ export default {
                     <input v-model="skill.name" class="form-control" type="text" placeholder="name">
                 </div>
 
-                <div class="mb-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" v-model="skill.is_sub_skill" value="1"
-                            id="flexCheckDefault">
-                        <label class=" form-check-label" for="flexCheckDefault">
-                            Is this a sub skill?
+                <label class="form-label">Node Type</label>
+                <div class="container row mb-3">
+                    <div class="form-check col-4">
+                        <input class="form-check-input" type="radio" name="nodeType" id="regularSkillRadio" value="regular"
+                            v-model="skill.type">
+                        <label class="form-check-label" for="regularSkillRadio">
+                            Regular
+                        </label>
+                    </div>
+                    <div class="form-check col-4">
+                        <input class="form-check-input" type="radio" name="nodeType" id="superSkillRadio" value="super"
+                            v-model="skill.type">
+                        <label class="form-check-label" for="superSkillRadio">
+                            Super
+                        </label>
+                    </div>
+                    <div class="form-check col-4">
+                        <input class="form-check-input" type="radio" name="nodeType" id="subSkillRadio" value="sub"
+                            v-model="skill.type">
+                        <label class="form-check-label" for="subSkillRadio">
+                            Sub
                         </label>
                     </div>
                 </div>
 
-                <div v-if="skill.is_sub_skill == 0" class="mb-3">
+                <div v-if="skill.type != 'sub'" class="mb-3">
                     <label class="form-label">Parent</label>
                     <select class="form-select" v-model="skill.parent">
                         <option v-for="skill in skills" :value="skill.id">
