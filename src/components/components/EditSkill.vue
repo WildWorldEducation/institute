@@ -20,7 +20,7 @@ export default {
     data() {
         return {
             skillId: this.$route.params.id,
-            parentSkills: [],
+            skills: [],
             skill: {
                 name: '',
                 parent: '',
@@ -35,7 +35,8 @@ export default {
             },
             image: '',
             // Array used to show which tags, of all the tags, are already assigned to this skill.
-            skillTags: []
+            skillTags: [],
+            superSkills: []
         };
     },
     async mounted() {
@@ -47,20 +48,11 @@ export default {
     },
     methods: {
         getParentSkills() {
-            var select = document.getElementById("parent");
-            var options = this.skillsStore.skillsList
-
-            var noParentOption = document.createElement("option");
-            noParentOption.textContent = "None";
-            noParentOption.value = 0;
-            select.appendChild(noParentOption);
-
-            for (var i = 0; i < options.length; i++) {
-                var opt = options[i];
-                var el = document.createElement("option");
-                el.textContent = opt.name;
-                el.value = opt.id;
-                select.appendChild(el);
+            this.skills = this.skillsStore.skillsList
+            for (let i = 0; i < this.skills.length; i++) {
+                if (this.skills[i].type == 'super') {
+                    this.superSkills.push(this.skills[i])
+                }
             }
 
             // Call this after the above, so that parent field loaded correctly.       
@@ -204,12 +196,20 @@ export default {
                 </label>
             </div>
         </div>
-        <div class="mb-3">
-            <label for="parent" class="form-label">
-                <span v-if="skill.type != 'sub'">Parent</span>
-                <span v-else>Super skill</span>
-            </label>
-            <select v-model="skill.parent" class="form-select" id="parent">
+        <div v-if="skill.type != 'sub'" class="mb-3">
+            <label class="form-label">Parent</label>
+            <select class="form-select" v-model="skill.parent">
+                <option v-for="skill in skills" :value="skill.id">
+                    {{ skill.name }}
+                </option>
+            </select>
+        </div>
+        <div v-else class="mb-3">
+            <label class="form-label">Super skill</label>
+            <select class="form-select" v-model="skill.parent">
+                <option v-for="superSkill in superSkills" :value="superSkill.id">
+                    {{ superSkill.name }}
+                </option>
             </select>
         </div>
         <div class="mb-3">
