@@ -207,7 +207,7 @@ export default {
         <div class="mb-3">
             <label for="parent" class="form-label">
                 <span v-if="skill.type != 'sub'">Parent</span>
-                <span v-else>Main skill</span>
+                <span v-else>Super skill</span>
             </label>
             <select v-model="skill.parent" class="form-select" id="parent">
             </select>

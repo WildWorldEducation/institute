@@ -30,7 +30,7 @@ export default {
             },
             image: '',
             skills: [],
-            isSubSkill: false
+            superSkills: []
         }
     },
     async created() {
@@ -56,6 +56,11 @@ export default {
     methods: {
         getParentSkills() {
             this.skills = this.skillsStore.skillsList
+            for (let i = 0; i < this.skills.length; i++) {
+                if (this.skills[i].type == 'super') {
+                    this.superSkills.push(this.skills[i])
+                }
+            }
         },
         // For image upload.
         onFileChange(e) {
@@ -162,10 +167,10 @@ export default {
                     </select>
                 </div>
                 <div v-else class="mb-3">
-                    <label class="form-label">Main skill</label>
+                    <label class="form-label">Super skill</label>
                     <select class="form-select" v-model="skill.parent">
-                        <option v-for="skill in skills" :value="skill.id">
-                            {{ skill.name }}
+                        <option v-for="superSkill in superSkills" :value="superSkill.id">
+                            {{ superSkill.name }}
                         </option>
                     </select>
                 </div>
