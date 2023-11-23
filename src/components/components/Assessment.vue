@@ -4,13 +4,15 @@ import router from "../../router";
 // Import the store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore'
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const skillsStore = useSkillsStore();
+        const userSkillsStore = useUserSkillsStore();
         return {
-            userDetailsStore, skillsStore
+            userDetailsStore, skillsStore, userSkillsStore
         }
     },
     data() {
@@ -31,6 +33,10 @@ export default {
         };
     },
     async created() {
+        // Get user skills, in case this is a sub skill. We have to check its siblings.
+        if (this.userSkillsStore.unnestedList.length == 0) {
+            await this.userSkillsStore.getUnnestedList(this.userDetailsStore.userId)
+        }
         // Need to get the questions for the quiz, before the DOM renders.
         const fetchMCQuestions = async () => {
             await fetch('/questions/' + this.skillId + '/multiple-choice')
@@ -175,31 +181,67 @@ export default {
             var url = "/user-skills/mastered/" + this.userDetailsStore.userId + "/" + skillId;
             fetch(url)
                 .then(() => {
-                    // Get all the child skills, as have to make them unlocked.
-                    const childSkills = []
+                    let skill = {}
+                    // Check if is a sub skill.                    
                     for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                        if (this.skillsStore.skillsList[i].parent == skillId) {
-                            childSkills.push(this.skillsStore.skillsList[i])
+                        if (this.skillsStore.skillsList[i].id == skillId) {
+                            skill = this.skillsStore.skillsList[i]
                         }
                     }
-                    let subSkills = []
-                    // Make them accessible/unlocked if regular type skills.
-                    for (let i = 0; i < childSkills.length; i++) {
-                        if (childSkills[i].type == 'regular') {
-                            this.MakeAccessible(childSkills[i].id)
+                    if (skill.type != 'sub') {
+                        // Get all the child skills, as have to make them unlocked.
+                        const childSkills = []
+                        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                            if (this.skillsStore.skillsList[i].parent == skillId) {
+                                childSkills.push(this.skillsStore.skillsList[i])
+                            }
                         }
-                        // If super type skills, make their subskills accessible.
-                        else if (childSkills[i].type == 'super') {
-                            for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
-                                if (this.skillsStore.skillsList[j].parent == childSkills[i].id
-                                    && this.skillsStore.skillsList[j].type == 'sub') {
-                                    subSkills.push(this.skillsStore.skillsList[j].id)
+                        let subSkills = []
+                        // Make them accessible/unlocked if regular type skills.
+                        for (let i = 0; i < childSkills.length; i++) {
+                            if (childSkills[i].type == 'regular') {
+                                this.MakeAccessible(childSkills[i].id)
+                            }
+                            // If super type skills, make their subskills accessible.
+                            else if (childSkills[i].type == 'super') {
+                                for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
+                                    if (this.skillsStore.skillsList[j].parent == childSkills[i].id
+                                        && this.skillsStore.skillsList[j].type == 'sub') {
+                                        subSkills.push(this.skillsStore.skillsList[j].id)
+                                    }
                                 }
                             }
                         }
+                        for (let i = 0; i < subSkills.length; i++) {
+                            this.MakeAccessible(subSkills[i])
+                        }
                     }
-                    for (let i = 0; i < subSkills.length; i++) {
-                        this.MakeAccessible(subSkills[i])
+                    else {
+                        let siblingSkills = []
+                        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                            if (this.skillsStore.skillsList[i].parent == skill.parent
+                                && this.skillsStore.skillsList[i].id != skill.id) {
+                                if (this.skillsStore.skillsList[i].type == 'sub') {
+                                    siblingSkills.push(this.skillsStore.skillsList[i])
+                                }
+                            }
+                        }
+
+                        //Check if all the siblings are mastered.
+                        let allMastered = true
+                        for (let i = 0; i < this.userSkillsStore.unnestedList.length; i++) {
+                            for (let j = 0; j < siblingSkills.length; j++) {
+                                if (siblingSkills[j].id == this.userSkillsStore.unnestedList[i].id) {
+                                    if (this.userSkillsStore.unnestedList[i].is_mastered != 1) {
+                                        allMastered = false
+                                    }
+                                }
+                            }
+                        }
+
+                        if (allMastered) {
+                            this.MakeAccessible(skill.parent)
+                        }
                     }
                 });
         },
@@ -218,16 +260,16 @@ export default {
                 }
             }
         },
-        // TestPass() {
-        //     this.MakeMastered(this.skillId)
-        // }
+        TestPass() {
+            this.MakeMastered(this.skillId)
+        }
     }
 }
 </script>
 
 <template>
     <div class="container mt-3">
-        <!-- <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
+        <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button>
         <!-- To wait for questions to be loaded, before the DOM renders. -->
         <div v-if="!isFetching" class="row mt-3">
             <h2>Question {{ this.questionNumber + 1 }}</h2>
