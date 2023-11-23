@@ -72,11 +72,9 @@ export default {
     methods: {
         toggleChildren() {
             this.showChildren = !this.showChildren;
-            console.log("children")
         },
         toggleSubSkills() {
             this.showSubskills = !this.showSubskills;
-            console.log("subskills")
         },
         ShowMobileButtonsModal() {
             this.showModal = true;
@@ -238,17 +236,17 @@ export default {
         </div>
     </div>
 
-    <!-- Recursive nesting of component -->
-    <SkillsListChild v-if="showChildren" v-for="    child     in     childrenNotSubskills    " :id="child.id"
-        :children="child.children" :firstAncestor="firstAncestor" :isUnlocked="child.is_accessible"
-        :isMastered="child.is_mastered" :isSubSkill="child.is_sub_skill" :name="child.skill_name" :role="role"
-        :DeleteSkill="DeleteSkill" :depth="depth + 1">
-    </SkillsListChild>
-
     <!-- Sub skills -->
     <SkillsListChild v-if="showSubskills" v-for="    subSkill     in     subSkills    " :id="subSkill.id"
         :children="subSkill.children" :firstAncestor="firstAncestor" :isUnlocked="subSkill.is_accessible"
         :isMastered="subSkill.is_mastered" :isSubSkill="subSkill.is_sub_skill" :name="subSkill.skill_name" :role="role"
+        :DeleteSkill="DeleteSkill" :depth="depth + 1">
+    </SkillsListChild>
+
+    <!-- Recursive nesting of component -->
+    <SkillsListChild v-if="showChildren" v-for="    child     in     childrenNotSubskills    " :id="child.id"
+        :children="child.children" :firstAncestor="firstAncestor" :isUnlocked="child.is_accessible"
+        :isMastered="child.is_mastered" :isSubSkill="child.is_sub_skill" :name="child.skill_name" :role="role"
         :DeleteSkill="DeleteSkill" :depth="depth + 1">
     </SkillsListChild>
 </template>
