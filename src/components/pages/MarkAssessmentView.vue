@@ -4,6 +4,7 @@ import { useUnmarkedAnswersStore } from '../../stores/UnmarkedAnswersStore.js'
 import { useAssessmentsStore } from '../../stores/AssessmentsStore.js'
 import { useUsersStore } from '../../stores/UsersStore'
 import { useSkillsStore } from '../../stores/SkillsStore'
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 export default {
     setup() {
@@ -11,9 +12,10 @@ export default {
         const assessmentsStore = useAssessmentsStore();
         const usersStore = useUsersStore();
         const skillsStore = useSkillsStore();
+        const userSkillsStore = useUserSkillsStore();
 
         return {
-            unmarkedAnswersStore, usersStore, skillsStore, assessmentsStore
+            unmarkedAnswersStore, usersStore, skillsStore, assessmentsStore, userSkillsStore
         }
     },
     data() {
@@ -132,48 +134,15 @@ export default {
                         }
                     }
                 }
-            } 
+            }
 
             // Delete from store and DB.
             this.unmarkedAnswersStore.deleteUnmarkedAnswer(answer)
             // Now remove this element from the array.
             this.answers.splice(this.questionNumber, 1);
         },
-        MakeMastered(studentId, skillId) {
-            var url = "/user-skills/mastered/" + studentId + "/" + skillId;
-            fetch(url)
-                .then(() => {
-                    // Get all the child skills, as have to make them unlocked.
-                    const childSkills = []
-                    for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                        if (this.skillsStore.skillsList[i].parent == skillId) {
-                            childSkills.push(this.skillsStore.skillsList[i])
-                        }
-                    }
-                    let subSkills = []
-                    // Make them accessible/unlocked if regular type skills.
-                    for (let i = 0; i < childSkills.length; i++) {
-                        if (childSkills[i].type == 'regular') {
-                            this.MakeAccessible(childSkills[i].id)
-                        }
-                        // If super type skills, make their subskills accessible.
-                        else if (childSkills[i].type == 'super') {
-                            for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
-                                if (this.skillsStore.skillsList[j].parent == childSkills[i].id
-                                    && this.skillsStore.skillsList[j].type == 'sub') {
-                                    subSkills.push(this.skillsStore.skillsList[j].id)
-                                }
-                            }
-                        }
-                    }
-                    for (let i = 0; i < subSkills.length; i++) {
-                        this.MakeAccessible(subSkills[i])
-                    }
-                });
-        },
-        MakeAccessible(studentId, skillId) {
-            var url = "/user-skills/accessible/" + studentId + "/" + skillId;
-            fetch(url)
+        async MakeMastered(studentId, skillId) {
+            await this.userSkillsStore.MakeMastered(studentId, skillId)
         },
     }
 }

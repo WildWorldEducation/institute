@@ -19,10 +19,8 @@ export const useUserSkillsStore = defineStore("userSkills", {
             if (skillsStore.skillsList.length == 0) {
                 await skillsStore.getSkillsList()
             }
-            // Load the user skills if havent been yet.
-            if (this.unnestedList.length == 0) {
-                await this.getUnnestedList(userId)
-            }
+            // Update user skills if havent been yet.           
+            await this.getUnnestedList(userId)
 
             let url = "/user-skills/mastered/" + userId + "/" + skillId;
 
@@ -88,6 +86,7 @@ export const useUserSkillsStore = defineStore("userSkills", {
                                 }
                             }
                         }
+
                         // If the others are, and now this one is, so unlock the super skill.
                         if (allMastered) {
                             this.MakeAccessible(userId, skill.parent)
@@ -95,9 +94,12 @@ export const useUserSkillsStore = defineStore("userSkills", {
                     }
                 });
         },
-        MakeAccessible(userId, skillId) {
+        async MakeAccessible(userId, skillId) {
             var url = "/user-skills/accessible/" + userId + "/" + skillId;
             fetch(url)
+
+            // Update user skills if havent been yet.           
+            await this.getUnnestedList(userId)
         },
     }
 });
