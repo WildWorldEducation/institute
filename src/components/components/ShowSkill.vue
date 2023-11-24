@@ -43,7 +43,7 @@ export default {
     async created() {
         await this.getSkill();
         await this.getUserSkills();
-        await this.getOtherSkillRequirements();
+        //  await this.getOtherSkillRequirements();
 
     },
     methods: {
@@ -87,18 +87,18 @@ export default {
                     }
                 })
         },
-        getOtherSkillRequirements() {
-            fetch('/skills/' + this.skillId + '/other-skill-requirements')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => {
-                    for (let i = 0; i < data.length; i++) {
-                        this.skillRequirements.push(data[i].other_skill_requirement_id)
-                    }
-                    console.log(this.skillRequirements)
-                })
-        },
+        // getOtherSkillRequirements() {
+        //     fetch('/skills/' + this.skillId + '/other-skill-requirements')
+        //         .then(function (response) {
+        //             return response.json();
+        //         })
+        //         .then((data) => {
+        //             for (let i = 0; i < data.length; i++) {
+        //                 this.skillRequirements.push(data[i].other_skill_requirement_id)
+        //             }
+        //             console.log(this.skillRequirements)
+        //         })
+        // },
         MakeMastered() {
             var url = "/user-skills/mastered/" + this.userDetailsStore.userId + "/" + this.skillId;
             fetch(url)
