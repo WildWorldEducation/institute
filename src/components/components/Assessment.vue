@@ -3,16 +3,14 @@
 import router from "../../router";
 // Import the store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore'
-import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
-        const skillsStore = useSkillsStore();
         const userSkillsStore = useUserSkillsStore();
         return {
-            userDetailsStore, skillsStore, userSkillsStore
+            userDetailsStore, userSkillsStore
         }
     },
     data() {
@@ -33,10 +31,7 @@ export default {
         };
     },
     async created() {
-        // Get user skills, in case this is a sub skill. We have to check its siblings.
-        if (this.userSkillsStore.unnestedList.length == 0) {
-            await this.userSkillsStore.getUnnestedList(this.userDetailsStore.userId)
-        }
+        // Get user skills, in case this is a sub skill. We have to check its siblings.     
         // Need to get the questions for the quiz, before the DOM renders.
         const fetchMCQuestions = async () => {
             await fetch('/questions/' + this.skillId + '/multiple-choice')
@@ -79,11 +74,6 @@ export default {
         // Calculate the total num of questions.
         // At the moment, each question is 1 mark, so we get the total score from this.
         this.totalNumOfQuestions = this.questions.length;
-
-        // Load the skills if havent been yet.
-        if (this.skillsStore.skillsList.length == 0) {
-            await this.skillsStore.getSkillsList()
-        }
     },
 
     methods: {
@@ -113,8 +103,8 @@ export default {
             if (this.essayQuestions.length == 0) {
                 // Pass mark of 90%.
                 if ((this.score / this.numMCQuestions.length) * 100 >= 90) {
-                    // Make skill mastered for this student.
-                    this.MakeMastered(this.skillId)
+                    // Make skill mastered for this student.                    
+                    this.userSkillsStore.MakeMastered(this.userDetailsStore.userId, skillId)
                     alert("Well done! You have now mastered this skill.")
                 }
                 else {
@@ -177,77 +167,8 @@ export default {
             // Redirect the user.
             this.$router.push("/skill-tree");
         },
-        MakeMastered(skillId) {
-            var url = "/user-skills/mastered/" + this.userDetailsStore.userId + "/" + skillId;
-            fetch(url)
-                .then(() => {
-                    let skill = {}
-                    // Check if is a sub skill.                    
-                    for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                        if (this.skillsStore.skillsList[i].id == skillId) {
-                            skill = this.skillsStore.skillsList[i]
-                        }
-                    }
-                    if (skill.type != 'sub') {
-                        // Get all the child skills, as have to make them unlocked.
-                        const childSkills = []
-                        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                            if (this.skillsStore.skillsList[i].parent == skillId) {
-                                childSkills.push(this.skillsStore.skillsList[i])
-                            }
-                        }
-                        let subSkills = []
-                        // Make them accessible/unlocked if regular type skills.
-                        for (let i = 0; i < childSkills.length; i++) {
-                            if (childSkills[i].type == 'regular') {
-                                this.MakeAccessible(childSkills[i].id)
-                            }
-                            // If super type skills, make their subskills accessible.
-                            else if (childSkills[i].type == 'super') {
-                                for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
-                                    if (this.skillsStore.skillsList[j].parent == childSkills[i].id
-                                        && this.skillsStore.skillsList[j].type == 'sub') {
-                                        subSkills.push(this.skillsStore.skillsList[j].id)
-                                    }
-                                }
-                            }
-                        }
-                        for (let i = 0; i < subSkills.length; i++) {
-                            this.MakeAccessible(subSkills[i])
-                        }
-                    }
-                    else {
-                        let siblingSkills = []
-                        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                            if (this.skillsStore.skillsList[i].parent == skill.parent
-                                && this.skillsStore.skillsList[i].id != skill.id) {
-                                if (this.skillsStore.skillsList[i].type == 'sub') {
-                                    siblingSkills.push(this.skillsStore.skillsList[i])
-                                }
-                            }
-                        }
-
-                        //Check if all the siblings are mastered.
-                        let allMastered = true
-                        for (let i = 0; i < this.userSkillsStore.unnestedList.length; i++) {
-                            for (let j = 0; j < siblingSkills.length; j++) {
-                                if (siblingSkills[j].id == this.userSkillsStore.unnestedList[i].id) {
-                                    if (this.userSkillsStore.unnestedList[i].is_mastered != 1) {
-                                        allMastered = false
-                                    }
-                                }
-                            }
-                        }
-
-                        if (allMastered) {
-                            this.MakeAccessible(skill.parent)
-                        }
-                    }
-                });
-        },
-        MakeAccessible(skillId) {
-            var url = "/user-skills/accessible/" + this.userDetailsStore.userId + "/" + skillId;
-            fetch(url)
+        async MakeMastered(skillId) {
+            await this.userSkillsStore.MakeMastered(this.userDetailsStore.userId, skillId)
         },
         UserAnswer() {
             for (let i = 0; i < this.questions.length; i++) {
