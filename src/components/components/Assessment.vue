@@ -184,8 +184,8 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 mb-3">
-        <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button>
+    <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button>
+    <div v-if="this.questions.length > 0" class="container mt-3 mb-3">
         <!-- To wait for questions to be loaded, before the DOM renders. -->
         <div class="row mt-3">
             <h3>Question {{ this.questionNumber + 1 }}: {{ question.question }}</h3>
@@ -253,6 +253,7 @@ export default {
                 class="btn green-btn">Submit</button>
         </div>
     </div>
+    <div v-else>There is no quiz for this skill yet. Please check again soon.</div>
 </template>
 
 <style scoped>
