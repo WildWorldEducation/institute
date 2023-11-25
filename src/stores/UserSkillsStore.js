@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 
 // Import another store.
 import { useSkillsStore } from './SkillsStore.js'
+import { useSkillTreeStore } from './SkillTreeStore.js'
 
 export const useUserSkillsStore = defineStore("userSkills", {
     state: () => ({
@@ -13,12 +14,14 @@ export const useUserSkillsStore = defineStore("userSkills", {
             this.unnestedList = await result.json();
         },
         async MakeMastered(userId, skillId) {
-            // API call for skill tree.
+            // API call for skills.
             const skillsStore = useSkillsStore();
             // Load the skills if havent been yet.
             if (skillsStore.skillsList.length == 0) {
                 await skillsStore.getSkillsList()
             }
+
+            const skillTreeStore = useSkillTreeStore();
             // Update user skills if havent been yet.           
             await this.getUnnestedList(userId)
 
@@ -92,6 +95,7 @@ export const useUserSkillsStore = defineStore("userSkills", {
                             this.MakeAccessible(userId, skill.parent)
                         }
                     }
+                    skillTreeStore.getUserSkills()
                 });
         },
         async MakeAccessible(userId, skillId) {
