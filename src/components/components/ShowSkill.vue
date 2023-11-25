@@ -4,6 +4,7 @@ import { useTagsStore } from '../../stores/TagsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 // Nested component.
 import Forum from './Forum.vue';
@@ -14,6 +15,7 @@ export default {
         const userDetailsStore = useUserDetailsStore();
         const skillsStore = useSkillsStore();
         const skillTreeStore = useSkillTreeStore();
+        const userSkillsStore = useUserSkillsStore();
 
         // If method hasnt been run before.
         if (tagsStore.tagsList.length == 0) {
@@ -22,7 +24,7 @@ export default {
         }
 
         return {
-            tagsStore, userDetailsStore, skillsStore, skillTreeStore
+            tagsStore, userDetailsStore, skillsStore, skillTreeStore, userSkillsStore
         }
     },
     data() {
@@ -99,28 +101,9 @@ export default {
         //             console.log(this.skillRequirements)
         //         })
         // },
-        MakeMastered() {
-            var url = "/user-skills/mastered/" + this.userDetailsStore.userId + "/" + this.skillId;
-            fetch(url)
-                .then(() => {
-                    // Get all the child skills, as have to make them unlocked.
-                    const childSkills = []
-                    for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                        if (this.skillsStore.skillsList[i].parent == this.skillId) {
-                            childSkills.push(this.skillsStore.skillsList[i].id)
-                        }
-                    }
-                    // Make them accessible/unlocked.
-                    for (let i = 0; i < childSkills.length; i++) {
-                        this.MakeAccessible(childSkills[i])
-                    }
-
-                    this.isMastered = true;
-                })
-        },
-        MakeAccessible(skillId) {
-            var url = "/user-skills/accessible/" + this.userDetailsStore.userId + "/" + skillId;
-            fetch(url);
+        async MakeMastered() {
+            await this.userSkillsStore.MakeMastered(this.userDetailsStore.userId, this.skillId)
+            this.getUserSkills();
         },
     }
 }
