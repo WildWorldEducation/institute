@@ -111,7 +111,7 @@ export default {
 
 <template>
     <div class="container mt-3">
-        <div v-if="isUnlocked && !isMastered" class="row mt-3">
+        <div v-if="isUnlocked && !isMastered && userDetailsStore.role == 'student'" class="row mt-3">
             <div class="d-flex btn-header flex-row-reverse center-header">
                 <router-link v-if="!skill.is_pass_through" class="btn purple-btn" :to="skillId + '/assessment'">Take
                     Assessment</router-link>
