@@ -25,7 +25,7 @@ export default {
         <RouterLink to="/" class="nav-link">
           <img src="/images/logo-red.png" alt="" width="50" height="50">
         </RouterLink>
-        <span class="navbar-brand">Collins Institute</span>
+        <span class="navbar-brand">The Collins Institute</span>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
