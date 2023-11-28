@@ -1,4 +1,6 @@
 <script>
+import router from "../../router";
+
 // Import the stores.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore'
 import { useSkillTreeStore } from '../../stores/SkillTreeStore'
@@ -29,14 +31,16 @@ export default {
         return {
             // The user's id.
             userId: this.userDetailsStore.userId,
-
+            // Used to work out the radius of each skill level.
+            skillSpacingDivisor: 3,
             // Sizes of the nodes, per level.
             firstLevelNodeRadius: 36,
             otherLevelNodeRadius: 17,
             // Radius's of the different skill levels.
-            firstLevelCircleRadius: 300,
-            nodeDistance: 300,
-            subSkillDistance: 75,
+            firstLevelCircleRadius: null,
+            secondLevelCircleRadius: null,
+            thirdLevelCircleRadius: null,
+            fourthLevelCircleRadius: null,
             // Arrays to position the nodes and for the filters.            
             firstLevelSkillsArray: [],
             firstLevelSkillsConnectingLinesArray: [],
@@ -48,6 +52,8 @@ export default {
             fourthLevelSkillsConnectingLinesArray: [],
             isSkillInfoPanelShown: false
         }
+    },
+    computed: {
     },
     components: {
         SkillTreeFilter,
@@ -67,14 +73,20 @@ export default {
         // Once font has loaded, load PIXI app.
         font.load().then(() => {
 
+            // Variable for skill node color fading.
+            //   var currentDate = new Date();
+
             const skilltreeDiv = document.getElementById("skilltree");
             const app = new PIXI.Application(
                 {
                     // Take up whole div.
                     resizeTo: skilltreeDiv,
+                    // // High resolution.
+                    // resolution: window.devicePixelRatio || 1,
+                    // autoDensity: true,
                     antialias: true,
                     // Background colour.
-                    //backgroundColor: 0xffffff
+                    backgroundColor: 0xffffff
                 })
 
             // Work out the width and height of the div, for the zooming and panning.
@@ -124,6 +136,7 @@ export default {
             centerNode.scale.set(0.15)
             viewport.addChild(centerNode)
 
+
             // Text.
             // Font size is set artificially high, then scaed down, to improve resolution.
             let centerNodeText = new PIXI.Text("SKILLS",
@@ -147,7 +160,7 @@ export default {
                 let firstLevelSkillNodeGraphic = new PIXI.Graphics();
 
                 // Colour depending on mastery, date of mastery, and whether skill is unlocked.
-                var color;
+                var color;                
                 if (userSkill.is_mastered == 1) {
                     color = '0x' + userSkill.mastered_color;
                 }
@@ -181,8 +194,7 @@ export default {
                 var spacing = 1.5
 
                 // Calculate the radius of the first level of skills.
-                //this.firstLevelCircleRadius = (firstLevelSkillsNum * this.firstLevelNodeRadius) / spacing
-
+                this.firstLevelCircleRadius = (firstLevelSkillsNum * this.firstLevelNodeRadius) / spacing
 
                 // Calculate the spacing and position of the first level skills around a circle path.       
                 var x = this.firstLevelCircleRadius * Math.cos(angle);
@@ -297,227 +309,399 @@ export default {
                 // Add the first level skills connecting lines to the array, for the filter.
                 this.firstLevelSkillsConnectingLinesArray.push(firstLevelSkillConnectingLine)
 
-                /*
-                 * Recursive function to render all descendant nodes.
-                 */
-                let arrayOfLevels = []
-                let skillNodeObject = { domain: userSkill.skill_name, skillNodeLevels: arrayOfLevels }
-                function renderDescendantNodes(parentChildren, parentContainer, parentAngle, totalAncestorXPos, totalAncestorYPos, depth, context) {
-                    // Increase the depth each recursion.
-                    depth++
+                /* Second level skills.*/
+                for (let j = 0; j < userSkill.children.length; j++) {
+                    var secondLevelSkillContainer = new PIXI.Container();
 
-                    // if (!arrayOfLevels.includes(depth)) {
-                    //     arrayOfLevels.push(depth)
-                    // }
-                    let skillsObject = { depth: depth, skills: [] }
+                    // Draw the circles.
+                    let secondLevelSkillNodeGraphic = new PIXI.Graphics();
+                    // Colour depending on mastery and whether skill is unlocked.
+                    var color;
+                    if (userSkill.children[j].is_mastered == 1) {
+                        color = '0x' + userSkill.mastered_color;
+                    }
+                    else if (userSkill.children[j].is_accessible == 1) {
+                        secondLevelSkillNodeGraphic.lineStyle(1, '0x' + userSkill.mastered_color, 1);
+                        color = '0x' + userSkill.unlocked_color;
+                    }
+                    else {
+                        color = '0xD9D9D9';
+                    }
+                    secondLevelSkillNodeGraphic.beginFill(color);
+                    secondLevelSkillNodeGraphic.drawCircle(0, 0, this.otherLevelNodeRadius);
 
-                    // We tally the ancestor node positions to calculate the connecting lines.
-                    totalAncestorXPos = totalAncestorXPos + parentContainer.x
-                    totalAncestorYPos = totalAncestorYPos + parentContainer.y
-
-                    // Orbit circle
-                    const orbitCircle = new PIXI.Graphics
-                    orbitCircle.lineStyle(2, 0xC8D7DA, 1);
-                    orbitCircle.drawCircle(window.innerWidth / 2, window.innerHeight / 2, 300 * depth);
-                    orbitCircle.endFill();
-                    viewport.addChild(orbitCircle);
-
-                    // Parameters
-                    let radius = 300
-                    let subNodeDistance = 75
-                    let nodeRadius = 17
-
-                    for (let [index, child] of parentChildren.entries()) {
-                        let nodeContainer = new PIXI.Container();
-
-                        // Sort the children into subskills and actual child skills.                        
-                        let numChildren = 0
-                        let numSubSkills = 0
-                        for (let i = 0; i < parentChildren.length; i++) {
-                            if (parentChildren[i].type != 'sub') {
-                                numChildren++
-                            }
-                            else {
-                                numSubSkills++
-                            }
+                    // Write the skill names. ---------------------------------
+                    fontSize = 40;
+                    //Working on having a smaller font size, if any one word is too long-------------------.
+                    // Split name into an array.
+                    const skillNameArray = userSkill.children[j].skill_name.split(" ");
+                    for (let p = 0; p < skillNameArray.length; p++) {
+                        // Check if any of the strings are too long.
+                        if (skillNameArray[p].length > 9) {
+                            fontSize = 37;
                         }
+                    }
 
-                        /*
-                         * The angle of the node from its parent.
-                         */
-                        let nodeAngle = 0;
-                        if (child.type != 'sub') {
-                            // Working out the placement of the nodes, in relation to their parent.
+                    // Add line break if skill name is more than one word.
+                    userSkill.children[j].skill_name = userSkill.children[j].skill_name.replace(/(.*?\s)/g, '$1' + '\n')
+                    // Note that the fontSize is 5 times higher than encessary, to deal with pixellation on zoom.
+                    let secondLevelSkillNodeName = new PIXI.Text(userSkill.children[j].skill_name.toUpperCase(),
+                        { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xffffff, align: 'center' });
+                    // Text to centre of container.
+                    secondLevelSkillNodeName.anchor.set(0.5)
 
-                            // Work out the increment.
-                            // 90 degrees is the total range outwards the tree angles can go,
-                            // from the previous node.                           
-                            // let increment = 0
-                            // if (depth == 1)
-                            //     increment = 135 / numChildren
-                            // else
-                            //     increment = 90 / numChildren
+                    // This is to deal with the artificially high fontSize mentioned above.
+                    secondLevelSkillNodeName.scale.x = 0.1
+                    secondLevelSkillNodeName.scale.y = 0.1
 
-                            // // Get the correct index number, excluding sub skills.
-                            // let mainSkillsIndex = index - numSubSkills
-                            // // Work out each chind node angle, based on the parent angle, and the increment, and which child it is.
-                            // nodeAngle = parentAngle + increment * mainSkillsIndex
+                    // Add components to the container.
+                    secondLevelSkillContainer.addChild(secondLevelSkillNodeGraphic);
+                    secondLevelSkillContainer.addChild(secondLevelSkillNodeName);
 
-                            // // This is the placement of the first of the child nodes.
-                            // // We have to change the angle so that the child nodes dont start incrememting
-                            // // from the parent node angle.
-                            // if (depth == 1)
-                            //     nodeAngle = nodeAngle - 67.5 + (67.5 / numChildren)
-                            // else
-                            //     nodeAngle = nodeAngle - 45 + (45 / numChildren)
+                    // Make the second-level skill a child of the first-level skill.
+                    firstLevelSkillContainer.addChild(secondLevelSkillContainer);
 
-                            // let rads = nodeAngle * Math.PI / 180
-                            // let x = nodeContainer.x + nodeDistance * Math.cos(rads)
-                            // let y = nodeContainer.y + nodeDistance * Math.sin(rads)
+                    // Create the second level skill object:
+                    let secondLevelSkill = {
+                        id: userSkill.children[j].id,
+                        isMastered: userSkill.children[j].is_mastered,
+                        isUnlocked: userSkill.children[j].is_accessible,
+                        isParentMastered: userSkill.is_mastered,
+                        isParentUnlocked: userSkill.is_accessible,
+                        color: color,
+                        container: secondLevelSkillContainer,
+                        name: userSkill.children[j].skill_name,
+                        description: userSkill.children[j].description,
+                        tagIDs: [],
+                        parentTagIDs: firstLevelSkill.tagIDs
+                    }
 
-                            // nodeContainer.x = nodeContainer.x + x
-                            // nodeContainer.y = nodeContainer.y + y
-                            skillsObject.skills.push(nodeContainer)
+                    // Add interactivity.            
+                    // This is added to the graphic and text, and not the container,
+                    // as it would otherwise effect all the container's child skills.
+                    secondLevelSkillNodeGraphic.eventMode = 'static';
+                    secondLevelSkillNodeName.eventMode = 'static';
+                    secondLevelSkillNodeGraphic.cursor = 'pointer';
+                    secondLevelSkillNodeName.cursor = 'pointer';
+                    secondLevelSkillNodeName.on('pointerdown', (event) => {
+                        if (!this.isSkillInfoPanelShown)
+                            this.showInfoPanel(secondLevelSkill)
+                        else
+                            this.updateInfoPanel(secondLevelSkill)
+                    });
+                    secondLevelSkillNodeGraphic.on('pointerdown', (event) => {
+                        if (!this.isSkillInfoPanelShown)
+                            this.showInfoPanel(secondLevelSkill)
+                        else
+                            this.updateInfoPanel(secondLevelSkill)
+                    });
 
+                    // Add the appropriate tags to the skill node, for the filters.
+                    for (let j = 0; j < this.skillTagsStore.skillTagsList.length; j++) {
+                        if (secondLevelSkill.id == this.skillTagsStore.skillTagsList[j].skill_id) {
+                            secondLevelSkill.tagIDs.push(this.skillTagsStore.skillTagsList[j].tag_id)
                         }
-                        // For subskills, they just go around the super skill (360 degrees).
-                        else {
-                            // Calculate the increment of the subskills, around a circle.
-                            let increment = 360 / numSubSkills
-                            // Get the correct index number, excluding sub skills.
-                            let subSkillsIndex = index - numChildren
-                            // Calculate the nodes angle.
-                            let angle = increment * subSkillsIndex
-                            let rads = angle * Math.PI / 180
-                            let x = nodeContainer.x + subNodeDistance * Math.cos(rads)
-                            let y = nodeContainer.y + subNodeDistance * Math.sin(rads)
+                    }
 
-                            nodeContainer.x = nodeContainer.x + x
-                            nodeContainer.y = nodeContainer.y + y
-                        }
+                    // We add the second level skills to this array, as their position is independant of the 
+                    // first level skills.
+                    this.secondLevelSkillsArray.push(secondLevelSkill);
 
-                        /*
-                         * Draw the nodes
-                         */
-                        let nodeGraphic = new PIXI.Graphics();
+                    /* Third level skills.*/
+                    for (let k = 0; k < userSkill.children[j].children.length; k++) {
+                        var thirdLevelSkillContainer = new PIXI.Container();
+
+                        // Draw the circles.
+                        let thirdLevelSkillNodeGraphic = new PIXI.Graphics();
                         // Colour depending on mastery and whether skill is unlocked.
                         var color;
-                        if (parentChildren[index].is_mastered == 1) {
+                        if (userSkill.children[j].children[k].is_mastered == 1) {
                             color = '0x' + userSkill.mastered_color;
                         }
-                        else if (parentChildren[index].is_accessible == 1) {
-                            nodeGraphic.lineStyle(1, '0x' + userSkill.mastered_color, 1);
+                        else if (userSkill.children[j].children[k].is_accessible == 1) {
                             color = '0x' + userSkill.unlocked_color;
+                            thirdLevelSkillNodeGraphic.lineStyle(1, '0x' + userSkill.mastered_color, 1);
                         }
                         else {
                             color = '0xD9D9D9';
                         }
-                        nodeGraphic.beginFill(color);
-                        nodeGraphic.drawCircle(0, 0, nodeRadius);
-                        // Add components to the container.
-                        nodeContainer.addChild(nodeGraphic);
+                        thirdLevelSkillNodeGraphic.beginFill(color);
+                        thirdLevelSkillNodeGraphic.drawCircle(0, 0, this.otherLevelNodeRadius);
 
-                        /*
-                         * Write the skill names.
-                         */
-                        let fontSize = 40;
+                        // Write the skill names. ---------------------------------
+                        fontSize = 40;
+                        //Working on having a smaller font size, if any one word is too long-------------------.
                         // Split name into an array.
-                        const nodeNameArray = parentChildren[index].skill_name.split(" ");
-                        for (let i = 0; i < nodeNameArray.length; i++) {
+                        const skillNameArray = userSkill.children[j].children[k].skill_name.split(" ");
+                        for (let p = 0; p < skillNameArray.length; p++) {
                             // Check if any of the strings are too long.
-                            if (nodeNameArray[i].length > 9) {
+                            if (skillNameArray[p].length > 9) {
                                 fontSize = 37;
                             }
                         }
 
                         // Add line break if skill name is more than one word.
-                        parentChildren[index].skill_name = parentChildren[index].skill_name.replace(/(.*?\s)/g, '$1' + '\n')
+                        userSkill.children[j].children[k].skill_name = userSkill.children[j].children[k].skill_name.replace(/(.*?\s)/g, '$1' + '\n')
                         // Note that the fontSize is 5 times higher than encessary, to deal with pixellation on zoom.
-                        let nodeName = new PIXI.Text(parentChildren[index].skill_name.toUpperCase(),
+                        let thirdLevelSkillNodeName = new PIXI.Text(userSkill.children[j].children[k].skill_name.toUpperCase(),
                             { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xffffff, align: 'center' });
                         // Text to centre of container.
-                        nodeName.anchor.set(0.5)
+                        thirdLevelSkillNodeName.anchor.set(0.5)
 
                         // This is to deal with the artificially high fontSize mentioned above.
-                        nodeName.scale.x = 0.1
-                        nodeName.scale.y = 0.1
+                        thirdLevelSkillNodeName.scale.x = 0.1
+                        thirdLevelSkillNodeName.scale.y = 0.1
 
-                        // Add components to the container.                        
-                        nodeContainer.addChild(nodeName);
+                        // Add component to the container.
+                        thirdLevelSkillContainer.addChild(thirdLevelSkillNodeGraphic);
+                        thirdLevelSkillContainer.addChild(thirdLevelSkillNodeName);
+                        // We make the node a child of the second level skill.
+                        secondLevelSkillContainer.addChild(thirdLevelSkillContainer);
 
-
-                        // Create the  skill object:
-                        let skill = {
-                            id: child.id,
-                            isMastered: child.is_mastered,
-                            isUnlocked: child.is_accessible,
-                            //  isParentMastered: userSkill.is_mastered,
-                            //   isParentUnlocked: userSkill.is_accessible,
+                        // Create the third level skill object:
+                        let thirdLevelSkill = {
+                            id: userSkill.children[j].children[k].id,
+                            isMastered: userSkill.children[j].children[k].is_mastered,
+                            isUnlocked: userSkill.children[j].children[k].is_accessible,
+                            isParentMastered: userSkill.children[j].is_mastered,
+                            isParentUnlocked: userSkill.children[j].is_accessible,
                             color: color,
-                            container: nodeContainer,
-                            name: child.skill_name,
-                            description: child.description,
+                            container: thirdLevelSkillContainer,
+                            name: userSkill.children[j].children[k].skill_name,
+                            description: userSkill.children[j].children[k].description,
                             tagIDs: [],
-                            //parentTagIDs: firstLevelSkill.tagIDs,
-                            //angle: newAngle
+                            parentTagIDs: secondLevelSkill.tagIDs
                         }
 
-
-                        // Add interactivity.            
-                        // This is added to the graphic and text, and not the container,
-                        // as it would otherwise effect all the container's child skills.
-                        nodeGraphic.eventMode = 'static';
-                        nodeName.eventMode = 'static';
-                        nodeGraphic.cursor = 'pointer';
-                        nodeName.cursor = 'pointer';
-                        nodeName.on('pointerdown', (event) => {
-                            if (!context.isSkillInfoPanelShown)
-                                context.showInfoPanel(skill)
+                        // Add interactivity.     
+                        // This is added to the graphic, and not the container,
+                        // as it would otherwise effect all the container's child skills.       
+                        thirdLevelSkillNodeGraphic.eventMode = 'static';
+                        thirdLevelSkillNodeGraphic.cursor = 'pointer';
+                        thirdLevelSkillNodeGraphic.on('pointerdown', (event) => {
+                            if (!this.isSkillInfoPanelShown)
+                                this.showInfoPanel(thirdLevelSkill)
                             else
-                                context.updateInfoPanel(skill)
-                        });
-                        nodeGraphic.on('pointerdown', (event) => {
-                            if (!context.isSkillInfoPanelShown)
-                                context.showInfoPanel(skill)
-                            else
-                                context.updateInfoPanel(skill)
+                                this.updateInfoPanel(thirdLevelSkill)
                         });
 
+                        // Add the appropriate tags to the skill node, for the filters.
+                        for (let j = 0; j < this.skillTagsStore.skillTagsList.length; j++) {
+                            if (thirdLevelSkill.id == this.skillTagsStore.skillTagsList[j].skill_id) {
+                                thirdLevelSkill.tagIDs.push(this.skillTagsStore.skillTagsList[j].tag_id)
+                            }
+                        }
 
-                        // Add the child node to the parent node.
-                        parentContainer.addChild(nodeContainer);
+                        // We add the third level skills to this array, as their position is independant of the 
+                        // first second skills.
+                        this.thirdLevelSkillsArray.push(thirdLevelSkill);
 
-                        /*
-                         * Connecting lines.
-                         */
-                        const connectingLine = new PIXI.Graphics();
-                        connectingLine.lineStyle(2, color, 1);
+                        /* Fourth level skills.*/
+                        for (let l = 0; l < userSkill.children[j].children[k].children.length; l++) {
+                            var fourthLevelSkillContainer = new PIXI.Container();
 
-                        connectingLine.position.x = totalAncestorXPos
-                        connectingLine.position.y = totalAncestorYPos
-                        connectingLine.lineTo(nodeContainer.x, nodeContainer.y);
-                        // Put the connecting line behind the skill nodes.
-                        connectingLine.zIndex = -1
-                        viewport.addChild(connectingLine);
+                            // Draw the circles.
+                            let fourthLevelSkillNodeGraphic = new PIXI.Graphics();
+                            // Colour depending on mastery and whether skill is unlocked.
+                            var color;
+                            if (userSkill.children[j].children[k].children[l].is_mastered == 1) {
+                                color = '0x' + userSkill.mastered_color;
+                            }
+                            else if (userSkill.children[j].children[k].children[l].is_accessible == 1) {
+                                color = '0x' + userSkill.unlocked_color;
+                                fourthLevelSkillNodeGraphic.lineStyle(1, '0x' + userSkill.mastered_color, 1);
+                            }
+                            else {
+                                color = '0xD9D9D9';
+                            }
+                            fourthLevelSkillNodeGraphic.beginFill(color);
+                            fourthLevelSkillNodeGraphic.drawCircle(0, 0, this.otherLevelNodeRadius);
 
-                        arrayOfLevels.push(skillsObject)
-                        /*
-                         * Run the above function again recursively.
-                         */
-                        if (child.children && Array.isArray(child.children) && child.children.length > 0)
-                            renderDescendantNodes(child.children, nodeContainer, nodeAngle, totalAncestorXPos, totalAncestorYPos, depth, context)
+                            // Write the skill names. ---------------------------------
+                            fontSize = 40;
+                            //Working on having a smaller font size, if any one word is too long-------------------.
+                            // Split name into an array.
+                            const skillNameArray = userSkill.children[j].children[k].children[l].skill_name.split(" ");
+                            for (let p = 0; p < skillNameArray.length; p++) {
+                                // Check if any of the strings are too long.
+                                if (skillNameArray[p].length > 9) {
+                                    fontSize = 37;
+                                }
+                            }
+
+                            // Add line break if skill name is more than one word.
+                            userSkill.children[j].children[k].children[l].skill_name = userSkill.children[j].children[k].children[l].skill_name.replace(/(.*?\s)/g, '$1' + '\n')
+                            // Note that the fontSize is 5 times higher than encessary, to deal with pixellation on zoom.
+                            let fourthLevelSkillNodeName = new PIXI.Text(userSkill.children[j].children[k].children[l].skill_name.toUpperCase(),
+                                { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xffffff, align: 'center' });
+                            // Text to centre of container.
+                            fourthLevelSkillNodeName.anchor.set(0.5)
+
+                            // This is to deal with the artificially high fontSize mentioned above.
+                            fourthLevelSkillNodeName.scale.x = 0.1
+                            fourthLevelSkillNodeName.scale.y = 0.1
+
+                            // Add components to the container.
+                            fourthLevelSkillContainer.addChild(fourthLevelSkillNodeGraphic);
+                            fourthLevelSkillContainer.addChild(fourthLevelSkillNodeName);
+                            // We make the node a child of the third level skill.
+                            thirdLevelSkillContainer.addChild(fourthLevelSkillContainer);
+
+                            // Create the fourth level skill object:
+                            let fourthLevelSkill = {
+                                id: userSkill.children[j].children[k].children[l].id,
+                                isMastered: userSkill.children[j].children[k].children[l].is_mastered,
+                                isUnlocked: userSkill.children[j].children[k].children[l].is_accessible,
+                                color: color,
+                                container: fourthLevelSkillContainer,
+                                name: userSkill.children[j].children[k].children[l].skill_name,
+                                description: userSkill.children[j].children[k].children[l].description,
+                                tagIDs: [],
+                                parentTagIDs: thirdLevelSkill.tagIDs
+                            }
+
+                            // Add interactivity.     
+                            // This is added to the graphic, and not the container,
+                            // as it would otherwise effect all the container's child skills.       
+                            fourthLevelSkillNodeGraphic.eventMode = 'static';
+                            fourthLevelSkillNodeGraphic.cursor = 'pointer';
+                            fourthLevelSkillNodeGraphic.on('pointerdown', (event) => {
+                                if (!this.isSkillInfoPanelShown)
+                                    this.showInfoPanel(fourthLevelSkill)
+                                else
+                                    this.updateInfoPanel(fourthLevelSkill)
+                            });
+
+                            // Add the appropriate tags to the skill node, for the filters.
+                            for (let j = 0; j < this.skillTagsStore.skillTagsList.length; j++) {
+                                if (fourthLevelSkill.id == this.skillTagsStore.skillTagsList[j].skill_id) {
+                                    fourthLevelSkill.tagIDs.push(this.skillTagsStore.skillTagsList[j].tag_id)
+                                }
+                            }
+
+                            // We add the third level skills to this array, as their position is independant of the 
+                            // first second skills.
+                            this.fourthLevelSkillsArray.push(fourthLevelSkill);
+                        }
                     }
                 }
-
-                // Run the recursive function.
-                // For each first level skill...
-                // Pass the child nodes, the container, the angle.
-                // The 2 zeros are to begin to tally the sum of all the ancestor position values, for the connecting lines.
-                // The other zero is for the depth.
-                renderDescendantNodes(userSkill.children, firstLevelSkillContainer, angle * 60, 0, 0, 0, this);
-
-                console.log(skillNodeObject)
             }
+
+            /* For calculating the position of the second level skills.*/
+            for (let j = 0; j < this.secondLevelSkillsArray.length; j++) {
+                // Calculate the radius of the second level of skills.
+                this.secondLevelCircleRadius = (this.secondLevelSkillsArray.length * this.otherLevelNodeRadius) / this.skillSpacingDivisor;
+
+                // In case the radius is smaller than the first level.
+                if (this.secondLevelCircleRadius < this.firstLevelCircleRadius) {
+                    this.secondLevelCircleRadius = this.firstLevelCircleRadius + this.firstLevelCircleRadius / 4
+                }
+
+                // Calculate the spacing and position of the second level skills around a circle path.
+                var theta = ((Math.PI * 2) / this.secondLevelSkillsArray.length);
+                var angle = (theta * j);
+                var x = this.secondLevelCircleRadius * Math.cos(angle);
+                var y = this.secondLevelCircleRadius * Math.sin(angle);
+
+                // Position is half the width of canvas plus x, half the height of canvas plus y.
+                // We then need to minus the parent's positional values.
+                this.secondLevelSkillsArray[j].container.x = (window.innerWidth / 2 + x) - this.secondLevelSkillsArray[j].container.parent.x
+                this.secondLevelSkillsArray[j].container.y = (window.innerHeight / 2 + y) - this.secondLevelSkillsArray[j].container.parent.y
+
+                // Connecting lines.
+                const connectingLine = new PIXI.Graphics();
+                connectingLine.lineStyle(2, this.secondLevelSkillsArray[j].color, 1);
+                connectingLine.position.x = this.secondLevelSkillsArray[j].container.parent.x;
+                connectingLine.position.y = this.secondLevelSkillsArray[j].container.parent.y;
+                connectingLine.lineTo(this.secondLevelSkillsArray[j].container.x, this.secondLevelSkillsArray[j].container.y);
+                // Put the connecting line behind the skill nodes.
+                connectingLine.zIndex = -1
+                viewport.addChild(connectingLine);
+
+                this.secondLevelSkillsConnectingLinesArray.push(connectingLine)
+            }
+
+            /* For calculating the position of the third level skills.*/
+            for (let k = 0; k < this.thirdLevelSkillsArray.length; k++) {
+                // Calculate the radius of the third level of skills.
+                this.thirdLevelCircleRadius = (this.thirdLevelSkillsArray.length * this.otherLevelNodeRadius) / this.skillSpacingDivisor;
+
+                // In case the radius is smaller than the second level.
+                if (this.thirdLevelCircleRadius < this.secondLevelCircleRadius) {
+                    this.thirdLevelCircleRadius = this.secondLevelCircleRadius + this.secondLevelCircleRadius / 4
+                }
+
+                // Calculate the spacing and position of the third level skills around a circle path.
+                var theta = ((Math.PI * 2) / this.thirdLevelSkillsArray.length);
+                var angle = (theta * k);
+                var x = this.thirdLevelCircleRadius * Math.cos(angle);
+                var y = this.thirdLevelCircleRadius * Math.sin(angle);
+
+                // Position is half the width of canvas plus x, half the height of canvas plus y.
+                // We then need to minus the parent's positional values.
+                this.thirdLevelSkillsArray[k].container.x = (window.innerWidth / 2 + x) - (this.thirdLevelSkillsArray[k].container.parent.x + this.thirdLevelSkillsArray[k].container.parent.parent.x)
+                this.thirdLevelSkillsArray[k].container.y = (window.innerHeight / 2 + y) - (this.thirdLevelSkillsArray[k].container.parent.y + this.thirdLevelSkillsArray[k].container.parent.parent.y)
+
+                // Connecting lines.
+                const connectingLine = new PIXI.Graphics();
+                connectingLine.lineStyle(2, this.thirdLevelSkillsArray[k].color, 1);
+                connectingLine.position.x = this.thirdLevelSkillsArray[k].container.parent.x + this.thirdLevelSkillsArray[k].container.parent.parent.x
+                connectingLine.position.y = this.thirdLevelSkillsArray[k].container.parent.y + this.thirdLevelSkillsArray[k].container.parent.parent.y
+
+                connectingLine.lineTo(
+                    this.thirdLevelSkillsArray[k].container.x,
+                    this.thirdLevelSkillsArray[k].container.y
+                );
+
+                // Put the connecting line behind the skill nodes.
+                connectingLine.zIndex = -1
+                viewport.addChild(connectingLine);
+
+                this.thirdLevelSkillsConnectingLinesArray.push(connectingLine)
+            }
+
+            /* For calculating the position of the fourth level skills.*/
+            for (let l = 0; l < this.fourthLevelSkillsArray.length; l++) {
+
+                // Calculate the radius of the fourth level of skills.
+                this.fourthLevelCircleRadius = (this.fourthLevelSkillsArray.length * this.otherLevelNodeRadius) / this.skillSpacingDivisor;
+
+                // In case the radius is smaller than the third level.
+                if (this.fourthLevelCircleRadius < this.thirdLevelCircleRadius) {
+                    this.fourthLevelCircleRadius = this.thirdLevelCircleRadius + this.thirdLevelCircleRadius / 4
+                }
+
+                // Calculate the spacing and position of the third level skills around a circle path.
+                var theta = ((Math.PI * 2) / this.fourthLevelSkillsArray.length);
+                var angle = (theta * l);
+                var x = this.fourthLevelCircleRadius * Math.cos(angle);
+                var y = this.fourthLevelCircleRadius * Math.sin(angle);
+
+                // Position is half the width of canvas plus x, half the height of canvas plus y.
+                // We then need to minus the parent's positional values.
+                this.fourthLevelSkillsArray[l].container.x = (window.innerWidth / 2 + x) - (this.fourthLevelSkillsArray[l].container.parent.x + this.fourthLevelSkillsArray[l].container.parent.parent.x + this.fourthLevelSkillsArray[l].container.parent.parent.parent.x)
+                this.fourthLevelSkillsArray[l].container.y = (window.innerHeight / 2 + y) - (this.fourthLevelSkillsArray[l].container.parent.y + this.fourthLevelSkillsArray[l].container.parent.parent.y + this.fourthLevelSkillsArray[l].container.parent.parent.parent.y)
+
+
+                /* Commented out because does not look right. */
+                // Connecting lines.
+                const connectingLine = new PIXI.Graphics();
+                connectingLine.lineStyle(2, this.fourthLevelSkillsArray[l].color, 1);
+                connectingLine.position.x = this.fourthLevelSkillsArray[l].container.parent.x + this.fourthLevelSkillsArray[l].container.parent.parent.x + this.fourthLevelSkillsArray[l].container.parent.parent.parent.x
+                connectingLine.position.y = this.fourthLevelSkillsArray[l].container.parent.y + this.fourthLevelSkillsArray[l].container.parent.parent.y + this.fourthLevelSkillsArray[l].container.parent.parent.parent.y
+
+                connectingLine.lineTo(
+                    this.fourthLevelSkillsArray[l].container.x,
+                    this.fourthLevelSkillsArray[l].container.y
+                );
+
+                // Put the connecting line behind the skill nodes.
+                connectingLine.zIndex = -1
+                viewport.addChild(connectingLine);
+
+                this.fourthLevelSkillsConnectingLinesArray.push(connectingLine)
+            }
+
         }, () => {
             // Failed load, log the error or display a message to the user
             console.log('Unable to load required font!');
