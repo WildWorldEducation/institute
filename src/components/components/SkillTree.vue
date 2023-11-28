@@ -421,6 +421,14 @@ export default {
                 }
                 skillNodeObject.skillNodeLevels = specificLevelsArrays
                 console.log(skillNodeObject)
+
+                // Starting to position the skills.
+
+                // Calculate the spacing and position of the second level skills around a circle path.
+                // var theta = ((Math.PI * 2) / this.secondLevelSkillsArray.length);
+                // var angle = (theta * j);
+                // var x = this.secondLevelCircleRadius * Math.cos(angle);
+                // var y = this.secondLevelCircleRadius * Math.sin(angle);
             }
         }, () => {
             // Failed load, log the error or display a message to the user
