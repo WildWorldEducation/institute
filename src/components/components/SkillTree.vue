@@ -429,13 +429,14 @@ export default {
                 this.domains.push(domainObject)
             }
 
-            //console.log(this.domains)
             /*
              * Starting to position the skills.
              */
             var xValues = [];
             var yValues = [];
 
+            // Function to rotate the skill nodes.
+            // They should be rotated, so as to be in the 60 degree segment for each skill domain.
             function rotate(cx, cy, x, y, angle) {
                 var radians = (Math.PI / 180) * angle,
                     cos = Math.cos(radians),
@@ -445,48 +446,33 @@ export default {
                 return [nx, ny];
             }
 
+            let additionalRadius = 300
             for (var i = 0; i < this.domains.length; i++) {
-                //console.log(this.domains)
                 if (this.domains[i].skillsByDepthLevel.length > 0) {
-                    for (var j = 0; j < this.domains[i].skillsByDepthLevel[0].length; j++) {
-                        // Work out the x and y coordinates, using the radius (600) and the number of skills.
-                        // Math.PI is divided by 3, as the skills should be arrayed around only one sixth of a circle.
-                        // (Math.PI * 2 would be a whole circle.)
-                        xValues[j] = (window.innerWidth / 2 + 600 * Math.cos((Math.PI / 3) * j / this.domains[i].skillsByDepthLevel[0].length));
-                        yValues[j] = (window.innerHeight / 2 + 600 * Math.sin((Math.PI / 3) * j / this.domains[i].skillsByDepthLevel[0].length));
+                    for (var j = 0; j < 2; j++) {
+                        //  for (var j = 0; j < this.domains[i].skillsByDepthLevel.length; j++) {
+                        for (var k = 0; k < this.domains[i].skillsByDepthLevel[j].length; k++) {
+                            // Work out the x and y coordinates, using the radius (600) and the number of skills.
+                            // Math.PI is divided by 3, as the skills should be arrayed around only one sixth of a circle.
+                            // (Math.PI * 2 would be a whole circle.)
+                            xValues[k] = (window.innerWidth / 2 + (300 + (additionalRadius * (j + 1))) * Math.cos((Math.PI / 3) * k / this.domains[i].skillsByDepthLevel[j].length));
+                            yValues[k] = (window.innerHeight / 2 + (300 + (additionalRadius * (j + 1))) * Math.sin((Math.PI / 3) * k / this.domains[i].skillsByDepthLevel[j].length));
+                            console.log(300 + (additionalRadius * (j + 1)))
+                            // Rotate skills from each domain by 60 degrees (because 360 degrees / 6 domains = 60),
+                            // so skills are in the correct segment for their domain.
+                            var coords = []
+                            coords = rotate(window.innerWidth / 2, window.innerHeight / 2, xValues[k], yValues[k], i * -60)
 
-                        // Rotate skills from each domain by 60 degrees (because 360 degrees / 6 domains = 60),
-                        // so skills are in the correct segment for their domain.
-                        var coords = []
-                        coords = rotate(window.innerWidth / 2, window.innerHeight / 2, xValues[j], yValues[j], i * -60)
-                        console.log([xValues[j], yValues[j]])
-                        console.log(coords)
+                            // Apply the x and y coordinates to the PIXI containers.
+                            this.domains[i].skillsByDepthLevel[j][k].container.x = coords[0]
+                            this.domains[i].skillsByDepthLevel[j][k].container.y = coords[1]
 
-                        // Apply the x and y coordinates to the PIXI containers.
-                        this.domains[i].skillsByDepthLevel[0][j].container.x = coords[0]
-                        this.domains[i].skillsByDepthLevel[0][j].container.y = coords[1]
-
-                        // Add to the PIXI viewport.
-                        viewport.addChild(this.domains[i].skillsByDepthLevel[0][j].container);
+                            // Add to the PIXI viewport.
+                            viewport.addChild(this.domains[i].skillsByDepthLevel[j][k].container);
+                        }
                     }
-                    //  console.log(this.domains[i].skillsByDepthLevel)
                 }
             }
-
-
-
-            // for (var i = 0; i < 4; i++) {
-            //     xValues[i] = (window.innerWidth / 2 + 600 * Math.cos((Math.PI / 3) * i / 4));
-            //     yValues[i] = (window.innerHeight / 2 + 600 * Math.sin((Math.PI / 3) * i / 4));
-
-            //     var graphics = new PIXI.Graphics();
-            //     graphics.beginFill(0xFFFF00);
-            //     graphics.drawRect(xValues[i], yValues[i], 50, 50);
-
-            //     viewport.addChild(graphics);
-            //     //  console.log(graphics)
-            // }
-
 
         }, () => {
             // Failed load, log the error or display a message to the user
