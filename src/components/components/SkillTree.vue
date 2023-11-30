@@ -46,7 +46,8 @@ export default {
             thirdLevelSkillsConnectingLinesArray: [],
             fourthLevelSkillsArray: [],
             fourthLevelSkillsConnectingLinesArray: [],
-            isSkillInfoPanelShown: false
+            isSkillInfoPanelShown: false,
+            domains: []
         }
     },
     components: {
@@ -291,17 +292,11 @@ export default {
                  * Recursive function to render all descendant nodes.
                  */
                 // Creating an object for each skill domain,
-                //to store non-sub-skill nodes, to calculate their positions later.
-                let arrayOfLevels = []
-                let skillNodeObject = { domain: userSkill.skill_name, skillNodeLevels: arrayOfLevels }
+                //to store non-sub-skill nodes, to calculate their positions later.                
+                let domainObject = { domain: userSkill.skill_name, skills: [] }
                 function renderDescendantNodes(parentChildren, parentContainer, totalAncestorXPos, totalAncestorYPos, depth, context) {
                     // Increase the depth each recursion.
                     depth++
-
-                    let skillObject = {
-                        depth: depth,
-                        skillNode: null
-                    }
 
                     // Orbit circle
                     const orbitCircle = new PIXI.Graphics
@@ -310,12 +305,18 @@ export default {
                     orbitCircle.endFill();
                     viewport.addChild(orbitCircle);
 
-                    // Parameters
-                    let radius = 300
+                    // Parameters                    
                     let subNodeDistance = 75
                     let nodeRadius = 17
 
                     for (let [index, child] of parentChildren.entries()) {
+
+                        let skillObject = {
+                            depth: depth,
+                            container: null,
+                            name: ''
+                        }
+
                         let nodeContainer = new PIXI.Container();
                         // Sort the children into subskills and actual child skills.                        
                         let numChildren = 0
@@ -335,8 +336,9 @@ export default {
                          Its position will be determined later, by its depth level.
                          */
                         if (child.type != 'sub') {
-                            skillObject.skillNode = nodeContainer
-                            arrayOfLevels.push(skillObject)
+                            skillObject.container = nodeContainer
+                            skillObject.name = child.skill_name
+                            domainObject.skills.push(skillObject)
                         }
                         // For subskills, they just go around the super skill (360 degrees).
                         else {
@@ -376,7 +378,7 @@ export default {
                         nodeContainer.addChild(nodeGraphic);
 
                         // Add the child node to the parent node.
-                        parentContainer.addChild(nodeContainer);
+                        // parentContainer.addChild(nodeContainer);
 
                         /*
                          * Run the above function again recursively.
@@ -397,43 +399,100 @@ export default {
                  * For the placement of the skill nodes around a circle,
                     in concentric rings by depth.
                  */
+
+                //console.log(domainObject)
+
                 // Here, we find the depth that the skill domain goes.
                 let lowestDepth = 0
-                for (let i = 0; i < skillNodeObject.skillNodeLevels.length; i++) {
-                    if (skillNodeObject.skillNodeLevels[i].depth > lowestDepth) {
-                        lowestDepth = skillNodeObject.skillNodeLevels[i].depth
+                for (let i = 0; i < domainObject.skills.length; i++) {
+                    if (domainObject.skills[i].depth > lowestDepth) {
+                        lowestDepth = domainObject.skills[i].depth
                     }
                 }
 
                 // We create an empty array for each level.
-                let specificLevelsArrays = []
+                let skillLevelsArray = []
                 for (let j = 0; j < lowestDepth; j++) {
-                    specificLevelsArrays.push([])
+                    skillLevelsArray.push([])
                 }
 
                 // We populate these arrays with the skills within the domain that are at that relevant depth level.
-                for (let i = 0; i < skillNodeObject.skillNodeLevels.length; i++) {
+                for (let i = 0; i < domainObject.skills.length; i++) {
                     for (let j = 0; j < lowestDepth; j++) {
-                        if (skillNodeObject.skillNodeLevels[i].depth == j + 1) {
-                            specificLevelsArrays[j].push(skillNodeObject.skillNodeLevels[i])
+                        if (domainObject.skills[i].depth == j + 1) {
+                            skillLevelsArray[j].push(domainObject.skills[i])
                         }
                     }
                 }
-                skillNodeObject.skillNodeLevels = specificLevelsArrays
-                console.log(skillNodeObject)
 
-                // Starting to position the skills.
-
-                // Calculate the spacing and position of the second level skills around a circle path.
-                // var theta = ((Math.PI * 2) / this.secondLevelSkillsArray.length);
-                // var angle = (theta * j);
-                // var x = this.secondLevelCircleRadius * Math.cos(angle);
-                // var y = this.secondLevelCircleRadius * Math.sin(angle);
+                domainObject.skillsByDepthLevel = skillLevelsArray
+                this.domains.push(domainObject)
             }
+
+            //console.log(this.domains)
+            /*
+             * Starting to position the skills.
+             */
+            var xValues = [];
+            var yValues = [];
+
+            function rotate(cx, cy, x, y, angle) {
+                var radians = (Math.PI / 180) * angle,
+                    cos = Math.cos(radians),
+                    sin = Math.sin(radians),
+                    nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+                    ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+                return [nx, ny];
+            }
+
+            for (var i = 0; i < this.domains.length; i++) {
+                //console.log(this.domains)
+                if (this.domains[i].skillsByDepthLevel.length > 0) {
+                    for (var j = 0; j < this.domains[i].skillsByDepthLevel[0].length; j++) {
+                        // Work out the x and y coordinates, using the radius (600) and the number of skills.
+                        // Math.PI is divided by 3, as the skills should be arrayed around only one sixth of a circle.
+                        // (Math.PI * 2 would be a whole circle.)
+                        xValues[j] = (window.innerWidth / 2 + 600 * Math.cos((Math.PI / 3) * j / this.domains[i].skillsByDepthLevel[0].length));
+                        yValues[j] = (window.innerHeight / 2 + 600 * Math.sin((Math.PI / 3) * j / this.domains[i].skillsByDepthLevel[0].length));
+
+                        // Rotate skills from each domain by 60 degrees (because 360 degrees / 6 domains = 60),
+                        // so skills are in the correct segment for their domain.
+                        var coords = []
+                        coords = rotate(window.innerWidth / 2, window.innerHeight / 2, xValues[j], yValues[j], i * -60)
+                        console.log([xValues[j], yValues[j]])
+                        console.log(coords)
+
+                        // Apply the x and y coordinates to the PIXI containers.
+                        this.domains[i].skillsByDepthLevel[0][j].container.x = coords[0]
+                        this.domains[i].skillsByDepthLevel[0][j].container.y = coords[1]
+
+                        // Add to the PIXI viewport.
+                        viewport.addChild(this.domains[i].skillsByDepthLevel[0][j].container);
+                    }
+                    //  console.log(this.domains[i].skillsByDepthLevel)
+                }
+            }
+
+
+
+            // for (var i = 0; i < 4; i++) {
+            //     xValues[i] = (window.innerWidth / 2 + 600 * Math.cos((Math.PI / 3) * i / 4));
+            //     yValues[i] = (window.innerHeight / 2 + 600 * Math.sin((Math.PI / 3) * i / 4));
+
+            //     var graphics = new PIXI.Graphics();
+            //     graphics.beginFill(0xFFFF00);
+            //     graphics.drawRect(xValues[i], yValues[i], 50, 50);
+
+            //     viewport.addChild(graphics);
+            //     //  console.log(graphics)
+            // }
+
+
         }, () => {
             // Failed load, log the error or display a message to the user
             console.log('Unable to load required font!');
         });
+
     },
 }
 
