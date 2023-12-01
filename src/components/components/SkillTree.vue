@@ -378,7 +378,7 @@ export default {
                         nodeContainer.addChild(nodeGraphic);
 
                         // Add the child node to the parent node.
-                        // parentContainer.addChild(nodeContainer);
+                        parentContainer.addChild(nodeContainer);
 
                         /*
                          * Run the above function again recursively.
@@ -464,35 +464,29 @@ export default {
                             var coords = []
                             coords = rotate(window.innerWidth / 2, window.innerHeight / 2, xValues[k], yValues[k], i * -60)
 
+                            // Once all the skills have been roated to fit in their domain segment,
+                            // They then need to be offset (if there is more than one per level).
+                            // This is because otehrwise, they will start the 0 position (same angle as the domain parent),
+                            // and then space along the circle. The need rather to have the center of the group of skills 
+                            // have the 0 angle (same angle as the domain parent).
 
-                            // Trying to find algorithm to rotate, within the domain.
                             var coords2 = []
                             var angle
                             angle = 30
                             var offset = 0
-                            // if (skillsPerDomainPerLevel.length == 2) {
-                            //     offset = 15
-                            // }
-                            // else if (skillsPerDomainPerLevel.length == 4) {
-                            //     offset = 7.5
-                            // }
                             offset = 30 / skillsPerDomainPerLevel.length
                             angle = angle - offset
-
-
                             coords2 = rotate(window.innerWidth / 2, window.innerHeight / 2, coords[0], coords[1], angle)
-
-
+                            // Apply the x and y coordinates to the PIXI containers.
                             if (skillsPerDomainPerLevel.length > 1) {
                                 this.domains[i].skillsByDepthLevel[j][k].container.x = coords2[0]
                                 this.domains[i].skillsByDepthLevel[j][k].container.y = coords2[1]
                             }
+                            // If there is only one skill in the level for the domain, no offset is needed.
                             else {
-                                // Apply the x and y coordinates to the PIXI containers.
                                 skillsPerDomainPerLevel[k].container.x = coords[0]
                                 skillsPerDomainPerLevel[k].container.y = coords[1]
                             }
-
 
                             // Add to the PIXI viewport.
                             viewport.addChild(this.domains[i].skillsByDepthLevel[j][k].container);
