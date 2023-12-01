@@ -307,10 +307,9 @@ export default {
 
                     // Parameters                    
                     let subNodeDistance = 30
-                    let nodeRadius = 17
+                    var nodeRadius
 
                     for (let [index, child] of parentChildren.entries()) {
-
                         let skillObject = {
                             depth: depth,
                             container: null,
@@ -331,11 +330,12 @@ export default {
                         }
 
                         /*
-                         * If the node is node a subskill,
+                         * If the node is not a subskill,
                          it is added to an array.
                          Its position will be determined later, by its depth level.
                          */
                         if (child.type != 'sub') {
+                            nodeRadius = 17
                             skillObject.container = nodeContainer
                             skillObject.name = child.skill_name
                             domainObject.skills.push(skillObject)
@@ -402,8 +402,6 @@ export default {
                     in concentric rings by depth.
                  */
 
-                //console.log(domainObject)
-
                 // Here, we find the depth that the skill domain goes.
                 let lowestDepth = 0
                 for (let i = 0; i < domainObject.skills.length; i++) {
@@ -454,7 +452,6 @@ export default {
                     for (var j = 0; j < this.domains[i].skillsByDepthLevel.length; j++) {
                         for (var k = 0; k < this.domains[i].skillsByDepthLevel[j].length; k++) {
                             var skillsPerDomainPerLevel = this.domains[i].skillsByDepthLevel[j]
-
                             // Work out the x and y coordinates, using the radius (600) and the number of skills.
                             // Math.PI is divided by 3, as the skills should be arrayed around only one sixth of a circle.
                             // (Math.PI * 2 would be a whole circle.)
