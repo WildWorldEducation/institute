@@ -449,23 +449,50 @@ export default {
             let additionalRadius = 300
             for (var i = 0; i < this.domains.length; i++) {
                 if (this.domains[i].skillsByDepthLevel.length > 0) {
-                    for (var j = 0; j < 2; j++) {
-                        //  for (var j = 0; j < this.domains[i].skillsByDepthLevel.length; j++) {
+                    for (var j = 0; j < 4; j++) {
+
                         for (var k = 0; k < this.domains[i].skillsByDepthLevel[j].length; k++) {
+                            var skillsPerDomainPerLevel = this.domains[i].skillsByDepthLevel[j]
+
                             // Work out the x and y coordinates, using the radius (600) and the number of skills.
                             // Math.PI is divided by 3, as the skills should be arrayed around only one sixth of a circle.
                             // (Math.PI * 2 would be a whole circle.)
-                            xValues[k] = (window.innerWidth / 2 + (300 + (additionalRadius * (j + 1))) * Math.cos((Math.PI / 3) * k / this.domains[i].skillsByDepthLevel[j].length));
-                            yValues[k] = (window.innerHeight / 2 + (300 + (additionalRadius * (j + 1))) * Math.sin((Math.PI / 3) * k / this.domains[i].skillsByDepthLevel[j].length));
-                            console.log(300 + (additionalRadius * (j + 1)))
+                            xValues[k] = (window.innerWidth / 2 + (300 + (additionalRadius * (j + 1))) * Math.cos((Math.PI / 3) * k / skillsPerDomainPerLevel.length));
+                            yValues[k] = (window.innerHeight / 2 + (300 + (additionalRadius * (j + 1))) * Math.sin((Math.PI / 3) * k / skillsPerDomainPerLevel.length));
                             // Rotate skills from each domain by 60 degrees (because 360 degrees / 6 domains = 60),
                             // so skills are in the correct segment for their domain.
                             var coords = []
                             coords = rotate(window.innerWidth / 2, window.innerHeight / 2, xValues[k], yValues[k], i * -60)
 
-                            // Apply the x and y coordinates to the PIXI containers.
-                            this.domains[i].skillsByDepthLevel[j][k].container.x = coords[0]
-                            this.domains[i].skillsByDepthLevel[j][k].container.y = coords[1]
+
+                            // Trying to find algorithm to rotate, within the domain.
+                            var coords2 = []
+                            var angle
+                            angle = 30
+                            var offset = 0
+                            // if (skillsPerDomainPerLevel.length == 2) {
+                            //     offset = 15
+                            // }
+                            // else if (skillsPerDomainPerLevel.length == 4) {
+                            //     offset = 7.5
+                            // }
+                            offset = 30 / skillsPerDomainPerLevel.length
+                            angle = angle - offset
+
+
+                            coords2 = rotate(window.innerWidth / 2, window.innerHeight / 2, coords[0], coords[1], angle)
+
+
+                            if (skillsPerDomainPerLevel.length > 1) {
+                                this.domains[i].skillsByDepthLevel[j][k].container.x = coords2[0]
+                                this.domains[i].skillsByDepthLevel[j][k].container.y = coords2[1]
+                            }
+                            else {
+                                // Apply the x and y coordinates to the PIXI containers.
+                                skillsPerDomainPerLevel[k].container.x = coords[0]
+                                skillsPerDomainPerLevel[k].container.y = coords[1]
+                            }
+
 
                             // Add to the PIXI viewport.
                             viewport.addChild(this.domains[i].skillsByDepthLevel[j][k].container);
