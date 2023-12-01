@@ -75,7 +75,7 @@ export default {
                     resizeTo: skilltreeDiv,
                     antialias: true,
                     // Background colour.
-                    //backgroundColor: 0xffffff
+                    backgroundColor: 0xffffff
                 })
 
             // Work out the width and height of the div, for the zooming and panning.
