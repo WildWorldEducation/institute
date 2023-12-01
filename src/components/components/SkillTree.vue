@@ -539,10 +539,12 @@ export default {
                             var parentId = skillsPerDomainPerLevel[k].parent
                             var parentX
                             var parentY
+                            // Make the first level skill connecting lines start from the domain node locations.
                             if (j == 0) {
                                 parentX = this.domains[i].domainX
                                 parentY = this.domains[i].domainY
                             }
+                            // Look for the skill parents.
                             for (var l = 0; l < this.domains[i].skills.length; l++) {
                                 if (this.domains[i].skills[l].id == parentId
                                     && typeof skillsPerDomainPerLevel[l] != 'undefined') {
@@ -551,9 +553,11 @@ export default {
                                 }
                             }
 
+                            /*
+                            * Connecting lines.
+                            */
                             const connectingLine = new PIXI.Graphics();
                             connectingLine.lineStyle(2, color, 1);
-
                             connectingLine.moveTo(parentX, parentY)
                             connectingLine.lineTo(skillsPerDomainPerLevel[k].container.x, skillsPerDomainPerLevel[k].container.y);
                             // Put the connecting line behind the skill nodes.
