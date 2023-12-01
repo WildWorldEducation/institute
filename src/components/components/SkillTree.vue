@@ -306,7 +306,7 @@ export default {
                     viewport.addChild(orbitCircle);
 
                     // Parameters                    
-                    let subNodeDistance = 75
+                    let subNodeDistance = 30
                     let nodeRadius = 17
 
                     for (let [index, child] of parentChildren.entries()) {
@@ -342,6 +342,8 @@ export default {
                         }
                         // For subskills, they just go around the super skill (360 degrees).
                         else {
+                            // Make the subskills smaller.
+                            nodeRadius = 10
                             // Calculate the increment of the subskills, around a circle.
                             let increment = 360 / numSubSkills
                             // Get the correct index number, excluding sub skills.
@@ -449,8 +451,7 @@ export default {
             let additionalRadius = 300
             for (var i = 0; i < this.domains.length; i++) {
                 if (this.domains[i].skillsByDepthLevel.length > 0) {
-                    for (var j = 0; j < 4; j++) {
-
+                    for (var j = 0; j < this.domains[i].skillsByDepthLevel.length; j++) {
                         for (var k = 0; k < this.domains[i].skillsByDepthLevel[j].length; k++) {
                             var skillsPerDomainPerLevel = this.domains[i].skillsByDepthLevel[j]
 
