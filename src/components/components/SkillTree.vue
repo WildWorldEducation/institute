@@ -294,11 +294,11 @@ export default {
                 // Creating an object for each skill domain,
                 //to store non-sub-skill nodes, to calculate their positions later.                
                 let domainObject = { domain: userSkill.skill_name, skills: [] }
-                function renderDescendantNodes(parentChildren, parentContainer, totalAncestorXPos, totalAncestorYPos, depth, context) {
+                function renderDescendantNodes(parentChildren, parentContainer, depth, context) {
                     // Increase the depth each recursion.
                     depth++
 
-                    // Orbit circle
+                    // Orbit circles
                     const orbitCircle = new PIXI.Graphics
                     orbitCircle.lineStyle(2, 0xC8D7DA, 1);
                     orbitCircle.drawCircle(window.innerWidth / 2, window.innerHeight / 2, 300 * depth);
@@ -313,7 +313,9 @@ export default {
                         let skillObject = {
                             depth: depth,
                             container: null,
-                            name: ''
+                            name: '',
+                            id: child.id,
+                            parent: child.parent,
                         }
 
                         let nodeContainer = new PIXI.Container();
@@ -407,14 +409,16 @@ export default {
                         // Add components to the container.                        
                         nodeContainer.addChild(nodeName);
 
-                        // Add the child node to the parent node.
-                        parentContainer.addChild(nodeContainer);
+                        if (child.type == 'sub') {
+                            // Add the child node to the parent node.
+                            parentContainer.addChild(nodeContainer);
+                        }
 
                         /*
                          * Run the above function again recursively.
                          */
                         if (child.children && Array.isArray(child.children) && child.children.length > 0)
-                            renderDescendantNodes(child.children, nodeContainer, totalAncestorXPos, totalAncestorYPos, depth, context)
+                            renderDescendantNodes(child.children, nodeContainer, depth, context)
                     }
                 }
 
@@ -423,7 +427,7 @@ export default {
                 // Pass the child nodes, the container, the angle.
                 // The 2 zeros are to begin to tally the sum of all the ancestor position values, for the connecting lines.
                 // The other zero is for the depth.
-                renderDescendantNodes(userSkill.children, firstLevelSkillContainer, 0, 0, 0, this);
+                renderDescendantNodes(userSkill.children, firstLevelSkillContainer, 0, this);
 
                 /*
                  * For the placement of the skill nodes around a circle,
@@ -454,6 +458,8 @@ export default {
                 }
 
                 domainObject.skillsByDepthLevel = skillLevelsArray
+                domainObject.domainX = firstLevelSkillContainer.x
+                domainObject.domainY = firstLevelSkillContainer.y
                 this.domains.push(domainObject)
             }
 
@@ -477,7 +483,8 @@ export default {
             let additionalRadius = 300
             for (var i = 0; i < this.domains.length; i++) {
                 if (this.domains[i].skillsByDepthLevel.length > 0) {
-                    for (var j = 0; j < this.domains[i].skillsByDepthLevel.length; j++) {
+                    for (var j = 0; j < 2; j++) {
+                        //for (var j = 0; j < this.domains[i].skillsByDepthLevel.length; j++) {
                         for (var k = 0; k < this.domains[i].skillsByDepthLevel[j].length; k++) {
                             var skillsPerDomainPerLevel = this.domains[i].skillsByDepthLevel[j]
                             // Work out the x and y coordinates, using the radius (600) and the number of skills.
@@ -505,8 +512,8 @@ export default {
                             coords2 = rotate(window.innerWidth / 2, window.innerHeight / 2, coords[0], coords[1], angle)
                             // Apply the x and y coordinates to the PIXI containers.
                             if (skillsPerDomainPerLevel.length > 1) {
-                                this.domains[i].skillsByDepthLevel[j][k].container.x = coords2[0]
-                                this.domains[i].skillsByDepthLevel[j][k].container.y = coords2[1]
+                                skillsPerDomainPerLevel[k].container.x = coords2[0]
+                                skillsPerDomainPerLevel[k].container.y = coords2[1]
                             }
                             // If there is only one skill in the level for the domain, no offset is needed.
                             else {
@@ -515,11 +522,48 @@ export default {
                             }
 
                             // Add to the PIXI viewport.
-                            viewport.addChild(this.domains[i].skillsByDepthLevel[j][k].container);
+                            viewport.addChild(skillsPerDomainPerLevel[k].container);
                         }
                     }
                 }
             }
+
+            // Connecting lines.
+            for (var i = 0; i < this.domains.length; i++) {
+                if (this.domains[i].skillsByDepthLevel.length > 0) {
+                    for (var j = 0; j < 2; j++) {
+                        //console.log(this.domains[i].skillsByDepthLevel[j])
+                        for (var k = 0; k < this.domains[i].skillsByDepthLevel[j].length; k++) {
+                            var skillsPerDomainPerLevel = this.domains[i].skillsByDepthLevel[j]
+                            // Find the parent coordinates.
+                            var parentId = skillsPerDomainPerLevel[k].parent
+                            var parentX
+                            var parentY
+                            if (j == 0) {
+                                parentX = this.domains[i].domainX
+                                parentY = this.domains[i].domainY
+                            }
+                            for (var l = 0; l < this.domains[i].skills.length; l++) {
+                                if (this.domains[i].skills[l].id == parentId
+                                    && typeof skillsPerDomainPerLevel[l] != 'undefined') {
+                                    parentX = this.domains[i].skills[l].container.x
+                                    parentY = this.domains[i].skills[l].container.y
+                                }
+                            }
+
+                            const connectingLine = new PIXI.Graphics();
+                            connectingLine.lineStyle(2, color, 1);
+
+                            connectingLine.moveTo(parentX, parentY)
+                            connectingLine.lineTo(skillsPerDomainPerLevel[k].container.x, skillsPerDomainPerLevel[k].container.y);
+                            // Put the connecting line behind the skill nodes.
+                            connectingLine.zIndex = -1
+                            viewport.addChild(connectingLine);
+                        }
+                    }
+                }
+            }
+
 
         }, () => {
             // Failed load, log the error or display a message to the user
