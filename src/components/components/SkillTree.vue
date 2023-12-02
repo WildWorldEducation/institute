@@ -300,7 +300,7 @@ export default {
 
                     // Orbit circles
                     const orbitCircle = new PIXI.Graphics
-                    orbitCircle.lineStyle(2, 0xC8D7DA, 1);
+                    orbitCircle.lineStyle(2, 0xC8D7DA, 0.1);
                     orbitCircle.drawCircle(window.innerWidth / 2, window.innerHeight / 2, 300 * depth);
                     orbitCircle.endFill();
                     viewport.addChild(orbitCircle);
@@ -483,8 +483,7 @@ export default {
             let additionalRadius = 300
             for (var i = 0; i < this.domains.length; i++) {
                 if (this.domains[i].skillsByDepthLevel.length > 0) {
-                    for (var j = 0; j < 3; j++) {
-                        //for (var j = 0; j < this.domains[i].skillsByDepthLevel.length; j++) {
+                    for (var j = 0; j < this.domains[i].skillsByDepthLevel.length; j++) {
                         for (var k = 0; k < this.domains[i].skillsByDepthLevel[j].length; k++) {
                             var skillsPerDomainPerLevel = this.domains[i].skillsByDepthLevel[j]
                             // Work out the x and y coordinates, using the radius (600) and the number of skills.
@@ -531,7 +530,7 @@ export default {
             // Connecting lines.
             for (var i = 0; i < this.domains.length; i++) {
                 if (this.domains[i].skillsByDepthLevel.length > 0) {
-                    for (var j = 0; j < 3; j++) {
+                    for (var j = 0; j < this.domains[i].skillsByDepthLevel.length; j++) {
                         //console.log(this.domains[i].skillsByDepthLevel[j])
                         for (var k = 0; k < this.domains[i].skillsByDepthLevel[j].length; k++) {
                             var skillsPerDomainPerLevel = this.domains[i].skillsByDepthLevel[j]
