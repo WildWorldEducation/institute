@@ -75,7 +75,7 @@ export default {
                     resizeTo: skilltreeDiv,
                     antialias: true,
                     // Background colour.
-                    backgroundColor: 0xffffff
+                    //backgroundColor: 0xffffff
                 })
 
             // Work out the width and height of the div, for the zooming and panning.
@@ -483,7 +483,7 @@ export default {
             let additionalRadius = 300
             for (var i = 0; i < this.domains.length; i++) {
                 if (this.domains[i].skillsByDepthLevel.length > 0) {
-                    for (var j = 0; j < 2; j++) {
+                    for (var j = 0; j < 3; j++) {
                         //for (var j = 0; j < this.domains[i].skillsByDepthLevel.length; j++) {
                         for (var k = 0; k < this.domains[i].skillsByDepthLevel[j].length; k++) {
                             var skillsPerDomainPerLevel = this.domains[i].skillsByDepthLevel[j]
@@ -531,7 +531,7 @@ export default {
             // Connecting lines.
             for (var i = 0; i < this.domains.length; i++) {
                 if (this.domains[i].skillsByDepthLevel.length > 0) {
-                    for (var j = 0; j < 2; j++) {
+                    for (var j = 0; j < 3; j++) {
                         //console.log(this.domains[i].skillsByDepthLevel[j])
                         for (var k = 0; k < this.domains[i].skillsByDepthLevel[j].length; k++) {
                             var skillsPerDomainPerLevel = this.domains[i].skillsByDepthLevel[j]
@@ -539,6 +539,7 @@ export default {
                             var parentId = skillsPerDomainPerLevel[k].parent
                             var parentX
                             var parentY
+
                             // Make the first level skill connecting lines start from the domain node locations.
                             if (j == 0) {
                                 parentX = this.domains[i].domainX
@@ -546,8 +547,7 @@ export default {
                             }
                             // Look for the skill parents.
                             for (var l = 0; l < this.domains[i].skills.length; l++) {
-                                if (this.domains[i].skills[l].id == parentId
-                                    && typeof skillsPerDomainPerLevel[l] != 'undefined') {
+                                if (this.domains[i].skills[l].id == parentId) {
                                     parentX = this.domains[i].skills[l].container.x
                                     parentY = this.domains[i].skills[l].container.y
                                 }
