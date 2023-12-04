@@ -98,7 +98,9 @@ export default {
 </template>
 
 
-<style scoped> #user-information {
+<style scoped> 
+
+#user-information {
      background-color: #E4ECF4;
      border-radius: 12px;
  }

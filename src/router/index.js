@@ -126,7 +126,7 @@ const router = createRouter({
     {
       path: '/user-skills/edit/:id',
       name: 'edit-user-skills',
-      component: () => import('../components/pages/EditUserSkillsView.vue')
+      component: () => import('../components/pages/EditSkillMasteryView.vue')
     },
     {
       path: '/profile-settings',

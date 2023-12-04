@@ -75,7 +75,7 @@ export default {
                     resizeTo: skilltreeDiv,
                     antialias: true,
                     // Background colour.
-                    //backgroundColor: 0xffffff
+                    backgroundColor: 0xffffff
                 })
 
             // Work out the width and height of the div, for the zooming and panning.
@@ -409,6 +409,37 @@ export default {
                         // Add components to the container.                        
                         nodeContainer.addChild(nodeName);
 
+                        // Create the  skill object:
+                        let skill = {
+                            id: child.id,
+                            isMastered: child.is_mastered,
+                            isUnlocked: child.is_accessible,
+                            color: color,
+                            container: nodeContainer,
+                            name: child.skill_name,
+                            description: child.description,
+                        }
+
+                        // Add interactivity.            
+                        // This is added to the graphic and text, and not the container,
+                        // as it would otherwise effect all the container's child skills.
+                        // nodeContainer.eventMode = 'static';
+                        //   nodeName.eventMode = 'static';
+                        // nodeGraphic.cursor = 'pointer';
+                        // nodeName.cursor = 'pointer';
+                        // nodeName.on('pointerdown', (event) => {
+                        //     if (!context.isSkillInfoPanelShown)
+                        //         context.showInfoPanel(skill)
+                        //     else
+                        //         context.updateInfoPanel(skill)
+                        // });
+                        // nodeGraphic.on('pointerdown', (event) => {
+                        //     if (!context.isSkillInfoPanelShown)
+                        //         context.showInfoPanel(skill)
+                        //     else
+                        //         context.updateInfoPanel(skill)
+                        // });
+
                         if (child.type == 'sub') {
                             // Add the child node to the parent node.
                             parentContainer.addChild(nodeContainer);
@@ -556,7 +587,7 @@ export default {
                             * Connecting lines.
                             */
                             const connectingLine = new PIXI.Graphics();
-                            connectingLine.lineStyle(2, color, 1);
+                            connectingLine.lineStyle(4, color, 1);
                             connectingLine.moveTo(parentX, parentY)
                             connectingLine.lineTo(skillsPerDomainPerLevel[k].container.x, skillsPerDomainPerLevel[k].container.y);
                             // Put the connecting line behind the skill nodes.
