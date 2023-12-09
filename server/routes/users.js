@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //  password: 'password',
+    ///password: 'password',
     database: 'skill_tree'
 });
 
@@ -115,6 +115,32 @@ router.post('/add', (req, res, next) => {
             }
         });
 
+    }
+    else {
+        res.redirect('/login');
+    }
+});
+
+router.post('/add/instructor', (req, res, next) => {
+    if (req.session.userName) {
+        let data = {};
+        data = {
+            instructor_id: req.body.instructor_id,
+            student_id: req.body.student_id,
+        };
+        let sqlQuery = "INSERT INTO instructor_students SET ?";
+        let query = conn.query(sqlQuery, data, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err)
+            }
+        });
     }
     else {
         res.redirect('/login');
@@ -253,6 +279,31 @@ router.put('/:id/edit', (req, res, next) => {
     }
 });
 
+router.put('/:id/edit/instructor', (req, res, next) => {
+    if (req.session.userName) {
+
+        let sqlQuery = `
+        INSERT INTO skill_tree.instructor_students (instructor_id, student_id) 
+        VALUES(` + req.body.instructor_id + `, ` + req.params.id + `) 
+        ON DUPLICATE KEY UPDATE instructor_id=` + req.body.instructor_id + `;`
+
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err)
+            }
+        });
+    }
+    else {
+        res.redirect('/login');
+    }
+});
+
+
 /**
  * Update User Message
  *
@@ -260,7 +311,7 @@ router.put('/:id/edit', (req, res, next) => {
  */
 router.put('/:id/edit-message', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `UPDATE users SET message='` + req.body.message +
+        let sqlQuery = `UPDATE users SET message = '` + req.body.message +
             `' WHERE id=` + req.params.id + `;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {

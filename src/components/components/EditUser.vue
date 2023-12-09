@@ -18,7 +18,8 @@ export default {
             userId: this.$route.params.id,
             user: {},
             image: '',
-            instructors: []
+            instructors: [],
+            instructorId: null
         };
     },
     async mounted() {
@@ -88,6 +89,20 @@ export default {
 
             var url = '/users/' + this.userId + '/edit';
             fetch(url, requestOptions)
+                .then(() => {
+                    if (this.user.role == "student") {
+                        const requestOptions = {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(
+                                {
+                                    instructor_id: this.instructorId,
+                                })
+                        };
+                        var url = '/users/' + this.userId + '/edit/instructor';
+                        fetch(url, requestOptions)
+                    }
+                })
                 .then(() => {
                     this.$router.push("/users");
                 });
@@ -160,7 +175,7 @@ export default {
         </div>
         <div v-if="user.role == 'student'" class="mb-3">
             <label class="form-label">Instructor</label>
-            <select v-model="user.instructor" class="form-select">
+            <select v-model="instructorId" class="form-select">
                 <option v-for="instructor in instructors" :value="instructor.id">
                     {{ instructor.username }}
                 </option>

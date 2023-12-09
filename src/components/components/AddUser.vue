@@ -22,7 +22,8 @@ export default {
             // The newly created ID number fo the user, from the DB.
             newUserId: null,
             isValidated: false,
-            instructors: []
+            instructors: [],
+            instructorId: null
         }
     },
     async created() {
@@ -129,6 +130,21 @@ export default {
                         }
                     }
                 })
+                .then((data) => {
+                    if (this.user.role == "student") {
+                        const requestOptions = {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(
+                                {
+                                    instructor_id: this.instructorId,
+                                    student_id: this.newUserId,
+                                })
+                        };
+                        var url = '/users/add/instructor';
+                        fetch(url, requestOptions)
+                    }
+                })
         },
         // For image upload.
         onFileChange(e) {
@@ -199,7 +215,7 @@ export default {
                 </div>
                 <div v-if="user.role == 'student'" class="mb-3">
                     <label class="form-label">Instructor</label>
-                    <select v-model="user.instructor" class="form-select">
+                    <select v-model="instructorId" class="form-select">
                         <option v-for="instructor in instructors" :value="instructor.id">
                             {{ instructor.username }}
                         </option>
