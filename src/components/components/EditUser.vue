@@ -44,8 +44,6 @@ export default {
                 }
             }
 
-            console.log(this.instructors)
-
             // Call this after the above, so that instructor field loaded correctly.       
             this.getUser();
         },

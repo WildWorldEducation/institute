@@ -21,7 +21,8 @@ export default {
             childrenOfFirstLevelSkillsIds: [],
             // The newly created ID number fo the user, from the DB.
             newUserId: null,
-            isValidated: false
+            isValidated: false,
+            instructors: []
         }
     },
     async created() {
@@ -45,7 +46,21 @@ export default {
             }
         }
     },
+    async mounted() {
+        // Run the GET request.
+        if (this.usersStore.users.length < 1)
+            await this.usersStore.getUsers()
+        this.getInstructors();
+    },
     methods: {
+        getInstructors() {
+            for (let i = 0; i < this.usersStore.users.length; i++) {
+                //console.log(this.usersStore.users[i])
+                if (this.usersStore.users[i].role == "instructor") {
+                    this.instructors.push(this.usersStore.users[i])
+                }
+            }
+        },
         ValidateForm() {
             if (this.user.first_name == "" || this.user.first_name == null) {
                 alert("Please add a first name.")
@@ -180,6 +195,14 @@ export default {
                         <option value="admin">admin</option>
                         <option value="instructor">instructor</option>
                         <option value="student">student</option>
+                    </select>
+                </div>
+                <div v-if="user.role == 'student'" class="mb-3">
+                    <label class="form-label">Instructor</label>
+                    <select v-model="user.instructor" class="form-select">
+                        <option v-for="instructor in instructors" :value="instructor.id">
+                            {{ instructor.username }}
+                        </option>
                     </select>
                 </div>
                 <div class="mb-3">
