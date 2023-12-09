@@ -178,7 +178,7 @@ export default {
                     <label class="form-label">Role</label>
                     <select v-model="user.role" class="form-select">
                         <option value="admin">admin</option>
-                        <option value="parent">parent</option>
+                        <option value="instructor">instructor</option>
                         <option value="student">student</option>
                     </select>
                 </div>

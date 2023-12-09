@@ -54,8 +54,8 @@ export default {
         <p v-if="userDetailsStore.role == 'admin'"><strong>role:</strong>
             <span> admin</span>
         </p>
-        <p v-else-if="userDetailsStore.role == 'parent'"><strong>role:</strong>
-            <span> parent</span>
+        <p v-else-if="userDetailsStore.role == 'instructor'"><strong>role:</strong>
+            <span> instructor</span>
         </p>
         <div class="d-flex">
             <p><router-link class="purple-btn btn" to="/profile/edit" role="button">Edit
