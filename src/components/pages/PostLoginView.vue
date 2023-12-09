@@ -48,7 +48,8 @@ export default {
             </div>
             <div class="column col-md-4">
                 <StudentProgress v-if="userDetailsStore.role == 'student'" :userId="userDetailsStore.userId" />
-                <RouterLink v-else to="/assessments">Mark assessments</RouterLink>
+                <RouterLink v-else-if="userDetailsStore.role == 'instructor'" to="/assessments">Mark assessments
+                </RouterLink>
             </div>
             <div class="column col-md-4">
                 <StudentMessages />
