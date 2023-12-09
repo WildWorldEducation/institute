@@ -1,19 +1,31 @@
 <script>
 import router from "../../router";
 
+// Import the users store.
+import { useUsersStore } from '../../stores/UsersStore'
+
 export default {
     setup() {
+        const usersStore = useUsersStore();
+
+        return {
+            usersStore
+        }
 
     },
     data() {
         return {
             userId: this.$route.params.id,
             user: {},
-            image: ''
+            image: '',
+            instructors: []
         };
     },
-    created() {
-        this.getUser();
+    async mounted() {
+        // Run the GET request.
+        if (this.usersStore.users.length < 1)
+            await this.usersStore.getUsers()
+        this.getInstructors();
     },
     methods: {
         getUser() {
@@ -23,6 +35,19 @@ export default {
                 }).then(data => this.user = data).then(() => {
                     this.image = this.user.avatar
                 });
+        },
+        getInstructors() {
+            for (let i = 0; i < this.usersStore.users.length; i++) {
+                //console.log(this.usersStore.users[i])
+                if (this.usersStore.users[i].role == "instructor") {
+                    this.instructors.push(this.usersStore.users[i])
+                }
+            }
+
+            console.log(this.instructors)
+
+            // Call this after the above, so that instructor field loaded correctly.       
+            this.getUser();
         },
         ValidateForm() {
             if (this.user.first_name == "" || this.user.first_name == null) {
@@ -133,6 +158,14 @@ export default {
                 <option value="admin">admin</option>
                 <option value="instructor">instructor</option>
                 <option value="student">student</option>
+            </select>
+        </div>
+        <div v-if="user.role == 'student'" class="mb-3">
+            <label class="form-label">Instructor</label>
+            <select v-model="user.instructor" class="form-select">
+                <option v-for="instructor in instructors" :value="instructor.id">
+                    {{ instructor.username }}
+                </option>
             </select>
         </div>
         <div class="mb-3">
