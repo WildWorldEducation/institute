@@ -32,14 +32,17 @@ export default {
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
+            <li v-if="userDetailsStore.role == 'student'" class="nav-item">
               <RouterLink to="/skill-tree" class="nav-link">Skill Tree</RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink to="/skills" class="nav-link">Skills</RouterLink>
             </li>
-            <li v-if="userDetailsStore.role == 'admin'" class="nav-item">
-              <RouterLink to="/users" class="nav-link">Users</RouterLink>
+            <li v-if="userDetailsStore.role != 'student'" class="nav-item">
+              <RouterLink to="/users" class="nav-link">
+                <span v-if="userDetailsStore.role == 'admin'">Users</span>
+                <span v-else-if="userDetailsStore.role == 'instructor'">Students</span>
+              </RouterLink>
             </li>
           </ul>
           <ul class="navbar-nav d-flex">
