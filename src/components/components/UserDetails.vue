@@ -6,6 +6,7 @@ export default {
     props: ['userId'],
     setup(props) {
         const usersStore = useUsersStore();
+
         // Run the GET request.
         if (usersStore.users.length < 1)
             usersStore.getUsers()
@@ -69,28 +70,32 @@ export default {
                             d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
                             fill="white" />
                     </svg>
-                </router-link> 
+                </router-link>
             </div>
             <div class="col-6">
                 <div class="mb-3">
                     <label class="form-label">First name</label>
-                    <input class="form-control" type="text" v-model="this.$parent.user.firstName">
+                    <input class="form-control" type="text" v-model="this.$parent.user.firstName" disabled>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Last name</label>
-                    <input class="form-control" type="text" v-model="this.$parent.user.lastName">
+                    <input class="form-control" type="text" v-model="this.$parent.user.lastName" disabled>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Username</label>
-                    <input class="form-control" type="text" v-model="this.$parent.user.username">
+                    <input class="form-control" type="text" v-model="this.$parent.user.username" disabled>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input class="form-control" type="text" v-model="this.$parent.user.email">
+                    <input class="form-control" type="text" v-model="this.$parent.user.email" disabled>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Role</label>
-                    <input class="form-control" type="text" v-model="this.$parent.user.role">
+                    <input class="form-control" type="text" v-model="this.$parent.user.role" disabled>
+                </div>
+                <div v-if="this.$parent.user.role == 'student'" class="mb-3">
+                    <label class="form-label">Instructor</label>
+                    <input class="form-control" type="text" v-model="this.$parent.instructor" disabled>
                 </div>
             </div>
         </div>
@@ -98,9 +103,7 @@ export default {
 </template>
 
 
-<style scoped> 
-
-#user-information {
+<style scoped> #user-information {
      background-color: #E4ECF4;
      border-radius: 12px;
  }

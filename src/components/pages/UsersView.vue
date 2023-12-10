@@ -5,12 +5,14 @@ import WriteMessage from '../components/WriteMessage.vue';
 
 // Import the users store.
 import { useUsersStore } from '../../stores/UsersStore'
+import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore'
 
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const instructorStudentsStore = useInstructorStudentsStore();
         return {
-            usersStore
+            usersStore, instructorStudentsStore
         }
     },
     data() {
@@ -21,7 +23,9 @@ export default {
                 lastName: null,
                 username: null,
                 avatar: null,
-            }
+            },
+            // Only for users with the "student" role.
+            instructor: null
         }
     },
     components: {
@@ -41,6 +45,11 @@ export default {
         this.user.email = this.usersStore.users[0].email;
         this.user.avatar = this.usersStore.users[0].avatar;
         this.user.role = this.usersStore.users[0].role;
+
+        // Get the instructor student list, if not yet loaded.
+        if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
+            await this.instructorStudentsStore.getInstructorStudentsList()
+        }
     },
     methods: {
         changeUserId(user) {
@@ -51,6 +60,24 @@ export default {
             this.user.email = user.email;
             this.user.avatar = user.avatar;
             this.user.role = user.role;
+
+            if (this.user.role == "student")
+                this.getInstructor()
+        },
+        getInstructor() {
+            // Get the instructor's user id.
+            var instructorId;
+            for (let i = 0; i < this.instructorStudentsStore.instructorStudentsList.length; i++) {
+                if (this.instructorStudentsStore.instructorStudentsList[i].student_id == this.user.id) {
+                    instructorId = this.instructorStudentsStore.instructorStudentsList[i].instructor_id
+                }
+            }
+            // Get the instructor's username.
+            for (let i = 0; i < this.usersStore.users.length; i++) {
+                if (this.usersStore.users[i].id == instructorId) {
+                    this.instructor = this.usersStore.users[i].username
+                }
+            }
         }
     }
 }
