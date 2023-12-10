@@ -2,29 +2,53 @@
 import { useAssessmentsStore } from '../../stores/AssessmentsStore.js'
 import { useUsersStore } from '../../stores/UsersStore'
 import { useSkillsStore } from '../../stores/SkillsStore'
+import { useUserDetailsStore } from '../../stores/UserDetailsStore'
+import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore'
 
 export default {
     setup() {
         const assessmentsStore = useAssessmentsStore();
         const usersStore = useUsersStore();
         const skillsStore = useSkillsStore();
+        const userDetailsStore = useUserDetailsStore();
+        const instructorStudentsStore = useInstructorStudentsStore();
 
         return {
-            usersStore, skillsStore, assessmentsStore
+            usersStore, skillsStore, assessmentsStore, userDetailsStore, instructorStudentsStore
         }
     },
     data() {
         return {
-            assessments: []
+            assessments: [], studentIds: []
         }
     },
     async created() {
         // Create the assessments array ---------------------------------
-        // Get unmarked assessments.
+        // Get unmarked assessments, if not yet loaded.
         if (this.assessmentsStore.assessments.length == 0) {
             await this.assessmentsStore.getAssessments()
         }
-        this.assessments = this.assessmentsStore.assessments
+
+        // Get the instructor student list, if not yet loaded.
+        if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
+            await this.instructorStudentsStore.getInstructorStudentsList()
+        }
+
+        // Just get the students that this instructors teaches.
+        for (let i = 0; i < this.instructorStudentsStore.instructorStudentsList.length; i++) {
+            if (this.userDetailsStore.userId == this.instructorStudentsStore.instructorStudentsList[i].instructor_id) {
+                this.studentIds.push(this.instructorStudentsStore.instructorStudentsList[i].student_id)
+            }
+        }
+
+        // Get the assessments for those students.
+        for (let i = 0; i < this.assessmentsStore.assessments.length; i++) {
+            for (let j = 0; j < this.studentIds.length; j++) {
+                if (this.assessmentsStore.assessments[i].student_id == this.studentIds[j]) {
+                    this.assessments.push(this.assessmentsStore.assessments[i])
+                }
+            }
+        }
 
         // Date.
         for (let i = 0; i < this.assessments.length; i++) {
@@ -57,8 +81,6 @@ export default {
                 }
             }
         }
-        console.log(this.assessments)
-
     },
     computed: {
     },
