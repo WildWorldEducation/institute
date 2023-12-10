@@ -1,15 +1,15 @@
 <script>
-import router from "../../router";
-
 // Import the users store.
 import { useUsersStore } from '../../stores/UsersStore'
+import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore'
 
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const instructorStudentsStore = useInstructorStudentsStore();
 
         return {
-            usersStore
+            usersStore, instructorStudentsStore
         }
 
     },
@@ -26,6 +26,12 @@ export default {
         // Run the GET request.
         if (this.usersStore.users.length < 1)
             await this.usersStore.getUsers()
+
+        // Get the instructor student list, if not yet loaded.
+        if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
+            await this.instructorStudentsStore.getInstructorStudentsList()
+        }
+
         this.getInstructors();
     },
     methods: {
@@ -38,10 +44,16 @@ export default {
                 });
         },
         getInstructors() {
+            // Get an array of all instructors.
             for (let i = 0; i < this.usersStore.users.length; i++) {
-                //console.log(this.usersStore.users[i])
                 if (this.usersStore.users[i].role == "instructor") {
                     this.instructors.push(this.usersStore.users[i])
+                }
+            }
+            // To prepopulate the 'instructor' field.
+            for (let i = 0; i < this.instructorStudentsStore.instructorStudentsList.length; i++) {
+                if (this.instructorStudentsStore.instructorStudentsList[i].student_id == this.userId) {
+                    this.instructorId = this.instructorStudentsStore.instructorStudentsList[i].instructor_id
                 }
             }
 
