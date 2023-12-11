@@ -46,7 +46,11 @@ export default {
             <input v-model="settingsStore.settings.skill_degradation_days" type="number" id="daysForSkillToDegrade" min="1"
                 max="3650" class="form-control" aria-describedby="daysForSkillToDegrade">
         </div>
-        <div class="mb-3">
+
+        <div class="d-flex justify-content-between mb-3">
+            <router-link class="btn btn-dark" to="/profile-settings">
+                Cancel
+            </router-link>
             <button @click="Submit()" type="submit" class="btn btn-dark">Submit</button>
         </div>
     </div>

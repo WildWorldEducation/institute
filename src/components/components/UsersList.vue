@@ -28,13 +28,13 @@ export default {
             await this.instructorStudentsStore.getInstructorStudentsList()
         }
 
-        if (this.userDetailsStore.role = "instructor")
+        if (this.userDetailsStore.role == "instructor")
             this.getStudents()
     },
     methods: {
         changeUserId(userId) {
             this.$emit('changeUserId', userId)
-            if (this.userDetailsStore.role = "instructor")
+            if (this.userDetailsStore.role == "instructor")
                 this.getStudents()
         },
         getStudents() {

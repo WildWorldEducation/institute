@@ -198,7 +198,12 @@ export default {
             <input v-model="user.password" type="text" class="form-control">
         </div>
 
-        <button class="btn btn-dark" @click="ValidateForm()">Submit</button>
+        <div class="d-flex justify-content-between">
+            <router-link class="btn btn-dark" to="/users">
+                Cancel
+            </router-link>
+            <button class="btn btn-dark" @click="ValidateForm()">Submit</button>
+        </div>
     </div>
 </template>
 
