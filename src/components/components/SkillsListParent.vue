@@ -4,8 +4,9 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
-// Nested component.
-import SkillsListChild from './SkillsListChild.vue';
+// Nested components.
+import SkillsListChildStudent from './SkillsListChildStudent.vue';
+import SkillsListChildNonStudent from './SkillsListChildNonStudent.vue';
 
 export default {
     setup() {
@@ -23,27 +24,39 @@ export default {
         }
     },
     async created() {
-        if (this.skillTreeStore.userSkills.length == 0) {
-            await this.skillTreeStore.getUserSkills();
+        if (this.userDetailsStore.role == "student") {
+            if (this.skillTreeStore.userSkills.length == 0) {
+                await this.skillTreeStore.getUserSkills();
+            }
+            this.userSkills = this.skillTreeStore.userSkills
         }
-
-        this.userSkills = this.skillTreeStore.userSkills
+        else {
+            if (this.skillsStore.skillsList.length == 0) {
+                await this.skillsStore.getNestedSkillsList();
+            }
+        }
     },
     computed: {},
     methods: {},
     components: {
-        SkillsListChild
+        SkillsListChildStudent, SkillsListChildNonStudent
     }
 }
 </script>
 
 <template>
     <div class="container mt-3" style="overflow: auto">
-        <div v-for="skill in userSkills">
-            <SkillsListChild :id="skill.id" :children="skill.children" :depth="1" :name="skill.skill_name"
+        <div v-if="this.userDetailsStore.role == 'student'" v-for="skill in userSkills">
+            <SkillsListChildStudent :id="skill.id" :children="skill.children" :depth="1" :name="skill.skill_name"
                 :firstAncestor="skill.first_ancestor" :isUnlocked="skill.is_accessible" :isMastered="skill.is_mastered"
                 :type="skill.type" :role="userDetailsStore.role" :DeleteSkill="skillsStore.deleteSkill">
-            </SkillsListChild>
+            </SkillsListChildStudent>
+        </div>
+        <div v-else v-for="skill in skillsStore.nestedSkillsList">
+            <SkillsListChildNonStudent :id="skill.id" :children="skill.children" :depth="1" :name="skill.name"
+                :firstAncestor="skill.first_ancestor" :type="skill.type" :role="userDetailsStore.role"
+                :DeleteSkill="skillsStore.deleteSkill">
+            </SkillsListChildNonStudent>
         </div>
     </div>
 </template>  

@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //  password: 'password',
+    // password: 'password',
     database: 'skill_tree'
 });
 
@@ -95,7 +95,7 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name, parent, first_ancestor
+    SELECT skill_tree.skills.id, name, parent, first_ancestor, type
     FROM skill_tree.skills`
         let query = conn.query(sqlQuery, (err, results) => {
             try {

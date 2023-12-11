@@ -237,18 +237,18 @@ export default {
     </div>
 
     <!-- Sub skills -->
-    <SkillsListChild v-if="showSubskills" v-for="    subSkill     in     subSkills    " :id="subSkill.id"
+    <SkillsListChildStudent v-if="showSubskills" v-for="    subSkill     in     subSkills    " :id="subSkill.id"
         :children="subSkill.children" :firstAncestor="firstAncestor" :isUnlocked="subSkill.is_accessible"
         :isMastered="subSkill.is_mastered" :type="subSkill.type" :name="subSkill.skill_name" :role="role"
         :DeleteSkill="DeleteSkill" :depth="depth + 1">
-    </SkillsListChild>
+    </SkillsListChildStudent>
 
     <!-- Recursive nesting of component -->
-    <SkillsListChild v-if="showChildren" v-for="    child     in     childrenNotSubskills    " :id="child.id"
+    <SkillsListChildStudent v-if="showChildren" v-for="    child     in     childrenNotSubskills    " :id="child.id"
         :children="child.children" :firstAncestor="firstAncestor" :isUnlocked="child.is_accessible"
         :isMastered="child.is_mastered" :type="child.type" :name="child.skill_name" :role="role" :DeleteSkill="DeleteSkill"
         :depth="depth + 1">
-    </SkillsListChild>
+    </SkillsListChildStudent>
 </template>
  
 <style scoped>
