@@ -195,7 +195,12 @@ export default {
                     <label for="mastery_requirements" class="form-label">Mastery Requirements</label>
                     <textarea v-model="skill.mastery_requirements" class="form-control" id="summernote" rows="3"></textarea>
                 </div>
-                <button class="btn btn-dark" @click="Submit()">Submit</button>
+                <div class="d-flex justify-content-between">
+                    <router-link class="btn btn-dark" to="/skills">
+                        Cancel
+                    </router-link>
+                    <button class="btn btn-dark" @click="Submit()">Submit</button>
+                </div>
             </div>
         </div>
     </div>
