@@ -84,7 +84,12 @@ export default {
             <input type="radio" value="dark" v-model="skillTreeTheme">
             <label for="dark">Dark</label><br>
         </div>
-        <button class="btn btn-dark" @click="ValidateForm()">Submit</button>
+        <div class="d-flex justify-content-between mb-3">
+            <router-link class="btn btn-dark" to="/profile-settings">
+                Cancel
+            </router-link>
+            <button class="btn btn-dark" @click="ValidateForm()">Submit</button>
+        </div>
     </div>
 </template>
 

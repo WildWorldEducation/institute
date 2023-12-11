@@ -108,11 +108,11 @@ const router = createRouter({
       name: 'users',
       component: () => import('../components/pages/UsersView.vue')
     },
-    {
-      path: '/users/:username/skilltree',
-      name: 'show-skilltree',
-      component: () => import('../components/pages/ShowSkillTreeView.vue')
-    },
+    // {
+    //   path: '/users/:username/skilltree',
+    //   name: 'show-skilltree',
+    //   component: () => import('../components/pages/ShowSkillTreeView.vue')
+    // },
     {
       path: '/users/add',
       name: 'add-user',
