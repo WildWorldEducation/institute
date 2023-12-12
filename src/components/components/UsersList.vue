@@ -34,8 +34,6 @@ export default {
     methods: {
         changeUserId(userId) {
             this.$emit('changeUserId', userId)
-            if (this.userDetailsStore.role == "instructor")
-                this.getStudents()
         },
         getStudents() {
             var studentIds = [];
@@ -44,7 +42,6 @@ export default {
                     studentIds.push(this.instructorStudentsStore.instructorStudentsList[i].student_id)
                 }
             }
-            console.log(studentIds)
             for (let i = 0; i < this.usersStore.users.length; i++) {
                 for (let j = 0; j < studentIds.length; j++) {
                     if (this.usersStore.users[i].id == studentIds[j]) {
