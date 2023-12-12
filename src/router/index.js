@@ -19,6 +19,11 @@ const router = createRouter({
       component: () => import('../components/pages/SkillTreeView.vue')
     },
     {
+      path: '/:id/skill-tree',
+      name: 'student-skill-tree',
+      component: () => import('../components/pages/SkillTreeStudentView.vue')
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../components/pages/LoginView.vue')

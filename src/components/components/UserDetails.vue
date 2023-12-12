@@ -57,7 +57,7 @@ export default {
                         </svg>
                     </button>
                 </div>
-                <router-link :to="'/users/edit/' + this.$parent.user.id" class="btn green-btn mx-auto">
+                <router-link :to="this.$parent.user.id + '/skill-tree'" class="btn green-btn mx-auto">
                     Skill tree
                 </router-link>
             </div>
