@@ -1,5 +1,7 @@
 <script>
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+// Import
+import router from "../../router";
 
 export default {
     setup() {
@@ -102,6 +104,7 @@ export default {
         <span style="text-align: left">{{ name }}</span>
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
+
             <button v-if="isSuperSkill" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
                 <!-- Plus sign -->
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -110,7 +113,7 @@ export default {
                         fill="#9C7EEC" />
                 </svg>
             </button>
-            <router-link :to="'/skills/' + id" class="btn me-2 ci-btn" role="button">
+            <button @click.stop="$router.push('/skills/' + id)" class="btn me-2 ci-btn">
                 <!-- Eye icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" height="25" width="30"
                     viewBox="0 0 576 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -118,8 +121,8 @@ export default {
                         d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z"
                         fill="#9C7EEC" />
                 </svg>
-            </router-link>
-            <router-link v-if="role == 'admin'" :to="'/skills/edit/' + id" class="btn me-2 ci-btn" role="button">
+            </button>
+            <button v-if="role == 'admin'" @click.stop="$router.push('/skills/edit/' + id)" class="btn me-2 ci-btn">
                 <!-- Pencil icon -->
                 <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -131,7 +134,7 @@ export default {
                         d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
                         fill="#9C7EEC" />
                 </svg>
-            </router-link>
+            </button>
             <button v-if="role == 'admin'" type="button" @click.stop="DeleteSkill(id)" class="btn delete-btn me-2 ci-btn">
                 <!-- X icon -->
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
