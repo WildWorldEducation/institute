@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    ///password: 'password',
+    // password: 'password',
     database: 'skill_tree'
 });
 
@@ -232,7 +232,20 @@ router.delete('/:id', (req, res, next) => {
                         if (err) {
                             throw err;
                         }
-                        res.end();
+
+                        // After deleting the user, delete all their instructor-student records.
+                        let sqlQuery3 = "DELETE FROM instructor_students WHERE student_id = " + req.params.id + " OR instructor_id = " + req.params.id + ";";
+                        let query = conn.query(sqlQuery3, (err, results) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                }
+                                res.end();
+                            } catch (err) {
+                                next(err)
+                            }
+                        });
+
                     } catch (err) {
                         next(err)
                     }
