@@ -23,6 +23,7 @@ export default {
                 lastName: null,
                 username: null,
                 avatar: null,
+                role: null
             },
             // Only for users with the "student" role.
             instructor: null
@@ -107,7 +108,7 @@ export default {
             </div>
             <div class="col-md-8">
                 <div class="row">
-                    <UserDetails :userId="user.id" />
+                    <UserDetails :userId="user.id" :userRole="user.role" />
                 </div>
                 <div class="row">
                     <WriteMessage :userId="user.id" />

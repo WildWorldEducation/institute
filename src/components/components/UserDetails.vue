@@ -3,7 +3,7 @@
 import { useUsersStore } from '../../stores/UsersStore'
 
 export default {
-    props: ['userId'],
+    props: ['userId', 'userRole'],
     setup(props) {
         const usersStore = useUsersStore();
 
@@ -57,7 +57,8 @@ export default {
                         </svg>
                     </button>
                 </div>
-                <router-link :to="this.$parent.user.id + '/skill-tree'" class="btn green-btn mx-auto">
+                <router-link v-if="userRole == 'student'" :to="this.$parent.user.id + '/skill-tree'"
+                    class="btn green-btn mx-auto">
                     Skill tree
                 </router-link>
             </div>
