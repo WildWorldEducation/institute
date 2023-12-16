@@ -15,6 +15,7 @@ import { Viewport } from 'pixi-viewport'
 // For pixi to use custom fonts.
 import FontFaceObserver from 'fontfaceobserver'
 
+import * as d3 from 'd3'
 
 export default {
     setup() {
@@ -27,885 +28,122 @@ export default {
     },
     data() {
         return {
-            // The user's id.
-            userId: this.userDetailsStore.userId,
 
-            // Sizes of the nodes, per level.
-            firstLevelNodeRadius: 36,
-            otherLevelNodeRadius: 17,
-            // Radius's of the different skill levels.
-            firstLevelCircleRadius: 300,
-            nodeDistance: 300,
-            subSkillDistance: 75,
-            // Arrays to position the nodes and for the filters.            
-            firstLevelSkillsArray: [],
-            firstLevelSkillsConnectingLinesArray: [],
-            secondLevelSkillsArray: [],
-            secondLevelSkillsConnectingLinesArray: [],
-            thirdLevelSkillsArray: [],
-            thirdLevelSkillsConnectingLinesArray: [],
-            fourthLevelSkillsArray: [],
-            fourthLevelSkillsConnectingLinesArray: [],
-            isSkillInfoPanelShown: false
         }
     },
     components: {
         SkillTreeFilter,
         SkillPanel
     },
-
-    async mounted() {
-        // Need to load these 2 stores before the asynchronous call to load the fonts.
-        // Load the user skills.
-        await this.skillTreeStore.getUserSkills()
-        // Load the skill tags.
-        await this.skillTagsStore.getSkillTagsList()
-
-        // Need to make sure the font is loaded before loading the app, or font wont load at first.
-        // Create font the loader.
-        let font = new FontFaceObserver('Poppins900', {});
-        // Once font has loaded, load PIXI app.
-        font.load().then(() => {
-
-            const skilltreeDiv = document.getElementById("skilltree");
-            const app = new PIXI.Application(
-                {
-                    // Take up whole div.
-                    resizeTo: skilltreeDiv,
-                    // Otherwise nodes and lines are blocky.
-                    antialias: true,
-                    // May reduce resources used.
-                    useContextAlpha: false
-                    // Background colour.
-                    //backgroundColor: 0xffffff
-                })
-
-            // Work out the width and height of the div, for the zooming and panning.
-            var skillTreeDivStyle = window.getComputedStyle(document.getElementById("skilltree"), null);
-            var skillTreeDivWidth = skillTreeDivStyle.getPropertyValue("width");
-            var skillTreeDivHeight = skillTreeDivStyle.getPropertyValue("height");
-
-            // Create viewport.
-            const viewport = new Viewport({
-                screenWidth: window.innerWidth,
-                screenHeight: window.innerHeight,
-                worldWidth: skillTreeDivWidth,
-                worldHeight: skillTreeDivHeight,
-
-                events: app.renderer.events // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
-            })
-            // So that the z-index of the elements can be changed (NB for the connecting lines).
-            viewport.sortableChildren = true
-
-            // Add the viewport to the stage.
-            app.stage.addChild(viewport)
-
-            // Activate viewport plugins.
-            viewport
-                .drag()
-                .pinch()
-                .wheel()
-                // Restrict amount of zoom in and out.
-                .clampZoom({ minScale: 0.2, maxScale: 4 })
-
-            skilltreeDiv.appendChild(app.view);
-
-            // Center Circle Halo
-            let centerNodeHalo = new PIXI.Graphics();
-            centerNodeHalo.lineStyle(3, 0xC8D7DA, 1);
-            centerNodeHalo.beginFill(0xFFFFFF, 1);
-            centerNodeHalo.drawCircle(window.innerWidth / 2, window.innerHeight / 2, 65);
-            centerNodeHalo.endFill();
-            viewport.addChild(centerNodeHalo)
-
-            // Center circle. ------
-            // Graphic.
-            const centerNode = PIXI.Sprite.from('center-node.png');
-            centerNode.x = window.innerWidth / 2
-            centerNode.y = window.innerHeight / 2
-            centerNode.anchor.set(0.5)
-            centerNode.scale.set(0.15)
-            viewport.addChild(centerNode)
-
-            // Text.
-            // Font size is set artificially high, then scaed down, to improve resolution.
-            let centerNodeText = new PIXI.Text("SKILLS",
-                { fontFamily: 'Poppins900', fontSize: 90, fill: 0x000000, align: 'center' });
-            centerNodeText.anchor.set(0.5)
-            // Center it.
-            centerNodeText.x = window.innerWidth / 2
-            centerNodeText.y = window.innerHeight / 2
-            // This is to deal with the artificially high font size mentioned above.
-            centerNodeText.scale.x = 0.2
-            centerNodeText.scale.y = 0.2
-            viewport.addChild(centerNodeText)
-
-            // Number of skills in first level.
-            var firstLevelSkillsNum = this.skillTreeStore.userSkills.length;
-
-            for (let i = 0; i < firstLevelSkillsNum; i++) {
-                let userSkill = this.skillTreeStore.userSkills[i]
-
-                // Draw the circles.
-                let firstLevelSkillNodeGraphic = new PIXI.Graphics();
-
-                // Colour depending on mastery, date of mastery, and whether skill is unlocked.
-                var color;
-                if (userSkill.is_mastered == 1) {
-                    color = '0x' + userSkill.mastered_color;
-                }
-                else if (userSkill.is_accessible == 1) {
-                    firstLevelSkillNodeGraphic.lineStyle(1, '0x' + userSkill.mastered_color, 1);
-                    color = '0x' + userSkill.unlocked_color;
-                }
-                else {
-                    color = '0xD9D9D9';
-                }
-
-                // Calculate the spacing and position of the first level skills around a circle path.
-                var theta = ((Math.PI * 2) / firstLevelSkillsNum);
-                var angle = (theta * i);
-
-                /* Smaller circles around the halo.*/
-                var smallCircleX = 65 * Math.cos(angle);
-                var smallCircleY = 65 * Math.sin(angle);
-
-                let haloGraphic = new PIXI.Graphics();
-                // Position is half the width of canvas plus x, half the height of canvas plus y.
-                haloGraphic.x = window.innerWidth / 2 + smallCircleX
-                haloGraphic.y = window.innerHeight / 2 + smallCircleY
-                // Draw the circles.
-                haloGraphic.beginFill(color);
-                haloGraphic.drawCircle(0, 0, 7.5);
-                viewport.addChild(haloGraphic)
-
-                /* First level skills.*/
-                // Calculate node spacing.           
-                var spacing = 1.5
-
-                // Calculate the radius of the first level of skills.
-                //this.firstLevelCircleRadius = (firstLevelSkillsNum * this.firstLevelNodeRadius) / spacing
-
-
-                // Calculate the spacing and position of the first level skills around a circle path.       
-                var x = this.firstLevelCircleRadius * Math.cos(angle);
-                var y = this.firstLevelCircleRadius * Math.sin(angle);
-
-                var firstLevelSkillContainer = new PIXI.Container();
-                // Position is half the width of canvas plus x, half the height of canvas plus y.
-                firstLevelSkillContainer.x = window.innerWidth / 2 + x
-                firstLevelSkillContainer.y = window.innerHeight / 2 + y
-
-                // Halo.
-                // TODO - correct colours.
-                //firstLevelSkillNodeGraphic.lineStyle(6, 0xC8D7DA, 1);
-
-                firstLevelSkillNodeGraphic.beginFill(color);
-                firstLevelSkillNodeGraphic.drawCircle(0, 0, this.firstLevelNodeRadius);
-                firstLevelSkillNodeGraphic.endFill();
-
-                // Lines connecting the center node with the first level skills.
-                const connectingLineGraphic = new PIXI.Graphics();
-                connectingLineGraphic.lineStyle(2, color, 1);
-                connectingLineGraphic.position.x = firstLevelSkillContainer.x;
-                connectingLineGraphic.position.y = firstLevelSkillContainer.y;
-                connectingLineGraphic.lineTo(haloGraphic.x - firstLevelSkillContainer.x, haloGraphic.y - firstLevelSkillContainer.y);
-
-                viewport.addChild(connectingLineGraphic);
-                // Add the first level skills to the array, for the filter.
-                var firstLevelSkillConnectingLine = {
-                    graphic: connectingLineGraphic,
-                    x: connectingLineGraphic.position.x,
-                    y: connectingLineGraphic.position.y,
-                    lineToX: haloGraphic.x - firstLevelSkillContainer.x,
-                    lineToY: haloGraphic.y - firstLevelSkillContainer.y,
-                    tagIDs: []
-                }
-
-                // Write the skill names---------------------------------------.
-                var fontSize = 60;
-                //Working on having a smaller font size, if any one word is too long-------------------.
-                // Split name into an array.
-                const skillNameArray = userSkill.skill_name.split(" ");
-                for (let p = 0; p < skillNameArray.length; p++) {
-                    // Check if any of the strings are too long.
-                    if (skillNameArray[p].length > 8) {
-                        fontSize = 45;
-                    }
-                }
-
-                // Add line break if skill name is more than one word.
-                userSkill.skill_name = userSkill.skill_name.replace(/(.*?\s)/g, '$1' + '\n')
-                // Note that the fontSize is 5 times higher than encessary, to deal with pixellation on zoom.
-                let firstLevelSkillNodeName = new PIXI.Text(userSkill.skill_name.toUpperCase(),
-                    { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xffffff, align: 'center' });
-
-
-                // Text to centre of container.
-                firstLevelSkillNodeName.anchor.set(0.5)
-
-                // This is to deal with the artificially high fontSize mentioned above.
-                firstLevelSkillNodeName.scale.x = 0.2
-                firstLevelSkillNodeName.scale.y = 0.2
-
-                // Add the graphic and text to the container.
-                firstLevelSkillContainer.addChild(firstLevelSkillNodeGraphic);
-                firstLevelSkillContainer.addChild(firstLevelSkillNodeName);
-
-                // Add the first level skills to the viewport.
-                viewport.addChild(firstLevelSkillContainer)
-
-                // Create the first level skill object:
-                let firstLevelSkill = {
-                    id: userSkill.id,
-                    isMastered: userSkill.is_mastered,
-                    isUnlocked: userSkill.is_accessible,
-                    color: color,
-                    container: firstLevelSkillContainer,
-                    tagIDs: [],
-                    name: userSkill.skill_name,
-                    description: userSkill.description
-                }
-
-                // Add interactivity.        
-                // This is added to the graphic and text, and not the container,
-                // as it would otherwise effect all the container's child skills.
-                firstLevelSkillNodeGraphic.eventMode = 'static';
-                firstLevelSkillNodeName.eventMode = 'static';
-                firstLevelSkillNodeGraphic.cursor = 'pointer';
-                firstLevelSkillNodeName.cursor = 'pointer';
-                firstLevelSkillNodeGraphic.on('pointerdown', (event) => {
-                    if (!this.isSkillInfoPanelShown)
-                        this.showInfoPanel(firstLevelSkill)
-                    else
-                        this.updateInfoPanel(firstLevelSkill)
-                });
-                firstLevelSkillNodeName.on('pointerdown', (event) => {
-                    if (!this.isSkillInfoPanelShown)
-                        this.showInfoPanel(firstLevelSkill)
-                    else
-                        this.updateInfoPanel(firstLevelSkill)
-                });
-
-                // Add the appropriate tags to the skill node and connecting line, for the filters.
-                for (let j = 0; j < this.skillTagsStore.skillTagsList.length; j++) {
-                    if (firstLevelSkill.id == this.skillTagsStore.skillTagsList[j].skill_id) {
-                        firstLevelSkill.tagIDs.push(this.skillTagsStore.skillTagsList[j].tag_id)
-                        firstLevelSkillConnectingLine.tagIDs.push(this.skillTagsStore.skillTagsList[j].tag_id)
-                    }
-                }
-
-                // Add the first level skills to the array, for the filter.
-                this.firstLevelSkillsArray.push(firstLevelSkill)
-                // Add the first level skills connecting lines to the array, for the filter.
-                this.firstLevelSkillsConnectingLinesArray.push(firstLevelSkillConnectingLine)
-
-                /*
-                 * Recursive function to render all descendant nodes.
-                 */
-                let arrayOfLevels = []
-                let skillNodeObject = { domain: userSkill.skill_name, skillNodeLevels: arrayOfLevels }
-                function renderDescendantNodes(parentChildren, parentContainer, parentAngle, totalAncestorXPos, totalAncestorYPos, depth, context) {
-                    // Increase the depth each recursion.
-                    depth++
-
-                    // if (!arrayOfLevels.includes(depth)) {
-                    //     arrayOfLevels.push(depth)
-                    // }
-                    let skillsObject = { depth: depth, skills: [] }
-
-                    // We tally the ancestor node positions to calculate the connecting lines.
-                    totalAncestorXPos = totalAncestorXPos + parentContainer.x
-                    totalAncestorYPos = totalAncestorYPos + parentContainer.y
-
-                    // Orbit circle
-                    // const orbitCircle = new PIXI.Graphics
-                    // orbitCircle.lineStyle(2, 0xC8D7DA, 1);
-                    // orbitCircle.drawCircle(window.innerWidth / 2, window.innerHeight / 2, 300 * depth);
-                    // orbitCircle.endFill();
-                    // viewport.addChild(orbitCircle);
-
-                    // Parameters
-                    let nodeDistance = 300
-                    let subNodeDistance = 75
-                    let nodeRadius = 17
-
-                    for (let [index, child] of parentChildren.entries()) {
-                        let nodeContainer = new PIXI.Container();
-
-                        // Sort the children into subskills and actual child skills.                        
-                        let numChildren = 0
-                        let numSubSkills = 0
-                        for (let i = 0; i < parentChildren.length; i++) {
-                            if (parentChildren[i].type != 'sub') {
-                                numChildren++
-                            }
-                            else {
-                                numSubSkills++
-                            }
-                        }
-
-                        /*
-                         * The angle of the node from its parent.
-                         */
-                        let nodeAngle = 0;
-                        if (child.type != 'sub') {
-                            // Working out the placement of the nodes, in relation to their parent.
-
-                            // Work out the increment.
-                            // 90 degrees is the total range outwards the tree angles can go,
-                            // from the previous node.                           
-                            let increment = 0
-                            if (depth == 1)
-                                increment = 135 / numChildren
-                            else
-                                increment = 90 / numChildren
-
-                            // Get the correct index number, excluding sub skills.
-                            let mainSkillsIndex = index - numSubSkills
-                            // // Work out each chind node angle, based on the parent angle, and the increment, and which child it is.
-                            nodeAngle = parentAngle + increment * mainSkillsIndex
-
-                            // This is the placement of the first of the child nodes.
-                            // We have to change the angle so that the child nodes dont start incrememting
-                            // from the parent node angle.
-                            if (depth == 1)
-                                nodeAngle = nodeAngle - 67.5 + (67.5 / numChildren)
-                            else
-                                nodeAngle = nodeAngle - 45 + (45 / numChildren)
-
-                            let rads = nodeAngle * Math.PI / 180
-                            let x = nodeContainer.x + nodeDistance * Math.cos(rads)
-                            let y = nodeContainer.y + nodeDistance * Math.sin(rads)
-
-                            nodeContainer.x = nodeContainer.x + x
-                            nodeContainer.y = nodeContainer.y + y
-                            skillsObject.skills.push(nodeContainer)
-
-                        }
-                        // For subskills, they just go around the super skill (360 degrees).
-                        else {
-                            // Calculate the increment of the subskills, around a circle.
-                            let increment = 360 / numSubSkills
-                            // Get the correct index number, excluding sub skills.
-                            let subSkillsIndex = index - numChildren
-                            // Calculate the nodes angle.
-                            let angle = increment * subSkillsIndex
-                            let rads = angle * Math.PI / 180
-                            let x = nodeContainer.x + subNodeDistance * Math.cos(rads)
-                            let y = nodeContainer.y + subNodeDistance * Math.sin(rads)
-
-                            nodeContainer.x = nodeContainer.x + x
-                            nodeContainer.y = nodeContainer.y + y
-                        }
-
-                        /*
-                         * Draw the nodes
-                         */
-                        let nodeGraphic = new PIXI.Graphics();
-                        // Colour depending on mastery and whether skill is unlocked.
-                        var color;
-                        if (parentChildren[index].is_mastered == 1) {
-                            color = '0x' + userSkill.mastered_color;
-                        }
-                        else if (parentChildren[index].is_accessible == 1) {
-                            nodeGraphic.lineStyle(1, '0x' + userSkill.mastered_color, 1);
-                            color = '0x' + userSkill.unlocked_color;
-                        }
-                        else {
-                            color = '0xD9D9D9';
-                        }
-                        nodeGraphic.beginFill(color);
-                        nodeGraphic.drawCircle(0, 0, nodeRadius);
-                        // Add components to the container.
-                        nodeContainer.addChild(nodeGraphic);
-
-                        /*
-                         * Write the skill names.
-                         */
-                        let fontSize = 40;
-                        // Split name into an array.
-                        const nodeNameArray = parentChildren[index].skill_name.split(" ");
-                        for (let i = 0; i < nodeNameArray.length; i++) {
-                            // Check if any of the strings are too long.
-                            if (nodeNameArray[i].length > 9) {
-                                fontSize = 37;
-                            }
-                        }
-
-                        // Add line break if skill name is more than one word.
-                        parentChildren[index].skill_name = parentChildren[index].skill_name.replace(/(.*?\s)/g, '$1' + '\n')
-                        // Note that the fontSize is 5 times higher than encessary, to deal with pixellation on zoom.
-                        let nodeName = new PIXI.Text(parentChildren[index].skill_name.toUpperCase(),
-                            { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xffffff, align: 'center' });
-                        // Text to centre of container.
-                        nodeName.anchor.set(0.5)
-
-                        // This is to deal with the artificially high fontSize mentioned above.
-                        nodeName.scale.x = 0.1
-                        nodeName.scale.y = 0.1
-
-                        // Add components to the container.                        
-                        nodeContainer.addChild(nodeName);
-
-
-                        // Create the  skill object:
-                        let skill = {
-                            id: child.id,
-                            isMastered: child.is_mastered,
-                            isUnlocked: child.is_accessible,
-                            //  isParentMastered: userSkill.is_mastered,
-                            //   isParentUnlocked: userSkill.is_accessible,
-                            color: color,
-                            container: nodeContainer,
-                            name: child.skill_name,
-                            description: child.description,
-                            tagIDs: [],
-                            //parentTagIDs: firstLevelSkill.tagIDs,
-                            //angle: newAngle
-                        }
-
-
-                        // Add interactivity.            
-                        // This is added to the graphic and text, and not the container,
-                        // as it would otherwise effect all the container's child skills.
-                        nodeGraphic.eventMode = 'static';
-                        nodeName.eventMode = 'static';
-                        nodeGraphic.cursor = 'pointer';
-                        nodeName.cursor = 'pointer';
-                        nodeName.on('pointerdown', (event) => {
-                            if (!context.isSkillInfoPanelShown)
-                                context.showInfoPanel(skill)
-                            else
-                                context.updateInfoPanel(skill)
-                        });
-                        nodeGraphic.on('pointerdown', (event) => {
-                            if (!context.isSkillInfoPanelShown)
-                                context.showInfoPanel(skill)
-                            else
-                                context.updateInfoPanel(skill)
-                        });
-
-
-                        // Add the child node to the parent node.
-                        parentContainer.addChild(nodeContainer);
-
-                        /*
-                         * Connecting lines.
-                         */
-                        const connectingLine = new PIXI.Graphics();
-                        connectingLine.lineStyle(2, color, 1);
-
-                        connectingLine.position.x = totalAncestorXPos
-                        connectingLine.position.y = totalAncestorYPos
-                        connectingLine.lineTo(nodeContainer.x, nodeContainer.y);
-                        // Put the connecting line behind the skill nodes.
-                        connectingLine.zIndex = -1
-                        viewport.addChild(connectingLine);
-
-                        arrayOfLevels.push(skillsObject)
-                        /*
-                         * Run the above function again recursively.
-                         */
-                        if (child.children && Array.isArray(child.children) && child.children.length > 0)
-                            renderDescendantNodes(child.children, nodeContainer, nodeAngle, totalAncestorXPos, totalAncestorYPos, depth, context)
-                    }
-                }
-
-                // Run the recursive function.
-                // For each first level skill...
-                // Pass the child nodes, the container, the angle.
-                // The 2 zeros are to begin to tally the sum of all the ancestor position values, for the connecting lines.
-                // The other zero is for the depth.
-                renderDescendantNodes(userSkill.children, firstLevelSkillContainer, angle * 60, 0, 0, 0, this);
-
-                console.log(skillNodeObject)
-            }
-        }, () => {
-            // Failed load, log the error or display a message to the user
-            console.log('Unable to load required font!');
+    mounted() {
+        var data = { "name": "flare", "children": [{ "name": "analytics", "children": [{ "name": "cluster", "children": [{ "name": "AgglomerativeCluster", "value": 3938 }, { "name": "CommunityStructure", "value": 3812 }, { "name": "HierarchicalCluster", "value": 6714 }, { "name": "MergeEdge", "value": 743 }] }, { "name": "graph", "children": [{ "name": "BetweennessCentrality", "value": 3534 }, { "name": "LinkDistance", "value": 5731 }, { "name": "MaxFlowMinCut", "value": 7840 }, { "name": "ShortestPaths", "value": 5914 }, { "name": "SpanningTree", "value": 3416 }] }, { "name": "optimization", "children": [{ "name": "AspectRatioBanker", "value": 7074 }] }] }, { "name": "animate", "children": [{ "name": "Easing", "value": 17010 }, { "name": "FunctionSequence", "value": 5842 }, { "name": "interpolate", "children": [{ "name": "ArrayInterpolator", "value": 1983 }, { "name": "ColorInterpolator", "value": 2047 }, { "name": "DateInterpolator", "value": 1375 }, { "name": "Interpolator", "value": 8746 }, { "name": "MatrixInterpolator", "value": 2202 }, { "name": "NumberInterpolator", "value": 1382 }, { "name": "ObjectInterpolator", "value": 1629 }, { "name": "PointInterpolator", "value": 1675 }, { "name": "RectangleInterpolator", "value": 2042 }] }, { "name": "ISchedulable", "value": 1041 }, { "name": "Parallel", "value": 5176 }, { "name": "Pause", "value": 449 }, { "name": "Scheduler", "value": 5593 }, { "name": "Sequence", "value": 5534 }, { "name": "Transition", "value": 9201 }, { "name": "Transitioner", "value": 19975 }, { "name": "TransitionEvent", "value": 1116 }, { "name": "Tween", "value": 6006 }] }, { "name": "data", "children": [{ "name": "converters", "children": [{ "name": "Converters", "value": 721 }, { "name": "DelimitedTextConverter", "value": 4294 }, { "name": "GraphMLConverter", "value": 9800 }, { "name": "IDataConverter", "value": 1314 }, { "name": "JSONConverter", "value": 2220 }] }, { "name": "DataField", "value": 1759 }, { "name": "DataSchema", "value": 2165 }, { "name": "DataSet", "value": 586 }, { "name": "DataSource", "value": 3331 }, { "name": "DataTable", "value": 772 }, { "name": "DataUtil", "value": 3322 }] }, { "name": "display", "children": [{ "name": "DirtySprite", "value": 8833 }, { "name": "LineSprite", "value": 1732 }, { "name": "RectSprite", "value": 3623 }, { "name": "TextSprite", "value": 10066 }] }, { "name": "flex", "children": [{ "name": "FlareVis", "value": 4116 }] }, { "name": "physics", "children": [{ "name": "DragForce", "value": 1082 }, { "name": "GravityForce", "value": 1336 }, { "name": "IForce", "value": 319 }, { "name": "NBodyForce", "value": 10498 }, { "name": "Particle", "value": 2822 }, { "name": "Simulation", "value": 9983 }, { "name": "Spring", "value": 2213 }, { "name": "SpringForce", "value": 1681 }] }, { "name": "query", "children": [{ "name": "AggregateExpression", "value": 1616 }, { "name": "And", "value": 1027 }, { "name": "Arithmetic", "value": 3891 }, { "name": "Average", "value": 891 }, { "name": "BinaryExpression", "value": 2893 }, { "name": "Comparison", "value": 5103 }, { "name": "CompositeExpression", "value": 3677 }, { "name": "Count", "value": 781 }, { "name": "DateUtil", "value": 4141 }, { "name": "Distinct", "value": 933 }, { "name": "Expression", "value": 5130 }, { "name": "ExpressionIterator", "value": 3617 }, { "name": "Fn", "value": 3240 }, { "name": "If", "value": 2732 }, { "name": "IsA", "value": 2039 }, { "name": "Literal", "value": 1214 }, { "name": "Match", "value": 3748 }, { "name": "Maximum", "value": 843 }, { "name": "methods", "children": [{ "name": "add", "value": 593 }, { "name": "and", "value": 330 }, { "name": "average", "value": 287 }, { "name": "count", "value": 277 }, { "name": "distinct", "value": 292 }, { "name": "div", "value": 595 }, { "name": "eq", "value": 594 }, { "name": "fn", "value": 460 }, { "name": "gt", "value": 603 }, { "name": "gte", "value": 625 }, { "name": "iff", "value": 748 }, { "name": "isa", "value": 461 }, { "name": "lt", "value": 597 }, { "name": "lte", "value": 619 }, { "name": "max", "value": 283 }, { "name": "min", "value": 283 }, { "name": "mod", "value": 591 }, { "name": "mul", "value": 603 }, { "name": "neq", "value": 599 }, { "name": "not", "value": 386 }, { "name": "or", "value": 323 }, { "name": "orderby", "value": 307 }, { "name": "range", "value": 772 }, { "name": "select", "value": 296 }, { "name": "stddev", "value": 363 }, { "name": "sub", "value": 600 }, { "name": "sum", "value": 280 }, { "name": "update", "value": 307 }, { "name": "variance", "value": 335 }, { "name": "where", "value": 299 }, { "name": "xor", "value": 354 }, { "name": "_", "value": 264 }] }, { "name": "Minimum", "value": 843 }, { "name": "Not", "value": 1554 }, { "name": "Or", "value": 970 }, { "name": "Query", "value": 13896 }, { "name": "Range", "value": 1594 }, { "name": "StringUtil", "value": 4130 }, { "name": "Sum", "value": 791 }, { "name": "Variable", "value": 1124 }, { "name": "Variance", "value": 1876 }, { "name": "Xor", "value": 1101 }] }, { "name": "scale", "children": [{ "name": "IScaleMap", "value": 2105 }, { "name": "LinearScale", "value": 1316 }, { "name": "LogScale", "value": 3151 }, { "name": "OrdinalScale", "value": 3770 }, { "name": "QuantileScale", "value": 2435 }, { "name": "QuantitativeScale", "value": 4839 }, { "name": "RootScale", "value": 1756 }, { "name": "Scale", "value": 4268 }, { "name": "ScaleType", "value": 1821 }, { "name": "TimeScale", "value": 5833 }] }, { "name": "util", "children": [{ "name": "Arrays", "value": 8258 }, { "name": "Colors", "value": 10001 }, { "name": "Dates", "value": 8217 }, { "name": "Displays", "value": 12555 }, { "name": "Filter", "value": 2324 }, { "name": "Geometry", "value": 10993 }, { "name": "heap", "children": [{ "name": "FibonacciHeap", "value": 9354 }, { "name": "HeapNode", "value": 1233 }] }, { "name": "IEvaluable", "value": 335 }, { "name": "IPredicate", "value": 383 }, { "name": "IValueProxy", "value": 874 }, { "name": "math", "children": [{ "name": "DenseMatrix", "value": 3165 }, { "name": "IMatrix", "value": 2815 }, { "name": "SparseMatrix", "value": 3366 }] }, { "name": "Maths", "value": 17705 }, { "name": "Orientation", "value": 1486 }, { "name": "palette", "children": [{ "name": "ColorPalette", "value": 6367 }, { "name": "Palette", "value": 1229 }, { "name": "ShapePalette", "value": 2059 }, { "name": "SizePalette", "value": 2291 }] }, { "name": "Property", "value": 5559 }, { "name": "Shapes", "value": 19118 }, { "name": "Sort", "value": 6887 }, { "name": "Stats", "value": 6557 }, { "name": "Strings", "value": 22026 }] }, { "name": "vis", "children": [{ "name": "axis", "children": [{ "name": "Axes", "value": 1302 }, { "name": "Axis", "value": 24593 }, { "name": "AxisGridLine", "value": 652 }, { "name": "AxisLabel", "value": 636 }, { "name": "CartesianAxes", "value": 6703 }] }, { "name": "controls", "children": [{ "name": "AnchorControl", "value": 2138 }, { "name": "ClickControl", "value": 3824 }, { "name": "Control", "value": 1353 }, { "name": "ControlList", "value": 4665 }, { "name": "DragControl", "value": 2649 }, { "name": "ExpandControl", "value": 2832 }, { "name": "HoverControl", "value": 4896 }, { "name": "IControl", "value": 763 }, { "name": "PanZoomControl", "value": 5222 }, { "name": "SelectionControl", "value": 7862 }, { "name": "TooltipControl", "value": 8435 }] }, { "name": "data", "children": [{ "name": "Data", "value": 20544 }, { "name": "DataList", "value": 19788 }, { "name": "DataSprite", "value": 10349 }, { "name": "EdgeSprite", "value": 3301 }, { "name": "NodeSprite", "value": 19382 }, { "name": "render", "children": [{ "name": "ArrowType", "value": 698 }, { "name": "EdgeRenderer", "value": 5569 }, { "name": "IRenderer", "value": 353 }, { "name": "ShapeRenderer", "value": 2247 }] }, { "name": "ScaleBinding", "value": 11275 }, { "name": "Tree", "value": 7147 }, { "name": "TreeBuilder", "value": 9930 }] }, { "name": "events", "children": [{ "name": "DataEvent", "value": 2313 }, { "name": "SelectionEvent", "value": 1880 }, { "name": "TooltipEvent", "value": 1701 }, { "name": "VisualizationEvent", "value": 1117 }] }, { "name": "legend", "children": [{ "name": "Legend", "value": 20859 }, { "name": "LegendItem", "value": 4614 }, { "name": "LegendRange", "value": 10530 }] }, { "name": "operator", "children": [{ "name": "distortion", "children": [{ "name": "BifocalDistortion", "value": 4461 }, { "name": "Distortion", "value": 6314 }, { "name": "FisheyeDistortion", "value": 3444 }] }, { "name": "encoder", "children": [{ "name": "ColorEncoder", "value": 3179 }, { "name": "Encoder", "value": 4060 }, { "name": "PropertyEncoder", "value": 4138 }, { "name": "ShapeEncoder", "value": 1690 }, { "name": "SizeEncoder", "value": 1830 }] }, { "name": "filter", "children": [{ "name": "FisheyeTreeFilter", "value": 5219 }, { "name": "GraphDistanceFilter", "value": 3165 }, { "name": "VisibilityFilter", "value": 3509 }] }, { "name": "IOperator", "value": 1286 }, { "name": "label", "children": [{ "name": "Labeler", "value": 9956 }, { "name": "RadialLabeler", "value": 3899 }, { "name": "StackedAreaLabeler", "value": 3202 }] }, { "name": "layout", "children": [{ "name": "AxisLayout", "value": 6725 }, { "name": "BundledEdgeRouter", "value": 3727 }, { "name": "CircleLayout", "value": 9317 }, { "name": "CirclePackingLayout", "value": 12003 }, { "name": "DendrogramLayout", "value": 4853 }, { "name": "ForceDirectedLayout", "value": 8411 }, { "name": "IcicleTreeLayout", "value": 4864 }, { "name": "IndentedTreeLayout", "value": 3174 }, { "name": "Layout", "value": 7881 }, { "name": "NodeLinkTreeLayout", "value": 12870 }, { "name": "PieLayout", "value": 2728 }, { "name": "RadialTreeLayout", "value": 12348 }, { "name": "RandomLayout", "value": 870 }, { "name": "StackedAreaLayout", "value": 9121 }, { "name": "TreeMapLayout", "value": 9191 }] }, { "name": "Operator", "value": 2490 }, { "name": "OperatorList", "value": 5248 }, { "name": "OperatorSequence", "value": 4190 }, { "name": "OperatorSwitch", "value": 2581 }, { "name": "SortOperator", "value": 2023 }] }, { "name": "Visualization", "value": 16540 }] }] }
+
+        // Specify the chart’s dimensions.
+        const width = 928;
+        const height = width;
+        const cx = width * 0.5; // adjust as needed to fit
+        const cy = height * 0.59; // adjust as needed to fit
+        const radius = Math.min(width, height) / 2 - 30;
+
+        // Create a radial tree layout. The layout’s first dimension (x)
+        // is the angle, while the second (y) is the radius.
+        const tree = d3.tree()
+            .size([2 * Math.PI, radius])
+            .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+
+        // Sort the tree and apply the layout.
+        const root = tree(d3.hierarchy(data)
+            .sort((a, b) => d3.ascending(a.data.name, b.data.name)));
+
+        //  console.log(root.descendants())
+
+        // Creates the SVG container.
+        const svg = d3.create("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", [-cx, -cy, width, height])
+            .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
+
+
+        // Append nodes.
+        svg.append("g")
+            .selectAll()
+            .data(root.descendants())
+            .join("circle")
+            .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+            //  .attr("fill", d => d.children ? "#555" : "#999")
+            .attr("r", 2.5);
+
+        //   console.log(svg)
+
+        var test = d3.selectAll(root.descendants());
+        //test.attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+
+        document.getElementById('svg').appendChild(svg.node());
+
+        // return svg.node();
+
+        // const width = window.innerWidth
+        //  const height = window.innerHeight
+
+        const app = new PIXI.Application({
+            width,
+            height,
+            resolution: 2,
+            transparent: true,
+            antialias: true,
+            autoDensity: true,
+            autoStart: true,
         });
+
+        document.querySelector('#app').appendChild(app.view);
+
+        const viewport = new Viewport({
+            screenWidth: width,
+            screenHeight: height,
+            worldWidth: width,
+            worldHeight: height,
+            events: app.renderer.events,
+        });
+
+        app.stage.addChild(viewport);
+
+        viewport.center = new PIXI.Point(0, 0);
+
+        viewport
+            .drag().pinch().wheel().decelerate()
+            .clampZoom({ minScale: 0.2, maxScale: 5 });
+
+
+
+        for (let i = 0; i < root.descendants().length; i++) {
+
+            const graphics = new PIXI.Graphics();
+            // Circle
+            graphics.lineStyle(0); // draw a circle, set the lineStyle to zero so the circle doesn't have an outline
+            graphics.beginFill(0xDE3249, 1);
+
+            var angle = Math.random() * Math.PI * 2;
+            var x = Math.cos(root.descendants()[i].x) * root.descendants()[i].y;
+            var y = Math.sin(root.descendants()[i].x) * root.descendants()[i].y;
+
+            //graphics.drawCircle(root.descendants()[i].y, root.descendants()[i].x * 180 / Math.PI - 90, 2.5);
+            graphics.drawCircle(x, y, 2.5);
+
+            graphics.endFill();
+
+
+            viewport.addChild(graphics);
+        }
     },
     methods: {
-        // Display everything.
-        clearFilter() {
-            // Cycle through nodes.
-            // First level skill nodes.
-            for (let i = 0; i < this.firstLevelSkillsArray.length; i++) {
-                // First level node graphic.
-                this.firstLevelSkillsArray[i].container.children[0].alpha = 1
-                this.firstLevelSkillsArray[i].container.children[0].eventMode = "static"
-                // First level node text.
-                this.firstLevelSkillsArray[i].container.children[1].alpha = 1;
-                this.firstLevelSkillsArray[i].container.children[1].eventMode = "static"
-                // First level connecting lines.
-                this.firstLevelSkillsConnectingLinesArray[i].graphic.alpha = 1
-            }
-            // Second level skills.                    
-            for (let i = 0; i < this.secondLevelSkillsArray.length; i++) {
-                // Graphic.
-                this.secondLevelSkillsArray[i].container.children[0].alpha = 1
-                this.secondLevelSkillsArray[i].container.children[0].eventMode = "static"
-                // Text.
-                this.secondLevelSkillsArray[i].container.children[1].alpha = 1
-                this.secondLevelSkillsArray[i].container.children[1].eventMode = "static"
-                // Second level connecting lines.
-                this.secondLevelSkillsConnectingLinesArray[i].alpha = 1
-            }
-            // Third level skills.                    
-            for (let i = 0; i < this.thirdLevelSkillsArray.length; i++) {
-                // Graphic.
-                this.thirdLevelSkillsArray[i].container.children[0].alpha = 1
-                this.thirdLevelSkillsArray[i].container.children[0].eventMode = "static"
-                // Text.
-                this.thirdLevelSkillsArray[i].container.children[1].alpha = 1
-                this.thirdLevelSkillsArray[i].container.children[1].eventMode = "static"
-                // Connecting lines.
-                this.thirdLevelSkillsConnectingLinesArray[i].alpha = 1
-            }
-            // Fourth level skills.                    
-            for (let i = 0; i < this.fourthLevelSkillsArray.length; i++) {
-                // Graphic.
-                this.fourthLevelSkillsArray[i].container.children[0].alpha = 1
-                this.fourthLevelSkillsArray[i].container.children[0].eventMode = "static"
-                // Text.
-                this.fourthLevelSkillsArray[i].container.children[1].alpha = 1
-                this.fourthLevelSkillsArray[i].container.children[1].eventMode = "static"
-                // Connecting lines.
-                this.fourthLevelSkillsConnectingLinesArray[i].alpha = 1
-            }
-        },
-
-        // Hide everything.
-        totalFilter() {
-            // Cycle through nodes.
-            // First level skill nodes.
-            for (let i = 0; i < this.firstLevelSkillsArray.length; i++) {
-                // First level node graphic.
-                this.firstLevelSkillsArray[i].container.children[0].alpha = 0
-                this.firstLevelSkillsArray[i].container.children[0].eventMode = "none"
-                // First level node text.
-                this.firstLevelSkillsArray[i].container.children[1].alpha = 0;
-                this.firstLevelSkillsArray[i].container.children[1].eventMode = "none"
-                // First level connecting lines.
-                this.firstLevelSkillsConnectingLinesArray[i].graphic.alpha = 0
-            }
-            // Second level skills.                    
-            for (let i = 0; i < this.secondLevelSkillsArray.length; i++) {
-                // Graphic.
-                this.secondLevelSkillsArray[i].container.children[0].alpha = 0
-                this.secondLevelSkillsArray[i].container.children[0].eventMode = "none"
-                // Text.
-                this.secondLevelSkillsArray[i].container.children[1].alpha = 0
-                this.secondLevelSkillsArray[i].container.children[1].eventMode = "none"
-                // Second level connecting lines.
-                this.secondLevelSkillsConnectingLinesArray[i].alpha = 0
-            }
-            // Third level skills.                    
-            for (let i = 0; i < this.thirdLevelSkillsArray.length; i++) {
-                // Graphic.
-                this.thirdLevelSkillsArray[i].container.children[0].alpha = 0
-                this.thirdLevelSkillsArray[i].container.children[0].eventMode = "none"
-                // Text.
-                this.thirdLevelSkillsArray[i].container.children[1].alpha = 0
-                this.thirdLevelSkillsArray[i].container.children[1].eventMode = "none"
-                // Connecting lines.
-                this.thirdLevelSkillsConnectingLinesArray[i].alpha = 0
-            }
-            // Fourth level skills.                    
-            for (let i = 0; i < this.fourthLevelSkillsArray.length; i++) {
-                // Graphic.
-                this.fourthLevelSkillsArray[i].container.children[0].alpha = 0
-                this.fourthLevelSkillsArray[i].container.children[0].eventMode = "none"
-                // Text.
-                this.fourthLevelSkillsArray[i].container.children[1].alpha = 0
-                this.fourthLevelSkillsArray[i].container.children[1].eventMode = "none"
-                // Connecting lines.
-                this.fourthLevelSkillsConnectingLinesArray[i].alpha = 0
-            }
-        },
-
-        // Fired from the child component select element.
-        applyFilter(selectedFilters) {
-
-            this.totalFilter()
-
-            // Clear filter and show all skills.
-            if (selectedFilters.length == 0) {
-                this.clearFilter()
-            }
-            // For the built in filter, to show mastered and unlocked skills.
-            else {
-                for (let i = 0; i < selectedFilters.length; i++) {
-                    if (selectedFilters[i] == 0) {
-                        // First level skills.                     
-                        for (let i = 0; i < this.firstLevelSkillsArray.length; i++) {
-                            // Filter through user skills.
-                            if (this.firstLevelSkillsArray[i].isMastered == "1" || this.firstLevelSkillsArray[i].isUnlocked == "1") {
-                                // Clear the graphic.
-                                this.firstLevelSkillsArray[i].container.children[0].alpha = 1;
-                                this.firstLevelSkillsArray[i].container.children[0].eventMode = "static"
-                                this.firstLevelSkillsArray[i].container.children[1].alpha = 1;
-                                this.firstLevelSkillsArray[i].container.children[1].eventMode = "static"
-                                // For the connecting lines.                       
-                                this.firstLevelSkillsConnectingLinesArray[i].graphic.alpha = 1
-                            }
-                        }
-                        // Second level skills.                    
-                        for (let i = 0; i < this.secondLevelSkillsArray.length; i++) {
-                            if (this.secondLevelSkillsArray[i].isMastered == "1" || this.secondLevelSkillsArray[i].isUnlocked == "1") {
-                                // Clear the graphic and redraw in appropriate colour.
-                                this.secondLevelSkillsArray[i].container.children[0].alpha = 1
-                                this.secondLevelSkillsArray[i].container.children[0].eventMode = "static"
-                                this.secondLevelSkillsArray[i].container.children[1].alpha = 1
-                                this.secondLevelSkillsArray[i].container.children[1].eventMode = "static"
-                                // For the connecting lines.                            
-                                this.secondLevelSkillsConnectingLinesArray[i].alpha = 1
-                            }
-                        }
-                        // Third level skills.                    
-                        for (let i = 0; i < this.thirdLevelSkillsArray.length; i++) {
-                            if (this.thirdLevelSkillsArray[i].isMastered == "1" || this.thirdLevelSkillsArray[i].isUnlocked == "1") {
-                                // Clear the graphic and redraw in appropriate colour.
-                                this.thirdLevelSkillsArray[i].container.children[0].alpha = 1
-                                this.thirdLevelSkillsArray[i].container.children[0].eventMode = "static"
-                                this.thirdLevelSkillsArray[i].container.children[1].alpha = 1
-                                this.thirdLevelSkillsArray[i].container.children[1].eventMode = "static"
-                                // For the connecting lines.                            
-                                this.thirdLevelSkillsConnectingLinesArray[i].alpha = 1
-                            }
-                        }
-                        // Fourth level skills.                    
-                        for (let i = 0; i < this.fourthLevelSkillsArray.length; i++) {
-                            if (this.fourthLevelSkillsArray[i].isMastered == "1" || this.fourthLevelSkillsArray[i].isUnlocked == "1") {
-                                // Clear the graphic and redraw in appropriate colour.
-                                this.fourthLevelSkillsArray[i].container.children[0].alpha = 1
-                                this.fourthLevelSkillsArray[i].container.children[0].eventMode = "static"
-                                this.fourthLevelSkillsArray[i].container.children[1].alpha = 1
-                                this.fourthLevelSkillsArray[i].container.children[1].eventMode = "static"
-                                // For the connecting lines.                            
-                                this.fourthLevelSkillsConnectingLinesArray[i].alpha = 1
-                            }
-                        }
-                    }
-                }
-
-                // Custom filters.
-
-                // Check all first level skill nodes.
-                for (let i = 0; i < this.firstLevelSkillsArray.length; i++) {
-                    // Check if the skill has a tag.
-                    if (this.firstLevelSkillsArray[i].tagIDs.length > 0) {
-                        // Cycle through all of the tags the skill has.
-                        for (let j = 0; j < this.firstLevelSkillsArray[i].tagIDs.length; j++) {
-                            // Cycle through all the selected tag filters.
-                            for (let k = 0; k < selectedFilters.length; k++) {
-                                // Check if the selected tag is one of them.
-                                if (this.firstLevelSkillsArray[i].tagIDs[j] == selectedFilters[k]) {
-                                    // Add and enable the graphic and text.
-                                    this.firstLevelSkillsArray[i].container.children[0].alpha = 1;
-                                    this.firstLevelSkillsArray[i].container.children[0].eventMode = "static"
-                                    this.firstLevelSkillsArray[i].container.children[1].alpha = 1;
-                                    this.firstLevelSkillsArray[i].container.children[1].eventMode = "static"
-                                    // Add the parent connecting lines.
-                                    this.firstLevelSkillsConnectingLinesArray[i].graphic.alpha = 1;
-                                }
-                            }
-                        }
-                    }
-                }
-                // Check all second level skill nodes.
-                // Check if filter tag applies to the second level skill.
-                for (let i = 0; i < this.secondLevelSkillsArray.length; i++) {
-                    // Check if the skill has a tag.
-                    if (this.secondLevelSkillsArray[i].tagIDs.length > 0) {
-                        // Cycle through all of the tags the skill has.
-                        for (let j = 0; j < this.secondLevelSkillsArray[i].tagIDs.length; j++) {
-                            // Cycle through all the selected tag filters.
-                            for (let k = 0; k < selectedFilters.length; k++) {
-                                // Check if the selected tag is one of them.
-                                if (this.secondLevelSkillsArray[i].tagIDs[j] == selectedFilters[k]) {
-                                    // Add and enable the graphic and text.
-                                    this.secondLevelSkillsArray[i].container.children[0].alpha = 1;
-                                    this.secondLevelSkillsArray[i].container.children[0].eventMode = "static"
-                                    this.secondLevelSkillsArray[i].container.children[1].alpha = 1;
-                                    this.secondLevelSkillsArray[i].container.children[1].eventMode = "static"
-                                    // Add the connecting line.
-                                    //   this.secondLevelSkillsConnectingLinesArray[i].alpha = 1;
-                                }
-                            }
-                        }
-                    }
-                    // Check if filter tag applies to the parent of the second level skill, so as to show the relevant connecting lines.
-                    if (this.secondLevelSkillsArray[i].parentTagIDs.length > 0) {
-                        // Cycle through all the parent skill node's tags.
-                        for (let j = 0; j < this.secondLevelSkillsArray[i].parentTagIDs.length; j++) {
-                            // Cycle through all the selected tag filters.
-                            for (let k = 0; k < selectedFilters.length; k++) {
-                                // Check if the selected tag is one of them.
-                                if (this.secondLevelSkillsArray[i].parentTagIDs[j] == selectedFilters[k]) {
-                                    // If both the node has a filter tag selected, as well as its parent, show the connecting line.
-                                    if (this.secondLevelSkillsArray[i].container.children[0].alpha == 1) {
-                                        // Show the connecting line.  
-                                        this.secondLevelSkillsConnectingLinesArray[i].alpha = 1;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                // Check all third level skill nodes.
-                for (let i = 0; i < this.thirdLevelSkillsArray.length; i++) {
-                    // Check if the skill has a tag.
-                    if (this.thirdLevelSkillsArray[i].tagIDs.length > 0) {
-                        // Cycle through all of the tags the skill has.
-                        for (let j = 0; j < this.thirdLevelSkillsArray[i].tagIDs.length; j++) {
-                            // Cycle through all the selected tag filters.
-                            for (let k = 0; k < selectedFilters.length; k++) {
-                                // Check if the selected tag is one of them.
-                                if (this.thirdLevelSkillsArray[i].tagIDs[j] == selectedFilters[k]) {
-                                    // Add and enable the graphic and text.
-                                    this.thirdLevelSkillsArray[i].container.children[0].alpha = 1;
-                                    this.thirdLevelSkillsArray[i].container.children[0].eventMode = "static"
-                                    this.thirdLevelSkillsArray[i].container.children[1].alpha = 1;
-                                    this.thirdLevelSkillsArray[i].container.children[1].eventMode = "static"
-                                    // Add the connecting line.
-                                    //    this.thirdLevelSkillsConnectingLinesArray[i].alpha = 1;
-                                }
-                            }
-                        }
-                    }
-                    // Check if filter tag applies to the parent of the third level skill, so as to show the relevant connecting lines.
-                    if (this.thirdLevelSkillsArray[i].parentTagIDs.length > 0) {
-                        // Cycle through all the parent skill node's tags.
-                        for (let j = 0; j < this.thirdLevelSkillsArray[i].parentTagIDs.length; j++) {
-                            // Cycle through all the selected tag filters.
-                            for (let k = 0; k < selectedFilters.length; k++) {
-                                // Check if the selected tag is one of them.
-                                if (this.thirdLevelSkillsArray[i].parentTagIDs[j] == selectedFilters[k]) {
-                                    // If both the node has a filter tag selected, as well as its parent, show the connecting line.
-                                    if (this.thirdLevelSkillsArray[i].container.children[0].alpha == 1) {
-                                        // Show the connecting lines.                              
-                                        this.thirdLevelSkillsConnectingLinesArray[i].alpha = 1;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                // Check all fourth level skill nodes.
-                for (let i = 0; i < this.fourthLevelSkillsArray.length; i++) {
-                    // Check if the skill has a tag.
-                    if (this.fourthLevelSkillsArray[i].tagIDs.length > 0) {
-                        // Cycle through all of the tags the skill has.
-                        for (let j = 0; j < this.fourthLevelSkillsArray[i].tagIDs.length; j++) {
-                            // Cycle through all the selected tag filters.
-                            for (let k = 0; k < selectedFilters.length; k++) {
-                                // Check if the selected tag is one of them.
-                                if (this.fourthLevelSkillsArray[i].tagIDs[j] == selectedFilters[k]) {
-                                    // Add and enable the graphic and text.
-                                    this.fourthLevelSkillsArray[i].container.children[0].alpha = 1;
-                                    this.fourthLevelSkillsArray[i].container.children[0].eventMode = "static";
-                                    this.fourthLevelSkillsArray[i].container.children[1].alpha = 1;
-                                    this.fourthLevelSkillsArray[i].container.children[1].eventMode = "static";
-                                }
-                            }
-                        }
-                    }
-                    // Check if filter tag applies to the parent of the fourth level skill, so as to show the relevant connecting lines.
-                    if (this.fourthLevelSkillsArray[i].parentTagIDs.length > 0) {
-                        // Cycle through all the parent skill node's tags.
-                        for (let j = 0; j < this.fourthLevelSkillsArray[i].parentTagIDs.length; j++) {
-                            // Cycle through all the selected tag filters.
-                            for (let k = 0; k < selectedFilters.length; k++) {
-                                // Check if the selected tag is one of them.
-                                if (this.fourthLevelSkillsArray[i].parentTagIDs[j] == selectedFilters[k]) {
-                                    // If both the node has a filter tag selected, as well as its parent, show the connecting line.
-                                    if (this.fourthLevelSkillsArray[i].container.children[0].alpha == 1) {
-                                        // Show the connecting lines.                              
-                                        this.fourthLevelSkillsConnectingLinesArray[i].alpha = 1;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        showInfoPanel(skill) {
-            // If panel is not showing.
-            if (!this.isSkillInfoPanelShown) {
-                // To display the panel.
-                // Responsive.
-                // Laptop etc.
-                if (screen.width > 800) {
-                    document.getElementById("skillInfoPanel").style.width = "474px";
-                }
-                // Mobile device.
-                else {
-                    document.getElementById("skillInfoPanel").style.height = "474px";
-                }
-                // Make the background dark and disabled.
-                document.getElementById("sidepanel-backdrop").style.display = "block";
-
-                this.isSkillInfoPanelShown = true;
-                // Populate the skill heading.
-                var skillHeading = document.getElementById("skillHeading");
-                var name = document.createTextNode(skill.name);
-                skillHeading.appendChild(name);
-                // Populate the skill description.
-                var skillDescription = document.getElementById("skillDescription");
-                var description = document.createTextNode(skill.description);
-                skillDescription.appendChild(description);
-                // Populate the skill panel check box.             
-                if (skill.isMastered == "1") {
-                    document.getElementById("skillIsMastered").checked = true;
-                }
-                // Populate the skill link button.        
-                var skillLink = document.getElementById("skillLink");
-                skillLink.setAttribute("href", "/skills/" + skill.id);
-            }
-        },
-        updateInfoPanel(skill) {
-            // If panel is showing.
-            if (this.isSkillInfoPanelShown) {
-                // Populate the skill heading.
-                var skillHeading = document.getElementById("skillHeading");
-                skillHeading.innerHTML = ""
-                var name = document.createTextNode(skill.name);
-                skillHeading.appendChild(name);
-                // Populate the skill description.
-                var skillDescription = document.getElementById("skillDescription");
-                skillDescription.innerHTML = ""
-                var description = document.createTextNode(skill.description);
-                skillDescription.appendChild(description);
-                // Populate the skill panel check box.             
-                if (skill.isMastered == "1") {
-                    document.getElementById("skillIsMastered").checked = true;
-                }
-                else
-                    document.getElementById("skillIsMastered").checked = false;
-                // Populate the skill link button.        
-                var skillLink = document.getElementById("skillLink");
-                skillLink.setAttribute("href", "/skills/" + skill.id);
-            }
-        }
     }
 }
 
 </script> 
 
 <template>
-    <div class="flex-container skill-tree-container">
-        <SkillTreeFilter id="filter" />
-        <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
-        <div id="wrapper">
-            <div id="skilltree">
-                <SkillPanel />
-            </div>
-            <div id="sidepanel-backdrop"></div>
-        </div>
-    </div>
+    <div id="svg" class="flex-container skill-tree-container"> </div>
 </template>
 
 
