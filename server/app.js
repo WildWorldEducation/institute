@@ -49,8 +49,6 @@ const skillRouter = require('./routes/skills');
 app.use('/skills', skillRouter);
 const userSkillRouter = require('./routes/user-skills');
 app.use('/user-skills', userSkillRouter);
-const skillTreeRouter = require('./routes/skill-tree');
-app.use('/skill-tree', skillTreeRouter);
 const resourcesRouter = require('./routes/resources');
 app.use('/resources', resourcesRouter);
 const userVotesRouter = require('./routes/user-votes');
