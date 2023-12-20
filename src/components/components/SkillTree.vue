@@ -208,7 +208,7 @@ export default {
                 child.data.skill_name = child.data.skill_name.replace(/(.*?\s)/g, '$1' + '\n')
                 // Note that the fontSize is 5 times higher than encessary, to deal with pixellation on zoom.
                 let nodeName = new PIXI.Text(child.data.skill_name.toUpperCase(),
-                    { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xff0000, align: 'center' });
+                    { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xffffff, align: 'center' });
                 // Text to centre of container.
                 nodeName.anchor.set(0.5)
 
@@ -237,7 +237,6 @@ export default {
 </script> 
 
 <template>
-    <hr>
     <!-- <div id="svg" class="flex-container skill-tree-container"> </div> -->
 </template>
 
