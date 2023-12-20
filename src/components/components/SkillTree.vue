@@ -151,7 +151,6 @@ export default {
             depth++
 
             for (let [index, child] of parentChildren.entries()) {
-
                 console.log(child)
 
                 /*
@@ -167,13 +166,12 @@ export default {
                 */
                 const graphics = new PIXI.Graphics();
                 // Circle              
-                graphics.beginFill(0xDE3249, 1);
                 // Colour depending on mastery and whether skill is unlocked.
                 var color;
-                if (child.data.is_mastered == 1) {
+                if (child.data.is_mastered == "1") {
                     color = '0x' + child.data.mastered_color;
                 }
-                else if (child.data.is_accessible == 1) {
+                else if (child.data.is_accessible == "1") {
                     graphics.lineStyle(1, '0x' + child.data.mastered_color, 1);
                     color = '0x' + child.data.unlocked_color;
                 }
@@ -210,7 +208,7 @@ export default {
                 child.data.skill_name = child.data.skill_name.replace(/(.*?\s)/g, '$1' + '\n')
                 // Note that the fontSize is 5 times higher than encessary, to deal with pixellation on zoom.
                 let nodeName = new PIXI.Text(child.data.skill_name.toUpperCase(),
-                    { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xffffff, align: 'center' });
+                    { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xff0000, align: 'center' });
                 // Text to centre of container.
                 nodeName.anchor.set(0.5)
 
