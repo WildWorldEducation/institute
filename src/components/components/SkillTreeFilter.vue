@@ -54,6 +54,10 @@ export default {
 
 
 <style scoped>
+#filter {
+    color: white
+}
+
 #filterMainHeader {
     font-family: 'Poppins900';
     color: #65E0A5;
