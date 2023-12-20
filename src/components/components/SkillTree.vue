@@ -2,6 +2,7 @@
 // Import the stores.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore'
 import { useSkillTreeStore } from '../../stores/SkillTreeStore'
+import { useUserSkillsStore } from '../../stores/UserSkillsStore'
 import { useSkillTagsStore } from '../../stores/SkillTagsStore'
 
 // Nested component.
@@ -22,8 +23,9 @@ export default {
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
         const skillTagsStore = useSkillTagsStore();
+        const userSkillsStore = useUserSkillsStore();
         return {
-            userDetailsStore, skillTreeStore, skillTagsStore
+            userDetailsStore, skillTreeStore, skillTagsStore, userSkillsStore
         }
     },
     data() {
@@ -40,16 +42,19 @@ export default {
         await this.skillTreeStore.getUserSkillsNoSubSkills()
         var nestedSkillNodes = this.skillTreeStore.userSkillsNoSubSkills
 
-        var object = {
+        await this.userSkillsStore.getUnnestedList(this.userDetailsStore.userId)
+        var unnestedUserSkills = this.userSkillsStore.unnestedList
+
+        var unnestedUserSkillsNoSubSkills = []
+        for (let i = 0; i < unnestedUserSkills.length; i++) {
+            if (unnestedUserSkills[i].type != "sub")
+                unnestedUserSkillsNoSubSkills.push(unnestedUserSkills[i])
+        }
+
+        var data = {
             name: "test",
             children: nestedSkillNodes
         }
-        var data = object
-
-        // var data2 = d3.filter(function (data) {
-        //     console.log("depth = " + data.name)
-        //     return data.name == "test";
-        // })
 
         // Specify the chart’s dimensions.
         const width = window.innerWidth
@@ -62,47 +67,47 @@ export default {
         // is the angle, while the second (y) is the radius.
         const tree = d3.tree()
             // increase the radius to space out the nodes.
-            .size([2 * Math.PI, radius * 4])
-            .separation((a, b) => (a.parent == b.parent ? 1 : 3) / a.depth);
+            .size([2 * Math.PI, radius * 6])
+            .separation((a, b) => (a.parent == b.parent ? 1 : 4) / a.depth);
 
         // Sort the tree and apply the layout.
-        const root = tree(d3.hierarchy(data)
-            .sort((a, b) => d3.ascending(a.data.name, b.data.name)));
+        const root = tree(d3.hierarchy(data))
+        console.log(root)
 
         // Creates the SVG container.
-        const svg = d3.create("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("viewBox", [-cx, -cy, width, height])
-            .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
+        // const svg = d3.create("svg")
+        //     .attr("width", width)
+        //     .attr("height", height)
+        //     .attr("viewBox", [-cx, -cy, width, height])
+        //     .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
 
 
         // Append links.
-        svg.append("g")
-            .attr("fill", "none")
-            .attr("stroke", "#555")
-            .attr("stroke-opacity", 0.4)
-            .attr("stroke-width", 1.5)
-            .selectAll()
-            .data(root.links())
-            .join("path")
-            .attr("d", d3.linkRadial()
-                .angle(d => d.x)
-                .radius(d => d.y));
+        // svg.append("g")
+        //     .attr("fill", "none")
+        //     .attr("stroke", "#555")
+        //     .attr("stroke-opacity", 0.4)
+        //     .attr("stroke-width", 1.5)
+        //     .selectAll()
+        //     .data(root.links())
+        //     .join("path")
+        //     .attr("d", d3.linkRadial()
+        //         .angle(d => d.x)
+        //         .radius(d => d.y));
 
         //console.log(root.links())
 
         // Append nodes.
-        svg.append("g")
-            .selectAll()
-            .data(root.descendants())
-            .join("circle")
-            .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
-            //  .attr("fill", d => d.children ? "#555" : "#999")
-            .attr("r", 2.5);
+        // svg.append("g")
+        //     .selectAll()
+        //     .data(root.descendants())
+        //     .join("circle")
+        //     .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+        //     //  .attr("fill", d => d.children ? "#555" : "#999")
+        //     .attr("r", 2.5);
 
 
-        document.getElementById('svg').appendChild(svg.node());
+        //        document.getElementById('svg').appendChild(svg.node());
 
 
         const app = new PIXI.Application({
@@ -152,22 +157,63 @@ export default {
         }
 
         // Nodes.    
-        for (let i = 0; i < root.descendants().length; i++) {
-            if (root.descendants()[i].type != "sub") {
+        // for (let i = 0; i < root.descendants().length; i++) {
+        //     const graphics = new PIXI.Graphics();
+        //     // Circle
+        //     graphics.lineStyle(0); // draw a circle, set the lineStyle to zero so the circle doesn't have an outline
+        //     graphics.beginFill(0xDE3249, 1);
+
+        //     var angle = Math.random() * Math.PI * 2;
+        //     var x = Math.cos(root.descendants()[i].x) * root.descendants()[i].y;
+        //     var y = Math.sin(root.descendants()[i].x) * root.descendants()[i].y;
+        //     if (i == 0) {
+        //         graphics.drawCircle(x, y, 30);
+        //     }
+        //     else if (i < 7) {
+        //         graphics.drawCircle(x, y, 15);
+        //     }
+        //     else
+        //         graphics.drawCircle(x, y, 10);
+        //     graphics.endFill();
+
+        //     viewport.addChild(graphics);
+        // }
+
+        function renderDescendantNodes(parentChildren, depth) {
+            // Increase the depth each recursion.
+            depth++
+
+            for (let [index, child] of parentChildren.entries()) {
+                console.log(child)
+
                 const graphics = new PIXI.Graphics();
                 // Circle
-                graphics.lineStyle(0); // draw a circle, set the lineStyle to zero so the circle doesn't have an outline
+                graphics.lineStyle(0);
                 graphics.beginFill(0xDE3249, 1);
-
                 var angle = Math.random() * Math.PI * 2;
-                var x = Math.cos(root.descendants()[i].x) * root.descendants()[i].y;
-                var y = Math.sin(root.descendants()[i].x) * root.descendants()[i].y;
-                graphics.drawCircle(x, y, 10);
+                var x = Math.cos(child.x) * child.y;
+                var y = Math.sin(child.x) * child.y;
+                if (depth == 0) {
+                    graphics.drawCircle(x, y, 30);
+                }
+                else if (depth < 7) {
+                    graphics.drawCircle(x, y, 15);
+                }
+                else
+                    graphics.drawCircle(x, y, 10);
                 graphics.endFill();
 
                 viewport.addChild(graphics);
+
+                /*
+                * Run the above function again recursively.
+                */
+                if (child.children && Array.isArray(child.children) && child.children.length > 0)
+                    renderDescendantNodes(child.children, depth)
             }
         }
+
+        renderDescendantNodes(root.children, 0);
     },
     methods: {
     }
@@ -176,7 +222,8 @@ export default {
 </script> 
 
 <template>
-    <div id="svg" class="flex-container skill-tree-container"> </div>
+    <hr>
+    <!-- <div id="svg" class="flex-container skill-tree-container"> </div> -->
 </template>
 
 
