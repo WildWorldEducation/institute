@@ -2,7 +2,6 @@
 // Import the stores.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore'
 import { useSkillTreeStore } from '../../stores/SkillTreeStore'
-import { useUserSkillsStore } from '../../stores/UserSkillsStore'
 import { useSkillTagsStore } from '../../stores/SkillTagsStore'
 
 // Nested component.
@@ -23,9 +22,8 @@ export default {
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
         const skillTagsStore = useSkillTagsStore();
-        const userSkillsStore = useUserSkillsStore();
         return {
-            userDetailsStore, skillTreeStore, skillTagsStore, userSkillsStore
+            userDetailsStore, skillTreeStore, skillTagsStore
         }
     },
     data() {
@@ -41,15 +39,6 @@ export default {
         // Get the data from the API.
         await this.skillTreeStore.getUserSkillsNoSubSkills()
         var nestedSkillNodes = this.skillTreeStore.userSkillsNoSubSkills
-
-        await this.userSkillsStore.getUnnestedList(this.userDetailsStore.userId)
-        var unnestedUserSkills = this.userSkillsStore.unnestedList
-
-        var unnestedUserSkillsNoSubSkills = []
-        for (let i = 0; i < unnestedUserSkills.length; i++) {
-            if (unnestedUserSkills[i].type != "sub")
-                unnestedUserSkillsNoSubSkills.push(unnestedUserSkills[i])
-        }
 
         var data = {
             name: "test",
@@ -157,53 +146,81 @@ export default {
         }
 
         // Nodes.    
-        // for (let i = 0; i < root.descendants().length; i++) {
-        //     const graphics = new PIXI.Graphics();
-        //     // Circle
-        //     graphics.lineStyle(0); // draw a circle, set the lineStyle to zero so the circle doesn't have an outline
-        //     graphics.beginFill(0xDE3249, 1);
-
-        //     var angle = Math.random() * Math.PI * 2;
-        //     var x = Math.cos(root.descendants()[i].x) * root.descendants()[i].y;
-        //     var y = Math.sin(root.descendants()[i].x) * root.descendants()[i].y;
-        //     if (i == 0) {
-        //         graphics.drawCircle(x, y, 30);
-        //     }
-        //     else if (i < 7) {
-        //         graphics.drawCircle(x, y, 15);
-        //     }
-        //     else
-        //         graphics.drawCircle(x, y, 10);
-        //     graphics.endFill();
-
-        //     viewport.addChild(graphics);
-        // }
-
         function renderDescendantNodes(parentChildren, depth) {
             // Increase the depth each recursion.
             depth++
 
             for (let [index, child] of parentChildren.entries()) {
+
                 console.log(child)
 
-                const graphics = new PIXI.Graphics();
-                // Circle
-                graphics.lineStyle(0);
-                graphics.beginFill(0xDE3249, 1);
+                /*
+                * Create the skill node container.
+                */
+                let nodeContainer = new PIXI.Container();
                 var angle = Math.random() * Math.PI * 2;
-                var x = Math.cos(child.x) * child.y;
-                var y = Math.sin(child.x) * child.y;
-                if (depth == 0) {
-                    graphics.drawCircle(x, y, 30);
+                nodeContainer.x = Math.cos(child.x) * child.y;
+                nodeContainer.y = Math.sin(child.x) * child.y;
+
+                /*
+                * Draw the skill node.
+                */
+                const graphics = new PIXI.Graphics();
+                // Circle              
+                graphics.beginFill(0xDE3249, 1);
+                // Colour depending on mastery and whether skill is unlocked.
+                var color;
+                if (child.data.is_mastered == 1) {
+                    color = '0x' + child.data.mastered_color;
                 }
-                else if (depth < 7) {
-                    graphics.drawCircle(x, y, 15);
+                else if (child.data.is_accessible == 1) {
+                    graphics.lineStyle(1, '0x' + child.data.mastered_color, 1);
+                    color = '0x' + child.data.unlocked_color;
+                }
+                else {
+                    color = '0xD9D9D9';
+                }
+                graphics.beginFill(color);
+                // Size, depending on depth.
+                if (depth == 0) {
+                    graphics.drawCircle(0, 0, 30);
+                }
+                else if (depth == 1) {
+                    graphics.drawCircle(0, 0, 15);
                 }
                 else
-                    graphics.drawCircle(x, y, 10);
+                    graphics.drawCircle(0, 0, 10);
                 graphics.endFill();
+                nodeContainer.addChild(graphics);
 
-                viewport.addChild(graphics);
+                /*
+                * Write the skill name.
+                */
+                let fontSize = 40;
+                // Split name into an array.
+                const nodeNameArray = child.data.skill_name.split(" ");
+                for (let i = 0; i < nodeNameArray.length; i++) {
+                    // Check if any of the strings are too long.
+                    if (nodeNameArray[i].length > 9) {
+                        fontSize = 37;
+                    }
+                }
+
+                // Add line break if skill name is more than one word.
+                child.data.skill_name = child.data.skill_name.replace(/(.*?\s)/g, '$1' + '\n')
+                // Note that the fontSize is 5 times higher than encessary, to deal with pixellation on zoom.
+                let nodeName = new PIXI.Text(child.data.skill_name.toUpperCase(),
+                    { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xffffff, align: 'center' });
+                // Text to centre of container.
+                nodeName.anchor.set(0.5)
+
+                // This is to deal with the artificially high fontSize mentioned above.
+                nodeName.scale.x = 0.1
+                nodeName.scale.y = 0.1
+
+                // Add components to the container.                        
+                nodeContainer.addChild(nodeName);
+                viewport.addChild(nodeContainer);
 
                 /*
                 * Run the above function again recursively.
