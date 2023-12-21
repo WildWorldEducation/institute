@@ -3,6 +3,7 @@
 import { useUserDetailsStore } from '../../stores/UserDetailsStore'
 import { useSkillTreeStore } from '../../stores/SkillTreeStore'
 import { useSkillTagsStore } from '../../stores/SkillTagsStore'
+import { useUserSkillsStore } from '../../stores/UserSkillsStore'
 
 // Nested component.
 import SkillTreeFilter from './SkillTreeFilter.vue';
@@ -22,8 +23,9 @@ export default {
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
         const skillTagsStore = useSkillTagsStore();
+        const userSkillsStore = useUserSkillsStore();
         return {
-            userDetailsStore, skillTreeStore, skillTagsStore
+            userDetailsStore, skillTreeStore, skillTagsStore, userSkillsStore
         }
     },
     data() {
@@ -38,11 +40,19 @@ export default {
     async mounted() {
         // Get the data from the API.
         await this.skillTreeStore.getUserSkillsNoSubSkills()
-        var nestedSkillNodes = this.skillTreeStore.userSkillsNoSubSkills
+        var nestedSkillNodesNoSubSkills = this.skillTreeStore.userSkillsNoSubSkills
+
+        await this.skillTreeStore.getUserSkills()
+        var nestedSkillNodes = this.skillTreeStore.userSkills
+
+        console.log(nestedSkillNodes)
+
+        // await this.userSkillsStore.getUnnestedList(this.userDetailsStore.userId)
+        // var unnestedSkillNodesNoSubSkills = this.userSkillsStore.unnestedList
 
         var data = {
             name: "test",
-            children: nestedSkillNodes
+            children: nestedSkillNodesNoSubSkills
         }
 
         // Specify the chart’s dimensions.
@@ -61,7 +71,7 @@ export default {
 
         // Sort the tree and apply the layout.
         const root = tree(d3.hierarchy(data))
-        console.log(root)
+        //  console.log(root)
 
         // Creates the SVG container.
         // const svg = d3.create("svg")
@@ -151,10 +161,16 @@ export default {
             depth++
 
             for (let [index, child] of parentChildren.entries()) {
-                console.log(child)
+                for (let i = 0; i < root.descendants().length; i++) {
+                    if (root.descendants()[i].data.id == child.id) {
+                        child.x = root.descendants()[i].x
+                        child.y = root.descendants()[i].y
+                    }
+                }
 
                 /*
                 * Create the skill node container.
+                * Using the D3 algorithm to get the position.
                 */
                 let nodeContainer = new PIXI.Container();
                 var angle = Math.random() * Math.PI * 2;
@@ -168,12 +184,12 @@ export default {
                 // Circle              
                 // Colour depending on mastery and whether skill is unlocked.
                 var color;
-                if (child.data.is_mastered == "1") {
-                    color = '0x' + child.data.mastered_color;
+                if (child.is_mastered == "1") {
+                    color = '0x' + child.mastered_color;
                 }
-                else if (child.data.is_accessible == "1") {
-                    graphics.lineStyle(1, '0x' + child.data.mastered_color, 1);
-                    color = '0x' + child.data.unlocked_color;
+                else if (child.is_accessible == "1") {
+                    graphics.lineStyle(1, '0x' + child.mastered_color, 1);
+                    color = '0x' + child.unlocked_color;
                 }
                 else {
                     color = '0xD9D9D9';
@@ -196,7 +212,7 @@ export default {
                 */
                 let fontSize = 40;
                 // Split name into an array.
-                const nodeNameArray = child.data.skill_name.split(" ");
+                const nodeNameArray = child.skill_name.split(" ");
                 for (let i = 0; i < nodeNameArray.length; i++) {
                     // Check if any of the strings are too long.
                     if (nodeNameArray[i].length > 9) {
@@ -205,9 +221,9 @@ export default {
                 }
 
                 // Add line break if skill name is more than one word.
-                child.data.skill_name = child.data.skill_name.replace(/(.*?\s)/g, '$1' + '\n')
+                child.skill_name = child.skill_name.replace(/(.*?\s)/g, '$1' + '\n')
                 // Note that the fontSize is 5 times higher than encessary, to deal with pixellation on zoom.
-                let nodeName = new PIXI.Text(child.data.skill_name.toUpperCase(),
+                let nodeName = new PIXI.Text(child.skill_name.toUpperCase(),
                     { fontFamily: 'Poppins900', fontSize: fontSize, fill: 0xffffff, align: 'center' });
                 // Text to centre of container.
                 nodeName.anchor.set(0.5)
@@ -221,6 +237,49 @@ export default {
                 viewport.addChild(nodeContainer);
 
                 /*
+                * Subskills.
+                */
+                // Sort the children into subskills and actual child skills.                        
+                let numChildren = 0
+                let numSubSkills = 0
+                for (let i = 0; i < child.children.length; i++) {
+                    if (child.children[i].type != 'sub') {
+                        numChildren++
+                    }
+                    else {
+                        numSubSkills++
+                    }
+                }
+                for (let i = 0; i < child.children.length; i++) {
+                    //console.log(child.children[i].type)
+                    if (child.children[i].type == "sub") {
+                        let subNodeContainer = new PIXI.Container();
+
+                        // Calculate the increment of the subskills, around a circle.
+                        let increment = 360 / numSubSkills
+                        // Get the correct index number, excluding sub skills.
+                        let subSkillsIndex = i - numChildren
+                        // Calculate the nodes angle.
+                        let angle = increment * subSkillsIndex
+                        let rads = angle * Math.PI / 180
+                        let x = 25 * Math.cos(rads)
+                        let y = 25 * Math.sin(rads)
+
+                        subNodeContainer.x = x
+                        subNodeContainer.y = y
+
+                        const graphics = new PIXI.Graphics();
+                        graphics.beginFill(0xFF0000);
+                        // Size, depending on depth.
+                        graphics.drawCircle(0, 0, 5);
+                        graphics.endFill();
+                        subNodeContainer.addChild(graphics);
+                        nodeContainer.addChild(subNodeContainer);
+                    }
+                }
+
+
+                /*
                 * Run the above function again recursively.
                 */
                 if (child.children && Array.isArray(child.children) && child.children.length > 0)
@@ -228,7 +287,7 @@ export default {
             }
         }
 
-        renderDescendantNodes(root.children, 0);
+        renderDescendantNodes(nestedSkillNodes, 0);
     },
     methods: {
     }
