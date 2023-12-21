@@ -3,7 +3,6 @@
 import { useUserDetailsStore } from '../../stores/UserDetailsStore'
 import { useSkillTreeStore } from '../../stores/SkillTreeStore'
 import { useSkillTagsStore } from '../../stores/SkillTagsStore'
-import { useUserSkillsStore } from '../../stores/UserSkillsStore'
 
 // Nested component.
 import SkillTreeFilter from './SkillTreeFilter.vue';
@@ -23,9 +22,8 @@ export default {
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
         const skillTagsStore = useSkillTagsStore();
-        const userSkillsStore = useUserSkillsStore();
         return {
-            userDetailsStore, skillTreeStore, skillTagsStore, userSkillsStore
+            userDetailsStore, skillTreeStore, skillTagsStore
         }
     },
     data() {
@@ -44,11 +42,6 @@ export default {
 
         await this.skillTreeStore.getUserSkills()
         var nestedSkillNodes = this.skillTreeStore.userSkills
-
-        console.log(nestedSkillNodes)
-
-        // await this.userSkillsStore.getUnnestedList(this.userDetailsStore.userId)
-        // var unnestedSkillNodesNoSubSkills = this.userSkillsStore.unnestedList
 
         var data = {
             name: "test",
@@ -71,43 +64,6 @@ export default {
 
         // Sort the tree and apply the layout.
         const root = tree(d3.hierarchy(data))
-        //  console.log(root)
-
-        // Creates the SVG container.
-        // const svg = d3.create("svg")
-        //     .attr("width", width)
-        //     .attr("height", height)
-        //     .attr("viewBox", [-cx, -cy, width, height])
-        //     .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
-
-
-        // Append links.
-        // svg.append("g")
-        //     .attr("fill", "none")
-        //     .attr("stroke", "#555")
-        //     .attr("stroke-opacity", 0.4)
-        //     .attr("stroke-width", 1.5)
-        //     .selectAll()
-        //     .data(root.links())
-        //     .join("path")
-        //     .attr("d", d3.linkRadial()
-        //         .angle(d => d.x)
-        //         .radius(d => d.y));
-
-        //console.log(root.links())
-
-        // Append nodes.
-        // svg.append("g")
-        //     .selectAll()
-        //     .data(root.descendants())
-        //     .join("circle")
-        //     .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
-        //     //  .attr("fill", d => d.children ? "#555" : "#999")
-        //     .attr("r", 2.5);
-
-
-        //        document.getElementById('svg').appendChild(svg.node());
-
 
         const app = new PIXI.Application({
             width,
@@ -134,7 +90,6 @@ export default {
             .drag().pinch().wheel().decelerate()
             .clampZoom({ minScale: 0.2, maxScale: 5 });
 
-
         // Links.
         for (let i = 0; i < root.links().length; i++) {
             const link = new PIXI.Graphics();
@@ -154,6 +109,31 @@ export default {
 
             viewport.addChild(link);
         }
+
+        /*
+        * Central circle.
+        */
+
+        // Graphic.
+        const centerNode = PIXI.Sprite.from('center-node.png');
+        centerNode.x = root.x
+        centerNode.y = root.y
+        centerNode.anchor.set(0.5)
+        centerNode.scale.set(0.10)
+        viewport.addChild(centerNode)
+
+        // Text.
+        // Font size is set artificially high, then scaed down, to improve resolution.
+        let centerNodeText = new PIXI.Text("SKILLS",
+            { fontFamily: 'Poppins900', fontSize: 65, fill: 0x000000, align: 'center' });
+        centerNodeText.anchor.set(0.5)
+        // Center it.
+        centerNodeText.x = root.x
+        centerNodeText.y = root.y
+        // This is to deal with the artificially high font size mentioned above.
+        centerNodeText.scale.x = 0.2
+        centerNodeText.scale.y = 0.2
+        viewport.addChild(centerNodeText)
 
         // Nodes.    
         function renderDescendantNodes(parentChildren, depth) {
