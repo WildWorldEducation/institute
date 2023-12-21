@@ -269,7 +269,18 @@ export default {
                         subNodeContainer.y = y
 
                         const graphics = new PIXI.Graphics();
-                        graphics.beginFill(0xFF0000);
+                        var color;
+                        if (child.children[i].is_mastered == "1") {
+                            color = '0x' + child.children[i].mastered_color;
+                        }
+                        else if (child.children[i].is_accessible == "1") {
+                            graphics.lineStyle(1, '0x' + child.children[i].mastered_color, 1);
+                            color = '0x' + child.children[i].unlocked_color;
+                        }
+                        else {
+                            color = '0xD9D9D9';
+                        }
+                        graphics.beginFill(color);
                         // Size, depending on depth.
                         graphics.drawCircle(0, 0, 5);
                         graphics.endFill();
@@ -277,7 +288,6 @@ export default {
                         nodeContainer.addChild(subNodeContainer);
                     }
                 }
-
 
                 /*
                 * Run the above function again recursively.
