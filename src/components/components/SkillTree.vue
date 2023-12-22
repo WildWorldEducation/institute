@@ -28,7 +28,7 @@ export default {
     },
     data() {
         return {
-
+            isSkillInfoPanelShown: false,
         }
     },
     components: {
@@ -75,7 +75,7 @@ export default {
             autoStart: true,
         });
 
-        document.querySelector('#app').appendChild(app.view);
+        document.querySelector('#skilltree').appendChild(app.view);
 
         const viewport = new Viewport({
             screenWidth: width,
@@ -136,7 +136,7 @@ export default {
         viewport.addChild(centerNodeText)
 
         // Nodes.    
-        function renderDescendantNodes(parentChildren, depth) {
+        function renderDescendantNodes(parentChildren, depth, context) {
             // Increase the depth each recursion.
             depth++
 
@@ -160,7 +160,7 @@ export default {
                 /*
                 * Draw the skill node.
                 */
-                const graphics = new PIXI.Graphics();
+                const nodeGraphic = new PIXI.Graphics();
                 // Circle              
                 // Colour depending on mastery and whether skill is unlocked.
                 var color;
@@ -168,24 +168,24 @@ export default {
                     color = '0x' + child.mastered_color;
                 }
                 else if (child.is_accessible == "1") {
-                    graphics.lineStyle(1, '0x' + child.mastered_color, 1);
+                    nodeGraphic.lineStyle(1, '0x' + child.mastered_color, 1);
                     color = '0x' + child.unlocked_color;
                 }
                 else {
                     color = '0xD9D9D9';
                 }
-                graphics.beginFill(color);
+                nodeGraphic.beginFill(color);
                 // Size, depending on depth.
                 if (depth == 0) {
-                    graphics.drawCircle(0, 0, 30);
+                    nodeGraphic.drawCircle(0, 0, 30);
                 }
                 else if (depth == 1) {
-                    graphics.drawCircle(0, 0, 15);
+                    nodeGraphic.drawCircle(0, 0, 15);
                 }
                 else
-                    graphics.drawCircle(0, 0, 10);
-                graphics.endFill();
-                nodeContainer.addChild(graphics);
+                    nodeGraphic.drawCircle(0, 0, 10);
+                nodeGraphic.endFill();
+                nodeContainer.addChild(nodeGraphic);
 
                 /*
                 * Write the skill name.
@@ -214,6 +214,43 @@ export default {
 
                 // Add components to the container.                        
                 nodeContainer.addChild(nodeName);
+
+                // Add interactivity.   
+                // Create the  skill object:
+                let skill = {
+                    id: child.id,
+                    isMastered: child.is_mastered,
+                    isUnlocked: child.is_accessible,
+                    color: color,
+                    container: nodeContainer,
+                    name: child.skill_name,
+                    description: child.description,
+                    tagIDs: [],
+                }
+                // This is added to the graphic and text, and not the container,
+                // as it would otherwise effect all the container's child skills.
+                nodeGraphic.eventMode = 'static';
+                nodeName.eventMode = 'static';
+                nodeGraphic.cursor = 'pointer';
+                nodeName.cursor = 'pointer';
+                nodeName.on('pointerdown', (event) => {
+                    if (!context.isSkillInfoPanelShown) {
+                        context.showInfoPanel(skill)
+                    }
+
+                    // else
+                    //     context.updateInfoPanel(skill)
+                });
+                nodeGraphic.on('pointerdown', (event) => {
+                    if (!context.isSkillInfoPanelShown) {
+                        context.showInfoPanel(skill)
+                    }
+                    //     context.showInfoPanel(skill)
+                    // else
+                    //     context.updateInfoPanel(skill)
+                });
+
+
                 viewport.addChild(nodeContainer);
 
                 /*
@@ -273,20 +310,64 @@ export default {
                 * Run the above function again recursively.
                 */
                 if (child.children && Array.isArray(child.children) && child.children.length > 0)
-                    renderDescendantNodes(child.children, depth)
+                    renderDescendantNodes(child.children, depth, context)
             }
         }
 
-        renderDescendantNodes(nestedSkillNodes, 0);
+        renderDescendantNodes(nestedSkillNodes, 0, this);
     },
     methods: {
+        showInfoPanel(skill) {
+            console.log("test")
+            // If panel is not showing.
+            if (!this.isSkillInfoPanelShown) {
+                // To display the panel.
+                // Responsive.
+                // Laptop etc.
+                if (screen.width > 800) {
+                    document.getElementById("skillInfoPanel").style.width = "474px";
+                }
+                // Mobile device.
+                else {
+                    document.getElementById("skillInfoPanel").style.height = "474px";
+                }
+                // Make the background dark and disabled.
+                document.getElementById("sidepanel-backdrop").style.display = "block";
+
+                this.isSkillInfoPanelShown = true;
+                // Populate the skill heading.
+                var skillHeading = document.getElementById("skillHeading");
+                var name = document.createTextNode(skill.name);
+                skillHeading.appendChild(name);
+                // Populate the skill description.
+                var skillDescription = document.getElementById("skillDescription");
+                var description = document.createTextNode(skill.description);
+                skillDescription.appendChild(description);
+                // Populate the skill panel check box.             
+                if (skill.isMastered == "1") {
+                    document.getElementById("skillIsMastered").checked = true;
+                }
+                // Populate the skill link button.        
+                var skillLink = document.getElementById("skillLink");
+                skillLink.setAttribute("href", "/skills/" + skill.id);
+            }
+        },
     }
 }
 
 </script> 
 
 <template>
-    <!-- <div id="svg" class="flex-container skill-tree-container"> </div> -->
+    <div class="flex-container skill-tree-container">
+        <SkillTreeFilter id="filter" />
+        <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
+        <div id="wrapper">
+            <div id="skilltree">
+                <SkillPanel />
+            </div>
+            <div id="sidepanel-backdrop"></div>
+        </div>
+    </div>
 </template>
 
 
