@@ -30,7 +30,8 @@ export default {
         return {
             stageContents: [],
             isSkillInfoPanelShown: false,
-            regularLockedUnmasteredNodeSprite: null
+            regularLockedUnmasteredNodeSprite: null,
+            radius: 0
         }
     },
     components: {
@@ -47,65 +48,65 @@ export default {
             await this.skillTreeStore.getUserSkills()
         }
 
+        // Specify the chart’s dimensions.
+        const width = window.innerWidth
+        const height = window.innerHeight
+        this.radius = Math.min(width, height) / 2;
 
-        this.drawChart(this.skillTreeStore.userSkillsNoSubSkills, this.skillTreeStore.userSkills)
+        var app = new PIXI.Application({
+            width,
+            height,
+            resolution: 2,
+            transparent: true,
+            antialias: true,
+            autoDensity: true,
+            autoStart: true,
+        });
 
+        document.querySelector('#skilltree').appendChild(app.view);
+
+        const viewport = new Viewport({
+            screenWidth: width,
+            screenHeight: height,
+            worldWidth: width,
+            worldHeight: height,
+            events: app.renderer.events,
+        });
+        app.stage.addChild(viewport);
+        viewport.center = new PIXI.Point(0, 0);
+        viewport
+            .drag().pinch().wheel().decelerate()
+            .clampZoom({ minScale: 0.2, maxScale: 5 });
+
+
+        this.getAlgorithm(this.skillTreeStore.userSkillsNoSubSkills, this.skillTreeStore.userSkills, viewport);
     },
     methods: {
-        drawChart(userSkillsNoSubSkills, userSkills) {
+        getAlgorithm(userSkillsNoSubSkills, userSkills, viewport) {
             var data = {
                 name: null,
                 children: userSkillsNoSubSkills
             }
 
-            // Specify the chart’s dimensions.
-            const width = window.innerWidth
-            const height = window.innerHeight
-            const cx = width * 0.5; // adjust as needed to fit
-            const cy = height * 0.59; // adjust as needed to fit
-            const radius = Math.min(width, height) / 2;
-
             // Create a radial tree layout. The layout’s first dimension (x)
             // is the angle, while the second (y) is the radius.
             const tree = d3.tree()
                 // increase the radius to space out the nodes.
-                .size([2 * Math.PI, radius * 6])
+                .size([2 * Math.PI, this.radius * 6])
                 .separation((a, b) => (a.parent == b.parent ? 1 : 4) / a.depth);
 
             // Sort the tree and apply the layout.
             const root = tree(d3.hierarchy(data))
 
-            var app = new PIXI.Application({
-                width,
-                height,
-                resolution: 2,
-                transparent: true,
-                antialias: true,
-                autoDensity: true,
-                autoStart: true,
-            });
+            console.log(root.children)
 
-            document.querySelector('#skilltree').appendChild(app.view);
-
-            const viewport = new Viewport({
-                screenWidth: width,
-                screenHeight: height,
-                worldWidth: width,
-                worldHeight: height,
-                events: app.renderer.events,
-            });
-            app.stage.addChild(viewport);
-            viewport.center = new PIXI.Point(0, 0);
-            viewport
-                .drag().pinch().wheel().decelerate()
-                .clampZoom({ minScale: 0.2, maxScale: 5 });
-
+            this.drawChart(userSkills, root, viewport)
+        },
+        drawChart(userSkills, root, viewport) {
             // Links.
             for (let i = 0; i < root.links().length; i++) {
                 const link = new PIXI.Graphics();
                 link.lineStyle(2, 0xFFFFFF, 1);
-
-                var angle = Math.random() * Math.PI * 2;
 
                 // Source node.
                 var sourceX = Math.cos(root.links()[i].source.x) * root.links()[i].source.y;
@@ -176,12 +177,14 @@ export default {
                     /*
                     * Draw the skill node.
                     */
+                    var nodeGraphic = new PIXI.Sprite();
+
                     if (depth == 0) {
 
                     }
                     else if (depth == 1) {
                         if (child.is_mastered == "1") {
-                            var nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
 
                             if (child.first_ancestor == "1") {
                                 nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-large-mastered.png');
@@ -211,7 +214,7 @@ export default {
                         }
                     }
                     else {
-                        var nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
+                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
                         if (child.is_mastered == "1") {
                             if (child.first_ancestor == "1") {
                                 nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-regular-mastered.png');
@@ -239,8 +242,6 @@ export default {
                         nodeGraphic.height = 20
                         nodeContainer.addChild(nodeGraphic);
                     }
-
-
 
                     /*
                     * Write the skill name.
@@ -285,34 +286,34 @@ export default {
                     }
                     // This is added to the graphic and text, and not the container,
                     // as it would otherwise effect all the container's child skills.
-                    // nodeGraphic.eventMode = 'static';
-                    // nodeName.eventMode = 'static';
-                    // nodeGraphic.cursor = 'pointer';
-                    // nodeName.cursor = 'pointer';
-                    // nodeName.on('pointerdown', (event) => {
-                    //     if (!context.isSkillInfoPanelShown) {
-                    //         //context.showInfoPanel(skill)                          
-                    //         for (let i = 0; i < context.stageContents.length; i++) {
-                    //             context.stageContents[i].destroy()
-                    //         }
-                    //         context.recenterTree(skill)
-                    //     }
+                    nodeGraphic.eventMode = 'static';
+                    nodeName.eventMode = 'static';
+                    nodeGraphic.cursor = 'pointer';
+                    nodeName.cursor = 'pointer';
+                    nodeName.on('pointerdown', (event) => {
+                        if (!context.isSkillInfoPanelShown) {
+                            //context.showInfoPanel(skill)                          
+                            for (let i = 0; i < context.stageContents.length; i++) {
+                                context.stageContents[i].destroy()
+                            }
+                            context.recenterTree(skill, viewport)
+                        }
 
-                    //     // else
-                    //     //     context.updateInfoPanel(skill)
-                    // });
-                    // nodeGraphic.on('pointerdown', (event) => {
-                    //     if (!context.isSkillInfoPanelShown) {
-                    //         //context.showInfoPanel(skill)                            
-                    //         for (let i = 0; i < context.stageContents.length; i++) {
-                    //             context.stageContents[i].destroy()
-                    //         }
-                    //         context.recenterTree(skill)
-                    //     }
-                    //     //     context.showInfoPanel(skill)
-                    //     // else
-                    //     //     context.updateInfoPanel(skill)
-                    // });
+                        // else
+                        //     context.updateInfoPanel(skill)
+                    });
+                    nodeGraphic.on('pointerdown', (event) => {
+                        if (!context.isSkillInfoPanelShown) {
+                            //context.showInfoPanel(skill)                            
+                            for (let i = 0; i < context.stageContents.length; i++) {
+                                context.stageContents[i].destroy()
+                            }
+                            context.recenterTree(skill, viewport)
+                        }
+                        //     context.showInfoPanel(skill)
+                        // else
+                        //     context.updateInfoPanel(skill)
+                    });
 
                     viewport.addChild(nodeContainer);
                     // Add to array, so can be deleted when skill tree is recentered.
@@ -381,8 +382,10 @@ export default {
 
             renderDescendantNodes(userSkills, 0, this);
         },
-        recenterTree(skill) {
-            this.drawChart(skill.children, skill.children)
+        recenterTree(skill, viewport) {
+            var newUserSkillsNoSubSkills = [];
+            console.log(skill)
+            this.getAlgorithm(skill.children, skill.children, viewport)
         },
 
         showInfoPanel(skill) {
