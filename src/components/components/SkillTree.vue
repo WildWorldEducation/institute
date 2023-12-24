@@ -30,6 +30,7 @@ export default {
         return {
             stageContents: [],
             isSkillInfoPanelShown: false,
+            regularLockedUnmasteredNodeSprite: null
         }
     },
     components: {
@@ -45,6 +46,7 @@ export default {
         if (this.skillTreeStore.userSkills.length == 0) {
             await this.skillTreeStore.getUserSkills()
         }
+
 
         this.drawChart(this.skillTreeStore.userSkillsNoSubSkills, this.skillTreeStore.userSkills)
 
@@ -174,32 +176,71 @@ export default {
                     /*
                     * Draw the skill node.
                     */
-                    const nodeGraphic = new PIXI.Graphics();
-                    // Circle              
-                    // Colour depending on mastery and whether skill is unlocked.
-                    var color;
-                    if (child.is_mastered == "1") {
-                        color = '0x' + child.mastered_color;
-                    }
-                    else if (child.is_accessible == "1") {
-                        nodeGraphic.lineStyle(1, '0x' + child.mastered_color, 1);
-                        color = '0x' + child.unlocked_color;
-                    }
-                    else {
-                        color = '0xD9D9D9';
-                    }
-                    nodeGraphic.beginFill(color);
-                    // Size, depending on depth.
                     if (depth == 0) {
-                        nodeGraphic.drawCircle(0, 0, 30);
+
                     }
                     else if (depth == 1) {
-                        nodeGraphic.drawCircle(0, 0, 15);
+                        if (child.is_mastered == "1") {
+                            var nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
+
+                            if (child.first_ancestor == "1") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-large-mastered.png');
+                            }
+                            else if (child.first_ancestor == "2") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-large-mastered.png');
+                            }
+                            else if (child.first_ancestor == "3") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-large-mastered.png');
+                            }
+                            else if (child.first_ancestor == "4") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-large-mastered.png');
+                            }
+                            else if (child.first_ancestor == "5") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-large-mastered.png');
+                            }
+                            else if (child.first_ancestor == "6") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-large-mastered.png');
+                            }
+                            nodeGraphic.anchor.set(0.5);
+                            nodeGraphic.width = 30
+                            nodeGraphic.height = 30
+                            nodeContainer.addChild(nodeGraphic);
+                        }
+                        else if (child.is_accessible == "1") {
+
+                        }
                     }
-                    else
-                        nodeGraphic.drawCircle(0, 0, 10);
-                    nodeGraphic.endFill();
-                    nodeContainer.addChild(nodeGraphic);
+                    else {
+                        var nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
+                        if (child.is_mastered == "1") {
+                            if (child.first_ancestor == "1") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-regular-mastered.png');
+                            }
+                            else if (child.first_ancestor == "2") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-regular-mastered.png');
+                            }
+                            else if (child.first_ancestor == "3") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-regular-mastered.png');
+                            }
+                            else if (child.first_ancestor == "4") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-regular-mastered.png');
+                            }
+                            else if (child.first_ancestor == "5") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-regular-mastered.png');
+                            }
+                            else if (child.first_ancestor == "6") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-regular-mastered.png');
+                            }
+                        }
+                        else if (child.is_accessible == "1") {
+                        }
+                        nodeGraphic.anchor.set(0.5);
+                        nodeGraphic.width = 20
+                        nodeGraphic.height = 20
+                        nodeContainer.addChild(nodeGraphic);
+                    }
+
+
 
                     /*
                     * Write the skill name.
@@ -244,34 +285,34 @@ export default {
                     }
                     // This is added to the graphic and text, and not the container,
                     // as it would otherwise effect all the container's child skills.
-                    nodeGraphic.eventMode = 'static';
-                    nodeName.eventMode = 'static';
-                    nodeGraphic.cursor = 'pointer';
-                    nodeName.cursor = 'pointer';
-                    nodeName.on('pointerdown', (event) => {
-                        if (!context.isSkillInfoPanelShown) {
-                            //context.showInfoPanel(skill)                          
-                            for (let i = 0; i < context.stageContents.length; i++) {
-                                context.stageContents[i].destroy()
-                            }
-                            context.recenterTree(skill)
-                        }
+                    // nodeGraphic.eventMode = 'static';
+                    // nodeName.eventMode = 'static';
+                    // nodeGraphic.cursor = 'pointer';
+                    // nodeName.cursor = 'pointer';
+                    // nodeName.on('pointerdown', (event) => {
+                    //     if (!context.isSkillInfoPanelShown) {
+                    //         //context.showInfoPanel(skill)                          
+                    //         for (let i = 0; i < context.stageContents.length; i++) {
+                    //             context.stageContents[i].destroy()
+                    //         }
+                    //         context.recenterTree(skill)
+                    //     }
 
-                        // else
-                        //     context.updateInfoPanel(skill)
-                    });
-                    nodeGraphic.on('pointerdown', (event) => {
-                        if (!context.isSkillInfoPanelShown) {
-                            //context.showInfoPanel(skill)                            
-                            for (let i = 0; i < context.stageContents.length; i++) {
-                                context.stageContents[i].destroy()
-                            }
-                            context.recenterTree(skill)
-                        }
-                        //     context.showInfoPanel(skill)
-                        // else
-                        //     context.updateInfoPanel(skill)
-                    });
+                    //     // else
+                    //     //     context.updateInfoPanel(skill)
+                    // });
+                    // nodeGraphic.on('pointerdown', (event) => {
+                    //     if (!context.isSkillInfoPanelShown) {
+                    //         //context.showInfoPanel(skill)                            
+                    //         for (let i = 0; i < context.stageContents.length; i++) {
+                    //             context.stageContents[i].destroy()
+                    //         }
+                    //         context.recenterTree(skill)
+                    //     }
+                    //     //     context.showInfoPanel(skill)
+                    //     // else
+                    //     //     context.updateInfoPanel(skill)
+                    // });
 
                     viewport.addChild(nodeContainer);
                     // Add to array, so can be deleted when skill tree is recentered.
