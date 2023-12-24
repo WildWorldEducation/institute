@@ -175,11 +175,8 @@ export default {
                     * Draw the skill node.
                     */
                     var nodeGraphic = new PIXI.Sprite();
-
-                    if (depth == 0) {
-
-                    }
-                    else if (depth == 1) {
+                    // First level of skills.
+                    if (depth == 1) {
                         if (child.is_mastered == "1") {
                             if (child.first_ancestor == "1") {
                                 nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-large-mastered.png');
@@ -220,12 +217,11 @@ export default {
                                 nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-large-unlocked.png');
                             }
                         }
-                        nodeGraphic.anchor.set(0.5);
                         nodeGraphic.width = 30
                         nodeGraphic.height = 30
-                        nodeContainer.addChild(nodeGraphic);
                     }
                     else {
+                        // make all the gray ones at first.
                         nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
                         if (child.is_mastered == "1") {
                             if (child.first_ancestor == "1") {
@@ -248,14 +244,30 @@ export default {
                             }
                         }
                         else if (child.is_accessible == "1") {
-
+                            if (child.first_ancestor == "1") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-regular-mastered.png');
+                            }
+                            else if (child.first_ancestor == "2") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-regular-mastered.png');
+                            }
+                            else if (child.first_ancestor == "3") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-regular-mastered.png');
+                            }
+                            else if (child.first_ancestor == "4") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-regular-mastered.png');
+                            }
+                            else if (child.first_ancestor == "5") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-regular-mastered.png');
+                            }
+                            else if (child.first_ancestor == "6") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-regular-mastered.png');
+                            }
                         }
-                        nodeGraphic.anchor.set(0.5);
                         nodeGraphic.width = 20
                         nodeGraphic.height = 20
-                        nodeContainer.addChild(nodeGraphic);
                     }
-
+                    nodeGraphic.anchor.set(0.5);
+                    nodeContainer.addChild(nodeGraphic);
                     /*
                     * Write the skill name.
                     */
