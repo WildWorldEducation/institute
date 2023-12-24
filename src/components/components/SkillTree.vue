@@ -181,8 +181,6 @@ export default {
                     }
                     else if (depth == 1) {
                         if (child.is_mastered == "1") {
-                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
-
                             if (child.first_ancestor == "1") {
                                 nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-large-mastered.png');
                             }
@@ -201,14 +199,31 @@ export default {
                             else if (child.first_ancestor == "6") {
                                 nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-large-mastered.png');
                             }
-                            nodeGraphic.anchor.set(0.5);
-                            nodeGraphic.width = 30
-                            nodeGraphic.height = 30
-                            nodeContainer.addChild(nodeGraphic);
                         }
                         else if (child.is_accessible == "1") {
-
+                            if (child.first_ancestor == "1") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-large-unlocked.png');
+                            }
+                            else if (child.first_ancestor == "2") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-large-unlocked.png');
+                            }
+                            else if (child.first_ancestor == "3") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-large-unlocked.png');
+                            }
+                            else if (child.first_ancestor == "4") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-large-unlocked.png');
+                            }
+                            else if (child.first_ancestor == "5") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-large-unlocked.png');
+                            }
+                            else if (child.first_ancestor == "6") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-large-unlocked.png');
+                            }
                         }
+                        nodeGraphic.anchor.set(0.5);
+                        nodeGraphic.width = 30
+                        nodeGraphic.height = 30
+                        nodeContainer.addChild(nodeGraphic);
                     }
                     else {
                         nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
@@ -233,6 +248,7 @@ export default {
                             }
                         }
                         else if (child.is_accessible == "1") {
+
                         }
                         nodeGraphic.anchor.set(0.5);
                         nodeGraphic.width = 20
