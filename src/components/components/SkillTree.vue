@@ -317,25 +317,15 @@ export default {
                     nodeName.cursor = 'pointer';
                     nodeName.on('pointerdown', (event) => {
                         if (!context.isSkillInfoPanelShown) {
-                            //context.showInfoPanel(skill)                          
-                            for (let i = 0; i < context.stageContents.length; i++) {
-                                context.stageContents[i].destroy()
-                            }
-                            context.recenterTree(skill, viewport)
+                            context.showInfoPanel(skill, viewport)
                         }
-
                         // else
                         //     context.updateInfoPanel(skill)
                     });
                     nodeGraphic.on('pointerdown', (event) => {
                         if (!context.isSkillInfoPanelShown) {
-                            //context.showInfoPanel(skill)                            
-                            for (let i = 0; i < context.stageContents.length; i++) {
-                                context.stageContents[i].destroy()
-                            }
-                            context.recenterTree(skill, viewport)
+                            context.showInfoPanel(skill, viewport)
                         }
-                        //     context.showInfoPanel(skill)
                         // else
                         //     context.updateInfoPanel(skill)
                     });
@@ -408,6 +398,10 @@ export default {
             renderDescendantNodes(userSkills, 0, this);
         },
         recenterTree(skill, viewport) {
+            for (let i = 0; i < this.stageContents.length; i++) {
+                this.stageContents[i].destroy()
+            }
+
             var skillChildrenNoSubSkills = skill.children;
             // Remove subskills, in order to allow D3 to calculate the positioning properly.
             function removeSubSkills(parentChildren) {
@@ -432,7 +426,7 @@ export default {
             this.getAlgorithm(skillChildrenNoSubSkills, skill.children, viewport)
         },
 
-        showInfoPanel(skill) {
+        showInfoPanel(skill, viewport) {
             // If panel is not showing.
             if (!this.isSkillInfoPanelShown) {
                 // To display the panel.
@@ -464,6 +458,11 @@ export default {
                 // Populate the skill link button.        
                 var skillLink = document.getElementById("skillLink");
                 skillLink.setAttribute("href", "/skills/" + skill.id);
+
+                var recenterButton = document.getElementById("recenterButton");
+                recenterButton.addEventListener('click', () => {
+                    this.recenterTree(skill, viewport)
+                })
             }
         },
     }
