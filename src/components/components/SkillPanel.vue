@@ -1,5 +1,4 @@
 <script>
-import router from "../../router";
 
 export default {
     setup() { },
@@ -62,6 +61,7 @@ export default {
                         fill="white" />
                 </svg>
             </router-link>
+            <button id="recenterButton" class="btn btn-primary mt-3">Recenter</button>
             <!-- Image: character with a sign. -->
             <img src="/images/char-with-sign.svg" />
         </div>
