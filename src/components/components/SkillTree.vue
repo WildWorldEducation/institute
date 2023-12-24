@@ -98,8 +98,6 @@ export default {
             // Sort the tree and apply the layout.
             const root = tree(d3.hierarchy(data))
 
-            console.log(root.children)
-
             this.drawChart(userSkills, root, viewport)
         },
         drawChart(userSkills, root, viewport) {
@@ -126,7 +124,6 @@ export default {
             /*
             * Central circle.
             */
-
             // Graphic.
             const centerNode = PIXI.Sprite.from('center-node.png');
             centerNode.x = root.x
@@ -383,9 +380,28 @@ export default {
             renderDescendantNodes(userSkills, 0, this);
         },
         recenterTree(skill, viewport) {
-            var newUserSkillsNoSubSkills = [];
-            console.log(skill)
-            this.getAlgorithm(skill.children, skill.children, viewport)
+            var skillChildrenNoSubSkills = skill.children;
+            // Remove subskills, in order to allow D3 to calculate the positioning properly.
+            function removeSubSkills(parentChildren) {
+                var i = parentChildren.length
+                while (i--) {
+                    if (parentChildren[i].type == "sub") {
+                        parentChildren.splice(i, 1);
+                    }
+
+                    // Dont run if this element was just spliced.
+                    if (typeof parentChildren[i] !== 'undefined') {
+                        /*
+                        * Run the above function again recursively.
+                        */
+                        if (parentChildren[i].children && Array.isArray(parentChildren[i].children) && parentChildren[i].children.length > 0)
+                            removeSubSkills(parentChildren[i].children)
+                    }
+                }
+            }
+
+            removeSubSkills(skillChildrenNoSubSkills);
+            this.getAlgorithm(skillChildrenNoSubSkills, skill.children, viewport)
         },
 
         showInfoPanel(skill) {
