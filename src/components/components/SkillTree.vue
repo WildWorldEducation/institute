@@ -104,6 +104,10 @@ export default {
         }
 
         this.getAlgorithm(viewport);
+
+        document.getElementById("reset-button").addEventListener("click", () => {
+            this.resetTree(viewport)
+        });
     },
     methods: {
         getAlgorithm(viewport) {
@@ -228,6 +232,7 @@ export default {
                     * Draw the skill node.
                     */
                     var nodeGraphic = new PIXI.Sprite();
+
                     // First level of skills.
                     if (depth == 1) {
                         if (child.is_mastered == "1") {
@@ -269,6 +274,9 @@ export default {
                             else if (child.first_ancestor == "6") {
                                 nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-large-unlocked.png');
                             }
+                        }
+                        else {
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
                         }
                         nodeGraphic.width = 30
                         nodeGraphic.height = 30
@@ -491,8 +499,23 @@ export default {
 
             this.getAlgorithm(viewport)
         },
-        resetTree() {
+        resetTree(viewport) {
+            this.isRecentered = false
 
+            this.radiusMultiplier = 6
+            console.log(viewport)
+            viewport.parent.removeChildren()
+            // for (let i = 0; i < this.viewport.children.length; i++) {
+            //     this.viewport.children[i].destroy()
+            // }
+            const centerNodeSprite = PIXI.Sprite.from('center-node.png');
+            this.skill = {
+                name: "SKILLS",
+                sprite: centerNodeSprite,
+                children: this.skillTreeStore.userSkills
+            }
+
+            this.getAlgorithm(viewport);
         },
         showInfoPanel() {
             // If panel is not showing.
@@ -529,7 +552,7 @@ export default {
 <template>
     <div class="flex-container skill-tree-container">
         <SkillTreeFilter id="filter" />
-        <button v-if="isRecentered" id="reset-button" class="btn btn-info">Reset</button>
+        <button id="reset-button" class="btn btn-info">Reset</button>
         <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
         <div id="wrapper">
             <div id="skilltree">

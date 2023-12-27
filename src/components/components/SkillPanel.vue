@@ -26,12 +26,6 @@ export default {
                 document.getElementById("sidepanel-backdrop").style.display = "none";
 
                 this.$parent.isSkillInfoPanelShown = false;
-                // Clear the fields.
-                var skillHeading = document.getElementById("skillHeading");
-                skillHeading.innerHTML = ""
-                var skillDescription = document.getElementById("skillDescription");
-                skillDescription.innerHTML = ""
-                document.getElementById("skillIsMastered").checked = false;
             }
         },
     }
