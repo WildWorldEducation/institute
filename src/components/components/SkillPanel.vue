@@ -6,6 +6,7 @@ export default {
         return {
         }
     },
+    props: ['skill'],
     computed: {
     },
     methods: {
@@ -32,7 +33,7 @@ export default {
                 skillDescription.innerHTML = ""
                 document.getElementById("skillIsMastered").checked = false;
             }
-        }
+        },
     }
 }
 </script> 
@@ -43,12 +44,12 @@ export default {
             <a href="javascript:void(0)" class="closebtn" @click="this.hideInfoPanel()">&times;</a>
         </div>
         <div id="skillInfoPanelContainer">
-            <h1 id="skillHeading"></h1>
-            <p id="skillDescription"></p>
+            <h1>{{ skill.name }}</h1>
+            <p>{{ skill.description }}</p>
             <div class="form-check">
                 <!-- 'pointer-events: none' to make checkbox unclickable, without it being greyed out (disabled). -->
-                <input class="form-check-input" type="checkbox" value="" id="skillIsMastered" style="pointer-events: none;">
-                <label class="form-check-label" for="skillIsMastered" style="color: #9C7EEC; pointer-events: none;">
+                <input class="form-check-input" type="checkbox" :value="skill.isMastered" style="pointer-events: none;">
+                <label class="form-check-label" style="color: #9C7EEC; pointer-events: none;">
                     Attained
                 </label>
             </div>
@@ -61,7 +62,7 @@ export default {
                         fill="white" />
                 </svg>
             </router-link>
-            <button id="recenterButton" class="btn btn-primary mt-3">Recenter</button>
+            <button id="recenterTree" class="btn btn-primary mt-3">Recenter</button>
             <!-- Image: character with a sign. -->
             <img src="/images/char-with-sign.svg" />
         </div>

@@ -47,6 +47,7 @@ export default {
                 tagIDs: [],
                 sprite: null,
             },
+            isRecentered: false
         }
     },
     components: {
@@ -177,7 +178,11 @@ export default {
             centerNode.x = root.x
             centerNode.y = root.y
             centerNode.anchor.set(0.5)
-            centerNode.scale.set(0.10)
+            if (this.isRecentered == false)
+                centerNode.scale.set(0.10)
+            else
+                centerNode.scale.set(0.50)
+
             viewport.addChild(centerNode)
             // Add to array, so can be deleted when skill tree is recentered.
             this.stageContents.push(centerNode)
@@ -203,7 +208,6 @@ export default {
                 depth++
 
                 for (let [index, child] of parentChildren.entries()) {
-
                     for (let i = 0; i < root.descendants().length; i++) {
                         if (root.descendants()[i].data.id == child.id) {
                             child.x = root.descendants()[i].x
@@ -345,7 +349,7 @@ export default {
                     // Add components to the container.                        
                     nodeContainer.addChild(nodeName);
 
-                    // Add interactivity.   
+                    // Add interactivity.  
 
                     // This is added to the graphic and text, and not the container,
                     // as it would otherwise effect all the container's child skills.
@@ -373,10 +377,10 @@ export default {
                             context.skill = skill
                             context.showInfoPanel(viewport)
 
-                            function myFunction() {
+                            function recenterTree() {
                                 context.recenterTree(viewport)
                             }
-                            document.getElementById("recenterTree").addEventListener("click", myFunction);
+                            document.getElementById("recenterTree").addEventListener("click", recenterTree);
                         }
                         // else
                         //     context.updateInfoPanel(skill)
@@ -401,6 +405,10 @@ export default {
                             context.skill = skill
                             context.showInfoPanel()
 
+                            function recenterTree() {
+                                context.recenterTree(viewport)
+                            }
+                            document.getElementById("recenterTree").addEventListener("click", recenterTree);
                         }
                         // else
                         //     context.updateInfoPanel(skill)
@@ -425,7 +433,6 @@ export default {
                         }
                     }
                     for (let i = 0; i < child.children.length; i++) {
-                        //console.log(child.children[i].type)
                         if (child.children[i].type == "sub") {
                             let subNodeContainer = new PIXI.Container();
 
@@ -474,6 +481,7 @@ export default {
             renderDescendantNodes(this.skill.children, 0, this);
         },
         recenterTree(viewport) {
+            this.isRecentered = true
             // Otherwise, the new chart is too spread out.
             this.radiusMultiplier = 1
 
@@ -482,6 +490,9 @@ export default {
             }
 
             this.getAlgorithm(viewport)
+        },
+        resetTree() {
+
         },
         showInfoPanel() {
             // If panel is not showing.
@@ -517,9 +528,8 @@ export default {
 
 <template>
     <div class="flex-container skill-tree-container">
-        <button width="200" height="100" class="btn btn-primary" id="recenterTree">
-        </button>
         <SkillTreeFilter id="filter" />
+        <button v-if="isRecentered" id="reset-button" class="btn btn-info">Reset</button>
         <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
         <div id="wrapper">
             <div id="skilltree">
@@ -562,6 +572,16 @@ export default {
     padding-left: 1%;
     z-index: 1;
     margin-top: 10px;
+}
+
+
+#reset-button {
+    width: 100px;
+    position: absolute;
+    padding-left: 1%;
+    z-index: 1;
+    margin-top: 10px;
+    right: 10px
 }
 
 #skilltree {
