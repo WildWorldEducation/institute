@@ -31,7 +31,22 @@ export default {
             stageContents: [],
             isSkillInfoPanelShown: false,
             regularLockedUnmasteredNodeSprite: null,
-            radius: 0
+            // De radius, maybe delete?
+            radius: 0,
+            // D3 radius multiplier
+            radiusMultiplier: 6,
+            skill: {
+                id: null,
+                children: [],
+                isMastered: null,
+                isUnlocked: null,
+                color: null,
+                container: null,
+                name: null,
+                description: null,
+                tagIDs: [],
+                sprite: null,
+            },
         }
     },
     components: {
@@ -40,9 +55,10 @@ export default {
     },
     async mounted() {
         // Get the data from the API.
-        if (this.skillTreeStore.userSkillsNoSubSkills.length == 0) {
-            await this.skillTreeStore.getUserSkillsNoSubSkills()
-        }
+        // if (this.skillTreeStore.userSkillsNoSubSkills.length == 0) {
+        //     await this.skillTreeStore.getUserSkillsNoSubSkills()
+        // }
+        // Delete the record in the store and the API call for the abve? Not used now.
 
         if (this.skillTreeStore.userSkills.length == 0) {
             await this.skillTreeStore.getUserSkills()
@@ -72,35 +88,67 @@ export default {
             worldHeight: height,
             events: app.renderer.events,
         });
+        this.viewport = viewport
         app.stage.addChild(viewport);
         viewport.center = new PIXI.Point(0, 0);
         viewport
             .drag().pinch().wheel().decelerate()
             .clampZoom({ minScale: 0.2, maxScale: 5 });
 
+        const centerNodeSprite = PIXI.Sprite.from('center-node.png');
+        this.skill = {
+            name: "SKILLS",
+            sprite: centerNodeSprite,
+            children: this.skillTreeStore.userSkills
+        }
 
-        this.getAlgorithm(this.skillTreeStore.userSkillsNoSubSkills, this.skillTreeStore.userSkills, viewport);
+        this.getAlgorithm(viewport);
     },
     methods: {
-        getAlgorithm(userSkillsNoSubSkills, userSkills, viewport) {
+        getAlgorithm(viewport) {
+            var skillsNoSubSkills = [];
+            skillsNoSubSkills = JSON.parse(JSON.stringify(this.skill.children));
+
+            // Remove subskills, in order to allow D3 to calculate the positioning properly.
+            function removeSubSkills(parentChildren) {
+                var i = parentChildren.length
+                while (i--) {
+                    if (parentChildren[i].type == "sub") {
+                        parentChildren.splice(i, 1);
+                    }
+
+                    // Dont run if this element was just spliced.
+                    if (typeof parentChildren[i] !== 'undefined') {
+                        /*
+                        * Run the above function again recursively.
+                        */
+                        if (parentChildren[i].children && Array.isArray(parentChildren[i].children) && parentChildren[i].children.length > 0)
+                            removeSubSkills(parentChildren[i].children)
+                    }
+                }
+            }
+
+            removeSubSkills(skillsNoSubSkills);
+
+
             var data = {
                 name: null,
-                children: userSkillsNoSubSkills
+                children: skillsNoSubSkills
             }
 
             // Create a radial tree layout. The layout’s first dimension (x)
             // is the angle, while the second (y) is the radius.
             const tree = d3.tree()
                 // increase the radius to space out the nodes.
-                .size([2 * Math.PI, this.radius * 6])
+                .size([2 * Math.PI, this.radius * this.radiusMultiplier])
                 .separation((a, b) => (a.parent == b.parent ? 1 : 4) / a.depth);
 
             // Sort the tree and apply the layout.
             const root = tree(d3.hierarchy(data))
 
-            this.drawChart(userSkills, root, viewport)
+            this.drawChart(root, viewport)
         },
-        drawChart(userSkills, root, viewport) {
+        drawChart(root, viewport) {
             // Links.
             for (let i = 0; i < root.links().length; i++) {
                 const link = new PIXI.Graphics();
@@ -125,7 +173,7 @@ export default {
             * Central circle.
             */
             // Graphic.
-            const centerNode = PIXI.Sprite.from('center-node.png');
+            const centerNode = this.skill.sprite
             centerNode.x = root.x
             centerNode.y = root.y
             centerNode.anchor.set(0.5)
@@ -136,15 +184,15 @@ export default {
 
             // Text.
             // Font size is set artificially high, then scaed down, to improve resolution.
-            let centerNodeText = new PIXI.Text("SKILLS",
-                { fontFamily: 'Poppins900', fontSize: 65, fill: 0x000000, align: 'center' });
+            let centerNodeText = new PIXI.Text(this.skill.name,
+                { fontFamily: 'Poppins900', fontSize: 40, fill: 0x000000, align: 'center' });
             centerNodeText.anchor.set(0.5)
             // Center it.
             centerNodeText.x = root.x
             centerNodeText.y = root.y
             // This is to deal with the artificially high font size mentioned above.
-            centerNodeText.scale.x = 0.2
-            centerNodeText.scale.y = 0.2
+            centerNodeText.scale.x = 0.1
+            centerNodeText.scale.y = 0.1
             viewport.addChild(centerNodeText)
             // Add to array, so can be deleted when skill tree is recentered.
             this.stageContents.push(centerNodeText)
@@ -155,6 +203,7 @@ export default {
                 depth++
 
                 for (let [index, child] of parentChildren.entries()) {
+
                     for (let i = 0; i < root.descendants().length; i++) {
                         if (root.descendants()[i].data.id == child.id) {
                             child.x = root.descendants()[i].x
@@ -167,7 +216,7 @@ export default {
                     * Using the D3 algorithm to get the position.
                     */
                     let nodeContainer = new PIXI.Container();
-                    var angle = Math.random() * Math.PI * 2;
+                    //   var angle = Math.random() * Math.PI * 2;
                     nodeContainer.x = Math.cos(child.x) * child.y;
                     nodeContainer.y = Math.sin(child.x) * child.y;
 
@@ -297,18 +346,7 @@ export default {
                     nodeContainer.addChild(nodeName);
 
                     // Add interactivity.   
-                    // Create the  skill object:
-                    let skill = {
-                        id: child.id,
-                        children: child.children,
-                        isMastered: child.is_mastered,
-                        isUnlocked: child.is_accessible,
-                        color: color,
-                        container: nodeContainer,
-                        name: child.skill_name,
-                        description: child.description,
-                        tagIDs: [],
-                    }
+
                     // This is added to the graphic and text, and not the container,
                     // as it would otherwise effect all the container's child skills.
                     nodeGraphic.eventMode = 'static';
@@ -316,15 +354,53 @@ export default {
                     nodeGraphic.cursor = 'pointer';
                     nodeName.cursor = 'pointer';
                     nodeName.on('pointerdown', (event) => {
+                        // Create the  skill object:
+                        var skill = {
+                            id: child.id,
+                            children: child.children,
+                            isMastered: child.is_mastered,
+                            isUnlocked: child.is_accessible,
+                            color: color,
+                            container: nodeContainer,
+                            name: child.skill_name,
+                            description: child.description,
+                            tagIDs: [],
+                            sprite: nodeGraphic
+                        }
+                        context.skill = skill
+
                         if (!context.isSkillInfoPanelShown) {
-                            context.showInfoPanel(skill, viewport)
+                            context.skill = skill
+                            context.showInfoPanel(viewport)
+
+                            function myFunction() {
+                                context.recenterTree(viewport)
+                            }
+                            document.getElementById("recenterTree").addEventListener("click", myFunction);
                         }
                         // else
                         //     context.updateInfoPanel(skill)
                     });
                     nodeGraphic.on('pointerdown', (event) => {
+                        // Create the  skill object:
+                        var skill = {
+                            id: child.id,
+                            children: child.children,
+                            isMastered: child.is_mastered,
+                            isUnlocked: child.is_accessible,
+                            color: color,
+                            container: nodeContainer,
+                            name: child.skill_name,
+                            description: child.description,
+                            tagIDs: [],
+                            sprite: nodeGraphic
+                        }
+                        context.skill = skill
+
                         if (!context.isSkillInfoPanelShown) {
-                            context.showInfoPanel(skill, viewport)
+                            context.skill = skill
+                            context.showInfoPanel()
+
                         }
                         // else
                         //     context.updateInfoPanel(skill)
@@ -395,38 +471,19 @@ export default {
                 }
             }
 
-            renderDescendantNodes(userSkills, 0, this);
+            renderDescendantNodes(this.skill.children, 0, this);
         },
-        recenterTree(skill, viewport) {
+        recenterTree(viewport) {
+            // Otherwise, the new chart is too spread out.
+            this.radiusMultiplier = 1
+
             for (let i = 0; i < this.stageContents.length; i++) {
                 this.stageContents[i].destroy()
             }
 
-            var skillChildrenNoSubSkills = skill.children;
-            // Remove subskills, in order to allow D3 to calculate the positioning properly.
-            function removeSubSkills(parentChildren) {
-                var i = parentChildren.length
-                while (i--) {
-                    if (parentChildren[i].type == "sub") {
-                        parentChildren.splice(i, 1);
-                    }
-
-                    // Dont run if this element was just spliced.
-                    if (typeof parentChildren[i] !== 'undefined') {
-                        /*
-                        * Run the above function again recursively.
-                        */
-                        if (parentChildren[i].children && Array.isArray(parentChildren[i].children) && parentChildren[i].children.length > 0)
-                            removeSubSkills(parentChildren[i].children)
-                    }
-                }
-            }
-
-            removeSubSkills(skillChildrenNoSubSkills);
-            this.getAlgorithm(skillChildrenNoSubSkills, skill.children, viewport)
+            this.getAlgorithm(viewport)
         },
-
-        showInfoPanel(skill, viewport) {
+        showInfoPanel() {
             // If panel is not showing.
             if (!this.isSkillInfoPanelShown) {
                 // To display the panel.
@@ -441,28 +498,16 @@ export default {
                 }
                 // Make the background dark and disabled.
                 document.getElementById("sidepanel-backdrop").style.display = "block";
-
                 this.isSkillInfoPanelShown = true;
-                // Populate the skill heading.
-                var skillHeading = document.getElementById("skillHeading");
-                var name = document.createTextNode(skill.name);
-                skillHeading.appendChild(name);
                 // Populate the skill description.
                 var skillDescription = document.getElementById("skillDescription");
-                var description = document.createTextNode(skill.description);
-                skillDescription.appendChild(description);
                 // Populate the skill panel check box.             
-                if (skill.isMastered == "1") {
-                    document.getElementById("skillIsMastered").checked = true;
-                }
+                // if (skill.isMastered == "1") {
+                //     document.getElementById("skillIsMastered").checked = true;
+                // }
                 // Populate the skill link button.        
                 var skillLink = document.getElementById("skillLink");
-                skillLink.setAttribute("href", "/skills/" + skill.id);
-
-                var recenterButton = document.getElementById("recenterButton");
-                recenterButton.addEventListener('click', () => {
-                    this.recenterTree(skill, viewport)
-                })
+                //skillLink.setAttribute("href", "/skills/" + skill.id);
             }
         },
     }
@@ -472,11 +517,13 @@ export default {
 
 <template>
     <div class="flex-container skill-tree-container">
+        <button width="200" height="100" class="btn btn-primary" id="recenterTree">
+        </button>
         <SkillTreeFilter id="filter" />
         <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
         <div id="wrapper">
             <div id="skilltree">
-                <SkillPanel />
+                <SkillPanel :skill="skill" />
             </div>
             <div id="sidepanel-backdrop"></div>
         </div>
