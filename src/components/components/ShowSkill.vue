@@ -40,13 +40,10 @@ export default {
     components: {
         Forum
     },
-    computed: {
-    },
+
     async created() {
         await this.getSkill();
         await this.getUserSkills();
-        //  await this.getOtherSkillRequirements();
-
     },
     methods: {
         getSkill() {
@@ -132,16 +129,6 @@ export default {
                     <p>{{ skill.description }}</p>
                 </div>
             </div>
-        </div>
-
-        <div class="mt-3">
-            <h2>Skill Requirements</h2>
-            <span v-if="skill.parent == 0">None</span>
-            <ul v-else>
-                <li v-for="   skillRequirement    in    skillRequirements   ">
-                    {{ skillRequirement }}
-                </li>
-            </ul>
         </div>
 
         <div class="row mt-3">
