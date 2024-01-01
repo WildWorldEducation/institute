@@ -26,7 +26,8 @@ export default {
                 first_ancestor: null,
                 hierarchy_level: null,
                 other_skill_requirements: [],
-                type: 'regular'
+                type: 'regular',
+                level: null
             },
             image: '',
             skills: [],
@@ -121,7 +122,6 @@ export default {
                 }
             }
 
-
             fetch(url, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
@@ -135,7 +135,8 @@ export default {
                         mastery_requirements: this.skill.mastery_requirements,
                         first_ancestor: this.skill.first_ancestor,
                         hierarchy_level: this.skill.hierarchy_level,
-                        type: this.skill.type
+                        type: this.skill.type,
+                        level: this.skill.level
                     })
             }).then(() => {
                 this.$router.push("/skills");
