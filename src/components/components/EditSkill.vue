@@ -32,11 +32,34 @@ export default {
                 first_ancestor: null,
                 hierarchy_level: null,
                 type: null,
+                level: null
             },
             image: '',
             // Array used to show which tags, of all the tags, are already assigned to this skill.
             skillTags: [],
-            superSkills: []
+            superSkills: [],
+            levels: [
+                {
+                    id: 'grade_school',
+                    name: 'Grade school'
+                },
+                {
+                    id: 'middle_school',
+                    name: 'Middle school'
+                },
+                {
+                    id: 'high_school',
+                    name: 'High school'
+                },
+                {
+                    id: 'college',
+                    name: 'College'
+                },
+                {
+                    id: 'phd',
+                    name: 'PhD'
+                }
+            ]
         };
     },
     async mounted() {
@@ -133,7 +156,8 @@ export default {
                         is_pass_through: this.skill.is_pass_through,
                         first_ancestor: this.skill.first_ancestor,
                         hierarchy_level: this.skill.hierarchy_level,
-                        type: this.skill.type
+                        type: this.skill.type,
+                        level: this.skill.level
                     })
             };
 
@@ -172,6 +196,16 @@ export default {
             <label for="name" class="form-label">Name</label>
             <input v-model="skill.name" type="text" class="form-control">
         </div>
+
+        <div class="mb-3">
+            <label class="form-label">Level</label>
+            <select class="form-select" v-model="skill.level">
+                <option v-for="level in levels" :value="level.id">
+                    {{ level.name }}
+                </option>
+            </select>
+        </div>
+
         <label class="form-label">Node Type</label>
         <div class="container row mb-3">
             <div class="form-check col-4">
