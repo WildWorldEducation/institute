@@ -233,19 +233,34 @@ export default {
                     */
                     var nodeGraphic = new PIXI.Sprite();
                     if (child.level == "grade_school") {
-                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/grade-school.png');
+                        if (child.is_mastered)
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/grade-school.png');
+                        else if (child.is_accessible)
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/grade-school-unlocked.png');
                     }
                     else if (child.level == "middle_school") {
-                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school.png');
+                        if (child.is_mastered)
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school.png');
+                        else if (child.is_accessible)
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school-unlocked.png');
                     }
                     else if (child.level == "high_school") {
-                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/high-school.png');
+                        if (child.is_mastered)
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/high-school.png');
+                        else if (child.is_accessible)
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school-unlocked.png');
                     }
                     else if (child.level == "college") {
-                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/college.png');
+                        if (child.is_mastered)
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/college.png');
+                        else if (child.is_accessible)
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school-unlocked.png');
                     }
                     else if (child.level == "phd") {
-                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/phd.png');
+                        if (child.is_mastered)
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/phd.png');
+                        else if (child.is_accessible)
+                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school-unlocked.png');
                     }
                     // OLD system.
                     // // First level of skills.
@@ -477,19 +492,34 @@ export default {
 
                             var nodeGraphic = new PIXI.Sprite();
                             if (child.level == "grade_school") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/grade-school-small.png');
+                                if (child.is_mastered)
+                                    nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/grade-school-small.png');
+                                else if (child.is_accessible)
+                                    nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/grade-school-small-unlocked.png');
                             }
                             else if (child.level == "middle_school") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school-small.png');
+                                if (child.is_mastered)
+                                    nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school-small.png');
+                                else if (child.is_accessible)
+                                    nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school-small-unlocked.png');
                             }
                             else if (child.level == "high_school") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/high-school-small.png');
+                                if (child.is_mastered)
+                                    nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/high-school-small.png');
+                                else if (child.is_accessible)
+                                    nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/high-school-small-unlocked.png');
                             }
                             else if (child.level == "college") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/college-small.png');
+                                if (child.is_mastered)
+                                    nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/college-small.png');
+                                else if (child.is_accessible)
+                                    nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/college-small-unlocked.png');
                             }
                             else if (child.level == "phd") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/phd-small.png');
+                                if (child.is_mastered)
+                                    nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/phd-small.png');
+                                else if (child.is_accessible)
+                                    nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/phd-small-unlocked.png');
                             }
                             nodeGraphic.width = 10
                             nodeGraphic.height = 10
