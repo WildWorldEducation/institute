@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    //  password: 'password',
     database: 'skill_tree'
 });
 
@@ -43,7 +43,7 @@ router.post('/add', (req, res, next) => {
             name: req.body.name, description: req.body.description, parent: req.body.parent,
             image: req.body.image, mastery_requirements: req.body.mastery_requirements,
             first_ancestor: req.body.first_ancestor, hierarchy_level: req.body.hierarchy_level
-            , type: req.body.type
+            , type: req.body.type, level: req.body.level
         };
 
         let sqlQuery1 = `INSERT INTO skills SET ?;`;
