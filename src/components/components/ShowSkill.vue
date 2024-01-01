@@ -132,6 +132,10 @@ export default {
         </div>
 
         <div class="row mt-3">
+            <h2>Level</h2>
+            <div v-html="skill.level"></div>
+        </div>
+        <div class="row mt-3">
             <h2>Mastery Requirements</h2>
             <div v-html="skill.mastery_requirements"></div>
         </div>
