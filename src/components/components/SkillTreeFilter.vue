@@ -31,7 +31,7 @@ export default {
 
 <template>
     <div id="filters">
-        <h1 id="filterMainHeader" class="mb-2">My Skills Tree</h1>
+        <h1 id="filterMainHeader" class="mb-2">My Skill Tree</h1>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" :value="0" id="flexCheckDefault" v-model="checkedFilters"
                 @change="applyFilter()">
