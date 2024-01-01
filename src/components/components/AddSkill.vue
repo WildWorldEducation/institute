@@ -30,7 +30,29 @@ export default {
             },
             image: '',
             skills: [],
-            superSkills: []
+            superSkills: [],
+            levels: [
+                {
+                    id: 'grade_school',
+                    name: 'Grade school'
+                },
+                {
+                    id: 'middle_school',
+                    name: 'Middle school'
+                },
+                {
+                    id: 'high_school',
+                    name: 'High school'
+                },
+                {
+                    id: 'college',
+                    name: 'College'
+                },
+                {
+                    id: 'phd',
+                    name: 'PhD'
+                }
+            ]
         }
     },
     async created() {
@@ -127,10 +149,19 @@ export default {
     <div class="container mt-3">
         <h1>Add Skill</h1>
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-lg-6">
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
                     <input v-model="skill.name" class="form-control" type="text" placeholder="name">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Level</label>
+                    <select class="form-select" v-model="skill.level">
+                        <option v-for="level in levels" :value="level.id">
+                            {{ level.name }}
+                        </option>
+                    </select>
                 </div>
 
                 <label class="form-label">Node Type</label>
