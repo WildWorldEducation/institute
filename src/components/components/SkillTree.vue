@@ -232,101 +232,118 @@ export default {
                     * Draw the skill node.
                     */
                     var nodeGraphic = new PIXI.Sprite();
-
-                    // First level of skills.
-                    if (depth == 1) {
-                        if (child.is_mastered == "1") {
-                            if (child.first_ancestor == "1") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-large-mastered.png');
-                            }
-                            else if (child.first_ancestor == "2") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-large-mastered.png');
-                            }
-                            else if (child.first_ancestor == "3") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-large-mastered.png');
-                            }
-                            else if (child.first_ancestor == "4") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-large-mastered.png');
-                            }
-                            else if (child.first_ancestor == "5") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-large-mastered.png');
-                            }
-                            else if (child.first_ancestor == "6") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-large-mastered.png');
-                            }
-                        }
-                        else if (child.is_accessible == "1") {
-                            if (child.first_ancestor == "1") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-large-unlocked.png');
-                            }
-                            else if (child.first_ancestor == "2") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-large-unlocked.png');
-                            }
-                            else if (child.first_ancestor == "3") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-large-unlocked.png');
-                            }
-                            else if (child.first_ancestor == "4") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-large-unlocked.png');
-                            }
-                            else if (child.first_ancestor == "5") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-large-unlocked.png');
-                            }
-                            else if (child.first_ancestor == "6") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-large-unlocked.png');
-                            }
-                        }
-                        else {
-                            nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
-                        }
-                        nodeGraphic.width = 30
-                        nodeGraphic.height = 30
+                    if (child.level == "grade_school") {
+                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/grade-school.png');
                     }
-                    else {
-                        // make all the gray ones at first.
-                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
-                        if (child.is_mastered == "1") {
-                            if (child.first_ancestor == "1") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-regular-mastered.png');
-                            }
-                            else if (child.first_ancestor == "2") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-regular-mastered.png');
-                            }
-                            else if (child.first_ancestor == "3") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-regular-mastered.png');
-                            }
-                            else if (child.first_ancestor == "4") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-regular-mastered.png');
-                            }
-                            else if (child.first_ancestor == "5") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-regular-mastered.png');
-                            }
-                            else if (child.first_ancestor == "6") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-regular-mastered.png');
-                            }
-                        }
-                        else if (child.is_accessible == "1") {
-                            if (child.first_ancestor == "1") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-regular-mastered.png');
-                            }
-                            else if (child.first_ancestor == "2") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-regular-mastered.png');
-                            }
-                            else if (child.first_ancestor == "3") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-regular-mastered.png');
-                            }
-                            else if (child.first_ancestor == "4") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-regular-mastered.png');
-                            }
-                            else if (child.first_ancestor == "5") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-regular-mastered.png');
-                            }
-                            else if (child.first_ancestor == "6") {
-                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-regular-mastered.png');
-                            }
-                        }
-                        nodeGraphic.width = 20
-                        nodeGraphic.height = 20
+                    else if (child.level == "middle_school") {
+                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school.png');
                     }
+                    else if (child.level == "high_school") {
+                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/high-school.png');
+                    }
+                    else if (child.level == "college") {
+                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/college.png');
+                    }
+                    else if (child.level == "phd") {
+                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/phd.png');
+                    }
+                    // OLD system.
+                    // // First level of skills.
+                    // if (depth == 1) {
+                    //     if (child.is_mastered == "1") {
+                    //         if (child.first_ancestor == "1") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-large-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "2") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-large-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "3") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-large-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "4") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-large-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "5") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-large-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "6") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-large-mastered.png');
+                    //         }
+                    //     }
+                    //     else if (child.is_accessible == "1") {
+                    //         if (child.first_ancestor == "1") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-large-unlocked.png');
+                    //         }
+                    //         else if (child.first_ancestor == "2") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-large-unlocked.png');
+                    //         }
+                    //         else if (child.first_ancestor == "3") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-large-unlocked.png');
+                    //         }
+                    //         else if (child.first_ancestor == "4") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-large-unlocked.png');
+                    //         }
+                    //         else if (child.first_ancestor == "5") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-large-unlocked.png');
+                    //         }
+                    //         else if (child.first_ancestor == "6") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-large-unlocked.png');
+                    //         }
+                    //     }
+                    //     else {
+                    //         nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
+                    //     }
+                    //     nodeGraphic.width = 30
+                    //     nodeGraphic.height = 30
+                    // }
+                    // else {
+                    //     // make all the gray ones at first.
+                    //     nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/all-regular-locked-unmastered.png');
+                    //     if (child.is_mastered == "1") {
+                    //         if (child.first_ancestor == "1") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-regular-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "2") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-regular-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "3") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-regular-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "4") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-regular-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "5") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-regular-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "6") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-regular-mastered.png');
+                    //         }
+                    //     }
+                    //     else if (child.is_accessible == "1") {
+                    //         if (child.first_ancestor == "1") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/spoken-language-domain-regular-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "2") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/written-language-domain-regular-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "3") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/math-domain-regular-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "4") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/science-domain-regular-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "5") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/history-domain-regular-mastered.png');
+                    //         }
+                    //         else if (child.first_ancestor == "6") {
+                    //             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/life-domain-regular-mastered.png');
+                    //         }
+                    //     }
+                    //     nodeGraphic.width = 30
+                    //     nodeGraphic.height = 30
+                    // }
+                    nodeGraphic.width = 30
+                    nodeGraphic.height = 30
                     nodeGraphic.anchor.set(0.5);
                     nodeContainer.addChild(nodeGraphic);
                     /*
@@ -365,6 +382,7 @@ export default {
                     nodeName.eventMode = 'static';
                     nodeGraphic.cursor = 'pointer';
                     nodeName.cursor = 'pointer';
+
                     nodeName.on('pointerdown', (event) => {
                         // Create the  skill object:
                         var skill = {
@@ -457,23 +475,27 @@ export default {
                             subNodeContainer.x = x
                             subNodeContainer.y = y
 
-                            const graphics = new PIXI.Graphics();
-                            var color;
-                            if (child.children[i].is_mastered == "1") {
-                                color = '0x' + child.children[i].mastered_color;
+                            var nodeGraphic = new PIXI.Sprite();
+                            if (child.level == "grade_school") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/grade-school-small.png');
                             }
-                            else if (child.children[i].is_accessible == "1") {
-                                graphics.lineStyle(1, '0x' + child.children[i].mastered_color, 1);
-                                color = '0x' + child.children[i].unlocked_color;
+                            else if (child.level == "middle_school") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school-small.png');
                             }
-                            else {
-                                color = '0xD9D9D9';
+                            else if (child.level == "high_school") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/high-school-small.png');
                             }
-                            graphics.beginFill(color);
-                            // Size, depending on depth.
-                            graphics.drawCircle(0, 0, 5);
-                            graphics.endFill();
-                            subNodeContainer.addChild(graphics);
+                            else if (child.level == "college") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/college-small.png');
+                            }
+                            else if (child.level == "phd") {
+                                nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/phd-small.png');
+                            }
+                            nodeGraphic.width = 10
+                            nodeGraphic.height = 10
+                            nodeGraphic.anchor.set(0.5);
+
+                            subNodeContainer.addChild(nodeGraphic);
                             nodeContainer.addChild(subNodeContainer);
                         }
                     }
