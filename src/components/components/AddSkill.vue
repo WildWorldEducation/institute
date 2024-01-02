@@ -2,13 +2,14 @@
 import VueMultiselect from 'vue-multiselect'
 // Import the stores.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
-
+import { useTagsStore } from '../../stores/TagsStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const tagsStore = useTagsStore();
         return {
-            skillsStore
+            skillsStore, tagsStore
         }
     },
     components: { VueMultiselect },
@@ -63,6 +64,10 @@ export default {
 
         if (this.skills.length == 0)
             await this.getParentSkills();
+
+        if (this.tagsStore.tagsList.length == 0) {
+            await this.tagsStore.getTagsList()
+        }
     },
     async mounted() {
         $("#summernote").summernote({
@@ -163,6 +168,19 @@ export default {
                             {{ level.name }}
                         </option>
                     </select>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="tags" class="form-label">Tags</label>
+                    <div v-for="tag in tagsStore.tagsList">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" :value="tag.id" id="flexCheckDefault"
+                                v-model="tag.isChecked" @change="changeTag(tag)">
+                            <label class=" form-check-label" for="flexCheckDefault">
+                                {{ tag.name }}
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <label class="form-label">Node Type</label>
