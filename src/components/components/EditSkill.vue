@@ -27,6 +27,7 @@ export default {
                 description: '',
                 image: '',
                 mastery_requirements: '',
+                first_ancestor: null,
                 tags: [],
                 is_pass_through: 0,
                 type: null,
@@ -133,6 +134,13 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
+            // Get the first ancestor and hierarchy level fields.
+            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                if (this.skillsStore.skillsList[i].id == this.skill.parent) {
+                    this.skill.first_ancestor = this.skillsStore.skillsList[i].first_ancestor
+                }
+            }
+
             // Update the skill.
             var masteryRequirementsData = $('#summernote').summernote("code");
             const requestOptions = {
@@ -146,6 +154,7 @@ export default {
                         icon: this.skill.icon,
                         image: this.skill.image,
                         mastery_requirements: masteryRequirementsData,
+                        first_ancestor: this.skill.first_ancestor,
                         is_pass_through: this.skill.is_pass_through,
                         type: this.skill.type,
                         level: this.skill.level

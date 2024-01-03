@@ -24,6 +24,7 @@ export default {
                 image: '',
                 image_attribution: '',
                 mastery_requirements: '',
+                first_ancestor: null,
                 //other_skill_requirements: [],
                 type: 'regular',
                 level: null
@@ -115,6 +116,13 @@ export default {
             // Get the Summernote HTML.         
             this.skill.mastery_requirements = $('#summernote').summernote("code");
 
+            // Get the first ancestor and hierarchy level fields.
+            for (let i = 0; i < this.skills.length; i++) {
+                if (this.skills[i].id == this.skill.parent) {
+                    this.skill.first_ancestor = this.skills[i].first_ancestor
+                }
+            }
+
             fetch(url, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
@@ -125,6 +133,7 @@ export default {
                         description: this.skill.description,
                         image: this.skill.image,
                         mastery_requirements: this.skill.mastery_requirements,
+                        first_ancestor: this.skill.first_ancestor,
                         type: this.skill.type,
                         level: this.skill.level
                     })
