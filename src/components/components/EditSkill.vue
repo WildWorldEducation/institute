@@ -25,14 +25,15 @@ export default {
                 name: '',
                 parent: '',
                 description: '',
-                image: '',
+                icon_image: '',
+                banner_image: '',
                 mastery_requirements: '',
-                first_ancestor: null,
                 tags: [],
                 type: null,
                 level: null
             },
-            image: '',
+            iconImage: '',
+            bannerImage: '',
             // Array used to show which tags, of all the tags, are already assigned to this skill.
             skillTags: [],
             superSkills: [],
@@ -87,7 +88,9 @@ export default {
                 .then(function (response) {
                     return response.json();
                 }).then(data => this.skill = data).then(() => {
-                    this.image = this.skill.image;
+                    this.iconImage = this.skill.icon_image;
+                    this.bannerImage = this.skill.banner_image;
+
                     $('#summernote').summernote('code', this.skill.mastery_requirements);
                     this.getSkillTags()
                 });
@@ -133,13 +136,6 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
-            // Get the first ancestor and hierarchy level fields.
-            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                if (this.skillsStore.skillsList[i].id == this.skill.parent) {
-                    this.skill.first_ancestor = this.skillsStore.skillsList[i].first_ancestor
-                }
-            }
-
             // Update the skill.
             var masteryRequirementsData = $('#summernote').summernote("code");
             const requestOptions = {
@@ -151,9 +147,9 @@ export default {
                         parent: this.skill.parent,
                         description: this.skill.description,
                         icon: this.skill.icon,
-                        image: this.skill.image,
+                        icon_image: this.skill.icon_image,
+                        banner_image: this.skill.banner_image,
                         mastery_requirements: masteryRequirementsData,
-                        first_ancestor: this.skill.first_ancestor,
                         type: this.skill.type,
                         level: this.skill.level
                     })
@@ -269,18 +265,31 @@ export default {
             <label for="description" class="form-label">Description</label>
             <textarea v-model="skill.description" class="form-control" rows="3"></textarea>
         </div>
+
         <div class="mb-3 row">
-            <label for="image" class="form-label">Image</label>
-            <div v-if="!image">
+            <label for="image" class="form-label">Icon</label>
+            <div v-if="!iconImage">
                 <input class="form-control" type="file" accept="image/*" @change="onFileChange">
                 <p style="font-size: 14px"><em>Maximum file size 15mb</em></p>
             </div>
             <div v-else>
-                <p><img :src="image" height="200" style="background-color: lightgrey" /></p>
+                <p><img :src="iconImage" height="200" style="background-color: lightgrey" /></p>
                 <p><button class="btn btn-warning" @click="removeImage">Remove image</button></p>
             </div>
-
         </div>
+
+        <div class="mb-3 row">
+            <label for="image" class="form-label">Banner</label>
+            <div v-if="!bannerImage">
+                <input class="form-control" type="file" accept="image/*" @change="onFileChange">
+                <p style="font-size: 14px"><em>Maximum file size 15mb</em></p>
+            </div>
+            <div v-else>
+                <p><img :src="bannerImage" height="200" style="background-color: lightgrey" /></p>
+                <p><button class="btn btn-warning" @click="removeImage">Remove image</button></p>
+            </div>
+        </div>
+
         <div class="mb-3">
             <label for="mastery_requirements" class="form-label">Mastery Requirements</label>
             <textarea class="form-control" v-model="skill.mastery_requirements" id="summernote" rows="3"></textarea>

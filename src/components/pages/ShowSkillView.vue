@@ -13,8 +13,7 @@ export default {
     data() {
         return {
             skillId: this.$route.params.id,
-            firstAncestorId: null,
-            level: null
+            bannerImage: null
         }
     },
     async mounted() {
@@ -27,24 +26,7 @@ export default {
         // Find the correct skill path (first ancestor skill), and level, to choose the banner img file.
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
             if (this.skillId == this.skillsStore.skillsList[i].id) {
-                this.firstAncestorId = this.skillsStore.skillsList[i].first_ancestor;
-                switch (this.skillsStore.skillsList[i].level) {
-                    case "grade_school":
-                        this.level = 1;
-                        break;
-                    case "middle_school":
-                        this.level = 2;
-                        break;
-                    case "high_school":
-                        this.level = 3;
-                        break;
-                    case "college":
-                        this.level = 4;
-                        break;
-                    case "phd":
-                        this.level = 5;
-                        break;
-                }
+                this.bannerImage = this.skillsStore.skillsList[i].banner_image
             }
         }
     },
@@ -57,11 +39,14 @@ export default {
 <template>
     <div id="banner">
         <!-- Assign banner dynamically -->
-        <img v-bind:src="'/images/banners/skills/' + this.firstAncestorId + '/' + this.level +
-            '.png'" class="img-fluid">
+        <img v-bind:src="bannerImage" class="img-fluid">
     </div>
     <ShowSkill />
 </template>
     
-<style></style>
+<style>
+#banner img {
+    max-height: 200px
+}
+</style>
   

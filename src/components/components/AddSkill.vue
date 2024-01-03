@@ -21,15 +21,15 @@ export default {
                 parent: 0,
                 description: '',
                 icon: '',
-                image: '',
-                image_attribution: '',
+                icon_image: '',
+                banner_image: '',
                 mastery_requirements: '',
-                first_ancestor: null,
                 //other_skill_requirements: [],
                 type: 'regular',
                 level: null
             },
-            image: '',
+            iconImage: '',
+            bannerImage: '',
             skills: [],
             superSkills: [],
             levels: [
@@ -88,21 +88,27 @@ export default {
             }
         },
         // For image upload.
-        onFileChange(e) {
+        onFileChange(e, type) {
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length)
                 return;
-            this.createImage(files[0]);
+            this.createImage(files[0], type);
         },
-        createImage(file) {
+        createImage(file, type) {
             var image = new Image();
             var reader = new FileReader();
             var vm = this;
 
             reader.onload = (e) => {
                 vm.image = e.target.result;
-                this.image = e.target.result;
-                this.skill.image = this.image;
+                if (type == 'icon') {
+                    this.iconImage = e.target.result;
+                    this.skill.icon_image = this.iconImage;
+                }
+                else {
+                    this.bannerImage = e.target.result;
+                    this.skill.banner_image = this.bannerImage;
+                }
             };
             reader.readAsDataURL(file);
 
@@ -112,6 +118,7 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
+
             var url = "/skills/add";
             // Get the Summernote HTML.         
             this.skill.mastery_requirements = $('#summernote').summernote("code");
@@ -131,9 +138,9 @@ export default {
                         name: this.skill.name,
                         parent: this.skill.parent,
                         description: this.skill.description,
-                        image: this.skill.image,
+                        icon_image: this.skill.icon_image,
+                        banner_image: this.skill.banner_image,
                         mastery_requirements: this.skill.mastery_requirements,
-                        first_ancestor: this.skill.first_ancestor,
                         type: this.skill.type,
                         level: this.skill.level
                     })
@@ -232,16 +239,29 @@ export default {
                         rows="3"></textarea>
                 </div>
                 <div class="mb-3 row">
-                    <label for="image" class="form-label">Image</label>
-                    <div v-if="!image">
-                        <input class="form-control" type="file" accept="image/*" @change="onFileChange">
+                    <label for="image" class="form-label">Icon</label>
+                    <div v-if="!iconImage">
+                        <input class="form-control" type="file" accept="image/*" @change="onFileChange($event, 'icon')">
                         <p style="font-size: 14px"><em>Maximum file size 15mb</em></p>
                     </div>
                     <div v-else>
-                        <p><img :src="image" height="200" style="background-color: lightgrey" /></p>
+                        <p><img :src="iconImage" height="200" style="background-color: lightgrey" /></p>
                         <p><button class="btn btn-warning" @click="removeImage">Remove image</button></p>
                     </div>
                 </div>
+
+                <div class="mb-3 row">
+                    <label for="image" class="form-label">Banner</label>
+                    <div v-if="!bannerImage">
+                        <input class="form-control" type="file" accept="image/*" @change="onFileChange($event, 'banner')">
+                        <p style="font-size: 14px"><em>Maximum file size 15mb</em></p>
+                    </div>
+                    <div v-else>
+                        <p><img :src="bannerImage" height="200" style="background-color: lightgrey" /></p>
+                        <p><button class="btn btn-warning" @click="removeImage">Remove image</button></p>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label for="mastery_requirements" class="form-label">Mastery Requirements</label>
                     <textarea v-model="skill.mastery_requirements" class="form-control" id="summernote" rows="3"></textarea>
