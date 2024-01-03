@@ -29,7 +29,6 @@ export default {
                 mastery_requirements: '',
                 first_ancestor: null,
                 tags: [],
-                is_pass_through: 0,
                 type: null,
                 level: null
             },
@@ -155,7 +154,6 @@ export default {
                         image: this.skill.image,
                         mastery_requirements: masteryRequirementsData,
                         first_ancestor: this.skill.first_ancestor,
-                        is_pass_through: this.skill.is_pass_through,
                         type: this.skill.type,
                         level: this.skill.level
                     })
@@ -206,30 +204,51 @@ export default {
             </select>
         </div>
 
+        <div class="row mb-3">
+            <label for="tags" class="form-label">Filter</label>
+            <div v-for="skillTag in skillTags">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" :value="skillTag.id" id="flexCheckDefault"
+                        v-model="skillTag.isChecked" @change="changeTag(skillTag)">
+                    <label class=" form-check-label" for="flexCheckDefault">
+                        {{ skillTag.name }}
+                    </label>
+                </div>
+            </div>
+        </div>
+
         <label class="form-label">Node Type</label>
         <div class="container row mb-3">
-            <div class="form-check col-4">
+            <div class="form-check col-3">
                 <input class="form-check-input" type="radio" name="nodeType" id="regularSkillRadio" value="regular"
                     v-model="skill.type">
                 <label class="form-check-label" for="regularSkillRadio">
                     Regular
                 </label>
             </div>
-            <div class="form-check col-4">
+            <div class="form-check col-3">
+                <input class="form-check-input" type="radio" name="nodeType" id="passThroughRadio" value="domain"
+                    v-model="skill.type">
+                <label class="form-check-label" for="passThroughRadio">
+                    Pass-through
+                </label>
+            </div>
+            <div class="form-check col-3">
                 <input class="form-check-input" type="radio" name="nodeType" id="superSkillRadio" value="super"
                     v-model="skill.type">
                 <label class="form-check-label" for="superSkillRadio">
-                    Super
+                    Cluster node center
                 </label>
             </div>
-            <div class="form-check col-4">
+            <div class="form-check col-3">
                 <input class="form-check-input" type="radio" name="nodeType" id="subSkillRadio" value="sub"
                     v-model="skill.type">
                 <label class="form-check-label" for="subSkillRadio">
-                    Sub
+                    Cluster node outer
                 </label>
             </div>
         </div>
+
         <div v-if="skill.type != 'sub'" class="mb-3">
             <label class="form-label">Parent</label>
             <select class="form-select" v-model="skill.parent">
@@ -239,7 +258,7 @@ export default {
             </select>
         </div>
         <div v-else class="mb-3">
-            <label class="form-label">Super skill</label>
+            <label class="form-label">Cluster node center</label>
             <select class="form-select" v-model="skill.parent">
                 <option v-for="superSkill in superSkills" :value="superSkill.id">
                     {{ superSkill.name }}
@@ -266,29 +285,7 @@ export default {
             <label for="mastery_requirements" class="form-label">Mastery Requirements</label>
             <textarea class="form-control" v-model="skill.mastery_requirements" id="summernote" rows="3"></textarea>
         </div>
-        <div class="row mb-3">
-            <label for="tags" class="form-label">Tags</label>
-            <div v-for="skillTag in skillTags">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" :value="skillTag.id" id="flexCheckDefault"
-                        v-model="skillTag.isChecked" @change="changeTag(skillTag)">
-                    <label class=" form-check-label" for="flexCheckDefault">
-                        {{ skillTag.name }}
-                    </label>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <label class="form-label">Assessment type</label>
-            <div class="col-md-6">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="1" v-model="skill.is_pass_through">
-                    <label class="form-check-label">
-                        Pass through node
-                    </label>
-                </div>
-            </div>
-        </div>
+
         <div class="mb-3 mt-3">
             <div class="d-flex justify-content-between">
                 <router-link class="btn btn-dark" to="/skills">

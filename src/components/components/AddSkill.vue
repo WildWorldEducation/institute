@@ -187,8 +187,8 @@ export default {
                         </label>
                     </div>
                     <div class="form-check col-3">
-                        <input class="form-check-input" type="radio" name="nodeType" id="passThroughRadio"
-                            value="pass-through" v-model="skill.type">
+                        <input class="form-check-input" type="radio" name="nodeType" id="passThroughRadio" value="domain"
+                            v-model="skill.type">
                         <label class="form-check-label" for="passThroughRadio">
                             Pass-through
                         </label>

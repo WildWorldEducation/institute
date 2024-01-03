@@ -110,10 +110,10 @@ export default {
     <div class="container mt-3">
         <div v-if="isUnlocked && !isMastered && userDetailsStore.role == 'student'" class="row mt-3">
             <div class="d-flex btn-header flex-row-reverse center-header">
-                <router-link v-if="!skill.is_pass_through" class="btn purple-btn" :to="skillId + '/assessment'">Take
-                    Assessment</router-link>
-                <button v-else @click="MakeMastered()" class="btn purple-btn"> Click to unlock child
+                <button v-if="skill.type == 'domain'" @click="MakeMastered()" class="btn purple-btn"> Click to unlock child
                     skills</button>
+                <router-link v-else class="btn purple-btn" :to="skillId + '/assessment'">Take
+                    Assessment</router-link>
             </div>
         </div>
         <div class="row mt-3">
@@ -145,7 +145,7 @@ export default {
                 {{ tag.name }}
             </div>
         </div>
-        <div v-if="userDetailsStore.role == 'admin' && !skill.is_pass_through" class="row mt-3">
+        <div v-if="userDetailsStore.role == 'admin' && skill.type != 'domain'" class="row mt-3">
             <h2>Assessment</h2>
             <div class="col d-flex">
                 <router-link class="btn purple-btn mt-3" :to="skillId + '/question-bank'">Question
