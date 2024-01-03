@@ -218,7 +218,6 @@ router.put('/:id/edit', (req, res, next) => {
         sqlQuery = `UPDATE skills SET name = '` + req.body.name + `', parent = '` + req.body.parent +
             `', description = '` + req.body.description + `', image = '` + req.body.image + `', mastery_requirements = '`
             + req.body.mastery_requirements + `', first_ancestor = '` + req.body.first_ancestor +
-            `', is_pass_through = '` + req.body.is_pass_through +
             `', type = '` + req.body.type + `', level = '` + req.body.level +
             `' WHERE id = ` + req.params.id;
 
