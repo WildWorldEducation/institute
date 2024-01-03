@@ -14,7 +14,7 @@ export default {
         return {
             skillId: this.$route.params.id,
             firstAncestorId: null,
-            levelInHierarchy: null
+            level: null
         }
     },
     async mounted() {
@@ -23,11 +23,28 @@ export default {
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList()
         }
-        // Find the correct skill path (first ancestor skill), and level in hierarchy
+
+        // Find the correct skill path (first ancestor skill), and level, to choose the banner img file.
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
             if (this.skillId == this.skillsStore.skillsList[i].id) {
                 this.firstAncestorId = this.skillsStore.skillsList[i].first_ancestor;
-                this.levelInHierarchy = this.skillsStore.skillsList[i].hierarchy_level;
+                switch (this.skillsStore.skillsList[i].level) {
+                    case "grade_school":
+                        this.level = 1;
+                        break;
+                    case "middle_school":
+                        this.level = 2;
+                        break;
+                    case "high_school":
+                        this.level = 3;
+                        break;
+                    case "college":
+                        this.level = 4;
+                        break;
+                    case "phd":
+                        this.level = 5;
+                        break;
+                }
             }
         }
     },
@@ -40,7 +57,7 @@ export default {
 <template>
     <div id="banner">
         <!-- Assign banner dynamically -->
-        <img v-bind:src="'/images/banners/skills/' + this.firstAncestorId + '/' + this.levelInHierarchy +
+        <img v-bind:src="'/images/banners/skills/' + this.firstAncestorId + '/' + this.level +
             '.png'" class="img-fluid">
     </div>
     <ShowSkill />
