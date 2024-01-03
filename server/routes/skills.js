@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    //  password: 'password',
     database: 'skill_tree'
 });
 
@@ -42,7 +42,7 @@ router.post('/add', (req, res, next) => {
         data = {
             name: req.body.name, description: req.body.description, parent: req.body.parent,
             image: req.body.image, mastery_requirements: req.body.mastery_requirements,
-            type: req.body.type, level: req.body.level
+            first_ancestor: req.body.first_ancestor, type: req.body.type, level: req.body.level
         };
 
         let sqlQuery1 = `INSERT INTO skills SET ?;`;
@@ -94,7 +94,7 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name, parent, type
+    SELECT skill_tree.skills.id, name, parent, first_ancestor, type
     FROM skill_tree.skills`
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -217,7 +217,7 @@ router.put('/:id/edit', (req, res, next) => {
         var sqlQuery;
         sqlQuery = `UPDATE skills SET name = '` + req.body.name + `', parent = '` + req.body.parent +
             `', description = '` + req.body.description + `', image = '` + req.body.image + `', mastery_requirements = '`
-            + req.body.mastery_requirements +
+            + req.body.mastery_requirements + `', first_ancestor = '` + req.body.first_ancestor +
             `', is_pass_through = '` + req.body.is_pass_through +
             `', type = '` + req.body.type + `', level = '` + req.body.level +
             `' WHERE id = ` + req.params.id;
