@@ -1,17 +1,32 @@
 <script>
-// Import the stores.
-import { useTagsStore } from '../../stores/TagsStore'
 
 export default {
     setup() {
-        const tagsStore = useTagsStore();
-        return {
-            tagsStore
-        }
+
     },
     data() {
         return {
-            filters: [
+            levels: [
+                {
+                    id: 'grade_school',
+                    name: 'Grade school'
+                },
+                {
+                    id: 'middle_school',
+                    name: 'Middle school'
+                },
+                {
+                    id: 'high_school',
+                    name: 'High school'
+                },
+                {
+                    id: 'college',
+                    name: 'College'
+                },
+                {
+                    id: 'phd',
+                    name: 'PhD'
+                }
             ],
             checkedFilters: []
         }
@@ -19,11 +34,11 @@ export default {
     async created() {
     },
     async mounted() {
-        await this.tagsStore.getTagsList()
+
     },
     methods: {
         applyFilter: function () {
-            this.$parent.applyFilter(this.checkedFilters);
+
         }
     }
 }
@@ -40,12 +55,12 @@ export default {
             </label>
         </div>
 
-        <div v-for="tag in this.tagsStore.tagsList">
+        <div v-for="level in levels">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" :value="tag.id" id="flexCheckDefault"
+                <input class="form-check-input" type="checkbox" :value="level.id" id="flexCheckDefault"
                     v-model="checkedFilters" @change="applyFilter()">
                 <label class=" form-check-label" for="flexCheckDefault">
-                    {{ tag.name }}
+                    {{ level.name }}
                 </label>
             </div>
         </div>
