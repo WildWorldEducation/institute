@@ -118,7 +118,7 @@ export default {
         </div>
         <div class="row mt-3">
             <div class="col-lg-2 col-md-3">
-                <img :src="skill.image" />
+                <img :src="skill.icon_image" class="img-fluid" />
             </div>
 
             <div class="col-lg-10 col-md-9">
