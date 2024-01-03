@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    //    password: 'password',
     database: 'skill_tree'
 });
 
@@ -38,14 +38,14 @@ router.get('/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name AS skill_name, parent, mastered_color, unlocked_color, is_accessible, is_mastered, grade, description, first_ancestor, type, level
+    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, grade, description, type, level
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` + req.params.id + `
 
     UNION
-    SELECT skill_tree.skills.id, name, parent, mastered_color, unlocked_color, "", "", "", description, first_ancestor, type, level
+    SELECT skill_tree.skills.id, name, parent, "", "", "", description, type, level
     FROM skill_tree.skills
     WHERE skill_tree.skills.id NOT IN 
 
@@ -103,14 +103,14 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name AS skill_name, parent, mastered_color, unlocked_color, is_accessible, is_mastered, grade, description, first_ancestor, type
+    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, grade, description, type
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` + req.params.id + ` AND skill_tree.skills.type <> 'sub'
 
     UNION
-    SELECT skill_tree.skills.id, name, parent, mastered_color, unlocked_color, "", "", "", description, first_ancestor, type
+    SELECT skill_tree.skills.id, name, parent, "", "", "", description, type
     FROM skill_tree.skills
     WHERE skill_tree.skills.id NOT IN 
 

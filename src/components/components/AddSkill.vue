@@ -24,9 +24,7 @@ export default {
                 image: '',
                 image_attribution: '',
                 mastery_requirements: '',
-                first_ancestor: null,
-                hierarchy_level: null,
-                other_skill_requirements: [],
+                //other_skill_requirements: [],
                 type: 'regular',
                 level: null
             },
@@ -78,8 +76,6 @@ export default {
                 ['para', ['ul', 'ol', 'paragraph']],
             ]
         });
-
-
     },
     methods: {
         getParentSkills() {
@@ -119,14 +115,6 @@ export default {
             // Get the Summernote HTML.         
             this.skill.mastery_requirements = $('#summernote').summernote("code");
 
-            // Get the first ancestor and hierarchy level fields.
-            for (let i = 0; i < this.skills.length; i++) {
-                if (this.skills[i].id == this.skill.parent) {
-                    this.skill.first_ancestor = this.skills[i].first_ancestor
-                    this.skill.hierarchy_level = this.skills[i].hierarchy_level + 1
-                }
-            }
-
             fetch(url, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
@@ -136,10 +124,7 @@ export default {
                         parent: this.skill.parent,
                         description: this.skill.description,
                         image: this.skill.image,
-                        image_attribution: this.skill.image_attribution,
                         mastery_requirements: this.skill.mastery_requirements,
-                        first_ancestor: this.skill.first_ancestor,
-                        hierarchy_level: this.skill.hierarchy_level,
                         type: this.skill.type,
                         level: this.skill.level
                     })
@@ -155,7 +140,7 @@ export default {
     <div class="container mt-3">
         <h1>Add Skill</h1>
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col">
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
                     <input v-model="skill.name" class="form-control" type="text" placeholder="name">
@@ -171,7 +156,7 @@ export default {
                 </div>
 
                 <div class="row mb-3">
-                    <label for="tags" class="form-label">Tags</label>
+                    <label for="tags" class="form-label">Filter</label>
                     <div v-for="tag in tagsStore.tagsList">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" :value="tag.id" id="flexCheckDefault"
@@ -185,25 +170,32 @@ export default {
 
                 <label class="form-label">Node Type</label>
                 <div class="container row mb-3">
-                    <div class="form-check col-4">
+                    <div class="form-check col-3">
                         <input class="form-check-input" type="radio" name="nodeType" id="regularSkillRadio" value="regular"
                             v-model="skill.type">
                         <label class="form-check-label" for="regularSkillRadio">
                             Regular
                         </label>
                     </div>
-                    <div class="form-check col-4">
+                    <div class="form-check col-3">
+                        <input class="form-check-input" type="radio" name="nodeType" id="passThroughRadio"
+                            value="pass-through" v-model="skill.type">
+                        <label class="form-check-label" for="passThroughRadio">
+                            Pass-through
+                        </label>
+                    </div>
+                    <div class="form-check col-3">
                         <input class="form-check-input" type="radio" name="nodeType" id="superSkillRadio" value="super"
                             v-model="skill.type">
                         <label class="form-check-label" for="superSkillRadio">
-                            Super
+                            Cluster node center
                         </label>
                     </div>
-                    <div class="form-check col-4">
+                    <div class="form-check col-3">
                         <input class="form-check-input" type="radio" name="nodeType" id="subSkillRadio" value="sub"
                             v-model="skill.type">
                         <label class="form-check-label" for="subSkillRadio">
-                            Sub
+                            Cluster node outer
                         </label>
                     </div>
                 </div>
@@ -217,7 +209,7 @@ export default {
                     </select>
                 </div>
                 <div v-else class="mb-3">
-                    <label class="form-label">Super skill</label>
+                    <label class="form-label">Cluster node center</label>
                     <select class="form-select" v-model="skill.parent">
                         <option v-for="superSkill in superSkills" :value="superSkill.id">
                             {{ superSkill.name }}
