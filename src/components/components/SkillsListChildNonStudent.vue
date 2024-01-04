@@ -92,12 +92,12 @@ export default {
     <button :style="indent" :class="{
         'top-level-skills': depth == 1,
         // Colors and background images for top level skills.
-        'spoken-language-domain': id == 1,
-        'written-language-domain': id == 2,
-        'mathematics-domain': id == 3,
-        'science-domain': id == 4,
-        'history-domain': id == 5,
-        'life-domain': id == 6,
+        // 'spoken-language-domain': id == 1,
+        // 'written-language-domain': id == 2,
+        // 'mathematics-domain': id == 3,
+        // 'science-domain': id == 4,
+        // 'history-domain': id == 5,
+        // 'life-domain': id == 6,
         'sub-skill-button': type == 'sub'
 
     }" class="skill-button d-flex justify-content-between" @click="toggleChildren">
@@ -249,7 +249,7 @@ export default {
 
 /* For the top level skills */
 .top-level-skills {
-    color: white;
+    color: black;
     width: 545px;
     height: 80px;
     font-size: 20px;
@@ -259,9 +259,9 @@ export default {
     background-position: right;
 }
 
-.top-level-skills svg path {
-    fill: white;
-}
+/* .top-level-skills svg path {
+    fill: black;
+} */
 
 /* Images for the different top level domains (skills) */
 .spoken-language-domain {

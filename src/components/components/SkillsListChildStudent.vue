@@ -90,12 +90,12 @@ export default {
     <button :style="indent" :class="{
         'top-level-skills': depth == 1,
         // Colors and background images for top level skills.
-        'spoken-language-domain': id == 1,
-        'written-language-domain': id == 2,
-        'mathematics-domain': id == 3,
-        'science-domain': id == 4,
-        'history-domain': id == 5,
-        'life-domain': id == 6,
+        // 'spoken-language-domain': id == 1,
+        // 'written-language-domain': id == 2,
+        // 'mathematics-domain': id == 3,
+        // 'science-domain': id == 4,
+        // 'history-domain': id == 5,
+        // 'life-domain': id == 6,
         'locked': isUnlocked != 1,
         'unlocked': isUnlocked == 1,
         'mastered': isMastered == 1,
@@ -248,7 +248,7 @@ export default {
 
 /* For the top level skills */
 .top-level-skills {
-    color: white;
+    color: black;
     width: 545px;
     height: 80px;
     font-size: 20px;
@@ -259,7 +259,7 @@ export default {
 }
 
 .top-level-skills svg path {
-    fill: white;
+    fill: black;
 }
 
 /* Images for the different top level domains (skills) */
