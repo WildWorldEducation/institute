@@ -20,6 +20,26 @@ export const useSkillsStore = defineStore("skills", {
             // Warning popup.
             var answer = window.confirm("Delete skill?");
             if (answer) {
+                // Check if any child skills. If so, delete them.
+                for (let i = 0; i < this.skillsList.length; i++) {
+                    if (this.skillsList[i].parent == id) {
+                        let id = this.skillsList[i].id
+                        this.nestedSkillsList = this.nestedSkillsList.filter(s => {
+                            return s.id !== id
+                        })
+
+                        const result = fetch('/skills/' + id,
+                            {
+                                method: 'DELETE',
+                            });
+
+                        if (result.error) {
+                            console.log(result.error)
+                        }
+                    }
+                }
+
+                // Remove the skill from the store.
                 this.nestedSkillsList = this.nestedSkillsList.filter(s => {
                     return s.id !== id
                 })
