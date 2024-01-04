@@ -77,10 +77,13 @@ export default {
     },
     methods: {
         getParentSkills() {
-            this.skills = this.skillsStore.skillsList
-            for (let i = 0; i < this.skills.length; i++) {
-                if (this.skills[i].type == 'super') {
-                    this.superSkills.push(this.skills[i])
+            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                if (this.skillsStore.skillsList[i].type == 'super') {
+                    this.superSkills.push(this.skillsStore.skillsList[i])
+                }
+                if (this.skillsStore.skillsList[i].id != this.skillId
+                    && this.skillsStore.skillsList[i].type != 'sub') {
+                    this.skills.push(this.skillsStore.skillsList[i])
                 }
             }
         },

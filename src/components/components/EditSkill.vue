@@ -67,7 +67,8 @@ export default {
                 if (this.skillsStore.skillsList[i].type == 'super') {
                     this.superSkills.push(this.skillsStore.skillsList[i])
                 }
-                if (this.skillsStore.skillsList[i].id != this.skillId) {
+                if (this.skillsStore.skillsList[i].id != this.skillId
+                    && this.skillsStore.skillsList[i].type != 'sub') {
                     this.skills.push(this.skillsStore.skillsList[i])
                 }
             }
