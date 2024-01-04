@@ -42,7 +42,7 @@ router.post('/add', (req, res, next) => {
         data = {
             name: req.body.name, description: req.body.description, parent: req.body.parent,
             icon_image: req.body.icon_image, banner_image: req.body.banner_image, mastery_requirements: req.body.mastery_requirements,
-            type: req.body.type, level: req.body.level
+            type: req.body.type, level: req.body.level, filter_1: req.body.filter_1
         };
 
         let sqlQuery1 = `INSERT INTO skills SET ?;`;
@@ -213,12 +213,15 @@ router.get('/show/:id', (req, res, next) => {
  * @return response()
  */
 router.put('/:id/edit', (req, res, next) => {
+
+    console.log(req.body)
+
     if (req.session.userName) {
         var sqlQuery;
         sqlQuery = `UPDATE skills SET name = '` + req.body.name + `', parent = '` + req.body.parent +
             `', description = '` + req.body.description + `', icon_image = '` + req.body.icon_image + `', banner_image = '` + req.body.banner_image +
             `', mastery_requirements = '` + req.body.mastery_requirements +
-            `', type = '` + req.body.type + `', level = '` + req.body.level +
+            `', type = '` + req.body.type + `', level = '` + req.body.level + `', filter_1 = '` + req.body.filter_1 +
             `' WHERE id = ` + req.params.id;
 
         let query = conn.query(sqlQuery, (err, results) => {
