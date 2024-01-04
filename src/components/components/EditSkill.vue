@@ -112,30 +112,35 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
-            // Update the skill.
-            var masteryRequirementsData = $('#summernote').summernote("code");
-            const requestOptions = {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(
-                    {
-                        name: this.skill.name,
-                        parent: this.skill.parent,
-                        description: this.skill.description,
-                        icon_image: this.skill.icon_image,
-                        banner_image: this.skill.banner_image,
-                        mastery_requirements: masteryRequirementsData,
-                        type: this.skill.type,
-                        level: this.skill.level,
-                        filter_1: this.skill.filter_1
-                    })
-            };
+            if (this.skill.type == "sub" && this.skill.parent == 0) {
+                alert("cluster nodes must have a parent")
+            }
+            else {
+                // Update the skill.
+                var masteryRequirementsData = $('#summernote').summernote("code");
+                const requestOptions = {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(
+                        {
+                            name: this.skill.name,
+                            parent: this.skill.parent,
+                            description: this.skill.description,
+                            icon_image: this.skill.icon_image,
+                            banner_image: this.skill.banner_image,
+                            mastery_requirements: masteryRequirementsData,
+                            type: this.skill.type,
+                            level: this.skill.level,
+                            filter_1: this.skill.filter_1
+                        })
+                };
 
-            var url = '/skills/' + this.skillId + '/edit';
-            fetch(url, requestOptions)
-                .then(() => {
-                    this.$router.push("/skills");
-                });
+                var url = '/skills/' + this.skillId + '/edit';
+                fetch(url, requestOptions)
+                    .then(() => {
+                        this.$router.push("/skills");
+                    });
+            }
         },
         // changeTag(skillTag) {
         //     var url;

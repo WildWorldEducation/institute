@@ -118,35 +118,40 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
-            var url = "/skills/add";
-            // Get the Summernote HTML.         
-            this.skill.mastery_requirements = $('#summernote').summernote("code");
-
-            // Get the first ancestor and hierarchy level fields.
-            for (let i = 0; i < this.skills.length; i++) {
-                if (this.skills[i].id == this.skill.parent) {
-                    this.skill.first_ancestor = this.skills[i].first_ancestor
-                }
+            if (this.skill.type == "sub" && this.skill.parent == 0) {
+                alert("cluster nodes must have a parent")
             }
+            else {
+                var url = "/skills/add";
+                // Get the Summernote HTML.         
+                this.skill.mastery_requirements = $('#summernote').summernote("code");
 
-            fetch(url, {
-                method: 'POST',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(
-                    {
-                        name: this.skill.name,
-                        parent: this.skill.parent,
-                        description: this.skill.description,
-                        icon_image: this.skill.icon_image,
-                        banner_image: this.skill.banner_image,
-                        mastery_requirements: this.skill.mastery_requirements,
-                        type: this.skill.type,
-                        level: this.skill.level,
-                        filter_1: this.skill.filter_1
-                    })
-            }).then(() => {
-                this.$router.push("/skills");
-            });
+                // Get the first ancestor and hierarchy level fields.
+                for (let i = 0; i < this.skills.length; i++) {
+                    if (this.skills[i].id == this.skill.parent) {
+                        this.skill.first_ancestor = this.skills[i].first_ancestor
+                    }
+                }
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(
+                        {
+                            name: this.skill.name,
+                            parent: this.skill.parent,
+                            description: this.skill.description,
+                            icon_image: this.skill.icon_image,
+                            banner_image: this.skill.banner_image,
+                            mastery_requirements: this.skill.mastery_requirements,
+                            type: this.skill.type,
+                            level: this.skill.level,
+                            filter_1: this.skill.filter_1
+                        })
+                }).then(() => {
+                    this.$router.push("/skills");
+                });
+            }
         },
     }
 }
