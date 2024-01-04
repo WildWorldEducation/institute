@@ -2,14 +2,14 @@
 import VueMultiselect from 'vue-multiselect'
 // Import the stores.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
-import { useTagsStore } from '../../stores/TagsStore.js';
+//import { useTagsStore } from '../../stores/TagsStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
-        const tagsStore = useTagsStore();
+        //      const tagsStore = useTagsStore();
         return {
-            skillsStore, tagsStore
+            skillsStore
         }
     },
     components: { VueMultiselect },
@@ -26,7 +26,8 @@ export default {
                 mastery_requirements: '',
                 //other_skill_requirements: [],
                 type: 'regular',
-                level: null
+                level: 'grade_school',
+                filter_1: 0
             },
             iconImage: '',
             bannerImage: '',
@@ -63,10 +64,6 @@ export default {
 
         if (this.skills.length == 0)
             await this.getParentSkills();
-
-        if (this.tagsStore.tagsList.length == 0) {
-            await this.tagsStore.getTagsList()
-        }
     },
     async mounted() {
         $("#summernote").summernote({
@@ -118,7 +115,6 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
-
             var url = "/skills/add";
             // Get the Summernote HTML.         
             this.skill.mastery_requirements = $('#summernote').summernote("code");
@@ -142,7 +138,8 @@ export default {
                         banner_image: this.skill.banner_image,
                         mastery_requirements: this.skill.mastery_requirements,
                         type: this.skill.type,
-                        level: this.skill.level
+                        level: this.skill.level,
+                        filter_1: this.skill.filter_1
                     })
             }).then(() => {
                 this.$router.push("/skills");
@@ -171,16 +168,14 @@ export default {
                     </select>
                 </div>
 
-                <div class="row mb-3">
-                    <label for="tags" class="form-label">Filter</label>
-                    <div v-for="tag in tagsStore.tagsList">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" :value="tag.id" id="flexCheckDefault"
-                                v-model="tag.isChecked" @change="changeTag(tag)">
-                            <label class=" form-check-label" for="flexCheckDefault">
-                                {{ tag.name }}
-                            </label>
-                        </div>
+                <label class="form-label">Filter</label>
+                <div class="container row mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault"
+                            v-model="skill.filter_1">
+                        <label class=" form-check-label" for="flexCheckDefault">
+                            contrary to strict Christian doctrine
+                        </label>
                     </div>
                 </div>
 
@@ -219,6 +214,9 @@ export default {
                 <div v-if="skill.type != 'sub'" class="mb-3">
                     <label class="form-label">Parent</label>
                     <select class="form-select" v-model="skill.parent">
+                        <option value=0>
+                            none
+                        </option>
                         <option v-for="skill in skills" :value="skill.id">
                             {{ skill.name }}
                         </option>

@@ -1,20 +1,13 @@
 <script>
 // Import the store.
-import { useTagsStore } from '../../stores/TagsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 
 export default {
     setup() {
-        const tagsStore = useTagsStore();
         const skillsStore = useSkillsStore();
-        // If method hasnt been run before.
-        if (tagsStore.tagsList.length == 0) {
-            // Run the GET request.
-            tagsStore.getTagsList()
-        }
 
         return {
-            tagsStore, skillsStore
+            skillsStore
         }
     },
     data() {
@@ -30,12 +23,12 @@ export default {
                 mastery_requirements: '',
                 tags: [],
                 type: null,
-                level: null
+                level: null,
+                filter_1: null
             },
+            filterChecked: false,
             iconImage: '',
             bannerImage: '',
-            // Array used to show which tags, of all the tags, are already assigned to this skill.
-            skillTags: [],
             superSkills: [],
             levels: [
                 {
@@ -65,9 +58,6 @@ export default {
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList()
         }
-        if (this.tagsStore.tagsList.length == 0) {
-            await this.tagsStore.getTagsList()
-        }
 
         this.getParentSkills();
     },
@@ -92,24 +82,7 @@ export default {
                     this.bannerImage = this.skill.banner_image;
 
                     $('#summernote').summernote('code', this.skill.mastery_requirements);
-                    this.getSkillTags()
                 });
-        },
-        // Array used to show which tags, of all the tags, are already assigned to this skill.
-        getSkillTags() {
-            // Cycle through all tags.
-            for (let i = 0; i < this.tagsStore.tagsList.length; i++) {
-                // Copy the above array into the new one.
-                this.skillTags.push(this.tagsStore.tagsList[i]);
-                // Create new field, just for this page.
-                this.skillTags[i].isChecked = false
-                // Check if the tag has already been added to the skill.
-                for (let j = 0; j < this.skill.tags.length; j++) {
-                    if (this.skill.tags[j].tag_id == this.tagsStore.tagsList[i].id) {
-                        this.skillTags[i].isChecked = true
-                    }
-                }
-            }
         },
         // For image upload.
         onFileChange(e) {
@@ -136,6 +109,8 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
+
+            console.log(this.skill)
             // Update the skill.
             var masteryRequirementsData = $('#summernote').summernote("code");
             const requestOptions = {
@@ -146,12 +121,12 @@ export default {
                         name: this.skill.name,
                         parent: this.skill.parent,
                         description: this.skill.description,
-                        icon: this.skill.icon,
                         icon_image: this.skill.icon_image,
                         banner_image: this.skill.banner_image,
                         mastery_requirements: masteryRequirementsData,
                         type: this.skill.type,
-                        level: this.skill.level
+                        level: this.skill.level,
+                        filter_1: this.skill.filter_1
                     })
             };
 
@@ -161,24 +136,24 @@ export default {
                     this.$router.push("/skills");
                 });
         },
-        changeTag(skillTag) {
-            var url;
-            // If the checkbox is checked, the DB entry is created.
-            if (skillTag.isChecked == true) {
-                url = "/skill-tags/add/" + this.skillId + "/" + skillTag.id
-                fetch(url, {
-                    method: 'POST',
-                    body: {}
-                });
-            }
-            // If the checkbox is unchecked, the DB entry is deleted.
-            else {
-                url = "/skill-tags/remove/" + this.skillId + "/" + skillTag.id
-                fetch(url, {
-                    method: 'DELETE'
-                });
-            }
-        }
+        // changeTag(skillTag) {
+        //     var url;
+        //     // If the checkbox is checked, the DB entry is created.
+        //     if (skillTag.isChecked == true) {
+        //         url = "/skill-tags/add/" + this.skillId + "/" + skillTag.id
+        //         fetch(url, {
+        //             method: 'POST',
+        //             body: {}
+        //         });
+        //     }
+        //     // If the checkbox is unchecked, the DB entry is deleted.
+        //     else {
+        //         url = "/skill-tags/remove/" + this.skillId + "/" + skillTag.id
+        //         fetch(url, {
+        //             method: 'DELETE'
+        //         });
+        //     }
+        // }
     }
 }
 </script> 
@@ -200,16 +175,14 @@ export default {
             </select>
         </div>
 
-        <div class="row mb-3">
-            <label for="tags" class="form-label">Filter</label>
-            <div v-for="skillTag in skillTags">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" :value="skillTag.id" id="flexCheckDefault"
-                        v-model="skillTag.isChecked" @change="changeTag(skillTag)">
-                    <label class=" form-check-label" for="flexCheckDefault">
-                        {{ skillTag.name }}
-                    </label>
-                </div>
+        <label for="tags" class="form-label">Filter</label>
+        <div class="container row mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" v-model="skill.filter_1"
+                    :true-value="1" :false-value="0">
+                <label class=" form-check-label" for="flexCheckDefault">
+                    contrary to strict Christian doctrine
+                </label>
             </div>
         </div>
 

@@ -51,6 +51,8 @@ export default {
                 .then(function (response) {
                     return response.json();
                 }).then(data => this.skill = data).then(() => {
+                    console.log(this.skill)
+
                     // Go through all the skill tags.
                     for (let i = 0; i < this.tagsStore.tagsList.length; i++) {
                         // Go through this skill's tags.
@@ -140,10 +142,9 @@ export default {
             <div v-html="skill.mastery_requirements"></div>
         </div>
         <div v-if="userDetailsStore.role == 'admin'" class="row mt-3">
-            <h2>Tags</h2>
-            <div v-for="   tag    in    this.skill.tags   ">
-                {{ tag.name }}
-            </div>
+            <h2>Filter</h2>
+            <span v-if="skill.filter_1 == 1">contrary to strict Christian doctrine</span>
+            <span v-else>none</span>
         </div>
         <div v-if="userDetailsStore.role == 'admin' && skill.type != 'domain'" class="row mt-3">
             <h2>Assessment</h2>
