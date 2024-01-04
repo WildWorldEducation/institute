@@ -63,10 +63,12 @@ export default {
     },
     methods: {
         getParentSkills() {
-            this.skills = this.skillsStore.skillsList
-            for (let i = 0; i < this.skills.length; i++) {
-                if (this.skills[i].type == 'super') {
-                    this.superSkills.push(this.skills[i])
+            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                if (this.skillsStore.skillsList[i].type == 'super') {
+                    this.superSkills.push(this.skillsStore.skillsList[i])
+                }
+                if (this.skillsStore.skillsList[i].id != this.skillId) {
+                    this.skills.push(this.skillsStore.skillsList[i])
                 }
             }
 
@@ -109,8 +111,6 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
-
-            console.log(this.skill)
             // Update the skill.
             var masteryRequirementsData = $('#summernote').summernote("code");
             const requestOptions = {
@@ -221,6 +221,9 @@ export default {
         <div v-if="skill.type != 'sub'" class="mb-3">
             <label class="form-label">Parent</label>
             <select class="form-select" v-model="skill.parent">
+                <option value=0>
+                    none
+                </option>
                 <option v-for="skill in skills" :value="skill.id">
                     {{ skill.name }}
                 </option>
