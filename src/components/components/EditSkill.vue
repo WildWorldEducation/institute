@@ -5,7 +5,6 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 export default {
     setup() {
         const skillsStore = useSkillsStore();
-
         return {
             skillsStore
         }
@@ -112,35 +111,46 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
-            if (this.skill.type == "sub" && this.skill.parent == 0) {
-                alert("cluster nodes must have a parent")
+            if (this.skill.type == "sub") {
+                if (this.skill.parent == 0) {
+                    alert("cluster nodes must have a parent")
+                    return;
+                }
+                for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                    if (this.skillsStore.skillsList[i].parent == this.skillId) {
+                        alert("please delete this node's child skills, before changing it to a cluster child skill")
+                        return;
+                    }
+                }
             }
-            else {
-                // Update the skill.
-                var masteryRequirementsData = $('#summernote').summernote("code");
-                const requestOptions = {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(
-                        {
-                            name: this.skill.name,
-                            parent: this.skill.parent,
-                            description: this.skill.description,
-                            icon_image: this.skill.icon_image,
-                            banner_image: this.skill.banner_image,
-                            mastery_requirements: masteryRequirementsData,
-                            type: this.skill.type,
-                            level: this.skill.level,
-                            filter_1: this.skill.filter_1
-                        })
-                };
 
-                var url = '/skills/' + this.skillId + '/edit';
-                fetch(url, requestOptions)
-                    .then(() => {
-                        this.$router.push("/skills");
-                    });
-            }
+            // Update the skill.
+            var masteryRequirementsData = $('#summernote').summernote("code");
+            const requestOptions = {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(
+                    {
+                        name: this.skill.name,
+                        parent: this.skill.parent,
+                        description: this.skill.description,
+                        icon_image: this.skill.icon_image,
+                        banner_image: this.skill.banner_image,
+                        mastery_requirements: masteryRequirementsData,
+                        type: this.skill.type,
+                        level: this.skill.level,
+                        filter_1: this.skill.filter_1
+                    })
+            };
+
+            var url = '/skills/' + this.skillId + '/edit';
+            fetch(url, requestOptions)
+                .then(() => {
+                    this.skillsStore.getNestedSkillsList()
+                }).then(() => {
+                    this.$router.push("/skills");
+                });
+
         },
         // changeTag(skillTag) {
         //     var url;

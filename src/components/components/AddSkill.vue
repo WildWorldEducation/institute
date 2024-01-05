@@ -2,12 +2,10 @@
 import VueMultiselect from 'vue-multiselect'
 // Import the stores.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
-//import { useTagsStore } from '../../stores/TagsStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
-        //      const tagsStore = useTagsStore();
         return {
             skillsStore
         }
@@ -117,7 +115,7 @@ export default {
             this.image = '';
             this.skill.image = this.image;
         },
-        Submit() {
+        async Submit() {
             if (this.skill.type == "sub" && this.skill.parent == 0) {
                 alert("cluster nodes must have a parent")
             }
@@ -133,7 +131,7 @@ export default {
                     }
                 }
 
-                fetch(url, {
+                await fetch(url, {
                     method: 'POST',
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(
@@ -148,6 +146,8 @@ export default {
                             level: this.skill.level,
                             filter_1: this.skill.filter_1
                         })
+                }).then(() => {
+                    this.skillsStore.getNestedSkillsList()
                 }).then(() => {
                     this.$router.push("/skills");
                 });
