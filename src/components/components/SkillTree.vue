@@ -271,7 +271,9 @@ export default {
                             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school-unlocked.png');
                         else
                             nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/middle-school-locked.png');
-
+                    }
+                    else if (child.level == "domain") {
+                        nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/domain.png');
                     }
                     // OLD system.
                     // // First level of skills.
