@@ -47,9 +47,8 @@ export default {
         }
     },
     async created() {
-        if (this.skillsStore.skillsList.length == 0) {
-            await this.skillsStore.getSkillsList();
-        }
+        await this.skillsStore.getNestedSkillsList();
+        await this.skillsStore.getSkillsList();
 
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
             if (this.skillsStore.skillsList[i].type == 'sub') {
