@@ -112,16 +112,23 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
+            // Domains cant get filters or levels.
             if (this.skill.type == 'domain') {
                 this.skill.filter_1 = 0
                 this.skill.level = 'domain'
             }
             else if (this.skill.type == "sub") {
+                // Make sure user has assigned a parent skill.
                 if (this.skill.parent == 0) {
                     alert("cluster nodes must have a parent")
                     return;
                 }
                 for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                    // Copy the filter from the parent node, for sub skills.
+                    if (this.skill.parent == this.skillsStore.skillsList[i].id) {
+                        this.skill.filter_1 = this.skillsStore.skillsList[i].filter_1
+                    }
+                    // Cant change a skill to be a sub skill, while it has its own child skills.
                     if (this.skillsStore.skillsList[i].parent == this.skillId) {
                         alert("please delete this node's child skills, before changing it to a cluster child skill")
                         return;
@@ -197,14 +204,16 @@ export default {
                 </select>
             </div>
 
-            <label for="tags" class="form-label">Filter</label>
-            <div class="container row mb-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" v-model="skill.filter_1"
-                        :true-value="1" :false-value="0">
-                    <label class=" form-check-label" for="flexCheckDefault">
-                        contrary to strict Christian doctrine
-                    </label>
+            <div v-if="skill.type != 'sub'">
+                <label for="tags" class="form-label">Filter</label>
+                <div class="container row mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault"
+                            v-model="skill.filter_1" :true-value="1" :false-value="0">
+                        <label class=" form-check-label" for="flexCheckDefault">
+                            contrary to strict Christian doctrine
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>

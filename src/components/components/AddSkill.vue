@@ -124,17 +124,17 @@ export default {
                     this.skill.filter_1 = 0
                     this.skill.level = 'domain'
                 }
+                else if (this.skill.type == 'sub') {
+                    for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                        if (this.skill.parent == this.skillsStore.skillsList[i].id) {
+                            this.skill.filter_1 = this.skillsStore.skillsList[i].filter_1
+                        }
+                    }
+                }
 
                 var url = "/skills/add";
                 // Get the Summernote HTML.         
                 this.skill.mastery_requirements = $('#summernote').summernote("code");
-
-                // Get the first ancestor and hierarchy level fields.
-                for (let i = 0; i < this.skills.length; i++) {
-                    if (this.skills[i].id == this.skill.parent) {
-                        this.skill.first_ancestor = this.skills[i].first_ancestor
-                    }
-                }
 
                 await fetch(url, {
                     method: 'POST',
@@ -182,14 +182,16 @@ export default {
                         </select>
                     </div>
 
-                    <label class="form-label">Filter</label>
-                    <div class="container row mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault"
-                                v-model="skill.filter_1">
-                            <label class=" form-check-label" for="flexCheckDefault">
-                                contrary to strict Christian doctrine
-                            </label>
+                    <div v-if="skill.type != 'sub'">
+                        <label class="form-label">Filter</label>
+                        <div class="container row mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault"
+                                    v-model="skill.filter_1">
+                                <label class=" form-check-label" for="flexCheckDefault">
+                                    contrary to strict Christian doctrine
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
