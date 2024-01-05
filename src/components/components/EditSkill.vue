@@ -112,7 +112,11 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
-            if (this.skill.type == "sub") {
+            if (this.skill.type == 'domain') {
+                this.skill.filter_1 = 0
+                this.skill.level = 'domain'
+            }
+            else if (this.skill.type == "sub") {
                 if (this.skill.parent == 0) {
                     alert("cluster nodes must have a parent")
                     return;
@@ -183,23 +187,25 @@ export default {
             <input v-model="skill.name" type="text" class="form-control">
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Level</label>
-            <select class="form-select" v-model="skill.level">
-                <option v-for="level in levels" :value="level.id">
-                    {{ level.name }}
-                </option>
-            </select>
-        </div>
+        <div v-if="skill.type != 'domain'">
+            <div class="mb-3">
+                <label class="form-label">Level</label>
+                <select class="form-select" v-model="skill.level">
+                    <option v-for="level in levels" :value="level.id">
+                        {{ level.name }}
+                    </option>
+                </select>
+            </div>
 
-        <label for="tags" class="form-label">Filter</label>
-        <div class="container row mb-3">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" v-model="skill.filter_1"
-                    :true-value="1" :false-value="0">
-                <label class=" form-check-label" for="flexCheckDefault">
-                    contrary to strict Christian doctrine
-                </label>
+            <label for="tags" class="form-label">Filter</label>
+            <div class="container row mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" v-model="skill.filter_1"
+                        :true-value="1" :false-value="0">
+                    <label class=" form-check-label" for="flexCheckDefault">
+                        contrary to strict Christian doctrine
+                    </label>
+                </div>
             </div>
         </div>
 

@@ -120,6 +120,11 @@ export default {
                 alert("cluster nodes must have a parent")
             }
             else {
+                if (this.skill.type == 'domain') {
+                    this.skill.filter_1 = 0
+                    this.skill.level = 'domain'
+                }
+
                 var url = "/skills/add";
                 // Get the Summernote HTML.         
                 this.skill.mastery_requirements = $('#summernote').summernote("code");
@@ -167,23 +172,25 @@ export default {
                     <input v-model="skill.name" class="form-control" type="text" placeholder="name">
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Level</label>
-                    <select class="form-select" v-model="skill.level">
-                        <option v-for="level in levels" :value="level.id">
-                            {{ level.name }}
-                        </option>
-                    </select>
-                </div>
+                <div v-if="skill.type != 'domain'">
+                    <div class="mb-3">
+                        <label class="form-label">Level</label>
+                        <select class="form-select" v-model="skill.level">
+                            <option v-for="level in levels" :value="level.id">
+                                {{ level.name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <label class="form-label">Filter</label>
-                <div class="container row mb-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault"
-                            v-model="skill.filter_1">
-                        <label class=" form-check-label" for="flexCheckDefault">
-                            contrary to strict Christian doctrine
-                        </label>
+                    <label class="form-label">Filter</label>
+                    <div class="container row mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault"
+                                v-model="skill.filter_1">
+                            <label class=" form-check-label" for="flexCheckDefault">
+                                contrary to strict Christian doctrine
+                            </label>
+                        </div>
                     </div>
                 </div>
 
