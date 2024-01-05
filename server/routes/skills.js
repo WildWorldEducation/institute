@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
+    // password: 'password',
     database: 'skill_tree'
 });
 
@@ -213,9 +213,6 @@ router.get('/show/:id', (req, res, next) => {
  * @return response()
  */
 router.put('/:id/edit', (req, res, next) => {
-
-    console.log(req.body)
-
     if (req.session.userName) {
         var sqlQuery;
         sqlQuery = `UPDATE skills SET name = '` + req.body.name + `', parent = '` + req.body.parent +
