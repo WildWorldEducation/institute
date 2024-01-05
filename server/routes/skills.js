@@ -102,11 +102,14 @@ router.get('/nested-list', (req, res, next) => {
                     throw err;
                 }
 
+                // Create the 'children' array.
                 for (var i = 0; i < results.length; i++) {
                     results[i].children = [];
+                }
+
+                for (var i = 0; i < results.length; i++) {
                     if (results[i].parent != null && results[i].parent != 0) {
                         var parentId = results[i].parent;
-
                         // go through all rows again, add children
                         for (let j = 0; j < results.length; j++) {
                             if (results[j].id == parentId) {
