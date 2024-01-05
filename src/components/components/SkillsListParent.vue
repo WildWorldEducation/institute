@@ -49,13 +49,12 @@ export default {
         <div v-if="this.userDetailsStore.role == 'student'" v-for="skill in userSkills">
             <SkillsListChildStudent :id="skill.id" :children="skill.children" :depth="1" :name="skill.skill_name"
                 :firstAncestor="skill.first_ancestor" :isUnlocked="skill.is_accessible" :isMastered="skill.is_mastered"
-                :type="skill.type" :role="userDetailsStore.role" :DeleteSkill="skillsStore.deleteSkill">
+                :type="skill.type" :role="userDetailsStore.role">
             </SkillsListChildStudent>
         </div>
         <div v-else v-for="skill in skillsStore.nestedSkillsList">
             <SkillsListChildNonStudent :id="skill.id" :children="skill.children" :depth="1" :name="skill.name"
-                :firstAncestor="skill.first_ancestor" :type="skill.type" :role="userDetailsStore.role"
-                :DeleteSkill="skillsStore.deleteSkill">
+                :firstAncestor="skill.first_ancestor" :type="skill.type" :role="userDetailsStore.role">
             </SkillsListChildNonStudent>
         </div>
     </div>

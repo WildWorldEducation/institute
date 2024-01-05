@@ -20,7 +20,7 @@ export default {
             subSkills: []
         };
     },
-    props: ['id', 'children', 'name', 'firstAncestor', 'type', 'depth', 'role', 'DeleteSkill'],
+    props: ['id', 'children', 'name', 'firstAncestor', 'type', 'depth', 'role'],
     computed: {
         indent() {
             var amount = 0;
@@ -82,6 +82,10 @@ export default {
         },
         HideMobileButtonsModal() {
             this.showModal = false;
+        },
+        async DeleteSkill(id) {
+            await this.skillsStore.deleteSkill(id)
+            this.$parent.$forceUpdate()
         }
     }
 }
@@ -206,13 +210,13 @@ export default {
     <!-- Sub skills -->
     <SkillsListChildNonStudent v-if="showSubskills" v-for="    subSkill     in     subSkills    " :id="subSkill.id"
         :children="subSkill.children" :firstAncestor="firstAncestor" :type="subSkill.type" :name="subSkill.name"
-        :role="role" :DeleteSkill="DeleteSkill" :depth="depth + 1">
+        :role="role" :depth="depth + 1">
     </SkillsListChildNonStudent>
 
     <!-- Recursive nesting of component -->
     <SkillsListChildNonStudent v-if="showChildren" v-for="    child     in     childrenNotSubskills    " :id="child.id"
         :children="child.children" :firstAncestor="firstAncestor" :type="child.type" :name="child.name" :role="role"
-        :DeleteSkill="DeleteSkill" :depth="depth + 1">
+        :depth="depth + 1">
     </SkillsListChildNonStudent>
 </template>
  
