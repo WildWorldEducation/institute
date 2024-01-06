@@ -127,6 +127,7 @@ export default {
                     for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
                         if (this.skill.parent == this.skillsStore.skillsList[i].id) {
                             this.skill.filter_1 = this.skillsStore.skillsList[i].filter_1
+                            this.skill.level = this.skillsStore.skillsList[i].level
                         }
                     }
                 }
@@ -171,7 +172,7 @@ export default {
                     <input v-model="skill.name" class="form-control" type="text" placeholder="name">
                 </div>
 
-                <div v-if="skill.type != 'domain'">
+                <div v-if="skill.type != 'domain' && skill.type != 'sub'">
                     <div class="mb-3">
                         <label class="form-label">Level</label>
                         <select class="form-select" v-model="skill.level">

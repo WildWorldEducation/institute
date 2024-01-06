@@ -126,6 +126,7 @@ export default {
                     // Copy the filter from the parent node, for sub skills.
                     if (this.skill.parent == this.skillsStore.skillsList[i].id) {
                         this.skill.filter_1 = this.skillsStore.skillsList[i].filter_1
+                        this.skill.level = this.skillsStore.skillsList[i].level
                     }
                     // Cant change a skill to be a sub skill, while it has its own child skills.
                     if (this.skillsStore.skillsList[i].parent == this.skillId) {
@@ -193,7 +194,7 @@ export default {
             <input v-model="skill.name" type="text" class="form-control">
         </div>
 
-        <div v-if="skill.type != 'domain'">
+        <div v-if="skill.type != 'domain' && skill.type != 'sub'">
             <div class="mb-3">
                 <label class="form-label">Level</label>
                 <select class="form-select" v-model="skill.level">
