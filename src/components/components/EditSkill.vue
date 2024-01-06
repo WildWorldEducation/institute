@@ -112,6 +112,20 @@ export default {
             this.skill.image = this.image;
         },
         Submit() {
+            // Check if this skill was a super skill with skills, and is being changed to another type.
+            if (this.skill.type != "super") {
+                var hasSubSkills = false;
+                for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                    if (this.skillsStore.skillsList[i].type == 'sub'
+                        && this.skillsStore.skillsList[i].parent == this.skillId) {
+                        hasSubSkills = true;
+                    }
+                }
+                if (hasSubSkills) {
+                    alert("Please delete outer cluster nodes belonging to the skill, before changing its type.")
+                    return
+                }
+            }
             // Domains cant get filters or levels.
             if (this.skill.type == 'domain') {
                 this.skill.level = 'domain'
