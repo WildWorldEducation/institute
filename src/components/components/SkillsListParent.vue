@@ -37,7 +37,12 @@ export default {
         }
     },
     computed: {},
-    methods: {},
+    methods: {
+        async DeleteSkill(id) {
+            await this.skillsStore.deleteSkill(id)
+            await this.skillsStore.getNestedSkillsList();
+        }
+    },
     components: {
         SkillsListChildStudent, SkillsListChildNonStudent
     }
@@ -54,7 +59,8 @@ export default {
         </div>
         <div v-else v-for="skill in skillsStore.nestedSkillsList">
             <SkillsListChildNonStudent :id="skill.id" :children="skill.children" :depth="1" :name="skill.name"
-                :firstAncestor="skill.first_ancestor" :type="skill.type" :role="userDetailsStore.role">
+                :firstAncestor="skill.first_ancestor" :type="skill.type" :role="userDetailsStore.role"
+                :DeleteSkill="DeleteSkill">
             </SkillsListChildNonStudent>
         </div>
     </div>
