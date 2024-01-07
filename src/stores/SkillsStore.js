@@ -19,16 +19,19 @@ export const useSkillsStore = defineStore("skills", {
         async deleteSkill(id) {
             // Warning popup.
             var answer = window.confirm("Delete skill?");
+
             if (answer) {
                 // Check if any child skills. If so, delete them.
                 for (let i = 0; i < this.skillsList.length; i++) {
+                    // Check if this skill is a prent to other skills.
                     if (this.skillsList[i].parent == id) {
-                        let id = this.skillsList[i].id
+                        let childId = this.skillsList[i].id
+                        // Remove direct children from the store.
                         this.nestedSkillsList = this.nestedSkillsList.filter(s => {
-                            return s.id !== id
+                            return s.childId !== childId
                         })
-
-                        const result = fetch('/skills/' + id,
+                        // Remove direct children from the DB.
+                        const result = fetch('/skills/' + childId,
                             {
                                 method: 'DELETE',
                             });
@@ -39,11 +42,11 @@ export const useSkillsStore = defineStore("skills", {
                     }
                 }
 
-                // Remove the skill from the store.
+                // Remove this skill from the store.
                 this.nestedSkillsList = this.nestedSkillsList.filter(s => {
                     return s.id !== id
                 })
-
+                // Remove this skill from the DB.
                 const result = fetch('/skills/' + id,
                     {
                         method: 'DELETE',
