@@ -82,25 +82,15 @@ export default {
         },
         HideMobileButtonsModal() {
             this.showModal = false;
-        },
-        // async DeleteSkill(id) {
-        //     await this.skillsStore.deleteSkill(id)
-        //     await this.skillsStore.getNestedSkillsList();
-        // }
+        }
     }
 }
 </script>    
 
 <template>
     <button :style="indent" :class="{
-        'top-level-skills': depth == 1,
-        // Colors and background images for top level skills.
-        // 'spoken-language-domain': id == 1,
-        // 'written-language-domain': id == 2,
-        // 'mathematics-domain': id == 3,
-        // 'science-domain': id == 4,
-        // 'history-domain': id == 5,
-        // 'life-domain': id == 6,
+        'domains': type == 'domain',
+        // Colors and background images for top level skills.    
         'sub-skill-button': type == 'sub'
 
     }" class="skill-button d-flex justify-content-between" @click="toggleChildren">
@@ -227,7 +217,7 @@ export default {
     margin-bottom: 10px;
     border: 2px solid #BCA3FF;
     border-radius: 8px;
-    width: 655px;
+    width: 545px;
     height: 84px;
     color: #53389E;
     font-size: 16px;
@@ -241,7 +231,7 @@ export default {
 
 /* Sub skill buttons */
 .sub-skill-button {
-    width: 539px;
+    width: 490px;
     height: 71px;
 }
 
@@ -251,45 +241,15 @@ export default {
 
 
 /* For the top level skills */
-.top-level-skills {
+.domains {
     color: black;
-    width: 545px;
-    height: 80px;
     font-size: 20px;
     font-weight: 400;
-    border-color: #7F56D9;
+    border-color: black;
     flex-direction: column;
     background-position: right;
 }
 
-/* .top-level-skills svg path {
-    fill: black;
-} */
-
-/* Images for the different top level domains (skills) */
-.spoken-language-domain {
-    background-image: url('/images/buttons/spoken-language.jpg');
-}
-
-.written-language-domain {
-    background-image: url('/images/buttons/written-language.jpg');
-}
-
-.mathematics-domain {
-    background-image: url('/images/buttons/mathematics.jpg');
-}
-
-.history-domain {
-    background-image: url('/images/buttons/history.jpg');
-}
-
-.science-domain {
-    background-image: url('/images/buttons/science.jpg');
-}
-
-.life-domain {
-    background-image: url('/images/buttons/life.jpg');
-}
 
 .user-name {
     background-color: white;

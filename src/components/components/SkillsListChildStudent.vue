@@ -88,14 +88,8 @@ export default {
 
 <template>
     <button :style="indent" :class="{
-        'top-level-skills': depth == 1,
-        // Colors and background images for top level skills.
-        // 'spoken-language-domain': id == 1,
-        // 'written-language-domain': id == 2,
-        // 'mathematics-domain': id == 3,
-        // 'science-domain': id == 4,
-        // 'history-domain': id == 5,
-        // 'life-domain': id == 6,
+        'domains': type == 'domain',
+        // Colors and background images for top level skills.       
         'locked': isUnlocked != 1,
         'unlocked': isUnlocked == 1,
         'mastered': isMastered == 1,
@@ -223,7 +217,7 @@ export default {
     margin-bottom: 10px;
     border: 2px solid #BCA3FF;
     border-radius: 8px;
-    width: 655px;
+    width: 545px;
     height: 84px;
     color: #53389E;
     font-size: 16px;
@@ -237,7 +231,7 @@ export default {
 
 /* Sub skill buttons */
 .sub-skill-button {
-    width: 539px;
+    width: 490px;
     height: 71px;
 }
 
@@ -247,13 +241,11 @@ export default {
 
 
 /* For the top level skills */
-.top-level-skills {
+.domains {
     color: black;
-    width: 545px;
-    height: 80px;
     font-size: 20px;
     font-weight: 400;
-    border-color: #7F56D9;
+    border-color: black;
     flex-direction: column;
     background-position: right;
 }
