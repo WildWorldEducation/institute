@@ -19,28 +19,33 @@ export const useSkillsStore = defineStore("skills", {
         async deleteSkill(id) {
             // Warning popup.
             var answer = window.confirm("Delete skill?");
-
             if (answer) {
-                // Check if any child skills. If so, delete them.
-                for (let i = 0; i < this.skillsList.length; i++) {
-                    // Check if this skill is a prent to other skills.
-                    if (this.skillsList[i].parent == id) {
-                        let childId = this.skillsList[i].id
-                        // Remove direct children from the store.
-                        this.nestedSkillsList = this.nestedSkillsList.filter(s => {
-                            return s.childId !== childId
-                        })
-                        // Remove direct children from the DB.
-                        const result = fetch('/skills/' + childId,
-                            {
-                                method: 'DELETE',
-                            });
-
-                        if (result.error) {
-                            console.log(result.error)
+                // Deal with all descendants ----------------
+                function renderDescendantNodes(id, context) {
+                    // Check if any child skills. If so, delete them.
+                    for (let i = 0; i < context.skillsList.length; i++) {
+                        if (context.skillsList[i].parent == id) {
+                            let childId = context.skillsList[i].id
+                            // Remove direct children from the store.
+                            context.nestedSkillsList = context.nestedSkillsList.filter(s => {
+                                return s.childId !== childId
+                            })
+                            // Remove direct children from the DB.
+                            const result = fetch('/skills/' + childId,
+                                {
+                                    method: 'DELETE',
+                                });
+                            if (result.error) {
+                                console.log(result.error)
+                            }
+                            // Run the above function again recursively.
+                            renderDescendantNodes(childId, context)
                         }
                     }
                 }
+
+                renderDescendantNodes(id, this);
+                // ------------------------
 
                 // Remove this skill from the store.
                 this.nestedSkillsList = this.nestedSkillsList.filter(s => {
@@ -51,13 +56,14 @@ export const useSkillsStore = defineStore("skills", {
                     {
                         method: 'DELETE',
                     });
-
                 if (result.error) {
                     console.log(result.error)
                 }
 
+                // Update the store.
                 this.getNestedSkillsList();
             }
         }
     }
-});
+})
+
