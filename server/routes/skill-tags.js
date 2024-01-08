@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    //  password: 'password',
     database: 'skill_tree'
 });
 
@@ -90,13 +90,10 @@ router.post('/add/:id1/:id2', (req, res, next) => {
  * @return response()
  */
 router.delete('/remove/:id1/:id2', (req, res, next) => {
-    // var session = req.session;
     if (req.session.userName) {
         let sqlQuery = `
         DELETE FROM skill_tree.skill_tags 
         WHERE skill_id =` + req.params.id1 + ` AND tag_id =` + req.params.id2 + `;`;
-
-        console.log(sqlQuery)
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
