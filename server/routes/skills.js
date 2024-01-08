@@ -94,7 +94,7 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name, parent, type
+    SELECT skill_tree.skills.id, name, parent, type, level
     FROM skill_tree.skills`
         let query = conn.query(sqlQuery, (err, results) => {
             try {
