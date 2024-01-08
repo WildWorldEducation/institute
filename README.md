@@ -1,35 +1,29 @@
-# client
+# skilltree-app
 
-This template should help get you started developing with Vue 3 in Vite.
+## Tech Stack
+### Front End
+* Vue 3
+* Pinia
+* Vue Router
+* Vite
+* D3.js
+* Pixi.js
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+### Back End
+* Node with Express
+* MariaDB
 
 ## Project Setup
-
-```sh
+### Install dependancies
 npm install
-```
 
-### Compile and Hot-Reload for Development
+### Setup database
+Please import the latest DB backup from the "db_backups" folder.
 
-```sh
+## Run or Compile
+### Hot-Reload for Development
 npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
+### Build
 npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+### Run compiled version
+npm run start
