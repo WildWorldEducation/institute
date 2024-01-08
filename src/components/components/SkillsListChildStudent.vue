@@ -18,7 +18,7 @@ export default {
             subSkills: []
         };
     },
-    props: ['id', 'children', 'name', 'firstAncestor', 'isUnlocked', 'isMastered', 'type', 'depth', 'role', 'DeleteSkill'],
+    props: ['id', 'children', 'name', 'firstAncestor', 'isUnlocked', 'isMastered', 'type', 'level', 'depth', 'role', 'DeleteSkill'],
     computed: {
         indent() {
             var amount = 0;
@@ -93,7 +93,12 @@ export default {
         'locked': isUnlocked != 1,
         'unlocked': isUnlocked == 1,
         'mastered': isMastered == 1,
-        'sub-skill-button': type == 'sub'
+        'sub-skill-button': type == 'sub',
+        'grade-school-level': level == 'grade_school',
+        'middle-school-level': level == 'middle_school',
+        'high-school-level': level == 'high_school',
+        'college-level': level == 'college',
+        'phd-level': level == 'phd',
 
     }" class="skill-button d-flex justify-content-between" @click="toggleChildren">
         <!-- Emoticons -->
@@ -198,15 +203,15 @@ export default {
     <!-- Sub skills -->
     <SkillsListChildStudent v-if="showSubskills" v-for="    subSkill     in     subSkills    " :id="subSkill.id"
         :children="subSkill.children" :firstAncestor="firstAncestor" :isUnlocked="subSkill.is_accessible"
-        :isMastered="subSkill.is_mastered" :type="subSkill.type" :name="subSkill.skill_name" :role="role"
-        :DeleteSkill="DeleteSkill" :depth="depth + 1">
+        :isMastered="subSkill.is_mastered" :type="subSkill.type" :level="subSkill.level" :name="subSkill.skill_name"
+        :role="role" :DeleteSkill="DeleteSkill" :depth="depth + 1">
     </SkillsListChildStudent>
 
     <!-- Recursive nesting of component -->
     <SkillsListChildStudent v-if="showChildren" v-for="    child     in     childrenNotSubskills    " :id="child.id"
         :children="child.children" :firstAncestor="firstAncestor" :isUnlocked="child.is_accessible"
-        :isMastered="child.is_mastered" :type="child.type" :name="child.skill_name" :role="role" :DeleteSkill="DeleteSkill"
-        :depth="depth + 1">
+        :isMastered="child.is_mastered" :type="child.type" :level="child.level" :name="child.skill_name" :role="role"
+        :DeleteSkill="DeleteSkill" :depth="depth + 1">
     </SkillsListChildStudent>
 </template>
  
@@ -215,7 +220,8 @@ export default {
 .skill-button {
     padding: 10px;
     margin-bottom: 10px;
-    border: 2px solid #BCA3FF;
+    border-style: solid;
+    border-width: 2px;
     border-radius: 8px;
     width: 545px;
     height: 84px;
@@ -248,6 +254,26 @@ export default {
     border-color: black;
     flex-direction: column;
     background-position: right;
+}
+
+.grade-school-level {
+    border-color: #40B9A9;
+}
+
+.middle-school-level {
+    border-color: #6EB3F5;
+}
+
+.high-school-level {
+    border-color: #3983DD;
+}
+
+.college-level {
+    border-color: #BAA9E1;
+}
+
+.phd-level {
+    border-color: #9C7EEC;
 }
 
 .top-level-skills svg path {
