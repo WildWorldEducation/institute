@@ -34,7 +34,7 @@ export default {
             // De radius, maybe delete?
             radius: 0,
             // D3 radius multiplier
-            radiusMultiplier: 6,
+            radiusMultiplier: 2,
             skill: {
                 id: null,
                 children: [],
@@ -145,7 +145,7 @@ export default {
             const tree = d3.tree()
                 // increase the radius to space out the nodes.
                 .size([2 * Math.PI, this.radius * this.radiusMultiplier])
-                .separation((a, b) => (a.parent == b.parent ? 1 : 4) / a.depth);
+                .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
 
             // Sort the tree and apply the layout.
             const root = tree(d3.hierarchy(data))
