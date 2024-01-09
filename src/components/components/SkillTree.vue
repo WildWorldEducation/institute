@@ -391,7 +391,6 @@ export default {
                     }
                     for (let i = 0; i < child.children.length; i++) {
                         if (child.children[i].type == "sub") {
-                            console.log("test")
                             let subNodeContainer = new PIXI.Container();
 
                             // Calculate the increment of the subskills, around a circle.
