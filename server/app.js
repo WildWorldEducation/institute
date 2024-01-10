@@ -161,6 +161,8 @@ app.get('/login-status', (req, res) => {
 // Log in with username and password.
 app.post('/login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
+    /** Check if the client send data */
+    console.log('LOG IN ATTEMPT: ' + JSON.stringify(req.body))
     // Execute SQL query that'll select the account from the database based on the specified username and password.
     let sqlQuery1 = "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" + req.body.username + "' AND skill_tree.users.password = '" + req.body.password + "';";
     let query1 = conn.query(sqlQuery1, (err, results) => {
@@ -178,6 +180,7 @@ app.post('/login-attempt', (req, res, next) => {
                 req.session.role = results[0].role;
                 res.json({ account: 'authorized' })
             } else {
+
                 // If both the username and password are not correct, check if the account exists.
                 let sqlQuery2 = "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" + req.body.username + "';";
                 let query2 = conn.query(sqlQuery2, (err, results) => {
