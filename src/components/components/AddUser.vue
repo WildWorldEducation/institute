@@ -28,15 +28,13 @@ export default {
     },
     async created() {
         // Load all skills.
-        if (this.skillsStore.skillsList.length < 1)
-            await this.skillsStore.getSkillsList()
+        if (this.skillsStore.nestedSkillsList.length < 1)
+            await this.skillsStore.getNestedSkillsList()
 
         // Find the first level skills - we will make these mastered.
-        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            if (this.skillsStore.skillsList[i].hierarchy_level == 1) {
-                // Add them to the local array.
-                this.firstLevelSkillIds.push(this.skillsStore.skillsList[i].id);
-            }
+        for (let i = 0; i < this.skillsStore.nestedSkillsList.length; i++) {
+            // Add them to the local array.
+            this.firstLevelSkillIds.push(this.skillsStore.nestedSkillsList[i].id);
         }
         // Find the child skills of the first level skills - we will make these available/unlocked.
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
