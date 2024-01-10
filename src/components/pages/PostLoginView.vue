@@ -46,9 +46,15 @@ export default {
       <h1 id="user-name">{{ name }}</h1>
     </div>
     <div class="row content-row">
-      <div class="column col-md-4 align-md-self-start">
+      <div class="column col-lg-4 col-md-12 row mx-0">
         <!-- Avatar image -->
-        <img :src="userDetailsStore.avatar" class="img-fluid px-md-0 px-5" />
+        <div class="column col-md-4 col-lg-12 px-5 pb-2 pb-lg-0 px-md-0">
+          <img
+            id="profile-img"
+            :src="userDetailsStore.avatar"
+            class="img-fluid"
+          />
+        </div>
       </div>
       <div class="column col-lg-4 col-md-6">
         <StudentProgress
@@ -117,7 +123,7 @@ h1 {
 }
 
 #user-name {
-  font-size: 2.375;
+  font-size: 2.375rem;
 }
 
 #message-col {
