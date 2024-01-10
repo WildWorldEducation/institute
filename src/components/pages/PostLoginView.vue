@@ -46,9 +46,9 @@ export default {
       <h1 id="user-name">{{ name }}</h1>
     </div>
     <div class="row content-row">
-      <div class="column col-lg-4 col-md-12">
+      <div class="column col-md-4 align-md-self-start">
         <!-- Avatar image -->
-        <img :src="userDetailsStore.avatar" class="img-md-fluid px-md-0 px-5" />
+        <img :src="userDetailsStore.avatar" class="img-fluid px-md-0 px-5" />
       </div>
       <div class="column col-lg-4 col-md-6">
         <StudentProgress
