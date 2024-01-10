@@ -188,7 +188,7 @@ export default {
             if (this.isRecentered == false)
                 centerNode.scale.set(0.10)
             else
-                centerNode.scale.set(0.50)
+                centerNode.scale.set(0.25)
 
             app.stage.children[0].addChild(centerNode)
             // Add to array, so can be deleted when skill tree is recentered.
@@ -479,6 +479,9 @@ export default {
                 this.stageContents[i].destroy()
             }
 
+            // Hide the side panel again.
+            this.hideInfoPanel()
+
             this.getAlgorithm(app)
         },
         resetTree(app) {
@@ -526,6 +529,24 @@ export default {
                 // Populate the skill link button.        
                 var skillLink = document.getElementById("skillLink");
                 //skillLink.setAttribute("href", "/skills/" + skill.id);
+            }
+        },
+        hideInfoPanel() {
+            // If panel is showing.
+            if (this.isSkillInfoPanelShown) {
+                // Responsive.
+                // Laptop etc.
+                if (screen.width > 800) {
+                    document.getElementById("skillInfoPanel").style.width = "0px";
+                }
+                // Mobile device.
+                else {
+                    document.getElementById("skillInfoPanel").style.height = "0px";
+                }
+                // Hide the background.
+                document.getElementById("sidepanel-backdrop").style.display = "none";
+
+                this.isSkillInfoPanelShown = false;
             }
         },
     }
