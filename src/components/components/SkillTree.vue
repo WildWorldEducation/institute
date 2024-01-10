@@ -33,8 +33,10 @@ export default {
             regularLockedUnmasteredNodeSprite: null,
             // De radius, maybe delete?
             radius: 0,
+            width: null,
+            height: null,
             // D3 radius multiplier
-            radiusMultiplier: 2,
+            radiusMultiplier: 4,
             skill: {
                 id: null,
                 children: [],
@@ -65,8 +67,10 @@ export default {
         }
 
         // Specify the chart’s dimensions.
-        const width = window.innerWidth
-        const height = window.innerHeight
+        this.width = window.innerWidth
+        this.height = window.innerHeight
+        var width = this.width
+        var height = this.height
         this.radius = Math.min(width, height) / 2;
 
         var app = new PIXI.Application({
@@ -88,8 +92,9 @@ export default {
             worldHeight: height,
             events: app.renderer.events,
         });
-        this.viewport = viewport
+
         app.stage.addChild(viewport);
+
         viewport.center = new PIXI.Point(0, 0);
         viewport
             .drag().pinch().wheel().decelerate()
@@ -102,14 +107,14 @@ export default {
             children: this.skillTreeStore.userSkills
         }
 
-        this.getAlgorithm(viewport);
+        this.getAlgorithm(app);
 
         document.getElementById("reset-button").addEventListener("click", () => {
-            this.resetTree(viewport)
+            this.resetTree(app)
         });
     },
     methods: {
-        getAlgorithm(viewport) {
+        getAlgorithm(app) {
             var skillsNoSubSkills = [];
             skillsNoSubSkills = JSON.parse(JSON.stringify(this.skill.children));
 
@@ -134,7 +139,6 @@ export default {
 
             removeSubSkills(skillsNoSubSkills);
 
-
             var data = {
                 name: null,
                 children: skillsNoSubSkills
@@ -150,9 +154,9 @@ export default {
             // Sort the tree and apply the layout.
             const root = tree(d3.hierarchy(data))
 
-            this.drawChart(root, viewport)
+            this.drawChart(root, app)
         },
-        drawChart(root, viewport) {
+        drawChart(root, app) {
             // Links.
             for (let i = 0; i < root.links().length; i++) {
                 const link = new PIXI.Graphics();
@@ -168,7 +172,7 @@ export default {
                 var targetY = Math.sin(root.links()[i].target.x) * root.links()[i].target.y;
                 link.lineTo(targetX, targetY);
 
-                viewport.addChild(link);
+                app.stage.children[0].addChild(link);
                 // Add to array, so can be deleted when skill tree is recentered.
                 this.stageContents.push(link)
             }
@@ -186,7 +190,7 @@ export default {
             else
                 centerNode.scale.set(0.50)
 
-            viewport.addChild(centerNode)
+            app.stage.children[0].addChild(centerNode)
             // Add to array, so can be deleted when skill tree is recentered.
             this.stageContents.push(centerNode)
 
@@ -201,7 +205,7 @@ export default {
             // This is to deal with the artificially high font size mentioned above.
             centerNodeText.scale.x = 0.1
             centerNodeText.scale.y = 0.1
-            viewport.addChild(centerNodeText)
+            app.stage.children[0].addChild(centerNodeText)
             // Add to array, so can be deleted when skill tree is recentered.
             this.stageContents.push(centerNodeText)
 
@@ -333,10 +337,10 @@ export default {
 
                         if (!context.isSkillInfoPanelShown) {
                             context.skill = skill
-                            context.showInfoPanel(viewport)
+                            context.showInfoPanel()
 
                             function recenterTree() {
-                                context.recenterTree(viewport)
+                                context.recenterTree(app)
                             }
                             document.getElementById("recenterTree").addEventListener("click", recenterTree);
                         }
@@ -363,7 +367,7 @@ export default {
                             context.showInfoPanel()
 
                             function recenterTree() {
-                                context.recenterTree(viewport)
+                                context.recenterTree(app)
                             }
                             document.getElementById("recenterTree").addEventListener("click", recenterTree);
                         }
@@ -371,7 +375,7 @@ export default {
                         //     context.updateInfoPanel(skill)
                     });
 
-                    viewport.addChild(nodeContainer);
+                    app.stage.children[0].addChild(nodeContainer);
                     // Add to array, so can be deleted when skill tree is recentered.
                     context.stageContents.push(nodeContainer)
 
@@ -466,7 +470,7 @@ export default {
 
             renderDescendantNodes(this.skill.children, 0, this);
         },
-        recenterTree(viewport) {
+        recenterTree(app) {
             this.isRecentered = true
             // Otherwise, the new chart is too spread out.
             this.radiusMultiplier = 1
@@ -475,17 +479,19 @@ export default {
                 this.stageContents[i].destroy()
             }
 
-            this.getAlgorithm(viewport)
+            this.getAlgorithm(app)
         },
-        resetTree(viewport) {
+        resetTree(app) {
             this.isRecentered = false
+            this.radiusMultiplier = 2
 
-            this.radiusMultiplier = 6
-            console.log(viewport)
-            viewport.parent.removeChildren()
+            app.stage.children[0].removeChildren()
+
             // for (let i = 0; i < this.viewport.children.length; i++) {
             //     this.viewport.children[i].destroy()
             // }
+
+
             const centerNodeSprite = PIXI.Sprite.from('center-node.png');
             this.skill = {
                 name: "SKILLS",
@@ -493,7 +499,7 @@ export default {
                 children: this.skillTreeStore.userSkills
             }
 
-            this.getAlgorithm(viewport);
+            this.getAlgorithm(app);
         },
         showInfoPanel() {
             // If panel is not showing.
