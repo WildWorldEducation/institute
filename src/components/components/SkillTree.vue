@@ -108,10 +108,6 @@ export default {
         }
 
         this.getAlgorithm(app);
-
-        document.getElementById("reset-button").addEventListener("click", () => {
-            this.resetTree(app)
-        });
     },
     methods: {
         getAlgorithm(app) {
@@ -472,6 +468,10 @@ export default {
         },
         recenterTree(app) {
             this.isRecentered = true
+
+            document.getElementById("reset-button").addEventListener("click", () => {
+                this.resetTree(app)
+            });
             // Otherwise, the new chart is too spread out.
             this.radiusMultiplier = 1
 
