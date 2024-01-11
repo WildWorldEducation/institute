@@ -31,8 +31,8 @@ export default {
         <td class="text-break">
           {{
             userDetailsStore.message
-              ? userDetailsStore.message
-              : 'You Have No Messages'
+            ? userDetailsStore.message
+            : 'You have no messages'
           }}
         </td>
       </tr>
@@ -53,7 +53,7 @@ td {
   color: #667085;
 }
 
-#message-table-body > tr {
+#message-table-body>tr {
   width: fit-content;
   padding-top: 10px;
   padding-bottom: 10px;
