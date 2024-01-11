@@ -203,8 +203,8 @@ export default {
             centerNodeText.x = root.x
             centerNodeText.y = root.y
             // This is to deal with the artificially high font size mentioned above.
-            centerNodeText.scale.x = 0.1
-            centerNodeText.scale.y = 0.1
+            centerNodeText.scale.x = 0.2
+            centerNodeText.scale.y = 0.2
             app.stage.children[0].addChild(centerNodeText)
             // Add to array, so can be deleted when skill tree is recentered.
             this.stageContents.push(centerNodeText)
@@ -292,7 +292,7 @@ export default {
                     for (let i = 0; i < nodeNameArray.length; i++) {
                         // Check if any of the strings are too long.
                         if (nodeNameArray[i].length > 9) {
-                            fontSize = 37;
+                            fontSize = 30;
                         }
                     }
 
@@ -572,7 +572,7 @@ export default {
 <style scoped>
 .skill-tree-container {
     /* Subtract the purple banner and the navigation bar. */
-    height: calc(100% - 77px - 66px)
+    height: calc(100% - 20px - 66px)
 }
 
 #wrapper {

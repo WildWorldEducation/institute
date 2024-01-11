@@ -3,7 +3,7 @@ import SkillTree from '../components/SkillTree.vue'
 </script>
 
 <template>
-    <div id="purple-banner"> 
+    <div id="purple-banner">
 
     </div>
     <!-- Display loading screen while asynchronous call is made. -->
@@ -19,11 +19,7 @@ import SkillTree from '../components/SkillTree.vue'
 
 <style>
 #purple-banner {
-    height: 77px;
+    height: 20px;
     background-color: #A48BE640;
-}
-
-template {
-    height: 200px
 }
 </style>
