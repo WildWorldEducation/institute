@@ -537,26 +537,37 @@ export default {
             }
         },
         applyFilter(level) {
-            console.log(level)
-            console.log(this.skill.children)
+
+            var filteredSkills = [];
+            filteredSkills = JSON.parse(JSON.stringify(this.skill.children));
+            console.log(filteredSkills)
 
             // TODO: recursive algorithm to remove skills not in the filter.
-            // function filterSkills(level, context) {
-            //     // Check if any child skills. If so, delete them.
-            //     for (let i = 0; i < context.skillsList.length; i++) {
-            //         if (context.skillsList[i].parent == id) {
-            //             let childId = context.skillsList[i].id
+            function filterSkills(children, level, context) {
+                // Check if any child skills. If so, delete them.
+                for (let i = 0; i < children.length; i++) {
+                    if (children[i].level != level && children[i].level != "domain") {
+                        //console.log(children[i].level)
+                        children.splice(i, 1);
+                    }
 
-            //             if (result.error) {
-            //                 console.log(result.error)
-            //             }
-            //             // Run the above function again recursively.
-            //             filterSkills(childId, context)
-            //         }
-            //     }
+                    if (children[i])
+                        if (children[i].children.length > 0)
+                            // Run the above function again recursively.
+                            filterSkills(children[i].children, level, context)
+                }
+            }
+
+            filterSkills(filteredSkills, level, this);
+
+            console.log(filteredSkills)
+
+            //  this.skill.children = filteredSkills
+
+            // for (let i = 0; i < this.stageContents.length; i++) {
+            //     this.stageContents[i].destroy()
             // }
-
-            // filterSkills(level, this);
+            // this.resetTree();
         }
     }
 }
