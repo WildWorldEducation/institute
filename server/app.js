@@ -178,6 +178,7 @@ app.post('/login-attempt', (req, res, next) => {
                 req.session.role = results[0].role;
                 res.json({ account: 'authorized' })
             } else {
+
                 // If both the username and password are not correct, check if the account exists.
                 let sqlQuery2 = "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" + req.body.username + "';";
                 let query2 = conn.query(sqlQuery2, (err, results) => {

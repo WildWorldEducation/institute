@@ -1,103 +1,182 @@
 <script>
 // Import store.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore'
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 export default {
-    setup() {
-        const userDetailsStore = useUserDetailsStore();
-        // Run the GET request.
-        userDetailsStore.getUserDetails()
-        return {
-            userDetailsStore
-        }
+  setup() {
+    const userDetailsStore = useUserDetailsStore();
+    // Run the GET request.
+    userDetailsStore.getUserDetails();
+    return {
+      userDetailsStore,
+    };
+  },
+  data() {
+    return {
+      news: [],
+    };
+  },
+  computed: {},
+  async created() {
+    await this.getNews();
+  },
+  methods: {
+    getNews() {
+      fetch('/news/list')
+        .then(function (response) {
+          return response.json();
+        })
+        .then((data) => (this.news = data));
     },
-    data() {
-        return {
-            news: []
-        }
+    SaveChange() {
+      const requestOptions = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          news1: this.news.news_1,
+          news2: this.news.news_2,
+          news3: this.news.news_3,
+          news4: this.news.news_4,
+        }),
+      };
+      var url = '/news/edit';
+      fetch(url, requestOptions);
     },
-    computed: {
-    },
-    async created() {
-        await this.getNews();
-    },
-    methods: {
-        getNews() {
-            fetch('/news/list')
-                .then(function (response) {
-                    return response.json();
-                }).then(data => this.news = data)
-        },
-        SaveChange() {
-            const requestOptions = {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(
-                    {
-                        news1: this.news.news_1,
-                        news2: this.news.news_2,
-                        news3: this.news.news_3,
-                        news4: this.news.news_4,
-                    })
-            };
-            var url = '/news/edit';
-            fetch(url, requestOptions)
-        }
-    }
-}
+  },
+};
 </script>
 
 <template>
-    <div class="container">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>News</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <div class="row">
-                        <div class="col-lg-3 col-md-6">
-                            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_1 }} </p>
-                            <textarea v-else @change="SaveChange()" v-model="news.news_1" class="form-control"
-                                rows="3"></textarea>
-                        </div>
-                        <div class="col-lg-3 col-md-6">
-                            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_2 }} </p>
-                            <textarea v-else @change="SaveChange()" v-model="news.news_2" class="form-control"
-                                rows="3"></textarea>
-                        </div>
-                        <div class="col-lg-3 col-md-6">
-                            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_3 }} </p>
-                            <textarea v-else @change="SaveChange()" v-model="news.news_3" class="form-control"
-                                rows="3"></textarea>
-                        </div>
-                        <div class="col-lg-3 col-md-6">
-                            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_4 }} </p>
-                            <textarea v-else @change="SaveChange()" v-model="news.news_4" class="form-control"
-                                rows="3"></textarea>
-                        </div>
-                    </div>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="container">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>News</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <div class="row border">
+            <div id="first-cell" class="col-lg-3 border col-md-6 news-cell">
+              <p v-if="userDetailsStore.role != 'admin'">{{ news.news_1 }}</p>
+              <textarea
+                v-else
+                @change="SaveChange()"
+                v-model="news.news_1"
+                class="form-control"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="col-lg-3 col-md-6 border news-cell">
+              <p v-if="userDetailsStore.role != 'admin'">{{ news.news_2 }}</p>
+              <textarea
+                v-else
+                @change="SaveChange()"
+                v-model="news.news_2"
+                class="form-control"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="col-lg-3 col-md-6 border news-cell">
+              <p v-if="userDetailsStore.role != 'admin'">{{ news.news_3 }}</p>
+              <textarea
+                v-else
+                @change="SaveChange()"
+                v-model="news.news_3"
+                class="form-control"
+                rows="3"
+              ></textarea>
+            </div>
+            <div id="last-cell" class="col-lg-3 border col-md-6 news-cell">
+              <p v-if="userDetailsStore.role != 'admin'">{{ news.news_4 }}</p>
+              <textarea
+                v-else
+                @change="SaveChange()"
+                v-model="news.news_4"
+                class="form-control"
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
-
 
 <style scoped>
 th {
-    background-color: #56C5B6;
-    border-color: #2FA894;
-    color: #FFFFFF;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
+  background-color: #56c5b6;
+  border-color: #2fa894;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
 }
 
-td {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    color: #667085;
+tr {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: #667085;
+}
+
+/* Because some wonky things we have to manual Style margin and border of row */
+.row {
+  padding-top: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  margin-top: -2px;
+  margin-left: 0px;
+  margin-right: -1px;
+  border-color: #2fa894 !important;
+  border-width: 1px !important;
+  border-collapse: collapse;
+}
+
+.news-cell {
+  border-color: #2fa894 !important;
+  border-width: 1px !important;
+  padding: 10px;
+}
+
+/* View Specific On Phone */
+@media (min-width: 320px) and (max-width: 576px) {
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .row {
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    margin-left: -1px;
+    margin-right: 0px;
+    border-color: #2fa894 !important;
+    border-width: 1px !important;
+    border-collapse: collapse;
+  }
+}
+
+/* View Specific On Tablet */
+@media (min-width: 577px) and (max-width: 1024px) {
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .row {
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    margin-top: -2px;
+    margin-left: -1px;
+    margin-right: 0px;
+    border-color: #2fa894 !important;
+    border-width: 1px !important;
+    border-collapse: collapse;
+  }
 }
 </style>
