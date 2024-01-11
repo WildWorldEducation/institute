@@ -536,6 +536,28 @@ export default {
                 this.isSkillInfoPanelShown = false;
             }
         },
+        applyFilter(level) {
+            console.log(level)
+            console.log(this.skill.children)
+
+            // TODO: recursive algorithm to remove skills not in the filter.
+            // function filterSkills(level, context) {
+            //     // Check if any child skills. If so, delete them.
+            //     for (let i = 0; i < context.skillsList.length; i++) {
+            //         if (context.skillsList[i].parent == id) {
+            //             let childId = context.skillsList[i].id
+
+            //             if (result.error) {
+            //                 console.log(result.error)
+            //             }
+            //             // Run the above function again recursively.
+            //             filterSkills(childId, context)
+            //         }
+            //     }
+            // }
+
+            // filterSkills(level, this);
+        }
     }
 }
 

@@ -37,8 +37,10 @@ export default {
 
     },
     methods: {
-        applyFilter: function () {
+        applyFilter: function (level) {
+            this.$parent.applyFilter(level)
 
+            
         }
     }
 }
@@ -58,7 +60,7 @@ export default {
         <div v-for="level in levels">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" :value="level.id" id="flexCheckDefault"
-                    v-model="checkedFilters" @change="applyFilter()">
+                    v-model="checkedFilters" @change="applyFilter(level.id)">
                 <label class=" form-check-label" for="flexCheckDefault">
                     {{ level.name }}
                 </label>
