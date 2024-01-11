@@ -557,7 +557,7 @@ export default {
 <template>
     <div class="flex-container skill-tree-container">
         <SkillTreeFilter id="filter" />
-        <button id="reset-button" class="btn btn-info">Reset</button>
+        <button v-if="isRecentered" id="reset-button" class="btn btn-info">Reset</button>
         <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
         <div id="wrapper">
             <div id="skilltree">
