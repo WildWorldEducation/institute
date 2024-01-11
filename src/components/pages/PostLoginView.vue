@@ -40,23 +40,20 @@ export default {
   <div id="banner">
     <img src="/images/banners/general-banner.png" class="" />
   </div>
-  <div id="purple-banner"></div>
   <div class="container post-login-container">
     <div class="row text-center text-md-start">
       <h1 id="user-name">{{ name }}</h1>
     </div>
     <div class="row content-row">
-      <div class="column col-lg-4 col-md-12 row mx-0">
+      <div id="profile-image-column" class="column col-lg-4 col-md-6 mx-0">
         <!-- Avatar image -->
-        <div class="column col-md-4 col-lg-12 px-5 pb-2 pb-lg-0 px-md-0">
-          <img
-            id="profile-img"
-            :src="userDetailsStore.avatar"
-            class="img-fluid"
-          />
-        </div>
+        <img
+          id="profile-img"
+          :src="userDetailsStore.avatar"
+          class="img-fluid"
+        />
       </div>
-      <div class="column col-lg-4 col-md-6">
+      <div id="middle-profile-column" class="column col-lg-4 col-md-6">
         <StudentProgress
           v-if="userDetailsStore.role == 'student'"
           :userId="userDetailsStore.userId"
@@ -70,12 +67,10 @@ export default {
       <div id="message-col" class="column col-lg-4 col-md-6">
         <StudentMessages />
       </div>
-    </div>
-    <div class="row content-row">
-      <div class="column col-lg-3 col-md-6">
+      <div id="notif-col" class="column col-lg-3 col-md-6">
         <Notifications />
       </div>
-      <div class="column col-lg-9 col-md-6">
+      <div id="sub-image" class="column col-lg-9 col-md-6 d-none d-lg-block">
         <img src="/images/post-login.png" class="img-fluid" />
       </div>
     </div>
@@ -86,7 +81,7 @@ export default {
 </template>
 
 <style>
-/**Some how the image-fluid bootstrap does not work 
+/**Some how the image-fluid bootstrap does not work
 *  So we have to implement it
 */
 .img-fluid {
@@ -113,7 +108,7 @@ export default {
 }
 
 .post-login-container {
-  padding-top: 68px;
+  padding-top: 23px;
 }
 
 h1 {
@@ -126,7 +121,100 @@ h1 {
   font-size: 2.375rem;
 }
 
+/* Because Boostrap doesn`t support the gap between column
+   So we have do it manual here
+*/
 #message-col {
-  padding-top: 8px;
+  padding-left: 41px;
+}
+
+#profile-image-column {
+  padding-right: 41px;
+}
+
+#middle-profile-column {
+  padding-left: 42px;
+  padding-right: 42px;
+}
+
+#notif-col {
+  margin-top: 51px;
+}
+
+#sub-image {
+  margin-top: 51px;
+  padding-left: 23px;
+}
+
+/* View Specific On Phone */
+@media (min-width: 320px) and (max-width: 576px) {
+  #message-col {
+    margin-top: 51px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-bottom: 51px;
+  }
+
+  #profile-image-column {
+    padding-right: 66px;
+    padding-left: 66px;
+  }
+
+  #middle-profile-column {
+    margin-top: 36px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  #user-name {
+    padding-left: 100px;
+    padding-right: 100px;
+  }
+
+  .post-login-container {
+    padding-top: 23px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* View Specific On Tablet */
+@media (min-width: 577px) and (max-width: 1024px) {
+  .content-row {
+    padding-bottom: 0px;
+    margin-bottom: 39px;
+  }
+
+  #message-col {
+    margin-top: 37px;
+    padding-left: 0px;
+    padding-right: 72px;
+  }
+
+  #notif-col {
+    margin-top: 37px;
+    padding-left: 72px;
+    padding-right: 0px;
+  }
+
+  #profile-image-column {
+    padding-right: 120px;
+    padding-left: 0px;
+  }
+
+  #middle-profile-column {
+    padding-left: 72px;
+    padding-right: 0px;
+    margin-right: 0px;
+  }
+
+  #user-name {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  .post-login-container {
+    padding-top: 23px;
+  }
 }
 </style>

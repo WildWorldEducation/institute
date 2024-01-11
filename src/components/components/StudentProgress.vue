@@ -3,6 +3,7 @@ export default {
   data() {
     return {
       userSkills: [],
+      noSkills: true,
     };
   },
   props: ['userId'],
@@ -21,7 +22,9 @@ export default {
           availableSkills.push(this.userSkills[i].name);
         }
       }
-
+      if (availableSkills.length > 0) {
+        this.noSkills = false;
+      }
       return availableSkills;
     },
   },
@@ -30,8 +33,8 @@ export default {
 </script>
 
 <template>
-  <h1 class="text-center text-md-start">My Progress</h1>
-  <h2 class="text-center text-md-start">2023 - Active</h2>
+  <!-- <h1 class="text-center text-md-start d-lg-none">My Progress</h1>
+  <h2 class="text-center text-md-start d-lg-none">2023 - Active</h2> -->
   <div class="table-responsive">
     <table class="table table-bordered">
       <thead>
@@ -40,6 +43,9 @@ export default {
         </tr>
       </thead>
       <tbody>
+        <tr v-if="noSkills">
+          <td id="no-skill-cell"></td>
+        </tr>
         <tr v-for="availableSkill in availableSkills">
           <td>{{ availableSkill }}</td>
         </tr>
@@ -77,5 +83,10 @@ td {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
   color: #857d99;
+  border-color: #dbd0f9;
+}
+
+#no-skill-cell {
+  height: 41px;
 }
 </style>
