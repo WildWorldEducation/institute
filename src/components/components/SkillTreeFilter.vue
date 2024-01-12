@@ -38,7 +38,7 @@ export default {
     },
     methods: {
         applyFilter: function (level) {
-            this.$parent.applyFilter(level)
+            this.$parent.filterSkills(level)
 
             
         }

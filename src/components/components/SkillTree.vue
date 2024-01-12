@@ -536,38 +536,65 @@ export default {
                 this.isSkillInfoPanelShown = false;
             }
         },
-        applyFilter(level) {
-
-            var filteredSkills = [];
-            filteredSkills = JSON.parse(JSON.stringify(this.skill.children));
-            console.log(filteredSkills)
-
-            // TODO: recursive algorithm to remove skills not in the filter.
-            function filterSkills(children, level, context) {
-                // Check if any child skills. If so, delete them.
+        filterSkills(level) {
+            // Recursive algorithm to remove skills not in the filter.
+            var filteredSkills = []
+            function filterSkills(children, level) {
+                // Go through each nested level of the array.
                 for (let i = 0; i < children.length; i++) {
-                    if (children[i].level != level && children[i].level != "domain") {
-                        //console.log(children[i].level)
-                        children.splice(i, 1);
+                    // If there isa  match for the filter, add it to the new array.
+                    if (children[i].level == level || children[i].level == "domain") {
+                        filteredSkills.push(children[i])
                     }
 
-                    if (children[i])
-                        if (children[i].children.length > 0)
-                            // Run the above function again recursively.
-                            filterSkills(children[i].children, level, context)
+                    // If the element has children, run the function on that array.
+                    if (children[i].children.length > 0)
+                        filterSkills(children[i].children, level)
+                }
+            }
+            filterSkills(this.skill.children, level);
+
+            // To convert the regular array to a nested one.
+            for (var i = 0; i < filteredSkills.length; i++) {
+                filteredSkills[i].children = [];
+                if (filteredSkills[i].parent != null && filteredSkills[i].parent != 0) {
+                    var parentId = filteredSkills[i].parent;
+
+                    // go through all rows again, add children
+                    for (let j = 0; j < filteredSkills.length; j++) {
+                        if (filteredSkills[j].id == parentId) {
+                            filteredSkills[j].children.push(filteredSkills[i]);
+                        }
+                    }
                 }
             }
 
-            filterSkills(filteredSkills, level, this);
+            let studentSkills = [];
+            for (var i = 0; i < filteredSkills.length; i++) {
+                if (filteredSkills[i].parent == null || filteredSkills[i].parent == 0) {
+                    studentSkills.push(filteredSkills[i]);
+                }
+            }
 
-            console.log(filteredSkills)
+            this.skill.children = studentSkills
 
-            //  this.skill.children = filteredSkills
+            for (let i = 0; i < this.stageContents.length; i++) {
+                this.stageContents[i].destroy()
+            }
+            this.applyFilter();
+        },
+        applyFilter() {
+            this.$pixiApp.stage.children[0].removeChildren()
+            this.radiusMultiplier = 2
 
-            // for (let i = 0; i < this.stageContents.length; i++) {
-            //     this.stageContents[i].destroy()
-            // }
-            // this.resetTree();
+            const centerNodeSprite = PIXI.Sprite.from('center-node.png');
+            this.skill = {
+                name: "SKILLS",
+                sprite: centerNodeSprite,
+                children: this.skill.children
+            }
+
+            this.getAlgorithm();
         }
     }
 }
