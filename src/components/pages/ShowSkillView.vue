@@ -2,12 +2,15 @@
 import ShowSkill from '../components/ShowSkill.vue';
 // Import the store.
 import { useSkillsStore } from '../../stores/SkillsStore';
+import { useUsersStore } from '../../stores/UsersStore';
 
 export default {
   setup() {
     const skillsStore = useSkillsStore();
+    const userDetailsStore = useUsersStore();
     return {
       skillsStore,
+      userDetailsStore,
     };
   },
   data() {
@@ -44,7 +47,7 @@ export default {
     <img src="/images/banners/institute-collins-2.png" class="img-fluid" />
   </div>
   <div class="container">
-    <div id="btn-row">
+    <div v-if="userDetailsStore.role == 'student'" id="btn-row">
       <!-- TODO: ADD FUNCTION TO BTN -->
       <button id="assessment-btn" class="top-btn d-none d-md-block">
         Take Assessment
