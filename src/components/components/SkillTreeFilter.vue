@@ -39,8 +39,6 @@ export default {
     methods: {
         applyFilter: function (level) {
             this.$parent.filterSkills(level)
-
-            
         }
     }
 }
