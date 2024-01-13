@@ -46,7 +46,9 @@ export default {
   <div class="container">
     <div id="btn-row">
       <!-- TODO: ADD FUNCTION TO BTN -->
-      <button id="assessment-btn" class="top-btn">Take Assessment</button>
+      <button id="assessment-btn" class="top-btn d-none d-md-block">
+        Take Assessment
+      </button>
       <button class="top-btn">Schedule Assessment</button>
     </div>
   </div>
@@ -85,5 +87,16 @@ export default {
 
 #assessment-btn {
   margin-right: 15px;
+}
+
+/* View Specific On Phone */
+@media (min-width: 0px) and (max-width: 576px) {
+  #btn-row {
+    padding-top: 21px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
 }
 </style>
