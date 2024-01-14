@@ -189,7 +189,7 @@ export default {
           <div class="row">
             <h1>{{ skill.name }}</h1>
           </div>
-          <div class="row pe-4">
+          <div class="row pe-4 ps-4 ps-md-0">
             <p>{{ skill.description }}</p>
           </div>
         </div>

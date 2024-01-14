@@ -189,10 +189,10 @@ export default {
   <div class="container-fluid">
     <div id="first-forum-row" class="row justify-content-md-between mt-3">
       <div class="col-12 col-md-6 row">
-        <div id="header-col" class="col-6 col-md-3">
+        <div id="header-col" class="col-6 col-lg-3">
           <h2>Resources</h2>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-lg-2">
           <!--TODO: get src from database -->
           <img src="/images/recurso-69.png" class="img-fluid" />
         </div>
@@ -331,11 +331,17 @@ export default {
           </div>
         </div>
         <div class="row">
-          <div id="user-avatar" class="col-3 col-md-1">
-            <img :src="post.userAvatar" class="img-fluid" alt="user avatar" />
-          </div>
-          <div class="col-7 col-md-3" id="user-name-div">
-            <span id="user-name-text"> {{ post.studentName }}: </span>
+          <div class="col post-user-row">
+            <div id="user-avatar">
+              <img
+                :src="post.userAvatar"
+                class="user-avatar-img"
+                alt="user avatar"
+              />
+            </div>
+            <div class="user-name-div">
+              <span id="user-name-text"> {{ post.studentName }}: </span>
+            </div>
           </div>
           <hr />
         </div>
@@ -350,9 +356,21 @@ export default {
         <!-- Modal content -->
         <div class="modal-content">
           <p>Are you sure you want to delete the resource?</p>
-          <div style="display: flex">
-            <button type="button" class="btn btn-danger">Yes</button>
-            <button type="button" class="btn btn-dark">No</button>
+          <div style="display: flex; gap: 10px">
+            <button
+              type="button"
+              class="btn btn-danger"
+              @click="deletePost(this.resourceId)"
+            >
+              Yes
+            </button>
+            <button
+              type="button"
+              class="btn btn-dark"
+              @click="showModal = false"
+            >
+              No
+            </button>
           </div>
         </div>
       </div>
@@ -402,10 +420,6 @@ export default {
   font-weight: 700;
 }
 
-#user-name-div {
-  display: flex;
-  align-items: center;
-}
 #user-name-text {
   font-family: 'Poppins', sans-serif;
   font-size: 1.25rem;
@@ -413,9 +427,16 @@ export default {
   color: #778094;
 }
 
-#user-avatar > img {
-  padding: 8px;
-  border-radius: 25px;
+.user-name-div {
+  margin-left: 12px;
+}
+
+.user-avatar-img {
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+  margin-right: 0px;
+  margin-left: auto;
 }
 .forum-post img {
   max-width: 100%;
@@ -475,6 +496,13 @@ h2 {
   border: 1px solid #888;
   width: 300px;
   /* Could be more or less, depending on screen size */
+}
+
+.post-user-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 5px;
 }
 
 #header-col {
