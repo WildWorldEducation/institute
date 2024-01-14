@@ -28,7 +28,6 @@ export const useUserDetailsStore = defineStore("userDetails", {
                 // Then load the details for the current user. 
                 const result = await fetch('/users/show/' + this.userId);
                 const data = await result.json();
-
                 this.avatar = data.avatar;
                 this.userName = data.username;
                 this.firstName = data.first_name;
