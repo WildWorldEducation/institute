@@ -84,7 +84,7 @@ export default {
           Skill tree
         </router-link>
       </div>
-      <div class="col-6">
+      <div id="user-form-info" class="col-6">
         <div class="mb-3">
           <label class="form-label">First name</label>
           <input
@@ -190,6 +190,11 @@ export default {
   font-weight: 400;
   font-size: 1rem;
   padding: 10px, 14px, 10px, 14px;
+}
+
+#user-form-info {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #user-function-btns-row {

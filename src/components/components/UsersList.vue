@@ -135,7 +135,7 @@ export default {
 }
 
 .user-buttons:hover {
-  background-color: #7f56d9;
+  background-color: #a48be6;
 }
 
 /* The style when the user button is currently choose to show information */
@@ -145,7 +145,7 @@ export default {
   height: 80px;
   border-radius: 8px;
   border: 1px solid #7f56d9;
-  background-color: #6c50a7;
+  background-color: #a48be6;
   color: white;
   padding: 16px, 28px, 16px, 28px;
   font-size: 1.25rem;
