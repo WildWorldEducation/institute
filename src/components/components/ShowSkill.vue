@@ -310,6 +310,7 @@ export default {
   border-radius: 12px;
   padding-top: 59px;
   padding-left: 48px;
+  padding-bottom: 10px;
 }
 .purple-btn {
   background-color: #a48be6;
