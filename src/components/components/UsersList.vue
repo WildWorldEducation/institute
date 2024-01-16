@@ -86,7 +86,10 @@ export default {
           {{ user.first_name }} {{ user.last_name }}
         </button>
       </div>
-      <hr class="border border-1 opacity-100 w-75" />
+      <!-- divide line for pc and tablet view -->
+      <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+      <!-- divide line for phone view specific -->
+      <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
     </div>
     <div
       v-else-if="userDetailsStore.role == 'instructor'"
@@ -107,7 +110,7 @@ export default {
           {{ student.first_name }} {{ student.last_name }}
         </button>
       </div>
-      <hr class="border border-1 opacity-100 w-75" />
+      <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
     </div>
   </div>
 </template>

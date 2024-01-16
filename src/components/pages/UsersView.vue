@@ -28,6 +28,8 @@ export default {
       },
       // Only for users with the "student" role.
       instructor: null,
+      // Flag to show user details when in phone view
+      showDetails: false,
     };
   },
   components: {
@@ -61,9 +63,11 @@ export default {
       this.user.email = user.email;
       this.user.avatar = user.avatar;
       this.user.role = user.role;
-
+      // turn on the show details flag
+      this.showDetails = true;
       if (this.user.role == 'student') this.getInstructor();
     },
+    turnOffDetailsPopup() {},
     getInstructor() {
       // Get the instructor's user id.
       var instructorId;
@@ -118,11 +122,25 @@ export default {
     </router-link>
   </div>
   <div id="user-container" class="container-fluid">
-    <div class="row">
+    <div class="row position-relative">
       <div class="col-md-4">
         <UsersList @changeUserId="changeUserId($event)" />
       </div>
-      <div class="col-md-7">
+      <!-- User detail view for PC and Tablet View -->
+      <div class="col-md-7 d-none d-md-block">
+        <div class="row">
+          <UserDetails :userId="user.id" :userRole="user.role" />
+        </div>
+        <div class="row">
+          <WriteMessage :userId="user.id" />
+        </div>
+      </div>
+      <!-- User detail view specific for phone -->
+      <div
+        v-if="showDetails"
+        class="col-md-7 d-block d-md-none"
+        id="user-detail-section"
+      >
         <div class="row">
           <UserDetails :userId="user.id" :userRole="user.role" />
         </div>
@@ -165,5 +183,29 @@ export default {
 #user-container {
   padding-left: 35px;
   padding-right: 46px;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  #first-content-row {
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  #user-container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  /* In the figma design I think in mobile the use detail will be a popup */
+  #user-detail-section {
+    position: absolute;
+    top: -10px;
+  }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
 }
 </style>

@@ -39,7 +39,7 @@ export default {
 </script>
 
 <template>
-  <div id="message-container" class="container mt-3">
+  <div id="message-container" class="container mt-lg-3">
     <label class="form-label">Personal Message</label>
     <textarea
       v-model="message"
@@ -80,5 +80,17 @@ export default {
   font-size: 0.875rem;
   font-weight: 600;
   font-family: 'Poppins' sans-serif;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  #message-container {
+    border-radius: 0px;
+    margin-bottom: 0px;
+  }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
 }
 </style>
