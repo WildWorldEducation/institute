@@ -123,15 +123,15 @@ export default {
   </div>
   <div id="user-container" class="container-fluid">
     <div class="row position-relative">
-      <div class="col-md-4">
+      <div class="col-lg-4 col-md-5">
         <UsersList @changeUserId="changeUserId($event)" />
       </div>
       <!-- User detail view for PC and Tablet View -->
       <div class="col-md-7 d-none d-md-block">
-        <div class="row">
+        <div class="row user-form-data-row">
           <UserDetails :userId="user.id" :userRole="user.role" />
         </div>
-        <div class="row">
+        <div class="row user-form-data-row">
           <WriteMessage :userId="user.id" />
         </div>
       </div>
@@ -207,5 +207,13 @@ export default {
 
 /* Tablets */
 @media (min-width: 481px) and (max-width: 1024px) {
+  #user-container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .user-form-data-row {
+    margin-right: 0px;
+  }
 }
 </style>

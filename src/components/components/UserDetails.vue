@@ -46,7 +46,7 @@ export default {
       </div>
     </div>
     <div class="row">
-      <div class="col col-lg-4 d-flex flex-column">
+      <div class="col col-md-5 col-lg-4 d-flex flex-column">
         <img id="user-avatar" :src="this.$parent.user.avatar" />
         <div
           id="user-function-btns-row"
@@ -318,9 +318,31 @@ export default {
     border-radius: 0px;
     padding-bottom: 0px;
   }
+  #user-avatar {
+    width: 180px;
+    height: 180px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 12px;
+  }
 }
 
 /* Tablets */
 @media (min-width: 481px) and (max-width: 1024px) {
+  #user-information {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 15px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  #user-avatar {
+    width: 169px;
+    height: 169px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 12px;
+  }
 }
 </style>
