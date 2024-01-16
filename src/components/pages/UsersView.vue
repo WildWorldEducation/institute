@@ -55,6 +55,17 @@ export default {
     }
   },
   methods: {
+    // This method will always get call by child element to restore current user to the first one
+    changeUserToDefault() {
+      console.log('CALL CHANGE TO DEFAULT');
+      this.user.id = this.usersStore.users[0].id;
+      this.user.firstName = this.usersStore.users[0].first_name;
+      this.user.lastName = this.usersStore.users[0].last_name;
+      this.user.username = this.usersStore.users[0].username;
+      this.user.email = this.usersStore.users[0].email;
+      this.user.avatar = this.usersStore.users[0].avatar;
+      this.user.role = this.usersStore.users[0].role;
+    },
     changeUserId(user) {
       this.user.id = user.id;
       this.user.firstName = user.first_name;
