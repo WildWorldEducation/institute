@@ -28,7 +28,8 @@ export default {
                     name: 'PhD'
                 }
             ],
-            checkedFilters: []
+            checkedFilters: [],
+            isFilterApplied: false
         }
     },
     async created() {
@@ -38,6 +39,7 @@ export default {
     },
     methods: {
         applyFilter: function (level) {
+            this.isFilterApplied = true;
             this.$parent.filterSkills(level)
         }
     }
@@ -47,21 +49,23 @@ export default {
 <template>
     <div id="filters">
         <h1 id="filterMainHeader" class="mb-2">My Skill Tree</h1>
-        <div class="form-check">
+        <!-- <div class="form-check">
             <input class="form-check-input" type="checkbox" :value="0" id="flexCheckDefault" v-model="checkedFilters"
                 @change="applyFilter()">
             <label class=" form-check-label" for="flexCheckDefault">
                 Mastered and available skills
             </label>
-        </div>
-
-        <div v-for="level in levels">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" :value="level.id" id="flexCheckDefault"
-                    v-model="checkedFilters" @change="applyFilter(level.id)">
-                <label class=" form-check-label" for="flexCheckDefault">
-                    {{ level.name }}
-                </label>
+        </div> -->
+        <div v-if="isFilterApplied == false">
+            <p class="mb-2">Choose which level to filter out</p>
+            <div v-for="level in levels">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" :value="level.id" id="flexCheckDefault"
+                        v-model="checkedFilters" @change="applyFilter(level.id)">
+                    <label class=" form-check-label" for="flexCheckDefault">
+                        {{ level.name }}
+                    </label>
+                </div>
             </div>
         </div>
     </div>
