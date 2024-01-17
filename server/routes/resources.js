@@ -67,6 +67,8 @@ router.post('/add/:skillId', (req, res, next) => {
  * @return response()
  */
 router.delete('/delete/:resourceId', (req, res, next) => {
+
+
     if (req.session.userName) {
         var postUserId;
         let sqlQuery1 = "SELECT user_id FROM resources WHERE id=" + req.params.resourceId;
@@ -77,9 +79,11 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                 }
                 else {
                     postUserId = results[0].user_id;
-                    if (postUserId == session.userId || session.role == 'admin') {
+                    if (postUserId == req.session.userId || req.session.role == 'admin') {
                         // Delete the post.               
-                        let sqlQuery2 = "DELETE FROM resources WHERE id=" + req.params.resourceId;
+
+                        console.log('---')
+                        console.log(sqlQuery2)
                         let query2 = conn.query(sqlQuery2, (err, results) => {
                             try {
                                 if (err) {
@@ -92,6 +96,7 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                     }
                 }
             } catch (err) {
+                console.error(err)
                 next(err)
             }
         });
@@ -119,7 +124,7 @@ router.put('/edit/:id', (req, res, next) => {
                 }
                 else {
                     postUserId = results[0].user_id;
-                    if (postUserId == session.userId) {
+                    if (postUserId == req.session.userId) {
                         // Edit the post.
                         let sqlQuery2 = "UPDATE resources SET content='" + req.body.editordata + "' WHERE id=" + req.params.id;
                         let query2 = conn.query(sqlQuery2, (err, results) => {
