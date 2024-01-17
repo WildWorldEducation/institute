@@ -26,48 +26,31 @@ export default {
           <img src="/images/logo-red.png" alt="" width="50" height="50" />
         </RouterLink>
         <span class="navbar-brand">The Collins Institute</span>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li v-if="userDetailsStore.role == 'student'" class="nav-item">
-              <RouterLink to="/skill-tree" class="nav-link"
-                >Skill Tree</RouterLink
-              >
+              <RouterLink to="/skill-tree" class="nav-link">Skill Tree</RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink to="/skills" class="nav-link">
                 <span> Skills </span>
-                <img src="/images/nav-bar-arrow.svg" />
               </RouterLink>
             </li>
             <li v-if="userDetailsStore.role != 'student'" class="nav-item">
               <RouterLink to="/users" class="nav-link">
                 <span v-if="userDetailsStore.role == 'admin'">Users </span>
-                <span v-else-if="userDetailsStore.role == 'instructor'"
-                  >Students</span
-                >
-                <img src="/images/nav-bar-arrow.svg" />
+                <span v-else-if="userDetailsStore.role == 'instructor'">Students</span>
               </RouterLink>
             </li>
           </ul>
           <ul class="navbar-nav d-flex">
             <li class="nav-item me-2">
               <RouterLink to="/profile-settings" class="nav-link">
-                <img
-                  id="user-avatar"
-                  :src="userDetailsStore.avatar"
-                  alt="user avatar"
-                />
+                <img id="user-avatar" :src="userDetailsStore.avatar" alt="user avatar" />
               </RouterLink>
             </li>
           </ul>
@@ -97,9 +80,10 @@ export default {
   align-items: baseline;
 }
 
-.nav-link > img {
+.nav-link>img {
   margin-left: 5px;
 }
+
 #user-avatar {
   width: 40px;
   height: 40px;
