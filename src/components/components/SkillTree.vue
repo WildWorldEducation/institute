@@ -36,7 +36,7 @@ export default {
             width: null,
             height: null,
             // D3 radius multiplier
-            radiusMultiplier: 4,
+            radiusMultiplier: 8,
             skill: {
                 id: null,
                 children: [],
@@ -536,57 +536,95 @@ export default {
                 this.isSkillInfoPanelShown = false;
             }
         },
-        filterSkills(level) {
-            // Recursive algorithm to remove skills not in the filter.
-            var filteredSkills = []
-            function filterSkills(children, level) {
-                // Go through each nested level of the array.
+        // To filter the skill tree based on level.
+        // At the moment, it simply removes the chosen level.
+        // This does not make sense from a user perspective, as what we want is for 
+        // the user to choose all the elvels they want to see.
+        // TODO: change to checkboxes, that start out checked.
+        // levels are removed when they are unchecked.
+        async filterSkills(level) {
+            // Flatten the nested array that we are using for the skill tree, first.
+            var flattenedSkillChildren = []
+            // Recursive function for nested array.
+            function flattenNestedArray(children, context) {
+                // Check if any child skills. If so, delete them.
                 for (let i = 0; i < children.length; i++) {
-                    // If there isa  match for the filter, add it to the new array.
-                    if (children[i].level == level || children[i].level == "domain") {
-                        filteredSkills.push(children[i])
-                    }
-
-                    // If the element has children, run the function on that array.
-                    if (children[i].children.length > 0)
-                        filterSkills(children[i].children, level)
+                    flattenedSkillChildren.push(children[i])
+                    // Run the above function again recursively.
+                    flattenNestedArray(children[i].children, context)
                 }
             }
-            filterSkills(this.skill.children, level);
+            flattenNestedArray(this.skill.children, this);
 
-            // To convert the regular array to a nested one.
-            for (var i = 0; i < filteredSkills.length; i++) {
-                filteredSkills[i].children = [];
-                if (filteredSkills[i].parent != null && filteredSkills[i].parent != 0) {
-                    var parentId = filteredSkills[i].parent;
-
-                    // go through all rows again, add children
-                    for (let j = 0; j < filteredSkills.length; j++) {
-                        if (filteredSkills[j].id == parentId) {
-                            filteredSkills[j].children.push(filteredSkills[i]);
+            // Before we filter, we need to change the parent nodes to ones that will
+            // not be filtered out.
+            var newParent = 0
+            for (let i = 0; i < flattenedSkillChildren.length; i++) {
+                let skill = flattenedSkillChildren[i];
+                reassignParentLevels(skill, skill.parent, level, 0);
+                flattenedSkillChildren[i].parent = newParent
+            }
+            // Recursive function.
+            function reassignParentLevels(skill, parent, level, depth) {
+                depth++
+                for (let i = 0; i < flattenedSkillChildren.length; i++) {
+                    if (flattenedSkillChildren[i].id == parent) {
+                        let parent = flattenedSkillChildren[i]
+                        if (parent.level == level) {
+                            newParent = parent.parent
+                            reassignParentLevels(skill, newParent, level, depth);
+                        }
+                        else {
+                            newParent = parent.id
                         }
                     }
                 }
             }
 
-            let studentSkills = [];
-            for (var i = 0; i < filteredSkills.length; i++) {
-                if (filteredSkills[i].parent == null || filteredSkills[i].parent == 0) {
-                    studentSkills.push(filteredSkills[i]);
+            // Next we copy the flattened user-skill array, ommitting any filtered skills.
+            let filteredSkills2 = []
+            for (var i = 0; i < flattenedSkillChildren.length; i++) {
+                if (flattenedSkillChildren[i].level != level) {
+                    filteredSkills2.push(flattenedSkillChildren[i])
                 }
             }
 
+            // We then convert the flat array back to a nested one.
+            for (var i = 0; i < filteredSkills2.length; i++) {
+                filteredSkills2[i].children = [];
+                if (filteredSkills2[i].parent != null && filteredSkills2[i].parent != 0) {
+                    var parentId = filteredSkills2[i].parent;
+                    // go through all rows again, add children
+                    for (let j = 0; j < filteredSkills2.length; j++) {
+                        if (filteredSkills2[j].id == parentId) {
+                            filteredSkills2[j].children.push(filteredSkills2[i]);
+                        }
+                    }
+                }
+            }
+            let studentSkills = [];
+            for (var i = 0; i < filteredSkills2.length; i++) {
+                if (filteredSkills2[i].parent == null || filteredSkills2[i].parent == 0) {
+                    studentSkills.push(filteredSkills2[i]);
+                }
+            }
+
+            // Then assign the new array to the original skill tre array.
             this.skill.children = studentSkills
 
+            // We delete the stage contents.
             for (let i = 0; i < this.stageContents.length; i++) {
                 this.stageContents[i].destroy()
             }
+
             this.applyFilter();
         },
         applyFilter() {
+            // Another attempt to clear the stage.
+            // Not sure if both are needed.
             this.$pixiApp.stage.children[0].removeChildren()
-            this.radiusMultiplier = 2
 
+            // Recreate the skill object.
             const centerNodeSprite = PIXI.Sprite.from('center-node.png');
             this.skill = {
                 name: "SKILLS",
@@ -594,6 +632,7 @@ export default {
                 children: this.skill.children
             }
 
+            // Make the tree again.
             this.getAlgorithm();
         }
     }
