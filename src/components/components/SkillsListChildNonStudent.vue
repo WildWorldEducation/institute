@@ -123,6 +123,7 @@ export default {
 </script>    
 
 <template>
+    test
     <button :style="indent" :class="{
         'domains': type == 'domain',
         // Colors and background images for top level skills.    
