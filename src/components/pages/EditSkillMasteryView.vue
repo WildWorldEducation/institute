@@ -20,6 +20,8 @@ export default {
         username: null,
         avatar: null,
       },
+      inputText: '',
+      suggestSkills: [],
     };
   },
   async created() {
@@ -27,10 +29,35 @@ export default {
       await this.skillsStore.getSkillsList();
     }
     if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
+    const chooseUserId = this.$route.params.id;
+    // Search for user info in users store
+    this.usersStore.users.forEach((user) => {
+      if (user.id == chooseUserId) {
+        this.user.id = user.id;
+        this.user.username = user.username;
+        this.user.avatar = user.avatar;
+      }
+    });
+  },
+  methods: {
+    getReferenceSkill() {
+      // Only show the suggestion if the user type in 2 word
+      if (this.inputText.length < 2) {
+        this.suggestSkills = [];
+      } else {
+        this.suggestSkills = this.skillsStore.skillsList.filter((skill) => {
+          // Lower case so the result wont be case sensitive
+          return skill.name
+            .toLowerCase()
+            .includes(this.inputText.toLowerCase());
+        });
+      }
+    },
 
-    this.user.id = this.usersStore.users[0].id;
-    this.user.username = this.usersStore.users[0].username;
-    this.user.avatar = this.usersStore.users[0].avatar;
+    handleChooseSuggestSkill(skillName) {
+      this.inputText = skillName;
+      this.suggestSkills = [];
+    },
   },
 };
 </script>
@@ -70,14 +97,30 @@ export default {
       </div>
       <div class="row mt-3 mt-md-4 mt-xl-5">
         <div class="col col-md-10 col-xl-5 mb-3 mt-md-3 mt-xl-5">
-          <select class="form-select">
-            <option
-              v-for="skill in this.skillsStore.skillsList"
-              :value="skill.id"
-            >
+          <input
+            id="skill-input"
+            v-model="inputText"
+            @input="getReferenceSkill"
+            placeholder="type skill name"
+          />
+          <!-- <select v-if="suggestSkills.length > 0" class="form-select">
+            <option v-for="skill in suggestSkills" :value="skill.id">
               {{ skill.name }}
             </option>
-          </select>
+          </select> -->
+          <div
+            v-if="suggestSkills.length > 0"
+            id="suggest-skills"
+            class="flex flex-column"
+          >
+            <div
+              class="suggest-option"
+              v-for="skill in suggestSkills"
+              @click="handleChooseSuggestSkill(skill.name)"
+            >
+              {{ skill.name }}
+            </div>
+          </div>
         </div>
       </div>
       <div class="row mt-2">
@@ -142,6 +185,10 @@ export default {
 </template>
 
 <style scoped>
+input:focus {
+  outline: none;
+}
+
 #edit-skill-mastery {
   background-color: #e4ecf4;
   border-radius: 12px;
@@ -183,6 +230,45 @@ export default {
 #banner > img {
   width: 100%;
   height: auto;
+}
+
+#skill-input {
+  width: 100%;
+  height: 42px;
+  padding: 20px, 14px, 10px, 14px;
+  padding-left: 20px;
+  border-radius: 8px;
+  border: 1px;
+  gap: 8px;
+  background: linear-gradient(0deg, #ffffff, #ffffff),
+    linear-gradient(0deg, #f2f4f7, #f2f4f7);
+  color: #667085;
+  box-shadow: 0px 1px 2px 0px #1018280d;
+  font-family: 'Poppins' sans-serif;
+}
+
+#suggest-skills {
+  border-radius: 6.63px;
+  border: 0.83px;
+  background: linear-gradient(0deg, #ffffff, #ffffff),
+    linear-gradient(0deg, #65e0a5, #65e0a5);
+  border: 1px solid #f2f4f7;
+  border: 0.83px solid #65e0a5;
+  box-shadow: 0px 3.317408561706543px 4.9761128425598145px -1.6587042808532715px
+    #10182808;
+  box-shadow: 0px 9.952225685119629px 13.269634246826172px -3.317408561706543px #10182814;
+}
+
+.suggest-option {
+  height: 36.59px;
+  padding: 8.29px 11px 8px 12px;
+  gap: 6.63px;
+  color: #344054;
+}
+
+.suggest-option:hover {
+  background: #65e0a51a;
+  cursor: pointer;
 }
 
 #header-tile {
