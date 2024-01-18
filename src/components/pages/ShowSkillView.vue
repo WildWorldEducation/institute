@@ -20,7 +20,6 @@ export default {
     };
   },
   async mounted() {
-    // Need to work out which banner to show.
     // Call the API to get list of skills.
     if (this.skillsStore.skillsList.length == 0) {
       await this.skillsStore.getSkillsList();
@@ -43,8 +42,12 @@ export default {
   <div id="banner">
     <!--TODO: Assign banner dynamically -->
     <img v-bind:src="bannerImage" class="img-fluid" />
-    <!-- Show a static img for now -->
-    <img src="/images/banners/institute-collins-2.png" class="img-fluid" />
+    <!-- Show a static img if skill have no banner image -->
+    <img
+      v-if="!bannerImage"
+      src="/images/banners/institute-collins-2.png"
+      class="img-fluid"
+    />
   </div>
   <div class="container">
     <div v-if="userDetailsStore.role == 'student'" id="btn-row">

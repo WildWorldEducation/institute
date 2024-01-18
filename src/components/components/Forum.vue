@@ -396,6 +396,10 @@ export default {
   padding-bottom: 10px;
 }
 
+.green-btn:hover {
+  background-color: #3eb3a3;
+}
+
 #posts-big-container {
   padding-left: 10px;
   padding-right: 10px;
