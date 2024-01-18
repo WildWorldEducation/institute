@@ -12,8 +12,8 @@ export default {
     },
     data() {
         return {
-            showChildren: null,
-            showSubskills: null,
+            showChildren: false,
+            showSubskills: false,
             showModal: false,
             isSuperSkill: false,
             childrenNotSubskills: [],
@@ -89,6 +89,7 @@ export default {
     methods: {
         // Save the state of the skills list to browser storage.
         toggleChildren() {
+            console.log("test")
             this.showChildren = !this.showChildren
             // if (this.showChildren == false) {
             //     localStorage.setItem(this.id + "children", true);
