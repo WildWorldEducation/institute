@@ -12,8 +12,8 @@ export default {
     },
     data() {
         return {
-            showChildren: false,
-            showSubskills: false,
+            showChildren: null,
+            showSubskills: null,
             showModal: false,
             isSuperSkill: false,
             childrenNotSubskills: [],
@@ -72,45 +72,42 @@ export default {
     },
     mounted() {
         // This is to load the state of the nested skills list (which child skills are currently showing).
-        // if (localStorage.getItem(this.id + "children") == "true") {
-        //     this.showChildren = true
-        // }
-        // else {
-        //     this.showChildren = false
-        // }
+        if (localStorage.getItem(this.id + "children") == "true") {
+            this.showChildren = true
+        }
+        else {
+            this.showChildren = false
+        }
 
-        // if (localStorage.getItem(this.id + "sub") == "true") {
-        //     this.showSubskills = true
-        // }
-        // else {
-        //     this.showSubskills = false
-        // }
+        if (localStorage.getItem(this.id + "sub") == "true") {
+            this.showSubskills = true
+        }
+        else {
+            this.showSubskills = false
+        }
     },
     methods: {
         // Save the state of the skills list to browser storage.
         toggleChildren() {
-            console.log("test")
-            this.showChildren = !this.showChildren
-            // if (this.showChildren == false) {
-            //     localStorage.setItem(this.id + "children", true);
-            //     this.showChildren = true
-            // }
-            // else {
-            //     localStorage.setItem(this.id + "children", false);
-            //     this.showChildren = false
-            // }
+            if (this.showChildren == false) {
+                localStorage.setItem(this.id + "children", true);
+                this.showChildren = true
+            }
+            else {
+                localStorage.setItem(this.id + "children", false);
+                this.showChildren = false
+            }
         },
         // Save the state of the skills list to browser storage.
         toggleSubSkills() {
-            this.showSubskills = !this.showSubskills
-            // if (this.showSubskills == false) {
-            //     localStorage.setItem(this.id + "sub", true);
-            //     this.showSubskills = true
-            // }
-            // else {
-            //     localStorage.setItem(this.id + "sub", false);
-            //     this.showSubskills = false
-            // }
+            if (this.showSubskills == false) {
+                localStorage.setItem(this.id + "sub", true);
+                this.showSubskills = true
+            }
+            else {
+                localStorage.setItem(this.id + "sub", false);
+                this.showSubskills = false
+            }
         },
         ShowMobileButtonsModal() {
             this.showModal = true;
@@ -123,7 +120,6 @@ export default {
 </script>    
 
 <template>
-    test
     <button :style="indent" :class="{
         'domains': type == 'domain',
         // Colors and background images for top level skills.    
