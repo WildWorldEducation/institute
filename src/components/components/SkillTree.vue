@@ -148,6 +148,55 @@ export default {
             // Sort the tree and apply the layout.
             const root = tree(d3.hierarchy(data))
 
+
+            // We need to get the x and y values from the D3 algorithm (root)
+            // and assign them to the nested skills list.
+
+            // First.
+            // Flatten the nested array that we are using for the skill tree, first.
+            var flattenedSkillChildren = []
+            // Recursive function for nested array.
+            function flattenNestedArray(children, context) {
+                // Check if any child skills. If so, delete them.
+                for (let i = 0; i < children.length; i++) {
+                    if (children[i].type != 'sub') {
+                        flattenedSkillChildren.push(children[i])
+                    }
+                    // Run the above function again recursively.
+                    flattenNestedArray(children[i].children, context)
+                }
+            }
+            flattenNestedArray(skillsNoSubSkills, this);
+
+            // Then assign the values.
+            for (let i = 0; i < flattenedSkillChildren.length; i++) {
+                flattenedSkillChildren[i].x = root.descendants()[i + 1].x
+                flattenedSkillChildren[i].y = root.descendants()[i + 1].y
+            }
+
+            // We then convert the flat array back to a nested one.
+            for (var i = 0; i < flattenedSkillChildren.length; i++) {
+                flattenedSkillChildren[i].children = [];
+                if (flattenedSkillChildren[i].parent != null && flattenedSkillChildren[i].parent != 0) {
+                    var parentId = flattenedSkillChildren[i].parent;
+                    // go through all rows again, add children
+                    for (let j = 0; j < flattenedSkillChildren.length; j++) {
+                        if (flattenedSkillChildren[j].id == parentId) {
+                            flattenedSkillChildren[j].children.push(flattenedSkillChildren[i]);
+                        }
+                    }
+                }
+            }
+            let studentSkills = [];
+            for (var i = 0; i < flattenedSkillChildren.length; i++) {
+                if (flattenedSkillChildren[i].parent == null || flattenedSkillChildren[i].parent == 0) {
+                    studentSkills.push(flattenedSkillChildren[i]);
+                }
+            }
+
+            // Then assign the new array to the original skill tree array.
+            this.skill.children = studentSkills
+
             this.drawChart(root)
         },
         drawChart(root) {
@@ -204,18 +253,11 @@ export default {
             this.stageContents.push(centerNodeText)
 
             // Nodes.    
-            function renderDescendantNodes(parentChildren, depth, context) {
+            function renderDescendantNodes(rootChildren, parentChildren, depth, context) {
                 // Increase the depth each recursion.
                 depth++
 
                 for (let [index, child] of parentChildren.entries()) {
-                    for (let i = 0; i < root.descendants().length; i++) {
-                        if (root.descendants()[i].data.id == child.id) {
-                            child.x = root.descendants()[i].x
-                            child.y = root.descendants()[i].y
-                        }
-                    }
-
                     /*
                     * Create the skill node container.
                     * Using the D3 algorithm to get the position.
@@ -319,8 +361,8 @@ export default {
                     nodeName.anchor.set(0.5)
 
                     // This is to deal with the artificially high fontSize mentioned above.
-                    nodeName.scale.x = 0.1
-                    nodeName.scale.y = 0.1
+                    nodeName.scale.x = 0.2
+                    nodeName.scale.y = 0.2
 
                     // Add components to the container.                        
                     nodeContainer.addChild(nodeName);
@@ -472,11 +514,11 @@ export default {
                     * Run the above function again recursively.
                     */
                     if (child.children && Array.isArray(child.children) && child.children.length > 0)
-                        renderDescendantNodes(child.children, depth, context)
+                        renderDescendantNodes(rootChildren, child.children, depth, context)
                 }
             }
 
-            renderDescendantNodes(this.skill.children, 0, this);
+            renderDescendantNodes(root.children, this.skill.children, 0, this);
         },
         recenterTree() {
             this.isRecentered = true
