@@ -31,12 +31,15 @@ export default {
             stageContents: [],
             isSkillInfoPanelShown: false,
             regularLockedUnmasteredNodeSprite: null,
-            // De radius, maybe delete?
+            // D3 radius, maybe delete?
             radius: 0,
             width: null,
             height: null,
             // D3 radius multiplier
-            radiusMultiplier: 8,
+            radiusMultiplier: 16,
+            firstLevelNodeSize: 100,
+            regularNodeSize: 50,
+            subSkillRadius: 50,
             skill: {
                 id: null,
                 children: [],
@@ -92,7 +95,7 @@ export default {
         viewport.center = new PIXI.Point(0, 0);
         viewport
             .drag().pinch().wheel().decelerate()
-            .clampZoom({ minScale: 0.2, maxScale: 5 });
+            .clampZoom({ minScale: 0.05, maxScale: 10 });
 
         const centerNodeSprite = PIXI.Sprite.from('center-node.png');
         this.skill = {
@@ -137,9 +140,10 @@ export default {
             // Create a radial tree layout. The layout’s first dimension (x)
             // is the angle, while the second (y) is the radius.
             const tree = d3.tree()
-                // increase the radius to space out the nodes.
+                // increase the radius to space out the nodes.                
                 .size([2 * Math.PI, this.radius * this.radiusMultiplier])
-                .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+                // Max separation between sibling nodes.
+                .separation((a, b) => (a.parent == b.parent ? 1 : 1) / a.depth);
 
             // Sort the tree and apply the layout.
             const root = tree(d3.hierarchy(data))
@@ -176,9 +180,9 @@ export default {
             centerNode.y = root.y
             centerNode.anchor.set(0.5)
             if (this.isRecentered == false)
-                centerNode.scale.set(0.10)
+                centerNode.scale.set(0.5)
             else
-                centerNode.scale.set(0.25)
+                centerNode.scale.set(1)
 
             this.$pixiApp.stage.children[0].addChild(centerNode)
             // Add to array, so can be deleted when skill tree is recentered.
@@ -269,8 +273,28 @@ export default {
                         nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/domain.png');
                     }
 
-                    nodeGraphic.width = 30
-                    nodeGraphic.height = 30
+                    // Determine if node has children or subskills.
+                    let numChildren = 0
+                    let numSubSkills = 0
+                    for (let i = 0; i < child.children.length; i++) {
+                        if (child.children[i].type != 'sub') {
+                            numChildren++
+                        }
+                        else {
+                            numSubSkills++
+                        }
+                    }
+
+                    // Increase the size of the first level nodes.
+                    if (depth == 1) {
+                        nodeGraphic.width = context.firstLevelNodeSize
+                        nodeGraphic.height = context.firstLevelNodeSize
+                    }
+                    else {
+                        nodeGraphic.width = context.regularNodeSize
+                        nodeGraphic.height = context.regularNodeSize
+                    }
+
                     nodeGraphic.anchor.set(0.5);
                     nodeContainer.addChild(nodeGraphic);
                     /*
@@ -365,6 +389,8 @@ export default {
                         //     context.updateInfoPanel(skill)
                     });
 
+
+
                     context.$pixiApp.stage.children[0].addChild(nodeContainer);
                     // Add to array, so can be deleted when skill tree is recentered.
                     context.stageContents.push(nodeContainer)
@@ -372,17 +398,7 @@ export default {
                     /*
                     * Subskills.
                     */
-                    // Sort the children into subskills and actual child skills.                        
-                    let numChildren = 0
-                    let numSubSkills = 0
-                    for (let i = 0; i < child.children.length; i++) {
-                        if (child.children[i].type != 'sub') {
-                            numChildren++
-                        }
-                        else {
-                            numSubSkills++
-                        }
-                    }
+                    // Sort the children into subskills and actual child skills.                      
                     for (let i = 0; i < child.children.length; i++) {
                         if (child.children[i].type == "sub") {
                             let subNodeContainer = new PIXI.Container();
@@ -394,8 +410,10 @@ export default {
                             // Calculate the nodes angle.
                             let angle = increment * subSkillsIndex
                             let rads = angle * Math.PI / 180
-                            let x = 25 * Math.cos(rads)
-                            let y = 25 * Math.sin(rads)
+                            let x;
+                            let y;
+                            x = context.subSkillRadius * Math.cos(rads)
+                            y = context.subSkillRadius * Math.sin(rads)
 
                             subNodeContainer.x = x
                             subNodeContainer.y = y
@@ -441,8 +459,8 @@ export default {
                                 else
                                     nodeGraphic = PIXI.Sprite.from('images/skill-tree-nodes/phd-small-locked.png');
                             }
-                            nodeGraphic.width = 10
-                            nodeGraphic.height = 10
+                            nodeGraphic.width = 15
+                            nodeGraphic.height = 15
                             nodeGraphic.anchor.set(0.5);
 
                             subNodeContainer.addChild(nodeGraphic);
