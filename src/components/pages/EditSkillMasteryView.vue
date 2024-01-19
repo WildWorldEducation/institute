@@ -269,7 +269,7 @@ input:focus {
 
 #suggest-skills {
   z-index: 10;
-  width: 95%;
+  width: 95.5%;
   margin-right: 0px;
   margin-left: auto;
   border-radius: 6.63px;
@@ -454,7 +454,7 @@ input:focus {
   animation-name: s-ripple-dup;
 }
 
-@media (min-width: 768px) and (max-width: 1999px) {
+@media (min-width: 768px) and (max-width: 1025px) {
   .avatar {
     margin-left: 0px;
     margin-right: 0px;
