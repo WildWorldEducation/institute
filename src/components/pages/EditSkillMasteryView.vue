@@ -2,15 +2,17 @@
 // Import the users store.
 import { useUsersStore } from '../../stores/UsersStore';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore';
 
 export default {
   setup() {
     const usersStore = useUsersStore();
     const skillsStore = useSkillsStore();
-
+    const userSkillsStore = useUserSkillsStore();
     return {
       usersStore,
       skillsStore,
+      userSkillsStore,
     };
   },
   data() {
@@ -22,6 +24,9 @@ export default {
       },
       inputText: '',
       suggestSkills: [],
+      selectedSkillId: null,
+      checkUnlock: false,
+      checkMastered: false,
     };
   },
   async created() {
@@ -54,9 +59,19 @@ export default {
       }
     },
 
-    handleChooseSuggestSkill(skillName) {
-      this.inputText = skillName;
+    handleChooseSuggestSkill(skill) {
+      this.inputText = skill.name;
+      this.selectedSkillId = skill.id;
       this.suggestSkills = [];
+    },
+
+    handleSubmitForm() {
+      // call method in user skill store base on form check state
+      this.checkUnlock &&
+        this.userSkillsStore.MakeAccessible(this.user.id, this.selectedSkillId);
+      this.checkMastered &&
+        this.userSkillsStore.MakeMastered(this.user.id, this.selectedSkillId);
+      alert('your action is submitted');
     },
   },
 };
@@ -103,11 +118,6 @@ export default {
             @input="getReferenceSkill"
             placeholder="type skill name"
           />
-          <!-- <select v-if="suggestSkills.length > 0" class="form-select">
-            <option v-for="skill in suggestSkills" :value="skill.id">
-              {{ skill.name }}
-            </option>
-          </select> -->
           <div
             v-if="suggestSkills.length > 0"
             id="suggest-skills"
@@ -116,7 +126,7 @@ export default {
             <div
               class="suggest-option"
               v-for="skill in suggestSkills"
-              @click="handleChooseSuggestSkill(skill.name)"
+              @click="handleChooseSuggestSkill(skill)"
             >
               {{ skill.name }}
             </div>
@@ -157,6 +167,7 @@ export default {
                 name="nodeType"
                 id="regularSkillRadio"
                 value="regular"
+                v-model="checkUnlock"
               />
               <div class="control_indicator"></div>
             </label>
@@ -169,12 +180,19 @@ export default {
                 name="nodeType"
                 id="superSkillRadio"
                 value="super"
+                v-model="checkMastered"
               />
               <div class="control_indicator"></div>
             </label>
           </div>
           <div class="col pe-0">
-            <button id="submit-btn" class="btn purple-btn">Submit</button>
+            <button
+              id="submit-btn"
+              class="btn purple-btn"
+              @click="handleSubmitForm"
+            >
+              Submit
+            </button>
           </div>
         </div>
       </div>
