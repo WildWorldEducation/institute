@@ -111,7 +111,9 @@ export default {
         </div>
       </div>
       <div class="row mt-3 mt-md-4 mt-xl-5">
-        <div class="col col-md-10 col-xl-5 mb-3 mt-md-3 mt-xl-5">
+        <div
+          class="col col-md-10 col-xl-5 mb-3 mt-md-3 mt-xl-5 position-relative"
+        >
           <input
             id="skill-input"
             v-model="inputText"
@@ -121,7 +123,7 @@ export default {
           <div
             v-if="suggestSkills.length > 0"
             id="suggest-skills"
-            class="flex flex-column"
+            class="flex flex-column position-absolute"
           >
             <div
               class="suggest-option"
@@ -266,6 +268,10 @@ input:focus {
 }
 
 #suggest-skills {
+  z-index: 10;
+  width: 95%;
+  margin-right: 0px;
+  margin-left: auto;
   border-radius: 6.63px;
   border: 0.83px;
   background: linear-gradient(0deg, #ffffff, #ffffff),
@@ -455,6 +461,10 @@ input:focus {
     width: 100%;
     height: auto;
   }
+
+  #suggest-skills {
+    width: 96%;
+  }
 }
 
 /* CSS Specific for phone view */
@@ -463,6 +473,9 @@ input:focus {
     margin-left: auto;
     margin-right: auto;
     margin-top: 40px;
+  }
+  #suggest-skills {
+    width: 93%;
   }
 }
 </style>
