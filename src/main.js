@@ -21,8 +21,9 @@ var pixiApp = new PIXI.Application({
     resolution: 2,
     transparent: true,
     antialias: true,
-    autoDensity: true,
+    useContextAlpha: false,
     autoStart: true,
+    cullable: true
 });
 
 app.config.globalProperties.$pixiApp = pixiApp;
