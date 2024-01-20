@@ -1,14 +1,11 @@
 <script>
-
 export default {
     setup() { },
     data() {
-        return {
-        }
+        return {};
     },
     props: ['skill'],
-    computed: {
-    },
+    computed: {},
     methods: {
         hideInfoPanel() {
             // If panel is showing.
@@ -16,21 +13,21 @@ export default {
                 // Responsive.
                 // Laptop etc.
                 if (screen.width > 800) {
-                    document.getElementById("skillInfoPanel").style.width = "0px";
+                    document.getElementById('skillInfoPanel').style.width = '0px';
                 }
                 // Mobile device.
                 else {
-                    document.getElementById("skillInfoPanel").style.height = "0px";
+                    document.getElementById('skillInfoPanel').style.height = '0px';
                 }
                 // Hide the background.
-                document.getElementById("sidepanel-backdrop").style.display = "none";
+                document.getElementById('sidepanel-backdrop').style.display = 'none';
 
                 this.$parent.isSkillInfoPanelShown = false;
             }
         },
-    }
-}
-</script> 
+    },
+};
+</script>
 
 <template>
     <div id="skillInfoPanel" class="skillInfoPanel">
@@ -38,12 +35,12 @@ export default {
             <a href="javascript:void(0)" class="closebtn" @click="this.hideInfoPanel()">&times;</a>
         </div>
         <div id="skillInfoPanelContainer">
-            <h1>{{ skill.name }}</h1>
-            <p>{{ skill.description }}</p>
+            <h1>{{ skill?.name }}</h1>
+            <p>{{ skill?.description }}</p>
             <div class="form-check">
                 <!-- 'pointer-events: none' to make checkbox unclickable, without it being greyed out (disabled). -->
-                <input class="form-check-input" type="checkbox" :value="skill.isMastered" style="pointer-events: none;">
-                <label class="form-check-label" style="color: #9C7EEC; pointer-events: none;">
+                <input class="form-check-input" type="checkbox" :value="skill?.isMastered" style="pointer-events: none" />
+                <label class="form-check-label" style="color: #9c7eec; pointer-events: none">
                     Attained
                 </label>
             </div>
@@ -63,37 +60,36 @@ export default {
     </div>
 </template>
 
-
 <style scoped>
 /* The sidepanel menu */
 .skillInfoPanel {
     position: absolute;
     z-index: 1;
-    background-color: #FFF;
+    background-color: #fff;
     /* Disable horizontal scroll */
     overflow-x: hidden;
     /* 0.5 second transition effect to slide in the sidepanel */
     transition: 0.5s;
-    background: #E4ECF4;
+    background: #e4ecf4;
     /* So it is above the darkened background. */
     z-index: 1072;
 }
 
 /* The sidepanel header */
 #skillHeading {
-    color: #9C7EEC;
+    color: #9c7eec;
     font-size: 32px;
     font-weight: 600;
 }
 
 #skillDescription {
-    color: #BCA3FF;
+    color: #bca3ff;
 }
 
 .green-btn {
-    background-color: #36C1AF;
+    background-color: #36c1af;
     color: white;
-    border: 1px solid #2CA695;
+    border: 1px solid #2ca695;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;
@@ -125,7 +121,6 @@ export default {
     }
 }
 
-
 @media (max-width: 800px) {
     .skillInfoPanel {
         /* This will be changed with JavaScript */
@@ -148,8 +143,8 @@ export default {
 .closebtn {
     font-family: 'Poppins900';
     text-decoration: none;
-    color: #C8D7DA;
-    border: 1.45px solid #C8D7DA;
+    color: #c8d7da;
+    border: 1.45px solid #c8d7da;
     border-radius: 5px;
     width: 29px;
     height: 29px;
@@ -157,6 +152,6 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #EDF5FD;
+    background-color: #edf5fd;
 }
 </style>
