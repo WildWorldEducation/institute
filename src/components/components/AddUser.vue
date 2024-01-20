@@ -24,8 +24,7 @@ export default {
       newUserId: null,
       isValidated: false,
       instructors: [],
-      instructorId: null,
-      instructorName: 'haha',
+      instructorId: 1,
     };
   },
   async created() {
@@ -63,6 +62,10 @@ export default {
       for (let i = 0; i < this.usersStore.users.length; i++) {
         if (this.usersStore.users[i].role == 'instructor') {
           this.instructors.push(this.usersStore.users[i]);
+          // if there are no instructor yet we assign one
+          if (this.instructorId === 1) {
+            this.instructorId = this.usersStore.users[i].id;
+          }
         }
       }
     },
@@ -169,6 +172,11 @@ export default {
     removeImage: function (e) {
       this.image = '';
       this.user.avatar = this.image;
+    },
+
+    handleSelectInstructor(selectId) {
+      console.log(selectId + 'IS THE ID OF INSTRUCTOR');
+      this.instructorId = selectId;
     },
   },
 };
@@ -279,11 +287,11 @@ export default {
           </div>
           <div v-if="user.role == 'student'" class="mb-3">
             <label class="form-label">Instructor</label>
-            <select class="form-select">
+            <select class="form-select" v-model="instructorId">
               <option
                 class="form-custom-option"
                 v-for="instructor in instructors"
-                @click="instructorId = instructor.id"
+                :value="instructor.id"
               >
                 {{ instructor.username }}
               </option>
