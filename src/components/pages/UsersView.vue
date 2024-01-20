@@ -52,6 +52,7 @@ export default {
     // Get the instructor student list, if not yet loaded.
     if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
       await this.instructorStudentsStore.getInstructorStudentsList();
+      console.log(this.instructorStudentsStore.instructorStudentsList);
     }
   },
   methods: {
