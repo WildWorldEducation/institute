@@ -166,7 +166,7 @@ export default {
         <div v-if="this.$parent.user.role == 'student'" class="mb-3">
           <label class="form-label">Instructor</label>
           <input
-            class="form-control"
+            class="form-control user-input-information"
             type="text"
             v-model="this.$parent.instructor"
             disabled
