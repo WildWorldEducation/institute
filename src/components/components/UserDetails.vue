@@ -96,6 +96,7 @@ export default {
             </svg>
           </button>
         </div>
+
         <router-link
           v-if="userRole == 'student'"
           :to="this.$parent.user.id + '/skill-tree'"
@@ -166,7 +167,7 @@ export default {
         <div v-if="this.$parent.user.role == 'student'" class="mb-3">
           <label class="form-label">Instructor</label>
           <input
-            class="form-control"
+            class="form-control user-input-information"
             type="text"
             v-model="this.$parent.instructor"
             disabled
@@ -373,6 +374,11 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
     flex-direction: column;
+  }
+
+  .green-btn {
+    margin-left: 10px !important;
+    margin-right: auto !important;
   }
 }
 </style>

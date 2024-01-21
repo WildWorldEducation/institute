@@ -49,10 +49,10 @@ export default {
     this.user.avatar = this.usersStore.users[0].avatar;
     this.user.role = this.usersStore.users[0].role;
 
-    // Get the instructor student list, if not yet loaded.
-    if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
-      await this.instructorStudentsStore.getInstructorStudentsList();
-    }
+    // Get the instructor student list, every time page is re-created because the instructor list may change
+    // due to edit and add user activity.
+
+    await this.instructorStudentsStore.getInstructorStudentsList();
   },
   methods: {
     // This method will always get call by child element to restore current user to the first one
