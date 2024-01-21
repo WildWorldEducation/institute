@@ -15,7 +15,6 @@ export default {
             showChildren: null,
             showSubskills: null,
             showModal: false,
-            isSuperSkill: false,
             childrenNotSubskills: [],
             subSkills: []
         };
@@ -49,17 +48,6 @@ export default {
     async created() {
         await this.skillsStore.getNestedSkillsList();
         await this.skillsStore.getSkillsList();
-
-        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            if (this.skillsStore.skillsList[i].type == 'sub') {
-                var superSkillId = this.skillsStore.skillsList[i].parent
-                for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
-                    if (this.id == superSkillId) {
-                        this.isSuperSkill = true
-                    }
-                }
-            }
-        }
 
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
@@ -135,7 +123,7 @@ export default {
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
 
-            <button v-if="isSuperSkill" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
+            <button v-if="type == 'super'" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
                 <!-- Plus sign -->
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -193,7 +181,7 @@ export default {
         <!-- Modal content -->
         <div class="modal-content d-flex">
             <!-- Buttons -->
-            <button v-if="isSuperSkill" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
+            <button v-if="type == 'super'" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
                 <!-- Plus sign -->
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
