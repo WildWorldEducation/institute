@@ -1,6 +1,6 @@
 <script>
 import UsersList from '../components/UsersList.vue';
-import UserDetails from '../components/UserDetails.vue';
+import UserDetails from '../components/userdetails.vue';
 import WriteMessage from '../components/WriteMessage.vue';
 
 // Import the users store.
@@ -48,12 +48,8 @@ export default {
     this.user.email = this.usersStore.users[0].email;
     this.user.avatar = this.usersStore.users[0].avatar;
     this.user.role = this.usersStore.users[0].role;
-
-    // Get the instructor student list, if not yet loaded.
-    if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
-      await this.instructorStudentsStore.getInstructorStudentsList();
-      console.log(this.instructorStudentsStore.instructorStudentsList);
-    }
+    // Alway refetch for the student instruction list because the edit and add user may change the list
+    await this.instructorStudentsStore.getInstructorStudentsList();
   },
   methods: {
     // This method will always get call by child element to restore current user to the first one

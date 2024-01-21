@@ -3,14 +3,17 @@
 import router from '../../router';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore';
+import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 
 export default {
   setup() {
     const skillsStore = useSkillsStore();
     const usersStore = useUsersStore();
+    const instructorStudentsStore = useInstructorStudentsStore();
     return {
       skillsStore,
       usersStore,
+      instructorStudentsStore,
     };
   },
   data() {
@@ -149,6 +152,10 @@ export default {
             var url = '/users/add/instructor';
             fetch(url, requestOptions);
           }
+        })
+        .then(async (data) => {
+          await this.instructorStudentsStore.getInstructorStudentsList();
+          console.log(this.instructorStudentsStore.instructorStudentsList);
         });
     },
     // For image upload.
@@ -172,11 +179,6 @@ export default {
     removeImage: function (e) {
       this.image = '';
       this.user.avatar = this.image;
-    },
-
-    handleSelectInstructor(selectId) {
-      console.log(selectId + 'IS THE ID OF INSTRUCTOR');
-      this.instructorId = selectId;
     },
   },
 };
