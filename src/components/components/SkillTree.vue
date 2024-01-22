@@ -36,7 +36,7 @@ export default {
             width: null,
             height: null,
             // D3 radius multiplier
-            radiusMultiplier: 16,
+            radiusMultiplier: 256,
             firstLevelNodeSize: 100,
             regularNodeSize: 50,
             subSkillRadius: 50,
@@ -95,7 +95,7 @@ export default {
         viewport.center = new PIXI.Point(0, 0);
         viewport
             .drag().pinch().wheel().decelerate()
-            .clampZoom({ minScale: 0.05, maxScale: 10 });
+            .clampZoom({ minScale: 0.001, maxScale: 10 });
 
         const centerNodeSprite = PIXI.Sprite.from('center-node.png');
         this.skill = {
@@ -175,6 +175,8 @@ export default {
                 flattenedSkillChildren[i].x = sortedRootDescendants[i + 1].x
                 flattenedSkillChildren[i].y = sortedRootDescendants[i + 1].y
             }
+
+            console.log(sortedRootDescendants)
 
             // We then convert the flat array back to a nested one.
             for (var i = 0; i < flattenedSkillChildren.length; i++) {
