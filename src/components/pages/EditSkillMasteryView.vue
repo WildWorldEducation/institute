@@ -43,6 +43,8 @@ export default {
         this.user.avatar = user.avatar;
       }
     });
+    // Get userSkill list data
+    await this.userSkillsStore.getUnnestedList(this.user.id);
   },
   methods: {
     getReferenceSkill() {
@@ -63,14 +65,35 @@ export default {
       this.inputText = skill.name;
       this.selectedSkillId = skill.id;
       this.suggestSkills = [];
+      // clear the state of two check input before reading new data
+      this.checkMastered = false;
+      this.checkUnlock = false;
+      /** Every time the user choose a skill we will check the user skill store for mastery information */
+      // USING FIND WILL MAKE THE SITE NOT WORKING WITH OLDER VERSION OF THE WEB
+      const skillDetails = this.userSkillsStore.unnestedList.find(
+        (userSkill) => userSkill.id == skill.id
+      );
+      console.log(this.userSkillsStore.unnestedList);
+      if (skillDetails) {
+        if (skillDetails.is_accessible === '1') this.checkUnlock = true;
+        if (skillDetails.is_mastered === '1') this.checkMastered = true;
+      }
     },
 
-    handleSubmitForm() {
+    async handleSubmitForm() {
       // call method in user skill store base on form check state
       this.checkUnlock &&
-        this.userSkillsStore.MakeAccessible(this.user.id, this.selectedSkillId);
+        (await this.userSkillsStore.MakeAccessible(
+          this.user.id,
+          this.selectedSkillId
+        ));
       this.checkMastered &&
-        this.userSkillsStore.MakeMastered(this.user.id, this.selectedSkillId);
+        (await this.userSkillsStore.MakeMastered(
+          this.user.id,
+          this.selectedSkillId
+        ));
+      // refetch userSkill list data so we can probably show the check input
+      await this.userSkillsStore.getUnnestedList(this.user.id);
       alert('your action is submitted');
     },
   },
@@ -137,30 +160,6 @@ export default {
       </div>
       <div class="row mt-2">
         <div class="col col-md-10 col-xl-5 row pe-0">
-          <!-- <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="nodeType"
-              id="regularSkillRadio"
-              value="regular"
-            />
-            <label class="form-check-label" for="regularSkillRadio">
-              Unlocked
-            </label>
-          </div>
-          <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="nodeType"
-              id="superSkillRadio"
-              value="super"
-            />
-            <label class="form-check-label" for="superSkillRadio">
-              Mastered
-            </label>
-          </div> -->
           <div class="col">
             <label class="control control-checkbox">
               <span class="my-auto mx-2 me-4">Unlock</span>
