@@ -166,12 +166,14 @@ export default {
                     flattenNestedArray(children[i].children, context)
                 }
             }
-            flattenNestedArray(skillsNoSubSkills, this);
+            flattenNestedArray(skillsNoSubSkills, this);          
 
+            // Need to first sort the root.descendants() array on the data.id property.            
+            let sortedRootDescendants = root.descendants().sort((a, b) => a.data.id - b.data.id)  
             // Then assign the values.
-            for (let i = 0; i < flattenedSkillChildren.length; i++) {
-                flattenedSkillChildren[i].x = root.descendants()[i + 1].x
-                flattenedSkillChildren[i].y = root.descendants()[i + 1].y
+            for (let i = 0; i < flattenedSkillChildren.length; i++) {                
+                flattenedSkillChildren[i].x = sortedRootDescendants[i + 1].x
+                flattenedSkillChildren[i].y = sortedRootDescendants[i + 1].y
             }
 
             // We then convert the flat array back to a nested one.
