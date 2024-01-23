@@ -217,12 +217,14 @@ router.get('/show/:id', (req, res, next) => {
  */
 router.put('/:id/edit', (req, res, next) => {
     if (req.session.userName) {
+        // Escape sinlge quotes for SQL to accept.
+        req.body.mastery_requirements = req.body.mastery_requirements.replace(/'/g, "''");
         var sqlQuery;
         sqlQuery = `UPDATE skills SET name = '` + req.body.name + `', parent = '` + req.body.parent +
             `', description = '` + req.body.description + `', icon_image = '` + req.body.icon_image + `', banner_image = '` + req.body.banner_image +
             `', mastery_requirements = '` + req.body.mastery_requirements +
             `', type = '` + req.body.type + `', level = '` + req.body.level + `', filter_1 = '` + req.body.filter_1 +
-            `' WHERE id = ` + req.params.id;
+            `' WHERE id = ` + req.params.id;      
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -230,7 +232,6 @@ router.put('/:id/edit', (req, res, next) => {
                     throw err;
                 }
                 res.redirect("back");
-
             }
             catch (err) {
                 next(err)
