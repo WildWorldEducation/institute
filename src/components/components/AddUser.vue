@@ -33,11 +33,11 @@ export default {
     async created() {
         // Load all skills.
         if (this.skillsStore.skillsList.length < 1)
-            await this.skillsStore.getSkillsList();
+            await this.skillsStore.getSkillsList();         
 
         // Find the first level skills - we will make these mastered.
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            if (this.skillsStore.skillsList[i].hierarchy_level == 1) {
+            if (this.skillsStore.skillsList[i].parent == 0) {
                 // Add them to the local array.
                 this.firstLevelSkillIds.push(this.skillsStore.skillsList[i].id);
             }
