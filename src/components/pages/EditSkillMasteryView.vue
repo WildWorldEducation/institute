@@ -532,5 +532,10 @@ input:focus {
   #suggest-skills {
     width: 93%;
   }
+
+  /* In phone view the modal will be in the center */
+  .modal-content {
+    margin: 100% auto;
+  }
 }
 </style>
