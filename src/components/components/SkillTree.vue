@@ -168,15 +168,19 @@ export default {
             }
             flattenNestedArray(skillsNoSubSkills, this);          
 
-            // Need to first sort the root.descendants() array on the data.id property.            
+            // Need to first sort the root.descendants() array on the data.id property.  
+            // This seems to optimise the load time considerable, though not sure.          
             let sortedRootDescendants = root.descendants().sort((a, b) => a.data.id - b.data.id)  
             // Then assign the values.
-            for (let i = 0; i < flattenedSkillChildren.length; i++) {                
-                flattenedSkillChildren[i].x = sortedRootDescendants[i + 1].x
-                flattenedSkillChildren[i].y = sortedRootDescendants[i + 1].y
-            }
-
-            console.log(sortedRootDescendants)
+            for (let i = 0; i < flattenedSkillChildren.length; i++) { 
+                for (let j = 0; j < sortedRootDescendants.length; j++) { 
+                    if (flattenedSkillChildren[i].id == sortedRootDescendants[j].data.id)
+                    {               
+                        flattenedSkillChildren[i].x = sortedRootDescendants[j].x
+                        flattenedSkillChildren[i].y = sortedRootDescendants[j].y
+                    }
+                }
+            }        
 
             // We then convert the flat array back to a nested one.
             for (var i = 0; i < flattenedSkillChildren.length; i++) {
