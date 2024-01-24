@@ -267,6 +267,23 @@ export default {
   border-radius: 12px;
 }
 
+.form-control:focus {
+  border-color: white;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+}
+
+.form-select {
+  cursor: pointer;
+}
+
+.form-select:focus {
+  border-color: white;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+}
+
+.form-custom-option:active {
+  background-color: #a48be6;
+}
 .form-label {
   color: #344054;
   font-family: 'Poppins' sans-serif;
