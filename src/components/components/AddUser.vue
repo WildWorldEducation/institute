@@ -272,7 +272,10 @@ export default {
             <label for="first_name" class="form-label">First Name</label>
             <input v-model="user.first_name" type="text" class="form-control" />
             <div
-              v-if="validate.first_name && (user.first_name == '' || user.first_name == null)"
+              v-if="
+                validate.first_name &&
+                (user.first_name == '' || user.first_name == null)
+              "
               class="form-validate"
             >
               please enter a first name !
@@ -282,9 +285,12 @@ export default {
             <label for="last_name" class="form-label">Last Name</label>
             <input v-model="user.last_name" type="text" class="form-control" />
             <div
-            v-if="validate.last_name && (user.last_name == '' || user.last_name == null)"
-            class="form-validate"
-          >
+              v-if="
+                validate.last_name &&
+                (user.last_name == '' || user.last_name == null)
+              "
+              class="form-validate"
+            >
               please enter a last name !
             </div>
           </div>
@@ -292,35 +298,36 @@ export default {
             <label class="form-label">Username</label>
             <input v-model="user.username" type="text" class="form-control" />
             <div
-            v-if="validate.username && (user.username == '' || user.username == null)"
-            class="form-validate"
-          >
+              v-if="
+                validate.username &&
+                (user.username == '' || user.username == null)
+              "
+              class="form-validate"
+            >
               please enter a user name !
             </div>
           </div>
           <div class="mb-3">
             <label class="form-label">Email address</label>
             <input
-            v-model="user.email"
-            type="email"
-            class="form-control"
+              v-model="user.email"
+              type="email"
+              class="form-control"
               @blur="ValidateEmail"
             />
-              <div
+            <div
               v-if="validate.email && (user.email == '' || user.email == null)"
               class="form-validate"
-              >
-                please enter an email !
-              </div>
-              <div
-              v-if="validate.emailFormat"
-              class="form-validate"
-              >
-                please enter a valid email !
-              </div>
+            >
+              please enter an email !
+            </div>
+            <div v-if="validate.emailFormat" class="form-validate">
+              please enter a valid email !
+            </div>
           </div>
           <div class="mb-3">
             <label class="form-label">Role</label>
+            <!-- Custom Dropdown -->
             <div class="d-flex flex-column">
               <div
                 :class="[
@@ -380,6 +387,7 @@ export default {
           </div>
           <div v-if="user.role == 'student'" class="mb-3">
             <label class="form-label">Instructor</label>
+            <!-- Custom Dropdown -->
             <div class="d-flex flex-column">
               <div
                 :class="[
@@ -412,6 +420,7 @@ export default {
                   @click="
                     instructorId = instructor.id;
                     instructorName = instructor.username;
+                    showDropDown = false;
                   "
                 >
                   {{ instructor.username }}
@@ -424,8 +433,11 @@ export default {
             <label class="form-label">Password</label>
             <input v-model="user.password" type="text" class="form-control" />
             <div
-            v-if="validate.password && (user.password == '' || user.password == null)"
-            class="form-validate"
+              v-if="
+                validate.password &&
+                (user.password == '' || user.password == null)
+              "
+              class="form-validate"
             >
               please enter a password !
             </div>
@@ -597,7 +609,7 @@ export default {
   transform: translate3d(0, 0, 0);
 }
 
-.form-validate{
+.form-validate {
   font-size: 0.75rem;
   color: red;
   font-weight: 300;
