@@ -411,6 +411,7 @@ export default {
   margin-right: 0px !important;
   width: 100%;
 }
+
 .forum-container {
   background-color: #f2edff;
   border-radius: 12px;
@@ -442,6 +443,15 @@ export default {
   margin-right: 0px;
   margin-left: auto;
 }
+
+.user-avatar-img {
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+  margin-right: 0px;
+  margin-left: auto;
+}
+
 .forum-post img {
   max-width: 100%;
   height: auto;
@@ -487,10 +497,12 @@ h2 {
   background-color: rgba(0, 0, 0, 0.4);
   /* Black w/ opacity */
 }
+
 #add-resource-column {
   padding-right: 0px !important;
   margin-right: 0px !important;
 }
+
 /* Modal Content/Box */
 .modal-content {
   background-color: #fefefe;
@@ -513,12 +525,14 @@ h2 {
   display: flex;
   align-items: end;
 }
+
 #header-col > h2 {
   margin-bottom: 0px;
   font-size: 1.75rem;
   margin-left: auto;
   margin-right: 0px;
 }
+
 /* Mobile */
 @media (max-width: 480px) {
   .center-header {

@@ -47,7 +47,7 @@ export default {
     </div>
     <!-- comment -->
     <div class="row">
-      <div class="col col-md-5 col-lg-4 d-flex flex-column">
+      <div class="col-12 col-md-5 col-lg-4 d-flex flex-column">
         <img id="user-avatar" :src="this.$parent.user.avatar" />
         <div
           id="user-function-btns-row"
@@ -97,6 +97,7 @@ export default {
             </svg>
           </button>
         </div>
+
         <router-link
           v-if="userRole == 'student'"
           :to="this.$parent.user.id + '/skill-tree'"
@@ -118,7 +119,7 @@ export default {
           </svg>
         </router-link>
       </div>
-      <div id="user-form-info" class="col col-lg-6">
+      <div id="user-form-info" class="col-12 col-md-6">
         <div class="mb-3">
           <label class="form-label">First name</label>
           <input
@@ -367,6 +368,18 @@ export default {
     margin-left: auto;
     margin-right: auto;
     border-radius: 12px;
+  }
+
+  #user-function-btns-row {
+    margin-top: 17;
+    padding-left: 10px;
+    padding-right: 10px;
+    flex-direction: column;
+  }
+
+  .green-btn {
+    margin-left: 10px !important;
+    margin-right: auto !important;
   }
 }
 </style>

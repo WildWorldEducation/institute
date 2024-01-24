@@ -12,10 +12,9 @@ export default {
     },
     data() {
         return {
-            showChildren: false,
-            showSubskills: false,
+            showChildren: null,
+            showSubskills: null,
             showModal: false,
-            isSuperSkill: false,
             childrenNotSubskills: [],
             subSkills: []
         };
@@ -50,17 +49,6 @@ export default {
         await this.skillsStore.getNestedSkillsList();
         await this.skillsStore.getSkillsList();
 
-        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            if (this.skillsStore.skillsList[i].type == 'sub') {
-                var superSkillId = this.skillsStore.skillsList[i].parent
-                for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
-                    if (this.id == superSkillId) {
-                        this.isSuperSkill = true
-                    }
-                }
-            }
-        }
-
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
                 this.subSkills.push(this.children[i])
@@ -70,12 +58,44 @@ export default {
             }
         }
     },
+    mounted() {
+        // This is to load the state of the nested skills list (which child skills are currently showing).
+        if (localStorage.getItem(this.id + "children") == "true") {
+            this.showChildren = true
+        }
+        else {
+            this.showChildren = false
+        }
+
+        if (localStorage.getItem(this.id + "sub") == "true") {
+            this.showSubskills = true
+        }
+        else {
+            this.showSubskills = false
+        }
+    },
     methods: {
+        // Save the state of the skills list to browser storage.
         toggleChildren() {
-            this.showChildren = !this.showChildren;
+            if (this.showChildren == false) {
+                localStorage.setItem(this.id + "children", true);
+                this.showChildren = true
+            }
+            else {
+                localStorage.setItem(this.id + "children", false);
+                this.showChildren = false
+            }
         },
+        // Save the state of the skills list to browser storage.
         toggleSubSkills() {
-            this.showSubskills = !this.showSubskills;
+            if (this.showSubskills == false) {
+                localStorage.setItem(this.id + "sub", true);
+                this.showSubskills = true
+            }
+            else {
+                localStorage.setItem(this.id + "sub", false);
+                this.showSubskills = false
+            }
         },
         ShowMobileButtonsModal() {
             this.showModal = true;
@@ -103,7 +123,7 @@ export default {
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
 
-            <button v-if="isSuperSkill" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
+            <button v-if="type == 'super'" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
                 <!-- Plus sign -->
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -161,7 +181,7 @@ export default {
         <!-- Modal content -->
         <div class="modal-content d-flex">
             <!-- Buttons -->
-            <button v-if="isSuperSkill" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
+            <button v-if="type == 'super'" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
                 <!-- Plus sign -->
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path

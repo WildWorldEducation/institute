@@ -160,10 +160,10 @@ tr {
 }
 
 /* View Specific On Tablet */
-@media (min-width: 577px) and (max-width: 1024px) {
+@media (min-width: 577px) and (max-width: 1020px) {
   .container {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 0px;
+    padding-right: 0px;
   }
 
   .row {
@@ -172,7 +172,7 @@ tr {
     padding-right: 0px;
     padding-bottom: 0px;
     margin-top: -2px;
-    margin-left: -1px;
+    margin-left: 0px;
     margin-right: 0px;
     border-color: #2fa894 !important;
     border-width: 1px !important;

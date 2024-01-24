@@ -27,6 +27,7 @@ export default {
       selectedSkillId: null,
       checkUnlock: false,
       checkMastered: false,
+      showModal: false,
     };
   },
   async created() {
@@ -43,6 +44,8 @@ export default {
         this.user.avatar = user.avatar;
       }
     });
+    // Get userSkill list data
+    await this.userSkillsStore.getUnnestedList(this.user.id);
   },
   methods: {
     getReferenceSkill() {
@@ -63,15 +66,40 @@ export default {
       this.inputText = skill.name;
       this.selectedSkillId = skill.id;
       this.suggestSkills = [];
+      // clear the state of two check input before reading new data
+      this.checkMastered = false;
+      this.checkUnlock = false;
+      /** Every time the user choose a skill we will check the user skill store for mastery information */
+      // USING FIND WILL MAKE THE SITE NOT WORKING WITH OLDER VERSION OF THE WEB
+      const skillDetails = this.userSkillsStore.unnestedList.find(
+        (userSkill) => userSkill.id == skill.id
+      );
+      console.log(this.userSkillsStore.unnestedList);
+      if (skillDetails) {
+        if (skillDetails.is_accessible === '1') this.checkUnlock = true;
+        if (skillDetails.is_mastered === '1') this.checkMastered = true;
+      }
     },
 
-    handleSubmitForm() {
+    async handleSubmitForm() {
       // call method in user skill store base on form check state
       this.checkUnlock &&
-        this.userSkillsStore.MakeAccessible(this.user.id, this.selectedSkillId);
+        (await this.userSkillsStore.MakeAccessible(
+          this.user.id,
+          this.selectedSkillId
+        ));
       this.checkMastered &&
-        this.userSkillsStore.MakeMastered(this.user.id, this.selectedSkillId);
-      alert('your action is submitted');
+        (await this.userSkillsStore.MakeMastered(
+          this.user.id,
+          this.selectedSkillId
+        ));
+      this.showModal = true;
+      // refetch userSkill list data so we can probably show the check input
+      await this.userSkillsStore.getUnnestedList(this.user.id);
+      // restore the state of the element
+      this.inputText = '';
+      this.checkMastered = false;
+      this.checkUnlock = false;
     },
   },
 };
@@ -137,30 +165,6 @@ export default {
       </div>
       <div class="row mt-2">
         <div class="col col-md-10 col-xl-5 row pe-0">
-          <!-- <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="nodeType"
-              id="regularSkillRadio"
-              value="regular"
-            />
-            <label class="form-check-label" for="regularSkillRadio">
-              Unlocked
-            </label>
-          </div>
-          <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="nodeType"
-              id="superSkillRadio"
-              value="super"
-            />
-            <label class="form-check-label" for="superSkillRadio">
-              Mastered
-            </label>
-          </div> -->
           <div class="col">
             <label class="control control-checkbox">
               <span class="my-auto mx-2 me-4">Unlock</span>
@@ -201,6 +205,24 @@ export default {
       <p>&nbsp;</p>
     </div>
     <hr class="mt-3 mb-5 d-none d-md-block" />
+  </div>
+  <!-- A modal for showing notification when user submit form -->
+  <div v-if="showModal">
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <p>Yours Changes Is Submitted</p>
+        <div style="display: flex; justify-content: centers">
+          <button
+            type="button"
+            class="btn btn-success mx-auto"
+            @click="showModal = false"
+          >
+            Okay
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -289,7 +311,6 @@ input:focus {
   gap: 6.63px;
   color: #344054;
 }
-
 .suggest-option:hover {
   background: #65e0a51a;
   cursor: pointer;
@@ -334,6 +355,7 @@ input:focus {
   margin-right: 0px;
 }
 
+/**-------------------------------------  */
 /* A lot of CSS to styling two check box */
 .control {
   font-family: 'Poppins' sans-serif;
@@ -453,6 +475,39 @@ input:focus {
 .control-checkbox input:checked + .control_indicator::before {
   animation-name: s-ripple-dup;
 }
+/* End of check box styling */
+
+/* The Notification Modal */
+.modal {
+  display: block;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 300px;
+  /* Could be more or less, depending on screen size */
+}
 
 @media (min-width: 768px) and (max-width: 1025px) {
   .avatar {
@@ -476,6 +531,11 @@ input:focus {
   }
   #suggest-skills {
     width: 93%;
+  }
+
+  /* In phone view the modal will be in the center */
+  .modal-content {
+    margin: 100% auto;
   }
 }
 </style>

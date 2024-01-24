@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
+    // password: 'password',
     database: 'skill_tree'
 });
 
@@ -38,14 +38,14 @@ router.get('/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, grade, description, type, level
+    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` + req.params.id + `
 
     UNION
-    SELECT skill_tree.skills.id, name, parent, "", "", "", description, type, level
+    SELECT skill_tree.skills.id, name, parent, "", "", description, type, level
     FROM skill_tree.skills
     WHERE skill_tree.skills.id NOT IN 
 
@@ -74,10 +74,6 @@ router.get('/:id', (req, res, next) => {
                             }
                         }
                     }
-
-                    // Change the grade from null to 0, if it has not yet been set.
-                    if (results[i].grade == null)
-                        results[i].grade = 0;
                 }
 
                 let studentSkills = [];
@@ -103,14 +99,14 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, grade, description, type
+    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` + req.params.id + ` AND skill_tree.skills.type <> 'sub'
 
     UNION
-    SELECT skill_tree.skills.id, name, parent, "", "", "", description, type
+    SELECT skill_tree.skills.id, name, parent, "", "", description, type
     FROM skill_tree.skills
     WHERE skill_tree.skills.id NOT IN 
 
@@ -139,10 +135,6 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
                             }
                         }
                     }
-
-                    // Change the grade from null to 0, if it has not yet been set.
-                    if (results[i].grade == null)
-                        results[i].grade = 0;
                 }
 
                 let studentSkills = [];
@@ -317,30 +309,30 @@ router.get('/unmastered/:id1/:id2', (req, res, next) => {
     }
 });
 
-/**
- * Edit item
- *
- * @return response()
- */
-router.put('/grade/:id1/:id2/:grade', (req, res, next) => {
-    if (req.session.userName) {
-        let sqlQuery =
-            `UPDATE skill_tree.user_skills
-        SET grade = ` + req.params.grade + `
-        WHERE user_id = ` + req.params.id1 + ` AND skill_id = ` + req.params.id2 + `;`;
+// /**
+//  * Edit item
+//  *
+//  * @return response()
+//  */
+// router.put('/grade/:id1/:id2/:grade', (req, res, next) => {
+//     if (req.session.userName) {
+//         let sqlQuery =
+//             `UPDATE skill_tree.user_skills
+//         SET grade = ` + req.params.grade + `
+//         WHERE user_id = ` + req.params.id1 + ` AND skill_id = ` + req.params.id2 + `;`;
 
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.end();
-            } catch (err) {
-                next(err)
-            }
-        });
-    }
-});
+//         let query = conn.query(sqlQuery, (err, results) => {
+//             try {
+//                 if (err) {
+//                     throw err;
+//                 }
+//                 res.end();
+//             } catch (err) {
+//                 next(err)
+//             }
+//         });
+//     }
+// });
 
 router.get('*', (req, res) => {
     res.redirect('/');

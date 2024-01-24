@@ -40,7 +40,7 @@ export default {
   <div id="banner">
     <img src="/images/banners/general-banner.png" class="" />
   </div>
-  <div class="container post-login-container">
+  <div class="container post-login-container min-vh-100">
     <div class="row text-center text-md-start">
       <h1 id="user-name">{{ name }}</h1>
     </div>
@@ -74,7 +74,7 @@ export default {
         <img src="/images/post-login.png" class="img-fluid" />
       </div>
     </div>
-    <div class="row">
+    <div id="news-row" class="row">
       <News />
     </div>
   </div>
@@ -146,6 +146,9 @@ h1 {
   padding-left: 23px;
 }
 
+#news-row {
+  height: 100%;
+}
 /* View Specific On Phone */
 @media (min-width: 320px) and (max-width: 576px) {
   #message-col {
@@ -176,10 +179,14 @@ h1 {
     padding-left: 20px;
     padding-right: 20px;
   }
+
+  #notif-col {
+    margin-top: 0px;
+  }
 }
 
 /* View Specific On Tablet */
-@media (min-width: 577px) and (max-width: 1024px) {
+@media (min-width: 577px) and (max-width: 1023px) {
   .content-row {
     padding-bottom: 0px;
     margin-bottom: 39px;
@@ -215,6 +222,16 @@ h1 {
 
   .post-login-container {
     padding-top: 23px;
+    display: relative;
+  }
+
+  #news-row {
+    min-height: 40vh;
+  }
+
+  #news-row > div {
+    margin-top: auto;
+    margin-bottom: 10px;
   }
 }
 </style>
