@@ -27,9 +27,21 @@ export default {
       newUserId: null,
       isValidated: false,
       instructors: [],
+      // Select input bind model
       instructorId: 0,
       instructorName: '',
+      userRole: 'student',
+      // Select showing flag
       showDropDown: false,
+      showRoleDropDown: false,
+      // Validate Object flag
+      validate: {
+        first_name: false,
+        last_name: false,
+        email: false,
+        emailFormat: false,
+        password: false,
+      },
     };
   },
   async created() {
@@ -77,13 +89,13 @@ export default {
     },
     ValidateForm() {
       if (this.user.first_name == '' || this.user.first_name == null) {
-        alert('Please add a first name.');
+        this.validate.first_name = true;
       } else if (this.user.last_name == '' || this.user.last_name == null) {
-        alert('Please add a last name.');
+        this.validate.last_name = true;
       } else if (this.user.username == '' || this.user.username == null) {
-        alert('Please add a username.');
+        this.validate.username = true;
       } else if (this.user.email == '' || this.user.email == null) {
-        alert('Please add am email address.');
+        this.validate.email = true;
       } else {
         this.Submit();
       }
@@ -92,8 +104,9 @@ export default {
       if (
         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.user.email)
       ) {
+        this.validate.emailFormat = false;
       } else {
-        alert('Please enter a valid email address');
+        this.validate.emailFormat = true;
       }
     },
     Submit() {
@@ -258,49 +271,115 @@ export default {
           <div class="mb-3">
             <label for="first_name" class="form-label">First Name</label>
             <input v-model="user.first_name" type="text" class="form-control" />
+            <div
+              v-if="validate.first_name && (user.first_name == '' || user.first_name == null)"
+              class="form-validate"
+            >
+              please enter a first name !
+            </div>
           </div>
           <div class="mb-3">
             <label for="last_name" class="form-label">Last Name</label>
             <input v-model="user.last_name" type="text" class="form-control" />
+            <div
+            v-if="validate.last_name && (user.last_name == '' || user.last_name == null)"
+            class="form-validate"
+          >
+              please enter a last name !
+            </div>
           </div>
           <div class="mb-3">
             <label class="form-label">Username</label>
             <input v-model="user.username" type="text" class="form-control" />
+            <div
+            v-if="validate.username && (user.username == '' || user.username == null)"
+            class="form-validate"
+          >
+              please enter a user name !
+            </div>
           </div>
           <div class="mb-3">
             <label class="form-label">Email address</label>
             <input
-              v-model="user.email"
-              type="email"
-              class="form-control"
+            v-model="user.email"
+            type="email"
+            class="form-control"
               @blur="ValidateEmail"
             />
+              <div
+              v-if="validate.email && (user.email == '' || user.email == null)"
+              class="form-validate"
+              >
+                please enter an email !
+              </div>
+              <div
+              v-if="validate.emailFormat"
+              class="form-validate"
+              >
+                please enter a valid email !
+              </div>
           </div>
-
           <div class="mb-3">
             <label class="form-label">Role</label>
-            <select v-model="user.role" class="form-select">
-              <option class="form-custom-option" value="student" selected>
-                student
-              </option>
-              <option class="form-custom-option" value="admin">admin</option>
-              <option class="form-custom-option" value="instructor">
-                instructor
-              </option>
-            </select>
+            <div class="d-flex flex-column">
+              <div
+                :class="[
+                  showRoleDropDown
+                    ? 'custom-select-button-focus'
+                    : 'custom-select-button',
+                ]"
+                @click="showRoleDropDown = !showRoleDropDown"
+              >
+                {{ userRole }}
+                <span>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                      fill="#344054"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <div v-if="showRoleDropDown" class="custom-dropdown-base">
+                <div
+                  class="custom-dropdown-option"
+                  @click="
+                    userRole = 'student';
+                    showRoleDropDown = false;
+                  "
+                >
+                  student
+                </div>
+                <div
+                  class="custom-dropdown-option"
+                  @click="
+                    userRole = 'instructor';
+                    showRoleDropDown = false;
+                  "
+                >
+                  instructor
+                </div>
+                <div
+                  class="custom-dropdown-option"
+                  @click="
+                    userRole = 'admin';
+                    showRoleDropDown = false;
+                  "
+                >
+                  admin
+                </div>
+              </div>
+            </div>
+            <!-- End of custom dropdown -->
           </div>
           <div v-if="user.role == 'student'" class="mb-3">
             <label class="form-label">Instructor</label>
-            <!-- <select class="form-select" v-model="instructorId">
-              <option
-                class="form-custom-option"
-                v-for="instructor in instructors"
-                :value="instructor.id"
-              >
-                {{ instructor.username }}
-              </option>
-            </select> -->
-            <!-- A custom dropdown -->
             <div class="d-flex flex-column">
               <div
                 :class="[
@@ -339,10 +418,17 @@ export default {
                 </div>
               </div>
             </div>
+            <!-- End of custom dropdown -->
           </div>
           <div class="mb-3">
             <label class="form-label">Password</label>
             <input v-model="user.password" type="text" class="form-control" />
+            <div
+            v-if="validate.password && (user.password == '' || user.password == null)"
+            class="form-validate"
+            >
+              please enter a password !
+            </div>
           </div>
           <div class="d-flex justify-content-end gap-4">
             <router-link class="btn red-btn" to="/users"> Cancel </router-link>
@@ -509,6 +595,12 @@ export default {
   margin-left: auto;
   animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   transform: translate3d(0, 0, 0);
+}
+
+.form-validate{
+  font-size: 0.75rem;
+  color: red;
+  font-weight: 300;
 }
 
 /* The animation key frame */
