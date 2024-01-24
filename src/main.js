@@ -20,7 +20,7 @@ var pixiApp = new PIXI.Application({
     height: window.innerHeight,
     resolution: 1,
     transparent: true,
-    antialias: false,
+    antialias: true,
     useContextAlpha: false,
     autoStart: true,
     cullable: true
