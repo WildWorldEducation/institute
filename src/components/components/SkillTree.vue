@@ -211,8 +211,15 @@ export default {
         drawChart(root) {
             // Links.
             for (let i = 0; i < root.links().length; i++) {
+                console.log(root.links()[i].target.data.is_mastered)
+
                 const link = new PIXI.Graphics();
-                link.lineStyle(2, 0xFFFFFF, 1);
+                if (root.links()[i].target.data.is_mastered == "1") {
+                    link.lineStyle(8, 0xFFFFFF, 1);
+                }
+                else {
+                    link.lineStyle(2, 0xFFFFFF, 1);
+                }
 
                 // Source node.
                 var sourceX = Math.cos(root.links()[i].source.x) * root.links()[i].source.y;
@@ -335,7 +342,7 @@ export default {
                             numSubSkills++
                         }
                     }
-                    console.log(child)
+
                     // Increase the size of the first level nodes.
                     if (depth == 1) {
                         nodeGraphic.width = context.firstLevelNodeSize
