@@ -37,7 +37,9 @@ export default {
             height: null,
             // D3 radius multiplier
             radiusMultiplier: 256,
-            firstLevelNodeSize: 100,
+            firstLevelNodeSize: 500,
+            // Max size before overlap.
+            secondLevelNodeSize: 100,
             regularNodeSize: 50,
             subSkillRadius: 50,
             skill: {
@@ -166,17 +168,20 @@ export default {
                     flattenNestedArray(children[i].children, context)
                 }
             }
-            flattenNestedArray(skillsNoSubSkills, this);          
+            flattenNestedArray(skillsNoSubSkills, this);
 
-            // Need to first sort the root.descendants() array on the data.id property.            
-            let sortedRootDescendants = root.descendants().sort((a, b) => a.data.id - b.data.id)  
+            // Need to first sort the root.descendants() array on the data.id property.  
+            // This seems to optimise the load time considerable, though not sure.          
+            let sortedRootDescendants = root.descendants().sort((a, b) => a.data.id - b.data.id)
             // Then assign the values.
-            for (let i = 0; i < flattenedSkillChildren.length; i++) {                
-                flattenedSkillChildren[i].x = sortedRootDescendants[i + 1].x
-                flattenedSkillChildren[i].y = sortedRootDescendants[i + 1].y
+            for (let i = 0; i < flattenedSkillChildren.length; i++) {
+                for (let j = 0; j < sortedRootDescendants.length; j++) {
+                    if (flattenedSkillChildren[i].id == sortedRootDescendants[j].data.id) {
+                        flattenedSkillChildren[i].x = sortedRootDescendants[j].x
+                        flattenedSkillChildren[i].y = sortedRootDescendants[j].y
+                    }
+                }
             }
-
-            console.log(sortedRootDescendants)
 
             // We then convert the flat array back to a nested one.
             for (var i = 0; i < flattenedSkillChildren.length; i++) {
@@ -206,8 +211,15 @@ export default {
         drawChart(root) {
             // Links.
             for (let i = 0; i < root.links().length; i++) {
+                console.log(root.links()[i].target.data.is_mastered)
+
                 const link = new PIXI.Graphics();
-                link.lineStyle(2, 0xFFFFFF, 1);
+                if (root.links()[i].target.data.is_mastered == "1") {
+                    link.lineStyle(8, 0xFFFFFF, 1);
+                }
+                else {
+                    link.lineStyle(2, 0xFFFFFF, 1);
+                }
 
                 // Source node.
                 var sourceX = Math.cos(root.links()[i].source.x) * root.links()[i].source.y;
@@ -244,7 +256,7 @@ export default {
             // Text.
             // Font size is set artificially high, then scaed down, to improve resolution.
             let centerNodeText = new PIXI.Text(this.skill.name,
-                { fontFamily: 'Poppins900', fontSize: 40, fill: 0x000000, align: 'center' });
+                { fontFamily: 'Poppins900', fontSize: 200, fill: 0x000000, align: 'center' });
             centerNodeText.anchor.set(0.5)
             // Center it.
             centerNodeText.x = root.x
@@ -257,7 +269,7 @@ export default {
             this.stageContents.push(centerNodeText)
 
             // Nodes.    
-            function renderDescendantNodes(rootChildren, parentChildren, depth, context) {
+            function renderDescendantNodes(parentChildren, depth, context) {
                 // Increase the depth each recursion.
                 depth++
 
@@ -336,6 +348,10 @@ export default {
                         nodeGraphic.width = context.firstLevelNodeSize
                         nodeGraphic.height = context.firstLevelNodeSize
                     }
+                    else if (depth == 2) {
+                        nodeGraphic.width = context.secondLevelNodeSize
+                        nodeGraphic.height = context.secondLevelNodeSize
+                    }
                     else {
                         nodeGraphic.width = context.regularNodeSize
                         nodeGraphic.height = context.regularNodeSize
@@ -346,13 +362,32 @@ export default {
                     /*
                     * Write the skill name.
                     */
-                    let fontSize = 40;
+                    // Increase the size of the first level nodes.
+                    let fontSize;
+                    if (depth == 1) {
+                        fontSize = 300
+                    }
+                    else if (depth == 2) {
+                        fontSize = 100
+                    }
+                    else {
+                        fontSize = 50
+                    }
+
                     // Split name into an array.
                     const nodeNameArray = child.skill_name.split(" ");
                     for (let i = 0; i < nodeNameArray.length; i++) {
                         // Check if any of the strings are too long.
                         if (nodeNameArray[i].length > 9) {
-                            fontSize = 30;
+                            if (depth == 1) {
+                                fontSize = 250
+                            }
+                            else if (depth == 2) {
+                                fontSize = 90
+                            }
+                            else {
+                                fontSize = 40
+                            }
                         }
                     }
 
@@ -518,11 +553,11 @@ export default {
                     * Run the above function again recursively.
                     */
                     if (child.children && Array.isArray(child.children) && child.children.length > 0)
-                        renderDescendantNodes(rootChildren, child.children, depth, context)
+                        renderDescendantNodes(child.children, depth, context)
                 }
             }
 
-            renderDescendantNodes(root.children, this.skill.children, 0, this);
+            renderDescendantNodes(this.skill.children, 0, this);
         },
         recenterTree() {
             this.isRecentered = true

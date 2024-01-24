@@ -33,7 +33,13 @@ export default {
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li v-if="userDetailsStore.role == 'student'" class="nav-item">
-              <RouterLink to="/skill-tree" class="nav-link">Skill Tree</RouterLink>
+              <RouterLink to="/skill-tree" class="nav-link">Skill Tree D3 & Pixi</RouterLink>
+            </li>
+            <li v-if="userDetailsStore.role == 'student'" class="nav-item">
+              <RouterLink to="/skill-tree-d3" class="nav-link">Skill Tree D3</RouterLink>
+            </li>
+            <li v-if="userDetailsStore.role == 'student'" class="nav-item">
+              <RouterLink to="/skill-tree-linear" class="nav-link">Skill Tree D3 Linear</RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink to="/skills" class="nav-link">
