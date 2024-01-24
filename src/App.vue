@@ -38,6 +38,9 @@ export default {
             <li v-if="userDetailsStore.role == 'student'" class="nav-item">
               <RouterLink to="/skill-tree-d3" class="nav-link">Skill Tree D3</RouterLink>
             </li>
+            <li v-if="userDetailsStore.role == 'student'" class="nav-item">
+              <RouterLink to="/skill-tree-linear" class="nav-link">Skill Tree D3 Linear</RouterLink>
+            </li>
             <li class="nav-item">
               <RouterLink to="/skills" class="nav-link">
                 <span> Skills </span>
