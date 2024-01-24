@@ -18,9 +18,9 @@ app.use(router)
 var pixiApp = new PIXI.Application({
     width: window.innerWidth,
     height: window.innerHeight,
-    resolution: 2,
+    resolution: 1,
     transparent: true,
-    antialias: true,
+    antialias: false,
     useContextAlpha: false,
     autoStart: true,
     cullable: true
