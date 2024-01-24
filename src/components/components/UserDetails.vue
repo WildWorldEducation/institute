@@ -45,6 +45,7 @@ export default {
         </svg>
       </div>
     </div>
+    <!-- comment -->
     <div class="row">
       <div class="col col-md-5 col-lg-4 d-flex flex-column">
         <img id="user-avatar" :src="this.$parent.user.avatar" />
