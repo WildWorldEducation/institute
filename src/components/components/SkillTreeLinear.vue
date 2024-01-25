@@ -158,13 +158,19 @@ export default {
                 .attr("fill", "none")
                 .attr("stroke", "#FFF")
                 .attr("stroke-opacity", 1)
-                .attr("stroke-width", 1.5)
                 .selectAll()
                 .data(root.links())
                 .join("path")
                 .attr("d", d3.linkHorizontal()
                     .x(d => d.y)
-                    .y(d => d.x));
+                    .y(d => d.x))
+                .attr("stroke-width", function (d) {
+                    if (d.target.data.is_mastered == 1) {
+                        return 8
+                    }
+                    else
+                        return 1.5
+                });
 
             const node = g.append("g")
                 .attr("stroke-linejoin", "round")
