@@ -27,13 +27,16 @@
     "jsonwebtoken": "^9.0.0",
     "jspdf": "^2.5.1",
     "mysql": "^2.18.1",
+    "pdfkit": "^0.14.0",
     "pinia": "^2.0.32",
     "pixi-viewport": "^5.0.1",
     "pixi.js": "^7.2.4",
+    "svg-to-pdfkit": "^0.1.8",
     "vue": "^3.2.47",
     "vue-multiselect": "^3.0.0-beta.3",
     "vue-router": "^4.1.6",
-    "vue-socials": "^2.0.3"
+    "vue-socials": "^2.0.3",
+    "wkhtmltopdf": "^0.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
