@@ -9,6 +9,8 @@ import FontFaceObserver from 'fontfaceobserver';
 // Nested component.
 import SkillPanel from './SkillPanel.vue';
 
+import html2pdf from 'html2pdf.js';
+
 export default {
   setup() {},
   data() {
@@ -23,6 +25,8 @@ export default {
       nodeDistance: 300,
       // Arrays to position the nodes and for the filters.
       isSkillInfoPanelShown: false,
+      // We have to save the the PixiJS app to access it renderer class
+      pixiJSApp: null,
     };
   },
   components: {
@@ -40,6 +44,7 @@ export default {
     font.load().then(
       () => {
         const skilltreeDiv = document.getElementById('skilltree');
+        // Pixi root component
         const app = new PIXI.Application({
           // Take up whole div.
           resizeTo: skilltreeDiv,
@@ -48,7 +53,7 @@ export default {
           // May reduce resources used.
           useContextAlpha: false,
           // Background colour.
-          //backgroundColor: 0xffffff
+          backgroundColor: `#A48BE640`,
         });
 
         // Work out the width and height of the div, for the zooming and panning.
@@ -521,6 +526,7 @@ export default {
             this
           );
         }
+        this.pixiJSApp = app;
       },
       () => {
         // Failed load, log the error or display a message to the user
@@ -585,11 +591,35 @@ export default {
         skillLink.setAttribute('href', '/skills/' + skill.id);
       }
     },
+    download2PDF(el) {
+      html2pdf(document.getElementById(el), {
+        html2canvas: { scale: 4 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' },
+      });
+    },
+    download_sprite_as_png(sprite, fileName) {
+      this.pixiJSApp.renderer.extract.canvas(sprite).toBlob(function (b) {
+        var a = document.createElement('a');
+        document.body.append(a);
+        a.download = fileName;
+        a.href = URL.createObjectURL(b);
+        a.click();
+        a.remove();
+      }, 'image/png');
+    },
   },
 };
 </script>
 
 <template>
+  <div class="row">
+    <div
+      class="btn bg-info"
+      @click="download_sprite_as_png('skilltree', 'a name')"
+    >
+      Print to Pdf
+    </div>
+  </div>
   <div class="flex-container skill-tree-container">
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div id="wrapper">
