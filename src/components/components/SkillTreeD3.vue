@@ -3,7 +3,7 @@
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore';
 import { useSkillTagsStore } from '../../stores/SkillTagsStore';
-import html2pdf from 'html2pdf.js';
+
 // Nested component.
 import SkillTreeFilter from './SkillTreeFilter.vue';
 import SkillPanel from './SkillPanel.vue';
@@ -127,7 +127,7 @@ export default {
       const tree = d3
         .tree()
         // increase the radius to space out the nodes.
-        .size([1 * Math.PI, this.radius * this.radiusMultiplier])
+        .size([2 * Math.PI, this.radius * this.radiusMultiplier])
         // Max separation between sibling nodes.
         .separation((a, b) => (a.parent == b.parent ? 1 : 1) / a.depth);
 
@@ -151,9 +151,9 @@ export default {
         .attr('fill', 'none')
         .attr('stroke', '#FFF')
         .attr('stroke-opacity', 1)
-        .attr('stroke-width', 2)
         .selectAll()
         .data(root.links())
+
         .join('path')
         .attr(
           'd',
@@ -161,7 +161,13 @@ export default {
             .linkRadial()
             .angle((d) => d.x)
             .radius((d) => d.y)
-        );
+        )
+        // Thicker line if the student has mastered the target node.
+        .attr('stroke-width', function (d) {
+          if (d.target.data.is_mastered == 1) {
+            return 8;
+          } else return 2;
+        });
 
       // Append nodes.
       g.append('g')
@@ -239,23 +245,12 @@ export default {
       // Append the SVG element.
       document.querySelector('#skilltree').append(svg.node());
     },
-    download2PDF(el) {
-      html2pdf(document.getElementById(el), {
-        html2canvas: { scale: 4 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' },
-      });
-    },
   },
 };
 </script>
 
 <template>
-  <div class="flex-container skill-tree-container d-flex flex-column">
-    <div class="row">
-      <div class="btn bg-info" @click="download2PDF('wrapper')">
-        Print to Pdf
-      </div>
-    </div>
+  <div class="flex-container skill-tree-container">
     <SkillTreeFilter id="filter" />
     <button v-show="isRecentered" id="reset-button" class="btn btn-info">
       Reset

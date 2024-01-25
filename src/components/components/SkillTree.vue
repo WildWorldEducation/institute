@@ -211,11 +211,9 @@ export default {
         drawChart(root) {
             // Links.
             for (let i = 0; i < root.links().length; i++) {
-                console.log(root.links()[i].target.data.is_mastered)
-
                 const link = new PIXI.Graphics();
                 if (root.links()[i].target.data.is_mastered == "1") {
-                    link.lineStyle(8, 0xFFFFFF, 1);
+                    link.lineStyle(16, 0xFFFFFF, 1);
                 }
                 else {
                     link.lineStyle(2, 0xFFFFFF, 1);
