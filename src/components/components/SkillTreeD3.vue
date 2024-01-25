@@ -144,13 +144,21 @@ export default {
                 .attr("fill", "none")
                 .attr("stroke", "#FFF")
                 .attr("stroke-opacity", 1)
-                .attr("stroke-width", 2)
                 .selectAll()
                 .data(root.links())
+
                 .join("path")
                 .attr("d", d3.linkRadial()
                     .angle(d => d.x)
-                    .radius(d => d.y));
+                    .radius(d => d.y))
+                // Thicker line if the student has mastered the target node.
+                .attr("stroke-width", function (d) {
+                    if (d.target.data.is_mastered == 1) {
+                        return 8
+                    }
+                    else
+                        return 2
+                });
 
             // Append nodes.
             g.append("g")
