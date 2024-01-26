@@ -30,13 +30,10 @@ export default {
         return {
             stageContents: [],
             isSkillInfoPanelShown: false,
-            regularLockedUnmasteredNodeSprite: null,
-            // D3 radius, maybe delete?
-            radius: 0,
             width: null,
             height: null,
             // D3 radius multiplier
-            radiusMultiplier: 64,
+            radiusMultiplier: 1,
             firstLevelNodeSize: 100,
             regularNodeSize: 50,
             subSkillRadius: 50,
@@ -73,8 +70,10 @@ export default {
         }
 
         // Specify the chart’s dimensions.
-        this.width = window.innerWidth
-        this.height = window.innerHeight
+        // this.width = window.innerWidth
+        // this.height = window.innerHeight
+        this.width = 30000
+        this.height = 30000
         this.radius = Math.min(this.width, this.height) / 2;
 
         const centerNodeSprite = PIXI.Sprite.from('center-node.png');
@@ -129,24 +128,28 @@ export default {
             const root = tree(d3.hierarchy(data))
 
             // Creates the SVG container.
-            const cx = this.width * 0.0; // adjust as needed to fit
-            const cy = this.height * 0.59; // adjust as needed to fit
+            // Set the center.
+            const cx = this.width * 0.5;
+            const cy = this.height * 0.5;
+
             const svg = d3.create("svg")
+                // Add ID for the printing to PDF.
+                .attr("id", "radialTree")
                 .attr("width", this.width)
                 .attr("height", this.height)
                 .attr("viewBox", [-cx, -cy, this.width, this.height])
-                .attr("style", "width: 100%; height: auto; font: 10px sans-serif;");
+                .attr("style", "width: 100%; height: auto; font: 10px sans-serif;")
+
 
             const g = svg.append("g")
 
             // Append links.
             g.append("g")
                 .attr("fill", "none")
-                .attr("stroke", "#FFF")
+                .attr("stroke", "#000")
                 .attr("stroke-opacity", 1)
                 .selectAll()
                 .data(root.links())
-
                 .join("path")
                 .attr("d", d3.linkRadial()
                     .angle(d => d.x)
@@ -212,13 +215,13 @@ export default {
                 .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
                 .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
                 .attr("paint-order", "stroke")
-                .attr("stroke", "white")
+                //.attr("stroke", "white")
                 .attr("fill", "currentColor")
                 .text(d => d.data.skill_name);
 
             svg.call(d3.zoom()
                 .extent([[0, 0], [this.width, this.height]])
-                .scaleExtent([0.1, 20])
+                .scaleExtent([0.0001, 20])
                 .on("zoom", zoomed));
 
 
@@ -228,6 +231,50 @@ export default {
 
             // Append the SVG element.
             document.querySelector('#skilltree').append(svg.node());
+        },
+        printPDF() {
+            // Select the element from the DOM.
+            var svg = document.getElementById("radialTree")
+            // Then select with D3
+            var d3Svg = d3.select(svg);
+            // Then select the SVG code with D3
+            var d3SvgNode = d3Svg.node();
+
+            // Make it a string, to send to server.
+            var s = new XMLSerializer();
+            var str = s.serializeToString(d3SvgNode);
+
+            // Create a JSON object.
+            var dataObject = { svg: str, treeType: "radial" };
+            var data = JSON.stringify(dataObject);
+
+            // POST request.
+            var xhttp = new XMLHttpRequest();
+            xhttp.responseType = "arraybuffer";
+            xhttp.open("POST", "/skilltree/print-pdf", true);
+            xhttp.setRequestHeader('Content-type',
+                'application/json;charset=UTF-8');
+            xhttp.setRequestHeader('Accept',
+                'application/json, text/plain, */*');
+            xhttp.send(data);
+
+            // To download the file client side.
+            xhttp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Typical action to be performed when the document is ready:
+                    let pdfBlob = new Blob([xhttp.response], { type: 'application/pdf' });
+                    const url = window.URL.createObjectURL(pdfBlob);
+
+                    // To download and name the file.
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style = "display: none";
+                    a.href = url;
+                    a.download = "My-Skill-Tree.pdf";
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }
+            }
         }
     }
 }
@@ -236,8 +283,9 @@ export default {
 
 <template>
     <div class="flex-container skill-tree-container">
-        <SkillTreeFilter id="filter" />
-        <button v-show="isRecentered" id="reset-button" class="btn btn-info">Reset</button>
+        <!-- <SkillTreeFilter id="filter" />
+        <button v-show="isRecentered" id="reset-button" class="btn btn-info">Reset</button> -->
+        <button id="print-btn" class="btn btn-info" @click="printPDF()">Print</button>
         <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
         <div id="wrapper">
             <div id="skilltree">
@@ -282,6 +330,13 @@ export default {
     margin-top: 10px;
 }
 
+#print-btn {
+    position: absolute;
+    right: 0;
+    z-index: 1;
+    margin-top: 10px;
+    margin-right: 10px;
+}
 
 #reset-button {
     width: 100px;
@@ -298,7 +353,7 @@ export default {
     overflow: hidden;
     /* This is for the positioning of the information panel. */
     position: relative;
-    background-color: black;
+    background-color: white;
 }
 
 .flex-container {

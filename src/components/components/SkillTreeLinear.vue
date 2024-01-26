@@ -225,7 +225,7 @@ export default {
             var str = s.serializeToString(d3SvgNode);
 
             // Create a JSON object.
-            var dataObject = { svg: str };
+            var dataObject = { svg: str, treeType: "linear" };
             var data = JSON.stringify(dataObject);
 
             // POST request.
@@ -240,7 +240,6 @@ export default {
 
             // To download the file client side.
             xhttp.onload = function () {
-                console.log(xhttp.response)
                 if (this.readyState == 4 && this.status == 200) {
                     // Typical action to be performed when the document is ready:
                     let pdfBlob = new Blob([xhttp.response], { type: 'application/pdf' });
