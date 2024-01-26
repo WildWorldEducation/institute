@@ -69,6 +69,8 @@ const unmarkedAnswersRouter = require('./routes/unmarked-answers');
 app.use('/unmarked-answers', unmarkedAnswersRouter);
 const instructorStudentsRouter = require('./routes/instructor-students');
 app.use('/instructor-students', instructorStudentsRouter);
+const skillTreeRouter = require('./routes/skilltree');
+app.use('/skilltree', skillTreeRouter);
 
 app.locals.title = 'Skill Tree'
 
