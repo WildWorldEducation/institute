@@ -15,8 +15,20 @@ router.post('/print-pdf', (req, res, next) => {
     return SVGtoPDF(this, svg, x, y, options), this;
   };
   // Create a new PDF doc. 
+  var width;
+  var height;
+
+  if (req.body.treeType == "linear") {
+    width = 5000
+    height = 37500
+  }
+  else if (req.body.treeType == "radial") {
+    width = 20000
+    height = 20000
+  }
+
   // This is the size of the full linear chart, with no filters.
-  const doc = new PDFDocument({ size: [5000, 37500], });
+  const doc = new PDFDocument({ size: [width, height], });
 
   // HTTP response to client.
   doc.pipe(res);
