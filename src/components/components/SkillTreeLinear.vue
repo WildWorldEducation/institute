@@ -238,14 +238,22 @@ export default {
                 'application/json, text/plain, */*');
             xhttp.send(data);
 
-            // TODO.
+            // To download the file client side.
             xhttp.onload = function () {
-                console.log("test1")
+                console.log(xhttp.response)
                 if (this.readyState == 4 && this.status == 200) {
-                    console.log("test2")
                     // Typical action to be performed when the document is ready:
                     let pdfBlob = new Blob([xhttp.response], { type: 'application/pdf' });
                     const url = window.URL.createObjectURL(pdfBlob);
+
+                    // To download and name the file.
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style = "display: none";
+                    a.href = url;
+                    a.download = "My-Skill-Tree.pdf";
+                    a.click();
+                    window.URL.revokeObjectURL(url);
                 }
             }
         }
