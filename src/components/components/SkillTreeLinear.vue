@@ -51,7 +51,8 @@ export default {
                 tagIDs: [],
                 sprite: null,
             },
-            isRecentered: false
+            isRecentered: false,
+            svg: null
         }
     },
     components: {
@@ -146,17 +147,20 @@ export default {
             // Compute the adjusted height of the tree.
             const height = x1 - x0 + dx * 2;
 
-            const svg = d3.create("svg")
+            this.svg = d3.create("svg")
+                // Add ID for the printing to PDF.
+                .attr("id", "linearTree")
                 .attr("width", width)
                 .attr("height", height)
                 .attr("viewBox", [-dy / 3, x0 - dx, width, height])
                 .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
 
-            const g = svg.append("g")
+            const g = this.svg.append("g")
 
+            // Links or connecting lines.
             g.append("g")
                 .attr("fill", "none")
-                .attr("stroke", "#FFF")
+                .attr("stroke", "#000")
                 .attr("stroke-opacity", 1)
                 .selectAll()
                 .data(root.links())
@@ -181,40 +185,88 @@ export default {
                 .attr("transform", d => `translate(${d.y},${d.x})`);
 
             node.append("circle")
-                .attr("fill", d => d.children ? "#555" : "#999")
+                .attr("fill", d => d.children ? "#555" : "#000")
                 .attr("r", 2.5);
 
+
+            // Labels.
             node.append("text")
                 .attr("dy", "0.31em")
                 .attr("x", d => d.children ? -6 : 6)
                 .attr("text-anchor", d => d.children ? "end" : "start")
                 .text(d => d.data.skill_name)
                 .clone(true).lower()
-                .attr("stroke", "white");
+                .attr("stroke", "none");
 
 
-            svg.call(d3.zoom()
+            // Zoom feature.
+            this.svg.call(d3.zoom()
                 .extent([[0, 0], [this.width, this.height]])
                 .scaleExtent([0.1, 20])
                 .on("zoom", zoomed));
-
 
             function zoomed({ transform }) {
                 g.attr("transform", transform);
             }
 
             // Append the SVG element.
-            document.querySelector('#skilltree').append(svg.node());
+            document.querySelector('#skilltree').append(this.svg.node());
+        },
+        printPDF() {
+            // Select the element from the DOM.
+            var svg = document.getElementById("linearTree")
+            // Then select with D3
+            var d3Svg = d3.select(svg);
+            // Then select the SVG code with D3
+            var d3SvgNode = d3Svg.node();
+
+            // Make it a string, to send to server.
+            var s = new XMLSerializer();
+            var str = s.serializeToString(d3SvgNode);
+
+            // Create a JSON object.
+            var dataObject = { svg: str };
+            var data = JSON.stringify(dataObject);
+
+            // POST request.
+            var xhttp = new XMLHttpRequest();
+            xhttp.responseType = "arraybuffer";
+            xhttp.open("POST", "/skilltree/print-pdf", true);
+            xhttp.setRequestHeader('Content-type',
+                'application/json;charset=UTF-8');
+            xhttp.setRequestHeader('Accept',
+                'application/json, text/plain, */*');
+            xhttp.send(data);
+
+            // To download the file client side.
+            xhttp.onload = function () {
+                console.log(xhttp.response)
+                if (this.readyState == 4 && this.status == 200) {
+                    // Typical action to be performed when the document is ready:
+                    let pdfBlob = new Blob([xhttp.response], { type: 'application/pdf' });
+                    const url = window.URL.createObjectURL(pdfBlob);
+
+                    // To download and name the file.
+                    var a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.style = "display: none";
+                    a.href = url;
+                    a.download = "My-Skill-Tree.pdf";
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }
+            }
         }
-    }
+    },
 }
 
 </script> 
 
 <template>
     <div class="flex-container skill-tree-container">
-        <SkillTreeFilter id="filter" />
-        <button v-show="isRecentered" id="reset-button" class="btn btn-info">Reset</button>
+        <!-- <SkillTreeFilter id="filter" /> -->
+
+        <button id="print-btn" class="btn btn-info" @click="printPDF()">Print</button>
         <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
         <div id="wrapper">
             <div id="skilltree">
@@ -259,6 +311,14 @@ export default {
     margin-top: 10px;
 }
 
+#print-btn {
+    position: absolute;
+    right: 0;
+    z-index: 1;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
 
 #reset-button {
     width: 100px;
@@ -275,7 +335,7 @@ export default {
     overflow: hidden;
     /* This is for the positioning of the information panel. */
     position: relative;
-    background-color: black;
+    background-color: white;
 }
 
 .flex-container {
