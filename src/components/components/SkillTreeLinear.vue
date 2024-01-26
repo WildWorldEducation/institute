@@ -89,52 +89,6 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            // // set the dimensions and margins of the graph
-            // var margin = { top: 10, right: 40, bottom: 30, left: 30 },
-            //     width = 450 - margin.left - margin.right,
-            //     height = 400 - margin.top - margin.bottom;
-
-            // // append the svg object to the body of the page
-            // this.svg = d3.select("#skilltree")
-            //     .append("svg")
-            //     .attr("id", "svgID")
-            //     .attr("width", width + margin.left + margin.right)
-            //     .attr("height", height + margin.top + margin.bottom)
-            //     .append("g")
-            //     .attr("transform",
-            //         "translate(" + margin.left + "," + margin.top + ")");
-
-            // // Create data
-            // var data = [{ x: 10, y: 20 }, { x: 40, y: 90 }, { x: 80, y: 50 }]
-
-            // // X scale and Axis
-            // var x = d3.scaleLinear()
-            //     .domain([0, 100])         // This is the min and the max of the data: 0 to 100 if percentages
-            //     .range([0, width]);       // This is the corresponding value I want in Pixel
-            // this.svg
-            //     .append('g')
-            //     .attr("transform", "translate(0," + height + ")")
-            //     .call(d3.axisBottom(x));
-
-            // // X scale and Axis
-            // var y = d3.scaleLinear()
-            //     .domain([0, 100])         // This is the min and the max of the data: 0 to 100 if percentages
-            //     .range([height, 0]);       // This is the corresponding value I want in Pixel
-            // this.svg
-            //     .append('g')
-            //     .call(d3.axisLeft(y));
-
-            // // Add 3 dots for 0, 50 and 100%
-            // this.svg
-            //     .selectAll("whatever")
-            //     .data(data)
-            //     .enter()
-            //     .append("circle")
-            //     .attr("cx", function (d) { return x(d.x) })
-            //     .attr("cy", function (d) { return y(d.y) })
-            //     .attr("r", 7)
-
-
             var skillsNoSubSkills = [];
             skillsNoSubSkills = JSON.parse(JSON.stringify(this.skill.children));
 
@@ -194,7 +148,8 @@ export default {
             const height = x1 - x0 + dx * 2;
 
             this.svg = d3.create("svg")
-                .attr("id", "svgID")
+                // Add ID for the printing to PDF.
+                .attr("id", "linearTree")
                 .attr("width", width)
                 .attr("height", height)
                 .attr("viewBox", [-dy / 3, x0 - dx, width, height])
@@ -202,9 +157,10 @@ export default {
 
             const g = this.svg.append("g")
 
+            // Links or connecting lines.
             g.append("g")
                 .attr("fill", "none")
-                .attr("stroke", "#FF0000")
+                .attr("stroke", "#000")
                 .attr("stroke-opacity", 1)
                 .selectAll()
                 .data(root.links())
@@ -229,23 +185,25 @@ export default {
                 .attr("transform", d => `translate(${d.y},${d.x})`);
 
             node.append("circle")
-                .attr("fill", d => d.children ? "#555" : "#FF0000")
+                .attr("fill", d => d.children ? "#555" : "#000")
                 .attr("r", 2.5);
 
+
+            // Labels.
             node.append("text")
                 .attr("dy", "0.31em")
                 .attr("x", d => d.children ? -6 : 6)
                 .attr("text-anchor", d => d.children ? "end" : "start")
                 .text(d => d.data.skill_name)
                 .clone(true).lower()
-                .attr("stroke", "#FF0000");
+                .attr("stroke", "none");
 
 
+            // Zoom feature.
             this.svg.call(d3.zoom()
                 .extent([[0, 0], [this.width, this.height]])
                 .scaleExtent([0.1, 20])
                 .on("zoom", zoomed));
-
 
             function zoomed({ transform }) {
                 g.attr("transform", transform);
@@ -253,39 +211,24 @@ export default {
 
             // Append the SVG element.
             document.querySelector('#skilltree').append(this.svg.node());
-
         },
         printPDF() {
+            // Select the element from the DOM.
+            var svg = document.getElementById("linearTree")
+            // Then select with D3
+            var d3Svg = d3.select(svg);
+            // Then select the SVG code with D3
+            var d3SvgNode = d3Svg.node();
 
-
-
-            var svg = document.getElementById("svgID")
-            console.log(svg)
-            var selection = d3.select(svg);
-            //var path = d3.select(svg).selectAll("path").node();
-
-            //console.log(path)
-
-            var elt = selection.node();
-
-
-            // svg.setAttribute("width", 400)
-            // svg.setAttribute("height", 400)
-            // path.setAttribute("fill", 'black')
-            // svg.setAttribute("viewBox", '-100 -100 200 200')
-
-            console.log(elt)
-
+            // Make it a string, to send to server.
             var s = new XMLSerializer();
-            var str = s.serializeToString(elt);
+            var str = s.serializeToString(d3SvgNode);
 
+            // Create a JSON object.
             var dataObject = { svg: str };
             var data = JSON.stringify(dataObject);
 
-
-
-
-
+            // POST request.
             var xhttp = new XMLHttpRequest();
             xhttp.responseType = "arraybuffer";
             xhttp.open("POST", "/skilltree/pdf", true);
@@ -293,8 +236,9 @@ export default {
                 'application/json;charset=UTF-8');
             xhttp.setRequestHeader('Accept',
                 'application/json, text/plain, */*');
-
             xhttp.send(data);
+
+            // TODO.
             xhttp.onload = function () {
                 console.log("test1")
                 if (this.readyState == 4 && this.status == 200) {
@@ -314,7 +258,7 @@ export default {
     <div class="flex-container skill-tree-container">
         <!-- <SkillTreeFilter id="filter" /> -->
 
-        <button class="btn btn-info" @click="printPDF()">Print</button>
+        <button id="print-btn" class="btn btn-info" @click="printPDF()">Print</button>
         <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
         <div id="wrapper">
             <div id="skilltree">
@@ -359,6 +303,14 @@ export default {
     margin-top: 10px;
 }
 
+#print-btn {
+    position: absolute;
+    right: 0;
+    z-index: 1;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
 
 #reset-button {
     width: 100px;
@@ -375,7 +327,7 @@ export default {
     overflow: hidden;
     /* This is for the positioning of the information panel. */
     position: relative;
-    /*background-color: black;*/
+    background-color: white;
 }
 
 .flex-container {
