@@ -231,7 +231,7 @@ export default {
             // POST request.
             var xhttp = new XMLHttpRequest();
             xhttp.responseType = "arraybuffer";
-            xhttp.open("POST", "/skilltree/pdf", true);
+            xhttp.open("POST", "/skilltree/print-pdf", true);
             xhttp.setRequestHeader('Content-type',
                 'application/json;charset=UTF-8');
             xhttp.setRequestHeader('Accept',
