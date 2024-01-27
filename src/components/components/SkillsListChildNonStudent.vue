@@ -108,6 +108,9 @@ export default {
     HideMobileButtonsModal() {
       this.showModal = false;
     },
+    openEditNewTab() {
+      console.log(window.location.origin);
+    },
   },
 };
 </script>
@@ -151,12 +154,7 @@ export default {
           />
         </svg>
       </button>
-      <RouterLink
-        :to="'/skills/' + id"
-        role="button"
-        class="btn me-2 ci-btn"
-        target="_blank"
-      >
+      <RouterLink :to="'/skills/' + id" role="button" class="btn me-2 ci-btn">
         <!-- Eye icon -->
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -175,7 +173,6 @@ export default {
         :to="'/skills/edit/' + id"
         v-if="role == 'admin'"
         class="btn me-2 ci-btn"
-        target="_blank"
       >
         <!-- Pencil icon -->
         <svg
