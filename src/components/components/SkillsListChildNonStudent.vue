@@ -108,9 +108,6 @@ export default {
     HideMobileButtonsModal() {
       this.showModal = false;
     },
-    openEditNewTab() {
-      console.log(window.location.origin);
-    },
   },
 };
 </script>
