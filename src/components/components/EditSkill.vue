@@ -180,7 +180,6 @@ export default {
         })
         .then(() => {
           alert('refresh skill list page to see update');
-          this.emitter.emit('reloadSkillList');
           window.close();
         });
     },

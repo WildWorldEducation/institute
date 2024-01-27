@@ -66,21 +66,6 @@ export default {
         this.childrenNotSubskills.push(this.children[i]);
       }
     }
-
-    // Listen to the reload event so we can reload the skill store data
-    this.emitter.on('reloadSkillList', async () => {
-      console.log('LISTEN TO RELOAD EVENT');
-      await this.skillsStore.getNestedSkillsList();
-      await this.skillsStore.getSkillsList();
-
-      for (let i = 0; i < this.children.length; i++) {
-        if (this.children[i].type == 'sub') {
-          this.subSkills.push(this.children[i]);
-        } else {
-          this.childrenNotSubskills.push(this.children[i]);
-        }
-      }
-    });
   },
   mounted() {
     // This is to load the state of the nested skills list (which child skills are currently showing).
@@ -95,21 +80,6 @@ export default {
     } else {
       this.showSubskills = false;
     }
-
-    // Listen to the reload event so we can reload the skill store data
-    this.emitter.on('reloadSkillList', async () => {
-      console.log('LISTEN TO RELOAD EVENT');
-      await this.skillsStore.getNestedSkillsList();
-      await this.skillsStore.getSkillsList();
-
-      for (let i = 0; i < this.children.length; i++) {
-        if (this.children[i].type == 'sub') {
-          this.subSkills.push(this.children[i]);
-        } else {
-          this.childrenNotSubskills.push(this.children[i]);
-        }
-      }
-    });
   },
   methods: {
     // Save the state of the skills list to browser storage.

@@ -1,17 +1,10 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import mitt from 'mitt'
-
 import App from './App.vue'
 import router from './router'
 
 // Import Pixi JS.
 import * as PIXI from 'pixi.js';
-/**
- * Create the  a Vue global variable.
- * Using event bus in Vue 3 to calling method globally
- */
-const emitter = mitt();
 const app = createApp(App);
 
 app.use(createPinia());
@@ -32,6 +25,5 @@ var pixiApp = new PIXI.Application({
 });
 
 app.config.globalProperties.$pixiApp = pixiApp;
-app.config.globalProperties.emitter = emitter;
 app.mount('#app')
 
