@@ -131,7 +131,7 @@ export default {
         <span style="text-align: left">{{ name }}</span>
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
-            <button v-if="type == 'sub'" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
+            <button v-if="type == 'super'" type="button" @click.stop="toggleSubSkills" class="btn me-2 ci-btn">
                 <!-- Plus sign -->
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
