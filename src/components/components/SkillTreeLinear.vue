@@ -196,7 +196,7 @@ export default {
                 .attr("text-anchor", d => d.children ? "end" : "start")
                 .text(d => d.data.skill_name)
                 .clone(true).lower()
-                .attr("stroke", "none");
+                .attr("stroke", "white");
 
 
             // Zoom feature.
