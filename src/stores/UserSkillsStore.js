@@ -48,7 +48,7 @@ export const useUserSkillsStore = defineStore("userSkills", {
                         let subSkills = []
                         // Make them accessible/unlocked if regular type skills.
                         for (let i = 0; i < childSkills.length; i++) {
-                            if (childSkills[i].type == 'regular') {
+                            if (childSkills[i].type == 'regular' || childSkills[i].type == 'domain') {
                                 this.MakeAccessible(userId, childSkills[i].id)
                             }
                             // If super type skills, make their subskills accessible.
