@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -224,7 +224,7 @@ router.put('/:id/edit', (req, res, next) => {
             `', description = '` + req.body.description + `', icon_image = '` + req.body.icon_image + `', banner_image = '` + req.body.banner_image +
             `', mastery_requirements = '` + req.body.mastery_requirements +
             `', type = '` + req.body.type + `', level = '` + req.body.level + `', filter_1 = '` + req.body.filter_1 +
-            `' WHERE id = ` + req.params.id;      
+            `' WHERE id = ` + req.params.id;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
