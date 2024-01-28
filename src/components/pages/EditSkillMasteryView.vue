@@ -27,6 +27,7 @@ export default {
       selectedSkillId: null,
       checkUnlock: false,
       checkMastered: false,
+      showModal: false,
     };
   },
   async created() {
@@ -43,6 +44,8 @@ export default {
         this.user.avatar = user.avatar;
       }
     });
+    // Get userSkill list data
+    await this.userSkillsStore.getUnnestedList(this.user.id);
   },
   methods: {
     getReferenceSkill() {
@@ -63,15 +66,40 @@ export default {
       this.inputText = skill.name;
       this.selectedSkillId = skill.id;
       this.suggestSkills = [];
+      // clear the state of two check input before reading new data
+      this.checkMastered = false;
+      this.checkUnlock = false;
+      /** Every time the user choose a skill we will check the user skill store for mastery information */
+      // USING FIND WILL MAKE THE SITE NOT WORKING WITH OLDER VERSION OF THE WEB
+      const skillDetails = this.userSkillsStore.unnestedList.find(
+        (userSkill) => userSkill.id == skill.id
+      );
+      console.log(this.userSkillsStore.unnestedList);
+      if (skillDetails) {
+        if (skillDetails.is_accessible === '1') this.checkUnlock = true;
+        if (skillDetails.is_mastered === '1') this.checkMastered = true;
+      }
     },
 
-    handleSubmitForm() {
+    async handleSubmitForm() {
       // call method in user skill store base on form check state
       this.checkUnlock &&
-        this.userSkillsStore.MakeAccessible(this.user.id, this.selectedSkillId);
+        (await this.userSkillsStore.MakeAccessible(
+          this.user.id,
+          this.selectedSkillId
+        ));
       this.checkMastered &&
-        this.userSkillsStore.MakeMastered(this.user.id, this.selectedSkillId);
-      alert('your action is submitted');
+        (await this.userSkillsStore.MakeMastered(
+          this.user.id,
+          this.selectedSkillId
+        ));
+      this.showModal = true;
+      // refetch userSkill list data so we can probably show the check input
+      await this.userSkillsStore.getUnnestedList(this.user.id);
+      // restore the state of the element
+      this.inputText = '';
+      this.checkMastered = false;
+      this.checkUnlock = false;
     },
   },
 };
@@ -79,10 +107,7 @@ export default {
 
 <template>
   <div id="banner">
-    <img
-      src="/images/banners/edit-mastery-skill-banner.png"
-      class="image-fluid"
-    />
+    <img src="/images/banners/edit-mastery-skill-banner.png" class="image-fluid" />
   </div>
   <div id="main-container" class="container">
     <!-- Header Section -->
@@ -101,35 +126,15 @@ export default {
         <div class="col-12 col-md-6 col-xl-3 mt-5 mt-xl-0">
           <div class="mb-3" id="student-form-name">
             <label class="form-label">Student Name:</label>
-            <input
-              class="form-control"
-              type="text"
-              v-model="this.user.username"
-              disabled
-            />
+            <input class="form-control" type="text" v-model="this.user.username" disabled />
           </div>
         </div>
       </div>
       <div class="row mt-3 mt-md-4 mt-xl-5">
-        <div
-          class="col col-md-10 col-xl-5 mb-3 mt-md-3 mt-xl-5 position-relative"
-        >
-          <input
-            id="skill-input"
-            v-model="inputText"
-            @input="getReferenceSkill"
-            placeholder="type skill name"
-          />
-          <div
-            v-if="suggestSkills.length > 0"
-            id="suggest-skills"
-            class="flex flex-column position-absolute"
-          >
-            <div
-              class="suggest-option"
-              v-for="skill in suggestSkills"
-              @click="handleChooseSuggestSkill(skill)"
-            >
+        <div class="col col-md-10 col-xl-5 mb-3 mt-md-3 mt-xl-5 position-relative">
+          <input id="skill-input" v-model="inputText" @input="getReferenceSkill" placeholder="type skill name" />
+          <div v-if="suggestSkills.length > 0" id="suggest-skills" class="flex flex-column position-absolute">
+            <div class="suggest-option" v-for="skill in suggestSkills" @click="handleChooseSuggestSkill(skill)">
               {{ skill.name }}
             </div>
           </div>
@@ -137,62 +142,22 @@ export default {
       </div>
       <div class="row mt-2">
         <div class="col col-md-10 col-xl-5 row pe-0">
-          <!-- <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="nodeType"
-              id="regularSkillRadio"
-              value="regular"
-            />
-            <label class="form-check-label" for="regularSkillRadio">
-              Unlocked
-            </label>
-          </div>
-          <div class="form-check">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="nodeType"
-              id="superSkillRadio"
-              value="super"
-            />
-            <label class="form-check-label" for="superSkillRadio">
-              Mastered
-            </label>
-          </div> -->
           <div class="col">
             <label class="control control-checkbox">
-              <span class="my-auto mx-2 me-4">Unlock</span>
-              <input
-                type="checkbox"
-                name="nodeType"
-                id="regularSkillRadio"
-                value="regular"
-                v-model="checkUnlock"
-              />
+              <span class="my-auto mx-2 me-4">Unlocked</span>
+              <input type="checkbox" name="nodeType" id="regularSkillRadio" value="regular" v-model="checkUnlock" />
               <div class="control_indicator"></div>
             </label>
           </div>
           <div class="col">
             <label class="control control-checkbox">
               <span class="my-auto mx-2">Mastered</span>
-              <input
-                type="checkbox"
-                name="nodeType"
-                id="superSkillRadio"
-                value="super"
-                v-model="checkMastered"
-              />
+              <input type="checkbox" name="nodeType" id="superSkillRadio" value="super" v-model="checkMastered" />
               <div class="control_indicator"></div>
             </label>
           </div>
           <div class="col pe-0">
-            <button
-              id="submit-btn"
-              class="btn purple-btn"
-              @click="handleSubmitForm"
-            >
+            <button id="submit-btn" class="btn purple-btn" @click="handleSubmitForm">
               Submit
             </button>
           </div>
@@ -201,6 +166,20 @@ export default {
       <p>&nbsp;</p>
     </div>
     <hr class="mt-3 mb-5 d-none d-md-block" />
+  </div>
+  <!-- A modal for showing notification when user submit form -->
+  <div v-if="showModal">
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <p>Yours Changes Is Submitted</p>
+        <div style="display: flex; justify-content: centers">
+          <button type="button" class="btn btn-success mx-auto" @click="showModal = false">
+            Okay
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -247,7 +226,7 @@ input:focus {
   width: 100%;
 }
 
-#banner > img {
+#banner>img {
   width: 100%;
   height: auto;
 }
@@ -278,8 +257,7 @@ input:focus {
     linear-gradient(0deg, #65e0a5, #65e0a5);
   border: 1px solid #f2f4f7;
   border: 0.83px solid #65e0a5;
-  box-shadow: 0px 3.317408561706543px 4.9761128425598145px -1.6587042808532715px
-    #10182808;
+  box-shadow: 0px 3.317408561706543px 4.9761128425598145px -1.6587042808532715px #10182808;
   box-shadow: 0px 9.952225685119629px 13.269634246826172px -3.317408561706543px #10182814;
 }
 
@@ -313,7 +291,7 @@ input:focus {
   height: 61px;
 }
 
-#student-form-name > label {
+#student-form-name>label {
   color: #344054;
   font-family: Poppins;
   font-size: 0.875rem;
@@ -323,7 +301,7 @@ input:focus {
   text-align: left;
 }
 
-#student-form-name > input {
+#student-form-name>input {
   box-shadow: 0px 1px 2px 0px #1018280d;
   border: 1px solid #f2f4f7;
   background: #fcfcfd !important;
@@ -334,6 +312,7 @@ input:focus {
   margin-right: 0px;
 }
 
+/**-------------------------------------  */
 /* A lot of CSS to styling two check box */
 .control {
   font-family: 'Poppins' sans-serif;
@@ -345,17 +324,19 @@ input:focus {
   cursor: pointer;
 }
 
-.control > span {
+.control>span {
   font-weight: 500;
   font-size: 0.938rem;
   color: #667085;
   text-align: center;
 }
+
 .control input {
   position: absolute;
   z-index: -1;
   opacity: 0;
 }
+
 .control_indicator {
   position: absolute;
   top: 2px;
@@ -366,32 +347,38 @@ input:focus {
   border: 1.45px solid #9c7eec;
   border-radius: 8.73px;
 }
-.control:hover input ~ .control_indicator,
-.control input:focus ~ .control_indicator {
+
+.control:hover input~.control_indicator,
+.control input:focus~.control_indicator {
   background: #e7ddf6;
 }
 
-.control input:checked ~ .control_indicator {
+.control input:checked~.control_indicator {
   background: #f9f5ff;
 }
-.control:hover input:not([disabled]):checked ~ .control_indicator,
-.control input:checked:focus ~ .control_indicator {
+
+.control:hover input:not([disabled]):checked~.control_indicator,
+.control input:checked:focus~.control_indicator {
   background: #f9f5ff;
 }
-.control input:disabled ~ .control_indicator {
+
+.control input:disabled~.control_indicator {
   background: #e6e6e6;
   opacity: 0.6;
   pointer-events: none;
 }
+
 .control_indicator:after {
   box-sizing: unset;
   content: '';
   position: absolute;
   display: none;
 }
-.control input:checked ~ .control_indicator:after {
+
+.control input:checked~.control_indicator:after {
   display: block;
 }
+
 .control-checkbox .control_indicator:after {
   left: 4px;
   top: 5px;
@@ -401,9 +388,11 @@ input:focus {
   border-width: 0px 0px 2.9px 2.9px;
   transform: rotate(-45deg);
 }
-.control-checkbox input:disabled ~ .control_indicator:after {
+
+.control-checkbox input:disabled~.control_indicator:after {
   border-color: #7b7b7b;
 }
+
 .control-checkbox .control_indicator::before {
   content: '';
   display: block;
@@ -420,38 +409,81 @@ input:focus {
   z-index: 99999;
   transform: scale(0);
 }
+
 @keyframes s-ripple {
   0% {
     transform: scale(0);
   }
+
   20% {
     transform: scale(1);
   }
+
   100% {
     opacity: 0;
     transform: scale(1);
   }
 }
+
 @keyframes s-ripple-dup {
   0% {
     transform: scale(0);
   }
+
   30% {
     transform: scale(1);
   }
+
   60% {
     transform: scale(1);
   }
+
   100% {
     opacity: 0;
     transform: scale(1);
   }
 }
-.control-checkbox input + .control_indicator::before {
+
+.control-checkbox input+.control_indicator::before {
   animation: s-ripple 250ms ease-out;
 }
-.control-checkbox input:checked + .control_indicator::before {
+
+.control-checkbox input:checked+.control_indicator::before {
   animation-name: s-ripple-dup;
+}
+
+/* End of check box styling */
+
+/* The Notification Modal */
+.modal {
+  display: block;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 300px;
+  /* Could be more or less, depending on screen size */
 }
 
 @media (min-width: 768px) and (max-width: 1025px) {
@@ -474,8 +506,14 @@ input:focus {
     margin-right: auto;
     margin-top: 40px;
   }
+
   #suggest-skills {
     width: 93%;
+  }
+
+  /* In phone view the modal will be in the center */
+  .modal-content {
+    margin: 100% auto;
   }
 }
 </style>
