@@ -57,7 +57,6 @@ export default {
         })
         .then((data) => (this.skill = data))
         .then(() => {
-          console.log(this.skill);
 
           // Go through all the skill tags.
           for (let i = 0; i < this.tagsStore.tagsList.length; i++) {
@@ -119,70 +118,36 @@ export default {
 <template>
   <div class="container mt-3">
     <div id="skill-info-container">
-      <div
-        v-if="isUnlocked && !isMastered && userDetailsStore.role == 'student'"
-        class="row mt-3"
-      >
+      <div v-if="isUnlocked && !isMastered && userDetailsStore.role == 'student'" class="row mt-3">
         <div class="d-flex btn-header flex-row-reverse center-header">
-          <button
-            v-if="skill.type == 'domain'"
-            @click="MakeMastered()"
-            class="btn purple-btn"
-          >
+          <button v-if="skill.type == 'domain'" @click="MakeMastered()" class="btn purple-btn">
             Click to unlock child skills
           </button>
-          <router-link
-            v-else
-            class="btn purple-btn"
-            :to="skillId + '/assessment'"
-            >Take Assessment</router-link
-          >
+          <router-link v-else class="btn purple-btn" :to="skillId + '/assessment'">Take Assessment</router-link>
         </div>
       </div>
       <!-- Edit skill only available for Admin -->
-      <div
-        v-if="userDetailsStore.role == 'admin'"
-        class="d-flex flex-row-reverse center-header px-2"
-      >
-        <router-link
-          :to="'/skills/edit/' + skillId"
-          class="btn green-btn"
-          role="button"
-          >Edit&nbsp;&nbsp;
+      <div v-if="userDetailsStore.role == 'admin'" class="d-flex flex-row-reverse center-header px-2">
+        <router-link :to="'/skills/edit/' + skillId" class="btn green-btn" role="button">Edit&nbsp;&nbsp;
           <!-- Plus sign -->
-          <svg
-            width="19"
-            height="20"
-            viewBox="0 0 19 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-              fill="#FFFFFF"
-            />
-            <path
-              d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-              fill="#FFFFFF"
-            />
+              fill="#FFFFFF" />
+            <path d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z" fill="#FFFFFF" />
             <path
               d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-              fill="#FFFFFF"
-            />
+              fill="#FFFFFF" />
           </svg>
         </router-link>
       </div>
       <div class="row mt-3">
         <div class="col col-lg-2 col-md-3">
           <!-- Show a default skill avatar if skill not have image yet -->
-          <img
-            :src="
-              skill.icon_image
-                ? skill.icon_image
-                : '/images/skill-avatar/recurso.png'
-            "
-            class="img-fluid"
-          />
+          <img :src="skill.icon_image
+            ? skill.icon_image
+            : '/images/skill-avatar/recurso.png'
+            " class="img-fluid" />
         </div>
 
         <div class="col-lg-10 col-md-9">
@@ -216,9 +181,7 @@ export default {
       </div>
       <div v-if="userDetailsStore.role == 'admin'" class="row mt-3">
         <h2>Filter</h2>
-        <span v-if="skill.filter_1 == 1"
-          >contrary to strict Christian doctrine</span
-        >
+        <span v-if="skill.filter_1 == 1">contrary to strict Christian doctrine</span>
         <span v-else>none</span>
       </div>
       <!-- A line divide -->
@@ -227,65 +190,36 @@ export default {
           <hr id="hr-parent" class="border border-2 opacity-100" />
         </div>
       </div>
-      <div
-        v-if="userDetailsStore.role == 'admin' && skill.type != 'domain'"
-        class="row mt-3"
-      >
+      <div v-if="userDetailsStore.role == 'admin' && skill.type != 'domain'" class="row mt-3">
         <h2>Assessment</h2>
         <div class="col d-flex">
-          <router-link
-            class="btn purple-btn mt-3 me-3"
-            :to="skillId + '/question-bank'"
-            >Question Bank&nbsp;&nbsp;
+          <router-link class="btn purple-btn mt-3 me-3" :to="skillId + '/question-bank'">Question Bank&nbsp;&nbsp;
             <!-- Pencil icon -->
-            <svg
-              width="19"
-              height="20"
-              viewBox="0 0 19 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                fill="#FFFFFF"
-              />
-              <path
-                d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                fill="#FFFFFF"
-              />
+                fill="#FFFFFF" />
+              <path d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
+                fill="#FFFFFF" />
               <path
                 d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                fill="#FFFFFF"
-              />
+                fill="#FFFFFF" />
             </svg>
           </router-link>
 
-          <router-link
-            class="btn purple-btn mt-3"
-            :to="skillId + '/edit-assessment'"
-          >
+          <!-- <router-link class="btn purple-btn mt-3" :to="skillId + '/edit-assessment'">
             Assessment&nbsp;&nbsp;
-            <svg
-              width="19"
-              height="20"
-              viewBox="0 0 19 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                fill="#FFFFFF"
-              />
-              <path
-                d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                fill="#FFFFFF"
-              />
+                fill="#FFFFFF" />
+              <path d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
+                fill="#FFFFFF" />
               <path
                 d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                fill="#FFFFFF"
-              />
+                fill="#FFFFFF" />
             </svg>
-          </router-link>
+          </router-link> -->
         </div>
       </div>
     </div>
@@ -304,6 +238,7 @@ export default {
 .image-attribution-text {
   font-size: smaller;
 }
+
 #hr-parent {
   border-color: #aea3ce !important;
 }
@@ -312,6 +247,7 @@ export default {
   margin-top: 46px;
   margin-bottom: 46px;
 }
+
 #skill-image {
   max-width: 600px;
 }
@@ -323,6 +259,7 @@ export default {
   padding-left: 48px;
   padding-bottom: 10px;
 }
+
 .purple-btn {
   background-color: #a48be6;
   color: white;
@@ -340,6 +277,7 @@ export default {
 .purple-btn:hover {
   background-color: #8f7bd6;
 }
+
 .green-btn {
   background-color: #36c1af;
   color: white;
