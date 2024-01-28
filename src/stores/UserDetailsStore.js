@@ -11,6 +11,8 @@ export const useUserDetailsStore = defineStore("userDetails", {
             firstName: null,
             role: null,
             lastName: null,
+            password: null,
+            email: null,
             skillTreeTheme: null,
             userId: null,
             message: null
@@ -35,6 +37,8 @@ export const useUserDetailsStore = defineStore("userDetails", {
                 this.role = data.role;
                 this.skillTreeTheme = data.skilltree_theme;
                 this.message = data.message;
+                this.password = data.password;
+                this.email = data.email;
 
                 return this.$state;
             }
@@ -68,6 +72,8 @@ export const useUserDetailsStore = defineStore("userDetails", {
                         id: this.userId,
                         avatar: this.avatar,
                         skillTreeTheme: this.skillTreeTheme,
+                        password: this.password,
+                        email: this.email
                     }
                     skillTreeStore.updateSkillTree(student);
                 });
