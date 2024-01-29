@@ -184,7 +184,7 @@ export default {
 </script>
 
 <template>
-    <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button>
+    <!-- <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div v-if="this.questions.length > 0" class="container mt-3 mb-3">
         <!-- To wait for questions to be loaded, before the DOM renders. -->
         <div class="row mt-3">

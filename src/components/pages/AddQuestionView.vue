@@ -1,12 +1,14 @@
 <script setup>
-import AddMCQuestion from '../components/AddMCQuestion.vue'
-import AddEssayQuestion from '../components/AddEssayQuestion.vue'
+import AddMCQuestion from "../components/AddMCQuestion.vue";
+import AddEssayQuestion from "../components/AddEssayQuestion.vue";
 </script>
 
 <template>
-    <AddMCQuestion />
-    <AddEssayQuestion />
+  <AddMCQuestion />
+  <AddEssayQuestion />
+  <div class="d-flex justify-content-between">
+    <a class="btn btn-dark" @click="$router.go(-1)">Cancel</a>
+  </div>
 </template>
-  
+
 <style></style>
-  
