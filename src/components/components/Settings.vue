@@ -22,7 +22,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 pb-5">
+    <div class="container mt-3 pb-5 px-3 px-lg-0">
         <!--Settings. Only show if admin -->
         <div v-if="userDetailsStore.role == 'admin'">
             <hr />
