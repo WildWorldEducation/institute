@@ -18,9 +18,10 @@ router.post('/print-pdf', (req, res, next) => {
   var width;
   var height;
 
+  // Full tree with no filtering.
   if (req.body.treeType == "linear") {
-    width = 5000
-    height = 37500
+    width = 6000
+    height = 54500
   }
   else if (req.body.treeType == "radial") {
     width = 20000
