@@ -1,9 +1,9 @@
 <script>
-import { RouterLink, RouterView } from 'vue-router';
+import { RouterLink, RouterView } from "vue-router";
 
 // Import the store.
-import { useSessionDetailsStore } from './stores/SessionDetailsStore.js';
-import { useUserDetailsStore } from './stores/UserDetailsStore.js';
+import { useSessionDetailsStore } from "./stores/SessionDetailsStore.js";
+import { useUserDetailsStore } from "./stores/UserDetailsStore.js";
 
 export default {
   setup() {
@@ -26,20 +26,38 @@ export default {
           <img src="/images/logo-red.png" alt="" width="50" height="50" />
         </RouterLink>
         <span class="navbar-brand">The Collins Institute</span>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li v-if="userDetailsStore.role == 'student'" class="nav-item">
-              <RouterLink to="/skill-tree" class="nav-link">Skill Tree D3 & Pixi</RouterLink>
+              <RouterLink to="/skill-tree" class="nav-link"
+                >Skill Tree D3 & Pixi</RouterLink
+              >
             </li>
             <li v-if="userDetailsStore.role == 'student'" class="nav-item">
-              <RouterLink to="/skill-tree-d3" class="nav-link">Skill Tree D3</RouterLink>
+              <RouterLink to="/skill-tree-d3" class="nav-link"
+                >Skill Tree D3</RouterLink
+              >
             </li>
             <li v-if="userDetailsStore.role == 'student'" class="nav-item">
-              <RouterLink to="/skill-tree-linear" class="nav-link">Skill Tree D3 Linear</RouterLink>
+              <RouterLink to="/skill-tree-d3-radial-cluster" class="nav-link"
+                >Skill Tree D3 Radial Cluster</RouterLink
+              >
+            </li>
+            <li v-if="userDetailsStore.role == 'student'" class="nav-item">
+              <RouterLink to="/skill-tree-linear" class="nav-link"
+                >Skill Tree D3 Linear</RouterLink
+              >
             </li>
             <li class="nav-item">
               <RouterLink to="/skills" class="nav-link">
@@ -49,14 +67,20 @@ export default {
             <li v-if="userDetailsStore.role != 'student'" class="nav-item">
               <RouterLink to="/users" class="nav-link">
                 <span v-if="userDetailsStore.role == 'admin'">Users </span>
-                <span v-else-if="userDetailsStore.role == 'instructor'">Students</span>
+                <span v-else-if="userDetailsStore.role == 'instructor'"
+                  >Students</span
+                >
               </RouterLink>
             </li>
           </ul>
           <ul class="navbar-nav d-flex">
             <li class="nav-item me-2">
               <RouterLink to="/profile-settings" class="nav-link">
-                <img id="user-avatar" :src="userDetailsStore.avatar" alt="user avatar" />
+                <img
+                  id="user-avatar"
+                  :src="userDetailsStore.avatar"
+                  alt="user avatar"
+                />
               </RouterLink>
             </li>
           </ul>
@@ -70,7 +94,7 @@ export default {
 
 <style scoped>
 .navbar-brand {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 600;
   font-size: 16px;
   margin-left: 20px;
@@ -86,7 +110,7 @@ export default {
   align-items: baseline;
 }
 
-.nav-link>img {
+.nav-link > img {
   margin-left: 5px;
 }
 
