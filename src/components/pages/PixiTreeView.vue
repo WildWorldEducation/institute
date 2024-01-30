@@ -1,5 +1,5 @@
 <script setup>
-import SkillTreeD3RadialCluster from "../components/SkillTreeD3RadialCluster.vue";
+import PixiTree from "../components/skilltrees/PixiTree.vue";
 </script>
 
 <template>
@@ -7,7 +7,7 @@ import SkillTreeD3RadialCluster from "../components/SkillTreeD3RadialCluster.vue
   <!-- Display loading screen while asynchronous call is made. -->
   <Suspense>
     <template #default>
-      <SkillTreeD3RadialCluster />
+      <PixiTree />
     </template>
     <template #fallback>
       <span>Loading...</span>
