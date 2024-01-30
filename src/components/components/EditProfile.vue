@@ -7,7 +7,7 @@ export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const showObj = { ...userDetailsStore, avatar: '1' };
-        console.log(JSON.stringify(showObj));
+        console.log(userDetailsStore.skillTreeTheme);
         return {
             userDetailsStore
         };
@@ -19,7 +19,16 @@ export default {
             avatar: this.userDetailsStore.avatar,
             email: this.userDetailsStore.email,
             password: this.userDetailsStore.password,
-            image: ''
+            image: '',
+            firstName: this.userDetailsStore.firstName,
+            lastName: this.userDetailsStore.lastName,
+            validate: {
+                firstName: false,
+                lastName: false,
+                email: false,
+                emailForm: false,
+                password: false
+            }
         };
     },
     computed: {},
@@ -31,16 +40,21 @@ export default {
             ) {
                 alert('Please add a username.');
             } else {
-                this.userDetailsStore.updateProfile(
-                    this.userName,
-                    this.skillTreeTheme,
-                    this.avatar
-                );
-                this.$router.push('/profile-settings');
+                // this.userDetailsStore.updateProfile(
+                //     this.userName,
+                //     this.skillTreeTheme,
+                //     this.avatar,
+                //     this.password,
+                //     this.email
+                // );
+                // this.$router.push('/profile-settings');
             }
         },
         // For image upload.
         onFileChange(e) {
+            // delete the old image first
+            this.image = '';
+            this.avatar = this.image;
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length) return;
             this.createImage(files[0]);
@@ -60,6 +74,10 @@ export default {
         removeImage: function (e) {
             this.image = '';
             this.avatar = this.image;
+        },
+        openImage() {
+            const input = document.getElementById('image-input');
+            input.click();
         }
     }
 };
@@ -68,14 +86,160 @@ export default {
 <template>
     <div class="container mt-3">
         <h1>Edit Profile</h1>
-        <div class="mb-3">
-            <label class="form-label">Username</label>
-            <input v-model="userName" type="text" class="form-control" />
+        <div class="row">
+            <div class="col-12 col-lg-5">
+                <div class="row mx-0 px-md-0">
+                    <div
+                        class="d-flex align-items-center align-items-md-start ps-lg-0 position-relative"
+                    >
+                        <div id="plus-svg" @click="openImage()">
+                            <!-- The plus Icon On Top Of the avatar -->
+                            <svg
+                                width="53"
+                                height="53"
+                                viewBox="0 0 53 53"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <circle
+                                    cx="26.5"
+                                    cy="26.5"
+                                    r="26.5"
+                                    fill="#D9D9D9"
+                                />
+                                <g clip-path="url(#clip0_372_11959)">
+                                    <path
+                                        d="M19.7439 45.0784L19.7439 33.2515L7.93354 33.268C7.40615 33.2671 6.90063 33.0572 6.52771 32.6843C6.15479 32.3114 5.94488 31.8059 5.94396 31.2785L5.93291 21.7174C5.93382 21.1901 6.14373 20.6845 6.51665 20.3116C6.88957 19.9387 7.3951 19.7288 7.92249 19.7279L19.7439 19.7334L19.7439 7.90646C19.7411 7.64223 19.7911 7.38009 19.8909 7.13543C19.9907 6.89076 20.1384 6.66849 20.3252 6.48164C20.5121 6.29479 20.7344 6.14713 20.979 6.0473C21.2237 5.94747 21.4858 5.8975 21.75 5.9003L31.2779 5.92241C31.8053 5.92332 32.3108 6.13322 32.6838 6.50615C33.0567 6.87907 33.2666 7.38459 33.2675 7.91198L33.262 19.7334L45.0889 19.7334C45.615 19.7337 46.1195 19.9428 46.4915 20.3148C46.8635 20.6869 47.0726 21.1913 47.073 21.7174L47.0951 31.2453C47.0948 31.7714 46.8856 32.2759 46.5136 32.6479C46.1416 33.0199 45.6371 33.229 45.111 33.2294L33.262 33.2515L33.2786 45.0618C33.2776 45.5892 33.0677 46.0947 32.6948 46.4677C32.3219 46.8406 31.8164 47.0505 31.289 47.0514L21.7501 47.0846C21.4858 47.0874 21.2237 47.0374 20.979 46.9376C20.7344 46.8377 20.5121 46.6901 20.3252 46.5032C20.1384 46.3164 19.9907 46.0941 19.8909 45.8494C19.7911 45.6048 19.7411 45.3426 19.7439 45.0784Z"
+                                        fill="white"
+                                    />
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_372_11959">
+                                        <rect
+                                            width="37"
+                                            height="37"
+                                            fill="white"
+                                            transform="translate(8 8)"
+                                        />
+                                    </clipPath>
+                                </defs>
+                            </svg>
+                        </div>
+                        <img
+                            id="img-background"
+                            :src="avatar"
+                            height="428"
+                            style="background-color: lightgrey"
+                            class="d-none d-lg-block"
+                        />
+                        <img
+                            id="img-background"
+                            :src="avatar"
+                            height="240"
+                            style="background-color: lightgrey"
+                            class="d-lg-none"
+                        />
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 px-4 px-md-0 col-lg-4 px-0 px-md-4 px-lg-0">
+                <div class="d-flex gap-4">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">First Name</label>
+                        <input
+                            id="name"
+                            v-model="firstName"
+                            type="text"
+                            class="form-control"
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Last Name</label>
+                        <input
+                            id="name"
+                            v-model="lastName"
+                            type="text"
+                            class="form-control"
+                        />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input
+                        v-model="userName"
+                        type="text"
+                        class="form-control"
+                    />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input v-model="email" type="email" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input
+                        v-model="password"
+                        type="text"
+                        class="form-control"
+                    />
+                </div>
+                <!-- <div class="mb-3">
+                    <label class="form-label">Theme</label><br />
+                    <input
+                        type="radio"
+                        value="light"
+                        v-model="skillTreeTheme"
+                    />
+                    <label for="light">Light</label><br />
+                    <input type="radio" value="dark" v-model="skillTreeTheme" />
+                    <label for="dark">Dark</label><br />
+                </div> -->
+                <div class="row mb-3">
+                    <label class="form-label">Theme</label><br />
+                    <div class="col">
+                        <label class="control control-checkbox">
+                            <span for="dark" class="my-auto mx-2 me-4"
+                                >Dark</span
+                            >
+                            <input
+                                type="radio"
+                                id="dark"
+                                name="nodeType"
+                                value="dark"
+                                v-model="skillTreeTheme"
+                            />
+                            <div class="control_indicator"></div>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="control control-checkbox">
+                            <span class="my-auto mx-2">Light</span>
+                            <input
+                                type="radio"
+                                name="nodeType"
+                                id="light"
+                                value="light"
+                                v-model="skillTreeTheme"
+                            />
+                            <div class="control_indicator"></div>
+                        </label>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between mb-3 mt-5">
+                    <router-link class="btn red-btn" to="/profile-settings">
+                        Cancel
+                    </router-link>
+                    <button class="btn purple-btn" @click="ValidateForm()">
+                        Submit
+                    </button>
+                </div>
+            </div>
         </div>
+
         <div class="mb-3 row">
-            <label for="avatar" class="form-label">Avatar</label>
-            <div v-if="!image">
+            <div class="d-none">
                 <input
+                    id="image-input"
                     class="form-control"
                     type="file"
                     accept="image/*"
@@ -83,7 +247,7 @@ export default {
                 />
                 <p style="font-size: 14px"><em>Maximum file size 15mb</em></p>
             </div>
-            <div v-else>
+            <!-- <div v-else>
                 <p>
                     <img
                         :src="image"
@@ -96,22 +260,206 @@ export default {
                         Remove image
                     </button>
                 </p>
-            </div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Theme</label><br />
-            <input type="radio" value="light" v-model="skillTreeTheme" />
-            <label for="light">Light</label><br />
-            <input type="radio" value="dark" v-model="skillTreeTheme" />
-            <label for="dark">Dark</label><br />
-        </div>
-        <div class="d-flex justify-content-between mb-3">
-            <router-link class="btn btn-dark" to="/profile-settings">
-                Cancel
-            </router-link>
-            <button class="btn btn-dark" @click="ValidateForm()">Submit</button>
+            </div> -->
         </div>
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+#plus-svg {
+    position: absolute;
+    right: 110px;
+    top: 15px;
+}
+#plus-svg:hover {
+    cursor: pointer;
+}
+
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    border: 1px solid #d33622;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.red-btn:hover {
+    background-color: #cc3535;
+}
+
+.purple-btn {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.purple-btn:hover {
+    background-color: #9a7ceb;
+}
+
+#img-background {
+    border-radius: 12px;
+}
+
+#page-tile {
+    font-family: 'Poppins' sans-serif;
+    font-size: 2.375rem;
+    font-weight: 900;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+.form-label {
+    color: #344054;
+    font-family: 'Poppins' sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+
+.form-control {
+    border: 1px solid #f2f4f7;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    color: #667085;
+}
+
+/**-------------------------------------  */
+/* A lot of CSS to styling two radio box */
+.control {
+    font-family: 'Poppins' sans-serif;
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 5px;
+    padding-top: 3px;
+    cursor: pointer;
+}
+
+.control > span {
+    font-weight: 500;
+    font-size: 0.938rem;
+    color: #667085;
+    text-align: center;
+}
+.control input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+.control_indicator {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    height: 29.09px;
+    width: 29.09px;
+    background: #f9f5ff;
+    border: 1.45px solid #9c7eec;
+    border-radius: 8.73px;
+}
+.control:hover input ~ .control_indicator,
+.control input:focus ~ .control_indicator {
+    background: #e7ddf6;
+}
+
+.control input:checked ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control:hover input:not([disabled]):checked ~ .control_indicator,
+.control input:checked:focus ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control input:disabled ~ .control_indicator {
+    background: #e6e6e6;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.control_indicator:after {
+    box-sizing: unset;
+    content: '';
+    position: absolute;
+    display: none;
+}
+.control input:checked ~ .control_indicator:after {
+    display: block;
+}
+.control-checkbox .control_indicator:after {
+    left: 4px;
+    top: 5px;
+    width: 13.58px;
+    height: 9.33px;
+    border: solid #9c7eec;
+    border-width: 0px 0px 2.9px 2.9px;
+    transform: rotate(-45deg);
+}
+.control-checkbox input:disabled ~ .control_indicator:after {
+    border-color: #7b7b7b;
+}
+.control-checkbox .control_indicator::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-left: -1.3rem;
+    margin-top: -1.3rem;
+    background: #9c7eec;
+    border-radius: 3rem;
+    opacity: 0.6;
+    z-index: 99999;
+    transform: scale(0);
+}
+/* @keyframes s-ripple {
+    0% {
+        transform: scale(0);
+    }
+    20% {
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+@keyframes s-ripple-dup {
+    0% {
+        transform: scale(0);
+    }
+    30% {
+        transform: scale(1);
+    }
+    60% {
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+} */
+.control-checkbox input + .control_indicator::before {
+    animation: s-ripple 250ms ease-out;
+}
+.control-checkbox input:checked + .control_indicator::before {
+    animation-name: s-ripple-dup;
+}
+/* End of check box styling */
+</style>
