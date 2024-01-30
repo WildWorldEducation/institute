@@ -40,23 +40,23 @@ export default {
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li v-if="userDetailsStore.role == 'student'" class="nav-item">
-              <RouterLink to="/skill-tree" class="nav-link"
-                >Skill Tree D3 & Pixi</RouterLink
+              <RouterLink to="/pixi-tree" class="nav-link"
+                >Pixi Tree</RouterLink
               >
             </li>
             <li v-if="userDetailsStore.role == 'student'" class="nav-item">
-              <RouterLink to="/skill-tree-d3" class="nav-link"
-                >Skill Tree D3</RouterLink
+              <RouterLink to="/radial-tidy-tree" class="nav-link"
+                >Radial Tidy Tree</RouterLink
               >
             </li>
             <li v-if="userDetailsStore.role == 'student'" class="nav-item">
-              <RouterLink to="/skill-tree-d3-radial-cluster" class="nav-link"
-                >Skill Tree D3 Radial Cluster</RouterLink
+              <RouterLink to="/radial-cluster-tree" class="nav-link"
+                >Radial Cluster Tree</RouterLink
               >
             </li>
             <li v-if="userDetailsStore.role == 'student'" class="nav-item">
-              <RouterLink to="/skill-tree-linear" class="nav-link"
-                >Skill Tree D3 Linear</RouterLink
+              <RouterLink to="/tidy-tree" class="nav-link"
+                >Tidy Tree</RouterLink
               >
             </li>
             <li class="nav-item">

@@ -14,24 +14,24 @@ const router = createRouter({
       component: PostLoginView
     },
     {
-      path: '/skill-tree',
-      name: 'skill-tree',
-      component: () => import('../components/pages/SkillTreeView.vue')
+      path: '/pixi-tree',
+      name: 'pixi-tree',
+      component: () => import('../components/pages/PixiTreeView.vue')
     },
     {
-      path: '/skill-tree-d3',
-      name: 'skill-tree-d3',
-      component: () => import('../components/pages/SkillTreeD3View.vue')
+      path: '/radial-tidy-tree',
+      name: 'radial-tidy-tree',
+      component: () => import('../components/pages/RadialTidyTreeView.vue')
     },
     {
-      path: '/skill-tree-d3-radial-cluster',
-      name: 'skill-tree-d3-radial-cluster',
-      component: () => import('../components/pages/SkillTreeD3RadialClusterView.vue')
+      path: '/radial-cluster-tree',
+      name: 'radial-cluster-tree',
+      component: () => import('../components/pages/RadialClusterTreeView.vue')
     },
     {
-      path: '/skill-tree-linear',
-      name: 'skill-tree-linear',
-      component: () => import('../components/pages/SkillTreeLinearView.vue')
+      path: '/tidy-tree',
+      name: 'tidy-tree',
+      component: () => import('../components/pages/TidyTreeView.vue')
     },
     {
       path: '/:id/skill-tree',

@@ -1,12 +1,12 @@
 <script>
 // Import the stores.
-import { useUserDetailsStore } from "../../stores/UserDetailsStore";
-import { useSkillTreeStore } from "../../stores/SkillTreeStore";
-import { useSkillTagsStore } from "../../stores/SkillTagsStore";
+import { useUserDetailsStore } from "../../../stores/UserDetailsStore";
+import { useSkillTreeStore } from "../../../stores/SkillTreeStore";
+import { useSkillTagsStore } from "../../../stores/SkillTagsStore";
 
 // Nested component.
-import SkillTreeFilter from "./SkillTreeFilter.vue";
-import SkillPanel from "./SkillPanel.vue";
+import SkillTreeFilter from "./../SkillTreeFilter.vue";
+import SkillPanel from "./../SkillPanel.vue";
 
 // Import Pixi JS.
 import * as PIXI from "pixi.js";
@@ -73,8 +73,8 @@ export default {
     // Specify the chart’s dimensions.
     // this.width = window.innerWidth
     // this.height = window.innerHeight
-    this.width = 20000;
-    this.height = 20000;
+    this.width = 30000;
+    this.height = 30000;
     this.radius = Math.min(this.width, this.height) / 2;
 
     const centerNodeSprite = PIXI.Sprite.from("center-node.png");
@@ -124,7 +124,7 @@ export default {
       // Create a radial tree layout. The layout’s first dimension (x)
       // is the angle, while the second (y) is the radius.
       const tree = d3
-        .cluster()
+        .tree()
         // increase the radius to space out the nodes.
         .size([2 * Math.PI, this.radius * this.radiusMultiplier])
         // Max separation between sibling nodes.
@@ -136,7 +136,7 @@ export default {
       // Creates the SVG container.
       // Set the center.
       const cx = this.width * 0.5;
-      const cy = this.height * 0.52;
+      const cy = this.height * 0.5;
 
       const svg = d3
         .create("svg")
@@ -297,9 +297,9 @@ export default {
   <div class="flex-container skill-tree-container">
     <!-- <SkillTreeFilter id="filter" />
         <button v-show="isRecentered" id="reset-button" class="btn btn-info">Reset</button> -->
-    <!--<button id="print-btn" class="btn btn-info" @click="printPDF()">
+    <button id="print-btn" class="btn btn-info" @click="printPDF()">
       Print
-    </button> -->
+    </button>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div id="wrapper">
       <div id="skilltree">

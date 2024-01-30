@@ -1,12 +1,12 @@
 <script>
 // Import the stores.
-import { useUserDetailsStore } from "../../stores/UserDetailsStore";
-import { useSkillTreeStore } from "../../stores/SkillTreeStore";
-import { useSkillTagsStore } from "../../stores/SkillTagsStore";
+import { useUserDetailsStore } from "../../../stores/UserDetailsStore";
+import { useSkillTreeStore } from "../../../stores/SkillTreeStore";
+import { useSkillTagsStore } from "../../../stores/SkillTagsStore";
 
 // Nested component.
-import SkillTreeFilter from "./SkillTreeFilter.vue";
-import SkillPanel from "./SkillPanel.vue";
+import SkillTreeFilter from "./../SkillTreeFilter.vue";
+import SkillPanel from "./../SkillPanel.vue";
 
 // Import Pixi JS.
 import * as PIXI from "pixi.js";
