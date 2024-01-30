@@ -24,6 +24,11 @@ const router = createRouter({
       component: () => import('../components/pages/SkillTreeD3View.vue')
     },
     {
+      path: '/skill-tree-d3-radial-cluster',
+      name: 'skill-tree-d3-radial-cluster',
+      component: () => import('../components/pages/SkillTreeD3RadialClusterView.vue')
+    },
+    {
       path: '/skill-tree-linear',
       name: 'skill-tree-linear',
       component: () => import('../components/pages/SkillTreeLinearView.vue')
