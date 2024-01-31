@@ -14,6 +14,7 @@ export default {
     },
     data() {
         return {
+            id: this.userDetailsStore.userId,
             userName: this.userDetailsStore.userName,
             skillTreeTheme: this.userDetailsStore.skillTreeTheme,
             avatar: this.userDetailsStore.avatar,
@@ -26,7 +27,7 @@ export default {
                 firstName: false,
                 lastName: false,
                 email: false,
-                emailForm: false,
+                emailFormat: false,
                 password: false
             }
         };
@@ -34,22 +35,67 @@ export default {
     computed: {},
     methods: {
         ValidateForm() {
-            if (
-                this.userDetailsStore.userName == '' ||
-                this.userDetailsStore.userName == null
-            ) {
-                alert('Please add a username.');
+            // if (
+            //     this.userDetailsStore.userName == '' ||
+            //     this.userDetailsStore.userName == null
+            // ) {
+            //     alert('Please add a username.');
+            // } else {
+            //     // this.userDetailsStore.updateProfile(
+            //     //     this.userName,
+            //     //     this.skillTreeTheme,
+            //     //     this.avatar,
+            //     //     this.password,
+            //     //     this.email
+            //     // );
+            //     // this.$router.push('/profile-settings');
+            // }
+            if (this.firstName == '' || this.firstName == null) {
+                this.validate.firstName = true;
+            } else if (this.lastName == '' || this.lastName == null) {
+                this.validate.lastName = true;
+            } else if (this.userName == '' || this.userName == null) {
+                this.validate.username = true;
+            } else if (this.email == '' || this.email == null) {
+                this.validate.email = true;
             } else {
-                // this.userDetailsStore.updateProfile(
-                //     this.userName,
-                //     this.skillTreeTheme,
-                //     this.avatar,
-                //     this.password,
-                //     this.email
-                // );
-                // this.$router.push('/profile-settings');
+                this.Submit();
             }
         },
+
+        ValidateEmail() {
+            if (
+                /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.email)
+            ) {
+                this.validate.emailFormat = false;
+            } else {
+                this.validate.emailFormat = true;
+            }
+        },
+
+        Submit() {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    firstName: this.firstName,
+                    lastName: this.lastName,
+                    username: this.userName,
+                    email: this.email,
+                    avatar: this.avatar,
+                    password: this.password,
+                    skilltree_theme: this.skillTreeTheme
+                })
+            };
+
+            var url = '/users/profile/' + this.id + '/edit';
+            fetch(url, requestOptions).then(() => {
+                // refresh user list so the users page will show the update data
+                this.userDetailsStore.getUserDetails();
+                this.$router.push('/profile-settings');
+            });
+        },
+
         // For image upload.
         onFileChange(e) {
             // delete the old image first
@@ -152,6 +198,15 @@ export default {
                             type="text"
                             class="form-control"
                         />
+                        <div
+                            v-if="
+                                validate.firstName &&
+                                (firstName == '' || firstName == null)
+                            "
+                            class="form-validate"
+                        >
+                            please enter a first name !
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="name" class="form-label">Last Name</label>
@@ -161,6 +216,15 @@ export default {
                             type="text"
                             class="form-control"
                         />
+                        <div
+                            v-if="
+                                validate.lastName &&
+                                (lastName == '' || lastName == null)
+                            "
+                            class="form-validate"
+                        >
+                            please enter a last name !
+                        </div>
                     </div>
                 </div>
                 <div class="mb-3">
@@ -170,10 +234,33 @@ export default {
                         type="text"
                         class="form-control"
                     />
+                    <div
+                        v-if="
+                            validate.userName &&
+                            (userName == '' || userName == null)
+                        "
+                        class="form-validate"
+                    >
+                        please enter a user name !
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input v-model="email" type="email" class="form-control" />
+                    <input
+                        v-model="email"
+                        type="email"
+                        class="form-control"
+                        @blur="ValidateEmail"
+                    />
+                    <div
+                        v-if="validate.email && (email == '' || email == null)"
+                        class="form-validate"
+                    >
+                        please enter an email !
+                    </div>
+                    <div v-if="validate.emailFormat" class="form-validate">
+                        please enter a valid email !
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Password</label>
@@ -182,6 +269,15 @@ export default {
                         type="text"
                         class="form-control"
                     />
+                    <div
+                        v-if="
+                            validate.password &&
+                            (password == '' || password == null)
+                        "
+                        class="form-validate"
+                    >
+                        please enter a password !
+                    </div>
                 </div>
                 <!-- <div class="mb-3">
                     <label class="form-label">Theme</label><br />
@@ -340,7 +436,11 @@ export default {
     text-align: left;
     color: #667085;
 }
-
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
+}
 /**-------------------------------------  */
 /* A lot of CSS to styling two radio box */
 .control {
