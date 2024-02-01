@@ -254,6 +254,12 @@ export default {
             return "700";
           } else return "400";
         })
+        .style("font-style", function (d) {
+          // If the node is a sub node.
+          if (d.data.type == "sub") {
+            return "italic";
+          }
+        })
         .attr("dy", "0.31em")
         .attr("x", (d) => (d.children ? -6 : 6))
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
