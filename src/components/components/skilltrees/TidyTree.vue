@@ -214,21 +214,22 @@ export default {
             .y((d) => d.x)
         )
         .attr("stroke", function (d) {
-          // If the link is between a super node start and end.
-          if (d.target.data.position == "end") {
-            return "#FF0000";
-          } else {
-            return "#000";
-          }
+          return "#000";
         })
         .attr("stroke-width", function (d) {
-          if (d.target.data.position == "end") {
-            return 4;
-          }
-
           if (d.target.data.is_mastered == 1) {
             return 8;
           } else return 1.5;
+        })
+        .style("stroke-dasharray", function (d) {
+          // If the node is a sub node.
+          if (
+            (d.source.data.type == "super" &&
+              d.target.data.position == "end") ||
+            d.target.data.type == "sub"
+          ) {
+            return 5;
+          }
         });
 
       const node = g
@@ -248,17 +249,31 @@ export default {
       // Labels.
       node
         .append("text")
+        .style("font-weight", function (d) {
+          // If the node is a super node.
+          if (d.data.type == "super") {
+            return "700";
+          } else return "400";
+        })
+        .style("font-style", function (d) {
+          // If the node is a sub node.
+          if (d.data.type == "sub") {
+            return "italic";
+          }
+        })
         .attr("dy", "0.31em")
         .attr("x", (d) => (d.children ? -6 : 6))
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
-        .text((d) => d.data.skill_name)
+        .text(function (d) {
+          // If the node is a super node end node.
+          if (d.data.position == "end") {
+            return "";
+          } else return d.data.skill_name;
+        })
         .clone(true)
         .lower()
         .attr("stroke", function (d) {
-          // If the node is a super node end node.
-          if (d.data.position == "end") {
-            return "red";
-          } else return "white";
+          return "white";
         });
 
       // Zoom feature.
@@ -344,12 +359,6 @@ export default {
 </template>
 
 <style scoped>
-.dashed {
-  fill: none;
-  stroke: #ff0000;
-  stroke-width: 1.5px;
-  stroke-dasharray: 20, 10, 5, 5, 5, 10;
-}
 .skill-tree-container {
   /* Subtract the purple banner and the navigation bar. */
   height: calc(100% - 20px - 66px);
