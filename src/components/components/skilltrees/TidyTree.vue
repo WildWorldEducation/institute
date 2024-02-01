@@ -214,21 +214,22 @@ export default {
             .y((d) => d.x)
         )
         .attr("stroke", function (d) {
-          // If the link is between a super node start and end.
-          if (d.target.data.position == "end") {
-            return "#FF0000";
-          } else {
-            return "#000";
-          }
+          return "#000";
         })
         .attr("stroke-width", function (d) {
-          if (d.target.data.position == "end") {
-            return 4;
-          }
-
           if (d.target.data.is_mastered == 1) {
             return 8;
           } else return 1.5;
+        })
+        .style("stroke-dasharray", function (d) {
+          // If the node is a sub node.
+          if (
+            (d.source.data.type == "super" &&
+              d.target.data.position == "end") ||
+            d.target.data.type == "sub"
+          ) {
+            return 5;
+          }
         });
 
       const node = g
