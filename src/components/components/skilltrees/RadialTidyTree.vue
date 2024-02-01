@@ -88,18 +88,81 @@ export default {
   },
   methods: {
     getAlgorithm() {
-      var skillsNoSubSkills = [];
-      skillsNoSubSkills = JSON.parse(JSON.stringify(this.skill.children));
+      // var skillsNoSubSkills = [];
+      // skillsNoSubSkills = JSON.parse(JSON.stringify(this.skill.children));
 
-      // Remove subskills, in order to allow D3 to calculate the positioning properly.
-      function removeSubSkills(parentChildren) {
+      // // Remove subskills, in order to allow D3 to calculate the positioning properly.
+      // function removeSubSkills(parentChildren) {
+      //   var i = parentChildren.length;
+      //   while (i--) {
+      //     if (parentChildren[i].type == "sub") {
+      //       parentChildren.splice(i, 1);
+      //     }
+
+      //     // Dont run if this element was just spliced.
+      //     if (typeof parentChildren[i] !== "undefined") {
+      //       /*
+      //        * Run the above function again recursively.
+      //        */
+      //       if (
+      //         parentChildren[i].children &&
+      //         Array.isArray(parentChildren[i].children) &&
+      //         parentChildren[i].children.length > 0
+      //       )
+      //         removeSubSkills(parentChildren[i].children);
+      //     }
+      //   }
+      // }
+
+      // removeSubSkills(skillsNoSubSkills);
+
+      var skillsWithSubSkillsMoved = [];
+      skillsWithSubSkillsMoved = JSON.parse(
+        JSON.stringify(this.skill.children)
+      );
+
+      // Duplicate super skill node, and make second one a child of the first.
+      // Put all the subskills of the node in the second version.
+      // This is an attempt to show the subskills using only D3.
+      // Other options, such as having them circle around the super skill,
+      // like the D3 and Pixi version, were too complex.
+      function moveSubSkills(parentChildren) {
         var i = parentChildren.length;
         while (i--) {
-          if (parentChildren[i].type == "sub") {
-            parentChildren.splice(i, 1);
+          // If the skill is a super skill, and not an "end" super skill.
+          if (
+            parentChildren[i].type == "super" &&
+            parentChildren[i].position != "end"
+          ) {
+            // Separate the child nodes.
+            var subSkills = [];
+            var regularChildSkills = [];
+            for (let j = 0; j < parentChildren[i].children.length; j++) {
+              if (parentChildren[i].children[j].type == "sub") {
+                subSkills.push(parentChildren[i].children[j]);
+              } else {
+                regularChildSkills.push(parentChildren[i].children[j]);
+              }
+            }
+
+            // Create a new child node, with the subskills in it.
+            var superSkillEndNode = {
+              skill_name: parentChildren[i].skill_name,
+              type: "super",
+              position: "end",
+              children: subSkills,
+            };
+
+            // Empty the child nodes.
+            parentChildren[i].children = [];
+            // Add the new node.
+            parentChildren[i].children.push(superSkillEndNode);
+            // Add the other child nodes, excluding subskills.
+            for (let j = 0; j < regularChildSkills.length; j++) {
+              parentChildren[i].children.push(regularChildSkills[j]);
+            }
           }
 
-          // Dont run if this element was just spliced.
           if (typeof parentChildren[i] !== "undefined") {
             /*
              * Run the above function again recursively.
@@ -109,16 +172,16 @@ export default {
               Array.isArray(parentChildren[i].children) &&
               parentChildren[i].children.length > 0
             )
-              removeSubSkills(parentChildren[i].children);
+              moveSubSkills(parentChildren[i].children);
           }
         }
       }
 
-      removeSubSkills(skillsNoSubSkills);
+      moveSubSkills(skillsWithSubSkillsMoved);
 
       var data = {
         name: null,
-        children: skillsNoSubSkills,
+        children: skillsWithSubSkillsMoved,
       };
 
       // Create a radial tree layout. The layout’s first dimension (x)
@@ -169,6 +232,16 @@ export default {
           if (d.target.data.is_mastered == 1) {
             return 8;
           } else return 2;
+        })
+        .style("stroke-dasharray", function (d) {
+          // If the node is a sub node.
+          if (
+            (d.source.data.type == "super" &&
+              d.target.data.position == "end") ||
+            d.target.data.type == "sub"
+          ) {
+            return 5;
+          }
         });
 
       // Append nodes.
@@ -227,7 +300,24 @@ export default {
         .attr("paint-order", "stroke")
         .attr("stroke", "white")
         .attr("fill", "currentColor")
-        .text((d) => d.data.skill_name);
+        .style("font-weight", function (d) {
+          // If the node is a super node.
+          if (d.data.type == "super") {
+            return "700";
+          } else return "400";
+        })
+        .style("font-style", function (d) {
+          // If the node is a sub node.
+          if (d.data.type == "sub") {
+            return "italic";
+          }
+        })
+        .text(function (d) {
+          // If the node is a super node end node.
+          if (d.data.position == "end") {
+            return "";
+          } else return d.data.skill_name;
+        });
 
       svg.call(
         d3
