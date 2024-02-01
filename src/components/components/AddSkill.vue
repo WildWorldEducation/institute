@@ -24,7 +24,7 @@ export default {
                 mastery_requirements: '',
                 //other_skill_requirements: [],
                 type: 'regular',
-                level: 'grade_school',
+                level: 'Grade School',
                 filter_1: 0
             },
             iconImage: '',
@@ -57,7 +57,10 @@ export default {
             parentInput: {
                 inputText: '',
                 suggestSkills: []
-            }
+            },
+            showDropDown: false,
+            // we want show the name instead of id
+            showLevel: 'Grade School'
         };
     },
     async created() {
@@ -203,6 +206,11 @@ export default {
             this.skill.parent = skill.id;
             // set input text
             this.parentInput.inputText = skill.name;
+        },
+        handleChooseSkillLevel(level) {
+            this.showLevel = level.name;
+            this.skill.level = level.id;
+            this.showDropDown = false;
         }
     }
 };
@@ -235,12 +243,6 @@ export default {
             <div class="col-5 mt-2">
                 <div v-if="skill.type != 'sub'" class="mb-3">
                     <label class="form-label">Parent</label>
-                    <!-- <select class="form-select" v-model="skill.parent">
-                        <option value="0">none</option>
-                        <option v-for="skill in skills" :value="skill.id">
-                            {{ skill.name }}
-                        </option>
-                    </select> -->
                     <div class="row mt-3">
                         <div class="col position-relative">
                             <input
@@ -278,19 +280,47 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- Skill level -->
+        <!-- Skill level custom dropdown-->
         <div class="row">
-            <div class="col col-md-5">
-                <div v-if="skill.type != 'domain' && skill.type != 'sub'">
-                    <div class="mb-3">
-                        <label class="form-label">Level</label>
-                        <select class="form-select" v-model="skill.level">
-                            <option v-for="level in levels" :value="level.id">
-                                {{ level.name }}
-                            </option>
-                        </select>
+            <div class="col col-md-5 mt-2">
+                <!-- Custom Dropdown -->
+                <label class="form-label">Level</label>
+                <div class="d-flex flex-column position-relative">
+                    <div
+                        :class="[
+                            showDropDown
+                                ? 'custom-select-button-focus '
+                                : 'custom-select-button '
+                        ]"
+                        @click="showDropDown = !showDropDown"
+                    >
+                        {{ showLevel }}
+                        <span>
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 20 20"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                    fill="#344054"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                    <div v-if="showDropDown" class="custom-dropdown-base">
+                        <div
+                            v-for="level in levels"
+                            class="custom-dropdown-option"
+                            @click="handleChooseSkillLevel(level)"
+                        >
+                            {{ level.name }}
+                        </div>
                     </div>
                 </div>
+                <!-- End of custom dropdown -->
             </div>
         </div>
         <!-- Skill filter -->
@@ -558,6 +588,7 @@ export default {
 .red-btn:hover {
     background-color: #cc3535;
 }
+/* ----------------- a lot of css style for all the various input style ----------------------------  */
 
 /* Parent skill input dropdown elements */
 #skill-input {
@@ -608,4 +639,118 @@ export default {
     background: #65e0a51a;
     cursor: pointer;
 }
+/* End of skill input and suggestion style */
+
+/* =========================== */
+
+/* Style For The Custom Select */
+.custom-select-button {
+    width: 100%;
+    height: 42px;
+    padding: 10px 0px 10px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #f2f4f7;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button-focus {
+    width: 100%;
+    height: 42px;
+    padding: 10px 0px 10px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 0px 0px 4px #bca3ff4d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button:hover {
+    cursor: pointer;
+    border: 1px solid #9c7eec;
+}
+
+.custom-select-button > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.custom-select-button-focus > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
+}
+
+/* The animation key frame */
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.custom-select-button-focus:hover {
+    cursor: pointer;
+}
+.custom-dropdown-base {
+    border-radius: 8px;
+    border: 1px;
+    background: linear-gradient(0deg, #ffffff, #ffffff);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 4px 6px -2px #10182808;
+    box-shadow: 0px 12px 16px -4px #10182814;
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    top: 42px;
+}
+
+.custom-dropdown-option {
+    padding: 10px 14px 10px 14px;
+    gap: 8px;
+    color: #344054;
+}
+
+.custom-dropdown-option:hover {
+    cursor: pointer;
+    background: #bca3ff1a;
+}
+/* End of CSS style for Custom Select */
 </style>
