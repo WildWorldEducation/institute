@@ -96,8 +96,14 @@ export default {
 
     viewport.center = new PIXI.Point(0, 0);
     viewport
-      .drag()
-      .pinch()
+      .drag({
+        wheelScroll: 2,
+        factor: 2,
+      })
+      .pinch({
+        percent: 2,
+        factor: 2,
+      })
       .wheel()
       .decelerate()
       .clampZoom({ minScale: 0.001, maxScale: 10 });
