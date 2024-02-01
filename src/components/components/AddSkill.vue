@@ -52,7 +52,12 @@ export default {
                     id: 'phd',
                     name: 'PhD'
                 }
-            ]
+            ],
+            // Below are data for various input function and data
+            parentInput: {
+                inputText: '',
+                suggestSkills: []
+            }
         };
     },
     async created() {
@@ -176,6 +181,28 @@ export default {
                         this.$router.push('/skills');
                     });
             }
+        },
+        // 2 Method that handle parent dropdown
+        getReferenceSkill() {
+            // Only show the suggestion if the user type in 2 word
+            if (this.parentInput.inputText.length < 2) {
+                this.parentInput.suggestSkills = [];
+            } else {
+                this.parentInput.suggestSkills = this.skills.filter((skill) => {
+                    // Lower case so the result wont be case sensitive
+                    return skill.name
+                        .toLowerCase()
+                        .includes(this.parentInput.inputText.toLowerCase());
+                });
+            }
+        },
+        handleChooseSuggestSkill(skill) {
+            //turn off the suggestion drop down
+            this.parentInput.suggestSkills = [];
+            // set form data
+            this.skill.parent = skill.id;
+            // set input text
+            this.parentInput.inputText = skill.name;
         }
     }
 };
@@ -189,6 +216,7 @@ export default {
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
+        <!-- Skill Name -->
         <div class="row mt-5">
             <div class="col-5 mt-2">
                 <div class="mb-3">
@@ -207,12 +235,35 @@ export default {
             <div class="col-5 mt-2">
                 <div v-if="skill.type != 'sub'" class="mb-3">
                     <label class="form-label">Parent</label>
-                    <select class="form-select" v-model="skill.parent">
+                    <!-- <select class="form-select" v-model="skill.parent">
                         <option value="0">none</option>
                         <option v-for="skill in skills" :value="skill.id">
                             {{ skill.name }}
                         </option>
-                    </select>
+                    </select> -->
+                    <div class="row mt-3">
+                        <div class="col position-relative">
+                            <input
+                                id="skill-input"
+                                v-model="parentInput.inputText"
+                                @input="getReferenceSkill"
+                                placeholder="type skill name"
+                            />
+                            <div
+                                v-if="parentInput.suggestSkills.length > 0"
+                                id="suggest-skills"
+                                class="flex flex-column position-absolute"
+                            >
+                                <div
+                                    class="suggest-option"
+                                    v-for="skill in parentInput.suggestSkills"
+                                    @click="handleChooseSuggestSkill(skill)"
+                                >
+                                    {{ skill.name }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div v-else class="mb-3">
                     <label class="form-label">Cluster node center</label>
@@ -242,6 +293,7 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- Skill filter -->
         <div class="row">
             <div class="col col-md-5">
                 <div v-if="skill.type != 'sub'">
@@ -505,5 +557,55 @@ export default {
 
 .red-btn:hover {
     background-color: #cc3535;
+}
+
+/* Parent skill input dropdown elements */
+#skill-input {
+    width: 100%;
+    height: 42px;
+    padding: 10px 0px 10px 14px;
+    border-radius: 8px;
+    border: 1px;
+    gap: 8px;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    border: 1px solid #f2f4f7;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    color: #667085;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    font-family: 'Poppins' sans-serif;
+}
+
+#skill-input:focus {
+    outline-color: #667085;
+}
+
+#suggest-skills {
+    z-index: 10;
+    width: 95.5%;
+    margin-right: 0px;
+    margin-left: auto;
+    border-radius: 6.63px;
+    border: 0.83px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #65e0a5, #65e0a5);
+    border: 1px solid #f2f4f7;
+    border: 0.83px solid #65e0a5;
+    box-shadow: 0px 3.317408561706543px 4.9761128425598145px -1.6587042808532715px
+        #10182808;
+    box-shadow: 0px 9.952225685119629px 13.269634246826172px -3.317408561706543px
+        #10182814;
+}
+
+.suggest-option {
+    height: 36.59px;
+    padding: 8.29px 11px 8px 12px;
+    gap: 6.63px;
+    color: #344054;
+}
+.suggest-option:hover {
+    background: #65e0a51a;
+    cursor: pointer;
 }
 </style>
