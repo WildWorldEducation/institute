@@ -248,17 +248,25 @@ export default {
       // Labels.
       node
         .append("text")
+        .style("font-weight", function (d) {
+          // If the node is a super node.
+          if (d.data.type == "super") {
+            return "700";
+          } else return "400";
+        })
         .attr("dy", "0.31em")
         .attr("x", (d) => (d.children ? -6 : 6))
         .attr("text-anchor", (d) => (d.children ? "end" : "start"))
-        .text((d) => d.data.skill_name)
+        .text(function (d) {
+          // If the node is a super node end node.
+          if (d.data.position == "end") {
+            return "";
+          } else return d.data.skill_name;
+        })
         .clone(true)
         .lower()
         .attr("stroke", function (d) {
-          // If the node is a super node end node.
-          if (d.data.position == "end") {
-            return "red";
-          } else return "white";
+          return "white";
         });
 
       // Zoom feature.
@@ -344,12 +352,6 @@ export default {
 </template>
 
 <style scoped>
-.dashed {
-  fill: none;
-  stroke: #ff0000;
-  stroke-width: 1.5px;
-  stroke-dasharray: 20, 10, 5, 5, 5, 10;
-}
 .skill-tree-container {
   /* Subtract the purple banner and the navigation bar. */
   height: calc(100% - 20px - 66px);
