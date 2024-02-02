@@ -530,33 +530,7 @@ export default {
     z-index: 99999;
     transform: scale(0);
 }
-/* @keyframes s-ripple {
-    0% {
-        transform: scale(0);
-    }
-    20% {
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1);
-    }
-}
-@keyframes s-ripple-dup {
-    0% {
-        transform: scale(0);
-    }
-    30% {
-        transform: scale(1);
-    }
-    60% {
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1);
-    }
-} */
+
 .control-checkbox input + .control_indicator::before {
     animation: s-ripple 250ms ease-out;
 }
