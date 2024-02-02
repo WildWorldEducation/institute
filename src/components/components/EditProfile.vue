@@ -7,7 +7,6 @@ export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const showObj = { ...userDetailsStore, avatar: '1' };
-        console.log(userDetailsStore.skillTreeTheme);
         return {
             userDetailsStore
         };
@@ -16,7 +15,6 @@ export default {
         return {
             id: this.userDetailsStore.userId,
             userName: this.userDetailsStore.userName,
-            skillTreeTheme: this.userDetailsStore.skillTreeTheme,
             avatar: this.userDetailsStore.avatar,
             email: this.userDetailsStore.email,
             password: this.userDetailsStore.password,
@@ -35,21 +33,6 @@ export default {
     computed: {},
     methods: {
         ValidateForm() {
-            // if (
-            //     this.userDetailsStore.userName == '' ||
-            //     this.userDetailsStore.userName == null
-            // ) {
-            //     alert('Please add a username.');
-            // } else {
-            //     // this.userDetailsStore.updateProfile(
-            //     //     this.userName,
-            //     //     this.skillTreeTheme,
-            //     //     this.avatar,
-            //     //     this.password,
-            //     //     this.email
-            //     // );
-            //     // this.$router.push('/profile-settings');
-            // }
             if (this.firstName == '' || this.firstName == null) {
                 this.validate.firstName = true;
             } else if (this.lastName == '' || this.lastName == null) {
@@ -83,8 +66,7 @@ export default {
                     username: this.userName,
                     email: this.email,
                     avatar: this.avatar,
-                    password: this.password,
-                    skilltree_theme: this.skillTreeTheme
+                    password: this.password
                 })
             };
 
@@ -131,8 +113,10 @@ export default {
 
 <template>
     <div class="container mt-3">
-        <h1 id="page-tile" class="my-3 ms-0 ms-md-3 ms-lg-0">Edit Profile</h1>
-        <div class="row">
+        <h1 id="page-tile" class="my-3 ms-0 ms-md-3 ms-lg-0 mt-5">
+            Edit Profile
+        </h1>
+        <div class="row mt-4">
             <div class="col-12 col-lg-5">
                 <div class="row mx-0 px-md-0">
                     <div
@@ -325,37 +309,6 @@ export default {
                         class="form-validate"
                     >
                         please enter a password !
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <label class="form-label">Theme</label><br />
-                    <div class="col">
-                        <label class="control control-checkbox">
-                            <span for="dark" class="my-auto mx-2 me-4"
-                                >Dark</span
-                            >
-                            <input
-                                type="radio"
-                                id="dark"
-                                name="nodeType"
-                                value="dark"
-                                v-model="skillTreeTheme"
-                            />
-                            <div class="control_indicator"></div>
-                        </label>
-                    </div>
-                    <div class="col">
-                        <label class="control control-checkbox">
-                            <span class="my-auto mx-2">Light</span>
-                            <input
-                                type="radio"
-                                name="nodeType"
-                                id="light"
-                                value="light"
-                                v-model="skillTreeTheme"
-                            />
-                            <div class="control_indicator"></div>
-                        </label>
                     </div>
                 </div>
                 <div class="d-flex justify-content-between mb-3 mt-5">

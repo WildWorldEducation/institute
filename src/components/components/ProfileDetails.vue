@@ -47,8 +47,10 @@ export default {
 
 <template>
     <div class="container pb-4">
-        <h1 id="page-tile" class="my-3 ms-0 ms-md-3 ms-lg-0">Profile</h1>
-        <div class="row">
+        <h1 id="page-tile" class="my-3 ms-0 ms-md-3 ms-lg-0 mt-5">
+            My Profile
+        </h1>
+        <div class="row mt-4">
             <div class="col-12 col-lg-5">
                 <div class="row mx-0 px-md-0">
                     <div
