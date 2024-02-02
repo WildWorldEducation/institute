@@ -342,12 +342,12 @@ router.put('/:id/edit-message', (req, res, next) => {
     }
 });
 
+//skill_tree_theme = "' + req.body.skilltree_theme + '"
 
-
-
+// Edit from profile page
 router.put('/profile/:id/edit', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = "UPDATE users SET username='" + req.body.username + "', avatar = '" + req.body.avatar + "', skilltree_theme = '" + req.body.skilltree_theme + "' WHERE id=" + req.params.id;
+        let sqlQuery = 'UPDATE users SET username="' + req.body.username + '", avatar ="' + req.body.avatar + '" ,first_name ="' + req.body.firstName + '", last_name="' + req.body.lastName + '",email="' + req.body.email + '", password="' + req.body.password + '" WHERE id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

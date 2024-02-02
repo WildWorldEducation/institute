@@ -1,26 +1,30 @@
 <script>
-import router from "../../router";
+import router from '../../router';
 // Import the stores.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore'
-import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js'
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         // Run the GET request.
-        userDetailsStore.getUserDetails()
+        userDetailsStore.getUserDetails();
         const sessionDetailsStore = useSessionDetailsStore();
         return {
-            userDetailsStore, sessionDetailsStore
-        }
+            userDetailsStore,
+            sessionDetailsStore
+        };
     },
     data() {
-        return {
-        }
+        return {};
     },
     computed: {
         name() {
-            return this.userDetailsStore.firstName + " " + this.userDetailsStore.lastName;
+            return (
+                this.userDetailsStore.firstName +
+                ' ' +
+                this.userDetailsStore.lastName
+            );
         }
     },
     methods: {
@@ -28,93 +32,235 @@ export default {
             this.sessionDetailsStore.isLoggedIn = false;
 
             const requestOptions = {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
             };
             var url = '/logout';
 
-            fetch(url, requestOptions)
-                .then(function (response) {
-                    router.push({ name: "login" });
-                })
+            fetch(url, requestOptions).then(function (response) {
+                router.push({ name: 'login' });
+            });
         }
     }
-}
-</script> 
+};
+</script>
 
 <template>
-    <div class="container">
-        <!-- Account details -->
-        <h1 class="mt-2">Your Profile</h1>
-        <p><strong>name:</strong> {{ name }}</p>
-        <p><strong>username:</strong> {{ userDetailsStore.userName }}</p>
-        <p><strong>avatar:</strong></p>
-        <p><img :src="userDetailsStore.avatar" height="100" style="background-color: lightgrey" /></p>
-        <p><strong>theme:</strong> {{ userDetailsStore.skillTreeTheme }}</p>
-        <p v-if="userDetailsStore.role == 'admin'"><strong>role:</strong>
-            <span> admin</span>
-        </p>
-        <p v-else-if="userDetailsStore.role == 'instructor'"><strong>role:</strong>
-            <span> instructor</span>
-        </p>
-        <div class="d-flex">
-            <p><router-link class="purple-btn btn" to="/profile/edit" role="button">Edit
-                    Profile&nbsp;
-                    <!-- Pencil icon -->
-                    <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                            fill="white" />
-                        <path d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                            fill="white" />
-                        <path
-                            d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                            fill="white" />
-                    </svg>
-
-                </router-link> </p>&nbsp;&nbsp;
-
-            <!-- Log in or out -->
-            <p><a v-if="sessionDetailsStore.isLoggedIn == true" @click="LogOut()" class="btn red-btn" role="button">
-                    Log out&nbsp;
-                    <!-- X icon -->
-                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
-                            fill="white" />
-                    </svg>
-                </a>
-                <a v-else href="/login" class="btn purple-btn" role="button">Log in</a>
-            </p>
+    <div class="container pb-4">
+        <h1 id="page-tile" class="my-3 ms-0 ms-md-3 ms-lg-0">Profile</h1>
+        <div class="row">
+            <div class="col-12 col-lg-5">
+                <div class="row mx-0 px-md-0">
+                    <div
+                        class="d-flex align-items-center align-items-md-start ps-lg-0"
+                    >
+                        <img
+                            id="img-background"
+                            :src="userDetailsStore.avatar"
+                            height="428"
+                            style="background-color: lightgrey"
+                            class="d-none d-lg-block"
+                        />
+                        <img
+                            id="img-background"
+                            :src="userDetailsStore.avatar"
+                            height="240"
+                            style="background-color: lightgrey"
+                            class="d-lg-none"
+                        />
+                    </div>
+                </div>
+                <div class="row my-3 mx-0">
+                    <div
+                        class="col-12 col-5 d-flex gap-3 flex-row justify-content-center justify-content-md-start ps-lg-0"
+                    >
+                        <router-link
+                            class="purple-btn btn"
+                            to="/profile/edit"
+                            role="button"
+                            >Edit Profile&nbsp;&nbsp;
+                            <!-- Pencil icon -->
+                            <svg
+                                width="19"
+                                height="20"
+                                viewBox="0 0 19 20"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
+                                    fill="white"
+                                />
+                                <path
+                                    d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
+                                    fill="white"
+                                />
+                                <path
+                                    d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
+                                    fill="white"
+                                />
+                            </svg>
+                        </router-link>
+                        <div class="">
+                            <!-- Log in or out -->
+                            <a
+                                v-if="sessionDetailsStore.isLoggedIn == true"
+                                @click="LogOut()"
+                                class="btn red-btn"
+                                role="button"
+                            >
+                                Log out&nbsp;&nbsp;
+                                <!-- X icon -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="22"
+                                    height="22"
+                                    fill="white"
+                                >
+                                    <path
+                                        d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"
+                                    />
+                                </svg>
+                            </a>
+                            <a
+                                v-else
+                                href="/login"
+                                class="btn purple-btn"
+                                role="button"
+                                >Log in</a
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 px-4 px-md-0 col-lg-4 px-0 px-md-4 px-lg-0">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input
+                        id="name"
+                        v-model="name"
+                        type="text"
+                        class="form-control"
+                        readonly
+                    />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input
+                        v-model="userDetailsStore.userName"
+                        type="text"
+                        class="form-control"
+                        readonly
+                    />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input
+                        v-model="userDetailsStore.email"
+                        type="email"
+                        class="form-control"
+                        readonly
+                    />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Role</label>
+                    <input
+                        v-model="userDetailsStore.role"
+                        type="text"
+                        class="form-control"
+                        readonly
+                    />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input
+                        v-model="userDetailsStore.password"
+                        type="text"
+                        class="form-control"
+                        readonly
+                    />
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
-
 <style scoped>
-.purple-btn {
-    background-color: #A48BE6;
+.red-btn {
+    background-color: #e24d4d;
     color: white;
-    border: 1px solid #7F56D9;
-    font-family: 'Inter', sans-serif;
+    border: 1px solid #d33622;
+    font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
     display: flex;
     align-items: center;
-    max-width: fit-content;
 }
 
-.red-btn {
-    background-color: #DA7033;
+.red-btn:hover {
+    background-color: #cc3535;
+}
+
+.purple-btn {
+    background-color: #a48be6;
     color: white;
-    border: 1px solid #7F56D9;
-    font-family: 'Inter', sans-serif;
+    border: 1px solid #7f56d9;
+    font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
     display: flex;
     align-items: center;
-    max-width: fit-content;
 }
-</style> 
+
+.purple-btn:hover {
+    background-color: #9a7ceb;
+}
+
+#page-tile {
+    font-family: 'Poppins' sans-serif;
+    font-size: 2.375rem;
+    font-weight: 900;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+
+#img-background {
+    border-radius: 12px;
+}
+
+.form-label {
+    color: #344054;
+    font-family: 'Poppins' sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+
+.form-control {
+    border: 1px solid #f2f4f7;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    color: #667085;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    #page-tile {
+        text-align: center;
+    }
+    #img-background {
+        margin: auto;
+    }
+}
+</style>
