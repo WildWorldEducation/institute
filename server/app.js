@@ -280,7 +280,7 @@ const environment = process.env.NODE_ENV;
 // Live server.
 process.env.BASE_URL = "https://parrhesia.io";
 // Dev server.
-process.env.BASE_URL = "http://localhost:3000";
+// process.env.BASE_URL = "http://localhost:3000";
 
 
 app.get("/*", async (_req, res) => {
