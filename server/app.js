@@ -272,7 +272,7 @@ app.put('/settings/edit', (req, res, next) => {
 
 const environment = process.env.NODE_ENV;
 
-process.env.BASE_URL = "http://localhost:3000";
+process.env.BASE_URL = "https://localhost:3000";
 
 // To avoid a problem loading the main.js and main.css on browser refresh, in production.
 // Otherwise site crashes on nested routes, on browser refresh, eg 'skills/1' or 'user/add'.
