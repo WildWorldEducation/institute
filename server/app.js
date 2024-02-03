@@ -83,7 +83,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //  password: 'password',
+   //   password: 'password',
     database: 'skill_tree'
 });
 
@@ -272,32 +272,16 @@ app.put('/settings/edit', (req, res, next) => {
 
 const environment = process.env.NODE_ENV;
 
-// To avoid a problem loading the main.js and main.css on browser refresh, in production.
-// Otherwise site crashes on nested routes, on browser refresh, eg 'skills/1' or 'user/add'.
-app.get("/users", async (_req, res) => {
-    res.redirect("/")
-});
-app.get("/user-skills", async (_req, res) => {
-    res.redirect("/")
-});
-app.get("/user-skills", async (_req, res) => {
-    res.redirect("/")
-});
-app.get("/resources", async (_req, res) => {
-    res.redirect("/")
-});
-app.get("/skill-tags", async (_req, res) => {
-    res.redirect("/")
-});
-app.get("/skill-tree", async (_req, res) => {
-    res.redirect("/")
-});
-app.get("/user-votes", async (_req, res) => {
-    res.redirect("/")
-});
-app.get("/skills", async (_req, res) => {
-    res.redirect("/")
-});
+// For production deployment.
+// For the index.html.ejs file
+// For creating an absolute URL
+// to allow for nested routes to be loaded in new tabs
+// and refreshed in the browser.
+// Live server.
+process.env.BASE_URL = "https://parrhesia.io";
+// Dev server.
+process.env.BASE_URL = "http://localhost:3000";
+
 
 app.get("/*", async (_req, res) => {
     const data = {
