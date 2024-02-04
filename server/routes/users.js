@@ -342,7 +342,7 @@ router.put('/:id/edit-message', (req, res, next) => {
     }
 });
 
-//skill_tree_theme = "' + req.body.skilltree_theme + '"
+
 
 // Edit from profile page
 router.put('/profile/:id/edit', (req, res, next) => {
