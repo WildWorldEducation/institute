@@ -60,7 +60,14 @@ export default {
             },
             showDropDown: false,
             // we want show the name instead of id
-            showLevel: 'Grade School'
+            showLevel: 'Grade School',
+            // validate obj
+            validate: {
+                violated: false,
+                name: false,
+                description: false,
+                orphan: false
+            }
         };
     },
     async created() {
@@ -149,11 +156,7 @@ export default {
             };
             reader.readAsDataURL(file);
         },
-        // I DON`T KNOW HOW THIS FUNCTION WORK SO I WILL CREATE A NEW REMOVE FUNCTION
-        removeImage: function (e) {
-            this.image = '';
-            this.skill.image = this.image;
-        },
+
         // New delete image method
         deleteImage(type) {
             switch (type) {
@@ -167,60 +170,76 @@ export default {
             }
         },
         async Submit() {
+            // validate some require data before fetch
             if (this.skill.type == 'sub' && this.skill.parent == 0) {
                 alert('cluster nodes must have a parent');
-            } else {
-                if (this.skill.type == 'domain') {
-                    this.skill.level = 'domain';
-                } else if (this.skill.type == 'sub') {
-                    for (
-                        let i = 0;
-                        i < this.skillsStore.skillsList.length;
-                        i++
+                this.validate.orphan = true;
+                // turn on the violated flag
+                this.validate.violated = true;
+            }
+            if (this.skill.name === '' || this.skill.name === null) {
+                alert('please enter a skill name');
+                this.validate.name = true;
+                this.validate.description = true;
+            }
+
+            if (this.skill.type == 'domain') {
+                this.skill.level = 'domain';
+            } else if (this.skill.type == 'sub') {
+                for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                    if (
+                        this.skill.parent == this.skillsStore.skillsList[i].id
                     ) {
-                        if (
-                            this.skill.parent ==
-                            this.skillsStore.skillsList[i].id
-                        ) {
-                            this.skill.filter_1 =
-                                this.skillsStore.skillsList[i].filter_1;
-                            this.skill.level =
-                                this.skillsStore.skillsList[i].level;
-                        }
+                        this.skill.filter_1 =
+                            this.skillsStore.skillsList[i].filter_1;
+                        this.skill.level = this.skillsStore.skillsList[i].level;
                     }
                 }
-
-                var url = '/skills/add';
-                // Get the Summernote HTML.
-                this.skill.mastery_requirements =
-                    $('#summernote').summernote('code');
-
-                this.skill.description = $(
-                    '#summernote_description'
-                ).summernote('code');
-
-                await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: this.skill.name,
-                        parent: this.skill.parent,
-                        description: this.skill.description,
-                        icon_image: this.skill.icon_image,
-                        banner_image: this.skill.banner_image,
-                        mastery_requirements: this.skill.mastery_requirements,
-                        type: this.skill.type,
-                        level: this.skill.level,
-                        filter_1: this.skill.filter_1
-                    })
-                })
-                    .then(() => {
-                        this.skillsStore.getNestedSkillsList();
-                    })
-                    .then(() => {
-                        this.$router.push('/skills');
-                    });
             }
+
+            var url = '/skills/add';
+            // Get the Summernote HTML.
+            this.skill.mastery_requirements =
+                $('#summernote').summernote('code');
+
+            this.skill.description = $('#summernote_description').summernote(
+                'code'
+            );
+
+            if (this.skill.description === '<p><br></p>') {
+                alert('please enter description for skill');
+                this.validate.description = true;
+                this.validate.violated = true;
+            }
+
+            // if any of the validate is violated we end the method here
+            if (this.validate.violated) {
+                return;
+            }
+
+            console.log(this.skill);
+
+            // await fetch(url, {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         name: this.skill.name,
+            //         parent: this.skill.parent,
+            //         description: this.skill.description,
+            //         icon_image: this.skill.icon_image,
+            //         banner_image: this.skill.banner_image,
+            //         mastery_requirements: this.skill.mastery_requirements,
+            //         type: this.skill.type,
+            //         level: this.skill.level,
+            //         filter_1: this.skill.filter_1
+            //     })
+            // })
+            //     .then(() => {
+            //         this.skillsStore.getNestedSkillsList();
+            //     })
+            //     .then(() => {
+            //         this.$router.push('/skills');
+            //     });
         },
         // 2 Method that handle parent dropdown
         getReferenceSkill() {
@@ -277,6 +296,15 @@ export default {
                         type="text"
                         placeholder="name"
                     />
+                    <div
+                        v-if="
+                            validate.name &&
+                            (skill.name == '' || skill.name == null)
+                        "
+                        class="form-validate"
+                    >
+                        please enter a skill name
+                    </div>
                 </div>
             </div>
         </div>
@@ -308,7 +336,17 @@ export default {
                             </div>
                         </div>
                     </div>
+                    <div
+                        v-if="
+                            validate.orphan &&
+                            (skill.parent == '' || skill.parent == null)
+                        "
+                        class="form-validate"
+                    >
+                        cluster nodes must have a parent
+                    </div>
                 </div>
+                <!-- -------------------------------------------------- -->
                 <div v-else class="mb-3">
                     <label class="form-label">Cluster node center</label>
                     <select class="form-select" v-model="skill.parent">
@@ -370,23 +408,7 @@ export default {
             <div class="col col-md-5 mt-2">
                 <div v-if="skill.type != 'sub'">
                     <label class="form-label">Filter</label>
-                    <!-- <div class="container row mb-3">
-                        <div class="form-check">
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                value="1"
-                                id="flexCheckDefault"
-                                v-model="skill.filter_1"
-                            />
-                            <label
-                                class="form-check-label"
-                                for="flexCheckDefault"
-                            >
-                                contrary to strict Christian doctrine
-                            </label>
-                        </div>
-                    </div> -->
+
                     <div class="col">
                         <label class="control control-checkbox">
                             <span class="my-auto mx-2 me-4"
@@ -657,6 +679,11 @@ export default {
                         rows="3"
                     ></textarea>
                 </div>
+                <div>
+                    <div v-if="validate.description" class="form-validate">
+                        please enter description for skill
+                    </div>
+                </div>
             </div>
         </div>
         <!-- Mastery Requirements with summernote -->
@@ -688,7 +715,6 @@ export default {
                 </div>
             </div>
         </div>
-        <div class="row"></div>
     </div>
 </template>
 
@@ -1039,5 +1065,12 @@ export default {
     padding-left: auto;
     padding-bottom: auto;
     padding-top: 10px;
+}
+
+/* ================== */
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
 }
 </style>
