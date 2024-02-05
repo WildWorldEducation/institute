@@ -309,9 +309,10 @@ export default {
 
 <template>
     <div class="container mt-4 pb-5 px-3 px-md-0">
+        <!-- Page Tile -->
         <div class="row mt-5">
             <div
-                class="col-12 col-md-5 d-flex align-items-baseline justify-content-center justify-content-md-start gap-3 mt-3"
+                class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline justify-content-center justify-content-md-start gap-3 mt-3"
             >
                 <h1 id="page-tile">Add Skill</h1>
                 <img src="/images/recurso-69.png" id="header-icon" />
@@ -319,7 +320,7 @@ export default {
         </div>
         <!-- Skill Name -->
         <div class="row mt-5">
-            <div class="col-12 col-md-5 mt-2">
+            <div class="col-12 col-md-8 col-lg-5 mt-2">
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
                     <input
@@ -342,7 +343,7 @@ export default {
         </div>
         <!-- Parent will be typing dropdown -->
         <div class="row">
-            <div class="col-12 col-md-5 mt-2">
+            <div class="col-12 col-md-8 col-lg-5 mt-2">
                 <div v-if="skill.type != 'sub'" class="mb-3">
                     <label class="form-label">Parent</label>
                     <div class="row mt-3">
@@ -421,7 +422,7 @@ export default {
         </div>
         <!-- Skill level custom dropdown-->
         <div class="row">
-            <div class="col col-md-5 mt-2">
+            <div class="col col-md-8 col-lg-5 mt-2">
                 <!-- Custom Dropdown -->
                 <label class="form-label">Level</label>
                 <div class="d-flex flex-column position-relative">
@@ -464,7 +465,7 @@ export default {
         </div>
         <!-- Skill filter Checker-->
         <div class="row">
-            <div class="col col-md-5 mt-2">
+            <div class="col col-md-8 col-lg-5 mt-2">
                 <div v-if="skill.type != 'sub'">
                     <label class="form-label">Filter</label>
 
@@ -488,7 +489,7 @@ export default {
         </div>
         <!-- Skills Types Radio choose -->
         <div class="row">
-            <div class="col-12 col-md-5 mt-2">
+            <div class="col-12 col-md-8 col-lg-5 mt-2">
                 <label class="form-label">Node Type</label>
                 <div class="row p-0 m-0">
                     <div class="form-check col-6 col-md-5 my-2">
@@ -553,7 +554,7 @@ export default {
         <!-- Icon and Banner file choose -->
         <div class="row">
             <!-- Icon chooser -->
-            <div class="col-4 col-md-2 mt-2">
+            <div class="col-4 col-md-3 col-lg-2 mt-2">
                 <div
                     class="mb-3 row d-flex justify-content-center justify-content-md-start"
                 >
@@ -640,7 +641,7 @@ export default {
                 </div>
             </div>
             <!-- Banner chooser -->
-            <div class="col-12 col-md-10 mt-2">
+            <div class="col-12 col-lg-10 mt-2">
                 <div class="mb-3 row">
                     <label for="image" class="form-label">Banner</label>
                     <div v-if="!bannerImage">
