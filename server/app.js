@@ -83,7 +83,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    password: 'password',
+  //  password: 'password',
     database: 'skill_tree'
 });
 
@@ -242,7 +242,7 @@ app.get('/settings', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                res.json(results[0]);
+                res.json(results);
             } catch (err) {
                 next(err)
             }
@@ -254,7 +254,11 @@ app.get('/settings', (req, res, next) => {
 // Edit app settings.
 app.put('/settings/edit', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = "UPDATE settings SET skill_degradation_days = " + req.body.skill_degradation_days;
+        let sqlQuery = `
+        UPDATE settings 
+        SET skill_degradation_days = ` + req.body.skill_degradation_days + 
+        `, quiz_max_questions = ` + req.body.quiz_max_questions;
+        
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
