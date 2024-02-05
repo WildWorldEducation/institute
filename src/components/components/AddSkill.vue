@@ -308,16 +308,18 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 pb-5">
+    <div class="container mt-4 pb-5 px-3 px-md-0">
         <div class="row mt-5">
-            <div class="col col-md-5 d-flex align-items-baseline gap-3 mt-3">
+            <div
+                class="col-12 col-md-5 d-flex align-items-baseline justify-content-center justify-content-md-start gap-3 mt-3"
+            >
                 <h1 id="page-tile">Add Skill</h1>
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
         <!-- Skill Name -->
         <div class="row mt-5">
-            <div class="col-5 mt-2">
+            <div class="col-12 col-md-5 mt-2">
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
                     <input
@@ -340,7 +342,7 @@ export default {
         </div>
         <!-- Parent will be typing dropdown -->
         <div class="row">
-            <div class="col-5 mt-2">
+            <div class="col-12 col-md-5 mt-2">
                 <div v-if="skill.type != 'sub'" class="mb-3">
                     <label class="form-label">Parent</label>
                     <div class="row mt-3">
@@ -486,10 +488,10 @@ export default {
         </div>
         <!-- Skills Types Radio choose -->
         <div class="row">
-            <div class="col col-md-5 mt-2">
+            <div class="col-12 col-md-5 mt-2">
                 <label class="form-label">Node Type</label>
                 <div class="row p-0 m-0">
-                    <div class="form-check col-5 my-2">
+                    <div class="form-check col-6 col-md-5 my-2">
                         <label class="control control-checkbox">
                             <span class="my-auto mx-2 me-4">Regular</span>
                             <input
@@ -502,7 +504,7 @@ export default {
                             <div class="control_indicator"></div>
                         </label>
                     </div>
-                    <div class="form-check col-5 my-2">
+                    <div class="form-check col-6 col-md-5 my-2">
                         <label class="control control-checkbox">
                             <span class="my-auto mx-2 me-4">Pass-through</span>
                             <input
@@ -515,7 +517,7 @@ export default {
                             <div class="control_indicator"></div>
                         </label>
                     </div>
-                    <div class="form-check col-5 my-2">
+                    <div class="form-check col-6 col-md-5 my-2">
                         <label class="control control-checkbox">
                             <span class="my-auto mx-2 me-4"
                                 >Cluster node center</span
@@ -530,7 +532,7 @@ export default {
                             <div class="control_indicator"></div>
                         </label>
                     </div>
-                    <div class="form-check col-5 my-2">
+                    <div class="form-check col-6 col-md-5 my-2">
                         <label class="control control-checkbox">
                             <span class="my-auto mx-2 me-4"
                                 >Cluster node outer</span
@@ -551,8 +553,10 @@ export default {
         <!-- Icon and Banner file choose -->
         <div class="row">
             <!-- Icon chooser -->
-            <div class="col-2 mt-2">
-                <div class="mb-3 row">
+            <div class="col-4 col-md-2 mt-2">
+                <div
+                    class="mb-3 row d-flex justify-content-center justify-content-md-start"
+                >
                     <label for="image" class="form-label">Icon</label>
                     <div v-if="!iconImage">
                         <input
@@ -636,7 +640,7 @@ export default {
                 </div>
             </div>
             <!-- Banner chooser -->
-            <div class="col-10 mt-2">
+            <div class="col-12 col-md-10 mt-2">
                 <div class="mb-3 row">
                     <label for="image" class="form-label">Banner</label>
                     <div v-if="!bannerImage">
@@ -1129,5 +1133,13 @@ export default {
     font-size: 0.75rem;
     color: red;
     font-weight: 300;
+}
+
+/* Style specific for phone view */
+@media (max-width: 767px) {
+    .default-no-img {
+        height: 100px;
+        width: auto;
+    }
 }
 </style>
