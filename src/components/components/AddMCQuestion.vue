@@ -75,7 +75,7 @@ export default {
                     <input
                         class="form-control"
                         type="file"
-                        accept=".csv"
+                        accept=".csv,.txt"
                         id="csvFile"
                         @change="OnFileChange"
                     />
