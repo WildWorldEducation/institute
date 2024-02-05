@@ -58,6 +58,10 @@ export default {
                 inputText: '',
                 suggestSkills: []
             },
+            clusterParentInput: {
+                inputText: '',
+                suggestSuperSkills: []
+            },
             showDropDown: false,
             // we want show the name instead of id
             showLevel: 'Grade School',
@@ -219,27 +223,27 @@ export default {
 
             console.log(this.skill);
 
-            // await fetch(url, {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({
-            //         name: this.skill.name,
-            //         parent: this.skill.parent,
-            //         description: this.skill.description,
-            //         icon_image: this.skill.icon_image,
-            //         banner_image: this.skill.banner_image,
-            //         mastery_requirements: this.skill.mastery_requirements,
-            //         type: this.skill.type,
-            //         level: this.skill.level,
-            //         filter_1: this.skill.filter_1
-            //     })
-            // })
-            //     .then(() => {
-            //         this.skillsStore.getNestedSkillsList();
-            //     })
-            //     .then(() => {
-            //         this.$router.push('/skills');
-            //     });
+            await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: this.skill.name,
+                    parent: this.skill.parent,
+                    description: this.skill.description,
+                    icon_image: this.skill.icon_image,
+                    banner_image: this.skill.banner_image,
+                    mastery_requirements: this.skill.mastery_requirements,
+                    type: this.skill.type,
+                    level: this.skill.level,
+                    filter_1: this.skill.filter_1
+                })
+            })
+                .then(() => {
+                    this.skillsStore.getNestedSkillsList();
+                })
+                .then(() => {
+                    this.$router.push('/skills');
+                });
         },
         // 2 Method that handle parent dropdown
         getReferenceSkill() {
@@ -263,6 +267,32 @@ export default {
             // set input text
             this.parentInput.inputText = skill.name;
         },
+        // -----------------------------------------
+        // 2 method for cluster outer skill type input
+        getSuperSkillSuggestion() {
+            // Only show the suggestion if the user type in 2 word
+            if (this.clusterParentInput.inputText.length < 2) {
+                this.clusterParentInput.suggestSuperSkills = [];
+            } else {
+                this.clusterParentInput.suggestSuperSkills =
+                    this.superSkills.filter((skill) => {
+                        // Lower case so the result wont be case sensitive
+                        return skill.name
+                            .toLowerCase()
+                            .includes(
+                                this.clusterParentInput.inputText.toLowerCase()
+                            );
+                    });
+            }
+        },
+
+        handleChooseSuperSkill(skill) {
+            this.clusterParentInput.suggestSuperSkills = [];
+            this.skill.parent = skill.id;
+            this.clusterParentInput.inputText = skill.name;
+        },
+
+        // -------------------------------------------
         handleChooseSkillLevel(level) {
             this.showLevel = level.name;
             this.skill.level = level.id;
@@ -349,14 +379,41 @@ export default {
                 <!-- -------------------------------------------------- -->
                 <div v-else class="mb-3">
                     <label class="form-label">Cluster node center</label>
-                    <select class="form-select" v-model="skill.parent">
+                    <!-- <select class="form-select" v-model="skill.parent">
                         <option
                             v-for="superSkill in superSkills"
                             :value="superSkill.id"
                         >
                             {{ superSkill.name }}
                         </option>
-                    </select>
+                    </select> -->
+                    <!-- ==================== -->
+                    <div class="row mt-3">
+                        <div class="col position-relative">
+                            <input
+                                id="skill-input"
+                                v-model="clusterParentInput.inputText"
+                                @input="getSuperSkillSuggestion"
+                                placeholder="type skill name"
+                            />
+                            <div
+                                v-if="
+                                    clusterParentInput.suggestSuperSkills
+                                        .length > 0
+                                "
+                                id="suggest-skills"
+                                class="flex flex-column position-absolute"
+                            >
+                                <div
+                                    class="suggest-option"
+                                    v-for="skill in clusterParentInput.suggestSuperSkills"
+                                    @click="handleChooseSuggestSkill(skill)"
+                                >
+                                    {{ skill.name }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
