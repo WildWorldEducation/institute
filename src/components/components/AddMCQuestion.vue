@@ -38,13 +38,12 @@ export default {
                 const questionObject = {};
                 questionObject.name = this.questionsArray[i][0];
                 questionObject.question = this.questionsArray[i][1];
-                questionObject.answer_1 = this.questionsArray[i][2];
-                questionObject.answer_2 = this.questionsArray[i][3];
-                questionObject.answer_3 = this.questionsArray[i][4];
-                questionObject.answer_4 = this.questionsArray[i][5];
-                questionObject.answer_5 = this.questionsArray[i][6];
-                questionObject.correct_answer = this.questionsArray[i][7];
-                questionObject.explanation = this.questionsArray[i][8];
+                questionObject.correct_answer = this.questionsArray[i][2];
+                questionObject.incorrect_answer_1 = this.questionsArray[i][3];
+                questionObject.incorrect_answer_2 = this.questionsArray[i][4];
+                questionObject.incorrect_answer_3 = this.questionsArray[i][5];
+                questionObject.incorrect_answer_4 = this.questionsArray[i][6];
+                questionObject.explanation = this.questionsArray[i][7];
 
                 questionArray.push(questionObject);
             }
