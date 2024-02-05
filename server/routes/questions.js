@@ -232,4 +232,79 @@ router.get('/essay/list', (req, res, next) => {
 });
 
 
+/**
+ * Create New MC Question Manually (not from CSV.)
+ *
+ * @return response()
+ */
+router.post('/mc-questions/add', (req, res, next) => {
+    if (req.session.userName) {        
+            let data = {};
+            data = {
+                name: req.body.name,
+                question: req.body.question,
+                correct_answer: req.body.correct_answer,
+                incorrect_answer_1: req.body.incorrect_answer_1,
+                incorrect_answer_2: req.body.incorrect_answer_2,
+                incorrect_answer_3: req.body.incorrect_answer_3,
+                incorrect_answer_4: req.body.incorrect_answer_4,                
+                explanation: req.body.explanation,
+                skill_id: req.body.skill_id
+            };
+            
+            let sqlQuery = "INSERT INTO mc_questions SET ?";
+            let query = conn.query(sqlQuery, data, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    else {
+                        res.end();
+                    }
+                } catch (err) {
+                    next(err)
+                }
+            });
+        }
+ 
+    else {
+        res.redirect('/login');
+    }
+})
+
+/**
+ * Create New Essay Question Manually (not from CSV.)
+ *
+ * @return response()
+ */
+router.post('/essay-questions/add', (req, res, next) => {
+    if (req.session.userName) {        
+            let data = {};
+            data = {
+                name: req.body.name,
+                question: req.body.question,                
+                skill_id: req.body.skill_id
+            };
+            
+            let sqlQuery = "INSERT INTO essay_questions SET ?";
+            let query = conn.query(sqlQuery, data, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    else {
+                        res.end();
+                    }
+                } catch (err) {
+                    next(err)
+                }
+            });
+        }
+ 
+    else {
+        res.redirect('/login');
+    }
+})
+
+
 module.exports = router

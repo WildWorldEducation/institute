@@ -79,6 +79,16 @@ const router = createRouter({
       component: () => import('../components/pages/EditMCQuestionView.vue')
     },
     {
+      path: '/mc-questions/:skillId/add',
+      name: 'add-mc-question',
+      component: () => import('../components/pages/AddMCQuestionView.vue')
+    },
+    {
+      path: '/essay-questions/:skillId/add',
+      name: 'add-essay-question',
+      component: () => import('../components/pages/AddEssayQuestionView.vue')
+    },
+    {
       path: '/essay-questions/edit/:id',
       name: 'edit-essay-question',
       component: () => import('../components/pages/EditEssayQuestionView.vue')
