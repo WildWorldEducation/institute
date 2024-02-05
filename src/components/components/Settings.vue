@@ -29,7 +29,11 @@ export default {
             <h1>Settings</h1>
             <p>
                 time for student skills to degrade (in days):
-                {{ settingsStore.settings.skill_degradation_days }}
+                {{ settingsStore.skillDegradationDays }}
+            </p>
+            <p>
+                max number of questions per quiz:
+                {{ settingsStore.quizMaxQuestions }}
             </p>
             <p>
                 <router-link

@@ -4,14 +4,17 @@ import router from '../../router';
 // Import the store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import { useSettingsStore } from '../../stores/SettingsStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const userSkillsStore = useUserSkillsStore();
+        const settingsStore = useSettingsStore();
         return {
             userDetailsStore,
-            userSkillsStore
+            userSkillsStore,
+            settingsStore
         };
     },
     data() {
@@ -31,6 +34,10 @@ export default {
         };
     },
     async created() {
+        // Load the max quiz question number setting.
+        if (this.settingsStore.quizMaxQuestions == null) {
+            await this.settingsStore.getSettings();
+        }
         // Get user skills, in case this is a sub skill. We have to check its siblings.
         // Need to get the questions for the quiz, before the DOM renders.
         await this.fetchMCQuestions();
@@ -102,6 +109,16 @@ export default {
                     this.questions = this.questions.sort(
                         (a, b) => 0.5 - Math.random()
                     );
+
+                    // Ensure that the number fo questions is at or below the setting.
+                    if (
+                        this.questions.length >
+                        this.settingsStore.quizMaxQuestions
+                    ) {
+                        this.questions.length =
+                            this.settingsStore.quizMaxQuestions;
+                    }
+
                     this.question = this.questions[0];
 
                     // Calculate the total num of questions.
