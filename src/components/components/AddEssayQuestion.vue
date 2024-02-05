@@ -82,7 +82,7 @@ export default {
                         </button>
                     </p>
                 </div>
-                <button class="btn btn-dark" @click="Submit()">Submit</button>
+                <button class="btn green-btn" @click="Submit()">Submit</button>
             </div>
         </div>
         <div class="row">

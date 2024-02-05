@@ -344,12 +344,11 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
             data = {
                 name: req.body.questionArray[i].name,
                 question: req.body.questionArray[i].question,
-                answer_1: req.body.questionArray[i].answer_1,
-                answer_2: req.body.questionArray[i].answer_2,
-                answer_3: req.body.questionArray[i].answer_3,
-                answer_4: req.body.questionArray[i].answer_4,
-                answer_5: req.body.questionArray[i].answer_5,
                 correct_answer: req.body.questionArray[i].correct_answer,
+                incorrect_answer_1: req.body.questionArray[i].incorrect_answer_1,
+                incorrect_answer_2: req.body.questionArray[i].incorrect_answer_2,
+                incorrect_answer_3: req.body.questionArray[i].incorrect_answer_3,
+                incorrect_answer_4: req.body.questionArray[i].incorrect_answer_4,                
                 explanation: req.body.questionArray[i].explanation,
                 skill_id: req.params.id
             };
