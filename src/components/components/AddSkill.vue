@@ -554,7 +554,7 @@ export default {
         <!-- Icon and Banner file choose -->
         <div class="row">
             <!-- Icon chooser -->
-            <div class="col-4 col-md-3 col-lg-2 mt-2">
+            <div class="col-6 col-md-3 col-lg-2 mt-2">
                 <div
                     class="mb-3 row d-flex justify-content-center justify-content-md-start"
                 >
@@ -1141,6 +1141,9 @@ export default {
     .default-no-img {
         height: 100px;
         width: auto;
+    }
+    #page-tile {
+        font-size: 32px;
     }
 }
 </style>

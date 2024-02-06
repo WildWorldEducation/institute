@@ -311,7 +311,7 @@ export default {
         <!-- Page Tile -->
         <div class="row mt-5">
             <div
-                class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline justify-content-center justify-content-md-start gap-3 mt-3"
+                class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
             >
                 <h1 id="page-tile">Edit Skill</h1>
                 <img src="/images/recurso-69.png" id="header-icon" />
@@ -546,9 +546,9 @@ export default {
         <!-- Icon and Banner -->
         <div class="row">
             <!-- Icon chooser -->
-            <div class="col-4 col-md-3 col-lg-2 mt-2">
+            <div class="col-8 col-md-3 col-lg-2 mt-2">
                 <div
-                    class="mb-3 row d-flex justify-content-center justify-content-md-start"
+                    class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                 >
                     <label for="image" class="form-label">Icon</label>
                     <div v-if="!iconImage">
@@ -1139,6 +1139,9 @@ export default {
     .default-no-img {
         height: 100px;
         width: auto;
+    }
+    #page-tile {
+        font-size: 32px;
     }
 }
 </style>
