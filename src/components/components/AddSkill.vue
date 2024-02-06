@@ -550,6 +550,16 @@ export default {
                     </div>
                 </div>
             </div>
+            <div
+                v-if="
+                    validate.orphan &&
+                    this.skill.type == 'sub' &&
+                    this.skill.parent == 0
+                "
+                class="form-validate"
+            >
+                please choose a parent for this skill
+            </div>
         </div>
         <!-- Icon and Banner file choose -->
         <div class="row">

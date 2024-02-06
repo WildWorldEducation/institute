@@ -61,6 +61,15 @@ export default {
             clusterParentInput: {
                 inputText: '',
                 suggestSuperSkills: []
+            },
+            // Validate Object for validate purpose
+            validate: {
+                violated: false,
+                name: false,
+                description: false,
+                orphan: false,
+                superValidate: false,
+                noChild: false
             }
         };
     },
@@ -170,10 +179,11 @@ export default {
                     }
                 }
                 if (hasSubSkills) {
+                    this.validate.superValidate = true;
+                    this.validate.violated = true;
                     alert(
                         'Please delete outer cluster nodes belonging to the skill, before changing its type.'
                     );
-                    return;
                 }
             }
             // Domains cant get filters or levels.
@@ -182,8 +192,9 @@ export default {
             } else if (this.skill.type == 'sub') {
                 // Make sure user has assigned a parent skill.
                 if (this.skill.parent == 0) {
+                    this.validate.orphan = true;
+                    this.validate.violated = true;
                     alert('cluster nodes must have a parent');
-                    return;
                 }
                 for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
                     // Copy the filter from the parent node, for sub skills.
@@ -196,24 +207,43 @@ export default {
                     }
                     // Cant change a skill to be a sub skill, while it has its own child skills.
                     if (this.skillsStore.skillsList[i].parent == this.skillId) {
+                        this.validate.noChild = true;
+                        this.validate.violated = true;
                         alert(
                             "please delete this node's child skills, before changing it to a cluster child skill"
                         );
-                        return;
                     }
                 }
             }
 
             // Update the skill.
             var masteryRequirementsData = $('#summernote').summernote('code');
+            const descriptionData = $('#description-summernote').summernote(
+                'code'
+            );
 
+            if (this.skill.name === '' || this.skill.name === null) {
+                this.validate.name = true;
+                this.validate.violated = true;
+                alert('please enter a skill name');
+            }
+            if (descriptionData === '<p><br></p>') {
+                alert('please enter description for skill');
+                this.validate.description = true;
+                this.validate.violated = true;
+            }
+
+            // We End function here if any of the validate is violated
+            if (this.validate.violated) {
+                return;
+            }
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: this.skill.name,
                     parent: this.skill.parent,
-                    description: this.skill.description,
+                    description: descriptionData,
                     icon_image: this.skill.icon_image,
                     banner_image: this.skill.banner_image,
                     mastery_requirements: masteryRequirementsData,
@@ -229,8 +259,7 @@ export default {
                     this.skillsStore.getNestedSkillsList();
                 })
                 .then(() => {
-                    alert('refresh skill list page to see update');
-                    window.close();
+                    this.$router.push('/skills');
                 });
         },
         // changeTag(skillTag) {
@@ -328,7 +357,7 @@ export default {
                         type="text"
                         placeholder="name"
                     />
-                    <!-- <div
+                    <div
                         v-if="
                             validate.name &&
                             (skill.name == '' || skill.name == null)
@@ -336,7 +365,7 @@ export default {
                         class="form-validate"
                     >
                         please enter a skill name
-                    </div> -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -385,7 +414,6 @@ export default {
                 </div>
             </div>
         </div>
-
         <!-- Skill Filter Checker -->
         <div class="row">
             <div class="col col-md-8 col-lg-5 mt-2">
@@ -471,6 +499,23 @@ export default {
                         </label>
                     </div>
                 </div>
+                <div
+                    v-if="
+                        validate.orphan &&
+                        this.skill.type == 'sub' &&
+                        this.skill.parent == 0
+                    "
+                    class="form-validate"
+                >
+                    please choose a parent for this skill
+                </div>
+                <div
+                    v-if="validate.noChild && this.skill.type == 'sub'"
+                    class="form-validate"
+                >
+                    please delete this node's child skills, before changing it
+                    to a cluster child skill
+                </div>
             </div>
         </div>
         <!-- Parent Typing Dropdown -->
@@ -501,15 +546,6 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <!-- <div
-                        v-if="
-                            validate.orphan &&
-                            (skill.parent == '' || skill.parent == null)
-                        "
-                        class="form-validate"
-                    >
-                        cluster nodes must have a parent
-                    </div> -->
                 </div>
                 <!-- -------------------------------------------------- -->
                 <div v-else class="mb-3">
@@ -732,6 +768,11 @@ export default {
                         id="description-summernote"
                         rows="3"
                     ></textarea>
+                </div>
+                <div>
+                    <div v-if="validate.description" class="form-validate">
+                        please enter description for skill
+                    </div>
                 </div>
             </div>
         </div>
