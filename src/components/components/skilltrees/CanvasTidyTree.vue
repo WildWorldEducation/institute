@@ -37,7 +37,8 @@ export default {
             },
             tree: {},
             root: {},
-            context: {}
+            context: {},
+            panX: 0
         };
     },
     async mounted() {
@@ -52,30 +53,6 @@ export default {
         //  document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
         let canvas = document.getElementById('canvas');
         this.context = canvas.getContext('2d');
-
-        // const viewport = new Viewport({
-        //     screenWidth: this.width,
-        //     screenHeight: this.height,
-        //     worldWidth: this.width,
-        //     worldHeight: this.height,
-        //     events: this.$pixiApp.renderer.events
-        // });
-
-        // this.$pixiApp.stage.addChild(viewport);
-
-        // viewport.center = new PIXI.Point(0, 0);
-        // viewport
-        //     .drag({
-        //         wheelScroll: 1,
-        //         factor: 1
-        //     })
-        //     .pinch({
-        //         percent: 1,
-        //         factor: 1
-        //     })
-        //     .wheel()
-        //     .decelerate()
-        //     .clampZoom({ minScale: 0.5, maxScale: 5 });
 
         this.skill = {
             name: 'SKILLS',
@@ -163,13 +140,11 @@ export default {
                 children: skillsWithSubSkillsMoved
             };
 
-            const width = 8000;
-
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(data);
             const dx = 12;
-            const dy = width / (this.root.height + 1);
+            const dy = this.width / (this.root.height + 1);
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -189,8 +164,8 @@ export default {
             });
 
             var canvas = document.getElementById('canvas');
-            canvas.width = width;
-            canvas.height = 1000;
+            canvas.width = this.width;
+            canvas.height = this.height;
             this.context = canvas.getContext('2d');
 
             // console.log(this.tree);
@@ -199,6 +174,8 @@ export default {
             this.drawTree();
         },
         drawTree() {
+            this.context.translate(this.panX, 0);
+
             const links = this.root.links();
             const nodes = this.root.descendants();
 
@@ -211,14 +188,6 @@ export default {
             for (const node of nodes) {
                 this.drawNode(node);
             }
-        },
-        zoomed() {
-            context.save();
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.translate(d3.event.transform.x, d3.event.transform.y);
-            context.scale(d3.event.transform.k, d3.event.transform.k);
-            redraw();
-            context.restore();
         },
         drawNode(node) {
             //   console.log(node);
@@ -273,16 +242,31 @@ export default {
                 .y((d) => d.x + 500)
                 .context(this.context);
 
+            this.context.lineWidth = 1;
             this.context.beginPath();
             linkGenerator(link);
             this.context.strokeStyle = '#000';
             this.context.stroke();
+        },
+        pan() {
+            this.panX = this.panX + 2;
+
+            this.context.clearRect(
+                0,
+                0,
+                this.context.canvas.width,
+                this.context.canvas.height
+            );
+            this.context.beginPath();
+
+            this.drawTree();
         }
     }
 };
 </script>
 
 <template>
+    <button @click="pan">pan</button>
     <canvas id="canvas" width="1500" height="1500"></canvas>
     <!-- <div id="skilltree"></div> -->
 </template>
