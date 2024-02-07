@@ -22,7 +22,7 @@ export default {
     },
     data() {
         return {
-            width: null,
+            width: 6000,
             height: null,
             skill: {
                 id: null,
@@ -38,7 +38,13 @@ export default {
             tree: {},
             root: {},
             context: {},
-            panX: 0
+            panX: 5,
+            panY: 0,
+            scale: 0.5,
+            translatePos: { x: 50, y: 50 },
+            scaleMultiplier: 0.8,
+            startDragOffset: { x: 0, y: 0 },
+            mouseDown: false
         };
     },
     async mounted() {
@@ -47,7 +53,7 @@ export default {
         }
 
         // Specify the chart’s dimensions.
-        this.width = window.innerWidth;
+        //  this.width = window.innerWidth;
         this.height = window.innerHeight;
 
         //  document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
@@ -61,6 +67,32 @@ export default {
         };
 
         this.getAlgorithm();
+
+        // add event listeners to handle screen drag
+        canvas.addEventListener('mousedown', (evt) => {
+            this.mouseDown = true;
+            this.startDragOffset.x = evt.clientX - this.translatePos.x;
+            this.startDragOffset.y = evt.clientY - this.translatePos.y;
+        });
+        canvas.addEventListener('mouseup', (evt) => {
+            this.mouseDown = false;
+        });
+
+        canvas.addEventListener('mouseover', (evt) => {
+            this.mouseDown = false;
+        });
+
+        canvas.addEventListener('mouseout', (evt) => {
+            this.mouseDown = false;
+        });
+
+        canvas.addEventListener('mousemove', (evt) => {
+            if (this.mouseDown) {
+                this.translatePos.x = evt.clientX - this.startDragOffset.x;
+                this.translatePos.y = evt.clientY - this.startDragOffset.y;
+                this.drawTree(this.scale, this.translatePos);
+            }
+        });
     },
     methods: {
         getAlgorithm() {
@@ -171,10 +203,19 @@ export default {
             // console.log(this.tree);
             // console.log(root.links());
 
-            this.drawTree();
+            this.drawTree(this.scale, this.translatePos);
         },
-        drawTree() {
-            this.context.translate(this.panX, 0);
+        drawTree(scale, translatePos) {
+            // clear canvas
+            this.context.clearRect(
+                0,
+                0,
+                this.context.canvas.width,
+                this.context.canvas.height
+            );
+            this.context.save();
+            this.context.translate(this.translatePos.x, this.translatePos.y);
+            this.context.scale(scale, scale);
 
             const links = this.root.links();
             const nodes = this.root.descendants();
@@ -188,6 +229,8 @@ export default {
             for (const node of nodes) {
                 this.drawNode(node);
             }
+
+            this.context.restore();
         },
         drawNode(node) {
             //   console.log(node);
@@ -211,29 +254,6 @@ export default {
                 node.y + 10,
                 node.x + 502
             );
-
-            // let nodeContainer = new PIXI.Container();
-            // //   var angle = Math.random() * Math.PI * 2;
-            // nodeContainer.x = node.y;
-            // nodeContainer.y = node.x;
-            // var nodeGraphic = PIXI.Sprite.from(
-            //     'images/skill-tree-nodes/tidy-tree/node.png'
-            // );
-            // nodeGraphic.anchor.set(0.5);
-            // nodeContainer.addChild(nodeGraphic);
-
-            // let nodeName = new PIXI.Text(node.data.skill_name, {
-            //     fill: 0xffffff
-            // });
-            // nodeName.x = 6;
-            // // Text to centre of container.
-            // nodeName.anchor.set(0, 0.5);
-            // // This is to deal with the artificially high fontSize mentioned above.
-            // nodeName.scale.x = 0.2;
-            // nodeName.scale.y = 0.2;
-            // nodeContainer.addChild(nodeName);
-
-            // this.$pixiApp.stage.children[0].addChild(nodeContainer);
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -248,9 +268,36 @@ export default {
             this.context.strokeStyle = '#000';
             this.context.stroke();
         },
-        pan() {
-            this.panX = this.panX + 2;
+        panRight() {
+            this.panX = 0;
+            this.panY = 0;
+            this.panX = this.panX + 50 / this.scale;
+            this.redraw();
+        },
+        panLeft() {
+            this.panX = 0;
+            this.panY = 0;
+            this.panX = this.panX - 50 / this.scale;
+            this.redraw();
+        },
+        panUp() {
+            this.panX = 0;
+            this.panY = 0;
+            this.panY = this.panY + 50 / this.scale;
+            this.redraw();
+        },
+        panDown() {
+            this.panX = 0;
+            this.panY = 0;
+            this.panY = this.panY - 50 / this.scale;
+            this.redraw();
+        },
+        redraw() {
+            // Store the current transformation matrix
+            this.context.save();
 
+            // Use the identity matrix while clearing the canvas
+            this.context.setTransform(1, 0, 0, 1, 0, 0);
             this.context.clearRect(
                 0,
                 0,
@@ -259,19 +306,65 @@ export default {
             );
             this.context.beginPath();
 
+            // Restore the transform
+            this.context.restore();
             this.drawTree();
+        },
+        zoomOut() {
+            // this.scale = this.scale / 2;
+            // this.context.scale(0.5, 0.5);
+            // this.redraw();
+
+            this.scale /= this.scaleMultiplier;
+            this.drawTree(this.scale, this.translatePos);
+        },
+        zoomIn() {
+            // this.scale = this.scale * 2;
+            // this.context.scale(2, 2);
+            // this.redraw();
+
+            this.scale *= this.scaleMultiplier;
+            this.drawTree(this.scale, this.translatePos);
         }
     }
 };
 </script>
 
 <template>
-    <button @click="pan">pan</button>
+    <!-- <button @click="panLeft">pan left</button>
+    <button @click="panRight">pan right</button>
+    <button @click="panUp">pan up</button>
+    <button @click="panDown">pan down</button> -->
+    <div id="buttonWrapper">
+        <input type="button" @click="zoomOut" value="+" />
+        <input type="button" @click="zoomIn" value="-" />
+    </div>
+    <!-- <button @click="zoomOut">zoom out</button>
+    <button @click="zoomIn">zoom in</button> -->
     <canvas id="canvas" width="1500" height="1500"></canvas>
     <!-- <div id="skilltree"></div> -->
 </template>
 
 <style scoped>
+#wrapper {
+    position: relative;
+    border: 1px solid #9c9898;
+    width: 578px;
+    height: 200px;
+}
+
+#buttonWrapper {
+    position: absolute;
+    width: 30px;
+    top: 90px;
+    right: 2px;
+}
+
+input[type='button'] {
+    padding: 5px;
+    width: 30px;
+    margin: 0px 0px 2px 0px;
+}
 .skill-tree-container {
     /* Subtract the purple banner and the navigation bar. */
     height: calc(100% - 20px - 66px);

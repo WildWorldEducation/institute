@@ -34,6 +34,11 @@ const router = createRouter({
       component: () => import('../components/pages/TidyTreeView.vue')
     },
     {
+      path: '/canvas-tidy-tree',
+      name: 'canvas-tidy-tree',
+      component: () => import('../components/pages/CanvasTidyTreeView.vue')
+    },
+    {
       path: '/:id/skill-tree',
       name: 'student-skill-tree',
       component: () => import('../components/pages/SkillTreeStudentView.vue')
