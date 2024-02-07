@@ -74,6 +74,11 @@ export default {
             this.startDragOffset.x = evt.clientX - this.translatePos.x;
             this.startDragOffset.y = evt.clientY - this.translatePos.y;
         });
+        canvas.addEventListener('touchstart', (evt) => {
+            this.mouseDown = true;
+            this.startDragOffset.x = evt.clientX - this.translatePos.x;
+            this.startDragOffset.y = evt.clientY - this.translatePos.y;
+        });
         canvas.addEventListener('mouseup', (evt) => {
             this.mouseDown = false;
         });
@@ -85,8 +90,18 @@ export default {
         canvas.addEventListener('mouseout', (evt) => {
             this.mouseDown = false;
         });
+        canvas.addEventListener('touchend', (evt) => {
+            this.mouseDown = false;
+        });
 
         canvas.addEventListener('mousemove', (evt) => {
+            if (this.mouseDown) {
+                this.translatePos.x = evt.clientX - this.startDragOffset.x;
+                this.translatePos.y = evt.clientY - this.startDragOffset.y;
+                this.drawTree(this.scale, this.translatePos);
+            }
+        });
+        canvas.addEventListener('touchmove', (evt) => {
             if (this.mouseDown) {
                 this.translatePos.x = evt.clientX - this.startDragOffset.x;
                 this.translatePos.y = evt.clientY - this.startDragOffset.y;
