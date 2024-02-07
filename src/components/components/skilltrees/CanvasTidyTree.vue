@@ -4,12 +4,12 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 
 import * as d3 from 'd3';
-// Import Pixi JS.
-import * as PIXI from 'pixi.js';
-// Import Pixi Viewprt.
-import { Viewport } from 'pixi-viewport';
-// For pixi to use custom fonts.
-import FontFaceObserver from 'fontfaceobserver';
+// // Import Pixi JS.
+// import * as PIXI from 'pixi.js';
+// // Import Pixi Viewprt.
+// import { Viewport } from 'pixi-viewport';
+// // For pixi to use custom fonts.
+// import FontFaceObserver from 'fontfaceobserver';
 
 export default {
     setup() {
@@ -48,33 +48,34 @@ export default {
         // Specify the chart’s dimensions.
         this.width = window.innerWidth;
         this.height = window.innerHeight;
-        this.radius = Math.min(this.width, this.height) / 2;
 
-        document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
+        //  document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
+        let canvas = document.getElementById('canvas');
+        this.context = canvas.getContext('2d');
 
-        const viewport = new Viewport({
-            screenWidth: this.width,
-            screenHeight: this.height,
-            worldWidth: this.width,
-            worldHeight: this.height,
-            events: this.$pixiApp.renderer.events
-        });
+        // const viewport = new Viewport({
+        //     screenWidth: this.width,
+        //     screenHeight: this.height,
+        //     worldWidth: this.width,
+        //     worldHeight: this.height,
+        //     events: this.$pixiApp.renderer.events
+        // });
 
-        this.$pixiApp.stage.addChild(viewport);
+        // this.$pixiApp.stage.addChild(viewport);
 
-        viewport.center = new PIXI.Point(0, 0);
-        viewport
-            .drag({
-                wheelScroll: 1,
-                factor: 1
-            })
-            .pinch({
-                percent: 1,
-                factor: 1
-            })
-            .wheel()
-            // .decelerate()
-            .clampZoom({ minScale: 0.5, maxScale: 5 });
+        // viewport.center = new PIXI.Point(0, 0);
+        // viewport
+        //     .drag({
+        //         wheelScroll: 1,
+        //         factor: 1
+        //     })
+        //     .pinch({
+        //         percent: 1,
+        //         factor: 1
+        //     })
+        //     .wheel()
+        //     .decelerate()
+        //     .clampZoom({ minScale: 0.5, maxScale: 5 });
 
         this.skill = {
             name: 'SKILLS',
@@ -187,10 +188,10 @@ export default {
                 if (d.x < x0) x0 = d.x;
             });
 
-            // var canvas = document.getElementById('canvas');
-            // canvas.width = width;
-            // canvas.height = 8000;
-            // this.context = canvas.getContext('2d');
+            var canvas = document.getElementById('canvas');
+            canvas.width = width;
+            canvas.height = 1000;
+            this.context = canvas.getContext('2d');
 
             // console.log(this.tree);
             // console.log(root.links());
@@ -201,12 +202,12 @@ export default {
             const links = this.root.links();
             const nodes = this.root.descendants();
 
-            //   this.context.beginPath();
+            this.context.beginPath();
             for (const link of links) {
                 this.drawLink(link);
             }
 
-            //   this.context.beginPath();
+            this.context.beginPath();
             for (const node of nodes) {
                 this.drawNode(node);
             }
@@ -220,63 +221,70 @@ export default {
             context.restore();
         },
         drawNode(node) {
-            // //   console.log(node);
-            // this.context.beginPath();
-            // this.context.moveTo(node.y, node.x + 4000);
-            // this.context.arc(node.y, node.x + 4000, 4, 0, 2 * Math.PI);
-            // this.context.fillStyle = '#000';
-            // this.context.fill();
+            //   console.log(node);
+            this.context.beginPath();
+            this.context.moveTo(node.y, node.x + 500);
+            this.context.arc(node.y, node.x + 500, 4, 0, 2 * Math.PI);
+            this.context.fillStyle = '#000';
+            this.context.fill();
 
-            // this.context.beginPath();
-            // this.context.fillStyle = '#000';
-            // this.context.fillText(
-            //     node.data.skill_name,
-            //     node.y + 10,
-            //     node.x + 4002
-            // );
-
-            let nodeContainer = new PIXI.Container();
-            //   var angle = Math.random() * Math.PI * 2;
-            nodeContainer.x = node.y;
-            nodeContainer.y = node.x;
-            var nodeGraphic = PIXI.Sprite.from(
-                'images/skill-tree-nodes/tidy-tree/node.png'
+            this.context.beginPath();
+            this.context.strokeStyle = '#FFF';
+            this.context.lineWidth = 4;
+            this.context.strokeText(
+                node.data.skill_name,
+                node.y + 10,
+                node.x + 502
             );
-            nodeGraphic.anchor.set(0.5);
-            nodeContainer.addChild(nodeGraphic);
+            this.context.fillStyle = '#000';
+            this.context.fillText(
+                node.data.skill_name,
+                node.y + 10,
+                node.x + 502
+            );
 
-            let nodeName = new PIXI.Text(node.data.skill_name, {
-                fill: 0xffffff
-            });
-            nodeName.x = 6;
-            // Text to centre of container.
-            nodeName.anchor.set(0, 0.5);
-            // This is to deal with the artificially high fontSize mentioned above.
-            nodeName.scale.x = 0.2;
-            nodeName.scale.y = 0.2;
-            nodeContainer.addChild(nodeName);
+            // let nodeContainer = new PIXI.Container();
+            // //   var angle = Math.random() * Math.PI * 2;
+            // nodeContainer.x = node.y;
+            // nodeContainer.y = node.x;
+            // var nodeGraphic = PIXI.Sprite.from(
+            //     'images/skill-tree-nodes/tidy-tree/node.png'
+            // );
+            // nodeGraphic.anchor.set(0.5);
+            // nodeContainer.addChild(nodeGraphic);
 
-            this.$pixiApp.stage.children[0].addChild(nodeContainer);
+            // let nodeName = new PIXI.Text(node.data.skill_name, {
+            //     fill: 0xffffff
+            // });
+            // nodeName.x = 6;
+            // // Text to centre of container.
+            // nodeName.anchor.set(0, 0.5);
+            // // This is to deal with the artificially high fontSize mentioned above.
+            // nodeName.scale.x = 0.2;
+            // nodeName.scale.y = 0.2;
+            // nodeContainer.addChild(nodeName);
+
+            // this.$pixiApp.stage.children[0].addChild(nodeContainer);
         },
         drawLink(link) {
             const linkGenerator = d3
                 .linkHorizontal()
                 .x((d) => d.y)
-                .y((d) => d.x + 4000)
+                .y((d) => d.x + 500)
                 .context(this.context);
 
-            // this.context.beginPath();
-            // linkGenerator(link);
-            // this.context.strokeStyle = '#000';
-            // this.context.stroke();
+            this.context.beginPath();
+            linkGenerator(link);
+            this.context.strokeStyle = '#000';
+            this.context.stroke();
         }
     }
 };
 </script>
 
 <template>
-    <!-- <canvas id="canvas" width="1500" height="1500"></canvas> -->
-    <div id="skilltree"></div>
+    <canvas id="canvas" width="1500" height="1500"></canvas>
+    <!-- <div id="skilltree"></div> -->
 </template>
 
 <style scoped>
