@@ -81,14 +81,14 @@ export default {
                                 >Tidy Tree</RouterLink
                             >
                         </li>
-                        <li
+                        <!-- <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/canvas-tidy-tree" class="nav-link"
                                 >Canvas Tidy Tree</RouterLink
                             >
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <RouterLink to="/skills" class="nav-link">
                                 <span> Skills </span>
