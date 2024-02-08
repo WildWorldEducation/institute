@@ -1,102 +1,130 @@
 <script>
-
 export default {
     props: ['isMultipleChoice', 'isEssay'],
-    setup() {
-
-    },
+    setup() {},
     data() {
         return {
             skillId: this.$route.params.id,
             mcQuestions: [],
             essayQuestions: []
-        }
+        };
     },
-    computed: {
-    },
+    computed: {},
     created() {
-        this.getMCQuestions()
-        this.getEssayQuestions()
+        this.getMCQuestions();
+        this.getEssayQuestions();
     },
     methods: {
         getMCQuestions() {
             fetch('/skills/' + this.skillId + '/mc-questions/list')
                 .then(function (response) {
                     return response.json();
-                }).then((data) => {
-                    this.mcQuestions = data
+                })
+                .then((data) => {
+                    this.mcQuestions = data;
                 });
         },
         getEssayQuestions() {
             fetch('/skills/' + this.skillId + '/essay-questions/list')
                 .then(function (response) {
                     return response.json();
-                }).then((data) => {
-                    this.essayQuestions = data
+                })
+                .then((data) => {
+                    this.essayQuestions = data;
                 });
         },
         async deleteMCQuestion(id) {
-            const result = fetch('/questions/mc/' + id,
-                {
-                    method: 'DELETE',
-                });
+            const result = fetch('/questions/mc/' + id, {
+                method: 'DELETE'
+            });
 
             if (result.error) {
-                console.log(result.error)
+                console.log(result.error);
             } else {
                 // Refresh the question list.
-                this.getMCQuestions()
+                this.getMCQuestions();
             }
         },
         async deleteEssayQuestion(id) {
-            const result = fetch('/questions/essay/' + id,
-                {
-                    method: 'DELETE',
-                });
+            const result = fetch('/questions/essay/' + id, {
+                method: 'DELETE'
+            });
 
             if (result.error) {
-                console.log(result.error)
+                console.log(result.error);
             } else {
                 // Refresh the question list.
-                this.getEssayQuestions()
+                this.getEssayQuestions();
             }
-        },
+        }
     }
-}
-</script> 
+};
+</script>
 
 <template>
-    <h2>Multiple Choice</h2>
-    <table v-if="isMultipleChoice" class="skilltree-table table-bordered">
-        <tr v-for="question in mcQuestions">
-            <td>
-                {{ question.name }}
-            </td>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Multiple Choice</h2>
+                <table
+                    v-if="isMultipleChoice"
+                    class="skilltree-table table-bordered"
+                >
+                    <tr v-for="question in mcQuestions">
+                        <td>
+                            {{ question.name }}
+                        </td>
 
-            <td><router-link :to="'/mc-questions/edit/' + question.id" class="btn btn-dark me-2 ci-btn"
-                    role="button">Edit</router-link></td>
-            <td>
-                <button type="button" @click="deleteMCQuestion(question.id)"
-                    class="btn btn-danger delete-btn me-2 ci-btn">Delete</button>
-            </td>
-        </tr>
-    </table>
-    <h2>Essay</h2>
-    <table v-if="isEssay" class="skilltree-table table-bordered">
-        <tr v-for="question in essayQuestions">
-            <td>
-                {{ question.name }}
-            </td>
+                        <td>
+                            <router-link
+                                :to="'/mc-questions/edit/' + question.id"
+                                class="btn btn-dark me-2 ci-btn"
+                                role="button"
+                                >Edit</router-link
+                            >
+                        </td>
+                        <td>
+                            <button
+                                type="button"
+                                @click="deleteMCQuestion(question.id)"
+                                class="btn btn-danger delete-btn me-2 ci-btn"
+                            >
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h2>Essay</h2>
+                <table v-if="isEssay" class="skilltree-table table-bordered">
+                    <tr v-for="question in essayQuestions">
+                        <td>
+                            {{ question.name }}
+                        </td>
 
-            <td><router-link :to="'/essay-questions/edit/' + question.id" class="btn btn-dark me-2 ci-btn"
-                    role="button">Edit</router-link></td>
-            <td>
-                <button type="button" @click="deleteEssayQuestion(question.id)"
-                    class="btn btn-danger delete-btn me-2 ci-btn">Delete</button>
-            </td>
-        </tr>
-    </table>
+                        <td>
+                            <router-link
+                                :to="'/essay-questions/edit/' + question.id"
+                                class="btn btn-dark me-2 ci-btn"
+                                role="button"
+                                >Edit</router-link
+                            >
+                        </td>
+                        <td>
+                            <button
+                                type="button"
+                                @click="deleteEssayQuestion(question.id)"
+                                class="btn btn-danger delete-btn me-2 ci-btn"
+                            >
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
 </template>
-
 
 <style scoped></style>
