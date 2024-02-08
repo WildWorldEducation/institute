@@ -24,7 +24,7 @@ export default {
                 mastery_requirements: '',
                 //other_skill_requirements: [],
                 type: 'regular',
-                level: 'Grade School',
+                level: 'grade_school',
                 filter_1: 0
             },
             iconImage: '',
