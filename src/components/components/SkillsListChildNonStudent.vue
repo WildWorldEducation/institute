@@ -131,7 +131,7 @@ export default {
             'has-children': childrenNotSubskills.length > 0
         }"
         class="skill-button d-flex justify-content-between"
-        @click.stop="toggleChildren"
+        @click="toggleChildren"
     >
         <span style="text-align: left">{{ name }}</span>
         <!-- Buttons -->
