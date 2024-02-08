@@ -47,8 +47,10 @@ export default {
 
 <template>
     <div class="container pb-4">
-        <h1 id="page-tile" class="my-3 ms-0 ms-md-3 ms-lg-0">Profile</h1>
-        <div class="row">
+        <h1 id="page-tile" class="my-3 ms-0 ms-md-3 ms-lg-0 mt-2 mt-md-4">
+            My Profile
+        </h1>
+        <div class="row mt-0 mt-md-4">
             <div class="col-12 col-lg-5">
                 <div class="row mx-0 px-md-0">
                     <div
@@ -57,14 +59,14 @@ export default {
                         <img
                             id="img-background"
                             :src="userDetailsStore.avatar"
-                            height="428"
+                            height="270"
                             style="background-color: lightgrey"
                             class="d-none d-lg-block"
                         />
                         <img
                             id="img-background"
                             :src="userDetailsStore.avatar"
-                            height="240"
+                            height="120"
                             style="background-color: lightgrey"
                             class="d-lg-none"
                         />
@@ -167,15 +169,6 @@ export default {
                     <label class="form-label">Role</label>
                     <input
                         v-model="userDetailsStore.role"
-                        type="text"
-                        class="form-control"
-                        readonly
-                    />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Password</label>
-                    <input
-                        v-model="userDetailsStore.password"
                         type="text"
                         class="form-control"
                         readonly
