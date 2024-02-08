@@ -128,7 +128,7 @@ export default {
             'high-school-level': level == 'high_school',
             'college-level': level == 'college',
             'phd-level': level == 'phd',
-            'has-children': children.length > 0
+            'has-children': childrenNotSubskills.length > 0
         }"
         class="skill-button d-flex justify-content-between"
         @click.stop="toggleChildren"
