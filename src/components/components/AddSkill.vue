@@ -22,7 +22,6 @@ export default {
                 icon_image: '',
                 banner_image: '',
                 mastery_requirements: '',
-                //other_skill_requirements: [],
                 type: 'regular',
                 level: 'grade_school',
                 filter_1: 0
@@ -210,18 +209,16 @@ export default {
                 'code'
             );
 
-            if (this.skill.description === '<p><br></p>') {
-                alert('please enter description for skill');
-                this.validate.description = true;
-                this.validate.violated = true;
-            }
+            // if (this.skill.description === '<p><br></p>') {
+            //     alert('please enter description for skill');
+            //     this.validate.description = true;
+            //     this.validate.violated = true;
+            // }
 
             // if any of the validate is violated we end the method here
             if (this.validate.violated) {
                 return;
             }
-
-            console.log(this.skill);
 
             await fetch(url, {
                 method: 'POST',

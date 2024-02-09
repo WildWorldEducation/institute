@@ -227,11 +227,11 @@ export default {
                 this.validate.violated = true;
                 alert('please enter a skill name');
             }
-            if (descriptionData === '<p><br></p>') {
-                alert('please enter description for skill');
-                this.validate.description = true;
-                this.validate.violated = true;
-            }
+            // if (descriptionData === '<p><br></p>') {
+            //     alert('please enter description for skill');
+            //     this.validate.description = true;
+            //     this.validate.violated = true;
+            // }
 
             // We End function here if any of the validate is violated
             if (this.validate.violated) {
@@ -805,7 +805,6 @@ export default {
         </div>
     </div>
 </template>
-
 
 <style scoped>
 .green-btn {
