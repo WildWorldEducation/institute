@@ -171,11 +171,14 @@ export default {
 
 #purple-banner {
     margin-top: -10px;
+    margin-right: 0px;
+    margin-left: 0px;
     padding-left: 46px;
     padding-top: 16px;
     padding-bottom: 17px;
     padding-right: 46px;
     height: 77px;
+    width: 100%;
     background-color: rgb(164, 139, 230, 0.25);
 }
 
