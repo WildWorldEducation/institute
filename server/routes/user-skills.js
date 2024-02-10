@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-     password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -37,12 +37,15 @@ router.get('/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery = `
+        let sqlQuery =
+            `
     SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
-    WHERE skill_tree.user_skills.user_id = ` + req.params.id + `
+    WHERE skill_tree.user_skills.user_id = ` +
+            req.params.id +
+            `
 
     UNION
     SELECT skill_tree.skills.id, name, parent, "", "", description, type, level
@@ -53,8 +56,10 @@ router.get('/:id', (req, res, next) => {
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
-    WHERE skill_tree.user_skills.user_id =` + req.params.id + `)
-    ORDER BY id;`
+    WHERE skill_tree.user_skills.user_id =` +
+            req.params.id +
+            `)
+    ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -64,12 +69,16 @@ router.get('/:id', (req, res, next) => {
 
                 for (var i = 0; i < results.length; i++) {
                     results[i].children = [];
+                }
+
+                for (var i = 0; i < results.length; i++) {
                     if (results[i].parent != null && results[i].parent != 0) {
                         var parentId = results[i].parent;
 
                         // go through all rows again, add children
                         for (let j = 0; j < results.length; j++) {
                             if (results[j].id == parentId) {
+                                // bug
                                 results[j].children.push(results[i]);
                             }
                         }
@@ -83,13 +92,13 @@ router.get('/:id', (req, res, next) => {
                     }
                 }
 
-                res.json((studentSkills));
+                res.json(studentSkills);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
-})
+});
 
 /* Nested list - without subskills */
 // Individual user and user-skills.
@@ -98,12 +107,15 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery = `
+        let sqlQuery =
+            `
     SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
-    WHERE skill_tree.user_skills.user_id = ` + req.params.id + ` AND skill_tree.skills.type <> 'sub'
+    WHERE skill_tree.user_skills.user_id = ` +
+            req.params.id +
+            ` AND skill_tree.skills.type <> 'sub'
 
     UNION
     SELECT skill_tree.skills.id, name, parent, "", "", description, type
@@ -114,8 +126,10 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
-    WHERE skill_tree.user_skills.user_id =` + req.params.id + `)  AND skill_tree.skills.type <> 'sub'
-    ORDER BY id;`
+    WHERE skill_tree.user_skills.user_id =` +
+            req.params.id +
+            `)  AND skill_tree.skills.type <> 'sub'
+    ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -144,13 +158,13 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
                     }
                 }
 
-                res.json((studentSkills));
+                res.json(studentSkills);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
-})
+});
 
 /* Unnested list */
 router.get('/unnested-list/:id', (req, res, next) => {
@@ -158,12 +172,15 @@ router.get('/unnested-list/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery = `
+        let sqlQuery =
+            `
     SELECT skill_tree.skills.id, name, is_accessible, is_mastered, type
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
-    WHERE skill_tree.user_skills.user_id = ` + req.params.id + `
+    WHERE skill_tree.user_skills.user_id = ` +
+            req.params.id +
+            `
 
     UNION
     SELECT skill_tree.skills.id, name, "", "", type
@@ -174,8 +191,10 @@ router.get('/unnested-list/:id', (req, res, next) => {
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
-    WHERE skill_tree.user_skills.user_id =` + req.params.id + `)
-    ORDER BY id;`
+    WHERE skill_tree.user_skills.user_id =` +
+            req.params.id +
+            `)
+    ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -185,12 +204,11 @@ router.get('/unnested-list/:id', (req, res, next) => {
 
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
-})
-
+});
 
 /**
  * Edit item
@@ -200,11 +218,16 @@ router.get('/unnested-list/:id', (req, res, next) => {
 router.get('/accessible/:id1/:id2', (req, res, next) => {
     if (req.session.userName) {
         // Make this skill accessible.
-        let sqlQuery = `
+        let sqlQuery =
+            `
         INSERT INTO skill_tree.user_skills (user_id, skill_id, is_accessible) 
-        VALUES(` + req.params.id1 + `, ` + req.params.id2 + `, 1) 
+        VALUES(` +
+            req.params.id1 +
+            `, ` +
+            req.params.id2 +
+            `, 1) 
         ON DUPLICATE KEY UPDATE is_accessible=1;
-        `
+        `;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -212,15 +235,13 @@ router.get('/accessible/:id1/:id2', (req, res, next) => {
                 }
                 res.redirect('back');
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
-
 
 /**
  * Edit item
@@ -229,11 +250,16 @@ router.get('/accessible/:id1/:id2', (req, res, next) => {
  */
 router.get('/inaccessible/:id1/:id2', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `
+        let sqlQuery =
+            `
         INSERT INTO skill_tree.user_skills (user_id, skill_id, is_accessible) 
-        VALUES(` + req.params.id1 + `, ` + req.params.id2 + `, 0) 
+        VALUES(` +
+            req.params.id1 +
+            `, ` +
+            req.params.id2 +
+            `, 0) 
         ON DUPLICATE KEY UPDATE is_accessible=0;
-        `
+        `;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -242,11 +268,10 @@ router.get('/inaccessible/:id1/:id2', (req, res, next) => {
                 }
                 res.redirect('back');
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
@@ -258,11 +283,16 @@ router.get('/inaccessible/:id1/:id2', (req, res, next) => {
  */
 router.get('/mastered/:id1/:id2', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `
+        let sqlQuery =
+            `
         INSERT INTO skill_tree.user_skills (user_id, skill_id, is_mastered, is_accessible) 
-        VALUES(` + req.params.id1 + `, ` + req.params.id2 + `, 1, 1) 
+        VALUES(` +
+            req.params.id1 +
+            `, ` +
+            req.params.id2 +
+            `, 1, 1) 
         ON DUPLICATE KEY UPDATE is_mastered=1, is_accessible=1;
-        `
+        `;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -271,11 +301,10 @@ router.get('/mastered/:id1/:id2', (req, res, next) => {
                 }
                 res.redirect('back');
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
@@ -287,10 +316,15 @@ router.get('/mastered/:id1/:id2', (req, res, next) => {
  */
 router.get('/unmastered/:id1/:id2', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `
+        let sqlQuery =
+            `
         INSERT INTO skill_tree.user_skills (user_id, skill_id, is_mastered) 
-        VALUES(` + req.params.id1 + `, ` + req.params.id2 + `, 0) 
-        ON DUPLICATE KEY UPDATE is_mastered=0;    `
+        VALUES(` +
+            req.params.id1 +
+            `, ` +
+            req.params.id2 +
+            `, 0) 
+        ON DUPLICATE KEY UPDATE is_mastered=0;    `;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -298,13 +332,11 @@ router.get('/unmastered/:id1/:id2', (req, res, next) => {
                     throw err;
                 }
                 res.redirect('back');
-
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
@@ -338,4 +370,4 @@ router.get('*', (req, res) => {
     res.redirect('/');
 });
 
-module.exports = router 
+module.exports = router;
