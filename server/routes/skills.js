@@ -37,7 +37,14 @@ conn.connect((err) => {
  */
 router.post('/add', (req, res, next) => {
     if (req.session.userName) {
-        // First, add the skill.
+        // Escape single quotes for SQL to accept.
+        req.body.name = req.body.name.replace(/'/g, "''");
+        req.body.description = req.body.description.replace(/'/g, "''");
+        req.body.mastery_requirements = req.body.mastery_requirements.replace(
+            /'/g,
+            "''"
+        );
+        // Add the skill.
         let data = {};
         data = {
             name: req.body.name,
@@ -363,6 +370,28 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
         // For each question.
         for (let i = 0; i < req.body.questionArray.length; i++) {
+            // Escape single quotes for SQL to accept.
+            req.body.name = req.body.name.replace(/'/g, "''");
+            req.body.correct_answer = req.body.questionArray[
+                i
+            ].correct_answer.replace(/'/g, "''");
+            req.body.incorrect_answer_1 = req.body.questionArray[
+                i
+            ].incorrect_answer_1.replace(/'/g, "''");
+            req.body.incorrect_answer_2 = req.body.questionArray[
+                i
+            ].incorrect_answer_2.replace(/'/g, "''");
+            req.body.incorrect_answer_3 = req.body.questionArray[
+                i
+            ].incorrect_answer_3.replace(/'/g, "''");
+            req.body.incorrect_answer_4 = req.body.questionArray[
+                i
+            ].incorrect_answer_4.replace(/'/g, "''");
+            req.body.explanation = req.body.questionArray[
+                i
+            ].explanation.replace(/'/g, "''");
+
+            // Add the questions.
             let data = {};
             data = {
                 name: req.body.questionArray[i].name,
@@ -407,6 +436,14 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
     if (req.session.userName) {
         // For each question.
         for (let i = 0; i < req.body.questionArray.length; i++) {
+            // Escape single quotes for SQL to accept.
+            req.body.name = req.body.questionArray[i].name.replace(/'/g, "''");
+            req.body.question = req.body.questionArray[i].question.replace(
+                /'/g,
+                "''"
+            );
+
+            // Add skill.
             let data = {};
             data = {
                 name: req.body.questionArray[i].name,
