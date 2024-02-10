@@ -38,8 +38,8 @@ conn.connect((err) => {
 router.post('/add', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.first_name = req.body.first_name.replace(/'/g, "''");
-        req.body.last_name = req.body.last_name.replace(/'/g, "''");
+        req.body.first_name = req.body.firstname.replace(/'/g, "''");
+        req.body.last_name = req.body.lastname.replace(/'/g, "''");
         req.body.username = req.body.username.replace(/'/g, "''");
         req.body.email = req.body.email.replace(/'/g, "''");
         req.body.password = req.body.password.replace(/'/g, "''");
