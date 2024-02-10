@@ -5,16 +5,20 @@ import router from '../../router';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
+import { useSkillsStore } from '../../stores/SkillsStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const userSkillsStore = useUserSkillsStore();
         const settingsStore = useSettingsStore();
+        const skillsStore = useSkillsStore();
+
         return {
             userDetailsStore,
             userSkillsStore,
-            settingsStore
+            settingsStore,
+            skillsStore
         };
     },
     data() {
@@ -38,10 +42,21 @@ export default {
         if (this.settingsStore.quizMaxQuestions == null) {
             await this.settingsStore.getSettings();
         }
+
+        // Check skill type.
+        let skillType;
+        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+            if (this.skillsStore.skillsList[i].id == this.skillId) {
+                skillType = this.skillsStore.skillsList[i].type;
+            }
+        }
         // Get user skills, in case this is a sub skill. We have to check its siblings.
         // Need to get the questions for the quiz, before the DOM renders.
-        await this.fetchMCQuestions();
-        await this.fetchEssayQuestions();
+        if (skillType != 'super') {
+            await this.fetchMCQuestions();
+            await this.fetchEssayQuestions();
+        } else {
+        }
     },
     methods: {
         fetchMCQuestions() {
