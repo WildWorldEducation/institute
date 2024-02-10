@@ -6,6 +6,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { subset } from 'd3';
 
 export default {
     setup() {
@@ -55,7 +56,18 @@ export default {
         if (skillType != 'super') {
             await this.fetchMCQuestions();
             await this.fetchEssayQuestions();
+            // If it is a super skill, populate quiz from its subskills.
         } else {
+            let subSkills = [];
+            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                if (
+                    this.skillsStore.skillsList[i].parent == this.skillId &&
+                    this.skillsStore.skillsList[i].type == 'sub'
+                ) {
+                    subSkills.push(this.skillsStore.skillsList[i]);
+                }
+            }
+            console.log(subSkills);
         }
     },
     methods: {
