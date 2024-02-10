@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-     password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -36,9 +36,10 @@ router.get('/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery = `
+        let sqlQuery =
+            `
     SELECT * FROM skill_tree.user_votes
-    WHERE resource_id =`+ req.params.id;
+    WHERE resource_id =` + req.params.id;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -47,12 +48,11 @@ router.get('/:id', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
 });
-
 
 /**
  * Create or Update Item
@@ -60,44 +60,52 @@ router.get('/:id', (req, res, next) => {
  * @return response()
  */
 router.put('/:userId/:resourceId/edit/up', (req, res, next) => {
-    // var session = req.session;
     if (req.session.userName) {
-        let sqlQuery = `
+        let sqlQuery =
+            `
         INSERT INTO skill_tree.user_votes (user_id, resource_id, vote) 
-        VALUES(` + req.params.userId + `, ` + req.params.resourceId + `, 1) 
+        VALUES(` +
+            req.params.userId +
+            `, ` +
+            req.params.resourceId +
+            `, 1) 
         ON DUPLICATE KEY UPDATE vote=1;
-        `
+        `;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.send("test");
+                res.send('test');
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
 });
 
 router.put('/:userId/:resourceId/edit/down', (req, res, next) => {
-    // var session = req.session;
     if (req.session.userName) {
-        let sqlQuery = `
+        let sqlQuery =
+            `
         INSERT INTO skill_tree.user_votes (user_id, resource_id, vote) 
-        VALUES(` + req.params.userId + `, ` + req.params.resourceId + `, -1) 
+        VALUES(` +
+            req.params.userId +
+            `, ` +
+            req.params.resourceId +
+            `, -1) 
         ON DUPLICATE KEY UPDATE vote=-1;
-        `
+        `;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.send("test");
+                res.send('test');
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
@@ -105,22 +113,26 @@ router.put('/:userId/:resourceId/edit/down', (req, res, next) => {
 
 // To cancel vote.
 router.put('/:userId/:resourceId/edit/cancel', (req, res, next) => {
-    // var session = req.session;
     if (req.session.userName) {
-        let sqlQuery = `
+        let sqlQuery =
+            `
         INSERT INTO skill_tree.user_votes (user_id, resource_id, vote) 
-        VALUES(` + req.params.userId + `, ` + req.params.resourceId + `, 0) 
+        VALUES(` +
+            req.params.userId +
+            `, ` +
+            req.params.resourceId +
+            `, 0) 
         ON DUPLICATE KEY UPDATE vote=0;
-        `
+        `;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.send("test");
+                res.send('test');
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
@@ -130,4 +142,4 @@ router.get('*', (req, res) => {
     res.redirect('/');
 });
 
-module.exports = router 
+module.exports = router;

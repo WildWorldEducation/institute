@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-     password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -36,7 +36,7 @@ conn.connect((err) => {
 /**
  * List Items
  *
- * @return response() 
+ * @return response()
  */
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
@@ -49,23 +49,31 @@ router.get('/list', (req, res, next) => {
                 }
                 res.json(results[0]);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
 });
 
-
 /**
  * Update Items
  *
- * @return response() 
+ * @return response()
  */
 router.put('/edit', (req, res, next) => {
     if (req.session.userName) {
+        // Escape single quotes for SQL to accept.
+        req.body.notification1 = req.body.notification1.replace(/'/g, "''");
+        req.body.notification2 = req.body.notification2.replace(/'/g, "''");
+
+        // Add data.
         let sqlQuery =
             `UPDATE notifications 
-        SET notification_1='` + req.body.notification1 + `', notification_2 = '` + req.body.notification2 + `';`;
+        SET notification_1='` +
+            req.body.notification1 +
+            `', notification_2 = '` +
+            req.body.notification2 +
+            `';`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -73,16 +81,13 @@ router.put('/edit', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
 
-
-
 // Export the router for app to use.
-module.exports = router 
+module.exports = router;

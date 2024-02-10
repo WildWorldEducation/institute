@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-     password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -33,16 +33,15 @@ conn.connect((err) => {
     console.log('MariaDB connected...');
 });
 
-
 /**
  * List Items
  *
- * @return response() 
+ * @return response()
  */
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM skill_tags";
+        let sqlQuery = 'SELECT * FROM skill_tags';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -50,23 +49,27 @@ router.get('/list', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
 });
 
-
 /**
-* Add item
-*
-* @return response()
-*/
+ * Add item
+ *
+ * @return response()
+ */
 router.post('/add/:id1/:id2', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `
+        let sqlQuery =
+            `
         INSERT INTO skill_tree.skill_tags (skill_id, tag_id) 
-        VALUES(` + req.params.id1 + `, ` + req.params.id2 + `);`;
+        VALUES(` +
+            req.params.id1 +
+            `, ` +
+            req.params.id2 +
+            `);`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -75,11 +78,10 @@ router.post('/add/:id1/:id2', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
@@ -91,9 +93,14 @@ router.post('/add/:id1/:id2', (req, res, next) => {
  */
 router.delete('/remove/:id1/:id2', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `
+        let sqlQuery =
+            `
         DELETE FROM skill_tree.skill_tags 
-        WHERE skill_id =` + req.params.id1 + ` AND tag_id =` + req.params.id2 + `;`;
+        WHERE skill_id =` +
+            req.params.id1 +
+            ` AND tag_id =` +
+            req.params.id2 +
+            `;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -102,16 +109,13 @@ router.delete('/remove/:id1/:id2', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
 
-
-
 // Export the router for app to use.
-module.exports = router 
+module.exports = router;

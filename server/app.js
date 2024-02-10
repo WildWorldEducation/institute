@@ -2,25 +2,31 @@ var express = require('express');
 
 var app = express();
 
-// Middleware 
+// Middleware
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 
-const path = require('path')
+const path = require('path');
 const fs = require('fs').promises;
-const publicPath = path.join(path.resolve(), "public");
-const distPath = path.join(path.resolve(), "dist");
+const publicPath = path.join(path.resolve(), 'public');
+const distPath = path.join(path.resolve(), 'dist');
 
 // Allow things to work.
-var cors = require('cors')
-app.use(cors())
+var cors = require('cors');
+app.use(cors());
 
 // Login with Google.
 var jwt = require('jsonwebtoken');
 
 // Limit effects max image size that can be uploaded.
-app.use(bodyParser.json({ limit: "5mb" }));
-app.use(bodyParser.urlencoded({ limit: "5mb", extended: true, parameterLimit: 50000 }));
+app.use(bodyParser.json({ limit: '5mb' }));
+app.use(
+    bodyParser.urlencoded({
+        limit: '5mb',
+        extended: true,
+        parameterLimit: 50000
+    })
+);
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 app.set('view engine', 'ejs');
@@ -35,12 +41,14 @@ app.use(express.urlencoded({ extended: true }));
 var history = require('connect-history-api-fallback');
 
 const oneDay = 1000 * 60 * 60 * 24;
-app.use(sessions({
-    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
-    saveUninitialized: true,
-    cookie: { maxAge: oneDay },
-    resave: false
-}));
+app.use(
+    sessions({
+        secret: 'thisismysecrctekeyfhrgfgrfrty84fwir767',
+        saveUninitialized: true,
+        cookie: { maxAge: oneDay },
+        resave: false
+    })
+);
 
 // Route files.
 const userRouter = require('./routes/users');
@@ -72,7 +80,7 @@ app.use('/instructor-students', instructorStudentsRouter);
 const skillTreeRouter = require('./routes/skilltree');
 app.use('/skilltree', skillTreeRouter);
 
-app.locals.title = 'Skill Tree'
+app.locals.title = 'Skill Tree';
 
 /*------------------------------------------
 --------------------------------------------
@@ -83,15 +91,14 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-      password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
-
-if (process.env.NODE_ENV === "production") {
-    app.use("/", express.static(distPath));
+if (process.env.NODE_ENV === 'production') {
+    app.use('/', express.static(distPath));
 } else {
-    app.use("/", express.static(publicPath));
+    app.use('/', express.static(publicPath));
 }
 
 /*------------------------------------------
@@ -111,7 +118,7 @@ conn.connect((err) => {
 // Log in with Google.
 var googleUserDetails;
 app.post('/google-login-attempt', (req, res) => {
-    googleUserDetails = jwt.decode(req.body.credential)
+    googleUserDetails = jwt.decode(req.body.credential);
     res.redirect('/google-login-attempt');
 });
 
@@ -119,7 +126,10 @@ var googleLoginResult;
 app.get('/google-login-attempt', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     // Get user id based on Google email, if it exists.
-    let sqlQuery = "SELECT * FROM skill_tree.users WHERE email = '" + googleUserDetails.email + "';";
+    let sqlQuery =
+        "SELECT * FROM skill_tree.users WHERE email = '" +
+        googleUserDetails.email +
+        "';";
     let query = conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -127,44 +137,52 @@ app.get('/google-login-attempt', (req, res) => {
             }
             // Check if user exists.
             if (typeof results[0] !== 'undefined') {
-                // Log user in.                
+                // Log user in.
                 req.session.isLoggedIn = true;
                 req.session.userId = results[0].id;
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
                 res.redirect('/');
-            }
-            else {
-                googleLoginResult = "no account"
+            } else {
+                googleLoginResult = 'no account';
                 res.redirect('/');
             }
         } catch (err) {
-            next(err)
+            next(err);
         }
     });
 });
 
 app.get('/google-login-result', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
-    res.json({ account: googleLoginResult })
+    res.json({ account: googleLoginResult });
 
     // Reset the variable.
-    googleLoginResult = "";
-})
+    googleLoginResult = '';
+});
 
 // Login and out. -----------------------------------
 // DELETE - redundant with below ("session-details")
-// To show whether the user is logged in or not in the nav bar, 
+// To show whether the user is logged in or not in the nav bar,
 // and to pass there data to the Profile and Settings view.
 app.get('/login-status', (req, res) => {
     res.send(req.session.isLoggedIn);
-})
+});
 
 // Log in with username and password.
 app.post('/login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
+    // Escape single quotes for SQL to accept.
+    req.body.username = req.body.username.replace(/'/g, "''");
+    req.body.password = req.body.password.replace(/'/g, "''");
+
     // Execute SQL query that'll select the account from the database based on the specified username and password.
-    let sqlQuery1 = "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" + req.body.username + "' AND skill_tree.users.password = '" + req.body.password + "';";
+    let sqlQuery1 =
+        "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" +
+        req.body.username +
+        "' AND skill_tree.users.password = '" +
+        req.body.password +
+        "';";
     let query1 = conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
@@ -178,11 +196,13 @@ app.post('/login-attempt', (req, res, next) => {
                 req.session.lastName = results[0].last_name;
                 req.session.skillTreeTheme = results[0].skilltree_theme;
                 req.session.role = results[0].role;
-                res.json({ account: 'authorized' })
+                res.json({ account: 'authorized' });
             } else {
-
                 // If both the username and password are not correct, check if the account exists.
-                let sqlQuery2 = "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" + req.body.username + "';";
+                let sqlQuery2 =
+                    "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" +
+                    req.body.username +
+                    "';";
                 let query2 = conn.query(sqlQuery2, (err, results) => {
                     try {
                         if (err) {
@@ -190,30 +210,28 @@ app.post('/login-attempt', (req, res, next) => {
                         }
                         // Tell user their password is incorrect.
                         else if (results.length > 0) {
-                            res.json({ account: 'wrong-password' })
+                            res.json({ account: 'wrong-password' });
                         }
                         // If neither the username or password are correct, let user know.
                         else {
-                            res.json({ account: 'no-account' })
+                            res.json({ account: 'no-account' });
                         }
                     } catch (err) {
-                        next(err)
+                        next(err);
                     }
                 });
             }
         } catch (err) {
-            next(err)
+            next(err);
         }
     });
 });
 
-
 app.post('/logout', (req, res) => {
     // Destroy the user session.
     req.session.destroy();
-    res.end()
+    res.end();
 });
-
 
 // User session -----------------------
 // Send the session variable.
@@ -221,8 +239,7 @@ app.get('/get-session-details', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     if (req.session.userName) {
         req.session.isLoggedIn = true;
-    }
-    else {
+    } else {
         req.session.isLoggedIn = false;
     }
 
@@ -244,21 +261,23 @@ app.get('/settings', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
-})
-
+});
 
 // Edit app settings.
 app.put('/settings/edit', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `
+        let sqlQuery =
+            `
         UPDATE settings 
-        SET skill_degradation_days = ` + req.body.skill_degradation_days + 
-        `, quiz_max_questions = ` + req.body.quiz_max_questions;
-        
+        SET skill_degradation_days = ` +
+            req.body.skill_degradation_days +
+            `, quiz_max_questions = ` +
+            req.body.quiz_max_questions;
+
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -266,13 +285,11 @@ app.put('/settings/edit', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
 });
-
-
 
 const environment = process.env.NODE_ENV;
 
@@ -282,24 +299,23 @@ const environment = process.env.NODE_ENV;
 // to allow for nested routes to be loaded in new tabs
 // and refreshed in the browser.
 // Live server.
-process.env.BASE_URL = "https://parrhesia.io";
+process.env.BASE_URL = 'https://parrhesia.io';
 // Dev server.
 // process.env.BASE_URL = "http://localhost:3000";
 
-
-app.get("/*", async (_req, res) => {
+app.get('/*', async (_req, res) => {
     const data = {
         environment,
-        manifest: await parseManifest(),
+        manifest: await parseManifest()
     };
 
-    res.render("index.html.ejs", data);
+    res.render('index.html.ejs', data);
 });
 
 const parseManifest = async () => {
-    if (environment !== "production") return {};
+    if (environment !== 'production') return {};
 
-    const manifestPath = path.join(path.resolve(), "dist", "manifest.json");
+    const manifestPath = path.join(path.resolve(), 'dist', 'manifest.json');
     const manifestFile = await fs.readFile(manifestPath);
 
     return JSON.parse(manifestFile);
@@ -311,9 +327,8 @@ const parseManifest = async () => {
  * @return response()
  */
 function apiResponse(results) {
-    return JSON.stringify({ "status": 200, "error": null, "response": results });
+    return JSON.stringify({ status: 200, error: null, response: results });
 }
-
 
 /*------------------------------------------
 --------------------------------------------
