@@ -1,5 +1,5 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 
@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-     password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -31,7 +31,7 @@ conn.connect((err) => {
 });
 
 /**
- * Create New Item 
+ * Create New Item
  *
  * @return response()
  */
@@ -40,9 +40,15 @@ router.post('/add', (req, res, next) => {
         // First, add the skill.
         let data = {};
         data = {
-            name: req.body.name, description: req.body.description, parent: req.body.parent,
-            icon_image: req.body.icon_image, banner_image: req.body.banner_image, mastery_requirements: req.body.mastery_requirements,
-            type: req.body.type, level: req.body.level, filter_1: req.body.filter_1
+            name: req.body.name,
+            description: req.body.description,
+            parent: req.body.parent,
+            icon_image: req.body.icon_image,
+            banner_image: req.body.banner_image,
+            mastery_requirements: req.body.mastery_requirements,
+            type: req.body.type,
+            level: req.body.level,
+            filter_1: req.body.filter_1
         };
 
         let sqlQuery1 = `INSERT INTO skills SET ?;`;
@@ -51,20 +57,17 @@ router.post('/add', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     res.end();
                 }
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
-
 
 /**
  * Get All Items
@@ -75,7 +78,7 @@ router.post('/add', (req, res, next) => {
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM skills";
+        let sqlQuery = 'SELECT * FROM skills';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -83,7 +86,7 @@ router.get('/list', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
@@ -95,7 +98,7 @@ router.get('/nested-list', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
     SELECT skill_tree.skills.id, name, parent, type, level
-    FROM skill_tree.skills`
+    FROM skill_tree.skills`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -116,7 +119,7 @@ router.get('/nested-list', (req, res, next) => {
                                 results[j].children.push(results[i]);
                             }
                         }
-                    };
+                    }
                 }
 
                 let nestedSkills = [];
@@ -126,14 +129,13 @@ router.get('/nested-list', (req, res, next) => {
                     }
                 }
 
-                res.json((nestedSkills));
-
+                res.json(nestedSkills);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
-})
+});
 
 /**
  * Get Single Item
@@ -143,7 +145,6 @@ router.get('/nested-list', (req, res, next) => {
 
 // Individual skills.
 router.get('/show/:id', (req, res, next) => {
-
     var skill;
     var tags;
 
@@ -151,10 +152,13 @@ router.get('/show/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         // Get skill.
-        let sqlQuery = `
+        let sqlQuery =
+            `
                         SELECT *
                             FROM skill_tree.skills
-            WHERE skill_tree.skills.id = ` + req.params.id + `; `;
+            WHERE skill_tree.skills.id = ` +
+            req.params.id +
+            `; `;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -165,27 +169,29 @@ router.get('/show/:id', (req, res, next) => {
                 skill = results[0];
 
                 // Get skill tags.
-                let sqlQuery2 = `
+                let sqlQuery2 =
+                    `
                         SELECT *
                             FROM skill_tree.skill_tags
-                WHERE skill_tree.skill_tags.skill_id = ` + req.params.id + `; `;
+                WHERE skill_tree.skill_tags.skill_id = ` +
+                    req.params.id +
+                    `; `;
 
                 let query2 = conn.query(sqlQuery2, (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         }
-                        tags = results
-                        skill.tags = tags
+                        tags = results;
+                        skill.tags = tags;
 
                         res.json(skill);
-
                     } catch (err) {
-                        next(err)
+                        next(err);
                     }
                 });
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
@@ -198,7 +204,7 @@ router.get('/show/:id', (req, res, next) => {
 //         let sqlQuery = "SELECT * FROM skill_other_skill_requirements WHERE skill_id = " + req.params.id + ";";
 //         let query = conn.query(sqlQuery, (err, results) => {
 //             try {
-//                 if (err) {  
+//                 if (err) {
 //                     throw err;
 //                 }
 //                 res.json(results);
@@ -209,7 +215,6 @@ router.get('/show/:id', (req, res, next) => {
 //     }
 // });
 
-
 /**
  * Edit Item
  *
@@ -217,32 +222,50 @@ router.get('/show/:id', (req, res, next) => {
  */
 router.put('/:id/edit', (req, res, next) => {
     if (req.session.userName) {
-        // Escape sinlge quotes for SQL to accept.
-        req.body.mastery_requirements = req.body.mastery_requirements.replace(/'/g, "''");
+        // Escape single quotes for SQL to accept.
+        req.body.name = req.body.name.replace(/'/g, "''");
+        req.body.description = req.body.description.replace(/'/g, "''");
+        req.body.mastery_requirements = req.body.mastery_requirements.replace(
+            /'/g,
+            "''"
+        );
         var sqlQuery;
-        sqlQuery = `UPDATE skills SET name = '` + req.body.name + `', parent = '` + req.body.parent +
-            `', description = '` + req.body.description + `', icon_image = '` + req.body.icon_image + `', banner_image = '` + req.body.banner_image +
-            `', mastery_requirements = '` + req.body.mastery_requirements +
-            `', type = '` + req.body.type + `', level = '` + req.body.level + `', filter_1 = '` + req.body.filter_1 +
-            `' WHERE id = ` + req.params.id;
+        sqlQuery =
+            `UPDATE skills SET name = '` +
+            req.body.name +
+            `', parent = '` +
+            req.body.parent +
+            `', description = '` +
+            req.body.description +
+            `', icon_image = '` +
+            req.body.icon_image +
+            `', banner_image = '` +
+            req.body.banner_image +
+            `', mastery_requirements = '` +
+            req.body.mastery_requirements +
+            `', type = '` +
+            req.body.type +
+            `', level = '` +
+            req.body.level +
+            `', filter_1 = '` +
+            req.body.filter_1 +
+            `' WHERE id = ` +
+            req.params.id;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.redirect("back");
-            }
-            catch (err) {
-                next(err)
+                res.redirect('back');
+            } catch (err) {
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
-
 
 /**
  * Delete Item
@@ -251,7 +274,7 @@ router.put('/:id/edit', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = "DELETE FROM skills WHERE id=" + req.params.id;
+        let sqlQuery = 'DELETE FROM skills WHERE id=' + req.params.id;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -260,22 +283,21 @@ router.delete('/:id', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
-
 
 // Learning Resources
 // List all for a particular skill.
 router.get('/:id/resources', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM resources WHERE skill_id=" + req.params.id;
+        let sqlQuery =
+            'SELECT * FROM resources WHERE skill_id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -283,12 +305,11 @@ router.get('/:id/resources', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
 });
-
 
 // Questions -------------------
 /**
@@ -299,7 +320,8 @@ router.get('/:id/resources', (req, res, next) => {
 router.get('/:id/mc-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM mc_questions WHERE skill_id = " + req.params.id;
+        let sqlQuery =
+            'SELECT * FROM mc_questions WHERE skill_id = ' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -307,7 +329,7 @@ router.get('/:id/mc-questions/list', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
@@ -316,7 +338,8 @@ router.get('/:id/mc-questions/list', (req, res, next) => {
 router.get('/:id/essay-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM essay_questions WHERE skill_id = " + req.params.id;
+        let sqlQuery =
+            'SELECT * FROM essay_questions WHERE skill_id = ' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -324,7 +347,7 @@ router.get('/:id/essay-questions/list', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
@@ -345,32 +368,34 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
                 name: req.body.questionArray[i].name,
                 question: req.body.questionArray[i].question,
                 correct_answer: req.body.questionArray[i].correct_answer,
-                incorrect_answer_1: req.body.questionArray[i].incorrect_answer_1,
-                incorrect_answer_2: req.body.questionArray[i].incorrect_answer_2,
-                incorrect_answer_3: req.body.questionArray[i].incorrect_answer_3,
-                incorrect_answer_4: req.body.questionArray[i].incorrect_answer_4,                
+                incorrect_answer_1:
+                    req.body.questionArray[i].incorrect_answer_1,
+                incorrect_answer_2:
+                    req.body.questionArray[i].incorrect_answer_2,
+                incorrect_answer_3:
+                    req.body.questionArray[i].incorrect_answer_3,
+                incorrect_answer_4:
+                    req.body.questionArray[i].incorrect_answer_4,
                 explanation: req.body.questionArray[i].explanation,
                 skill_id: req.params.id
             };
-            let sqlQuery = "INSERT INTO mc_questions SET ?";
+            let sqlQuery = 'INSERT INTO mc_questions SET ?';
             let query = conn.query(sqlQuery, data, (err, results) => {
                 try {
                     if (err) {
                         throw err;
-                    }
-                    else {
+                    } else {
                         res.end();
                     }
                 } catch (err) {
-                    next(err)
+                    next(err);
                 }
             });
         }
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
-})
+});
 
 /**
  * Create New Question
@@ -388,29 +413,26 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
                 question: req.body.questionArray[i].question,
                 skill_id: req.params.id
             };
-            let sqlQuery = "INSERT INTO essay_questions SET ?";
+            let sqlQuery = 'INSERT INTO essay_questions SET ?';
             let query = conn.query(sqlQuery, data, (err, results) => {
                 try {
                     if (err) {
                         throw err;
-                    }
-                    else {
+                    } else {
                         res.end();
                     }
                 } catch (err) {
-                    next(err)
+                    next(err);
                 }
             });
         }
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
-})
-
+});
 
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });
 
-module.exports = router
+module.exports = router;
