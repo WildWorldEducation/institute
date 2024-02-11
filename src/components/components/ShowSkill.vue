@@ -247,6 +247,7 @@ export default {
                 <h2>Assessment</h2>
                 <div class="col">
                     <router-link
+                        v-if="skill.type != 'super'"
                         class="btn purple-btn mt-3 me-3"
                         :to="skillId + '/question-bank'"
                         >Question Bank&nbsp;&nbsp;
@@ -272,6 +273,10 @@ export default {
                             />
                         </svg>
                     </router-link>
+                    <span v-else
+                        >This assessment will draw questions from its cluster
+                        nodes' question banks.</span
+                    >
 
                     <!-- <router-link class="btn purple-btn mt-3" :to="skillId + '/edit-assessment'">
             Assessment&nbsp;&nbsp;
