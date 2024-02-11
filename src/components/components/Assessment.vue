@@ -54,8 +54,8 @@ export default {
         // Get user skills, in case this is a sub skill. We have to check its siblings.
         // Need to get the questions for the quiz, before the DOM renders.
         if (skillType != 'super') {
-            await this.fetchMCQuestions();
-            await this.fetchEssayQuestions();
+            await this.fetchMCQuestions(this.skillId);
+            await this.fetchEssayQuestions(this.skillId);
             // If it is a super skill, populate quiz from its subskills.
         } else {
             let subSkills = [];
@@ -67,16 +67,22 @@ export default {
                     subSkills.push(this.skillsStore.skillsList[i]);
                 }
             }
-            console.log(subSkills);
+            for (let i = 0; i < subSkills.length; i++) {
+                await this.fetchMCQuestions(subSkills[i].id);
+                await this.fetchEssayQuestions(subSkills[i].id);
+            }
         }
     },
     methods: {
-        fetchMCQuestions() {
-            fetch('/questions/' + this.skillId + '/multiple-choice')
+        fetchMCQuestions(skillId) {
+            fetch('/questions/' + skillId + '/multiple-choice')
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => (this.mcQuestions = data))
+                .then((data) => {
+                    // Add the new questions to the existing questions.
+                    this.mcQuestions = this.mcQuestions.concat(data);
+                })
                 .then(() => {
                     // Add field to elements, for the user's answer.
                     for (let i = 0; i < this.mcQuestions.length; i++) {
@@ -115,12 +121,15 @@ export default {
                     }
                 });
         },
-        fetchEssayQuestions() {
-            fetch('/questions/' + this.skillId + '/essay')
+        fetchEssayQuestions(skillId) {
+            fetch('/questions/' + skillId + '/essay')
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => (this.essayQuestions = data))
+                .then((data) => {
+                    // Add the new questions to the existing questions.
+                    this.essayQuestions = this.essayQuestions.concat(data);
+                })
                 .then(() => {
                     // Add field to elements, for the user's answer.
                     for (let i = 0; i < this.essayQuestions.length; i++) {
@@ -129,6 +138,8 @@ export default {
                     }
                 })
                 .then(() => {
+                    // TODO: below can be optimized in the case of this being a super skill
+                    // drawing questions from each sub skill.
                     this.questions = this.essayQuestions.concat(
                         this.mcQuestions
                     );
@@ -274,7 +285,7 @@ export default {
 </script>
 
 <template>
-    <!-- <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
+    <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button>
     <div v-if="this.questions.length > 0" class="container mt-3 mb-3">
         <!-- To wait for questions to be loaded, before the DOM renders. -->
         <div class="row mt-3">
