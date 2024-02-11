@@ -55,15 +55,15 @@ export default {
                                 >Pixi Tree</RouterLink
                             >
                         </li>
-                        <li
+                        <!-- <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/radial-tidy-tree" class="nav-link"
                                 >Radial Tidy Tree</RouterLink
                             >
-                        </li>
-                        <li
+                        </li> -->
+                        <!-- <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
@@ -72,23 +72,23 @@ export default {
                                 class="nav-link"
                                 >Radial Cluster Tree</RouterLink
                             >
-                        </li>
+                        </li> -->
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/tidy-tree" class="nav-link"
-                                >Tidy Tree</RouterLink
+                                >SVG Tidy Tree</RouterLink
                             >
                         </li>
-                        <!-- <li
+                        <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/canvas-tidy-tree" class="nav-link"
                                 >Canvas Tidy Tree</RouterLink
                             >
-                        </li> -->
+                        </li>
                         <li class="nav-item">
                             <RouterLink to="/skills" class="nav-link">
                                 <span> Skills </span>
