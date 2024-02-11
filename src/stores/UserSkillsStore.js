@@ -44,7 +44,7 @@ export const useUserSkillsStore = defineStore('userSkills', {
                             childSkills.push(skillsStore.skillsList[i]);
                         }
                     }
-                    console.log(childSkills);
+                  
                     let subSkills = [];
                     // Make them accessible/unlocked if regular type skills.
                     for (let i = 0; i < childSkills.length; i++) {
