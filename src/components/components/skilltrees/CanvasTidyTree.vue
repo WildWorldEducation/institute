@@ -44,7 +44,8 @@ export default {
             translatePos: { x: 50, y: 50 },
             scaleMultiplier: 0.8,
             startDragOffset: { x: 0, y: 0 },
-            mouseDown: false
+            mouseDown: false,
+            r: 1.5
         };
     },
     async mounted() {
@@ -68,46 +69,55 @@ export default {
 
         this.getAlgorithm();
 
-        // add event listeners to handle screen drag
-        canvas.addEventListener('mousedown', (evt) => {
-            this.mouseDown = true;
-            this.startDragOffset.x = evt.clientX - this.translatePos.x;
-            this.startDragOffset.y = evt.clientY - this.translatePos.y;
-        });
-        canvas.addEventListener('touchstart', (evt) => {
-            this.mouseDown = true;
-            this.startDragOffset.x = evt.clientX - this.translatePos.x;
-            this.startDragOffset.y = evt.clientY - this.translatePos.y;
-        });
-        canvas.addEventListener('mouseup', (evt) => {
-            this.mouseDown = false;
-        });
+        d3.select(this.context.canvas).call(
+            d3
+                .zoom()
+                .scaleExtent([0.2, 8])
+                .on('zoom', ({ transform }) => this.zoomed(transform))
+        );
 
-        canvas.addEventListener('mouseover', (evt) => {
-            this.mouseDown = false;
-        });
+        //this.zoomed(d3.zoomIdentity);
 
-        canvas.addEventListener('mouseout', (evt) => {
-            this.mouseDown = false;
-        });
-        canvas.addEventListener('touchend', (evt) => {
-            this.mouseDown = false;
-        });
+        // // add event listeners to handle screen drag
+        // canvas.addEventListener('mousedown', (evt) => {
+        //     this.mouseDown = true;
+        //     this.startDragOffset.x = evt.clientX - this.translatePos.x;
+        //     this.startDragOffset.y = evt.clientY - this.translatePos.y;
+        // });
+        // canvas.addEventListener('touchstart', (evt) => {
+        //     this.mouseDown = true;
+        //     this.startDragOffset.x = evt.clientX - this.translatePos.x;
+        //     this.startDragOffset.y = evt.clientY - this.translatePos.y;
+        // });
+        // canvas.addEventListener('mouseup', (evt) => {
+        //     this.mouseDown = false;
+        // });
 
-        canvas.addEventListener('mousemove', (evt) => {
-            if (this.mouseDown) {
-                this.translatePos.x = evt.clientX - this.startDragOffset.x;
-                this.translatePos.y = evt.clientY - this.startDragOffset.y;
-                this.drawTree(this.scale, this.translatePos);
-            }
-        });
-        canvas.addEventListener('touchmove', (evt) => {
-            if (this.mouseDown) {
-                this.translatePos.x = evt.clientX - this.startDragOffset.x;
-                this.translatePos.y = evt.clientY - this.startDragOffset.y;
-                this.drawTree(this.scale, this.translatePos);
-            }
-        });
+        // canvas.addEventListener('mouseover', (evt) => {
+        //     this.mouseDown = false;
+        // });
+
+        // canvas.addEventListener('mouseout', (evt) => {
+        //     this.mouseDown = false;
+        // });
+        // canvas.addEventListener('touchend', (evt) => {
+        //     this.mouseDown = false;
+        // });
+
+        // canvas.addEventListener('mousemove', (evt) => {
+        //     if (this.mouseDown) {
+        //         this.translatePos.x = evt.clientX - this.startDragOffset.x;
+        //         this.translatePos.y = evt.clientY - this.startDragOffset.y;
+        //         this.drawTree(this.scale, this.translatePos);
+        //     }
+        // });
+        // canvas.addEventListener('touchmove', (evt) => {
+        //     if (this.mouseDown) {
+        //         this.translatePos.x = evt.clientX - this.startDragOffset.x;
+        //         this.translatePos.y = evt.clientY - this.startDragOffset.y;
+        //         this.drawTree(this.scale, this.translatePos);
+        //     }
+        // });
     },
     methods: {
         getAlgorithm() {
@@ -222,15 +232,15 @@ export default {
         },
         drawTree(scale, translatePos) {
             // clear canvas
-            this.context.clearRect(
-                0,
-                0,
-                this.context.canvas.width,
-                this.context.canvas.height
-            );
-            this.context.save();
-            this.context.translate(this.translatePos.x, this.translatePos.y);
-            this.context.scale(scale, scale);
+            // this.context.clearRect(
+            //     0,
+            //     0,
+            //     this.context.canvas.width,
+            //     this.context.canvas.height
+            // );
+            // this.context.save();
+            // this.context.translate(this.translatePos.x, this.translatePos.y);
+            // this.context.scale(scale, scale);
 
             const links = this.root.links();
             const nodes = this.root.descendants();
@@ -245,7 +255,7 @@ export default {
                 this.drawNode(node);
             }
 
-            this.context.restore();
+            //    this.context.restore();
         },
         drawNode(node) {
             //   console.log(node);
@@ -282,6 +292,35 @@ export default {
             linkGenerator(link);
             this.context.strokeStyle = '#000';
             this.context.stroke();
+        },
+        zoomed(transform) {
+            this.context.save();
+            this.context.clearRect(
+                0,
+                0,
+                this.context.canvas.width,
+                this.context.canvas.height
+            );
+            this.context.translate(transform.x, transform.y);
+            this.context.scale(transform.k, transform.k);
+            this.context.beginPath();
+
+            const links = this.root.links();
+            const nodes = this.root.descendants();
+
+            this.drawTree();
+
+            for (let i = 0; i < nodes.length; i++) {
+                this.context.moveTo(i.x + this.r, i.y);
+                this.context.arc(i.x, i.y, this.r, 0, 2 * Math.PI);
+            }
+
+            // for (const [x, y] of data) {
+            //     this.context.moveTo(x + this.r, y);
+            //     this.context.arc(x, y, this.r, 0, 2 * Math.PI);
+            // }
+            this.context.fill();
+            this.context.restore();
         },
         panRight() {
             this.panX = 0;
@@ -349,11 +388,11 @@ export default {
     <!-- <button @click="panLeft">pan left</button>
     <button @click="panRight">pan right</button>
     <button @click="panUp">pan up</button>
-    <button @click="panDown">pan down</button> -->
+    <button @click="panDown">pan down</button>
     <div id="buttonWrapper">
         <input type="button" @click="zoomOut" value="+" />
         <input type="button" @click="zoomIn" value="-" />
-    </div>
+    </div> -->
     <!-- <button @click="zoomOut">zoom out</button>
     <button @click="zoomIn">zoom in</button> -->
     <canvas id="canvas" width="1500" height="1500"></canvas>
