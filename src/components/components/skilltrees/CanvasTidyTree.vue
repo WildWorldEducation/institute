@@ -200,7 +200,7 @@ export default {
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(data);
-            const dx = 12;
+            const dx = 24;
             const dy = this.width / (this.root.height + 1);
 
             // Create a tree layout.
@@ -261,7 +261,7 @@ export default {
             //   console.log(node);
             this.context.beginPath();
             this.context.moveTo(node.y, node.x + 500);
-            this.context.arc(node.y, node.x + 500, 4, 0, 2 * Math.PI);
+            this.context.arc(node.y, node.x + 500, 10, 0, 2 * Math.PI);
             this.context.fillStyle = '#000';
             this.context.fill();
 
