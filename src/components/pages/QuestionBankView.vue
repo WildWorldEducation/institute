@@ -153,6 +153,11 @@ export default {
     align-items: center;
 }
 
+.purple-btn:hover {
+    background-color: #9c7eec;
+    color: white !important;
+}
+
 .red-btn {
     background-color: #e24d4d;
     color: white;

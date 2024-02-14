@@ -64,8 +64,8 @@ export default {
 <template>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6">
-                <h2>Multiple Choice</h2>
+            <div id="multiple-choice-column" class="col-md-6 p-0 m-0">
+                <h2 class="question-type">Multiple Choice</h2>
                 <table
                     v-if="isMultipleChoice"
                     class="skilltree-table table-bordered"
@@ -95,8 +95,8 @@ export default {
                     </tr>
                 </table>
             </div>
-            <div class="col-md-6">
-                <h2>Essay</h2>
+            <div class="col-md-6 p-0 m-0">
+                <h2 class="question-type">Essay</h2>
                 <table v-if="isEssay" class="skilltree-table table-bordered">
                     <tr v-for="question in essayQuestions">
                         <td>
@@ -127,4 +127,18 @@ export default {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.question-type {
+    /* Text */
+
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 900;
+    font-size: 28px;
+    line-height: 28px;
+    /* or 100% */
+    display: flex;
+    align-items: center;
+    color: #8f7bd6;
+}
+</style>

@@ -4,7 +4,10 @@ export default {
         return {
             skillId: this.$route.params.id,
             questionCSVFile: '',
-            questionsArray: []
+            questionsArray: [],
+            // flag state for dropdown zone
+            isDragging: false,
+            files: []
         };
     },
     async created() {},
@@ -26,6 +29,7 @@ export default {
 
                 // Break individual questions into arrays.
                 for (let i = 0; i < CSVArray.length; i++) {
+                    console.log(CSVArray[i]);
                     this.questionsArray[i] = CSVArray[i].split('|');
                 }
             };
@@ -60,6 +64,26 @@ export default {
             fetch(url, requestOptions).then(() => {
                 this.$router.push('/skills/' + this.skillId + '/question-bank');
             });
+        },
+        // --- ++ Drag and drop file relate feature ++ --- //
+        onChange() {
+            this.files.push(...this.$refs.file.files);
+            this.files.forEach((file) => {
+                this.ReadFile(file);
+            });
+        },
+        dragover(e) {
+            e.preventDefault();
+            this.isDragging = true;
+        },
+        dragleave() {
+            this.isDragging = false;
+        },
+        drop(e) {
+            e.preventDefault();
+            this.$refs.file.files = e.dataTransfer.files;
+            this.onChange();
+            this.isDragging = false;
         }
     }
 };
@@ -91,6 +115,67 @@ export default {
                     </p>
                 </div>
                 <button class="btn green-btn" @click="Submit()">Submit</button>
+            </div>
+        </div>
+        <div class="row">
+            <div
+                class="dropzone-container"
+                @dragover="dragover"
+                @dragleave="dragleave"
+                @drop="drop"
+            >
+                <input
+                    type="file"
+                    multiple
+                    name="file"
+                    id="fileInput"
+                    class="hidden-input"
+                    @change="onChange"
+                    ref="file"
+                    accept=".csv"
+                />
+
+                <label for="fileInput" class="file-label">
+                    <div v-if="isDragging">Release to drop files here.</div>
+                    <div v-else>
+                        Drop files here or <u>click here</u> to upload.
+                    </div>
+                    <!-- List file that uploaded and their size -->
+                    <div class="preview-container mt-4" v-if="files.length">
+                        <div
+                            v-for="file in files"
+                            :key="file.name"
+                            class="preview-card"
+                        >
+                            <div>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    fill="green"
+                                    width="60"
+                                    height="60"
+                                >
+                                    <path
+                                        d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V304H176c-35.3 0-64 28.7-64 64V512H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM200 352h16c22.1 0 40 17.9 40 40v8c0 8.8-7.2 16-16 16s-16-7.2-16-16v-8c0-4.4-3.6-8-8-8H200c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8v-8c0-8.8 7.2-16 16-16s16 7.2 16 16v8c0 22.1-17.9 40-40 40H200c-22.1 0-40-17.9-40-40V392c0-22.1 17.9-40 40-40zm133.1 0H368c8.8 0 16 7.2 16 16s-7.2 16-16 16H333.1c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1H304c-8.8 0-16-7.2-16-16s7.2-16 16-16h42.9c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16v31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66V368c0-8.8 7.2-16 16-16s16 7.2 16 16v31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6V368c0-8.8 7.2-16 16-16z"
+                                    />
+                                </svg>
+                                <p class="">
+                                    {{ file.name }}
+                                    ({{ Math.round(file.size / 1000) + 'kb' }})
+                                </p>
+                            </div>
+                            <div>
+                                <button
+                                    class="ms-2 btn btn-danger"
+                                    @click="remove(files.indexOf(file))"
+                                    title="Remove file"
+                                >
+                                    <b>×</b>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </label>
             </div>
         </div>
         <div class="row">
@@ -137,4 +222,48 @@ export default {
 .green-btn:hover {
     background-color: #3eb3a3;
 }
+
+/** Drop Zone Styling */
+.dropzone-container {
+    padding: 4rem;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border: 2px dashed;
+    border-color: #9e9e9e;
+}
+
+.hidden-input {
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+}
+
+.file-label {
+    font-size: 20px;
+    display: block;
+    cursor: pointer;
+}
+
+.preview-container {
+    display: flex;
+    margin-top: 2rem;
+}
+
+.preview-card {
+    display: flex;
+    border: 1px solid #a2a2a2;
+    padding: 5px;
+    margin-left: 5px;
+}
+
+.preview-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    border: 1px solid #a2a2a2;
+    background-color: #a2a2a2;
+}
+/* End Of Drop Zone Styling */
 </style>
