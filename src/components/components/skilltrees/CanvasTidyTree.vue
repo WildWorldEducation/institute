@@ -38,6 +38,7 @@ export default {
             tree: {},
             root: {},
             context: {},
+            hiddenCanvasContext: {},
             panX: 5,
             panY: 0,
             scale: 0.5,
@@ -45,7 +46,10 @@ export default {
             scaleMultiplier: 0.8,
             startDragOffset: { x: 0, y: 0 },
             mouseDown: false,
-            r: 1.5
+            r: 1.5,
+            nodes: [],
+            nextCol: 1,
+            colToNode: {}
         };
     },
     async mounted() {
@@ -69,55 +73,57 @@ export default {
 
         this.getAlgorithm();
 
-        d3.select(this.context.canvas).call(
-            d3
-                .zoom()
-                .scaleExtent([0.2, 8])
-                .on('zoom', ({ transform }) => this.zoomed(transform))
-        );
+        // Pan and zoom.
+        // d3.select(this.context.canvas).call(
+        //     d3
+        //         .zoom()
+        //         .scaleExtent([0.2, 8])
+        //         .on('zoom', ({ transform }) => this.zoomed(transform))
+        // );
 
-        //this.zoomed(d3.zoomIdentity);
+        // Interactivity.
+        let hiddenCanvas = document.getElementById('hidden-canvas');
+        this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
+        //  hiddenCanvas.style.display = 'none';
 
-        // // add event listeners to handle screen drag
-        // canvas.addEventListener('mousedown', (evt) => {
-        //     this.mouseDown = true;
-        //     this.startDragOffset.x = evt.clientX - this.translatePos.x;
-        //     this.startDragOffset.y = evt.clientY - this.translatePos.y;
-        // });
-        // canvas.addEventListener('touchstart', (evt) => {
-        //     this.mouseDown = true;
-        //     this.startDragOffset.x = evt.clientX - this.translatePos.x;
-        //     this.startDragOffset.y = evt.clientY - this.translatePos.y;
-        // });
-        // canvas.addEventListener('mouseup', (evt) => {
-        //     this.mouseDown = false;
-        // });
+        // Listen for clicks on the main canvas
+        canvas.addEventListener('click', (e) => {
+            // We actually only need to draw the hidden canvas when
+            // there is an interaction. This sketch can draw it on
+            // each loop, but that is only for demonstration.
+            this.drawTree(true);
 
-        // canvas.addEventListener('mouseover', (evt) => {
-        //     this.mouseDown = false;
-        // });
+            var data = this.nodes;
+            //Figure out where the mouse click occurred.
+            var mouseX = e.layerX;
+            var mouseY = e.layerY;
 
-        // canvas.addEventListener('mouseout', (evt) => {
-        //     this.mouseDown = false;
-        // });
-        // canvas.addEventListener('touchend', (evt) => {
-        //     this.mouseDown = false;
-        // });
+            // Get the corresponding pixel color on the hidden canvas
+            // and look up the node in our map.
+            var ctx = this.hiddenCanvasContext;
+            // This will return that pixel's color
+            var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+            //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
+            console.log(col);
+            //Our map uses these rgb strings as keys to nodes.
+            var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+            var node = this.colToNode[colString];
 
-        // canvas.addEventListener('mousemove', (evt) => {
-        //     if (this.mouseDown) {
-        //         this.translatePos.x = evt.clientX - this.startDragOffset.x;
-        //         this.translatePos.y = evt.clientY - this.startDragOffset.y;
-        //         this.drawTree(this.scale, this.translatePos);
-        //     }
-        // });
-        // canvas.addEventListener('touchmove', (evt) => {
-        //     if (this.mouseDown) {
-        //         this.translatePos.x = evt.clientX - this.startDragOffset.x;
-        //         this.translatePos.y = evt.clientY - this.startDragOffset.y;
-        //         this.drawTree(this.scale, this.translatePos);
-        //     }
-        // });
+            // console.log(this.colToNode);
+
+            if (node) {
+                // We clicked on something, lets set the color of the node
+                // we also have access to the data associated with it, which in
+                // this case is just its original index in the data array.
+                node.renderCol = node.__pickColor;
+
+                //Update the display with some data
+                //  controls.lastClickedIndex = node.index;
+                //   lastClicked.updateDisplay();
+                //  animateHidden.updateDisplay();
+                console.log('Clicked on node with index:', node.index, node);
+            }
+        });
     },
     methods: {
         getAlgorithm() {
@@ -228,57 +234,73 @@ export default {
             // console.log(this.tree);
             // console.log(root.links());
 
-            this.drawTree(this.scale, this.translatePos);
+            this.drawTree(false);
         },
-        drawTree(scale, translatePos) {
-            // clear canvas
-            // this.context.clearRect(
-            //     0,
-            //     0,
-            //     this.context.canvas.width,
-            //     this.context.canvas.height
-            // );
-            // this.context.save();
-            // this.context.translate(this.translatePos.x, this.translatePos.y);
-            // this.context.scale(scale, scale);
+        drawTree(hidden) {
+            //  this.context.clearRect(0, 0, this.width, this.height);
 
-            const links = this.root.links();
-            const nodes = this.root.descendants();
+            this.nodes = this.root.descendants();
 
-            this.context.beginPath();
-            for (const link of links) {
-                this.drawLink(link);
+            if (!hidden) {
+                const links = this.root.links();
+                this.context.beginPath();
+                for (const link of links) {
+                    this.drawLink(link);
+                }
             }
 
             this.context.beginPath();
-            for (const node of nodes) {
-                this.drawNode(node);
+            for (const node of this.nodes) {
+                if (node.renderCol) {
+                    // Render clicked nodes in the color of their corresponding node
+                    // on the hidden canvas.
+                    this.context.fillStyle = node.renderCol;
+                } else {
+                    this.context.fillStyle = 'RGBA(105, 105, 105, 0.8)';
+                }
+
+                //
+                //  If we are rendering to the hidden canvas each element
+                // should get its own color.
+                //
+                if (hidden) {
+                    if (node.__pickColor === undefined) {
+                        // If we have never drawn the node to the hidden canvas get a new
+                        // color for it and put it in the dictionary. genColor returns a new color
+                        // every time it is called.
+                        node.__pickColor = this.genColor();
+                        this.colToNode[node.__pickColor] = node;
+                    }
+                    // On the hidden canvas each rectangle gets a unique color.
+                    this.hiddenCanvasContext.fillStyle = node.__pickColor;
+                }
+
+                // Draw the actual shape
+                this.drawNode(hidden, node);
             }
 
             //    this.context.restore();
         },
-        drawNode(node) {
+        drawNode(hidden, node) {
             //   console.log(node);
-            this.context.beginPath();
-            this.context.moveTo(node.y, node.x + 500);
-            this.context.arc(node.y, node.x + 500, 10, 0, 2 * Math.PI);
-            this.context.fillStyle = '#000';
-            this.context.fill();
+            let ctx;
+            if (hidden) {
+                ctx = this.hiddenCanvasContext;
+            } else {
+                ctx = this.context;
+            }
+            ctx.beginPath();
+            ctx.moveTo(node.y, node.x + 500);
+            ctx.arc(node.y, node.x + 500, 10, 0, 2 * Math.PI);
+            //    ctx.fillStyle = '#000';
+            ctx.fill();
 
-            this.context.beginPath();
-            this.context.strokeStyle = '#FFF';
-            this.context.lineWidth = 4;
-            this.context.strokeText(
-                node.data.skill_name,
-                node.y + 10,
-                node.x + 502
-            );
-            this.context.fillStyle = '#000';
-            this.context.fillText(
-                node.data.skill_name,
-                node.y + 10,
-                node.x + 502
-            );
+            ctx.beginPath();
+            ctx.strokeStyle = '#FFF';
+            ctx.lineWidth = 4;
+            ctx.strokeText(node.data.skill_name, node.y + 10, node.x + 502);
+            ctx.fillStyle = '#000';
+            ctx.fillText(node.data.skill_name, node.y + 10, node.x + 502);
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -292,6 +314,19 @@ export default {
             linkGenerator(link);
             this.context.strokeStyle = '#000';
             this.context.stroke();
+        },
+        genColor() {
+            var ret = [];
+            // via http://stackoverflow.com/a/15804183
+            if (this.nextCol < 16777215) {
+                ret.push(this.nextCol & 0xff); // R
+                ret.push((this.nextCol & 0xff00) >> 8); // G
+                ret.push((this.nextCol & 0xff0000) >> 16); // B
+
+                this.nextCol += 100; // This is exagerated for this example and would ordinarily be 1.
+            }
+            var col = 'rgb(' + ret.join(',') + ')';
+            return col;
         },
         zoomed(transform) {
             this.context.save();
@@ -396,6 +431,7 @@ export default {
     <!-- <button @click="zoomOut">zoom out</button>
     <button @click="zoomIn">zoom in</button> -->
     <canvas id="canvas" width="1500" height="1500"></canvas>
+    <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
     <!-- <div id="skilltree"></div> -->
 </template>
 
