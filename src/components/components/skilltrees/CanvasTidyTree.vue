@@ -2,6 +2,8 @@
 // Import the stores.
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
+// Nested component.
+import SkillPanel from './../SkillPanel.vue';
 
 import * as d3 from 'd3';
 // // Import Pixi JS.
@@ -49,8 +51,12 @@ export default {
             r: 1.5,
             nodes: [],
             nextCol: 1,
-            colToNode: {}
+            colToNode: {},
+            isSkillInfoPanelShown: false
         };
+    },
+    components: {
+        SkillPanel
     },
     async mounted() {
         if (this.skillTreeStore.userSkills.length == 0) {
@@ -84,7 +90,7 @@ export default {
         // Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
         this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
-        //  hiddenCanvas.style.display = 'none';
+        hiddenCanvas.style.display = 'none';
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', (e) => {
@@ -122,6 +128,7 @@ export default {
                 //   lastClicked.updateDisplay();
                 //  animateHidden.updateDisplay();
                 console.log('Clicked on node with index:', node.index, node);
+                this.showInfoPanel();
             }
         });
     },
@@ -292,7 +299,7 @@ export default {
             ctx.beginPath();
             ctx.moveTo(node.y, node.x + 500);
             ctx.arc(node.y, node.x + 500, 10, 0, 2 * Math.PI);
-            //    ctx.fillStyle = '#000';
+            if (!hidden) ctx.fillStyle = '#000';
             ctx.fill();
 
             ctx.beginPath();
@@ -328,93 +335,111 @@ export default {
             var col = 'rgb(' + ret.join(',') + ')';
             return col;
         },
-        zoomed(transform) {
-            this.context.save();
-            this.context.clearRect(
-                0,
-                0,
-                this.context.canvas.width,
-                this.context.canvas.height
-            );
-            this.context.translate(transform.x, transform.y);
-            this.context.scale(transform.k, transform.k);
-            this.context.beginPath();
-
-            const links = this.root.links();
-            const nodes = this.root.descendants();
-
-            this.drawTree();
-
-            for (let i = 0; i < nodes.length; i++) {
-                this.context.moveTo(i.x + this.r, i.y);
-                this.context.arc(i.x, i.y, this.r, 0, 2 * Math.PI);
+        showInfoPanel() {
+            // If panel is not showing.
+            if (!this.isSkillInfoPanelShown) {
+                console.log('test');
+                // To display the panel.
+                // Responsive.
+                // Laptop etc.
+                if (screen.width > 800) {
+                    document.getElementById('skillInfoPanel').style.width =
+                        '474px';
+                }
+                // Mobile device.
+                else {
+                    document.getElementById('skillInfoPanel').style.height =
+                        '474px';
+                }
             }
-
-            // for (const [x, y] of data) {
-            //     this.context.moveTo(x + this.r, y);
-            //     this.context.arc(x, y, this.r, 0, 2 * Math.PI);
-            // }
-            this.context.fill();
-            this.context.restore();
-        },
-        panRight() {
-            this.panX = 0;
-            this.panY = 0;
-            this.panX = this.panX + 50 / this.scale;
-            this.redraw();
-        },
-        panLeft() {
-            this.panX = 0;
-            this.panY = 0;
-            this.panX = this.panX - 50 / this.scale;
-            this.redraw();
-        },
-        panUp() {
-            this.panX = 0;
-            this.panY = 0;
-            this.panY = this.panY + 50 / this.scale;
-            this.redraw();
-        },
-        panDown() {
-            this.panX = 0;
-            this.panY = 0;
-            this.panY = this.panY - 50 / this.scale;
-            this.redraw();
-        },
-        redraw() {
-            // Store the current transformation matrix
-            this.context.save();
-
-            // Use the identity matrix while clearing the canvas
-            this.context.setTransform(1, 0, 0, 1, 0, 0);
-            this.context.clearRect(
-                0,
-                0,
-                this.context.canvas.width,
-                this.context.canvas.height
-            );
-            this.context.beginPath();
-
-            // Restore the transform
-            this.context.restore();
-            this.drawTree();
-        },
-        zoomOut() {
-            // this.scale = this.scale / 2;
-            // this.context.scale(0.5, 0.5);
-            // this.redraw();
-
-            this.scale /= this.scaleMultiplier;
-            this.drawTree(this.scale, this.translatePos);
-        },
-        zoomIn() {
-            // this.scale = this.scale * 2;
-            // this.context.scale(2, 2);
-            // this.redraw();
-
-            this.scale *= this.scaleMultiplier;
-            this.drawTree(this.scale, this.translatePos);
         }
+        // zoomed(transform) {
+        //     this.context.save();
+        //     this.context.clearRect(
+        //         0,
+        //         0,
+        //         this.context.canvas.width,
+        //         this.context.canvas.height
+        //     );
+        //     this.context.translate(transform.x, transform.y);
+        //     this.context.scale(transform.k, transform.k);
+        //     this.context.beginPath();
+
+        //     const links = this.root.links();
+        //     const nodes = this.root.descendants();
+
+        //     this.drawTree();
+
+        //     for (let i = 0; i < nodes.length; i++) {
+        //         this.context.moveTo(i.x + this.r, i.y);
+        //         this.context.arc(i.x, i.y, this.r, 0, 2 * Math.PI);
+        //     }
+
+        //     // for (const [x, y] of data) {
+        //     //     this.context.moveTo(x + this.r, y);
+        //     //     this.context.arc(x, y, this.r, 0, 2 * Math.PI);
+        //     // }
+        //     this.context.fill();
+        //     this.context.restore();
+        // },
+        // panRight() {
+        //     this.panX = 0;
+        //     this.panY = 0;
+        //     this.panX = this.panX + 50 / this.scale;
+        //     this.redraw();
+        // },
+        // panLeft() {
+        //     this.panX = 0;
+        //     this.panY = 0;
+        //     this.panX = this.panX - 50 / this.scale;
+        //     this.redraw();
+        // },
+        // panUp() {
+        //     this.panX = 0;
+        //     this.panY = 0;
+        //     this.panY = this.panY + 50 / this.scale;
+        //     this.redraw();
+        // },
+        // panDown() {
+        //     this.panX = 0;
+        //     this.panY = 0;
+        //     this.panY = this.panY - 50 / this.scale;
+        //     this.redraw();
+        // },
+        // redraw() {
+        //     // Store the current transformation matrix
+        //     this.context.save();
+
+        //     // Use the identity matrix while clearing the canvas
+        //     this.context.setTransform(1, 0, 0, 1, 0, 0);
+        //     this.context.clearRect(
+        //         0,
+        //         0,
+        //         this.context.canvas.width,
+        //         this.context.canvas.height
+        //     );
+        //     this.context.beginPath();
+
+        //     // Restore the transform
+        //     this.context.restore();
+        //     this.drawTree();
+        // },
+        // zoomOut() {
+        //     // this.scale = this.scale / 2;
+        //     // this.context.scale(0.5, 0.5);
+        //     // this.redraw();
+
+        //     this.scale /= this.scaleMultiplier;
+        //     this.drawTree(this.scale, this.translatePos);
+        // },
+        // zoomIn() {
+        //     // this.scale = this.scale * 2;
+        //     // this.context.scale(2, 2);
+        //     // this.redraw();
+
+        //     this.scale *= this.scaleMultiplier;
+        //     this.drawTree(this.scale, this.translatePos);
+        // }
     }
 };
 </script>
@@ -430,6 +455,7 @@ export default {
     </div> -->
     <!-- <button @click="zoomOut">zoom out</button>
     <button @click="zoomIn">zoom in</button> -->
+    <SkillPanel :skill="skill" />
     <canvas id="canvas" width="1500" height="1500"></canvas>
     <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
     <!-- <div id="skilltree"></div> -->
