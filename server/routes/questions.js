@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    password: 'password',
+    // password: 'password',
     database: 'skill_tree'
 });
 
@@ -124,46 +124,34 @@ router.get('/essay/show/:id', (req, res) => {
 router.put('/mc/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.name = req.body.name.replace(/'/g, "''");
-        req.body.question = req.body.question.replace(/'/g, "''");
-        req.body.correct_answer = req.body.correct_answer.replace(/'/g, "''");
-        req.body.incorrect_answer_1 = req.body.incorrect_answer_1.replace(
-            /'/g,
-            "''"
-        );
-        req.body.incorrect_answer_2 = req.body.incorrect_answer_2.replace(
-            /'/g,
-            "''"
-        );
-        req.body.incorrect_answer_3 = req.body.incorrect_answer_3.replace(
-            /'/g,
-            "''"
-        );
-        req.body.incorrect_answer_4 = req.body.incorrect_answer_4.replace(
-            /'/g,
-            "''"
-        );
-        req.body.explanation = req.body.explanation.replace(/'/g, "''");
+        var name = req.body.name.replace(/'/g, "''");
+        var question = req.body.question.replace(/'/g, "''");
+        var correctAnswer = req.body.correct_answer.replace(/'/g, "''");
+        var incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "''");
+        var incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "''");
+        var incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "''");
+        var incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "''");
+        var explanation = req.body.explanation.replace(/'/g, "''");
 
         // Add data.
         let sqlQuery =
             `UPDATE mc_questions 
         SET name='` +
-            req.body.name +
+            name +
             `', question = '` +
-            req.body.question +
+            question +
             `', correct_answer = '` +
-            req.body.correct_answer +
+            correctAnswer +
             `', incorrect_answer_1 = '` +
-            req.body.incorrect_answer_1 +
+            incorrectAnswer1 +
             `', incorrect_answer_2 = '` +
-            req.body.incorrect_answer_2 +
+            incorrectAnswer2 +
             `', incorrect_answer_3 = '` +
-            req.body.incorrect_answer_3 +
+            incorrectAnswer3 +
             `', incorrect_answer_4 = '` +
-            req.body.incorrect_answer_4 +
+            incorrectAnswer4 +
             `', explanation = '` +
-            req.body.explanation +
+            explanation +
             `' WHERE id = ` +
             req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -185,16 +173,16 @@ router.put('/mc/:id/edit', (req, res, next) => {
 router.put('/essay/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.name = req.body.name.replace(/'/g, "''");
-        req.body.question = req.body.question.replace(/'/g, "''");
+        var name = req.body.name.replace(/'/g, "''");
+        var question = req.body.question.replace(/'/g, "''");
 
         // Add data.
         let sqlQuery =
             `UPDATE essay_questions 
         SET name='` +
-            req.body.name +
+            name +
             `', question = '` +
-            req.body.question +
+            question +
             `' WHERE id = ` +
             req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -252,7 +240,8 @@ router.get('/:skillId/essay', (req, res, next) => {
     }
 });
 
-// Load essay type questions.
+// TODO: find out where this is used, if at all.
+// Load all essay type questions.
 router.get('/essay/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -278,38 +267,26 @@ router.get('/essay/list', (req, res, next) => {
 router.post('/mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.name = req.body.name.replace(/'/g, "''");
-        req.body.question = req.body.question.replace(/'/g, "''");
-        req.body.correct_answer = req.body.correct_answer.replace(/'/g, "''");
-        req.body.incorrect_answer_1 = req.body.incorrect_answer_1.replace(
-            /'/g,
-            "''"
-        );
-        req.body.incorrect_answer_2 = req.body.incorrect_answer_2.replace(
-            /'/g,
-            "''"
-        );
-        req.body.incorrect_answer_3 = req.body.incorrect_answer_3.replace(
-            /'/g,
-            "''"
-        );
-        req.body.incorrect_answer_4 = req.body.incorrect_answer_4.replace(
-            /'/g,
-            "''"
-        );
-        req.body.explanation = req.body.explanation.replace(/'/g, "''");
+        let name = req.body.name.replace(/'/g, "''");
+        let question = req.body.question.replace(/'/g, "''");
+        let correctAnswer = req.body.correct_answer.replace(/'/g, "''");
+        let incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "''");
+        let incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "''");
+        let incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "''");
+        let incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "''");
+        let explanation = req.body.explanation.replace(/'/g, "''");
 
         // Add data.
         let data = {};
         data = {
-            name: req.body.name,
-            question: req.body.question,
-            correct_answer: req.body.correct_answer,
-            incorrect_answer_1: req.body.incorrect_answer_1,
-            incorrect_answer_2: req.body.incorrect_answer_2,
-            incorrect_answer_3: req.body.incorrect_answer_3,
-            incorrect_answer_4: req.body.incorrect_answer_4,
-            explanation: req.body.explanation,
+            name: name,
+            question: question,
+            correct_answer: correctAnswer,
+            incorrect_answer_1: incorrectAnswer1,
+            incorrect_answer_2: incorrectAnswer2,
+            incorrect_answer_3: incorrectAnswer3,
+            incorrect_answer_4: incorrectAnswer4,
+            explanation: explanation,
             skill_id: req.body.skill_id
         };
 
@@ -338,14 +315,14 @@ router.post('/mc-questions/add', (req, res, next) => {
 router.post('/essay-questions/add', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.name = req.body.name.replace(/'/g, "''");
-        req.body.question = req.body.question.replace(/'/g, "''");
+        let name = req.body.name.replace(/'/g, "''");
+        let question = req.body.question.replace(/'/g, "''");
 
         // Add data.
         let data = {};
         data = {
-            name: req.body.name,
-            question: req.body.question,
+            name: name,
+            question: question,
             skill_id: req.body.skill_id
         };
 

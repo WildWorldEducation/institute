@@ -26,6 +26,10 @@ export default {
 
                 // Break individual questions into arrays.
                 for (let i = 0; i < CSVArray.length; i++) {
+                    // Remove any empty lines.
+                    if (CSVArray[i] == '') {
+                        CSVArray.splice(i, 1);
+                    }
                     this.questionsArray[i] = CSVArray[i].split('|');
                 }
             };
