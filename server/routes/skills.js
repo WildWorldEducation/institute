@@ -372,29 +372,38 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
         for (let i = 0; i < req.body.questionArray.length; i++) {
             // Escape single quotes for SQL to accept.
             var name = req.body.questionArray[i].name.replace(/'/g, "''");
+            // Removes spaces from both sides of the string.
+            name = name.trim();
             var question = req.body.questionArray[i].question.replace(
                 /'/g,
                 "''"
             );
+            question = question.trim();
             var correctAnswer = req.body.questionArray[
                 i
             ].correct_answer.replace(/'/g, "''");
+            correctAnswer = correctAnswer.trim();
             var incorrectAnswer1 = req.body.questionArray[
                 i
             ].incorrect_answer_1.replace(/'/g, "''");
+            incorrectAnswer1 = incorrectAnswer1.trim();
             var incorrectAnswer2 = req.body.questionArray[
                 i
             ].incorrect_answer_2.replace(/'/g, "''");
+            incorrectAnswer2 = incorrectAnswer2.trim();
             var incorrectAnswer3 = req.body.questionArray[
                 i
             ].incorrect_answer_3.replace(/'/g, "''");
+            incorrectAnswer3 = incorrectAnswer3.trim();
             var incorrectAnswer4 = req.body.questionArray[
                 i
             ].incorrect_answer_4.replace(/'/g, "''");
+            incorrectAnswer4 = incorrectAnswer4.trim();
             var explanation = req.body.questionArray[i].explanation.replace(
                 /'/g,
                 "''"
             );
+            explanation = explanation.trim();
 
             // Add the questions.
             let data = {};
@@ -439,10 +448,12 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
         for (let i = 0; i < req.body.questionArray.length; i++) {
             // Escape single quotes for SQL to accept.
             var name = req.body.questionArray[i].name.replace(/'/g, "''");
+            name = name.trim();
             var question = req.body.questionArray[i].question.replace(
                 /'/g,
                 "''"
             );
+            question = question.trim();
 
             // Add skill.
             let data = {};
