@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    password: 'password',
+    //  password: 'password',
     database: 'skill_tree'
 });
 
@@ -371,41 +371,42 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
         // For each question.
         for (let i = 0; i < req.body.questionArray.length; i++) {
             // Escape single quotes for SQL to accept.
-            req.body.name = req.body.name.replace(/'/g, "''");
-            req.body.correct_answer = req.body.questionArray[
+            var name = req.body.questionArray[i].name.replace(/'/g, "''");
+            var question = req.body.questionArray[i].question.replace(
+                /'/g,
+                "''"
+            );
+            var correctAnswer = req.body.questionArray[
                 i
             ].correct_answer.replace(/'/g, "''");
-            req.body.incorrect_answer_1 = req.body.questionArray[
+            var incorrectAnswer1 = req.body.questionArray[
                 i
             ].incorrect_answer_1.replace(/'/g, "''");
-            req.body.incorrect_answer_2 = req.body.questionArray[
+            var incorrectAnswer2 = req.body.questionArray[
                 i
             ].incorrect_answer_2.replace(/'/g, "''");
-            req.body.incorrect_answer_3 = req.body.questionArray[
+            var incorrectAnswer3 = req.body.questionArray[
                 i
             ].incorrect_answer_3.replace(/'/g, "''");
-            req.body.incorrect_answer_4 = req.body.questionArray[
+            var incorrectAnswer4 = req.body.questionArray[
                 i
             ].incorrect_answer_4.replace(/'/g, "''");
-            req.body.explanation = req.body.questionArray[
-                i
-            ].explanation.replace(/'/g, "''");
+            var explanation = req.body.questionArray[i].explanation.replace(
+                /'/g,
+                "''"
+            );
 
             // Add the questions.
             let data = {};
             data = {
-                name: req.body.questionArray[i].name,
-                question: req.body.questionArray[i].question,
-                correct_answer: req.body.questionArray[i].correct_answer,
-                incorrect_answer_1:
-                    req.body.questionArray[i].incorrect_answer_1,
-                incorrect_answer_2:
-                    req.body.questionArray[i].incorrect_answer_2,
-                incorrect_answer_3:
-                    req.body.questionArray[i].incorrect_answer_3,
-                incorrect_answer_4:
-                    req.body.questionArray[i].incorrect_answer_4,
-                explanation: req.body.questionArray[i].explanation,
+                name: name,
+                question: question,
+                correct_answer: correctAnswer,
+                incorrect_answer_1: incorrectAnswer1,
+                incorrect_answer_2: incorrectAnswer2,
+                incorrect_answer_3: incorrectAnswer3,
+                incorrect_answer_4: incorrectAnswer4,
+                explanation: explanation,
                 skill_id: req.params.id
             };
             let sqlQuery = 'INSERT INTO mc_questions SET ?';
@@ -437,8 +438,8 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
         // For each question.
         for (let i = 0; i < req.body.questionArray.length; i++) {
             // Escape single quotes for SQL to accept.
-            req.body.name = req.body.questionArray[i].name.replace(/'/g, "''");
-            req.body.question = req.body.questionArray[i].question.replace(
+            var name = req.body.questionArray[i].name.replace(/'/g, "''");
+            var question = req.body.questionArray[i].question.replace(
                 /'/g,
                 "''"
             );
@@ -446,8 +447,8 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
             // Add skill.
             let data = {};
             data = {
-                name: req.body.questionArray[i].name,
-                question: req.body.questionArray[i].question,
+                name: name,
+                question: question,
                 skill_id: req.params.id
             };
             let sqlQuery = 'INSERT INTO essay_questions SET ?';
