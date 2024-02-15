@@ -348,10 +348,11 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
                 incorrect_answer_1: req.body.questionArray[i].incorrect_answer_1,
                 incorrect_answer_2: req.body.questionArray[i].incorrect_answer_2,
                 incorrect_answer_3: req.body.questionArray[i].incorrect_answer_3,
-                incorrect_answer_4: req.body.questionArray[i].incorrect_answer_4,                
+                incorrect_answer_4: req.body.questionArray[i].incorrect_answer_4,
                 explanation: req.body.questionArray[i].explanation,
                 skill_id: req.params.id
             };
+
             let sqlQuery = "INSERT INTO mc_questions SET ?";
             let query = conn.query(sqlQuery, data, (err, results) => {
                 try {
