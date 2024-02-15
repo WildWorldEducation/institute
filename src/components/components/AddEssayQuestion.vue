@@ -28,6 +28,7 @@ export default {
                 // Break individual questions into arrays.
                 for (let i = 0; i < CSVArray.length; i++) {
                     const splitResult = CSVArray[i].split('|');
+                    // check the result length here to make sure we add a meaningful question to database
                     splitResult.length > 1 &&
                         this.questionsArray.push(splitResult);
                 }
@@ -84,6 +85,7 @@ export default {
             this.isDragging = false;
         },
         remove(i) {
+            // remove object in array based on their index
             this.files_essay.splice(i, 1);
         }
     }
