@@ -204,24 +204,6 @@ router.get('/show/:id', (req, res, next) => {
     }
 });
 
-// // Get other skill requirements, if they exist.
-// router.get('/:id/other-skill-requirements', (req, res, next) => {
-//     if (req.session.userName) {
-//         res.setHeader('Content-Type', 'application/json');
-//         let sqlQuery = "SELECT * FROM skill_other_skill_requirements WHERE skill_id = " + req.params.id + ";";
-//         let query = conn.query(sqlQuery, (err, results) => {
-//             try {
-//                 if (err) {
-//                     throw err;
-//                 }
-//                 res.json(results);
-//             } catch (err) {
-//                 next(err)
-//             }
-//         });
-//     }
-// });
-
 /**
  * Edit Item
  *
