@@ -26,7 +26,21 @@ export default {
 
                 // Break individual questions into arrays.
                 for (let i = 0; i < CSVArray.length; i++) {
+                    // Remove any empty lines.
+                    if (CSVArray[i] == '') {
+                        CSVArray.splice(i, 1);
+                    }
+
                     this.questionsArray[i] = CSVArray[i].split('|');
+
+                    // Validation - checking for missing fields.
+                    if (this.questionsArray[i].length != 2) {
+                        alert(
+                            'Please check your CSVs. There are fields missing.'
+                        );
+                        this.questionsArray = [];
+                        return;
+                    }
                 }
             };
             reader.readAsText(file);
@@ -67,7 +81,7 @@ export default {
                     <input
                         class="form-control"
                         type="file"
-                        accept=".csv"
+                        accept=".csv,.txt"
                         id="csvFile"
                         @change="OnFileChange"
                     />

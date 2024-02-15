@@ -31,6 +31,15 @@ export default {
                         CSVArray.splice(i, 1);
                     }
                     this.questionsArray[i] = CSVArray[i].split('|');
+
+                    // Validation - checking for missing fields.
+                    if (this.questionsArray[i].length != 8) {
+                        alert(
+                            'Please check your CSVs. There are fields missing.'
+                        );
+                        this.questionsArray = [];
+                        return;
+                    }
                 }
             };
             reader.readAsText(file);
