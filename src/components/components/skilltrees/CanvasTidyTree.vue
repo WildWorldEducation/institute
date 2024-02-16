@@ -338,7 +338,7 @@ export default {
         showInfoPanel() {
             // If panel is not showing.
             if (!this.isSkillInfoPanelShown) {
-                console.log('test');
+                this.isSkillInfoPanelShown = true;
                 // To display the panel.
                 // Responsive.
                 // Laptop etc.
@@ -351,6 +351,27 @@ export default {
                     document.getElementById('skillInfoPanel').style.height =
                         '474px';
                 }
+            }
+        },
+        hideInfoPanel() {
+            // If panel is showing.
+            if (this.isSkillInfoPanelShown) {
+                // Responsive.
+                // Laptop etc.
+                if (screen.width > 800) {
+                    document.getElementById('skillInfoPanel').style.width =
+                        '0px';
+                }
+                // Mobile device.
+                else {
+                    document.getElementById('skillInfoPanel').style.height =
+                        '0px';
+                }
+                // Hide the background.
+                document.getElementById('sidepanel-backdrop').style.display =
+                    'none';
+
+                this.isSkillInfoPanelShown = false;
             }
         }
         // zoomed(transform) {
