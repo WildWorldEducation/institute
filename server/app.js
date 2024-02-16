@@ -173,8 +173,10 @@ app.get('/login-status', (req, res) => {
 app.post('/login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Escape single quotes for SQL to accept.
-    req.body.username = req.body.username.replace(/'/g, "''");
-    req.body.password = req.body.password.replace(/'/g, "''");
+    if (req.body.username != null)
+        req.body.username = req.body.username.replace(/'/g, "''");
+    if (req.body.password != null)
+        req.body.password = req.body.password.replace(/'/g, "''");
 
     // Execute SQL query that'll select the account from the database based on the specified username and password.
     let sqlQuery1 =

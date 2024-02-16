@@ -63,8 +63,10 @@ router.get('/list', (req, res, next) => {
 router.put('/edit', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.notification1 = req.body.notification1.replace(/'/g, "''");
-        req.body.notification2 = req.body.notification2.replace(/'/g, "''");
+        if (req.body.notification1 != null)
+            req.body.notification1 = req.body.notification1.replace(/'/g, "''");
+        if (req.body.notification2 != null)
+            req.body.notification2 = req.body.notification2.replace(/'/g, "''");
 
         // Add data.
         let sqlQuery =
