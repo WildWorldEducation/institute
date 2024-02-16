@@ -80,12 +80,12 @@ export default {
         this.getAlgorithm();
 
         // Pan and zoom.
-        // d3.select(this.context.canvas).call(
-        //     d3
-        //         .zoom()
-        //         .scaleExtent([0.2, 8])
-        //         .on('zoom', ({ transform }) => this.zoomed(transform))
-        // );
+        d3.select(this.context.canvas).call(
+            d3
+                .zoom()
+                .scaleExtent([0.2, 8])
+                .on('zoom', ({ transform }) => this.zoomed(transform))
+        );
 
         // Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
@@ -128,6 +128,7 @@ export default {
                 //   lastClicked.updateDisplay();
                 //  animateHidden.updateDisplay();
                 //  console.log('Clicked on node with index:', node.index, node);
+                this.skill.name = node.data.skill_name;
                 this.showInfoPanel();
             }
         });
@@ -337,9 +338,7 @@ export default {
         },
         showInfoPanel() {
             // If panel is not showing.
-            console.log(this.isSkillInfoPanelShown);
             if (!this.isSkillInfoPanelShown) {
-                console.log('test');
                 this.isSkillInfoPanelShown = true;
                 // To display the panel.
                 // Responsive.
@@ -375,36 +374,40 @@ export default {
 
                 this.isSkillInfoPanelShown = false;
             }
+        },
+        zoomed(transform) {
+            // For the regular canvas.
+            this.context.save();
+            this.context.clearRect(
+                0,
+                0,
+                this.context.canvas.width,
+                this.context.canvas.height
+            );
+            this.context.translate(transform.x, transform.y);
+            this.context.scale(transform.k, transform.k);
+
+            this.drawTree(false);
+
+            this.context.fill();
+            this.context.restore();
+
+            // For the hidden canvas.
+            this.hiddenCanvasContext.save();
+            this.hiddenCanvasContext.clearRect(
+                0,
+                0,
+                this.hiddenCanvasContext.canvas.width,
+                this.hiddenCanvasContext.canvas.height
+            );
+            this.hiddenCanvasContext.translate(transform.x, transform.y);
+            this.hiddenCanvasContext.scale(transform.k, transform.k);
+
+            this.drawTree(true);
+
+            this.hiddenCanvasContext.fill();
+            this.hiddenCanvasContext.restore();
         }
-        // zoomed(transform) {
-        //     this.context.save();
-        //     this.context.clearRect(
-        //         0,
-        //         0,
-        //         this.context.canvas.width,
-        //         this.context.canvas.height
-        //     );
-        //     this.context.translate(transform.x, transform.y);
-        //     this.context.scale(transform.k, transform.k);
-        //     this.context.beginPath();
-
-        //     const links = this.root.links();
-        //     const nodes = this.root.descendants();
-
-        //     this.drawTree();
-
-        //     for (let i = 0; i < nodes.length; i++) {
-        //         this.context.moveTo(i.x + this.r, i.y);
-        //         this.context.arc(i.x, i.y, this.r, 0, 2 * Math.PI);
-        //     }
-
-        //     // for (const [x, y] of data) {
-        //     //     this.context.moveTo(x + this.r, y);
-        //     //     this.context.arc(x, y, this.r, 0, 2 * Math.PI);
-        //     // }
-        //     this.context.fill();
-        //     this.context.restore();
-        // },
         // panRight() {
         //     this.panX = 0;
         //     this.panY = 0;

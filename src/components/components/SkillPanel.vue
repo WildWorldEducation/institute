@@ -44,7 +44,6 @@ export default {
         </div>
         <div id="skillInfoPanelContainer">
             <h1>{{ skill?.name }}</h1>
-            <p>{{ skill?.description }}</p>
             <div class="form-check">
                 <!-- 'pointer-events: none' to make checkbox unclickable, without it being greyed out (disabled). -->
                 <input
@@ -81,9 +80,9 @@ export default {
                     />
                 </svg>
             </router-link>
-            <button id="recenterTree" class="btn btn-primary mt-3">
+            <!-- <button id="recenterTree" class="btn btn-primary mt-3">
                 Recenter
-            </button>
+            </button> -->
             <!-- Image: character with a sign. -->
             <img src="/images/char-with-sign.svg" />
         </div>
