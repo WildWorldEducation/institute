@@ -41,7 +41,8 @@ conn.connect((err) => {
 router.post('/add/:skillId', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.editordata = req.body.editordata.replace(/'/g, "''");
+        if (req.body.editordata != null)
+            req.body.editordata = req.body.editordata.replace(/'/g, "''");
 
         // Add data.
         let data = {
@@ -119,7 +120,8 @@ router.delete('/delete/:resourceId', (req, res, next) => {
 router.put('/edit/:id', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.editordata = req.body.editordata.replace(/'/g, "''");
+        if (req.body.editordata != null)
+            req.body.editordata = req.body.editordata.replace(/'/g, "''");
 
         //Extra backend security check that the user is allowed to edit the post.
         var postUserId;

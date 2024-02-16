@@ -83,7 +83,8 @@ router.get('/list/:assessmentId', (req, res, next) => {
 router.post('/add/:assessmentId', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.answer = req.body.answer.replace(/'/g, "''");
+        if (req.body.answer != null)
+            req.body.answer = req.body.answer.replace(/'/g, "''");
 
         // Add data..
         let data = {};

@@ -32,7 +32,6 @@ conn.connect((err) => {
 
 // Sum of votes per skill.
 router.get('/:id', (req, res, next) => {
-    // var session = req.session;
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 

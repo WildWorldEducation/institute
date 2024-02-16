@@ -38,12 +38,13 @@ conn.connect((err) => {
 router.post('/add', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.name = req.body.name.replace(/'/g, "''");
-        req.body.description = req.body.description.replace(/'/g, "''");
-        req.body.mastery_requirements = req.body.mastery_requirements.replace(
-            /'/g,
-            "''"
-        );
+        if (req.body.name != null)
+            req.body.name = req.body.name.replace(/'/g, "''");
+        if (req.body.description != null)
+            req.body.description = req.body.description.replace(/'/g, "''");
+        if (req.body.mastery_requirements != null)
+            req.body.mastery_requirements =
+                req.body.mastery_requirements.replace(/'/g, "''");
         // Add the skill.
         let data = {};
         data = {
@@ -212,12 +213,13 @@ router.get('/show/:id', (req, res, next) => {
 router.put('/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
-        req.body.name = req.body.name.replace(/'/g, "''");
-        req.body.description = req.body.description.replace(/'/g, "''");
-        req.body.mastery_requirements = req.body.mastery_requirements.replace(
-            /'/g,
-            "''"
-        );
+        if (req.body.name != null)
+            req.body.name = req.body.name.replace(/'/g, "''");
+        if (req.body.description != null)
+            req.body.description = req.body.description.replace(/'/g, "''");
+        if (req.body.mastery_requirements != null)
+            req.body.mastery_requirements =
+                req.body.mastery_requirements.replace(/'/g, "''");
         var sqlQuery;
         sqlQuery =
             `UPDATE skills SET name = '` +
@@ -352,40 +354,72 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
         // For each question.
         for (let i = 0; i < req.body.questionArray.length; i++) {
+            let name;
+            let question;
+            let correctAnswer;
+            let incorrectAnswer1;
+            let incorrectAnswer2;
+            let incorrectAnswer3;
+            let incorrectAnswer4;
+            let explanation;
+
             // Escape single quotes for SQL to accept.
-            var name = req.body.questionArray[i].name.replace(/'/g, "''");
-            // Removes spaces from both sides of the string.
-            name = name.trim();
-            var question = req.body.questionArray[i].question.replace(
-                /'/g,
-                "''"
-            );
-            question = question.trim();
-            var correctAnswer = req.body.questionArray[
-                i
-            ].correct_answer.replace(/'/g, "''");
-            correctAnswer = correctAnswer.trim();
-            var incorrectAnswer1 = req.body.questionArray[
-                i
-            ].incorrect_answer_1.replace(/'/g, "''");
-            incorrectAnswer1 = incorrectAnswer1.trim();
-            var incorrectAnswer2 = req.body.questionArray[
-                i
-            ].incorrect_answer_2.replace(/'/g, "''");
-            incorrectAnswer2 = incorrectAnswer2.trim();
-            var incorrectAnswer3 = req.body.questionArray[
-                i
-            ].incorrect_answer_3.replace(/'/g, "''");
-            incorrectAnswer3 = incorrectAnswer3.trim();
-            var incorrectAnswer4 = req.body.questionArray[
-                i
-            ].incorrect_answer_4.replace(/'/g, "''");
-            incorrectAnswer4 = incorrectAnswer4.trim();
-            var explanation = req.body.questionArray[i].explanation.replace(
-                /'/g,
-                "''"
-            );
-            explanation = explanation.trim();
+            if (req.body.questionArray[i].name != null) {
+                name = req.body.questionArray[i].name.replace(/'/g, "''");
+                // Removes spaces from both sides of the string.
+                name = name.trim();
+            }
+
+            if (req.body.questionArray[i].question != null) {
+                question = req.body.questionArray[i].question.replace(
+                    /'/g,
+                    "''"
+                );
+                question = question.trim();
+            }
+
+            if (req.body.questionArray[i].correct_answer != null) {
+                correctAnswer = req.body.questionArray[
+                    i
+                ].correct_answer.replace(/'/g, "''");
+                correctAnswer = correctAnswer.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_1 != null) {
+                incorrectAnswer1 = req.body.questionArray[
+                    i
+                ].incorrect_answer_1.replace(/'/g, "''");
+                incorrectAnswer1 = incorrectAnswer1.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_2 != null) {
+                incorrectAnswer2 = req.body.questionArray[
+                    i
+                ].incorrect_answer_2.replace(/'/g, "''");
+                incorrectAnswer2 = incorrectAnswer2.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_3 != null) {
+                incorrectAnswer3 = req.body.questionArray[
+                    i
+                ].incorrect_answer_3.replace(/'/g, "''");
+                incorrectAnswer3 = incorrectAnswer3.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_4 != null) {
+                incorrectAnswer4 = req.body.questionArray[
+                    i
+                ].incorrect_answer_4.replace(/'/g, "''");
+                incorrectAnswer4 = incorrectAnswer4.trim();
+            }
+
+            if (req.body.questionArray[i].explanation != null) {
+                explanation = req.body.questionArray[i].explanation.replace(
+                    /'/g,
+                    "''"
+                );
+                explanation = explanation.trim();
+            }
 
             // Add the questions.
             let data = {};
@@ -428,14 +462,22 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
     if (req.session.userName) {
         // For each question.
         for (let i = 0; i < req.body.questionArray.length; i++) {
+            let name;
+            let question;
+
             // Escape single quotes for SQL to accept.
-            var name = req.body.questionArray[i].name.replace(/'/g, "''");
-            name = name.trim();
-            var question = req.body.questionArray[i].question.replace(
-                /'/g,
-                "''"
-            );
-            question = question.trim();
+            if (req.body.questionArray[i].name != null) {
+                name = req.body.questionArray[i].name.replace(/'/g, "''");
+                name = name.trim();
+            }
+
+            if (req.body.questionArray[i].question != null) {
+                question = req.body.questionArray[i].question.replace(
+                    /'/g,
+                    "''"
+                );
+                question = question.trim();
+            }
 
             // Add skill.
             let data = {};
