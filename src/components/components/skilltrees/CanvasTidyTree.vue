@@ -52,7 +52,8 @@ export default {
             nodes: [],
             nextCol: 1,
             colToNode: {},
-            isSkillInfoPanelShown: false
+            isSkillInfoPanelShown: false,
+            firstRender: true
         };
     },
     components: {
@@ -239,14 +240,9 @@ export default {
             canvas.height = this.height;
             this.context = canvas.getContext('2d');
 
-            // console.log(this.tree);
-            // console.log(root.links());
-
             this.drawTree(false);
         },
         drawTree(hidden) {
-            //  this.context.clearRect(0, 0, this.width, this.height);
-
             this.nodes = this.root.descendants();
 
             if (!hidden) {
@@ -298,26 +294,39 @@ export default {
                 ctx = this.context;
             }
             ctx.beginPath();
-            ctx.moveTo(node.y, node.x + 500);
-            ctx.arc(node.y, node.x + 500, 10, 0, 2 * Math.PI);
+            ctx.moveTo(node.y, node.x);
+            ctx.arc(node.y, node.x, 10, 0, 2 * Math.PI);
             if (!hidden) ctx.fillStyle = '#000';
             ctx.fill();
 
             ctx.beginPath();
             ctx.strokeStyle = '#FFF';
             ctx.lineWidth = 4;
-            ctx.strokeText(node.data.skill_name, node.y + 10, node.x + 502);
+            ctx.strokeText(node.data.skill_name, node.y + 10, node.x + 2);
             ctx.fillStyle = '#000';
-            ctx.fillText(node.data.skill_name, node.y + 10, node.x + 502);
+            ctx.fillText(node.data.skill_name, node.y + 10, node.x + 2);
         },
         drawLink(link) {
             const linkGenerator = d3
                 .linkHorizontal()
                 .x((d) => d.y)
-                .y((d) => d.x + 500)
+                .y((d) => d.x)
                 .context(this.context);
 
-            this.context.lineWidth = 1;
+            // If skill is mastered.
+            if (link.target.data.is_mastered == 1) this.context.lineWidth = 4;
+            else this.context.lineWidth = 1;
+
+            if (
+                (link.source.data.type == 'super' &&
+                    link.target.data.position == 'end') ||
+                link.target.data.type == 'sub'
+            ) {
+                this.context.setLineDash([5, 3]);
+            } else {
+                this.context.setLineDash([]);
+            }
+
             this.context.beginPath();
             linkGenerator(link);
             this.context.strokeStyle = '#000';
