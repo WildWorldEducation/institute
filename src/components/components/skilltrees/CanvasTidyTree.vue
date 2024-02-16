@@ -110,7 +110,7 @@ export default {
             // This will return that pixel's color
             var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
             //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
-            console.log(col);
+            // console.log(col);
             //Our map uses these rgb strings as keys to nodes.
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
@@ -127,7 +127,7 @@ export default {
                 //  controls.lastClickedIndex = node.index;
                 //   lastClicked.updateDisplay();
                 //  animateHidden.updateDisplay();
-                console.log('Clicked on node with index:', node.index, node);
+                //  console.log('Clicked on node with index:', node.index, node);
                 this.showInfoPanel();
             }
         });
@@ -337,7 +337,9 @@ export default {
         },
         showInfoPanel() {
             // If panel is not showing.
+            console.log(this.isSkillInfoPanelShown);
             if (!this.isSkillInfoPanelShown) {
+                console.log('test');
                 this.isSkillInfoPanelShown = true;
                 // To display the panel.
                 // Responsive.
@@ -476,10 +478,12 @@ export default {
     </div> -->
     <!-- <button @click="zoomOut">zoom out</button>
     <button @click="zoomIn">zoom in</button> -->
-    <SkillPanel :skill="skill" />
-    <canvas id="canvas" width="1500" height="1500"></canvas>
-    <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
-    <!-- <div id="skilltree"></div> -->
+    <div id="wrapper">
+        <SkillPanel :skill="skill" />
+        <canvas id="canvas" width="1500" height="1500"></canvas>
+        <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
+        <div id="sidepanel-backdrop"></div>
+    </div>
 </template>
 
 <style scoped>
