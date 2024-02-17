@@ -298,7 +298,7 @@ export default {
         <div id="resource-hr">
             <hr class="border border-1 opacity-100" />
         </div>
-        <div class="row mt-3 mb-3">
+        <div v-if="skill.type != 'domain'" class="row mt-3 mb-3">
             <Forum />
         </div>
         <p>&nbsp;</p>
