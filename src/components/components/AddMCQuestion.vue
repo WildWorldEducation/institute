@@ -114,7 +114,7 @@ export default {
     <div class="container mt-3">
         <h1>Add Multiple Choice Question</h1>
         <!-- Drop down zone for csv file input-->
-        <div class="row mt-5 pe-3 pe-lg-0">
+        <div class="row mt-5">
             <div
                 class="dropzone-container mx-lg-3 my-2"
                 @dragover="dragover"
@@ -379,11 +379,9 @@ export default {
         border: 1px solid #e2e8f0;
         border: 2px dashed;
         border-color: #9e9e9e;
-        margin-left: 10px;
-        margin-right: 10px;
     }
     .file-label {
-        font-size: 14px;
+        font-size: 12px;
         display: block;
         cursor: pointer;
     }

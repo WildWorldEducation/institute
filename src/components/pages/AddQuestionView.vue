@@ -10,17 +10,19 @@ import AddEssayQuestion from '../components/AddEssayQuestion.vue';
             class="image-fluid"
         />
     </div>
-    <AddMCQuestion />
+    <div class="container-fluid">
+        <AddMCQuestion />
 
-    <br class="mt-3" />
-    <div class="container mt-3">
-        <hr id="divide-line" class="border border-1 opacity-75" />
-    </div>
-    <br />
-    <AddEssayQuestion />
-    <div class="container mt-3 pb-3 pe-0">
-        <div class="d-flex flex-row-reverse pe-0 me-lg-0 me-2">
-            <a class="btn red-btn" @click="$router.go(-1)">Cancel</a>
+        <br class="mt-3" />
+        <div class="container mt-3">
+            <hr id="divide-line" class="border border-1 opacity-75" />
+        </div>
+        <br />
+        <AddEssayQuestion />
+        <div class="container mt-3 pb-3 pe-0">
+            <div class="d-flex flex-row-reverse pe-0 me-lg-0 me-2">
+                <a class="btn red-btn" @click="$router.go(-1)">Cancel</a>
+            </div>
         </div>
     </div>
 </template>
