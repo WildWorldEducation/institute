@@ -76,7 +76,6 @@ export default {
             // Check if user add a file with name already in files
             // Get the list of file name for checking duplicate below
             const filesName = this.files.map((file) => file.name);
-            console.log(filesName);
             // We use filter to get the duplicates item for validate purpose
             this.duplicates = filesName.filter(
                 /**
@@ -87,7 +86,6 @@ export default {
                  */
                 (item, index) => filesName.indexOf(item) !== index
             );
-            console.log(this.duplicates);
         },
         dragover(e) {
             // have to prevent default in other to
@@ -107,8 +105,6 @@ export default {
             this.files.splice(i, 1);
             // we remove in the duplicate array too to update the validate warning
             this.duplicates = this.duplicates.filter((file) => file !== name);
-            console.log(this.duplicates);
-            console.log(name);
         }
     }
 };
@@ -209,7 +205,7 @@ export default {
                     <div
                         v-for="file in files"
                         :key="file.name"
-                        class="preview-card col-10"
+                        class="preview-card col-10 d-flex justify-content-between"
                     >
                         <div>
                             <svg
@@ -231,7 +227,7 @@ export default {
                         <div>
                             <button
                                 class="btn btn-danger"
-                                @click="remove(files.indexOf(file))"
+                                @click="remove(files.indexOf(file), file.name)"
                                 title="Remove file"
                             >
                                 <svg
@@ -247,6 +243,14 @@ export default {
                                 </svg>
                             </button>
                         </div>
+                    </div>
+                    <!-- Warning for duplicate file -->
+                    <div class="validate-line mt-3" v-if="duplicates.length">
+                        You have add duplicate csv files. Please remove the
+                        duplicate file for
+                        <span v-for="file in duplicates" :key="file.name"
+                            >{{ file }}, &ThinSpace;
+                        </span>
                     </div>
                 </div>
             </div>

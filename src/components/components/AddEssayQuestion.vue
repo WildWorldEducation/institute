@@ -7,7 +7,9 @@ export default {
             questionsArray: [],
             // flag state for dropdown zone
             isDragging: false,
-            files_essay: []
+            files_essay: [],
+            // validate flag for same file name in drag and drop
+            duplicates: []
         };
     },
     async created() {},
@@ -69,6 +71,19 @@ export default {
         // --- ++ Drag and drop file relate feature ++ --- //
         onChange() {
             this.files_essay.push(...this.$refs.file_essay.files);
+            // Check if user add a file with name already in files
+            // Get the list of file name for checking duplicate below
+            const filesName = this.files_essay.map((file) => file.name);
+            // We use filter to get the duplicates item for validate purpose
+            this.duplicates = filesName.filter(
+                /**
+                 * - because index of will always return the first item that fit it arg So if
+                 * the index of currently item not equal to the result of index of that mean there are another
+                 * item that match indexof result => these two are the same and therefore array have duplicate
+                 *
+                 */
+                (item, index) => filesName.indexOf(item) !== index
+            );
         },
         dragover(e) {
             // have to prevent default in other to
@@ -84,9 +99,12 @@ export default {
             this.onChange();
             this.isDragging = false;
         },
-        remove(i) {
+        remove(i, name) {
             // remove object in array based on their index
             this.files_essay.splice(i, 1);
+            // we remove in the duplicate array too to update the validate warning
+            this.duplicates = this.duplicates.filter((file) => file !== name);
+            console.log(this.duplicates);
         }
     }
 };
@@ -131,7 +149,7 @@ export default {
                     <div
                         v-for="file in files_essay"
                         :key="file.name"
-                        class="preview-card col-3"
+                        class="preview-card col-3 d-flex justify-content-between"
                     >
                         <div>
                             <svg
@@ -153,7 +171,9 @@ export default {
                         <div>
                             <button
                                 class="ms-2 btn btn-danger"
-                                @click="remove(files_essay.indexOf(file))"
+                                @click="
+                                    remove(files_essay.indexOf(file), file.name)
+                                "
                                 title="Remove file"
                             >
                                 <svg
@@ -170,6 +190,14 @@ export default {
                             </button>
                         </div>
                     </div>
+                    <!-- Warning for duplicate file -->
+                    <div class="validate-line mt-3" v-if="duplicates.length">
+                        You have add duplicate csv files. Please remove the
+                        duplicate file for
+                        <span v-for="file in duplicates" :key="file.name"
+                            >{{ file }}, &ThinSpace;
+                        </span>
+                    </div>
                 </div>
                 <!-- Phone view  -->
                 <div
@@ -179,7 +207,7 @@ export default {
                     <div
                         v-for="file in files_essay"
                         :key="file.name"
-                        class="preview-card col-10"
+                        class="preview-card col-10 d-flex justify-content-between"
                     >
                         <div>
                             <svg
@@ -201,7 +229,9 @@ export default {
                         <div>
                             <button
                                 class="ms-2 btn btn-danger"
-                                @click="remove(files_essay.indexOf(file))"
+                                @click="
+                                    remove(files_essay.indexOf(file), file.name)
+                                "
                                 title="Remove file"
                             >
                                 <svg
@@ -217,6 +247,14 @@ export default {
                                 </svg>
                             </button>
                         </div>
+                    </div>
+                    <!-- Warning for duplicate file -->
+                    <div class="validate-line mt-3" v-if="duplicates.length">
+                        You have add duplicate csv files. Please remove the
+                        duplicate file for
+                        <span v-for="file in duplicates" :key="file.name"
+                            >{{ file }}, &ThinSpace;
+                        </span>
                     </div>
                 </div>
             </div>
@@ -287,6 +325,12 @@ export default {
 .purple-btn:hover {
     background-color: #9c7eec;
     color: white !important;
+}
+
+.validate-line {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
 }
 
 /** Drop Zone Styling */

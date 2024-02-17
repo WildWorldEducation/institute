@@ -19,7 +19,7 @@ import AddEssayQuestion from '../components/AddEssayQuestion.vue';
     <br />
     <AddEssayQuestion />
     <div class="container mt-3 pb-3 pe-0">
-        <div class="d-flex flex-row-reverse pe-0 me-0">
+        <div class="d-flex flex-row-reverse pe-0 me-lg-0 me-2">
             <a class="btn red-btn" @click="$router.go(-1)">Cancel</a>
         </div>
     </div>
