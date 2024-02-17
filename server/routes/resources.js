@@ -74,6 +74,7 @@ router.post('/add/:skillId', (req, res, next) => {
  */
 router.delete('/delete/:resourceId', (req, res, next) => {
     if (req.session.userName) {
+        // Check if the user has the right to delete the learning resource.
         var postUserId;
         let sqlQuery1 =
             'SELECT user_id FROM resources WHERE id=' + req.params.resourceId;
@@ -88,9 +89,9 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                         req.session.role == 'admin'
                     ) {
                         // Delete the post.
-
-                        console.log('---');
-                        console.log(sqlQuery2);
+                        let sqlQuery2 =
+                            'DELETE FROM resources WHERE id=' +
+                            req.params.resourceId;
                         let query2 = conn.query(sqlQuery2, (err, results) => {
                             try {
                                 if (err) {
