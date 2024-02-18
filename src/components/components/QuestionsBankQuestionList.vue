@@ -85,6 +85,7 @@ export default {
                                 :to="'/mc-questions/edit/' + question.id"
                                 class="btn purple-btn p-2"
                                 role="button"
+                                :title="'Edit ' + question.name"
                                 ><svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 512 512"
@@ -103,6 +104,7 @@ export default {
                                 type="button"
                                 @click="deleteMCQuestion(question.id)"
                                 class="btn btn red-btn p-2"
+                                :title="'Delete ' + question.name"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -137,6 +139,7 @@ export default {
                                 :to="'/essay-questions/edit/' + question.id"
                                 class="btn purple-btn p-2"
                                 role="button"
+                                :title="'Edit ' + question.name"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -156,6 +159,7 @@ export default {
                                 type="button"
                                 @click="deleteEssayQuestion(question.id)"
                                 class="btn red-btn p-2"
+                                :title="'Delete ' + question.name"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
