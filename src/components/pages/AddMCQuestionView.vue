@@ -33,6 +33,8 @@ export default {
     },
     methods: {
         Submit() {
+            // Reset the validate flag before re-checking
+            this.validate.validated = false;
             // Check data before fetching
             if (this.question.name === '' || this.question.name === null) {
                 this.validate.name = true;
