@@ -64,7 +64,10 @@ export default {
 <template>
     <div class="container-fluid">
         <div class="row">
-            <div id="multiple-choice-column" class="col-md-6 pe-0 pe-lg-4">
+            <div
+                id="multiple-choice-column"
+                class="col-12 col-md-10 col-lg-6 ps-0 pe-0 pe-lg-4"
+            >
                 <h2 class="question-type">Multiple Choice</h2>
                 <table
                     v-if="isMultipleChoice"
@@ -117,7 +120,9 @@ export default {
                     </tr>
                 </table>
             </div>
-            <div class="col-md-6 ps-0 ps-lg-4">
+            <div
+                class="col-12 col-md-10 col-lg-6 ps-0 pe-0 ps-lg-4 mt-4 mt-lg-0"
+            >
                 <h2 class="question-type">Essay</h2>
                 <table v-if="isEssay" class="skilltree-table table-bordered">
                     <tr v-for="question in essayQuestions">
