@@ -37,7 +37,6 @@ export default {
             if (this.question.name === '' || this.question.name === null) {
                 this.validate.name = true;
                 this.validate.validated = true;
-                alert('No Name');
             }
 
             if (
@@ -46,7 +45,6 @@ export default {
             ) {
                 this.validate.question = true;
                 this.validate.validated = true;
-                alert('No Question');
             }
 
             if (
@@ -55,7 +53,6 @@ export default {
             ) {
                 this.validate.correctAnswer = true;
                 this.validate.validated = true;
-                alert('No Correct Answer');
             }
 
             if (
@@ -64,7 +61,6 @@ export default {
             ) {
                 this.validate.incorrectAnswer1 = true;
                 this.validate.validated = true;
-                alert('No incorrectAnswer1');
             }
 
             if (
@@ -73,7 +69,6 @@ export default {
             ) {
                 this.validate.incorrectAnswer2 = true;
                 this.validate.validated = true;
-                alert('No incorrectAnswer2');
             }
 
             if (
@@ -82,7 +77,6 @@ export default {
             ) {
                 this.validate.incorrectAnswer3 = true;
                 this.validate.validated = true;
-                alert('No incorrectAnswer3');
             }
 
             if (
@@ -91,7 +85,6 @@ export default {
             ) {
                 this.validate.incorrectAnswer4 = true;
                 this.validate.validated = true;
-                alert('No incorrectAnswer4');
             }
 
             if (
@@ -100,10 +93,9 @@ export default {
             ) {
                 this.validate.explanation = true;
                 this.validate.validated = true;
-                alert('No explanation');
             }
 
-            if (validate.validated) {
+            if (this.validate.validated) {
                 return;
             }
 
