@@ -87,33 +87,31 @@ export default {
         </div>
         <!-- question type checker row -->
         <div class="row mt-5 pt-3 pb-3">
-            <div class="col row">
-                <div class="col">
-                    <label class="control control-checkbox">
-                        <span class="my-auto mx-2 me-4">Multiple Choice</span>
-                        <input
-                            type="checkbox"
-                            name="nodeType"
-                            id="regularSkillRadio"
-                            value="regular"
-                            v-model="isMultipleChoice"
-                        />
-                        <div class="control_indicator"></div>
-                    </label>
-                </div>
-                <div class="col">
-                    <label class="control control-checkbox">
-                        <span class="my-auto mx-2">Essay</span>
-                        <input
-                            type="checkbox"
-                            name="nodeType"
-                            id="superSkillRadio"
-                            value="super"
-                            v-model="isEssay"
-                        />
-                        <div class="control_indicator"></div>
-                    </label>
-                </div>
+            <div class="col-6">
+                <label class="control control-checkbox">
+                    <span class="my-auto mx-2 me-4">Multiple Choice</span>
+                    <input
+                        type="checkbox"
+                        name="nodeType"
+                        id="regularSkillRadio"
+                        value="regular"
+                        v-model="isMultipleChoice"
+                    />
+                    <div class="control_indicator"></div>
+                </label>
+            </div>
+            <div class="col-6 ps-0 ps-lg-4">
+                <label class="control control-checkbox">
+                    <span class="my-auto mx-2">Essay</span>
+                    <input
+                        type="checkbox"
+                        name="nodeType"
+                        id="superSkillRadio"
+                        value="super"
+                        v-model="isEssay"
+                    />
+                    <div class="control_indicator"></div>
+                </label>
             </div>
         </div>
         <!-- Question content row -->
