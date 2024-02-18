@@ -156,6 +156,16 @@ export default {
     align-items: center;
 }
 
+.purple-btn:hover {
+    background-color: #a48be6;
+    color: white;
+}
+
+.purple-btn:focus {
+    background-color: #a48be6;
+    color: white;
+}
+
 #header-tile {
     color: #667085;
     font-family: 'Poppins' sans-serif;
