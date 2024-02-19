@@ -163,7 +163,7 @@ export default {
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(data);
-            const dx = 24;
+            const dx = 35;
             const dy = width / (this.root.height + 1);
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -188,7 +188,7 @@ export default {
             const nodeGraphic = new PIXI.Graphics();
             nodeGraphic.lineStyle(0);
             nodeGraphic.beginFill(0x000, 1);
-            nodeGraphic.drawCircle(node.y, node.x, 10);
+            nodeGraphic.drawCircle(node.y, node.x, 15);
             nodeGraphic.endFill();
             this.$pixiApp.stage.children[0].addChild(nodeGraphic);
 
