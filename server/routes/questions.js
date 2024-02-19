@@ -381,4 +381,111 @@ router.post('/essay-questions/add', (req, res, next) => {
     }
 });
 
+/**
+ * Create New MC Question Manually (not from CSV.)
+ *
+ * @return response()
+ */
+router.post('/mc-questions/bulk-add', (req, res, next) => {
+    if (req.session.userName) {
+        // For each question.
+        for (let i = 0; i < req.body.questionArray.length; i++) {
+            let name;
+            let question;
+            let correctAnswer;
+            let incorrectAnswer1;
+            let incorrectAnswer2;
+            let incorrectAnswer3;
+            let incorrectAnswer4;
+            let explanation;
+
+            // Escape single quotes for SQL to accept.
+            if (req.body.questionArray[i].name != null) {
+                name = req.body.questionArray[i].name.replace(/'/g, "''");
+                // Removes spaces from both sides of the string.
+                name = name.trim();
+            }
+
+            if (req.body.questionArray[i].question != null) {
+                question = req.body.questionArray[i].question.replace(
+                    /'/g,
+                    "''"
+                );
+                question = question.trim();
+            }
+
+            if (req.body.questionArray[i].correct_answer != null) {
+                correctAnswer = req.body.questionArray[
+                    i
+                ].correct_answer.replace(/'/g, "''");
+                correctAnswer = correctAnswer.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_1 != null) {
+                incorrectAnswer1 = req.body.questionArray[
+                    i
+                ].incorrect_answer_1.replace(/'/g, "''");
+                incorrectAnswer1 = incorrectAnswer1.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_2 != null) {
+                incorrectAnswer2 = req.body.questionArray[
+                    i
+                ].incorrect_answer_2.replace(/'/g, "''");
+                incorrectAnswer2 = incorrectAnswer2.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_3 != null) {
+                incorrectAnswer3 = req.body.questionArray[
+                    i
+                ].incorrect_answer_3.replace(/'/g, "''");
+                incorrectAnswer3 = incorrectAnswer3.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_4 != null) {
+                incorrectAnswer4 = req.body.questionArray[
+                    i
+                ].incorrect_answer_4.replace(/'/g, "''");
+                incorrectAnswer4 = incorrectAnswer4.trim();
+            }
+
+            if (req.body.questionArray[i].explanation != null) {
+                explanation = req.body.questionArray[i].explanation.replace(
+                    /'/g,
+                    "''"
+                );
+                explanation = explanation.trim();
+            }
+
+            // Add the questions.
+            let data = {};
+            data = {
+                name: name,
+                question: question,
+                correct_answer: correctAnswer,
+                incorrect_answer_1: incorrectAnswer1,
+                incorrect_answer_2: incorrectAnswer2,
+                incorrect_answer_3: incorrectAnswer3,
+                incorrect_answer_4: incorrectAnswer4,
+                explanation: explanation,
+                skill_id: req.body.questionArray[i].skillId
+            };
+            let sqlQuery = `INSERT INTO mc_questions SET ?`;
+            let query = conn.query(sqlQuery, data, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    } else {
+                        res.end();
+                    }
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    } else {
+        res.redirect('/login');
+    }
+});
+
 module.exports = router;
