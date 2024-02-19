@@ -34,7 +34,7 @@ export default {
             // Select showing flag
             showDropDown: false,
             showRoleDropDown: false,
-            // Validate Object flag
+            // Validate Object
             validate: {
                 first_name: false,
                 last_name: false,

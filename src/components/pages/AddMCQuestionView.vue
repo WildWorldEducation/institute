@@ -98,7 +98,7 @@ export default {
             }
 
             if (this.validate.validated) {
-                return;
+                return; // stop the submit operation if there something violated validate condition
             }
 
             const requestOptions = {
@@ -167,11 +167,12 @@ export default {
                         <label for="last_name" class="form-label"
                             >Question</label
                         >
-                        <input
+                        <textarea
                             v-model="question.question"
-                            type="text"
+                            rows="1"
                             class="form-control"
-                        />
+                        >
+                        </textarea>
                         <div
                             v-if="
                                 validate.question &&
