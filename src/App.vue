@@ -89,6 +89,14 @@ export default {
                                 >Canvas Tidy Tree</RouterLink
                             >
                         </li>
+                        <li
+                            v-if="userDetailsStore.role == 'student'"
+                            class="nav-item"
+                        >
+                            <RouterLink to="/pixi-tidy-tree" class="nav-link"
+                                >Pixi Tidy Tree</RouterLink
+                            >
+                        </li>
                         <li class="nav-item">
                             <RouterLink to="/skills" class="nav-link">
                                 <span> Skills </span>
