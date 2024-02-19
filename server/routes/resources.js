@@ -42,7 +42,7 @@ router.post('/add/:skillId', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
         if (req.body.editordata != null)
-            req.body.editordata = req.body.editordata.replace(/'/g, "''");
+            req.body.editordata = req.body.editordata.replace(/'/g, "'");
 
         // Add data.
         let data = {
@@ -122,7 +122,7 @@ router.put('/edit/:id', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
         if (req.body.editordata != null)
-            req.body.editordata = req.body.editordata.replace(/'/g, "''");
+            req.body.editordata = req.body.editordata.replace(/'/g, "'");
 
         //Extra backend security check that the user is allowed to edit the post.
         var postUserId;
@@ -162,7 +162,6 @@ router.put('/edit/:id', (req, res, next) => {
  * @return response()
  */
 router.get('/show/:id', (req, res) => {
-    // var session = req.session;
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM resources WHERE id=' + req.params.id;

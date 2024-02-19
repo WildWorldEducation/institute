@@ -132,21 +132,21 @@ router.put('/mc/:id/edit', (req, res, next) => {
         let incorrectAnswer4;
         let explanation;
         // Escape single quotes for SQL to accept.
-        if (req.body.name != null) name = req.body.name.replace(/'/g, "''");
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "'");
         if (req.body.question != null)
-            question = req.body.question.replace(/'/g, "''");
+            question = req.body.question.replace(/'/g, "'");
         if (req.body.correct_answer != null)
-            correctAnswer = req.body.correct_answer.replace(/'/g, "''");
+            correctAnswer = req.body.correct_answer.replace(/'/g, "'");
         if (req.body.incorrect_answer_1 != null)
-            incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "''");
+            incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "'");
         if (req.body.incorrect_answer_2 != null)
-            incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "''");
+            incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "'");
         if (req.body.incorrect_answer_3 != null)
-            incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "''");
+            incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "'");
         if (req.body.incorrect_answer_4 != null)
-            incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "''");
+            incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "'");
         if (req.body.explanation != null)
-            explanation = req.body.explanation.replace(/'/g, "''");
+            explanation = req.body.explanation.replace(/'/g, "'");
 
         // Add data.
         let sqlQuery =
@@ -190,9 +190,9 @@ router.put('/essay/:id/edit', (req, res, next) => {
         let name;
         let question;
         // Escape single quotes for SQL to accept.
-        if (req.body.name != null) name = req.body.name.replace(/'/g, "''");
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "'");
         if (req.body.question != null)
-            question = req.body.question.replace(/'/g, "''");
+            question = req.body.question.replace(/'/g, "'");
 
         // Add data.
         let sqlQuery =
@@ -294,21 +294,21 @@ router.post('/mc-questions/add', (req, res, next) => {
         let explanation;
 
         // Escape single quotes for SQL to accept.
-        if (req.body.name != null) name = req.body.name.replace(/'/g, "''");
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "'");
         if (req.body.question != null)
-            question = req.body.question.replace(/'/g, "''");
+            question = req.body.question.replace(/'/g, "'");
         if (req.body.correct_answer != null)
-            correctAnswer = req.body.correct_answer.replace(/'/g, "''");
+            correctAnswer = req.body.correct_answer.replace(/'/g, "'");
         if (req.body.incorrect_answer_1 != null)
-            incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "''");
+            incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "'");
         if (req.body.incorrect_answer_2 != null)
-            incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "''");
+            incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "'");
         if (req.body.incorrect_answer_3 != null)
-            incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "''");
+            incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "'");
         if (req.body.incorrect_answer_4 != null)
-            incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "''");
+            incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "'");
         if (req.body.explanation != null)
-            explanation = req.body.explanation.replace(/'/g, "''");
+            explanation = req.body.explanation.replace(/'/g, "'");
 
         // Add data.
         let data = {};
@@ -352,9 +352,9 @@ router.post('/essay-questions/add', (req, res, next) => {
         let question;
 
         // Escape single quotes for SQL to accept.
-        if (req.body.name != null) name = req.body.name.replace(/'/g, "''");
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "'");
         if (req.body.question != null)
-            question = req.body.question.replace(/'/g, "''");
+            question = req.body.question.replace(/'/g, "'");
 
         // Add data.
         let data = {};
@@ -401,7 +401,7 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
 
             // Escape single quotes for SQL to accept.
             if (req.body.questionArray[i].name != null) {
-                name = req.body.questionArray[i].name.replace(/'/g, "''");
+                name = req.body.questionArray[i].name.replace(/'/g, "'");
                 // Removes spaces from both sides of the string.
                 name = name.trim();
             }
@@ -409,7 +409,7 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
             if (req.body.questionArray[i].question != null) {
                 question = req.body.questionArray[i].question.replace(
                     /'/g,
-                    "''"
+                    "'"
                 );
                 question = question.trim();
             }
@@ -417,42 +417,42 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
             if (req.body.questionArray[i].correct_answer != null) {
                 correctAnswer = req.body.questionArray[
                     i
-                ].correct_answer.replace(/'/g, "''");
+                ].correct_answer.replace(/'/g, "'");
                 correctAnswer = correctAnswer.trim();
             }
 
             if (req.body.questionArray[i].incorrect_answer_1 != null) {
                 incorrectAnswer1 = req.body.questionArray[
                     i
-                ].incorrect_answer_1.replace(/'/g, "''");
+                ].incorrect_answer_1.replace(/'/g, "'");
                 incorrectAnswer1 = incorrectAnswer1.trim();
             }
 
             if (req.body.questionArray[i].incorrect_answer_2 != null) {
                 incorrectAnswer2 = req.body.questionArray[
                     i
-                ].incorrect_answer_2.replace(/'/g, "''");
+                ].incorrect_answer_2.replace(/'/g, "'");
                 incorrectAnswer2 = incorrectAnswer2.trim();
             }
 
             if (req.body.questionArray[i].incorrect_answer_3 != null) {
                 incorrectAnswer3 = req.body.questionArray[
                     i
-                ].incorrect_answer_3.replace(/'/g, "''");
+                ].incorrect_answer_3.replace(/'/g, "'");
                 incorrectAnswer3 = incorrectAnswer3.trim();
             }
 
             if (req.body.questionArray[i].incorrect_answer_4 != null) {
                 incorrectAnswer4 = req.body.questionArray[
                     i
-                ].incorrect_answer_4.replace(/'/g, "''");
+                ].incorrect_answer_4.replace(/'/g, "'");
                 incorrectAnswer4 = incorrectAnswer4.trim();
             }
 
             if (req.body.questionArray[i].explanation != null) {
                 explanation = req.body.questionArray[i].explanation.replace(
                     /'/g,
-                    "''"
+                    "'"
                 );
                 explanation = explanation.trim();
             }
