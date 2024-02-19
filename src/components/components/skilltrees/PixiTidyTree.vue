@@ -8,6 +8,7 @@ import SkillPanel from './../SkillPanel.vue';
 import * as d3 from 'd3';
 // Import Pixi JS.
 //import * as PIXI from 'pixi.js';
+// Using pixi legacy because we are using the canvas, not WebGL.
 import * as PIXI from 'pixi.js-legacy';
 // Import Pixi Viewprt.
 import { Viewport } from 'pixi-viewport';
@@ -210,6 +211,7 @@ export default {
             }
         },
         drawNode(node) {
+            // Skill node.
             const nodeGraphic = new PIXI.Graphics();
             nodeGraphic.lineStyle(0);
             nodeGraphic.beginFill(0x000, 1);
@@ -217,6 +219,24 @@ export default {
             nodeGraphic.endFill();
             this.$pixiApp.stage.children[0].addChild(nodeGraphic);
 
+            // Interactivity.
+            nodeGraphic.eventMode = 'static';
+            nodeGraphic.cursor = 'pointer';
+            nodeGraphic.on('pointerdown', (event) => {
+                // Create the  skill object:
+                var skill = {
+                    isMastered: node.data.is_mastered,
+                    isUnlocked: node.data.is_accessible,
+                    name: node.data.skill_name
+                };
+                this.skill = skill;
+
+                if (!this.isSkillInfoPanelShown) {
+                    this.showInfoPanel();
+                }
+            });
+
+            // Skill names.
             const style = new PIXI.TextStyle({
                 fontFamily: 'Arial',
                 fontSize: 12,
@@ -254,7 +274,20 @@ export default {
 
             // Draw the bezier curve with Pixi.
             const nodeLink = new PIXI.Graphics();
-            nodeLink.lineStyle(2, 0x000, 1);
+            // If skill is mastered.
+            var lineWidth;
+            if (link.target.data.is_mastered == 1) lineWidth = 4;
+            else lineWidth = 2;
+            // If skill is a subskill.
+            if (
+                (link.source.data.type == 'super' &&
+                    link.target.data.position == 'end') ||
+                link.target.data.type == 'sub'
+            ) {
+                lineWidth = 1;
+            }
+
+            nodeLink.lineStyle(lineWidth, 0x000, 1);
             nodeLink.position.x = startingPointArray[0];
             nodeLink.position.y = startingPointArray[1];
             // This PIXI function is additive, therefore must subtract the starting point.
