@@ -90,7 +90,8 @@ export default {
 
         this.$pixiApp.stage.addChild(viewport);
 
-        viewport.center = new PIXI.Point(0, 0);
+        viewport.center = new PIXI.Point(100, 0);
+        viewport.setZoom(0.1);
         viewport
             .drag({
                 wheelScroll: 2,
