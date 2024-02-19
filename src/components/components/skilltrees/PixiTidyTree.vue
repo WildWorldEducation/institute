@@ -313,45 +313,66 @@ export default {
 
                 this.isSkillInfoPanelShown = false;
             }
-        },
-        zoomed(transform) {
-            // For the regular canvas.
-            this.context.save();
-            this.context.clearRect(
-                0,
-                0,
-                this.context.canvas.width,
-                this.context.canvas.height
-            );
-            this.context.translate(transform.x, transform.y);
-            this.context.scale(transform.k, transform.k);
-
-            this.drawTree(false);
-
-            this.context.fill();
-            this.context.restore();
-
-            // For the hidden canvas.
-            this.hiddenCanvasContext.save();
-            this.hiddenCanvasContext.clearRect(
-                0,
-                0,
-                this.hiddenCanvasContext.canvas.width,
-                this.hiddenCanvasContext.canvas.height
-            );
-            this.hiddenCanvasContext.translate(transform.x, transform.y);
-            this.hiddenCanvasContext.scale(transform.k, transform.k);
-
-            this.drawTree(true);
-
-            this.hiddenCanvasContext.fill();
-            this.hiddenCanvasContext.restore();
         }
+        // printPDF() {
+        //     // Select the element from the DOM.
+        //     var svg = document.getElementById('linearTree');
+        //     // Then select with D3
+        //     var d3Svg = d3.select(svg);
+        //     // Then select the SVG code with D3
+        //     var d3SvgNode = d3Svg.node();
+
+        //     // Make it a string, to send to server.
+        //     var s = new XMLSerializer();
+        //     var str = s.serializeToString(d3SvgNode);
+
+        //     // Create a JSON object.
+        //     var dataObject = { svg: str, treeType: 'linear' };
+        //     var data = JSON.stringify(dataObject);
+
+        //     // POST request.
+        //     var xhttp = new XMLHttpRequest();
+        //     xhttp.responseType = 'arraybuffer';
+        //     xhttp.open('POST', '/skilltree/print-pdf', true);
+        //     xhttp.setRequestHeader(
+        //         'Content-type',
+        //         'application/json;charset=UTF-8'
+        //     );
+        //     xhttp.setRequestHeader(
+        //         'Accept',
+        //         'application/json, text/plain, */*'
+        //     );
+        //     xhttp.send(data);
+
+        //     // To download the file client side.
+        //     xhttp.onload = function () {
+        //         if (this.readyState == 4 && this.status == 200) {
+        //             // Typical action to be performed when the document is ready:
+        //             let pdfBlob = new Blob([xhttp.response], {
+        //                 type: 'application/pdf'
+        //             });
+        //             const url = window.URL.createObjectURL(pdfBlob);
+
+        //             // To download and name the file.
+        //             var a = document.createElement('a');
+        //             document.body.appendChild(a);
+        //             a.style = 'display: none';
+        //             a.href = url;
+        //             a.download = 'My-Skill-Tree.pdf';
+        //             a.click();
+        //             window.URL.revokeObjectURL(url);
+        //         }
+        //     };
+        // }
     }
 };
 </script>
 
 <template>
+    <button id="print-btn" class="btn btn-info" @click="printPDF()">
+        Print
+    </button>
+    <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div id="wrapper">
         <SkillPanel :skill="skill" />
         <div id="skilltree"></div>
