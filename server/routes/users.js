@@ -39,15 +39,15 @@ router.post('/add', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
         if (req.body.first_name != null)
-            req.body.first_name = req.body.firstname.replace(/'/g, "''");
+            req.body.first_name = req.body.firstname.replace(/'/g, "'");
         if (req.body.last_name != null)
-            req.body.last_name = req.body.lastname.replace(/'/g, "''");
+            req.body.last_name = req.body.lastname.replace(/'/g, "'");
         if (req.body.username != null)
-            req.body.username = req.body.username.replace(/'/g, "''");
+            req.body.username = req.body.username.replace(/'/g, "'");
         if (req.body.email != null)
-            req.body.email = req.body.email.replace(/'/g, "''");
+            req.body.email = req.body.email.replace(/'/g, "'");
         if (req.body.password != null)
-            req.body.password = req.body.password.replace(/'/g, "''");
+            req.body.password = req.body.password.replace(/'/g, "'");
 
         // Providing default avatar.
         // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
@@ -303,15 +303,15 @@ router.put('/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
         if (req.body.first_name != null)
-            req.body.first_name = req.body.first_name.replace(/'/g, "''");
+            req.body.first_name = req.body.first_name.replace(/'/g, "'");
         if (req.body.last_name != null)
-            req.body.last_name = req.body.last_name.replace(/'/g, "''");
+            req.body.last_name = req.body.last_name.replace(/'/g, "'");
         if (req.body.username != null)
-            req.body.username = req.body.username.replace(/'/g, "''");
+            req.body.username = req.body.username.replace(/'/g, "'");
         if (req.body.email != null)
-            req.body.email = req.body.email.replace(/'/g, "''");
+            req.body.email = req.body.email.replace(/'/g, "'");
         if (req.body.password != null)
-            req.body.password = req.body.password.replace(/'/g, "''");
+            req.body.password = req.body.password.replace(/'/g, "'");
 
         // Check if avatar field is empty.
         let avatar = '';
@@ -389,7 +389,7 @@ router.put('/:id/edit-message', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
         if (req.body.message != null)
-            req.body.message = req.body.message.replace(/'/g, "''");
+            req.body.message = req.body.message.replace(/'/g, "'");
 
         // Add data.
         let sqlQuery =
@@ -418,15 +418,15 @@ router.put('/profile/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
         if (req.body.first_name != null)
-            req.body.first_name = req.body.first_name.replace(/'/g, "''");
+            req.body.first_name = req.body.first_name.replace(/'/g, "'");
         if (req.body.last_name != null)
-            req.body.last_name = req.body.last_name.replace(/'/g, "''");
+            req.body.last_name = req.body.last_name.replace(/'/g, "'");
         if (req.body.username != null)
-            req.body.username = req.body.username.replace(/'/g, "''");
+            req.body.username = req.body.username.replace(/'/g, "'");
         if (req.body.email != null)
-            req.body.email = req.body.email.replace(/'/g, "''");
+            req.body.email = req.body.email.replace(/'/g, "'");
         if (req.body.password != null)
-            req.body.password = req.body.password.replace(/'/g, "''");
+            req.body.password = req.body.password.replace(/'/g, "'");
 
         // Add data.
         let sqlQuery =

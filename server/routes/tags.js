@@ -64,7 +64,7 @@ router.post('/add', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
         if (req.body.name != null)
-            req.body.name = req.body.name.replace(/'/g, "''");
+            req.body.name = req.body.name.replace(/'/g, "'");
 
         // Add data.
         let data = {};
