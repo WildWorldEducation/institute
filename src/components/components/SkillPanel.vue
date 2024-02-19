@@ -64,7 +64,7 @@ export default {
                 class="btn green-btn"
                 target="_blank"
                 id="skillLink"
-                to=""
+                :to="'/skills/' + skill.id"
                 >See More&nbsp;
                 <!-- Plus sign -->
                 <svg

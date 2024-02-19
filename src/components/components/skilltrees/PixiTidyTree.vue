@@ -31,29 +31,11 @@ export default {
                 children: [],
                 isMastered: null,
                 isUnlocked: null,
-                container: null,
-                name: null,
-                description: null,
-                tagIDs: [],
-                sprite: null
+                name: null
             },
             tree: {},
             root: {},
-            context: {},
-            hiddenCanvasContext: {},
-            panX: 5,
-            panY: 0,
-            scale: 0.5,
-            translatePos: { x: 50, y: 50 },
-            scaleMultiplier: 0.8,
-            startDragOffset: { x: 0, y: 0 },
-            mouseDown: false,
-            r: 1.5,
-            nodes: [],
-            nextCol: 1,
-            colToNode: {},
-            isSkillInfoPanelShown: false,
-            firstRender: true
+            isSkillInfoPanelShown: false
         };
     },
     components: {
@@ -64,22 +46,12 @@ export default {
             await this.skillTreeStore.getUserSkills();
         }
 
-        // Specify the chart’s dimensions.
-        //  this.width = window.innerWidth;
-        //  this.height = 10000;
         this.skill = {
             name: 'SKILLS',
             sprite: null,
             children: this.skillTreeStore.userSkills
         };
 
-        // Pan and zoom.
-        // d3.select(this.context.canvas).call(
-        //     d3
-        //         .zoom()
-        //         .scaleExtent([0.2, 8])
-        //         .on('zoom', ({ transform }) => this.zoomed(transform))
-        // );
         const viewport = new Viewport({
             screenWidth: this.width,
             screenHeight: this.height,
@@ -191,7 +163,7 @@ export default {
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(data);
-            const dx = 24;
+            const dx = 35;
             const dy = width / (this.root.height + 1);
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -216,7 +188,7 @@ export default {
             const nodeGraphic = new PIXI.Graphics();
             nodeGraphic.lineStyle(0);
             nodeGraphic.beginFill(0x000, 1);
-            nodeGraphic.drawCircle(node.y, node.x, 10);
+            nodeGraphic.drawCircle(node.y, node.x, 15);
             nodeGraphic.endFill();
             this.$pixiApp.stage.children[0].addChild(nodeGraphic);
 
@@ -226,6 +198,7 @@ export default {
             nodeGraphic.on('pointerdown', (event) => {
                 // Create the  skill object:
                 var skill = {
+                    id: node.data.id,
                     isMastered: node.data.is_mastered,
                     isUnlocked: node.data.is_accessible,
                     name: node.data.skill_name
@@ -340,45 +313,66 @@ export default {
 
                 this.isSkillInfoPanelShown = false;
             }
-        },
-        zoomed(transform) {
-            // For the regular canvas.
-            this.context.save();
-            this.context.clearRect(
-                0,
-                0,
-                this.context.canvas.width,
-                this.context.canvas.height
-            );
-            this.context.translate(transform.x, transform.y);
-            this.context.scale(transform.k, transform.k);
-
-            this.drawTree(false);
-
-            this.context.fill();
-            this.context.restore();
-
-            // For the hidden canvas.
-            this.hiddenCanvasContext.save();
-            this.hiddenCanvasContext.clearRect(
-                0,
-                0,
-                this.hiddenCanvasContext.canvas.width,
-                this.hiddenCanvasContext.canvas.height
-            );
-            this.hiddenCanvasContext.translate(transform.x, transform.y);
-            this.hiddenCanvasContext.scale(transform.k, transform.k);
-
-            this.drawTree(true);
-
-            this.hiddenCanvasContext.fill();
-            this.hiddenCanvasContext.restore();
         }
+        // printPDF() {
+        //     // Select the element from the DOM.
+        //     var svg = document.getElementById('linearTree');
+        //     // Then select with D3
+        //     var d3Svg = d3.select(svg);
+        //     // Then select the SVG code with D3
+        //     var d3SvgNode = d3Svg.node();
+
+        //     // Make it a string, to send to server.
+        //     var s = new XMLSerializer();
+        //     var str = s.serializeToString(d3SvgNode);
+
+        //     // Create a JSON object.
+        //     var dataObject = { svg: str, treeType: 'linear' };
+        //     var data = JSON.stringify(dataObject);
+
+        //     // POST request.
+        //     var xhttp = new XMLHttpRequest();
+        //     xhttp.responseType = 'arraybuffer';
+        //     xhttp.open('POST', '/skilltree/print-pdf', true);
+        //     xhttp.setRequestHeader(
+        //         'Content-type',
+        //         'application/json;charset=UTF-8'
+        //     );
+        //     xhttp.setRequestHeader(
+        //         'Accept',
+        //         'application/json, text/plain, */*'
+        //     );
+        //     xhttp.send(data);
+
+        //     // To download the file client side.
+        //     xhttp.onload = function () {
+        //         if (this.readyState == 4 && this.status == 200) {
+        //             // Typical action to be performed when the document is ready:
+        //             let pdfBlob = new Blob([xhttp.response], {
+        //                 type: 'application/pdf'
+        //             });
+        //             const url = window.URL.createObjectURL(pdfBlob);
+
+        //             // To download and name the file.
+        //             var a = document.createElement('a');
+        //             document.body.appendChild(a);
+        //             a.style = 'display: none';
+        //             a.href = url;
+        //             a.download = 'My-Skill-Tree.pdf';
+        //             a.click();
+        //             window.URL.revokeObjectURL(url);
+        //         }
+        //     };
+        // }
     }
 };
 </script>
 
 <template>
+    <button id="print-btn" class="btn btn-info" @click="printPDF()">
+        Print
+    </button>
+    <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div id="wrapper">
         <SkillPanel :skill="skill" />
         <div id="skilltree"></div>
