@@ -60,34 +60,34 @@ export default {
             }
 
             if (
-                this.question.incorrect_answer1 === '' ||
-                this.question.incorrect_answer1 === null
+                this.question.incorrect_answer_1 === '' ||
+                this.question.incorrect_answer_1 === null
             ) {
-                this.validate.incorrect_answer1 = true;
+                this.validate.incorrect_answer_1 = true;
                 this.validate.validated = true;
             }
 
             if (
-                this.question.incorrect_answer2 === '' ||
-                this.question.incorrect_answer2 === null
+                this.question.incorrect_answer_2 === '' ||
+                this.question.incorrect_answer_2 === null
             ) {
-                this.validate.incorrect_answer2 = true;
+                this.validate.incorrect_answer_2 = true;
                 this.validate.validated = true;
             }
 
             if (
-                this.question.incorrect_answer3 === '' ||
-                this.question.incorrect_answer3 === null
+                this.question.incorrect_answer_3 === '' ||
+                this.question.incorrect_answer_3 === null
             ) {
-                this.validate.incorrect_answer3 = true;
+                this.validate.incorrect_answer_3 = true;
                 this.validate.validated = true;
             }
 
             if (
-                this.question.incorrect_answer4 === '' ||
-                this.question.incorrect_answer4 === null
+                this.question.incorrect_answer_4 === '' ||
+                this.question.incorrect_answer_4 === null
             ) {
-                this.validate.incorrect_answer4 = true;
+                this.validate.incorrect_answer_4 = true;
                 this.validate.validated = true;
             }
 
@@ -110,8 +110,8 @@ export default {
                     question: this.question.question,
                     incorrect_answer_1: this.question.incorrect_answer_1,
                     incorrect_answer_2: this.question.incorrect_answer_2,
-                    incorrect_answer3: this.question.incorrect_answer3,
-                    incorrect_answer4: this.question.incorrect_answer4,
+                    incorrect_answer_3: this.question.incorrect_answer_3,
+                    incorrect_answer_4: this.question.incorrect_answer_4,
                     correct_answer: this.question.correct_answer,
                     explanation: this.question.explanation
                 })
