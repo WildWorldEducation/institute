@@ -52,7 +52,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink to="/pixi-tree" class="nav-link"
-                                >Pixi Tree</RouterLink
+                                >Radial Tree</RouterLink
                             >
                         </li>
                         <!-- <li
@@ -73,28 +73,28 @@ export default {
                                 >Radial Cluster Tree</RouterLink
                             >
                         </li> -->
-                        <li
+                        <!-- <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/tidy-tree" class="nav-link"
                                 >SVG Tidy Tree</RouterLink
                             >
-                        </li>
-                        <li
+                        </li> -->
+                        <!-- <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/canvas-tidy-tree" class="nav-link"
                                 >Canvas Tidy Tree</RouterLink
                             >
-                        </li>
+                        </li> -->
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/pixi-tidy-tree" class="nav-link"
-                                >Pixi Tidy Tree</RouterLink
+                                >Tidy Tree</RouterLink
                             >
                         </li>
                         <li class="nav-item">
