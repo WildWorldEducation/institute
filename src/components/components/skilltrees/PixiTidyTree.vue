@@ -31,29 +31,11 @@ export default {
                 children: [],
                 isMastered: null,
                 isUnlocked: null,
-                container: null,
-                name: null,
-                description: null,
-                tagIDs: [],
-                sprite: null
+                name: null
             },
             tree: {},
             root: {},
-            context: {},
-            hiddenCanvasContext: {},
-            panX: 5,
-            panY: 0,
-            scale: 0.5,
-            translatePos: { x: 50, y: 50 },
-            scaleMultiplier: 0.8,
-            startDragOffset: { x: 0, y: 0 },
-            mouseDown: false,
-            r: 1.5,
-            nodes: [],
-            nextCol: 1,
-            colToNode: {},
-            isSkillInfoPanelShown: false,
-            firstRender: true
+            isSkillInfoPanelShown: false
         };
     },
     components: {
@@ -64,22 +46,12 @@ export default {
             await this.skillTreeStore.getUserSkills();
         }
 
-        // Specify the chart’s dimensions.
-        //  this.width = window.innerWidth;
-        //  this.height = 10000;
         this.skill = {
             name: 'SKILLS',
             sprite: null,
             children: this.skillTreeStore.userSkills
         };
 
-        // Pan and zoom.
-        // d3.select(this.context.canvas).call(
-        //     d3
-        //         .zoom()
-        //         .scaleExtent([0.2, 8])
-        //         .on('zoom', ({ transform }) => this.zoomed(transform))
-        // );
         const viewport = new Viewport({
             screenWidth: this.width,
             screenHeight: this.height,
@@ -226,6 +198,7 @@ export default {
             nodeGraphic.on('pointerdown', (event) => {
                 // Create the  skill object:
                 var skill = {
+                    id: node.data.id,
                     isMastered: node.data.is_mastered,
                     isUnlocked: node.data.is_accessible,
                     name: node.data.skill_name
