@@ -3,6 +3,7 @@ export default {
     data() {
         return {
             questionCSVFile: '',
+            filesArray: [],
             questionsArray: []
         };
     },
@@ -11,7 +12,9 @@ export default {
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length) return;
 
-            this.ReadFile(files[0]);
+            for (let i = 0; i < files.length; i++) {
+                this.ReadFile(files[i]);
+            }
         },
         // Convert file to string, and then to array.
         ReadFile(file) {
@@ -27,16 +30,15 @@ export default {
                     if (CSVArray[i] == '') {
                         CSVArray.splice(i, 1);
                     }
-                    this.questionsArray[i] = CSVArray[i].split('|');
-
                     // Validation - checking for missing fields.
-                    if (this.questionsArray[i].length != 8) {
+                    if (CSVArray[i].split('|').length != 9) {
                         alert(
-                            'Please check your CSVs. There are fields missing.'
+                            'Please check your CSVs. At least one question has the wrong number of fields.'
                         );
                         this.questionsArray = [];
                         return;
                     }
+                    this.questionsArray.push(CSVArray[i].split('|'));
                 }
             };
             reader.readAsText(file);
@@ -46,14 +48,15 @@ export default {
             // For each question.
             for (let i = 0; i < this.questionsArray.length; i++) {
                 const questionObject = {};
-                questionObject.name = this.questionsArray[i][0];
-                questionObject.question = this.questionsArray[i][1];
-                questionObject.correct_answer = this.questionsArray[i][2];
-                questionObject.incorrect_answer_1 = this.questionsArray[i][3];
-                questionObject.incorrect_answer_2 = this.questionsArray[i][4];
-                questionObject.incorrect_answer_3 = this.questionsArray[i][5];
-                questionObject.incorrect_answer_4 = this.questionsArray[i][6];
-                questionObject.explanation = this.questionsArray[i][7];
+                questionObject.skillId = this.questionsArray[i][0];
+                questionObject.name = this.questionsArray[i][1];
+                questionObject.question = this.questionsArray[i][2];
+                questionObject.correct_answer = this.questionsArray[i][3];
+                questionObject.incorrect_answer_1 = this.questionsArray[i][4];
+                questionObject.incorrect_answer_2 = this.questionsArray[i][5];
+                questionObject.incorrect_answer_3 = this.questionsArray[i][6];
+                questionObject.incorrect_answer_4 = this.questionsArray[i][7];
+                questionObject.explanation = this.questionsArray[i][8];
 
                 questionArray.push(questionObject);
             }
@@ -65,10 +68,10 @@ export default {
                     questionArray
                 })
             };
-            var url = '/skills/' + this.skillId + '/mc-questions/add';
+            var url = '/questions/mc-questions/bulk-add';
 
             fetch(url, requestOptions).then(() => {
-                this.$router.push('/skills/' + this.skillId + '/question-bank');
+                alert('Questions uploaded.');
             });
         }
     }
@@ -86,8 +89,8 @@ export default {
                         class="form-control"
                         type="file"
                         accept=".csv,.txt"
-                        id="csvFile"
                         @change="OnFileChange"
+                        multiple
                     />
                     <p style="font-size: 14px">
                         <em>Maximum file size 15mb</em>
