@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
+   // password: 'password',
     database: 'skill_tree'
 });
 
@@ -41,7 +41,7 @@ conn.connect((err) => {
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM `unmarked_essay_answers`";
+        let sqlQuery = 'SELECT * FROM `unmarked_essay_answers`';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -49,7 +49,7 @@ router.get('/list', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
@@ -58,16 +58,18 @@ router.get('/list', (req, res, next) => {
 router.get('/list/:assessmentId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM `unmarked_essay_answers` WHERE assessment_id = " + req.params.assessmentId;
+        let sqlQuery =
+            'SELECT * FROM `unmarked_essay_answers` WHERE assessment_id = ' +
+            req.params.assessmentId;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                console.log(results.length)
+                console.log(results.length);
                 res.json(results.length);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
@@ -76,35 +78,37 @@ router.get('/list/:assessmentId', (req, res, next) => {
 /**
  * Add Item
  *
- * @return response() 
+ * @return response()
  */
 router.post('/add/:assessmentId', (req, res, next) => {
     if (req.session.userName) {
+        // Escape single quotes for SQL to accept.
+        if (req.body.answer != null)
+            req.body.answer = req.body.answer.replace(/'/g, "'");
+
+        // Add data..
         let data = {};
         data = {
             assessment_id: req.params.assessmentId,
             answer: req.body.answer,
-            question_id: req.body.questionId,
+            question_id: req.body.questionId
         };
-        let sqlQuery = "INSERT INTO unmarked_essay_answers SET ?";
+        let sqlQuery = 'INSERT INTO unmarked_essay_answers SET ?';
         let query = conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     res.end();
                 }
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
-
 
 /**
  * Delete Item
@@ -113,42 +117,42 @@ router.post('/add/:assessmentId', (req, res, next) => {
  */
 router.delete('/delete/:assessmentId', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = "DELETE FROM unmarked_essay_answers WHERE assessment_id=" + req.params.assessmentId;
+        let sqlQuery =
+            'DELETE FROM unmarked_essay_answers WHERE assessment_id=' +
+            req.params.assessmentId;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.end()
+                res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
 
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = "DELETE FROM unmarked_essay_answers WHERE id=" + req.params.id;
+        let sqlQuery =
+            'DELETE FROM unmarked_essay_answers WHERE id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.end()
+                res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
 
-
 // Export the router for app to use.
-module.exports = router 
+module.exports = router;

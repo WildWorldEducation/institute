@@ -33,7 +33,6 @@ conn.connect((err) => {
     console.log('MariaDB connected...');
 });
 
-
 /**
  * Get All Items
  *
@@ -42,7 +41,7 @@ conn.connect((err) => {
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM `instructor_students`";
+        let sqlQuery = 'SELECT * FROM `instructor_students`';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -50,13 +49,11 @@ router.get('/list', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
 });
 
-
-
 // Export the router for app to use.
-module.exports = router 
+module.exports = router;

@@ -1,16 +1,17 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 
-import App from './App.vue'
-import router from './router'
+import App from './App.vue';
+import router from './router';
 
 // Import Pixi JS.
-import * as PIXI from 'pixi.js';
+//import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js-legacy';
 
-const app = createApp(App)
+const app = createApp(App);
 
-app.use(createPinia())
-app.use(router)
+app.use(createPinia());
+app.use(router);
 
 // Create the Pixi application as a Vue global variable.
 // Have to do this, as otherwise get propagation error when try to access this
@@ -23,9 +24,12 @@ var pixiApp = new PIXI.Application({
     antialias: true,
     useContextAlpha: false,
     autoStart: true,
-    cullable: true
+    cullable: true,
+    // We are using the canvas, as it seems to give much better performance than WebGL.
+    forceCanvas: true,
+    background: '#FFF'
 });
 
 app.config.globalProperties.$pixiApp = pixiApp;
 
-app.mount('#app')
+app.mount('#app');

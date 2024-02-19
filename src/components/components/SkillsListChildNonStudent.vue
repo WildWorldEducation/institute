@@ -60,8 +60,8 @@ export default {
         }
     },
     async created() {
-        await this.skillsStore.getNestedSkillsList();
-        await this.skillsStore.getSkillsList();
+        //  await this.skillsStore.getNestedSkillsList();
+        //  await this.skillsStore.getSkillsList();
 
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
@@ -127,10 +127,11 @@ export default {
             'middle-school-level': level == 'middle_school',
             'high-school-level': level == 'high_school',
             'college-level': level == 'college',
-            'phd-level': level == 'phd'
+            'phd-level': level == 'phd',
+            'has-children': childrenNotSubskills.length > 0
         }"
         class="skill-button d-flex justify-content-between"
-        @click.stop="toggleChildren"
+        @click="toggleChildren"
     >
         <span style="text-align: left">{{ name }}</span>
         <!-- Buttons -->
@@ -404,6 +405,18 @@ export default {
     font-size: 16px;
     font-weight: 500;
     background-color: #f2edff;
+}
+
+.has-children {
+    border-bottom-width: thick;
+}
+
+.skill-button:hover {
+    background-color: #e4def0;
+}
+
+.skill-button:active {
+    border-width: 4px;
 }
 
 .skill-button img {

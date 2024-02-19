@@ -30,9 +30,7 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => {
-                    this.question = data;
-                });
+                .then((data) => (this.question = data));
         },
         Submit() {
             // Reset the validate flag before re-checking
@@ -108,6 +106,7 @@ export default {
                 body: JSON.stringify({
                     name: this.question.name,
                     question: this.question.question,
+                    correct_answer: this.question.correct_answer,
                     incorrect_answer_1: this.question.incorrect_answer_1,
                     incorrect_answer_2: this.question.incorrect_answer_2,
                     incorrect_answer_3: this.question.incorrect_answer_3,

@@ -1,5 +1,5 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 
@@ -18,7 +18,6 @@ const conn = mysql.createConnection({
     database: 'skill_tree'
 });
 
-
 /*------------------------------------------
 --------------------------------------------
 Shows Mysql Connect
@@ -31,7 +30,6 @@ conn.connect((err) => {
     console.log('MariaDB connected...');
 });
 
-
 /**
  * Delete Item
  *
@@ -40,7 +38,7 @@ conn.connect((err) => {
 // Delete multiple choice question.
 router.delete('/mc/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = "DELETE FROM mc_questions WHERE id=" + req.params.id;
+        let sqlQuery = 'DELETE FROM mc_questions WHERE id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -48,11 +46,10 @@ router.delete('/mc/:id', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
@@ -60,7 +57,7 @@ router.delete('/mc/:id', (req, res, next) => {
 // Delete essay question.
 router.delete('/essay/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = "DELETE FROM essay_questions WHERE id=" + req.params.id;
+        let sqlQuery = 'DELETE FROM essay_questions WHERE id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -68,15 +65,13 @@ router.delete('/essay/:id', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
-
 
 /**
  * Show Item
@@ -87,16 +82,15 @@ router.delete('/essay/:id', (req, res, next) => {
 router.get('/mc/show/:id', (req, res) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM mc_questions WHERE id=" + req.params.id;
+        let sqlQuery = 'SELECT * FROM mc_questions WHERE id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
                 res.json(results[0]);
-            }
-            catch (err) {
-                next(err)
+            } catch (err) {
+                next(err);
             }
         });
     }
@@ -106,37 +100,75 @@ router.get('/mc/show/:id', (req, res) => {
 router.get('/essay/show/:id', (req, res) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM essay_questions WHERE id=" + req.params.id;
+        let sqlQuery =
+            'SELECT * FROM essay_questions WHERE id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
                 res.json(results[0]);
-            }
-            catch (err) {
-                next(err)
+            } catch (err) {
+                next(err);
             }
         });
     }
 });
 
-
 /**
-* Update Item
-*
-* @return response()
-*/
+ * Update Item
+ *
+ * @return response()
+ */
 // MC questions
 router.put('/mc/:id/edit', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `UPDATE mc_questions 
-        SET name='` + req.body.name + `', question = '` + req.body.question +
-            `', incorrect_answer_1 = '` + req.body.incorrect_answer_1 + `', incorrect_answer_2 = '` + req.body.incorrect_answer_2 +
-            `', incorrect_answer_3 = '` + req.body.incorrect_answer_3 + `', incorrect_answer_4 = '` + req.body.incorrect_answer_4 +
-            `', correct_answer = '` + req.body.correct_answer +
-            `', explanation = '` + req.body.explanation +
-            `' WHERE id = ` + req.params.id;
+        let name;
+        let question;
+        let correctAnswer;
+        let incorrectAnswer1;
+        let incorrectAnswer2;
+        let incorrectAnswer3;
+        let incorrectAnswer4;
+        let explanation;
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "'");
+        if (req.body.correct_answer != null)
+            correctAnswer = req.body.correct_answer.replace(/'/g, "'");
+        if (req.body.incorrect_answer_1 != null)
+            incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "'");
+        if (req.body.incorrect_answer_2 != null)
+            incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "'");
+        if (req.body.incorrect_answer_3 != null)
+            incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "'");
+        if (req.body.incorrect_answer_4 != null)
+            incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "'");
+        if (req.body.explanation != null)
+            explanation = req.body.explanation.replace(/'/g, "'");
+
+        // Add data.
+        let sqlQuery =
+            `UPDATE mc_questions 
+        SET name='` +
+            name +
+            `', question = '` +
+            question +
+            `', correct_answer = '` +
+            correctAnswer +
+            `', incorrect_answer_1 = '` +
+            incorrectAnswer1 +
+            `', incorrect_answer_2 = '` +
+            incorrectAnswer2 +
+            `', incorrect_answer_3 = '` +
+            incorrectAnswer3 +
+            `', incorrect_answer_4 = '` +
+            incorrectAnswer4 +
+            `', explanation = '` +
+            explanation +
+            `' WHERE id = ` +
+            req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -144,11 +176,10 @@ router.put('/mc/:id/edit', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
@@ -156,9 +187,22 @@ router.put('/mc/:id/edit', (req, res, next) => {
 // Essay questions
 router.put('/essay/:id/edit', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `UPDATE essay_questions 
-        SET name='` + req.body.name + `', question = '` + req.body.question +
-            `' WHERE id = ` + req.params.id;
+        let name;
+        let question;
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "'");
+
+        // Add data.
+        let sqlQuery =
+            `UPDATE essay_questions 
+        SET name='` +
+            name +
+            `', question = '` +
+            question +
+            `' WHERE id = ` +
+            req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -166,22 +210,21 @@ router.put('/essay/:id/edit', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
-
 
 // Dynamically create assessments.
 // Load multiple choice type questions.
 router.get('/:skillId/multiple-choice', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM mc_questions WHERE skill_id = " + req.params.skillId;
+        let sqlQuery =
+            'SELECT * FROM mc_questions WHERE skill_id = ' + req.params.skillId;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -189,7 +232,7 @@ router.get('/:skillId/multiple-choice', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
@@ -199,7 +242,9 @@ router.get('/:skillId/multiple-choice', (req, res, next) => {
 router.get('/:skillId/essay', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM essay_questions WHERE skill_id = " + req.params.skillId;
+        let sqlQuery =
+            'SELECT * FROM essay_questions WHERE skill_id = ' +
+            req.params.skillId;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -207,17 +252,18 @@ router.get('/:skillId/essay', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
 });
 
-// Load essay type questions.
+// TODO: find out where this is used, if at all.
+// Load all essay type questions.
 router.get('/essay/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM essay_questions;";
+        let sqlQuery = 'SELECT * FROM essay_questions;';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -225,12 +271,11 @@ router.get('/essay/list', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
 });
-
 
 /**
  * Create New MC Question Manually (not from CSV.)
@@ -239,38 +284,62 @@ router.get('/essay/list', (req, res, next) => {
  */
 router.post('/mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
+        let name;
+        let question;
+        let correctAnswer;
+        let incorrectAnswer1;
+        let incorrectAnswer2;
+        let incorrectAnswer3;
+        let incorrectAnswer4;
+        let explanation;
+
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "'");
+        if (req.body.correct_answer != null)
+            correctAnswer = req.body.correct_answer.replace(/'/g, "'");
+        if (req.body.incorrect_answer_1 != null)
+            incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "'");
+        if (req.body.incorrect_answer_2 != null)
+            incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "'");
+        if (req.body.incorrect_answer_3 != null)
+            incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "'");
+        if (req.body.incorrect_answer_4 != null)
+            incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "'");
+        if (req.body.explanation != null)
+            explanation = req.body.explanation.replace(/'/g, "'");
+
+        // Add data.
         let data = {};
         data = {
-            name: req.body.name,
-            question: req.body.question,
-            correct_answer: req.body.correct_answer,
-            incorrect_answer_1: req.body.incorrect_answer_1,
-            incorrect_answer_2: req.body.incorrect_answer_2,
-            incorrect_answer_3: req.body.incorrect_answer_3,
-            incorrect_answer_4: req.body.incorrect_answer_4,
-            explanation: req.body.explanation,
+            name: name,
+            question: question,
+            correct_answer: correctAnswer,
+            incorrect_answer_1: incorrectAnswer1,
+            incorrect_answer_2: incorrectAnswer2,
+            incorrect_answer_3: incorrectAnswer3,
+            incorrect_answer_4: incorrectAnswer4,
+            explanation: explanation,
             skill_id: req.body.skill_id
         };
 
-        let sqlQuery = "INSERT INTO mc_questions SET ?";
+        let sqlQuery = 'INSERT INTO mc_questions SET ?';
         let query = conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     res.end();
                 }
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-
-    else {
+    } else {
         res.redirect('/login');
     }
-})
+});
 
 /**
  * Create New Essay Question Manually (not from CSV.)
@@ -279,32 +348,144 @@ router.post('/mc-questions/add', (req, res, next) => {
  */
 router.post('/essay-questions/add', (req, res, next) => {
     if (req.session.userName) {
+        let name;
+        let question;
+
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "'");
+
+        // Add data.
         let data = {};
         data = {
-            name: req.body.name,
-            question: req.body.question,
+            name: name,
+            question: question,
             skill_id: req.body.skill_id
         };
 
-        let sqlQuery = "INSERT INTO essay_questions SET ?";
+        let sqlQuery = 'INSERT INTO essay_questions SET ?';
         let query = conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     res.end();
                 }
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-
-    else {
+    } else {
         res.redirect('/login');
     }
-})
+});
 
+/**
+ * Create New MC Question Manually (not from CSV.)
+ *
+ * @return response()
+ */
+router.post('/mc-questions/bulk-add', (req, res, next) => {
+    if (req.session.userName) {
+        // For each question.
+        for (let i = 0; i < req.body.questionArray.length; i++) {
+            let name;
+            let question;
+            let correctAnswer;
+            let incorrectAnswer1;
+            let incorrectAnswer2;
+            let incorrectAnswer3;
+            let incorrectAnswer4;
+            let explanation;
 
-module.exports = router
+            // Escape single quotes for SQL to accept.
+            if (req.body.questionArray[i].name != null) {
+                name = req.body.questionArray[i].name.replace(/'/g, "'");
+                // Removes spaces from both sides of the string.
+                name = name.trim();
+            }
+
+            if (req.body.questionArray[i].question != null) {
+                question = req.body.questionArray[i].question.replace(
+                    /'/g,
+                    "'"
+                );
+                question = question.trim();
+            }
+
+            if (req.body.questionArray[i].correct_answer != null) {
+                correctAnswer = req.body.questionArray[
+                    i
+                ].correct_answer.replace(/'/g, "'");
+                correctAnswer = correctAnswer.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_1 != null) {
+                incorrectAnswer1 = req.body.questionArray[
+                    i
+                ].incorrect_answer_1.replace(/'/g, "'");
+                incorrectAnswer1 = incorrectAnswer1.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_2 != null) {
+                incorrectAnswer2 = req.body.questionArray[
+                    i
+                ].incorrect_answer_2.replace(/'/g, "'");
+                incorrectAnswer2 = incorrectAnswer2.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_3 != null) {
+                incorrectAnswer3 = req.body.questionArray[
+                    i
+                ].incorrect_answer_3.replace(/'/g, "'");
+                incorrectAnswer3 = incorrectAnswer3.trim();
+            }
+
+            if (req.body.questionArray[i].incorrect_answer_4 != null) {
+                incorrectAnswer4 = req.body.questionArray[
+                    i
+                ].incorrect_answer_4.replace(/'/g, "'");
+                incorrectAnswer4 = incorrectAnswer4.trim();
+            }
+
+            if (req.body.questionArray[i].explanation != null) {
+                explanation = req.body.questionArray[i].explanation.replace(
+                    /'/g,
+                    "'"
+                );
+                explanation = explanation.trim();
+            }
+
+            // Add the questions.
+            let data = {};
+            data = {
+                name: name,
+                question: question,
+                correct_answer: correctAnswer,
+                incorrect_answer_1: incorrectAnswer1,
+                incorrect_answer_2: incorrectAnswer2,
+                incorrect_answer_3: incorrectAnswer3,
+                incorrect_answer_4: incorrectAnswer4,
+                explanation: explanation,
+                skill_id: req.body.questionArray[i].skillId
+            };
+            let sqlQuery = `INSERT INTO mc_questions SET ?`;
+            let query = conn.query(sqlQuery, data, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    } else {
+                        res.end();
+                    }
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    } else {
+        res.redirect('/login');
+    }
+});
+
+module.exports = router;

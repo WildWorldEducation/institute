@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    //   password: 'password',
     database: 'skill_tree'
 });
 
@@ -33,7 +33,6 @@ conn.connect((err) => {
     console.log('MariaDB connected...');
 });
 
-
 /**
  * Create New Item
  *
@@ -41,22 +40,29 @@ conn.connect((err) => {
  */
 router.post('/add/:skillId', (req, res, next) => {
     if (req.session.userName) {
-        let data = { skill_id: req.params.skillId, user_id: req.body.userId, content: req.body.editordata };
-        let sqlQuery = "INSERT INTO resources SET ?";
+        // Escape single quotes for SQL to accept.
+        if (req.body.editordata != null)
+            req.body.editordata = req.body.editordata.replace(/'/g, "'");
+
+        // Add data.
+        let data = {
+            skill_id: req.params.skillId,
+            user_id: req.body.userId,
+            content: req.body.editordata
+        };
+        let sqlQuery = 'INSERT INTO resources SET ?';
         let query = conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     res.end();
                 }
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
@@ -67,45 +73,45 @@ router.post('/add/:skillId', (req, res, next) => {
  * @return response()
  */
 router.delete('/delete/:resourceId', (req, res, next) => {
-
-
     if (req.session.userName) {
+        // Check if the user has the right to delete the learning resource.
         var postUserId;
-        let sqlQuery1 = "SELECT user_id FROM resources WHERE id=" + req.params.resourceId;
+        let sqlQuery1 =
+            'SELECT user_id FROM resources WHERE id=' + req.params.resourceId;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     postUserId = results[0].user_id;
-                    if (postUserId == req.session.userId || req.session.role == 'admin') {
-                        // Delete the post.               
-
-                        console.log('---')
-                        console.log(sqlQuery2)
+                    if (
+                        postUserId == req.session.userId ||
+                        req.session.role == 'admin'
+                    ) {
+                        // Delete the post.
+                        let sqlQuery2 =
+                            'DELETE FROM resources WHERE id=' +
+                            req.params.resourceId;
                         let query2 = conn.query(sqlQuery2, (err, results) => {
                             try {
                                 if (err) {
                                     throw err;
                                 }
                             } catch (err) {
-                                next(err)
+                                next(err);
                             }
                         });
                     }
                 }
             } catch (err) {
-                console.error(err)
-                next(err)
+                console.error(err);
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
-
 
 /**
  * Edit Item
@@ -114,19 +120,27 @@ router.delete('/delete/:resourceId', (req, res, next) => {
  */
 router.put('/edit/:id', (req, res, next) => {
     if (req.session.userName) {
+        // Escape single quotes for SQL to accept.
+        if (req.body.editordata != null)
+            req.body.editordata = req.body.editordata.replace(/'/g, "'");
+
         //Extra backend security check that the user is allowed to edit the post.
         var postUserId;
-        let sqlQuery1 = "SELECT user_id FROM resources WHERE id=" + req.params.id;
+        let sqlQuery1 =
+            'SELECT user_id FROM resources WHERE id=' + req.params.id;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     postUserId = results[0].user_id;
                     if (postUserId == req.session.userId) {
                         // Edit the post.
-                        let sqlQuery2 = "UPDATE resources SET content='" + req.body.editordata + "' WHERE id=" + req.params.id;
+                        let sqlQuery2 =
+                            "UPDATE resources SET content='" +
+                            req.body.editordata +
+                            "' WHERE id=" +
+                            req.params.id;
                         let query2 = conn.query(sqlQuery2, (err, results) => {
                             if (err) throw err;
                             res.end();
@@ -134,15 +148,13 @@ router.put('/edit/:id', (req, res, next) => {
                     }
                 }
             } catch (err) {
-                next(err)
+                next(err);
             }
-        })
-    }
-    else {
+        });
+    } else {
         res.redirect('/login');
     }
 });
-
 
 /**
  * Show Item
@@ -150,27 +162,24 @@ router.put('/edit/:id', (req, res, next) => {
  * @return response()
  */
 router.get('/show/:id', (req, res) => {
-    // var session = req.session;
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM resources WHERE id=" + req.params.id;
+        let sqlQuery = 'SELECT * FROM resources WHERE id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
                 res.json(results[0]);
-            }
-            catch (err) {
-                next(err)
+            } catch (err) {
+                next(err);
             }
         });
     }
 });
 
-
 router.get('*', (req, res) => {
     res.redirect('/');
 });
 
-module.exports = router 
+module.exports = router;

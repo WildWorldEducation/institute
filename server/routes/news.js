@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    //  password: 'password',
     database: 'skill_tree'
 });
 
@@ -36,7 +36,7 @@ conn.connect((err) => {
 /**
  * List Items
  *
- * @return response() 
+ * @return response()
  */
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
@@ -49,7 +49,7 @@ router.get('/list', (req, res, next) => {
                 }
                 res.json(results[0]);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
@@ -58,14 +58,32 @@ router.get('/list', (req, res, next) => {
 /**
  * Update Items
  *
- * @return response() 
+ * @return response()
  */
 router.put('/edit', (req, res, next) => {
     if (req.session.userName) {
+        // Escape single quotes for SQL to accept.
+        if (req.body.news1 != null)
+            req.body.news1 = req.body.news1.replace(/'/g, "'");
+        if (req.body.news2 != null)
+            req.body.news2 = req.body.news2.replace(/'/g, "'");
+        if (req.body.news3 != null)
+            req.body.news3 = req.body.news3.replace(/'/g, "'");
+        if (req.body.news4 != null)
+            req.body.news4 = req.body.news4.replace(/'/g, "'");
+
+        // Add data.
         let sqlQuery =
             `UPDATE news 
-        SET news_1='` + req.body.news1 + `', news_2 = '` + req.body.news2 + `', news_3 = '`
-            + req.body.news3 + `', news_4 = '` + req.body.news4 + `';`;
+        SET news_1='` +
+            req.body.news1 +
+            `', news_2 = '` +
+            req.body.news2 +
+            `', news_3 = '` +
+            req.body.news3 +
+            `', news_4 = '` +
+            req.body.news4 +
+            `';`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -74,15 +92,13 @@ router.put('/edit', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
 
-
 // Export the router for app to use.
-module.exports = router 
+module.exports = router;

@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    //   password: 'password',
     database: 'skill_tree'
 });
 
@@ -33,16 +33,15 @@ conn.connect((err) => {
     console.log('MariaDB connected...');
 });
 
-
 /**
  * List Items
  *
- * @return response() 
+ * @return response()
  */
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = "SELECT * FROM tags";
+        let sqlQuery = 'SELECT * FROM tags';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -50,41 +49,42 @@ router.get('/list', (req, res, next) => {
                 }
                 res.json(results);
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
     }
 });
 
-
 /**
-* Create New Item 
-*
-* @return response()
-*/
+ * Create New Item
+ *
+ * @return response()
+ */
 router.post('/add', (req, res, next) => {
     if (req.session.userName) {
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null)
+            req.body.name = req.body.name.replace(/'/g, "'");
+
+        // Add data.
         let data = {};
         data = { name: req.body.name };
-        let sqlQuery = "INSERT INTO tags SET ?";
+        let sqlQuery = 'INSERT INTO tags SET ?';
         let query = conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     res.end();
                 }
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
-
 
 /**
  * Delete Item
@@ -93,7 +93,7 @@ router.post('/add', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = "DELETE FROM tags WHERE id=" + req.params.id;
+        let sqlQuery = 'DELETE FROM tags WHERE id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -101,14 +101,13 @@ router.delete('/:id', (req, res, next) => {
                 }
                 res.end();
             } catch (err) {
-                next(err)
+                next(err);
             }
         });
-    }
-    else {
+    } else {
         res.redirect('/login');
     }
 });
 
 // Export the router for app to use.
-module.exports = router 
+module.exports = router;

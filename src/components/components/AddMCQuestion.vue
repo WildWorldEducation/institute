@@ -28,9 +28,20 @@ export default {
                 var CSVArray = CSVString.split(/\r?\n|\r|\n/g);
                 // Break individual questions into arrays.
                 for (let i = 0; i < CSVArray.length; i++) {
-                    const splitResult = CSVArray[i].split('|');
-                    splitResult.length > 1 &&
-                        this.questionsArray.push(splitResult);
+                    // Remove any empty lines.
+                    if (CSVArray[i] == '') {
+                        CSVArray.splice(i, 1);
+                    }
+                    this.questionsArray[i] = CSVArray[i].split('|');
+
+                    // Validation - checking for missing fields.
+                    if (this.questionsArray[i].length != 8) {
+                        alert(
+                            'Please check your CSVs. There are fields missing.'
+                        );
+                        this.questionsArray = [];
+                        return;
+                    }
                 }
             };
             reader.readAsText(file);

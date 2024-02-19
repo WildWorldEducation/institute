@@ -405,11 +405,10 @@ export default {
                                     class="custom-dropdown-option"
                                     @click="
                                         userRole = 'instructor';
+                                        user.role = 'instructor';
                                         showRoleDropDown = false;
                                     "
-                                >
-                                    instructor
-                                </div>
+                                ></div>
                                 <div
                                     class="custom-dropdown-option"
                                     @click="
