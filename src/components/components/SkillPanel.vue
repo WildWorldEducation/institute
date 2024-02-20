@@ -47,9 +47,10 @@ export default {
             <div class="form-check">
                 <!-- 'pointer-events: none' to make checkbox unclickable, without it being greyed out (disabled). -->
                 <input
+                    id="mastery-checkbox"
                     class="form-check-input"
                     type="checkbox"
-                    :value="skill?.isMastered"
+                    value="skill?.isMastered"
                     style="pointer-events: none"
                 />
                 <label
@@ -80,9 +81,6 @@ export default {
                     />
                 </svg>
             </router-link>
-            <!-- <button id="recenterTree" class="btn btn-primary mt-3">
-                Recenter
-            </button> -->
             <!-- Image: character with a sign. -->
             <img src="/images/char-with-sign.svg" />
         </div>
