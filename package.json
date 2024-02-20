@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@pixi/graphics-smooth": "^1.1.0",
     "body-parser": "^1.20.2",
     "connect-history-api-fallback": "^2.0.0",
     "cors": "^2.8.5",
@@ -29,6 +30,7 @@
     "pinia": "^2.0.32",
     "pixi-viewport": "^5.0.1",
     "pixi.js": "^7.2.4",
+    "pixi.js-legacy": "^7.4.0",
     "svg-to-pdfkit": "^0.1.8",
     "vue": "^3.2.47",
     "vue-multiselect": "^3.0.0-beta.3",

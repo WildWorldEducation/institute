@@ -7,11 +7,16 @@ import SkillPanel from './../SkillPanel.vue';
 
 import * as d3 from 'd3';
 // Import Pixi JS.
-//import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js';
 // Using pixi legacy because we are using the canvas, not WebGL.
-import * as PIXI from 'pixi.js-legacy';
+// import * as PIXI from 'pixi.js-legacy';
 // Import Pixi Viewprt.
 import { Viewport } from 'pixi-viewport';
+
+import {
+    SmoothGraphics as Graphics,
+    DashLineShader
+} from '@pixi/graphics-smooth';
 
 export default {
     setup() {
@@ -250,7 +255,9 @@ export default {
             var otherPointsArray = otherPoints.split(',');
 
             // Draw the bezier curve with Pixi.
-            const nodeLink = new PIXI.Graphics();
+            const nodeLink = new Graphics();
+
+            // graphics.lineStyle({ width: 16, color: 0xff00ff, shader });
             // If skill is mastered.
             var lineWidth;
             if (link.target.data.is_mastered == 1) lineWidth = 4;
@@ -261,10 +268,13 @@ export default {
                     link.target.data.position == 'end') ||
                 link.target.data.type == 'sub'
             ) {
-                lineWidth = 1;
+                // Use dashed line.
+                const shader = new DashLineShader({ dash: 5, gap: 8 });
+                nodeLink.lineStyle({ width: lineWidth, color: 0x000, shader });
+            } else {
+                nodeLink.lineStyle({ width: lineWidth, color: 0x000 });
             }
 
-            nodeLink.lineStyle(lineWidth, 0x000, 1);
             nodeLink.position.x = startingPointArray[0];
             nodeLink.position.y = startingPointArray[1];
             // This PIXI function is additive, therefore must subtract the starting point.

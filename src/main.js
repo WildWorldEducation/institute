@@ -26,7 +26,7 @@ var pixiApp = new PIXI.Application({
     autoStart: true,
     cullable: true,
     // We are using the canvas, as it seems to give much better performance than WebGL.
-    forceCanvas: true,
+    forceCanvas: false,
     background: '#FFF'
 });
 
