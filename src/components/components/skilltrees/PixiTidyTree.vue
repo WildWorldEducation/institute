@@ -221,7 +221,7 @@ export default {
 
             const basicText = new PIXI.Text(node.data.skill_name, style);
             basicText.anchor.set(0, 0.5);
-            basicText.x = node.y + 10;
+            basicText.x = node.y + 15;
             basicText.y = node.x;
             this.$pixiApp.stage.children[0].addChild(basicText);
         },
@@ -291,6 +291,12 @@ export default {
                     document.getElementById('skillInfoPanel').style.height =
                         '474px';
                 }
+
+                // Check the box on the skill panel, if the skill is mastered.
+                if (this.skill.isMastered == '1')
+                    document.getElementById('mastery-checkbox').checked = true;
+                else
+                    document.getElementById('mastery-checkbox').checked = false;
             }
         },
         hideInfoPanel() {
