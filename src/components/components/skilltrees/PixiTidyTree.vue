@@ -530,7 +530,7 @@ input[type='button'] {
 #wrapper {
     width: 100%;
     height: calc(100% - 86px);
-    /*   overflow: hidden; */
+    overflow: hidden;
     position: relative;
 }
 
@@ -574,7 +574,7 @@ input[type='button'] {
 #skilltree {
     width: 100%;
     height: 100%;
-    /*  overflow: hidden; */
+    overflow: hidden;
     /* This is for the positioning of the information panel. */
     position: relative;
     background-color: white;
