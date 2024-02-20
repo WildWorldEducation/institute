@@ -9,7 +9,9 @@ export default {
             isDragging: false,
             files: [],
             // validate flag for same file name in drag and drop
-            duplicates: []
+            duplicates: [],
+            // validate flag for missing fields in drag and drop
+            missingFields: []
         };
     },
     async created() {},
@@ -20,25 +22,24 @@ export default {
             if (!files.length) return;
         },
         // Convert file to string, and then to array.
-        ReadFile(file) {
+        async ReadFile(file) {
             var reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 var CSVString = e.target.result;
                 // Break CSV into individual questions.
                 var CSVArray = CSVString.split(/\r?\n|\r|\n/g);
                 // Break individual questions into arrays.
-                for (let i = 0; i < CSVArray.length; i++) {
+                for await (const CSVLine of CSVArray) {
                     // Remove any empty lines.
-                    if (CSVArray[i] == '') {
+                    if (CSVLine === '') {
                         CSVArray.splice(i, 1);
                     }
-                    this.questionsArray[i] = CSVArray[i].split('|');
-
+                    const question = CSVLine.split('|');
+                    this.questionsArray.push(question);
+                    console.log(this.questionsArray);
                     // Validation - checking for missing fields.
-                    if (this.questionsArray[i].length != 8) {
-                        alert(
-                            'Please check your CSVs. There are fields missing.'
-                        );
+                    if (question.length != 8) {
+                        this.missingFields.push(file.name);
                         this.questionsArray = [];
                         return;
                     }
@@ -47,13 +48,17 @@ export default {
             reader.readAsText(file);
         },
         async Submit() {
+            // Clear the missing fields flag every time user make submit
+            this.missingFields = [];
+            // Reset Question Array
             // When User Submit we will read the files and prepare data to fetch to API
             // Read all the file in files and push them to question array
             for await (const file of this.files) {
-                this.ReadFile(file);
+                await this.ReadFile(file);
             }
 
             const questionArray = [];
+            console.log(this.questionsArray.length);
             // For each question.
             for (let i = 0; i < this.questionsArray.length; i++) {
                 const questionObject = {};
@@ -77,9 +82,9 @@ export default {
             };
             var url = '/skills/' + this.skillId + '/mc-questions/add';
 
-            fetch(url, requestOptions).then(() => {
-                this.$router.push('/skills/' + this.skillId + '/question-bank');
-            });
+            // fetch(url, requestOptions).then(() => {
+            //     this.$router.push('/skills/' + this.skillId + '/question-bank');
+            // });
         },
         // --- ++ Drag and drop file relate feature ++ --- //
         onChange() {
@@ -203,9 +208,17 @@ export default {
                     <div class="validate-line mt-3" v-if="duplicates.length">
                         You have add duplicate csv files. Please remove the
                         duplicate file for
-                        <span v-for="file in duplicates" :key="file.name"
+                        <span v-for="file in duplicates" :key="file"
                             >{{ file }}, &ThinSpace;
                         </span>
+                    </div>
+                    <!-- warning for missing fields -->
+                    <div class="validate-line mt-3" v-if="missingFields.length">
+                        Please check your CSVs files:
+                        <span v-for="file in missingFields" :key="file"
+                            >{{ file }}, &ThinSpace;
+                        </span>
+                        .There are fields missing.
                     </div>
                 </div>
                 <!-- Phone Styling -->
@@ -267,7 +280,7 @@ export default {
             </div>
         </div>
         <div class="mt-3">
-            <div class="btn purple-btn" @click="Submit">Submit</div>
+            <div class="btn purple-btn" @click="Submit()">Submit</div>
         </div>
         <div class="row mt-4">
             <div class="col-sm-4">
