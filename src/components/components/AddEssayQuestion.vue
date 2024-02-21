@@ -71,9 +71,9 @@ export default {
                 })
             };
             var url = '/skills/' + this.skillId + '/essay-questions/add';
-            // fetch(url, requestOptions).then(() => {
-            //     this.$router.push('/skills/' + this.skillId + '/question-bank');
-            // });
+            fetch(url, requestOptions).then(() => {
+                this.$router.push('/skills/' + this.skillId + '/question-bank');
+            });
         },
         // --- ++ Drag and drop file relate feature ++ --- //
         onChange() {
