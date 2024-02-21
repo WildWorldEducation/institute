@@ -22,7 +22,7 @@ export default {
             if (!files.length) return;
         },
         // Convert file to string, and then to array.
-        async ReadFile(file) {
+        ReadFile(file) {
             var reader = new FileReader();
             reader.onload = async (e) => {
                 var CSVString = e.target.result;
@@ -36,7 +36,6 @@ export default {
                     }
                     const question = CSVLine.split('|');
                     this.questionsArray.push(question);
-                    console.log(this.questionsArray);
                     // Validation - checking for missing fields.
                     if (question.length != 8) {
                         this.missingFields.push(file.name);
@@ -48,17 +47,11 @@ export default {
             reader.readAsText(file);
         },
         async Submit() {
-            // Clear the missing fields flag every time user make submit
-            this.missingFields = [];
-            // Reset Question Array
-            // When User Submit we will read the files and prepare data to fetch to API
-            // Read all the file in files and push them to question array
-            for await (const file of this.files) {
-                await this.ReadFile(file);
-            }
-
             const questionArray = [];
-            console.log(this.questionsArray.length);
+            // If validate condition are violated we stop the submit function
+            if (this.missingFields.length || this.duplicates.length) {
+                return;
+            }
             // For each question.
             for (let i = 0; i < this.questionsArray.length; i++) {
                 const questionObject = {};
@@ -82,12 +75,14 @@ export default {
             };
             var url = '/skills/' + this.skillId + '/mc-questions/add';
 
-            // fetch(url, requestOptions).then(() => {
-            //     this.$router.push('/skills/' + this.skillId + '/question-bank');
-            // });
+            fetch(url, requestOptions).then(() => {
+                this.$router.push('/skills/' + this.skillId + '/question-bank');
+            });
         },
         // --- ++ Drag and drop file relate feature ++ --- //
         onChange() {
+            const inputFiles = [];
+            inputFiles.push(...this.$refs.file.files);
             this.files.push(...this.$refs.file.files);
             // Check if user add a file with name already in files
             // Get the list of file name for checking duplicate below
@@ -102,6 +97,16 @@ export default {
                  */
                 (item, index) => filesName.indexOf(item) !== index
             );
+            // ended the function here if we have duplicate file
+            if (this.duplicates.length) {
+                return;
+            } else {
+                // add file content to question array
+                // we have to do this in onchange because I cant figure out a way to do this asynchronous in submit function
+                inputFiles.forEach((file) => {
+                    this.ReadFile(file);
+                });
+            }
         },
         dragover(e) {
             // have to prevent default in other to
@@ -121,6 +126,10 @@ export default {
             this.files.splice(i, 1);
             // we remove in the duplicate array too to update the validate warning
             this.duplicates = this.duplicates.filter((file) => file !== name);
+            //  we also remove the missing Fields array if user delete the file
+            this.missingFields = this.missingFields.filter(
+                (file) => file !== name
+            );
         }
     }
 };
