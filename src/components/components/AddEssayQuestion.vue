@@ -127,6 +127,12 @@ export default {
             this.missingFields = this.missingFields.filter(
                 (file) => file !== name
             );
+            /** Because we add file content to question array when input change
+             *  So we have to update the question array whenever user delete a file in files
+             */
+            // empty the array question and update it again with new files array
+            this.questionsArray = [];
+            this.files_essay.forEach((file) => this.ReadFile(file));
         }
     }
 };
