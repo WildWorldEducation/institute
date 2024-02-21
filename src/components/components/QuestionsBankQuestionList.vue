@@ -6,7 +6,13 @@ export default {
         return {
             skillId: this.$route.params.id,
             mcQuestions: [],
-            essayQuestions: []
+            essayQuestions: [],
+            // Because we handle delete for each type of question in two separate function
+            // So we will have two different modal
+            showMCModal: false,
+            showEssayModal: false,
+            // Flag to store question ID
+            questionID: null
         };
     },
     computed: {},
@@ -102,7 +108,10 @@ export default {
                         <td>
                             <button
                                 type="button"
-                                @click="deleteMCQuestion(question.id)"
+                                @click="
+                                    questionID = question.id;
+                                    showMCModal = true;
+                                "
                                 class="btn btn red-btn p-2"
                                 :title="'Delete ' + question.name"
                             >
@@ -157,7 +166,10 @@ export default {
                         <td>
                             <button
                                 type="button"
-                                @click="deleteEssayQuestion(question.id)"
+                                @click="
+                                    questionID = question.id;
+                                    showEssayModal = true;
+                                "
                                 class="btn red-btn p-2"
                                 :title="'Delete ' + question.name"
                             >
@@ -178,13 +190,66 @@ export default {
                 </table>
             </div>
         </div>
+        <div v-if="showMCModal">
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <p>Are you sure you want to delete this question ?</p>
+                    <div style="display: flex; gap: 10px; justify-content: end">
+                        <button
+                            type="button"
+                            class="btn red-btn"
+                            @click="
+                                showMCModal = false;
+                                deleteMCQuestion(questionID);
+                            "
+                        >
+                            Yes
+                        </button>
+                        <button
+                            type="button"
+                            class="btn green-btn"
+                            @click="showMCModal = false"
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="showEssayModal">
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <p>Are you sure you want to delete this question ?</p>
+                    <div style="display: flex; gap: 10px; justify-content: end">
+                        <button
+                            type="button"
+                            class="btn red-btn"
+                            @click="
+                                showEssayModal = false;
+                                deleteEssayQuestion(questionID);
+                            "
+                        >
+                            Yes
+                        </button>
+                        <button
+                            type="button"
+                            class="btn green-btn"
+                            @click="showEssayModal = false"
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
 .question-type {
     /* Text */
-
     font-family: 'Poppins';
     font-style: normal;
     font-weight: 900;
@@ -216,6 +281,26 @@ export default {
     background-color: #cc3535;
 }
 
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.green-btn > svg {
+    margin-left: 15px;
+}
+
+.green-btn:hover {
+    background-color: #2ca695;
+}
 .purple-btn {
     background-color: #a48be6;
     color: white;
@@ -232,4 +317,39 @@ export default {
     background-color: #8f7bd6;
     color: white;
 }
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    /* Could be more or less, depending on screen size */
+    display: flex;
+    justify-content: end;
+}
+/* | End Of Warning Model Styling | */
 </style>
