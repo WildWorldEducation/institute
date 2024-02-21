@@ -9,7 +9,9 @@ export default {
             isDragging: false,
             files_essay: [],
             // validate flag for same file name in drag and drop
-            duplicates: []
+            duplicates: [],
+            // validate flag for missing fields in drag and drop
+            missingFields: []
         };
     },
     async created() {},
@@ -28,19 +30,16 @@ export default {
                 // Break CSV into individual questions.
                 var CSVArray = CSVString.split(/\r?\n|\r|\n/g);
                 // Break individual questions into arrays.
-                for (let i = 0; i < CSVArray.length; i++) {
+                for (const CSVLine of CSVArray) {
                     // Remove any empty lines.
-                    if (CSVArray[i] == '') {
+                    if (CSVLine === '') {
                         CSVArray.splice(i, 1);
                     }
-
-                    this.questionsArray[i] = CSVArray[i].split('|');
-
+                    const question = CSVLine.split('|');
+                    this.questionsArray.push(question);
                     // Validation - checking for missing fields.
-                    if (this.questionsArray[i].length != 2) {
-                        alert(
-                            'Please check your CSVs. There are fields missing.'
-                        );
+                    if (question.length != 2) {
+                        this.missingFields.push(file.name);
                         this.questionsArray = [];
                         return;
                     }
@@ -49,12 +48,10 @@ export default {
             reader.readAsText(file);
         },
         async Submit() {
-            // When User Submit we will read the files and prepare data to fetch to API
-            // Read all the file in files and push them to question array
-            for await (const file of this.files_essay) {
-                this.ReadFile(file);
+            // If validate condition are violated we stop the submit function
+            if (this.missingFields.length || this.duplicates.length) {
+                return;
             }
-
             const questionArray = [];
             // For each question.
             for (let i = 0; i < this.questionsArray.length; i++) {
@@ -74,13 +71,14 @@ export default {
                 })
             };
             var url = '/skills/' + this.skillId + '/essay-questions/add';
-
-            fetch(url, requestOptions).then(() => {
-                this.$router.push('/skills/' + this.skillId + '/question-bank');
-            });
+            // fetch(url, requestOptions).then(() => {
+            //     this.$router.push('/skills/' + this.skillId + '/question-bank');
+            // });
         },
         // --- ++ Drag and drop file relate feature ++ --- //
         onChange() {
+            const inputFiles = [];
+            inputFiles.push(...this.$refs.file_essay.files);
             this.files_essay.push(...this.$refs.file_essay.files);
             // Check if user add a file with name already in files
             // Get the list of file name for checking duplicate below
@@ -95,6 +93,16 @@ export default {
                  */
                 (item, index) => filesName.indexOf(item) !== index
             );
+            // ended the function here if we have duplicate file
+            if (this.duplicates.length) {
+                return;
+            } else {
+                // add file content to question array
+                // we have to do this in onchange because I cant figure out a way to do this asynchronous in submit function
+                inputFiles.forEach((file) => {
+                    this.ReadFile(file);
+                });
+            }
         },
         dragover(e) {
             // have to prevent default in other to
@@ -115,7 +123,10 @@ export default {
             this.files_essay.splice(i, 1);
             // we remove in the duplicate array too to update the validate warning
             this.duplicates = this.duplicates.filter((file) => file !== name);
-            console.log(this.duplicates);
+            //  we also remove the missing Fields array if user delete the file
+            this.missingFields = this.missingFields.filter(
+                (file) => file !== name
+            );
         }
     }
 };
@@ -124,19 +135,99 @@ export default {
 <template>
     <div class="container mt-3">
         <h1>Add Essay Question</h1>
-        <div class="row">
-            <div class="col-sm-4">
-                <div v-if="!questionCSVFile">
-                    <input
-                        class="form-control"
-                        type="file"
-                        accept=".csv,.txt"
-                        id="csvFile"
-                        @change="OnFileChange"
-                    />
-                    <p style="font-size: 14px">
-                        <em>Maximum file size 15mb</em>
-                    </p>
+        <!-- Drop down zone for csv file input -->
+        <div class="row mt-5">
+            <div
+                class="dropzone-container"
+                @dragover="dragover"
+                @dragleave="dragleave"
+                @drop="drop"
+                :style="isDragging && 'border-color: #8f7bd6;'"
+            >
+                <input
+                    type="file"
+                    multiple
+                    name="file_essay"
+                    id="fileInput_essay"
+                    class="hidden-input"
+                    @change="onChange"
+                    ref="file_essay"
+                    accept=".csv"
+                />
+                <label for="fileInput_essay" class="file-label">
+                    <div v-if="isDragging">Release to drop files here.</div>
+                    <div v-else>
+                        Drop files here or
+                        <span id="click-here-label">click here</span> to upload
+                        CSV file.
+                    </div>
+                </label>
+                <!-- List file that uploaded and their size -->
+                <!-- PC Styling -->
+                <div
+                    class="preview-container mt-4 row gap-2 d-none d-lg-flex"
+                    v-if="files_essay.length"
+                >
+                    <div
+                        v-for="file in files_essay"
+                        :key="file.name"
+                        class="preview-card col-3 d-flex justify-content-between"
+                    >
+                        <div>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                fill="green"
+                                width="60"
+                                height="60"
+                            >
+                                <path
+                                    d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V304H176c-35.3 0-64 28.7-64 64V512H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM200 352h16c22.1 0 40 17.9 40 40v8c0 8.8-7.2 16-16 16s-16-7.2-16-16v-8c0-4.4-3.6-8-8-8H200c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8v-8c0-8.8 7.2-16 16-16s16 7.2 16 16v8c0 22.1-17.9 40-40 40H200c-22.1 0-40-17.9-40-40V392c0-22.1 17.9-40 40-40zm133.1 0H368c8.8 0 16 7.2 16 16s-7.2 16-16 16H333.1c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1H304c-8.8 0-16-7.2-16-16s7.2-16 16-16h42.9c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16v31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66V368c0-8.8 7.2-16 16-16s16 7.2 16 16v31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6V368c0-8.8 7.2-16 16-16z"
+                                />
+                            </svg>
+                            <p class="input-file-name">
+                                {{ file.name }}
+                                ({{ Math.round(file.size / 1000) + 'kb' }})
+                            </p>
+                        </div>
+                        <div>
+                            <button
+                                class="ms-2 btn btn-danger"
+                                @click="
+                                    remove(files_essay.indexOf(file), file.name)
+                                "
+                                title="Remove file"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"
+                                    fill="white"
+                                    width="16"
+                                    height="16"
+                                >
+                                    <path
+                                        d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Warning for duplicate file -->
+                    <div class="validate-line mt-3" v-if="duplicates.length">
+                        You have add duplicate csv files. Please remove the
+                        duplicate file for
+                        <span v-for="file in duplicates" :key="file.name"
+                            >{{ file }}, &ThinSpace;
+                        </span>
+                    </div>
+                    <!-- warning for missing fields -->
+                    <div class="validate-line mt-3" v-if="missingFields.length">
+                        Please check your CSVs files:
+                        <span v-for="file in missingFields" :key="file"
+                            >{{ file }}, &ThinSpace;
+                        </span>
+                        .There are fields missing.
+                    </div>
                 </div>
                 <!-- Phone view  -->
                 <div
