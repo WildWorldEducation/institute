@@ -8,8 +8,6 @@ import SkillPanel from './../SkillPanel.vue';
 import * as d3 from 'd3';
 // Import Pixi JS.
 import * as PIXI from 'pixi.js';
-// Using pixi legacy because we are using the canvas, not WebGL.
-// import * as PIXI from 'pixi.js-legacy';
 // Import Pixi Viewprt.
 import { Viewport } from 'pixi-viewport';
 
