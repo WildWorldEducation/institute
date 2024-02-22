@@ -46,6 +46,7 @@ export default {
     },
 
     async created() {
+        await this.userDetailsStore.getUserDetails();
         await this.getSkill();
         await this.getUserSkills();
     },
@@ -87,12 +88,16 @@ export default {
                 })
                 .then((data) => (this.userSkills = data))
                 .then(() => {
+                    // Find the user-skill data of this user
                     for (let i = 0; i < this.userSkills.length; i++) {
                         if (this.userSkills[i].id == this.skillId) {
+                            // Check master status and unlock status of user-skill
                             if (this.userSkills[i].is_mastered == 1)
                                 this.isMastered = true;
+                            else this.isMastered = false;
                             if (this.userSkills[i].is_accessible == 1)
                                 this.isUnlocked = true;
+                            else this.isMastered = false;
                         }
                     }
                 });
@@ -123,6 +128,7 @@ export default {
 <template>
     <div class="container mt-3">
         <div id="skill-info-container">
+            <!-- User can only go to quiz page if they are student and the skill is accessible as well as not mastered -->
             <div
                 v-if="
                     isUnlocked &&
@@ -135,13 +141,13 @@ export default {
                     <button
                         v-if="skill.type == 'domain'"
                         @click="MakeMastered()"
-                        class="btn purple-btn"
+                        class="btn tab-btn mb-2"
                     >
                         Click to unlock child skills
                     </button>
                     <router-link
                         v-else
-                        class="btn purple-btn"
+                        class="btn tab-btn"
                         :to="skillId + '/assessment'"
                         >Take Assessment</router-link
                     >
@@ -331,6 +337,28 @@ export default {
     padding-bottom: 10px;
 }
 
+.tab-btn {
+    background-color: #a48be6;
+    color: white;
+    border-radius: 8px;
+    /* We make the right side of button square for better visual */
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border: 1px solid #7f56d9;
+    border-right: 0px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    max-width: fit-content;
+    height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.tab-btn:hover {
+    background-color: #8f7bd6;
+}
 .purple-btn {
     background-color: #a48be6;
     color: white;
