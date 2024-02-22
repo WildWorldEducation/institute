@@ -214,12 +214,12 @@ router.put('/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
         if (req.body.name != null)
-            req.body.name = req.body.name.replace(/'/g, "'");
+            req.body.name = req.body.name.replace(/'/g, "\\'");
         if (req.body.description != null)
-            req.body.description = req.body.description.replace(/'/g, "'");
+            req.body.description = req.body.description.replace(/'/g, "\\'");
         if (req.body.mastery_requirements != null)
             req.body.mastery_requirements =
-                req.body.mastery_requirements.replace(/'/g, "'");
+                req.body.mastery_requirements.replace(/'/g, "\\'");
         var sqlQuery;
         sqlQuery =
             `UPDATE skills SET name = '` +
