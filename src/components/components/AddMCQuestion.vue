@@ -145,11 +145,9 @@ export default {
         remove(i, name) {
             this.files.splice(i, 1);
             // we remove in the duplicate array too to update the validate warning
-            this.duplicates = this.duplicates.filter((file) => file !== name);
+            this.duplicates = [];
             //  we also remove the missing Fields array if user delete the file
-            this.missingFields = this.missingFields.filter(
-                (file) => file.fileName !== name
-            );
+            this.missingFields = [];
             /** Because we add file content to question array when input change
              *  So we have to update the question array whenever user delete a file in files
              */
@@ -350,16 +348,29 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Please fix the below errors and re-upload the file:</p>
-
+                <!-- Show below waring if there are files have missing field  -->
+                <p class="mb-3" v-if="missingFields.length">
+                    Please fix the below errors and re-upload the file:
+                </p>
                 <div
-                    class="modal-warning-line mt-3"
+                    class="modal-warning-line mb-3"
                     v-for="file in missingFields"
                     :key="file"
                 >
                     File: {{ file.fileName }} at Line {{ file.line }} have
                     {{ file.numberOfMissingField }}
                     {{ file.missingType }} field than default.
+                </div>
+                <!-- Show below warning if there are duplicate files name -->
+                <p v-if="duplicates.length">
+                    Please remove any duplicate files that are submitted below:
+                </p>
+                <div
+                    class="modal-warning-line mb-3"
+                    v-for="file in duplicates"
+                    :key="file"
+                >
+                    File: {{ file }}.
                 </div>
                 <div
                     class="mt-4"
