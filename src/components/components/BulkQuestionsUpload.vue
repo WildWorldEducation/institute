@@ -26,7 +26,7 @@ export default {
                 var CSVArray = CSVString.split(/\r?\n|\r|\n/g);
                 // Break individual questions into arrays.
                 // Validation.
-                //reverse loop.
+                //reverse loop to not mess with splicing.
                 for (let i = CSVArray.length - 1; i >= 0; i--) {
                     // Remove any empty lines.
                     if (CSVArray[i] == '') {
