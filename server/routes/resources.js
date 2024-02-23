@@ -41,7 +41,7 @@ conn.connect((err) => {
 router.post('/add/:skillId', (req, res, next) => {
     if (req.session.userName) {
         // No need to escape single quotes for SQL to accept,
-        // as using the SET operator.
+        // as using '?'.
         // Add data.
         let data = {
             skill_id: req.params.skillId,

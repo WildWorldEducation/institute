@@ -285,7 +285,7 @@ router.get('/essay/list', (req, res, next) => {
 router.post('/mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
         // No need to escape single quotes for SQL to accept,
-        // as using the SET operator.
+        // as using '?'.
         // Add data.
         let data = {};
         data = {
@@ -325,7 +325,7 @@ router.post('/mc-questions/add', (req, res, next) => {
 router.post('/essay-questions/add', (req, res, next) => {
     if (req.session.userName) {
         // No need to escape single quotes for SQL to accept,
-        // as using the SET operator.
+        // as using '?'.
         // Add data.
         let data = {};
         data = {
@@ -360,7 +360,7 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
     if (req.session.userName) {
         // For each question.
         // No need to escape single quotes for SQL to accept,
-        // as using the SET operator.
+        // as using '?'.
         for (let i = 0; i < req.body.questionArray.length; i++) {
             // Add the questions.
             let data = {};

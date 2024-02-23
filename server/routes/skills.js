@@ -38,7 +38,7 @@ conn.connect((err) => {
 router.post('/add', (req, res, next) => {
     if (req.session.userName) {
         // No need to escape single quotes for SQL to accept,
-        // as using the SET operator.
+        // as using '?'.
         // Add the skill.
         let data = {};
         data = {
@@ -347,7 +347,7 @@ router.get('/:id/essay-questions/list', (req, res, next) => {
 router.post('/:id/mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
         // No need to escape single quotes for SQL to accept,
-        // as using the SET operator.
+        // as using '?'.
         // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
         // For each question.
         for (let i = 0; i < req.body.questionArray.length; i++) {
@@ -395,7 +395,7 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
     if (req.session.userName) {
         // For each question.
         // No need to escape single quotes for SQL to accept,
-        // as using the SET operator.
+        // as using '?'.
         // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
         for (let i = 0; i < req.body.questionArray.length; i++) {
             // Add skill.
