@@ -20,42 +20,35 @@ export default {
         ReadFile(file) {
             var reader = new FileReader();
             reader.onload = (e) => {
-                var numIncorrectlyFormattedQuestions = 0;
+                let incorrectlyFormattedQuestions = false;
                 var CSVString = e.target.result;
                 // Break CSV into individual questions.
                 var CSVArray = CSVString.split(/\r?\n|\r|\n/g);
 
                 // Break individual questions into arrays.
                 // Validation.
-                // Remove any empty lines.
-                for (let i = 0; i < CSVArray.length; i++) {
+                //reverse loop to not mess with splicing.
+                for (let i = CSVArray.length - 1; i >= 0; i--) {
                     // Remove any empty lines.
                     if (CSVArray[i] == '') {
                         CSVArray.splice(i, 1);
                     }
-                }
-                // As splicing messes up the numbering, we use a second loop.
-                // Check for missing fields.
-                for (let i = 0; i < CSVArray.length; i++) {
+                    // Check for missing fields.
+                    // If found, omit this question.
                     if (CSVArray[i].split('|').length != 2) {
-                        numIncorrectlyFormattedQuestions++;
+                        incorrectlyFormattedQuestions = true;
                         CSVArray.splice(i, 1);
                     }
+                }
+                // Add the correctly formatted questions to the array.
+                for (let i = 0; i < CSVArray.length; i++) {
                     this.questionsArray[i] = CSVArray[i].split('|');
                 }
                 // Let the user know they had some incorrectly formatted questions.
-                if (numIncorrectlyFormattedQuestions > 0) {
-                    let string;
-                    if (numIncorrectlyFormattedQuestions == 1) {
-                        string =
-                            numIncorrectlyFormattedQuestions +
-                            ' question has the wrong number of fields and has been omitted.';
-                    } else {
-                        string =
-                            numIncorrectlyFormattedQuestions +
-                            ' questions have the wrong number of fields and have been omitted.';
-                    }
-                    alert(string);
+                if (incorrectlyFormattedQuestions) {
+                    alert(
+                        'At least one question has the wrong number of fields and has been omitted.'
+                    );
                 }
             };
             reader.readAsText(file);
