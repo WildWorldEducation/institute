@@ -82,11 +82,9 @@ router.get('/list/:assessmentId', (req, res, next) => {
  */
 router.post('/add/:assessmentId', (req, res, next) => {
     if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.answer != null)
-            req.body.answer = req.body.answer.replace(/'/g, "'");
-
-        // Add data..
+        // No need to escape single quotes for SQL to accept,
+        // as using '?'.
+        // Add data.
         let data = {};
         data = {
             assessment_id: req.params.assessmentId,
