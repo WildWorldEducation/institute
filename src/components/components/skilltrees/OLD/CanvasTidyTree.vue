@@ -1,9 +1,9 @@
 <script>
 // Import the stores.
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
-import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
+//import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+//import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested component.
-import SkillPanel from './../SkillPanel.vue';
+//import SkillPanel from './../SkillPanel.vue';
 
 import * as d3 from 'd3';
 // // Import Pixi JS.
