@@ -20,27 +20,42 @@ export default {
         ReadFile(file) {
             var reader = new FileReader();
             reader.onload = (e) => {
+                var numIncorrectlyFormattedQuestions = 0;
                 var CSVString = e.target.result;
                 // Break CSV into individual questions.
                 var CSVArray = CSVString.split(/\r?\n|\r|\n/g);
 
                 // Break individual questions into arrays.
+                // Validation.
+                // Remove any empty lines.
                 for (let i = 0; i < CSVArray.length; i++) {
                     // Remove any empty lines.
                     if (CSVArray[i] == '') {
                         CSVArray.splice(i, 1);
                     }
-
-                    this.questionsArray[i] = CSVArray[i].split('|');
-
-                    // Validation - checking for missing fields.
-                    if (this.questionsArray[i].length != 2) {
-                        alert(
-                            'Please check your CSVs. There are fields missing.'
-                        );
-                        this.questionsArray = [];
-                        return;
+                }
+                // As splicing messes up the numbering, we use a second loop.
+                // Check for missing fields.
+                for (let i = 0; i < CSVArray.length; i++) {
+                    if (CSVArray[i].split('|').length != 2) {
+                        numIncorrectlyFormattedQuestions++;
+                        CSVArray.splice(i, 1);
                     }
+                    this.questionsArray[i] = CSVArray[i].split('|');
+                }
+                // Let the user know they had some incorrectly formatted questions.
+                if (numIncorrectlyFormattedQuestions > 0) {
+                    let string;
+                    if (numIncorrectlyFormattedQuestions == 1) {
+                        string =
+                            numIncorrectlyFormattedQuestions +
+                            ' question has the wrong number of fields and has been omitted.';
+                    } else {
+                        string =
+                            numIncorrectlyFormattedQuestions +
+                            ' questions have the wrong number of fields and have been omitted.';
+                    }
+                    alert(string);
                 }
             };
             reader.readAsText(file);
