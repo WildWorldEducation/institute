@@ -11,7 +11,9 @@ export default {
             // validate flag for same file name in drag and drop
             duplicates: [],
             // validate flag for missing fields in drag and drop
-            missingFields: []
+            missingFields: [],
+            //  show modal flag
+            showModal: false
         };
     },
     async created() {},
@@ -29,18 +31,35 @@ export default {
                 // Break CSV into individual questions.
                 var CSVArray = CSVString.split(/\r?\n|\r|\n/g);
                 // Break individual questions into arrays.
-                for await (const CSVLine of CSVArray) {
+                for (let i = 0; i < CSVArray.length; i++) {
                     // Remove any empty lines.
-                    if (CSVLine === '') {
+
+                    if (CSVArray[i] == '') {
                         CSVArray.splice(i, 1);
-                    }
-                    const question = CSVLine.split('|');
-                    this.questionsArray.push(question);
-                    // Validation - checking for missing fields.
-                    if (question.length != 8) {
-                        this.missingFields.push(file.name);
-                        this.questionsArray = [];
-                        return;
+                    } else {
+                        const question = CSVArray[i].split('|');
+                        this.questionsArray.push(question);
+                        // Validation - checking for missing fields.
+                        if (question.length != 8) {
+                            // line order of the CSVline that have missing field
+                            const line = i + 1;
+                            // Determine if this line has fewer of more field and number of difference in field
+                            const missingType =
+                                question.length - 8 > 0 ? 'more' : 'less';
+                            // We calculate the absolute value of field the line is missing
+                            const numberOfMissingField = Math.abs(
+                                8 - question.length
+                            );
+                            const missingObj = {
+                                fileName: file.name,
+                                line: line,
+                                missingType: missingType,
+                                numberOfMissingField: numberOfMissingField
+                            };
+
+                            this.missingFields.push(missingObj);
+                            this.questionsArray = [];
+                        }
                     }
                 }
             };
@@ -48,8 +67,9 @@ export default {
         },
         async Submit() {
             const questionArray = [];
-            // If validate condition are violated we stop the submit function
+            // If validate condition are violated we stop the submit function and show a warning modal
             if (this.missingFields.length || this.duplicates.length) {
+                this.showModal = true;
                 return;
             }
             // For each question.
@@ -128,7 +148,7 @@ export default {
             this.duplicates = this.duplicates.filter((file) => file !== name);
             //  we also remove the missing Fields array if user delete the file
             this.missingFields = this.missingFields.filter(
-                (file) => file !== name
+                (file) => file.fileName !== name
             );
             /** Because we add file content to question array when input change
              *  So we have to update the question array whenever user delete a file in files
@@ -230,10 +250,13 @@ export default {
                     <!-- warning for missing fields -->
                     <div class="validate-line mt-3" v-if="missingFields.length">
                         Please check your CSVs files:
-                        <span v-for="file in missingFields" :key="file"
-                            >{{ file }}, &ThinSpace;
-                        </span>
-                        .There are fields missing.
+                        <div v-for="file in missingFields" :key="file">
+                            File: {{ file.fileName }} at Line
+                            {{ file.line }} have
+                            {{ file.numberOfMissingField }}
+                            {{ file.missingType }} field than default.
+                            &ThinSpace;
+                        </div>
                     </div>
                 </div>
                 <!-- Phone Styling -->
@@ -283,13 +306,16 @@ export default {
                             </button>
                         </div>
                     </div>
-                    <!-- Warning for duplicate file -->
-                    <div class="validate-line mt-3" v-if="duplicates.length">
-                        You have add duplicate csv files. Please remove the
-                        duplicate file for
-                        <span v-for="file in duplicates" :key="file.name"
-                            >{{ file }}, &ThinSpace;
-                        </span>
+                    <!-- warning for missing fields -->
+                    <div class="validate-line mt-3" v-if="missingFields.length">
+                        Please check your CSVs files:
+                        <div v-for="file in missingFields" :key="file">
+                            File: {{ file.fileName }} at Line
+                            {{ file.line }} have
+                            {{ file.numberOfMissingField }}
+                            {{ file.missingType }} field than default.
+                            &ThinSpace;
+                        </div>
                     </div>
                 </div>
             </div>
@@ -317,6 +343,36 @@ export default {
                         />
                     </svg>
                 </router-link>
+            </div>
+        </div>
+    </div>
+    <div v-if="showModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>Please fix the below errors and re-upload the file:</p>
+
+                <div
+                    class="modal-warning-line mt-3"
+                    v-for="file in missingFields"
+                    :key="file"
+                >
+                    File: {{ file.fileName }} at Line {{ file.line }} have
+                    {{ file.numberOfMissingField }}
+                    {{ file.missingType }} field than default.
+                </div>
+                <div
+                    class="mt-4"
+                    style="display: flex; gap: 10px; justify-content: end"
+                >
+                    <button
+                        type="button"
+                        class="btn green-btn"
+                        @click="showModal = false"
+                    >
+                        OK
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -366,6 +422,12 @@ export default {
     font-weight: 300;
 }
 
+.modal-warning-line {
+    font-size: 1rem;
+    color: red;
+    font-weight: 400;
+}
+
 /** Drop Zone Styling */
 .dropzone-container {
     padding: 4rem;
@@ -407,6 +469,41 @@ export default {
 #click-here-label:hover {
     color: #8f7bd6;
 }
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 650px;
+    /* Could be more or less, depending on screen size */
+    display: flex;
+    justify-content: end;
+}
+/* | End Of Warning Model Styling | */
 
 /* End Of Drop Zone Styling */
 
