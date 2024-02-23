@@ -11,7 +11,9 @@ export default {
             // validate flag for same file name in drag and drop
             duplicates: [],
             // validate flag for missing fields in drag and drop
-            missingFields: []
+            missingFields: [],
+            //  show modal flag
+            showModal: false
         };
     },
     async created() {},
@@ -29,38 +31,61 @@ export default {
                 var CSVString = e.target.result;
                 // Break CSV into individual questions.
                 var CSVArray = CSVString.split(/\r?\n|\r|\n/g);
+
                 // Break individual questions into arrays.
-                for (const CSVLine of CSVArray) {
+                for (let i = 0; i < CSVArray.length; i++) {
                     // Remove any empty lines.
-                    if (CSVLine === '') {
+                    if (CSVArray[i] === '') {
                         CSVArray.splice(i, 1);
                     }
-                    const question = CSVLine.split('|');
+                    let question;
+                    console.log(CSVArray[i]);
+                    if (CSVArray[i] !== undefined) {
+                        question = CSVArray[i].split('|');
+                    } else {
+                        break;
+                    }
                     this.questionsArray.push(question);
+
                     // Validation - checking for missing fields.
+
                     if (question.length != 2) {
-                        this.missingFields.push(file.name);
+                        // line order of the CSVline that have missing field
+                        const line = i + 1;
+                        // Determine if this line has fewer of more field and number of difference in field
+                        const missingType =
+                            question.length - 2 > 0 ? 'more' : 'less';
+                        // We calculate the absolute value of field the line is missing
+                        const numberOfMissingField = Math.abs(
+                            2 - question.length
+                        );
+                        const missingObj = {
+                            fileName: file.name,
+                            line: line,
+                            missingType: missingType,
+                            numberOfMissingField: numberOfMissingField
+                        };
+
+                        this.missingFields.push(missingObj);
                         this.questionsArray = [];
-                        return;
                     }
                 }
             };
             reader.readAsText(file);
         },
         async Submit() {
+            const questionArray = [];
             // If validate condition are violated we stop the submit function
             if (this.missingFields.length || this.duplicates.length) {
+                this.showModal = true;
                 return;
             }
-            const questionArray = [];
             // For each question.
             for (let i = 0; i < this.questionsArray.length; i++) {
                 const questionObject = {};
                 questionObject.name = this.questionsArray[i][0];
                 questionObject.question = this.questionsArray[i][1];
                 questionArray.push(questionObject);
-                console.log('question No.' + i);
-                console.log(questionObject);
             }
 
             const requestOptions = {
@@ -122,11 +147,9 @@ export default {
             // remove object in array based on their index
             this.files_essay.splice(i, 1);
             // we remove in the duplicate array too to update the validate warning
-            this.duplicates = this.duplicates.filter((file) => file !== name);
+            this.duplicates = [];
             //  we also remove the missing Fields array if user delete the file
-            this.missingFields = this.missingFields.filter(
-                (file) => file !== name
-            );
+            this.missingFields = [];
             /** Because we add file content to question array when input change
              *  So we have to update the question array whenever user delete a file in files
              */
@@ -158,7 +181,7 @@ export default {
                     class="hidden-input"
                     @change="onChange"
                     ref="file_essay"
-                    accept=".csv"
+                    accept=".csv, .txt"
                 />
                 <label for="fileInput_essay" class="file-label">
                     <div v-if="isDragging">Release to drop files here.</div>
@@ -229,10 +252,13 @@ export default {
                     <!-- warning for missing fields -->
                     <div class="validate-line mt-3" v-if="missingFields.length">
                         Please check your CSVs files:
-                        <span v-for="file in missingFields" :key="file"
-                            >{{ file }}, &ThinSpace;
-                        </span>
-                        .There are fields missing.
+                        <div v-for="file in missingFields" :key="file">
+                            File: {{ file.fileName }} at Line
+                            {{ file.line }} have
+                            {{ file.numberOfMissingField }}
+                            {{ file.missingType }} field than default.
+                            &ThinSpace;
+                        </div>
                     </div>
                 </div>
                 <!-- Phone view  -->
@@ -292,6 +318,17 @@ export default {
                             >{{ file }}, &ThinSpace;
                         </span>
                     </div>
+                    <!-- warning for missing fields -->
+                    <div class="validate-line mt-3" v-if="missingFields.length">
+                        Please check your CSVs files:
+                        <div v-for="file in missingFields" :key="file">
+                            File: {{ file.fileName }} at Line
+                            {{ file.line }} have
+                            {{ file.numberOfMissingField }}
+                            {{ file.missingType }} field than default.
+                            &ThinSpace;
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -320,6 +357,49 @@ export default {
                         />
                     </svg>
                 </router-link>
+            </div>
+        </div>
+    </div>
+    <div v-if="showModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <!-- Show below waring if there are files have missing field  -->
+                <p class="mb-3" v-if="missingFields.length">
+                    Please fix the below errors and re-upload the file:
+                </p>
+                <div
+                    class="modal-warning-line mb-3"
+                    v-for="file in missingFields"
+                    :key="file"
+                >
+                    File: {{ file.fileName }} at Line {{ file.line }} have
+                    {{ file.numberOfMissingField }}
+                    {{ file.missingType }} field than default.
+                </div>
+                <!-- Show below warning if there are duplicate files name -->
+                <p v-if="duplicates.length">
+                    Please remove any duplicate files that are submitted below:
+                </p>
+                <div
+                    class="modal-warning-line mb-3"
+                    v-for="file in duplicates"
+                    :key="file"
+                >
+                    File: {{ file }}.
+                </div>
+                <div
+                    class="mt-4"
+                    style="display: flex; gap: 10px; justify-content: end"
+                >
+                    <button
+                        type="button"
+                        class="btn green-btn"
+                        @click="showModal = false"
+                    >
+                        OK
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -414,6 +494,47 @@ export default {
 }
 
 /* End Of Drop Zone Styling */
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 650px;
+    /* Could be more or less, depending on screen size */
+    display: flex;
+    justify-content: end;
+}
+
+.modal-warning-line {
+    font-size: 1rem;
+    color: red;
+    font-weight: 400;
+}
+/* | End Of Warning Model Styling | */
 
 /* Mobile */
 @media (max-width: 480px) {

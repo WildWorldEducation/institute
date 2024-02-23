@@ -433,12 +433,6 @@ export default {
     font-weight: 300;
 }
 
-.modal-warning-line {
-    font-size: 1rem;
-    color: red;
-    font-weight: 400;
-}
-
 /** Drop Zone Styling */
 .dropzone-container {
     padding: 4rem;
@@ -513,6 +507,12 @@ export default {
     /* Could be more or less, depending on screen size */
     display: flex;
     justify-content: end;
+}
+
+.modal-warning-line {
+    font-size: 1rem;
+    color: red;
+    font-weight: 400;
 }
 /* | End Of Warning Model Styling | */
 
