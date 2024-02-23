@@ -1,1 +1,0 @@
-import{r as t,o as e,c as o,e as _,f as a,g as r,F as l,b as n,a as c}from"./main-6235d138.js";const i=n("div",{id:"purple-banner"},null,-1),d=n("span",null,"Loading...",-1),T={__name:"CanvasTidyTreeView",setup(p){return(u,m)=>{const s=t("CanvasTidyTree");return e(),o(l,null,[i,(e(),_(r,null,{default:a(()=>[c(s)]),fallback:a(()=>[d]),_:1}))],64)}}};export{T as default};
