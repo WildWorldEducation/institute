@@ -39,7 +39,6 @@ export default {
                         CSVArray.splice(i, 1);
                     }
                     let question;
-                    console.log(CSVArray[i]);
                     if (CSVArray[i] !== undefined) {
                         question = CSVArray[i].split('|');
                     } else {
