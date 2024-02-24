@@ -219,17 +219,18 @@ export default {
             // Skill names.
             const style = new PIXI.TextStyle({
                 fontFamily: 'Arial',
-                fontSize: 12,
+                fontSize: 24,
                 fill: '#000',
                 stroke: '#fff',
-                strokeThickness: 3
+                strokeThickness: 4
             });
 
-            const basicText = new PIXI.Text(node.data.skill_name, style);
-            basicText.anchor.set(0, 0.5);
-            basicText.x = node.y + 15;
-            basicText.y = node.x;
-            this.$pixiApp.stage.children[0].addChild(basicText);
+            const nameText = new PIXI.Text(node.data.skill_name, style);
+            nameText.anchor.set(0, 0.5);
+            nameText.x = node.y + 15;
+            nameText.y = node.x;
+            nameText.scale.set(0.5, 0.5);
+            this.$pixiApp.stage.children[0].addChild(nameText);
         },
         drawLink(link) {
             // D3 function to generate the link path data.
