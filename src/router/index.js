@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import PostLoginView from '../components/pages/PostLoginView.vue';
-// import LoginView from '../components/pages/LoginView.vue'
+import TidyTreeView from '../components/pages/TidyTreeView.vue';
 
 import { useSessionDetailsStore } from '../stores/SessionDetailsStore';
 import { useUserDetailsStore } from '../stores/UserDetailsStore';
@@ -10,42 +9,30 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'post-login',
-            component: PostLoginView
+            name: 'tidy-tree',
+            component: TidyTreeView
         },
         {
-            path: '/pixi-tree',
-            name: 'pixi-tree',
+            path: '/hub',
+            name: 'hub',
+            component: () => import('../components/pages/HubView.vue')
+        },
+        {
+            path: '/radial-tree',
+            name: 'radial-tree',
             component: () => import('../components/pages/PixiTreeView.vue')
         },
-        {
-            path: '/radial-tidy-tree',
-            name: 'radial-tidy-tree',
-            component: () =>
-                import('../components/pages/RadialTidyTreeView.vue')
-        },
-        {
-            path: '/radial-cluster-tree',
-            name: 'radial-cluster-tree',
-            component: () =>
-                import('../components/pages/RadialClusterTreeView.vue')
-        },
-        {
-            path: '/tidy-tree',
-            name: 'tidy-tree',
-            component: () => import('../components/pages/TidyTreeView.vue')
-        },
-        {
-            path: '/canvas-tidy-tree',
-            name: 'canvas-tidy-tree',
-            component: () =>
-                import('../components/pages/CanvasTidyTreeView.vue')
-        },
-        {
-            path: '/pixi-tidy-tree',
-            name: 'pixi-tidy-tree',
-            component: () => import('../components/pages/PixiTidyTreeView.vue')
-        },
+        // {
+        //     path: '/tidy-tree',
+        //     name: 'tidy-tree',
+        //     component: () => import('../components/pages/TidyTreeView.vue')
+        // },
+        // {
+        //     path: '/canvas-tidy-tree',
+        //     name: 'canvas-tidy-tree',
+        //     component: () =>
+        //         import('../components/pages/CanvasTidyTreeView.vue')
+        // },
         {
             path: '/:id/skill-tree',
             name: 'student-skill-tree',
