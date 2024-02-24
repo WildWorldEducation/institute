@@ -1,1 +1,0 @@
-import{r as s,o as e,c as o,e as _,f as a,g as r,F as l,b as n,a as c}from"./main-578d4ac3.js";const i=n("div",{id:"purple-banner"},null,-1),d=n("span",null,"Loading...",-1),f={__name:"TidyTreeView",setup(p){return(u,m)=>{const t=s("TidyTree");return e(),o(l,null,[i,(e(),_(r,null,{default:a(()=>[c(t)]),fallback:a(()=>[d]),_:1}))],64)}}};export{f as default};
