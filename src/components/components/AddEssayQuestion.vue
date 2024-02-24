@@ -566,5 +566,14 @@ export default {
     .input-file-name {
         font-size: 14px;
     }
+
+    .modal-content {
+        background-color: #fefefe;
+        border: 1px solid #888;
+        width: 100%;
+        /* Could be more or less, depending on screen size */
+        display: flex;
+        justify-content: end;
+    }
 }
 </style>
