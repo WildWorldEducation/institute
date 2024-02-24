@@ -23,11 +23,6 @@ const router = createRouter({
             component: () => import('../components/pages/PixiTreeView.vue')
         },
         // {
-        //     path: '/tidy-tree',
-        //     name: 'tidy-tree',
-        //     component: () => import('../components/pages/TidyTreeView.vue')
-        // },
-        // {
         //     path: '/canvas-tidy-tree',
         //     name: 'canvas-tidy-tree',
         //     component: () =>
