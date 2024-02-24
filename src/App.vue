@@ -47,54 +47,25 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink to="/pixi-tree" class="nav-link"
-                                >Radial Tree</RouterLink
+                        <li class="nav-item">
+                            <RouterLink to="/hub" class="nav-link"
+                                >Hub</RouterLink
                             >
                         </li>
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink to="/radial-tidy-tree" class="nav-link"
-                                >Radial Tidy Tree</RouterLink
-                            >
-                        </li> -->
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/radial-cluster-tree"
-                                class="nav-link"
-                                >Radial Cluster Tree</RouterLink
-                            >
-                        </li> -->
-                        <!-- <li
+                        <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/tidy-tree" class="nav-link"
-                                >SVG Tidy Tree</RouterLink
+                                >Tidy Tree</RouterLink
                             >
-                        </li> -->
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink to="/canvas-tidy-tree" class="nav-link"
-                                >Canvas Tidy Tree</RouterLink
-                            >
-                        </li> -->
+                        </li>
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
-                            <RouterLink to="/pixi-tidy-tree" class="nav-link"
-                                >Tidy Tree</RouterLink
+                            <RouterLink to="/radial-tree" class="nav-link"
+                                >Radial Tree</RouterLink
                             >
                         </li>
                         <li class="nav-item">

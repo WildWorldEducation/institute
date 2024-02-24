@@ -1,5 +1,5 @@
 <script setup>
-//import TidyTree from "../components/skilltrees/TidyTree.vue";
+import TidyTree from '../components/skilltrees/TidyTree.vue';
 </script>
 
 <template>
