@@ -63,6 +63,7 @@ export default {
     created() {
         this.$tidyTreeContainer.visible = false;
         this.$radialTreeContainer.visible = true;
+        this.$pixiApp.renderer.background.color = 0x000;
     },
     async mounted() {
         // Get the data from the API.

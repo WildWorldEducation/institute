@@ -48,6 +48,7 @@ export default {
     created() {
         this.$radialTreeContainer.visible = false;
         this.$tidyTreeContainer.visible = true;
+        this.$pixiApp.renderer.background.color = 0xffffff;
     },
     async mounted() {
         if (this.skillTreeStore.userSkills.length == 0) {
@@ -65,7 +66,6 @@ export default {
         }
         // Add the canvas to the DOM.
         document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
-        this.$radialTreeContainer.visible = false;
     },
     methods: {
         getAlgorithm() {
