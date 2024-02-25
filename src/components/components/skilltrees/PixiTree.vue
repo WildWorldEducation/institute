@@ -10,8 +10,6 @@ import SkillPanel from './../SkillPanel.vue';
 
 // Import Pixi JS.
 import * as PIXI from 'pixi.js';
-// Import Pixi Viewprt.
-import { Viewport } from 'pixi-viewport';
 // For pixi to use custom fonts.
 import FontFaceObserver from 'fontfaceobserver';
 
@@ -62,6 +60,14 @@ export default {
         SkillTreeFilter,
         SkillPanel
     },
+    created() {
+        // Hide the tidy tree.
+        this.$tidyTreeContainer.visible = false;
+        // Show this tree.
+        this.$radialTreeContainer.visible = true;
+        // Set the background colour.
+        this.$pixiApp.renderer.background.color = 0x000;
+    },
     async mounted() {
         // Get the data from the API.
         // if (this.skillTreeStore.userSkillsNoSubSkills.length == 0) {
@@ -79,45 +85,22 @@ export default {
             await this.skillTreeStore.getUserSkills();
         }
 
-        // Specify the chart’s dimensions.
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
-        this.radius = Math.min(this.width, this.height) / 2;
-
+        // Only generate this chart, if it has not already been generated.
+        if (this.$radialTreeContainer.children.length == 0) {
+            // Specify the chart’s dimensions.
+            this.width = window.innerWidth;
+            this.height = window.innerHeight;
+            this.radius = Math.min(this.width, this.height) / 2;
+            const centerNodeSprite = PIXI.Sprite.from('center-node.png');
+            this.skill = {
+                name: 'SKILLS',
+                sprite: centerNodeSprite,
+                children: this.skillTreeStore.userSkills
+            };
+            this.getAlgorithm();
+        }
+        // Add the canvas to the DOM.
         document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
-
-        const viewport = new Viewport({
-            screenWidth: this.width,
-            screenHeight: this.height,
-            worldWidth: this.width,
-            worldHeight: this.height,
-            events: this.$pixiApp.renderer.events
-        });
-
-        this.$pixiApp.stage.addChild(viewport);
-
-        viewport.center = new PIXI.Point(0, 0);
-        viewport
-            .drag({
-                wheelScroll: 2,
-                factor: 2
-            })
-            .pinch({
-                percent: 2,
-                factor: 2
-            })
-            .wheel()
-            .decelerate()
-            .clampZoom({ minScale: 0.001, maxScale: 10 });
-
-        const centerNodeSprite = PIXI.Sprite.from('center-node.png');
-        this.skill = {
-            name: 'SKILLS',
-            sprite: centerNodeSprite,
-            children: this.skillTreeStore.userSkills
-        };
-
-        this.getAlgorithm();
     },
     methods: {
         getAlgorithm() {
@@ -266,7 +249,8 @@ export default {
                     root.links()[i].target.y;
                 link.lineTo(targetX, targetY);
 
-                this.$pixiApp.stage.children[0].addChild(link);
+                // Add to the global variable container for this chart.
+                this.$radialTreeContainer.addChild(link);
                 // Add to array, so can be deleted when skill tree is recentered.
                 this.stageContents.push(link);
             }
@@ -282,7 +266,9 @@ export default {
             if (this.isRecentered == false) centerNode.scale.set(0.5);
             else centerNode.scale.set(1);
 
-            this.$pixiApp.stage.children[0].addChild(centerNode);
+            // Add to the global variable container for this chart.
+            this.$radialTreeContainer.addChild(centerNode);
+
             // Add to array, so can be deleted when skill tree is recentered.
             this.stageContents.push(centerNode);
 
@@ -301,7 +287,8 @@ export default {
             // This is to deal with the artificially high font size mentioned above.
             centerNodeText.scale.x = 0.2;
             centerNodeText.scale.y = 0.2;
-            this.$pixiApp.stage.children[0].addChild(centerNodeText);
+            // Add to the global variable container for this chart.
+            this.$radialTreeContainer.addChild(centerNodeText);
             // Add to array, so can be deleted when skill tree is recentered.
             this.stageContents.push(centerNodeText);
 
@@ -541,7 +528,8 @@ export default {
                         //     context.updateInfoPanel(skill)
                     });
 
-                    context.$pixiApp.stage.children[0].addChild(nodeContainer);
+                    // Add to the global variable container for this chart.
+                    context.$radialTreeContainer.addChild(nodeContainer);
                     // Add to array, so can be deleted when skill tree is recentered.
                     context.stageContents.push(nodeContainer);
 
@@ -678,7 +666,8 @@ export default {
 
             this.radiusMultiplier = 4;
 
-            this.$pixiApp.stage.children[0].removeChildren();
+            // Clear the global variable container for this chart.
+            this.$radialTreeContainer.removeChildren();
 
             const centerNodeSprite = PIXI.Sprite.from('center-node.png');
             this.skill = {

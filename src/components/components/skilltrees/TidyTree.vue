@@ -8,8 +8,6 @@ import SkillPanel from './../SkillPanel.vue';
 import * as d3 from 'd3';
 // Import Pixi JS.
 import * as PIXI from 'pixi.js';
-// Import Pixi Viewprt.
-import { Viewport } from 'pixi-viewport';
 
 import {
     SmoothGraphics as Graphics,
@@ -47,45 +45,30 @@ export default {
     components: {
         SkillPanel
     },
+    created() {
+        // Hide the radial tree.
+        this.$radialTreeContainer.visible = false;
+        // Show this tree.
+        this.$tidyTreeContainer.visible = true;
+        // Set the background colour.
+        this.$pixiApp.renderer.background.color = 0xffffff;
+    },
     async mounted() {
         if (this.skillTreeStore.userSkills.length == 0) {
             await this.skillTreeStore.getUserSkills();
         }
 
-        this.skill = {
-            name: 'SKILLS',
-            sprite: null,
-            children: this.skillTreeStore.userSkills
-        };
-
-        const viewport = new Viewport({
-            screenWidth: this.width,
-            screenHeight: this.height,
-            worldWidth: this.width,
-            worldHeight: this.height,
-            events: this.$pixiApp.renderer.events
-        });
-
-        this.$pixiApp.stage.addChild(viewport);
-
-        viewport.center = new PIXI.Point(100, 0);
-        viewport.setZoom(0.1);
-        viewport
-            .drag({
-                wheelScroll: 2,
-                factor: 2
-            })
-            .pinch({
-                percent: 2,
-                factor: 2
-            })
-            .wheel()
-            .decelerate()
-            .clampZoom({ minScale: 0.001, maxScale: 10 });
-
+        // Only generate this chart, if it has not already been generated.
+        if (this.$tidyTreeContainer.children.length == 0) {
+            this.skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: this.skillTreeStore.userSkills
+            };
+            this.getAlgorithm();
+        }
+        // Add the canvas to the DOM.
         document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
-
-        this.getAlgorithm();
     },
     methods: {
         getAlgorithm() {
@@ -196,7 +179,8 @@ export default {
             nodeGraphic.beginFill(0x000, 1);
             nodeGraphic.drawCircle(node.y, node.x, 15);
             nodeGraphic.endFill();
-            this.$pixiApp.stage.children[0].addChild(nodeGraphic);
+            // Add to the global variable container for this chart.
+            this.$tidyTreeContainer.addChild(nodeGraphic);
 
             // Interactivity.
             nodeGraphic.eventMode = 'static';
@@ -230,7 +214,8 @@ export default {
             nameText.x = node.y + 15;
             nameText.y = node.x;
             nameText.scale.set(0.5, 0.5);
-            this.$pixiApp.stage.children[0].addChild(nameText);
+            // Add to the global variable container for this chart.
+            this.$tidyTreeContainer.addChild(nameText);
         },
         drawLink(link) {
             // D3 function to generate the link path data.
@@ -255,8 +240,6 @@ export default {
 
             // Draw the bezier curve with Pixi.
             const nodeLink = new Graphics();
-
-            // graphics.lineStyle({ width: 16, color: 0xff00ff, shader });
             // If skill is mastered.
             var lineWidth;
             if (link.target.data.is_mastered == 1) lineWidth = 4;
@@ -285,7 +268,8 @@ export default {
                 otherPointsArray[4] - startingPointArray[0],
                 otherPointsArray[5] - startingPointArray[1]
             );
-            this.$pixiApp.stage.children[0].addChild(nodeLink);
+            // Add to the global variable container for this chart.
+            this.$tidyTreeContainer.addChild(nodeLink);
         },
         showInfoPanel() {
             // If panel is not showing.
