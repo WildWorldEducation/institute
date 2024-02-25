@@ -61,4 +61,14 @@ viewport
     .decelerate()
     .clampZoom({ minScale: 0.001, maxScale: 10 });
 
+// Create Pixi containers for each skill tree.
+// So as to be able to hide them when the user moves to a different one,
+// so they dont print over one another.
+// Rather than clearing and rebuilding them, which would take time.
+app.config.globalProperties.$tidyTreeContainer = new PIXI.Container();
+viewport.addChild(app.config.globalProperties.$tidyTreeContainer);
+
+app.config.globalProperties.$radialTreeContainer = new PIXI.Container();
+viewport.addChild(app.config.globalProperties.$radialTreeContainer);
+
 app.mount('#app');

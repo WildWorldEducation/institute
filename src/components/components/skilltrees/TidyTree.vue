@@ -45,20 +45,27 @@ export default {
     components: {
         SkillPanel
     },
+    created() {
+        this.$radialTreeContainer.visible = false;
+        this.$tidyTreeContainer.visible = true;
+    },
     async mounted() {
         if (this.skillTreeStore.userSkills.length == 0) {
             await this.skillTreeStore.getUserSkills();
         }
 
-        this.skill = {
-            name: 'SKILLS',
-            sprite: null,
-            children: this.skillTreeStore.userSkills
-        };
-
+        // Only generate this chart, if it has not already been generated.
+        if (this.$tidyTreeContainer.children.length == 0) {
+            this.skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: this.skillTreeStore.userSkills
+            };
+            this.getAlgorithm();
+        }
+        // Add the canvas to the DOM.
         document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
-
-        this.getAlgorithm();
+        this.$radialTreeContainer.visible = false;
     },
     methods: {
         getAlgorithm() {
@@ -169,7 +176,8 @@ export default {
             nodeGraphic.beginFill(0x000, 1);
             nodeGraphic.drawCircle(node.y, node.x, 15);
             nodeGraphic.endFill();
-            this.$pixiApp.stage.children[0].addChild(nodeGraphic);
+            // this.$pixiApp.stage.children[0].addChild(nodeGraphic);
+            this.$tidyTreeContainer.addChild(nodeGraphic);
 
             // Interactivity.
             nodeGraphic.eventMode = 'static';
@@ -203,7 +211,8 @@ export default {
             nameText.x = node.y + 15;
             nameText.y = node.x;
             nameText.scale.set(0.5, 0.5);
-            this.$pixiApp.stage.children[0].addChild(nameText);
+            //this.$pixiApp.stage.children[0].addChild(nameText);
+            this.$tidyTreeContainer.addChild(nameText);
         },
         drawLink(link) {
             // D3 function to generate the link path data.
@@ -258,7 +267,8 @@ export default {
                 otherPointsArray[4] - startingPointArray[0],
                 otherPointsArray[5] - startingPointArray[1]
             );
-            this.$pixiApp.stage.children[0].addChild(nodeLink);
+            //this.$pixiApp.stage.children[0].addChild(nodeLink);
+            this.$tidyTreeContainer.addChild(nodeLink);
         },
         showInfoPanel() {
             // If panel is not showing.
