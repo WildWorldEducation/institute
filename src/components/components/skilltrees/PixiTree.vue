@@ -10,8 +10,6 @@ import SkillPanel from './../SkillPanel.vue';
 
 // Import Pixi JS.
 import * as PIXI from 'pixi.js';
-// Import Pixi Viewprt.
-import { Viewport } from 'pixi-viewport';
 // For pixi to use custom fonts.
 import FontFaceObserver from 'fontfaceobserver';
 
@@ -85,30 +83,6 @@ export default {
         this.radius = Math.min(this.width, this.height) / 2;
 
         document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
-
-        const viewport = new Viewport({
-            screenWidth: this.width,
-            screenHeight: this.height,
-            worldWidth: this.width,
-            worldHeight: this.height,
-            events: this.$pixiApp.renderer.events
-        });
-
-        this.$pixiApp.stage.addChild(viewport);
-
-        viewport.center = new PIXI.Point(0, 0);
-        viewport
-            .drag({
-                wheelScroll: 2,
-                factor: 2
-            })
-            .pinch({
-                percent: 2,
-                factor: 2
-            })
-            .wheel()
-            .decelerate()
-            .clampZoom({ minScale: 0.001, maxScale: 10 });
 
         const centerNodeSprite = PIXI.Sprite.from('center-node.png');
         this.skill = {

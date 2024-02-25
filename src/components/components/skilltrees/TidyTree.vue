@@ -8,8 +8,6 @@ import SkillPanel from './../SkillPanel.vue';
 import * as d3 from 'd3';
 // Import Pixi JS.
 import * as PIXI from 'pixi.js';
-// Import Pixi Viewprt.
-import { Viewport } from 'pixi-viewport';
 
 import {
     SmoothGraphics as Graphics,
@@ -57,31 +55,6 @@ export default {
             sprite: null,
             children: this.skillTreeStore.userSkills
         };
-
-        const viewport = new Viewport({
-            screenWidth: this.width,
-            screenHeight: this.height,
-            worldWidth: this.width,
-            worldHeight: this.height,
-            events: this.$pixiApp.renderer.events
-        });
-
-        this.$pixiApp.stage.addChild(viewport);
-
-        viewport.center = new PIXI.Point(100, 0);
-        viewport.setZoom(0.1);
-        viewport
-            .drag({
-                wheelScroll: 2,
-                factor: 2
-            })
-            .pinch({
-                percent: 2,
-                factor: 2
-            })
-            .wheel()
-            .decelerate()
-            .clampZoom({ minScale: 0.001, maxScale: 10 });
 
         document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
 
