@@ -46,8 +46,11 @@ export default {
         SkillPanel
     },
     created() {
+        // Hide the radial tree.
         this.$radialTreeContainer.visible = false;
+        // Show this tree.
         this.$tidyTreeContainer.visible = true;
+        // Set the background colour.
         this.$pixiApp.renderer.background.color = 0xffffff;
     },
     async mounted() {
@@ -176,7 +179,7 @@ export default {
             nodeGraphic.beginFill(0x000, 1);
             nodeGraphic.drawCircle(node.y, node.x, 15);
             nodeGraphic.endFill();
-            // this.$pixiApp.stage.children[0].addChild(nodeGraphic);
+            // Add to the global variable container for this chart.
             this.$tidyTreeContainer.addChild(nodeGraphic);
 
             // Interactivity.
@@ -211,7 +214,7 @@ export default {
             nameText.x = node.y + 15;
             nameText.y = node.x;
             nameText.scale.set(0.5, 0.5);
-            //this.$pixiApp.stage.children[0].addChild(nameText);
+            // Add to the global variable container for this chart.
             this.$tidyTreeContainer.addChild(nameText);
         },
         drawLink(link) {
@@ -237,8 +240,6 @@ export default {
 
             // Draw the bezier curve with Pixi.
             const nodeLink = new Graphics();
-
-            // graphics.lineStyle({ width: 16, color: 0xff00ff, shader });
             // If skill is mastered.
             var lineWidth;
             if (link.target.data.is_mastered == 1) lineWidth = 4;
@@ -267,7 +268,7 @@ export default {
                 otherPointsArray[4] - startingPointArray[0],
                 otherPointsArray[5] - startingPointArray[1]
             );
-            //this.$pixiApp.stage.children[0].addChild(nodeLink);
+            // Add to the global variable container for this chart.
             this.$tidyTreeContainer.addChild(nodeLink);
         },
         showInfoPanel() {

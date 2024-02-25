@@ -65,9 +65,9 @@ viewport
 // So as to be able to hide them when the user moves to a different one,
 // so they dont print over one another.
 // Rather than clearing and rebuilding them, which would take time.
+// A bit like 2 scenes.
 app.config.globalProperties.$tidyTreeContainer = new PIXI.Container();
 viewport.addChild(app.config.globalProperties.$tidyTreeContainer);
-
 app.config.globalProperties.$radialTreeContainer = new PIXI.Container();
 viewport.addChild(app.config.globalProperties.$radialTreeContainer);
 

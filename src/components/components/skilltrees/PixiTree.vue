@@ -61,8 +61,11 @@ export default {
         SkillPanel
     },
     created() {
+        // Hide the tidy tree.
         this.$tidyTreeContainer.visible = false;
+        // Show this tree.
         this.$radialTreeContainer.visible = true;
+        // Set the background colour.
         this.$pixiApp.renderer.background.color = 0x000;
     },
     async mounted() {
@@ -246,7 +249,7 @@ export default {
                     root.links()[i].target.y;
                 link.lineTo(targetX, targetY);
 
-                //this.$pixiApp.stage.children[0].addChild(link);
+                // Add to the global variable container for this chart.
                 this.$radialTreeContainer.addChild(link);
                 // Add to array, so can be deleted when skill tree is recentered.
                 this.stageContents.push(link);
@@ -263,7 +266,7 @@ export default {
             if (this.isRecentered == false) centerNode.scale.set(0.5);
             else centerNode.scale.set(1);
 
-            //this.$pixiApp.stage.children[0].addChild(centerNode);
+            // Add to the global variable container for this chart.
             this.$radialTreeContainer.addChild(centerNode);
 
             // Add to array, so can be deleted when skill tree is recentered.
@@ -284,7 +287,7 @@ export default {
             // This is to deal with the artificially high font size mentioned above.
             centerNodeText.scale.x = 0.2;
             centerNodeText.scale.y = 0.2;
-            //this.$pixiApp.stage.children[0].addChild(centerNodeText);
+            // Add to the global variable container for this chart.
             this.$radialTreeContainer.addChild(centerNodeText);
             // Add to array, so can be deleted when skill tree is recentered.
             this.stageContents.push(centerNodeText);
@@ -525,7 +528,8 @@ export default {
                         //     context.updateInfoPanel(skill)
                     });
 
-                    context.$pixiApp.stage.children[0].addChild(nodeContainer);
+                    // Add to the global variable container for this chart.
+                    context.$radialTreeContainer.addChild(nodeContainer);
                     // Add to array, so can be deleted when skill tree is recentered.
                     context.stageContents.push(nodeContainer);
 
@@ -662,7 +666,7 @@ export default {
 
             this.radiusMultiplier = 4;
 
-            //this.$pixiApp.stage.children[0].removeChildren();
+            // Clear the global variable container for this chart.
             this.$radialTreeContainer.removeChildren();
 
             const centerNodeSprite = PIXI.Sprite.from('center-node.png');
