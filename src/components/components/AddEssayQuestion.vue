@@ -13,7 +13,9 @@ export default {
             // validate flag for missing fields in drag and drop
             missingFields: [],
             //  show modal flag
-            showModal: false
+            showModal: false,
+            // flag to handle user click on modal
+            clickModal: false
         };
     },
     async created() {},
@@ -44,7 +46,6 @@ export default {
                     } else {
                         break;
                     }
-                    this.questionsArray.push(question);
 
                     // Validation - checking for missing fields.
 
@@ -64,9 +65,10 @@ export default {
                             missingType: missingType,
                             numberOfMissingField: numberOfMissingField
                         };
-
                         this.missingFields.push(missingObj);
-                        this.questionsArray = [];
+                    } else {
+                        // Add question that have correct format to the questions array
+                        this.questionsArray.push(question);
                     }
                 }
             };
@@ -75,7 +77,11 @@ export default {
         async Submit() {
             const questionArray = [];
             // If validate condition are violated we stop the submit function
-            if (this.missingFields.length || this.duplicates.length) {
+            // Now we only show the modal once and If user still want to upload question we will
+            if (
+                (this.missingFields.length || this.duplicates.length) &&
+                !this.clickModal
+            ) {
                 this.showModal = true;
                 return;
             }
@@ -397,7 +403,11 @@ export default {
             <div class="modal-content">
                 <!-- Show below waring if there are files have missing field  -->
                 <p class="mb-3" v-if="missingFields.length">
-                    Please fix the below errors and re-upload the file:
+                    Your files contain questions with incorrect formatting.
+                    <span class="text-warning"
+                        >If you still wish to submit them, the lines below will
+                        not be created:
+                    </span>
                 </p>
                 <div
                     class="modal-warning-line mb-3"
@@ -426,9 +436,19 @@ export default {
                     <button
                         type="button"
                         class="btn green-btn"
+                        @click="
+                            clickModal = true;
+                            Submit();
+                        "
+                    >
+                        Still Submit
+                    </button>
+                    <button
+                        type="button"
+                        class="btn red-btn"
                         @click="showModal = false"
                     >
-                        OK
+                        Cancel
                     </button>
                 </div>
             </div>
@@ -605,6 +625,9 @@ export default {
         /* Could be more or less, depending on screen size */
         display: flex;
         justify-content: end;
+    }
+    .modal-content {
+        width: 100%;
     }
 }
 </style>

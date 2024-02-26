@@ -391,10 +391,10 @@ export default {
             <div class="modal-content">
                 <!-- Show below waring if there are files have missing field  -->
                 <p class="mb-3" v-if="missingFields.length">
-                    Your files have incorrectly formatted question.
+                    Your files contain questions with incorrect formatting.
                     <span class="text-warning"
-                        >If you still want to submit the below lines will not
-                        get create:
+                        >If you still wish to submit them, the lines below will
+                        not be created:
                     </span>
                 </p>
                 <div
