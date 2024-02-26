@@ -36,7 +36,12 @@ export default {
             dy: null,
             data: {},
             radius: 0,
-            radiusMultiplier: 128
+            radiusMultiplier: 256,
+            firstLevelNodeSize: 500,
+            // Max size before overlap.
+            secondLevelNodeSize: 100,
+            regularNodeSize: 50,
+            subSkillRadius: 50
         };
     },
     components: {
@@ -132,12 +137,12 @@ export default {
             this.$radialTreeContainer.addChild(centerNodeSprite);
 
             // Get the data from D3.
-            var nodes = this.root.descendants();
+            const nodes = this.root.descendants();
             const links = this.root.links();
 
             // Draw the actual shapes.
             for (const link of links) {
-                //this.drawLink(link);
+                this.drawLink(link);
             }
             for (const node of nodes) {
                 this.drawNode(node);
@@ -229,6 +234,17 @@ export default {
                 );
             }
             nodeGraphic.anchor.set(0.5);
+            // Increase the size of the first level nodes.
+            if (node.depth == 1) {
+                nodeGraphic.width = this.firstLevelNodeSize;
+                nodeGraphic.height = this.firstLevelNodeSize;
+            } else if (node.depth == 2) {
+                nodeGraphic.width = this.secondLevelNodeSize;
+                nodeGraphic.height = this.secondLevelNodeSize;
+            } else {
+                nodeGraphic.width = this.regularNodeSize;
+                nodeGraphic.height = this.regularNodeSize;
+            }
             nodeContainer.addChild(nodeGraphic);
 
             // Interactivity.
@@ -249,13 +265,27 @@ export default {
                 }
             });
 
-            // Skill names.
+            let fontSize;
+            let fill;
+            if (node.depth == 0) {
+                fontSize = 200;
+                fill = '#000000';
+            } else if (node.depth == 1) {
+                fontSize = 100;
+                fill = '#ffffff';
+            } else {
+                fontSize = 50;
+                fill = '#ffffff';
+            }
+
+            /*
+             * Skill names.
+             */
             const style = new PIXI.TextStyle({
-                fontFamily: 'Arial',
-                fontSize: 24,
-                fill: '#000',
-                stroke: '#fff',
-                strokeThickness: 4
+                fontFamily: 'Poppins900',
+                fontSize: fontSize,
+                fill: fill,
+                align: 'center'
             });
 
             const nameText = new PIXI.Text(node.data.skill_name, style);
@@ -263,60 +293,196 @@ export default {
             nameText.scale.set(0.5, 0.5);
             // Add to the global variable container for this chart.
             nodeContainer.addChild(nameText);
+
+            // /*
+            //  * Subskills.
+            //  */
+            // // Sort the children into subskills and actual child skills.
+            // for (let i = 0; i < node.children.length; i++) {
+            //     if (node.children[i].type == 'sub') {
+            //         let subNodeContainer = new PIXI.Container();
+
+            //         // Calculate the increment of the subskills, around a circle.
+            //         let increment = 360 / numSubSkills;
+            //         // Get the correct index number, excluding sub skills.
+            //         let subSkillsIndex = i - numChildren;
+            //         // Calculate the nodes angle.
+            //         let angle = increment * subSkillsIndex;
+            //         let rads = (angle * Math.PI) / 180;
+            //         let x;
+            //         let y;
+            //         x = this.subSkillRadius * Math.cos(rads);
+            //         y = this.subSkillRadius * Math.sin(rads);
+
+            //         subNodeContainer.x = x;
+            //         subNodeContainer.y = y;
+
+            //         var nodeGraphic = new PIXI.Sprite();
+            //         if (node.data.level == 'grade_school') {
+            //             if (node.data.is_mastered)
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/grade-school-small-mastered.png'
+            //                 );
+            //             else if (node.data.is_accessible)
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/grade-school-small-unlocked.png'
+            //                 );
+            //             else
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/grade-school-small-locked.png'
+            //                 );
+            //         } else if (node.data.level == 'middle_school') {
+            //             if (node.data.is_mastered)
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/middle-school-small-mastered.png'
+            //                 );
+            //             else if (node.data.is_accessible)
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/middle-school-small-unlocked.png'
+            //                 );
+            //             else
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/middle-school-small-locked.png'
+            //                 );
+            //         } else if (node.data.level == 'high_school') {
+            //             if (node.data.is_mastered)
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/high-school-small-mastered.png'
+            //                 );
+            //             else if (node.data.is_accessible)
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/high-school-small-unlocked.png'
+            //                 );
+            //             else
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/high-school-small-locked.png'
+            //                 );
+            //         } else if (node.data.level == 'college') {
+            //             if (node.data.is_mastered)
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/college-smal-mastered.png'
+            //                 );
+            //             else if (node.data.is_accessible)
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/college-small-unlocked.png'
+            //                 );
+            //             else
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/college-small-locked.png'
+            //                 );
+            //         } else if (node.data.level == 'phd') {
+            //             if (node.data.is_mastered)
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/phd-small-mastered.png'
+            //                 );
+            //             else if (node.data.is_accessible)
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/phd-small-unlocked.png'
+            //                 );
+            //             else
+            //                 nodeGraphic = PIXI.Sprite.from(
+            //                     'images/skill-tree-nodes/phd-small-locked.png'
+            //                 );
+            //         }
+            //         nodeGraphic.width = 15;
+            //         nodeGraphic.height = 15;
+            //         nodeGraphic.anchor.set(0.5);
+
+            //         subNodeContainer.addChild(nodeGraphic);
+            //         nodeContainer.addChild(subNodeContainer);
+            //     }
+            // }
         },
         drawLink(link) {
-            // D3 function to generate the link path data.
-            const linkGenerator = d3
-                .linkHorizontal()
-                .x((d) => {
-                    return d.y;
-                })
-                .y((d) => {
-                    return d.x;
-                });
-            // Convert the path data into an array for starting point values,
-            // and an array for the rest of the points.
-            var pathData = linkGenerator(link);
-            var startingPoint = pathData.substring(
-                pathData.indexOf('M') + 1,
-                pathData.lastIndexOf('C')
-            );
-            const startingPointArray = startingPoint.split(',');
-            var otherPoints = pathData.split('C')[1];
-            var otherPointsArray = otherPoints.split(',');
-
-            // Draw the bezier curve with Pixi.
-            const nodeLink = new Graphics();
-            // If skill is mastered.
-            var lineWidth;
-            if (link.target.data.is_mastered == 1) lineWidth = 4;
-            else lineWidth = 2;
-            // If skill is a subskill.
-            if (
-                (link.source.data.type == 'super' &&
-                    link.target.data.position == 'end') ||
-                link.target.data.type == 'sub'
-            ) {
-                // Use dashed line.
-                const shader = new DashLineShader({ dash: 5, gap: 8 });
-                nodeLink.lineStyle({ width: lineWidth, color: 0x000, shader });
+            const nodeLink = new PIXI.Graphics();
+            // If skill is mastered, make line thicker.
+            if (link.target.data.is_mastered == '1') {
+                nodeLink.lineStyle(16, 0xffffff, 1);
             } else {
-                nodeLink.lineStyle({ width: lineWidth, color: 0x000 });
+                nodeLink.lineStyle(2, 0xffffff, 1);
             }
 
-            nodeLink.position.x = startingPointArray[0];
-            nodeLink.position.y = startingPointArray[1];
-            // This PIXI function is additive, therefore must subtract the starting point.
-            nodeLink.bezierCurveTo(
-                otherPointsArray[0] - startingPointArray[0],
-                otherPointsArray[1] - startingPointArray[1],
-                otherPointsArray[2] - startingPointArray[0],
-                otherPointsArray[3] - startingPointArray[1],
-                otherPointsArray[4] - startingPointArray[0],
-                otherPointsArray[5] - startingPointArray[1]
-            );
+            // Source node.
+            var sourceX = Math.cos(link.source.x) * link.source.y;
+            var sourceY = Math.sin(link.source.x) * link.source.y;
+            nodeLink.moveTo(sourceX, sourceY);
+
+            // Target node.
+            var targetX = Math.cos(link.target.x) * link.target.y;
+            var targetY = Math.sin(link.target.x) * link.target.y;
+            nodeLink.lineTo(targetX, targetY);
+
             // Add to the global variable container for this chart.
-            this.$tidyTreeContainer.addChild(nodeLink);
+            this.$radialTreeContainer.addChild(nodeLink);
+
+            // Tidy tree bezier curves - for reference.
+            // D3 function to generate the link path data.
+
+            // let radialData = {
+            //     source: {
+            //         x: link.source.x,
+            //         y: link.source.y
+            //     },
+            //     target: {
+            //         x:
+            //             Math.atan2(
+            //                 link.target.y - link.source.y,
+            //                 link.target.x - link.source.x
+            //             ) - Math.PI,
+            //         y: Math.sqrt(
+            //             (link.target.x - link.source.x) *
+            //                 (link.target.x - link.source.x) +
+            //                 (link.target.y - link.source.y) *
+            //                     (link.target.y - link.source.y)
+            //         )
+            //     }
+            // };
+
+            // var linkRadial = d3
+            //     .linkRadial()
+            //     .angle(function (d) {
+            //         return d.x;
+            //     })
+            //     .radius(function (d) {
+            //         return d.y;
+            //     });
+
+            // // Convert the path data into an array for starting point values,
+            // // and an array for the rest of the points.
+            // var pathData = linkRadial(radialData);
+
+            // var startingPoint = pathData.substring(
+            //     pathData.indexOf('M') + 1,
+            //     pathData.lastIndexOf('C')
+            // );
+            // const startingPointArray = startingPoint.split(',');
+            // console.log(startingPointArray);
+
+            // var otherPoints = pathData.split('C')[1];
+            // var otherPointsArray = otherPoints.split(',');
+            // console.log(otherPointsArray);
+
+            // // Draw the bezier curve with Pixi.
+            // const nodeLink = new PIXI.Graphics();
+            // // If skill is mastered.
+            // var lineWidth;
+            // if (link.target.data.is_mastered == 1) lineWidth = 16;
+            // else lineWidth = 8;
+            // nodeLink.lineStyle({ width: lineWidth, color: 0xffffff });
+
+            // nodeLink.position.x = startingPointArray[0];
+            // nodeLink.position.y = startingPointArray[1];
+            // // This PIXI function is additive, therefore must subtract the starting point.
+            // nodeLink.bezierCurveTo(
+            //     otherPointsArray[0] - startingPointArray[0],
+            //     otherPointsArray[1] - startingPointArray[1],
+            //     otherPointsArray[2] - startingPointArray[0],
+            //     otherPointsArray[3] - startingPointArray[1],
+            //     otherPointsArray[4] - startingPointArray[0],
+            //     otherPointsArray[5] - startingPointArray[1]
+            // );
+            // // Add to the global variable container for this chart.
+            // this.$radialTreeContainer.addChild(nodeLink);
         },
         showInfoPanel() {
             // If panel is not showing.
