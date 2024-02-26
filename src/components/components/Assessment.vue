@@ -286,12 +286,21 @@ export default {
 
 <template>
     <!--<button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
-    <div v-if="this.questions.length > 0" class="container mt-5 mb-3">
+    <div
+        v-if="this.questions.length > 0"
+        class="container mt-5 mb-3 p-3"
+        id="question-container"
+    >
         <!-- To wait for questions to be loaded, before the DOM renders. -->
         <div class="row mt-3">
-            <h3>
-                Question {{ this.questionNumber + 1 }}: {{ question.question }}
-            </h3>
+            <div class="col d-flex my-2 gap-2 align-items-lg-center">
+                <div id="question-number-div">
+                    {{ this.questionNumber + 1 }}
+                </div>
+                <div id="question-content">
+                    {{ question.question }}
+                </div>
+            </div>
             <div v-if="this.question.questionType == 'mc'">
                 <!-- Option 1. -->
                 <div
@@ -365,5 +374,44 @@ export default {
     display: flex;
     align-items: center;
     max-width: fit-content;
+}
+
+#question-container {
+    border-radius: 12px;
+    background: #f2edffcc;
+}
+
+#question-number-div {
+    top: 6px;
+    left: 3px;
+    padding: 6px 18px;
+    border-radius: 8px;
+    border: 1px;
+    gap: 12px;
+    color: white;
+    border: 1px solid#8f7bd6;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    background-color: #8f7bd6;
+    font-family: 'Poppins' sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+
+#question-content {
+    font-family: 'Poppins' sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #667085;
+}
+
+.form-control:focus {
+    border-color: white;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
 }
 </style>
