@@ -120,6 +120,17 @@ export default {
             this.drawTree();
         },
         drawTree() {
+            /*
+             * Central circle.
+             */
+            // Graphic.
+            const centerNodeSprite = PIXI.Sprite.from('center-node.png');
+            centerNodeSprite.x = this.root.x;
+            centerNodeSprite.y = this.root.y;
+            centerNodeSprite.anchor.set(0.5);
+            // Add to the global variable container for this chart.
+            this.$radialTreeContainer.addChild(centerNodeSprite);
+
             // Get the data from D3.
             var nodes = this.root.descendants();
             const links = this.root.links();
@@ -221,22 +232,22 @@ export default {
             nodeContainer.addChild(nodeGraphic);
 
             // Interactivity.
-            // nodeGraphic.eventMode = 'static';
-            // nodeGraphic.cursor = 'pointer';
-            // nodeGraphic.on('pointerdown', (event) => {
-            //     // Create the  skill object:
-            //     var skill = {
-            //         id: node.data.id,
-            //         isMastered: node.data.is_mastered,
-            //         isUnlocked: node.data.is_accessible,
-            //         name: node.data.skill_name
-            //     };
-            //     this.skill = skill;
+            nodeGraphic.eventMode = 'static';
+            nodeGraphic.cursor = 'pointer';
+            nodeGraphic.on('pointerdown', (event) => {
+                // Create the  skill object:
+                var skill = {
+                    id: node.data.id,
+                    isMastered: node.data.is_mastered,
+                    isUnlocked: node.data.is_accessible,
+                    name: node.data.skill_name
+                };
+                this.skill = skill;
 
-            //     if (!this.isSkillInfoPanelShown) {
-            //         this.showInfoPanel();
-            //     }
-            // });
+                if (!this.isSkillInfoPanelShown) {
+                    this.showInfoPanel();
+                }
+            });
 
             // Skill names.
             const style = new PIXI.TextStyle({
