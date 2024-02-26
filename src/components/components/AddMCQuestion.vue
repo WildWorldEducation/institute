@@ -13,7 +13,9 @@ export default {
             // validate flag for missing fields in drag and drop
             missingFields: [],
             //  show modal flag
-            showModal: false
+            showModal: false,
+            // flag to handle user click on modal
+            modalClick: false
         };
     },
     async created() {},
@@ -33,12 +35,10 @@ export default {
                 // Break individual questions into arrays.
                 for (let i = 0; i < CSVArray.length; i++) {
                     // Remove any empty lines.
-
                     if (CSVArray[i] == '') {
                         CSVArray.splice(i, 1);
                     } else {
                         const question = CSVArray[i].split('|');
-                        this.questionsArray.push(question);
                         // Validation - checking for missing fields.
                         if (question.length != 8) {
                             // line order of the CSVline that have missing field
@@ -56,9 +56,10 @@ export default {
                                 missingType: missingType,
                                 numberOfMissingField: numberOfMissingField
                             };
-
                             this.missingFields.push(missingObj);
-                            this.questionsArray = [];
+                        } else {
+                            // if the question have all require field push it to the question array
+                            this.questionsArray.push(question);
                         }
                     }
                 }
@@ -68,7 +69,11 @@ export default {
         async Submit() {
             const questionArray = [];
             // If validate condition are violated we stop the submit function and show a warning modal
-            if (this.missingFields.length || this.duplicates.length) {
+            // Now we only show the modal once and If user still want to upload question we will
+            if (
+                (this.missingFields.length || this.duplicates.length) &&
+                !this.modalClick
+            ) {
                 this.showModal = true;
                 return;
             }
@@ -386,7 +391,11 @@ export default {
             <div class="modal-content">
                 <!-- Show below waring if there are files have missing field  -->
                 <p class="mb-3" v-if="missingFields.length">
-                    Please fix the below errors and re-upload the file:
+                    Your files have incorrectly formatted question.
+                    <span class="text-warning"
+                        >If you still want to submit the below lines will not
+                        get create:
+                    </span>
                 </p>
                 <div
                     class="modal-warning-line mb-3"
@@ -415,9 +424,19 @@ export default {
                     <button
                         type="button"
                         class="btn green-btn"
+                        @click="
+                            modalClick = true;
+                            Submit();
+                        "
+                    >
+                        Still Submit
+                    </button>
+                    <button
+                        type="button"
+                        class="btn red-btn"
                         @click="showModal = false"
                     >
-                        OK
+                        Cancel
                     </button>
                 </div>
             </div>
@@ -573,6 +592,10 @@ export default {
         flex-direction: row;
         justify-content: space-between;
         margin-left: 10px;
+    }
+
+    .modal-content {
+        width: 100%;
     }
 }
 </style>
