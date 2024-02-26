@@ -133,7 +133,6 @@ export default {
             }
         },
         drawNode(node) {
-            // console.log(node);
             /*
              * Create the skill node container.
              * Using the D3 algorithm to get the position.
@@ -144,11 +143,81 @@ export default {
             // Add to the global variable container for this chart.
             this.$radialTreeContainer.addChild(nodeContainer);
 
-            const nodeGraphic = new PIXI.Graphics();
-            nodeGraphic.lineStyle(0);
-            nodeGraphic.beginFill(0xffffff, 1);
-            nodeGraphic.drawCircle(0, 0, 15);
-            nodeGraphic.endFill();
+            /*
+             * Draw the skill node.
+             */
+            var nodeGraphic = new PIXI.Sprite();
+            if (node.data.level == 'grade_school') {
+                if (node.data.is_mastered)
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/grade-school-mastered.png'
+                    );
+                else if (node.data.is_accessible)
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/grade-school-unlocked.png'
+                    );
+                else
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/grade-school-locked.png'
+                    );
+            } else if (node.data.level == 'middle_school') {
+                if (node.data.is_mastered)
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/middle-school-mastered.png'
+                    );
+                else if (node.data.is_accessible)
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/middle-school-unlocked.png'
+                    );
+                else
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/middle-school-locked.png'
+                    );
+            } else if (node.data.level == 'high_school') {
+                if (node.data.is_mastered)
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/high-school-mastered.png'
+                    );
+                else if (node.data.is_accessible)
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/middle-school-unlocked.png'
+                    );
+                else
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/middle-school-locked.png'
+                    );
+            } else if (node.data.level == 'college') {
+                if (node.data.is_mastered)
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/college-mastered.png'
+                    );
+                else if (node.data.is_accessible)
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/middle-school-unlocked.png'
+                    );
+                else
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/middle-school-locked.png'
+                    );
+            } else if (node.data.level == 'phd') {
+                if (node.data.is_mastered)
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/phd-mastered.png'
+                    );
+                else if (node.data.is_accessible)
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/middle-school-unlocked.png'
+                    );
+                else
+                    nodeGraphic = PIXI.Sprite.from(
+                        'images/skill-tree-nodes/middle-school-locked.png'
+                    );
+            } else if (node.data.level == 'domain') {
+                nodeGraphic = PIXI.Sprite.from(
+                    'images/skill-tree-nodes/domain.png'
+                );
+            }
+            nodeGraphic.anchor.set(0.5);
             nodeContainer.addChild(nodeGraphic);
 
             // Interactivity.
@@ -179,7 +248,7 @@ export default {
             });
 
             const nameText = new PIXI.Text(node.data.skill_name, style);
-            nameText.anchor.set(0, 0.5);
+            nameText.anchor.set(0.5);
             nameText.scale.set(0.5, 0.5);
             // Add to the global variable container for this chart.
             nodeContainer.addChild(nameText);
