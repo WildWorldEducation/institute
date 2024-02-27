@@ -25,7 +25,7 @@ export default {
 
 <template>
     <div id="banner">
-        <img src="/images/banners/general-banner.png" class="img-fluid" />
+        <img src="/images/banners/general-banner.png" class="w-100 h-auto" />
     </div>
     <ProfileDetails />
     <!--Only show if admin -->
