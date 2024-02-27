@@ -6,7 +6,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
-import { subset } from 'd3';
+import { subset, tree } from 'd3';
 
 export default {
     setup() {
@@ -35,7 +35,11 @@ export default {
             numMCQuestions: 0,
             numEssayQuestions: 0,
             totalNumOfQuestions: 0,
-            isAllQuestionsAnswered: false
+            isAllQuestionsAnswered: false,
+            // flag for which modal to show
+            passModal: false,
+            failedModal: false,
+            waitForMarkModal: false
         };
     },
     async created() {
@@ -186,9 +190,6 @@ export default {
                     this.numEssayQuestions++;
                 }
             }
-            console.log('score: ' + this.score);
-            console.log('num of mc question: ' + this.numMCQuestions);
-            console.log('num of essay question: ' + this.numEssayQuestions);
 
             // If there are no essay questions we, mark the test now. If there are essay question , requiring manual marking
             if (this.numEssayQuestions === 0) {
@@ -196,15 +197,12 @@ export default {
                 if ((this.score / this.numMCQuestions) * 100 >= 90) {
                     // Make skill mastered for this student.
                     this.MakeMastered(this.skillId);
-                    alert('Well done! You have now mastered this skill.');
+                    this.passModal = true;
                 } else {
-                    alert('You failed');
+                    this.failedModal = true;
                 }
             } else {
                 // Deal with the essay questions.
-                alert(
-                    'There is at least one question that needs to be marked manually. Please check whether you passed later.'
-                );
 
                 // create an unmarked assessment record
                 const requestOptions = {
@@ -221,6 +219,10 @@ export default {
                     this.userDetailsStore.userId +
                     '/' +
                     this.skillId;
+                const turnOnModal = () => {
+                    this.waitForMarkModal = true;
+                };
+
                 fetch(url, requestOptions)
                     .then(function (response) {
                         return response.json();
@@ -252,17 +254,13 @@ export default {
                                     fetch(url, requestOptions).then(function (
                                         response
                                     ) {
-                                        // Return to tags list page.
-                                        router.push({ name: 'post-login' });
+                                        turnOnModal();
                                     });
                                 }
                             }
                         });
                     });
             }
-
-            // Redirect the user.
-            this.$router.push('/skills/' + this.skillId);
         },
         async MakeMastered(skillId) {
             await this.userSkillsStore.MakeMastered(
@@ -362,8 +360,66 @@ export default {
             </button>
         </div>
     </div>
-    <div v-else>
+    <div v-else id="question-content">
         There is no quiz for this skill yet. Please check again soon.
+    </div>
+    <!-- Some modal to tell the student when their finish the assessment -->
+    <!-- Pass Modal -->
+    <div v-if="passModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>Well done! You have now mastered this skill.</p>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn green-btn"
+                        @click="this.$router.push('/skills/' + this.skillId)"
+                    >
+                        Great!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Failed Modal-->
+    <div v-if="failedModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>You Failed This Time, Try Again Later</p>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn red-btn"
+                        @click="this.$router.push('/skills/' + this.skillId)"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Wait for mark modal -->
+    <div v-if="waitForMarkModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>
+                    There is at least one question that needs to be marked
+                    manually. Please check whether you passed later.
+                </p>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn red-btn"
+                        @click="this.$router.push('/')"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -519,5 +575,91 @@ export default {
 }
 /* End of check box styling */
 
+/* Button Styling */
+.red-btn {
+    background-color: #da7033;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.red-btn:hover {
+    background-color: rgb(209, 96, 15);
+}
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.green-btn > svg {
+    margin-left: 15px;
+}
+
+.green-btn:hover {
+    background-color: #2ca695;
+}
+
+.purple-btn {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
 /* ------------------------------------------------------------- */
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    /* Could be more or less, depending on screen size */
+}
+/* End of Modal Styling */
+
+/******************************/
 </style>
