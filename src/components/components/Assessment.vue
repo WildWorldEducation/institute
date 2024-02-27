@@ -139,11 +139,11 @@ export default {
                 })
                 .then(() => {
                     // TODO: below can be optimized in the case of this being a super skill
-                    // drawing questions from each sub skill.
+                    // drawing questions from each sub skill to create a combine array of both type of question
                     this.questions = this.essayQuestions.concat(
                         this.mcQuestions
                     );
-                    // Shuffle array
+                    // Shuffle array to create random set of questions for each user
                     this.questions = this.questions.sort(
                         (a, b) => 0.5 - Math.random()
                     );
@@ -157,7 +157,10 @@ export default {
                             this.settingsStore.quizMaxQuestions;
                     }
 
+                    // Set the first question in questions array for display
                     this.question = this.questions[0];
+                    console.log('question is: ');
+                    console.log(this.question);
 
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
