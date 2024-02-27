@@ -144,8 +144,6 @@ export default {
                         this.mcQuestions
                     );
 
-                    this.questions = this.mcQuestions;
-
                     // Shuffle array to create random set of questions for each user
                     this.questions = this.questions.sort(
                         (a, b) => 0.5 - Math.random()
@@ -189,13 +187,11 @@ export default {
                 }
             }
             console.log('score: ' + this.score);
-            console.log('num of mc question: ' + this.mcQuestions.length);
-            console.log(
-                'num of essay question: ' + this.numEssayQuestions.length
-            );
+            console.log('num of mc question: ' + this.numMCQuestions);
+            console.log('num of essay question: ' + this.numEssayQuestions);
 
             // If there are no essay questions we, mark the test now. If there are essay question , requiring manual marking
-            if (this.numEssayQuestions.length == 0) {
+            if (this.numEssayQuestions === 0) {
                 // Pass mark of 90%.
                 if ((this.score / this.numMCQuestions) * 100 >= 90) {
                     // Make skill mastered for this student.
