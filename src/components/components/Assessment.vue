@@ -143,6 +143,9 @@ export default {
                     this.questions = this.essayQuestions.concat(
                         this.mcQuestions
                     );
+
+                    this.questions = this.mcQuestions;
+
                     // Shuffle array to create random set of questions for each user
                     this.questions = this.questions.sort(
                         (a, b) => 0.5 - Math.random()
@@ -159,9 +162,6 @@ export default {
 
                     // Set the first question in questions array for display
                     this.question = this.questions[0];
-                    console.log('question is: ');
-                    console.log(this.question);
-
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
                     this.totalNumOfQuestions = this.questions.length;
@@ -188,9 +188,14 @@ export default {
                     this.numEssayQuestions++;
                 }
             }
+            console.log('score: ' + this.score);
+            console.log('num of mc question: ' + this.mcQuestions.length);
+            console.log(
+                'num of essay question: ' + this.numEssayQuestions.length
+            );
 
-            // If there are no essay questions, requiring manual marking, mark the test now.
-            if (this.essayQuestions.length == 0) {
+            // If there are no essay questions we, mark the test now. If there are essay question , requiring manual marking
+            if (this.numEssayQuestions.length == 0) {
                 // Pass mark of 90%.
                 if ((this.score / this.numMCQuestions) * 100 >= 90) {
                     // Make skill mastered for this student.
@@ -304,21 +309,23 @@ export default {
                     {{ question.question }}
                 </div>
             </div>
+            <!-- Multiple Choice Question -->
             <div v-if="this.question.questionType == 'mc'">
-                <!-- Option 1. -->
                 <div
                     v-for="(answerOption, index) in this.question.answerOptions"
-                    class="form-check"
+                    class="form-check my-3"
                 >
-                    <input
-                        @input="UserAnswer()"
-                        class="form-check-input"
-                        type="radio"
-                        :value="answerOption.index"
-                        v-model="questions[this.questionNumber].userAnswer"
-                    />
-                    <label class="form-check-label">
-                        {{ answerOption.option }}
+                    <label class="control control-checkbox">
+                        <span class="my-auto mx-2 me-4">{{
+                            answerOption.option
+                        }}</span>
+                        <input
+                            type="radio"
+                            name="nodeType"
+                            :value="answerOption.index"
+                            v-model="questions[this.questionNumber].userAnswer"
+                        />
+                        <div class="control_indicator"></div>
                     </label>
                 </div>
             </div>
@@ -333,7 +340,6 @@ export default {
                 </div>
             </div>
         </div>
-
         <div class="mt-3 d-flex justify-content-end">
             <button
                 v-if="this.questionNumber > 0"
@@ -404,7 +410,7 @@ export default {
 }
 
 #question-content {
-    font-family: 'Poppins' sans-serif;
+    font-family: sans-serif;
     font-size: 17px;
     font-weight: 700;
     line-height: 28px;
@@ -417,4 +423,105 @@ export default {
     border-color: white;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
 }
+
+/**-------------------------------------  */
+/* A lot of CSS to styling two check box */
+.control {
+    font-family: 'Poppins' sans-serif;
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 5px;
+    padding-top: 3px;
+    cursor: pointer;
+}
+
+.control > span {
+    font-weight: 500;
+    font-size: 0.938rem;
+    color: #667085;
+    text-align: center;
+}
+.control input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+.control_indicator {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    height: 29.09px;
+    width: 29.09px;
+    background: #f9f5ff;
+    border: 2px solid #9c7eec;
+    border-radius: 60px;
+}
+.control:hover input ~ .control_indicator,
+.control input:focus ~ .control_indicator {
+    background: #e7ddf6;
+}
+
+.plus-svg:hover {
+    cursor: pointer;
+}
+.control input:checked ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control:hover input:not([disabled]):checked ~ .control_indicator,
+.control input:checked:focus ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control input:disabled ~ .control_indicator {
+    background: #e6e6e6;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.control_indicator:after {
+    box-sizing: unset;
+    content: '';
+    position: absolute;
+    display: none;
+}
+.control input:checked ~ .control_indicator:after {
+    display: block;
+}
+.control-checkbox .control_indicator:after {
+    left: 4px;
+    top: 5px;
+    width: 13.58px;
+    height: 9.33px;
+    border: solid #9c7eec;
+    border-width: 0px 0px 2.9px 2.9px;
+    transform: rotate(-45deg);
+}
+.control-checkbox input:disabled ~ .control_indicator:after {
+    border-color: #7b7b7b;
+}
+.control-checkbox .control_indicator::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-left: -1.3rem;
+    margin-top: -1.3rem;
+    background: #9c7eec;
+    border-radius: 3rem;
+    opacity: 0.6;
+    z-index: 99999;
+    transform: scale(0);
+}
+
+.control-checkbox input + .control_indicator::before {
+    animation: s-ripple 250ms ease-out;
+}
+.control-checkbox input:checked + .control_indicator::before {
+    animation-name: s-ripple-dup;
+}
+/* End of check box styling */
+
+/* ------------------------------------------------------------- */
 </style>
