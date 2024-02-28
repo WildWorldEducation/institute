@@ -6,7 +6,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
-import { subset } from 'd3';
+import { subset, tree } from 'd3';
 
 export default {
     setup() {
@@ -35,7 +35,11 @@ export default {
             numMCQuestions: 0,
             numEssayQuestions: 0,
             totalNumOfQuestions: 0,
-            isAllQuestionsAnswered: false
+            isAllQuestionsAnswered: false,
+            // flag for which modal to show
+            passModal: false,
+            failedModal: false,
+            waitForMarkModal: false
         };
     },
     async created() {
@@ -139,11 +143,12 @@ export default {
                 })
                 .then(() => {
                     // TODO: below can be optimized in the case of this being a super skill
-                    // drawing questions from each sub skill.
+                    // drawing questions from each sub skill to create a combine array of both type of question
                     this.questions = this.essayQuestions.concat(
                         this.mcQuestions
                     );
-                    // Shuffle array
+
+                    // Shuffle array to create random set of questions for each user
                     this.questions = this.questions.sort(
                         (a, b) => 0.5 - Math.random()
                     );
@@ -157,8 +162,8 @@ export default {
                             this.settingsStore.quizMaxQuestions;
                     }
 
+                    // Set the first question in questions array for display
                     this.question = this.questions[0];
-
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
                     this.totalNumOfQuestions = this.questions.length;
@@ -186,21 +191,18 @@ export default {
                 }
             }
 
-            // If there are no essay questions, requiring manual marking, mark the test now.
-            if (this.essayQuestions.length == 0) {
+            // If there are no essay questions we, mark the test now. If there are essay question , requiring manual marking
+            if (this.numEssayQuestions === 0) {
                 // Pass mark of 90%.
                 if ((this.score / this.numMCQuestions) * 100 >= 90) {
                     // Make skill mastered for this student.
                     this.MakeMastered(this.skillId);
-                    alert('Well done! You have now mastered this skill.');
+                    this.passModal = true;
                 } else {
-                    alert('You failed');
+                    this.failedModal = true;
                 }
             } else {
                 // Deal with the essay questions.
-                alert(
-                    'There is at least one question that needs to be marked manually. Please check whether you passed later.'
-                );
 
                 // create an unmarked assessment record
                 const requestOptions = {
@@ -217,6 +219,10 @@ export default {
                     this.userDetailsStore.userId +
                     '/' +
                     this.skillId;
+                const turnOnModal = () => {
+                    this.waitForMarkModal = true;
+                };
+
                 fetch(url, requestOptions)
                     .then(function (response) {
                         return response.json();
@@ -248,17 +254,13 @@ export default {
                                     fetch(url, requestOptions).then(function (
                                         response
                                     ) {
-                                        // Return to tags list page.
-                                        router.push({ name: 'post-login' });
+                                        turnOnModal();
                                     });
                                 }
                             }
                         });
                     });
             }
-
-            // Redirect the user.
-            this.$router.push('/skills/' + this.skillId);
         },
         async MakeMastered(skillId) {
             await this.userSkillsStore.MakeMastered(
@@ -286,27 +288,38 @@ export default {
 
 <template>
     <!--<button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
-    <div v-if="this.questions.length > 0" class="container mt-3 mb-3">
+    <div
+        v-if="this.questions.length > 0"
+        class="container mt-5 mb-3 p-3 pt-2"
+        id="question-container"
+    >
         <!-- To wait for questions to be loaded, before the DOM renders. -->
-        <div class="row mt-3">
-            <h3>
-                Question {{ this.questionNumber + 1 }}: {{ question.question }}
-            </h3>
+        <div class="row">
+            <div class="col d-flex my-2 gap-2 align-items-lg-center">
+                <div id="question-number-div">
+                    {{ this.questionNumber + 1 }}
+                </div>
+                <div id="question-content">
+                    {{ question.name }}: {{ question.question }}
+                </div>
+            </div>
+            <!-- Multiple Choice Question -->
             <div v-if="this.question.questionType == 'mc'">
-                <!-- Option 1. -->
                 <div
                     v-for="(answerOption, index) in this.question.answerOptions"
-                    class="form-check"
+                    class="form-check my-3"
                 >
-                    <input
-                        @input="UserAnswer()"
-                        class="form-check-input"
-                        type="radio"
-                        :value="answerOption.index"
-                        v-model="questions[this.questionNumber].userAnswer"
-                    />
-                    <label class="form-check-label">
-                        {{ answerOption.option }}
+                    <label class="control control-checkbox">
+                        <span class="my-auto mx-2 me-4">{{
+                            answerOption.option
+                        }}</span>
+                        <input
+                            type="radio"
+                            name="nodeType"
+                            :value="answerOption.index"
+                            v-model="questions[this.questionNumber].userAnswer"
+                        />
+                        <div class="control_indicator"></div>
                     </label>
                 </div>
             </div>
@@ -321,12 +334,11 @@ export default {
                 </div>
             </div>
         </div>
-
         <div class="mt-3 d-flex justify-content-end">
             <button
                 v-if="this.questionNumber > 0"
                 @click="Previous()"
-                class="btn green-btn me-2"
+                class="btn red-btn me-2"
             >
                 Previous
             </button>
@@ -348,8 +360,96 @@ export default {
             </button>
         </div>
     </div>
-    <div v-else>
+    <div v-else id="question-content">
         There is no quiz for this skill yet. Please check again soon.
+    </div>
+    <!-- Some modal to tell the student when their finish the assessment -->
+    <!-- Pass Modal -->
+    <div v-if="passModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex align-content-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="50"
+                        height="50"
+                        fill="green"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                        />
+                    </svg>
+                    <div class="my-auto ms-2">
+                        Well done! You have now mastered this skill.
+                    </div>
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn green-btn"
+                        @click="this.$router.push('/skills/' + this.skillId)"
+                    >
+                        Great!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Failed Modal-->
+    <div v-if="failedModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex align-content-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        fill="red"
+                        width="50"
+                        height="50"
+                    >
+                        <path
+                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                        />
+                    </svg>
+                    <div class="my-auto ms-2">
+                        You Failed This Time, Try Again Later !
+                    </div>
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn red-btn"
+                        @click="this.$router.push('/skills/' + this.skillId)"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Wait for mark modal -->
+    <div v-if="waitForMarkModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>
+                    There is at least one question that needs to be marked
+                    manually. Please check whether you passed later.
+                </p>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn green-btn"
+                        @click="this.$router.push('/')"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -366,4 +466,230 @@ export default {
     align-items: center;
     max-width: fit-content;
 }
+
+#question-container {
+    border-radius: 12px;
+    background: #f2edffcc;
+}
+
+#question-number-div {
+    top: 6px;
+    left: 3px;
+    padding: 6px 18px;
+    border-radius: 8px;
+    border: 1px;
+    gap: 12px;
+    color: white;
+    border: 1px solid#8f7bd6;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    background-color: #8f7bd6;
+    font-family: 'Poppins' sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+
+#question-content {
+    font-family: sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #667085;
+}
+
+.form-control:focus {
+    border-color: white;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+}
+
+/**-------------------------------------  */
+/* A lot of CSS to styling two check box */
+.control {
+    font-family: 'Poppins' sans-serif;
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 5px;
+    padding-top: 3px;
+    cursor: pointer;
+}
+
+.control > span {
+    font-weight: 500;
+    font-size: 0.938rem;
+    color: #667085;
+    text-align: center;
+}
+.control input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+.control_indicator {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    height: 29.09px;
+    width: 29.09px;
+    background: #f9f5ff;
+    border: 2px solid #9c7eec;
+    border-radius: 60px;
+}
+.control:hover input ~ .control_indicator,
+.control input:focus ~ .control_indicator {
+    background: #e7ddf6;
+}
+
+.plus-svg:hover {
+    cursor: pointer;
+}
+.control input:checked ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control:hover input:not([disabled]):checked ~ .control_indicator,
+.control input:checked:focus ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control input:disabled ~ .control_indicator {
+    background: #e6e6e6;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.control_indicator:after {
+    box-sizing: unset;
+    content: '';
+    position: absolute;
+    display: none;
+}
+.control input:checked ~ .control_indicator:after {
+    display: block;
+}
+.control-checkbox .control_indicator:after {
+    left: 4px;
+    top: 5px;
+    width: 13.58px;
+    height: 9.33px;
+    border: solid #9c7eec;
+    border-width: 0px 0px 2.9px 2.9px;
+    transform: rotate(-45deg);
+}
+.control-checkbox input:disabled ~ .control_indicator:after {
+    border-color: #7b7b7b;
+}
+.control-checkbox .control_indicator::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-left: -1.3rem;
+    margin-top: -1.3rem;
+    background: #9c7eec;
+    border-radius: 3rem;
+    opacity: 0.6;
+    z-index: 99999;
+    transform: scale(0);
+}
+
+.control-checkbox input + .control_indicator::before {
+    animation: s-ripple 250ms ease-out;
+}
+.control-checkbox input:checked + .control_indicator::before {
+    animation-name: s-ripple-dup;
+}
+/* End of check box styling */
+
+/* Button Styling */
+.red-btn {
+    background-color: #dd2822;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.red-btn:hover {
+    background-color: rgb(209, 96, 15);
+}
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.green-btn > svg {
+    margin-left: 15px;
+}
+
+.green-btn:hover {
+    background-color: #2ca695;
+}
+
+.purple-btn {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+/* ------------------------------------------------------------- */
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+    /* Could be more or less, depending on screen size */
+}
+/* End of Modal Styling */
+
+/******************************/
 </style>

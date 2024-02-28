@@ -37,7 +37,6 @@ export default {
                     this.skillsStore.skillsList[i].first_ancestor;
                 this.skill.levelInHierarchy =
                     this.skillsStore.skillsList[i].hierarchy_level;
-                console.log(this.skillsStore.skillsList[i]);
             }
         }
     },
@@ -49,14 +48,13 @@ export default {
 
 <template>
     <div id="banner">
-        <!-- BECAUSE WE DONT HAVE BANNER FOR SKILL YET SO I WILL PUT HERE A DEFAULT STATIC ONE -->
+        <!-- We will use a default banner for now -->
         <img
-            src="/images/banners/institute-collins-2.png"
-            alt="static banner"
+            v-bind:src="'/images/banners/skills-banner.png'"
             class="img-fluid"
         />
         <!-- Assign banner dynamically -->
-        <img
+        <!-- <img
             v-bind:src="
                 '/images/banners/skills/' +
                 this.skill.firstAncestorId +
@@ -65,28 +63,32 @@ export default {
                 '.png'
             "
             class="img-fluid"
-        />
+        /> -->
     </div>
     <div class="container mt-3">
         <div class="d-flex">
-            <!-- Display a default image if skill doesn`t have one -->
+            <!-- Display a default skill icon if the current skill doesn`t have one -->
+            <img v-if="this.skill.image" :src="this.skill.image" />
             <img
-                v-if="!this.skill.image"
+                v-else
                 src="/images/skill-avatar/recurso.png"
-                alt="skill avatar"
+                alt="default skill icon"
             />
-            <img :src="this.skill.image" />
             <h1 class="ms-3">{{ this.skill.name }} Quiz</h1>
         </div>
-        <div class="horizontal-line">
-            <br />
+        <div class="mt-4 mb-4">
             <hr
-                class="border border-2 opacity-100"
-                style="border-color: #aea3ce"
+                class="border border-2 opacity-100 w-75"
+                id="assessment-horizontal-line"
             />
         </div>
         <Assessment />
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+#assessment-horizontal-line {
+    border-color: #aea3ce !important;
+    border: solid;
+}
+</style>
