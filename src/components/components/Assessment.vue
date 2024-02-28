@@ -289,7 +289,7 @@ export default {
 <template>
     <!--<button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div
-        v-if="this.questions.length > 0"
+        v-if="this.questions.length"
         class="container mt-5 mb-3 p-3 pt-2 mb-3"
         id="question-container"
     >

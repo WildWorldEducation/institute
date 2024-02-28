@@ -1,9 +1,9 @@
 <script>
-import { useAssessmentsStore } from '../../stores/AssessmentsStore.js'
-import { useUsersStore } from '../../stores/UsersStore'
-import { useSkillsStore } from '../../stores/SkillsStore'
-import { useUserDetailsStore } from '../../stores/UserDetailsStore'
-import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore'
+import { useAssessmentsStore } from '../../stores/AssessmentsStore.js';
+import { useUsersStore } from '../../stores/UsersStore';
+import { useSkillsStore } from '../../stores/SkillsStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 
 export default {
     setup() {
@@ -14,82 +14,107 @@ export default {
         const instructorStudentsStore = useInstructorStudentsStore();
 
         return {
-            usersStore, skillsStore, assessmentsStore, userDetailsStore, instructorStudentsStore
-        }
+            usersStore,
+            skillsStore,
+            assessmentsStore,
+            userDetailsStore,
+            instructorStudentsStore
+        };
     },
     data() {
         return {
-            assessments: [], studentIds: []
-        }
+            assessments: [],
+            studentIds: []
+        };
     },
     async created() {
         // Create the assessments array ---------------------------------
         // Get unmarked assessments, if not yet loaded.
         if (this.assessmentsStore.assessments.length == 0) {
-            await this.assessmentsStore.getAssessments()
+            await this.assessmentsStore.getAssessments();
         }
 
         // Get the instructor student list, if not yet loaded.
         if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
-            await this.instructorStudentsStore.getInstructorStudentsList()
+            await this.instructorStudentsStore.getInstructorStudentsList();
         }
 
         // Just get the students that this instructors teaches.
-        for (let i = 0; i < this.instructorStudentsStore.instructorStudentsList.length; i++) {
-            if (this.userDetailsStore.userId == this.instructorStudentsStore.instructorStudentsList[i].instructor_id) {
-                this.studentIds.push(this.instructorStudentsStore.instructorStudentsList[i].student_id)
+        for (
+            let i = 0;
+            i < this.instructorStudentsStore.instructorStudentsList.length;
+            i++
+        ) {
+            if (
+                this.userDetailsStore.userId ==
+                this.instructorStudentsStore.instructorStudentsList[i]
+                    .instructor_id
+            ) {
+                this.studentIds.push(
+                    this.instructorStudentsStore.instructorStudentsList[i]
+                        .student_id
+                );
             }
         }
 
         // Get the assessments for those students.
         for (let i = 0; i < this.assessmentsStore.assessments.length; i++) {
             for (let j = 0; j < this.studentIds.length; j++) {
-                if (this.assessmentsStore.assessments[i].student_id == this.studentIds[j]) {
-                    this.assessments.push(this.assessmentsStore.assessments[i])
+                if (
+                    this.assessmentsStore.assessments[i].student_id ==
+                    this.studentIds[j]
+                ) {
+                    this.assessments.push(this.assessmentsStore.assessments[i]);
                 }
             }
         }
 
         // Date.
         for (let i = 0; i < this.assessments.length; i++) {
-            let date = new Date(this.assessments[i].date).toDateString()
-            this.assessments[i].date = date
+            let date = new Date(this.assessments[i].date).toDateString();
+            this.assessments[i].date = date;
         }
 
         // Get users.
         if (this.usersStore.users.length == 0) {
-            await this.usersStore.getUsers()
+            await this.usersStore.getUsers();
         }
         // Add the student name.
         for (let i = 0; i < this.assessments.length; i++) {
             for (let j = 0; j < this.usersStore.users.length; j++) {
-                if (this.assessments[i].student_id == this.usersStore.users[j].id) {
-                    this.assessments[i].studentUsername = this.usersStore.users[j].username
+                if (
+                    this.assessments[i].student_id ==
+                    this.usersStore.users[j].id
+                ) {
+                    this.assessments[i].studentUsername =
+                        this.usersStore.users[j].username;
                 }
             }
         }
 
         // Get skills.
         if (this.skillsStore.skillsList.length == 0) {
-            await this.skillsStore.getSkillsList()
+            await this.skillsStore.getSkillsList();
         }
         // Add the skill name.
         for (let i = 0; i < this.assessments.length; i++) {
             for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
-                if (this.assessments[i].skill_id == this.skillsStore.skillsList[j].id) {
-                    this.assessments[i].skillName = this.skillsStore.skillsList[j].name
+                if (
+                    this.assessments[i].skill_id ==
+                    this.skillsStore.skillsList[j].id
+                ) {
+                    this.assessments[i].skillName =
+                        this.skillsStore.skillsList[j].name;
                 }
             }
         }
-    },
-    computed: {
-    },
-    methods: {
 
-    }
-}
+        console.log(this.assessments);
+    },
+    computed: {},
+    methods: {}
+};
 </script>
-
 
 <template>
     <div class="container mt-3">
@@ -108,15 +133,15 @@ export default {
 
 <style>
 h2 {
-    color: #8F7BD6;
+    color: #8f7bd6;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
 
 .green-btn {
-    background-color: #36C1AF;
+    background-color: #36c1af;
     color: white;
-    border: 1px solid #2CA695;
+    border: 1px solid #2ca695;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;
@@ -128,9 +153,9 @@ h2 {
 }
 
 .red-btn {
-    background-color: #DA7033;
+    background-color: #da7033;
     color: white;
-    border: 1px solid #7F56D9;
+    border: 1px solid #7f56d9;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;
@@ -140,4 +165,4 @@ h2 {
     max-width: fit-content;
     height: 44px;
 }
-</style>   
+</style>
