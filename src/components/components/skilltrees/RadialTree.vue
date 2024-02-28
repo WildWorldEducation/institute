@@ -37,7 +37,7 @@ export default {
             data: {},
             radius: 0,
             radiusMultiplier: 256,
-            firstLevelNodeSize: 500,
+            firstLevelNodeSize: 400,
             // Max size before overlap.
             secondLevelNodeSize: 100,
             regularNodeSize: 50,
@@ -265,35 +265,6 @@ export default {
                 }
             });
 
-            let fontSize;
-            let fill;
-            if (node.depth == 0) {
-                fontSize = 200;
-                fill = '#000000';
-            } else if (node.depth == 1) {
-                fontSize = 100;
-                fill = '#ffffff';
-            } else {
-                fontSize = 50;
-                fill = '#ffffff';
-            }
-
-            /*
-             * Skill names.
-             */
-            const style = new PIXI.TextStyle({
-                fontFamily: 'Poppins900',
-                fontSize: fontSize,
-                fill: fill,
-                align: 'center'
-            });
-
-            const nameText = new PIXI.Text(node.data.skill_name, style);
-            nameText.anchor.set(0.5);
-            nameText.scale.set(0.5, 0.5);
-            // Add to the global variable container for this chart.
-            nodeContainer.addChild(nameText);
-
             /*
              * Subskills.
              */
@@ -385,10 +356,91 @@ export default {
                     nodeGraphic.height = 15;
                     nodeGraphic.anchor.set(0.5);
 
+                    // Interactivity.
+                    nodeGraphic.eventMode = 'static';
+                    nodeGraphic.cursor = 'pointer';
+                    nodeGraphic.on('pointerdown', (event) => {
+                        // Create the  skill object:
+                        var skill = {
+                            id: node.data.subskills[i].id,
+                            isMastered: node.data.subskills[i].is_mastered,
+                            isUnlocked: node.data.subskills[i].is_accessible,
+                            name: node.data.subskills[i].skill_name
+                        };
+                        this.skill = skill;
+
+                        if (!this.isSkillInfoPanelShown) {
+                            this.showInfoPanel();
+                        }
+                    });
+
                     subNodeContainer.addChild(nodeGraphic);
+
+                    const style = new PIXI.TextStyle({
+                        fontFamily: 'Poppins900',
+                        fontSize: '10',
+                        fill: 'white',
+                        align: 'center',
+                        strokeThickness: 2,
+                        stroke: 'black'
+                    });
+
+                    const nameText = new PIXI.Text(
+                        node.data.subskills[i].skill_name,
+                        style
+                    );
+                    nameText.angle = angle;
+                    subNodeContainer.addChild(nameText);
                     nodeContainer.addChild(subNodeContainer);
                 }
             }
+
+            /*
+             * Skill names.
+             */
+            let fontSize;
+            let fill;
+            if (node.depth == 0) {
+                fontSize = 200;
+                fill = '#000000';
+            } else if (node.depth == 1) {
+                fontSize = 100;
+                fill = '#ffffff';
+            } else {
+                fontSize = 50;
+                fill = '#ffffff';
+            }
+
+            const style = new PIXI.TextStyle({
+                fontFamily: 'Poppins900',
+                fontSize: fontSize,
+                fill: fill,
+                align: 'center',
+                strokeThickness: 4,
+                stroke: 'black'
+            });
+
+            const nameText = new PIXI.Text(node.data.skill_name, style);
+            if (node.depth == 0 || node.depth == 1) {
+                // For the centre and first elvel nodes, the text is centred,
+                // and not rotated.
+                nameText.anchor.set(0.5, 0.5);
+            } else if (node.depth > 1) {
+                // For all the outer nodes, the text is only partly centred,
+                // and it is rotated.
+                nameText.anchor.set(0, 0.5);
+                nameText.angle = (node.x * 180) / Math.PI - 90;
+                if (nodeContainer.x > 0) {
+                    nameText.angle = nameText.angle + 90;
+                } else {
+                    nameText.angle = nameText.angle - 90;
+                }
+            }
+
+            nameText.scale.set(0.5, 0.5);
+
+            // Add to the global variable container for this chart.
+            nodeContainer.addChild(nameText);
         },
         drawLink(link) {
             const nodeLink = new PIXI.Graphics();
