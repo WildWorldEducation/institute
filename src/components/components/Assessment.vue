@@ -290,17 +290,17 @@ export default {
     <!--<button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div
         v-if="this.questions.length > 0"
-        class="container mt-5 mb-3 p-3"
+        class="container mt-5 mb-3 p-3 pt-2"
         id="question-container"
     >
         <!-- To wait for questions to be loaded, before the DOM renders. -->
-        <div class="row mt-3">
+        <div class="row">
             <div class="col d-flex my-2 gap-2 align-items-lg-center">
                 <div id="question-number-div">
                     {{ this.questionNumber + 1 }}
                 </div>
                 <div id="question-content">
-                    {{ question.question }}
+                    {{ question.name }}: {{ question.question }}
                 </div>
             </div>
             <!-- Multiple Choice Question -->
@@ -338,7 +338,7 @@ export default {
             <button
                 v-if="this.questionNumber > 0"
                 @click="Previous()"
-                class="btn green-btn me-2"
+                class="btn red-btn me-2"
             >
                 Previous
             </button>
@@ -369,7 +369,22 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Well done! You have now mastered this skill.</p>
+                <div class="d-flex align-content-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="50"
+                        height="50"
+                        fill="green"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                        />
+                    </svg>
+                    <div class="my-auto ms-2">
+                        Well done! You have now mastered this skill.
+                    </div>
+                </div>
                 <div class="d-flex flex-row-reverse">
                     <button
                         type="button"
@@ -387,7 +402,22 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>You Failed This Time, Try Again Later</p>
+                <div class="d-flex align-content-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        fill="red"
+                        width="50"
+                        height="50"
+                    >
+                        <path
+                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                        />
+                    </svg>
+                    <div class="my-auto ms-2">
+                        You Failed This Time, Try Again Later !
+                    </div>
+                </div>
                 <div class="d-flex flex-row-reverse">
                     <button
                         type="button"
@@ -412,7 +442,7 @@ export default {
                 <div class="d-flex flex-row-reverse">
                     <button
                         type="button"
-                        class="btn red-btn"
+                        class="btn green-btn"
                         @click="this.$router.push('/')"
                     >
                         OK
@@ -577,7 +607,7 @@ export default {
 
 /* Button Styling */
 .red-btn {
-    background-color: #da7033;
+    background-color: #dd2822;
     color: white;
     border: 1px solid #7f56d9;
     font-family: 'Inter', sans-serif;
@@ -656,7 +686,7 @@ export default {
     /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 300px;
+    width: 40%;
     /* Could be more or less, depending on screen size */
 }
 /* End of Modal Styling */
