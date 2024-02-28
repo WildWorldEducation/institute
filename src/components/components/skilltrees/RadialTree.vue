@@ -37,7 +37,7 @@ export default {
             data: {},
             radius: 0,
             radiusMultiplier: 256,
-            firstLevelNodeSize: 500,
+            firstLevelNodeSize: 400,
             // Max size before overlap.
             secondLevelNodeSize: 100,
             regularNodeSize: 50,
@@ -56,8 +56,8 @@ export default {
         this.$pixiApp.renderer.background.color = 0x000000;
     },
     async mounted() {
-        if (this.skillTreeStore.userSkills.length == 0) {
-            await this.skillTreeStore.getUserSkills();
+        if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
+            await this.skillTreeStore.getUserSkillsSubSkillsSeparate();
         }
 
         // Only generate this chart, if it has not already been generated.
@@ -69,7 +69,7 @@ export default {
             this.skill = {
                 name: 'SKILLS',
                 sprite: null,
-                children: this.skillTreeStore.userSkills
+                children: this.skillTreeStore.userSkillsSubSkillsSeparate
             };
             this.getAlgorithm();
         }
@@ -104,7 +104,7 @@ export default {
                 }
             }
 
-            removeSubSkills(skillsNoSubSkills);
+            //      removeSubSkills(skillsNoSubSkills);
 
             this.data = {
                 skill_name: 'My skills',
@@ -265,6 +265,139 @@ export default {
                 }
             });
 
+            /*
+             * Subskills.
+             */
+            if (node.data.subskills) {
+                for (let i = 0; i < node.data.subskills.length; i++) {
+                    let subNodeContainer = new PIXI.Container();
+                    // Calculate the increment of the subskills, around a circle.
+                    let increment = 360 / node.data.subskills.length;
+                    // Get the correct index number.
+                    let subSkillsIndex = i;
+                    // Calculate the nodes angle.
+                    let angle = increment * subSkillsIndex;
+                    let rads = (angle * Math.PI) / 180;
+
+                    let x = this.subSkillRadius * Math.cos(rads);
+                    let y = this.subSkillRadius * Math.sin(rads);
+                    subNodeContainer.x = x;
+                    subNodeContainer.y = y;
+
+                    var nodeGraphic = new PIXI.Sprite();
+
+                    if (node.data.level == 'grade_school') {
+                        if (node.data.is_mastered)
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/grade-school-small-mastered.png'
+                            );
+                        else if (node.data.is_accessible)
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/grade-school-small-unlocked.png'
+                            );
+                        else
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/grade-school-small-locked.png'
+                            );
+                    } else if (node.data.level == 'middle_school') {
+                        if (node.data.is_mastered)
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/middle-school-small-mastered.png'
+                            );
+                        else if (node.data.is_accessible)
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/middle-school-small-unlocked.png'
+                            );
+                        else
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/middle-school-small-locked.png'
+                            );
+                    } else if (node.data.level == 'high_school') {
+                        if (node.data.is_mastered)
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/high-school-small-mastered.png'
+                            );
+                        else if (node.data.is_accessible)
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/high-school-small-unlocked.png'
+                            );
+                        else
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/high-school-small-locked.png'
+                            );
+                    } else if (node.data.level == 'college') {
+                        if (node.data.is_mastered)
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/college-smal-mastered.png'
+                            );
+                        else if (node.data.is_accessible)
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/college-small-unlocked.png'
+                            );
+                        else
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/college-small-locked.png'
+                            );
+                    } else if (node.data.level == 'phd') {
+                        if (node.data.is_mastered)
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/phd-small-mastered.png'
+                            );
+                        else if (node.data.is_accessible)
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/phd-small-unlocked.png'
+                            );
+                        else
+                            nodeGraphic = PIXI.Sprite.from(
+                                'images/skill-tree-nodes/phd-small-locked.png'
+                            );
+                    }
+                    nodeGraphic.width = 15;
+                    nodeGraphic.height = 15;
+                    nodeGraphic.anchor.set(0.5);
+
+                    // Interactivity.
+                    nodeGraphic.eventMode = 'static';
+                    nodeGraphic.cursor = 'pointer';
+                    nodeGraphic.on('pointerdown', (event) => {
+                        // Create the  skill object:
+                        var skill = {
+                            id: node.data.subskills[i].id,
+                            isMastered: node.data.subskills[i].is_mastered,
+                            isUnlocked: node.data.subskills[i].is_accessible,
+                            name: node.data.subskills[i].skill_name
+                        };
+                        this.skill = skill;
+
+                        if (!this.isSkillInfoPanelShown) {
+                            this.showInfoPanel();
+                        }
+                    });
+
+                    subNodeContainer.addChild(nodeGraphic);
+
+                    const style = new PIXI.TextStyle({
+                        fontFamily: 'Poppins900',
+                        fontSize: '10',
+                        fill: 'white',
+                        align: 'center',
+                        strokeThickness: 2,
+                        stroke: 'black'
+                    });
+
+                    const nameText = new PIXI.Text(
+                        node.data.subskills[i].skill_name,
+                        style
+                    );
+                    nameText.angle = angle;
+                    subNodeContainer.addChild(nameText);
+                    nodeContainer.addChild(subNodeContainer);
+                }
+            }
+
+            /*
+             * Skill names.
+             */
             let fontSize;
             let fill;
             if (node.depth == 0) {
@@ -278,120 +411,36 @@ export default {
                 fill = '#ffffff';
             }
 
-            /*
-             * Skill names.
-             */
             const style = new PIXI.TextStyle({
                 fontFamily: 'Poppins900',
                 fontSize: fontSize,
                 fill: fill,
-                align: 'center'
+                align: 'center',
+                strokeThickness: 4,
+                stroke: 'black'
             });
 
             const nameText = new PIXI.Text(node.data.skill_name, style);
-            nameText.anchor.set(0.5);
+            if (node.depth == 0 || node.depth == 1) {
+                // For the centre and first elvel nodes, the text is centred,
+                // and not rotated.
+                nameText.anchor.set(0.5, 0.5);
+            } else if (node.depth > 1) {
+                // For all the outer nodes, the text is only partly centred,
+                // and it is rotated.
+                nameText.anchor.set(0, 0.5);
+                nameText.angle = (node.x * 180) / Math.PI - 90;
+                if (nodeContainer.x > 0) {
+                    nameText.angle = nameText.angle + 90;
+                } else {
+                    nameText.angle = nameText.angle - 90;
+                }
+            }
+
             nameText.scale.set(0.5, 0.5);
+
             // Add to the global variable container for this chart.
             nodeContainer.addChild(nameText);
-
-            // /*
-            //  * Subskills.
-            //  */
-            // // Sort the children into subskills and actual child skills.
-            // for (let i = 0; i < node.children.length; i++) {
-            //     if (node.children[i].type == 'sub') {
-            //         let subNodeContainer = new PIXI.Container();
-
-            //         // Calculate the increment of the subskills, around a circle.
-            //         let increment = 360 / numSubSkills;
-            //         // Get the correct index number, excluding sub skills.
-            //         let subSkillsIndex = i - numChildren;
-            //         // Calculate the nodes angle.
-            //         let angle = increment * subSkillsIndex;
-            //         let rads = (angle * Math.PI) / 180;
-            //         let x;
-            //         let y;
-            //         x = this.subSkillRadius * Math.cos(rads);
-            //         y = this.subSkillRadius * Math.sin(rads);
-
-            //         subNodeContainer.x = x;
-            //         subNodeContainer.y = y;
-
-            //         var nodeGraphic = new PIXI.Sprite();
-            //         if (node.data.level == 'grade_school') {
-            //             if (node.data.is_mastered)
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/grade-school-small-mastered.png'
-            //                 );
-            //             else if (node.data.is_accessible)
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/grade-school-small-unlocked.png'
-            //                 );
-            //             else
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/grade-school-small-locked.png'
-            //                 );
-            //         } else if (node.data.level == 'middle_school') {
-            //             if (node.data.is_mastered)
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/middle-school-small-mastered.png'
-            //                 );
-            //             else if (node.data.is_accessible)
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/middle-school-small-unlocked.png'
-            //                 );
-            //             else
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/middle-school-small-locked.png'
-            //                 );
-            //         } else if (node.data.level == 'high_school') {
-            //             if (node.data.is_mastered)
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/high-school-small-mastered.png'
-            //                 );
-            //             else if (node.data.is_accessible)
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/high-school-small-unlocked.png'
-            //                 );
-            //             else
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/high-school-small-locked.png'
-            //                 );
-            //         } else if (node.data.level == 'college') {
-            //             if (node.data.is_mastered)
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/college-smal-mastered.png'
-            //                 );
-            //             else if (node.data.is_accessible)
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/college-small-unlocked.png'
-            //                 );
-            //             else
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/college-small-locked.png'
-            //                 );
-            //         } else if (node.data.level == 'phd') {
-            //             if (node.data.is_mastered)
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/phd-small-mastered.png'
-            //                 );
-            //             else if (node.data.is_accessible)
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/phd-small-unlocked.png'
-            //                 );
-            //             else
-            //                 nodeGraphic = PIXI.Sprite.from(
-            //                     'images/skill-tree-nodes/phd-small-locked.png'
-            //                 );
-            //         }
-            //         nodeGraphic.width = 15;
-            //         nodeGraphic.height = 15;
-            //         nodeGraphic.anchor.set(0.5);
-
-            //         subNodeContainer.addChild(nodeGraphic);
-            //         nodeContainer.addChild(subNodeContainer);
-            //     }
-            // }
         },
         drawLink(link) {
             const nodeLink = new PIXI.Graphics();
