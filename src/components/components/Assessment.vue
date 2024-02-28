@@ -290,7 +290,7 @@ export default {
     <!--<button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div
         v-if="this.questions.length > 0"
-        class="container mt-5 mb-3 p-3 pt-2"
+        class="container mt-5 mb-3 p-3 pt-2 mb-3"
         id="question-container"
     >
         <!-- To wait for questions to be loaded, before the DOM renders. -->
@@ -300,7 +300,7 @@ export default {
                     {{ this.questionNumber + 1 }}
                 </div>
                 <div id="question-content">
-                    {{ question.name }}: {{ question.question }}
+                    {{ question.question }}
                 </div>
             </div>
             <!-- Multiple Choice Question -->
