@@ -21,15 +21,20 @@ app.use(router);
 var pixiApp = new PIXI.Application({
     width: window.innerWidth,
     height: window.innerHeight,
+    // Visual quality.
     resolution: 1,
     transparent: true,
+    // Visual quality.
     antialias: true,
     useContextAlpha: false,
-    autoStart: true,
+    // Whether the Pixi application will start now.
+    // Should only start when being viewd as takes a lot of resources.
+    autoStart: false,
     cullable: true,
-    // We are using the canvas, as it seems to give much better performance than WebGL.
+    // Whether to use the canvas or WebGL.
     forceCanvas: false,
-    background: '#FFF'
+    background: '#FFF',
+    clearBeforeRender: true
 });
 
 // Make the Pixi app a global variable available everywhere in the Vue app.

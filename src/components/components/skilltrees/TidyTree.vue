@@ -46,6 +46,9 @@ export default {
         SkillPanel
     },
     created() {
+        // Start the Pixi renderer.
+        this.$pixiApp.start();
+
         // Hide the radial tree.
         this.$radialTreeContainer.visible = false;
         // Show this tree.
