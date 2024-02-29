@@ -1,5 +1,4 @@
 <script setup>
-import PixiTree from '../components/skilltrees/PixiTree.vue';
 import RadialTree from '../components/skilltrees/RadialTree.vue';
 </script>
 
