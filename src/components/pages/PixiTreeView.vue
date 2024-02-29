@@ -18,7 +18,7 @@ import RadialTree from '../components/skilltrees/RadialTree.vue';
 
 <style>
 #purple-banner {
-    height: 20px;
+    height: 40px;
     background-color: #a48be640;
 }
 </style>

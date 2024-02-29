@@ -53,7 +53,7 @@ export default {
         // Hide the tidy tree.
         this.$tidyTreeContainer.visible = false;
         // Set the background colour.
-        this.$pixiApp.renderer.background.color = 0x000000;
+        this.$pixiApp.renderer.background.color = 0x16022e;
     },
     async mounted() {
         if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
@@ -88,11 +88,10 @@ export default {
                     if (parentChildren[i].type == 'sub') {
                         parentChildren.splice(i, 1);
                     }
-
                     // Dont run if this element was just spliced.
                     if (typeof parentChildren[i] !== 'undefined') {
                         /*
-                         * Run the above function again recursively.
+                         * Run the above function again recursively to splice all sub child skill
                          */
                         if (
                             parentChildren[i].children &&
@@ -122,6 +121,7 @@ export default {
 
             // Sort the tree and apply the layout.
             this.root = tree(d3.hierarchy(this.data));
+            // draw the tree with hierarchy data
             this.drawTree();
         },
         drawTree() {
@@ -129,7 +129,7 @@ export default {
              * Central circle.
              */
             // Graphic.
-            const centerNodeSprite = PIXI.Sprite.from('center-node.png');
+            const centerNodeSprite = PIXI.Sprite.from('center-node.png'); // central node sprite
             centerNodeSprite.x = this.root.x;
             centerNodeSprite.y = this.root.y;
             centerNodeSprite.anchor.set(0.5);
@@ -148,6 +148,7 @@ export default {
                 this.drawNode(node);
             }
         },
+        // WE CAN CHANGE CODE IN THIS FUNCTION TO REPOSITION THE SKILL NAME
         drawNode(node) {
             /*
              * Create the skill node container.
@@ -163,6 +164,7 @@ export default {
              * Draw the skill node.
              */
             var nodeGraphic = new PIXI.Sprite();
+            // Get node sprite based on it level and state
             if (node.data.level == 'grade_school') {
                 if (node.data.is_mastered)
                     nodeGraphic = PIXI.Sprite.from(
@@ -407,7 +409,7 @@ export default {
                 fontSize = 100;
                 fill = '#ffffff';
             } else {
-                fontSize = 50;
+                fontSize = 90;
                 fill = '#ffffff';
             }
 
@@ -416,7 +418,7 @@ export default {
                 fontSize: fontSize,
                 fill: fill,
                 align: 'center',
-                strokeThickness: 4,
+                strokeThickness: 14,
                 stroke: 'black'
             });
 
@@ -428,11 +430,12 @@ export default {
             } else if (node.depth > 1) {
                 // For all the outer nodes, the text is only partly centred,
                 // and it is rotated.
-                nameText.anchor.set(0, 0.5);
                 nameText.angle = (node.x * 180) / Math.PI - 90;
                 if (nodeContainer.x > 0) {
                     nameText.angle = nameText.angle + 90;
+                    nameText.anchor.set(1.1, 0.5);
                 } else {
+                    nameText.anchor.set(0, 0.5);
                     nameText.angle = nameText.angle - 90;
                 }
             }
