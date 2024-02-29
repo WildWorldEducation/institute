@@ -198,7 +198,7 @@ app.post('/login-attempt', (req, res, next) => {
                 req.session.lastName = results[0].last_name;
                 req.session.skillTreeTheme = results[0].skilltree_theme;
                 req.session.role = results[0].role;
-                res.json({ account: 'authorized' });
+                res.json({ account: 'authorized', role: req.session.role });
             } else {
                 // If both the username and password are not correct, check if the account exists.
                 let sqlQuery2 =
