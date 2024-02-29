@@ -20,14 +20,8 @@ const router = createRouter({
         {
             path: '/radial-tree',
             name: 'radial-tree',
-            component: () => import('../components/pages/PixiTreeView.vue')
+            component: () => import('../components/pages/RadialTreeView.vue')
         },
-        // {
-        //     path: '/canvas-tidy-tree',
-        //     name: 'canvas-tidy-tree',
-        //     component: () =>
-        //         import('../components/pages/CanvasTidyTreeView.vue')
-        // },
         {
             path: '/:id/skill-tree',
             name: 'student-skill-tree',
