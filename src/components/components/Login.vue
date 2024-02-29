@@ -38,7 +38,9 @@ export default {
                 })
                 .then(function (data) {
                     if (data.account == 'authorized') {
-                        router.push({ name: 'tidy-tree' });
+                        if (data.role == 'student')
+                            router.push({ name: 'tidy-tree' });
+                        else router.push({ name: 'hub' });
                     } else if (data.account == 'wrong-password') {
                         alert('wrong password');
                     } else {
