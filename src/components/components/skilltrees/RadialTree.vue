@@ -422,9 +422,13 @@ export default {
                 stroke: 'black'
             });
 
-            const nameText = new PIXI.Text(node.data.skill_name, style);
+            const nameText = new PIXI.Text(
+                node.data.skill_name + node.data.skill_name.length,
+                style
+            );
+            // Rotate skill name base on it property
             if (node.depth == 0 || node.depth == 1) {
-                // For the centre and first elvel nodes, the text is centred,
+                // For the centre and first level nodes, the text is centred,
                 // and not rotated.
                 nameText.anchor.set(0.5, 0.5);
             } else if (node.depth > 1) {
@@ -433,10 +437,39 @@ export default {
                 nameText.angle = (node.x * 180) / Math.PI - 90;
                 if (nodeContainer.x > 0) {
                     nameText.angle = nameText.angle + 90;
-                    nameText.anchor.set(1.1, 0.5);
+
+                    // If node is a leaf it will be on the outside
+                    if (!node.children) {
+                        nameText.anchor.set(0, 0.5);
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x + 50 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y + 50 * Math.sin(nameText.rotation);
+                    } else {
+                        nameText.anchor.set(1, 0.5);
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x - 50 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y - 50 * Math.sin(nameText.rotation);
+                    }
                 } else {
                     nameText.anchor.set(0, 0.5);
                     nameText.angle = nameText.angle - 90;
+                    if (!node.children) {
+                        nameText.anchor.set(1, 0.5);
+                        nameText.x =
+                            nameText.x - 50 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y - 50 * Math.sin(nameText.rotation);
+                    } else {
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x + 50 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y + 50 * Math.sin(nameText.rotation);
+                    }
                 }
             }
 
