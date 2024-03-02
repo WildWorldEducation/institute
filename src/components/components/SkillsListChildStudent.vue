@@ -220,7 +220,7 @@ export default {
                 </svg>
             </button>
             <button
-                v-if="isUnlocked == 1"
+                v-if="isUnlocked == 1 && type != 'domain'"
                 @click.stop="$router.push('/skills/' + id)"
                 class="btn me-2 ci-btn"
             >
