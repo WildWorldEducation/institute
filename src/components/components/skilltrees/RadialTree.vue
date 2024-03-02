@@ -83,30 +83,6 @@ export default {
             var skillsNoSubSkills = [];
             skillsNoSubSkills = JSON.parse(JSON.stringify(this.skill.children));
 
-            // Remove subskills, in order to allow D3 to calculate the positioning properly.
-            function removeSubSkills(parentChildren) {
-                var i = parentChildren.length;
-                while (i--) {
-                    if (parentChildren[i].type == 'sub') {
-                        parentChildren.splice(i, 1);
-                    }
-                    // Dont run if this element was just spliced.
-                    if (typeof parentChildren[i] !== 'undefined') {
-                        /*
-                         * Run the above function again recursively to splice all sub child skill
-                         */
-                        if (
-                            parentChildren[i].children &&
-                            Array.isArray(parentChildren[i].children) &&
-                            parentChildren[i].children.length > 0
-                        )
-                            removeSubSkills(parentChildren[i].children);
-                    }
-                }
-            }
-
-            //      removeSubSkills(skillsNoSubSkills);
-
             this.data = {
                 skill_name: 'My skills',
                 children: skillsNoSubSkills
