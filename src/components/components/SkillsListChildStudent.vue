@@ -220,7 +220,7 @@ export default {
                 </svg>
             </button>
             <button
-                v-if="isUnlocked == 1 && type != 'domain'"
+                v-if="isUnlocked == 1"
                 @click.stop="$router.push('/skills/' + id)"
                 class="btn me-2 ci-btn"
             >
@@ -411,8 +411,8 @@ export default {
     font-size: 20px;
     font-weight: 400;
     border-color: black;
-    flex-direction: column;
     background-position: right;
+    flex-direction: row;
 }
 
 .grade-school-level {
