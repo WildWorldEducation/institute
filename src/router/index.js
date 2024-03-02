@@ -6,14 +6,14 @@ import { useUserDetailsStore } from '../stores/UserDetailsStore';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
-    routes: [
+    routes: [     
         {
-            path: '/',
+            path: '/tidy-tree',
             name: 'tidy-tree',
             component: TidyTreeView
         },
         {
-            path: '/hub',
+            path: '/',
             name: 'hub',
             component: () => import('../components/pages/HubView.vue')
         },

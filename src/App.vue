@@ -59,19 +59,19 @@ export default {
                             <!-- ".native is used because Vue doesnt really allow for click handlers for routerlinks" -->
                             <RouterLink
                                 @click.native="stopPixiApp()"
-                                to="/hub"
+                                to="/"
                                 class="nav-link"
                                 >Hub</RouterLink
                             >
                         </li>
-                        <!-- <li
+                        <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/tidy-tree" class="nav-link"
                                 >Tidy Tree</RouterLink
                             >
-                        </li> -->
+                        </li>
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
