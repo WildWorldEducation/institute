@@ -778,7 +778,7 @@ export default {
         </div>
 
         <!-- Mastery Requirement summernote -->
-        <div class="mb-3">
+        <div v-if="skill.type != 'domain'" class="mb-3">
             <label for="mastery_requirements" class="form-label"
                 >Mastery Requirements</label
             >
