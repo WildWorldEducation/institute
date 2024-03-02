@@ -178,6 +178,8 @@ export default {
         drawNode(node) {
             // Skill node.
             const nodeGraphic = new PIXI.Graphics();
+            // Attempting to increase performance with the below line.
+            nodeGraphic.interactiveChildren = false;
             nodeGraphic.lineStyle(0);
             nodeGraphic.beginFill(0x000, 1);
             nodeGraphic.drawCircle(node.y, node.x, 15);
@@ -213,6 +215,8 @@ export default {
             });
 
             const nameText = new PIXI.Text(node.data.skill_name, style);
+            // Attempting to increase performance with the below line.
+            nameText.interactiveChildren = false;
             nameText.anchor.set(0, 0.5);
             nameText.x = node.y + 15;
             nameText.y = node.x;
@@ -243,6 +247,8 @@ export default {
 
             // Draw the bezier curve with Pixi.
             const nodeLink = new Graphics();
+            // Attempting to increase performance with the below line.
+            nodeLink.interactiveChildren = false;
             // If skill is mastered.
             var lineWidth;
             if (link.target.data.is_mastered == 1) lineWidth = 4;
