@@ -101,7 +101,7 @@ export default {
             this.root = tree(d3.hierarchy(this.data));
             // draw the tree with hierarchy data
             //this.drawTree();
-            this.createSVGTree();
+            //  this.createSVGTree();
         },
         drawTree() {
             /*
@@ -651,7 +651,7 @@ export default {
             var str = s.serializeToString(d3SvgNode);
 
             // Create a JSON object.
-            var dataObject = { svg: str, treeType: 'linear' };
+            var dataObject = { svg: str, treeType: 'radial' };
             var data = JSON.stringify(dataObject);
 
             // POST request.
@@ -688,15 +688,17 @@ export default {
                 }
             };
         },
-        createSVGTree() {
-            const cx = this.width * 0.5; // adjust as needed to fit
-            const cy = this.height * 0.59; // adjust as needed to fit
+        async createSVGTree() {
+            const width = 20000;
+            const height = 20000;
+            const cx = width * 0.5;
+            const cy = height * 0.59;
             // Create a radial tree layout. The layout’s first dimension (x)
             // is the angle, while the second (y) is the radius.
             const tree = d3
                 .tree()
                 // increase the radius to space out the nodes.
-                .size([2 * Math.PI, this.radius * 16])
+                .size([2 * Math.PI, this.radius * 64])
                 // Max separation between sibling nodes.
                 .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
 
@@ -707,9 +709,9 @@ export default {
                 .create('svg')
                 // Add ID for the printing to PDF.
                 .attr('id', 'radialTree')
-                .attr('width', this.width)
-                .attr('height', this.height)
-                .attr('viewBox', [-cx, -cy, this.width, this.height])
+                .attr('width', width)
+                .attr('height', height)
+                .attr('viewBox', [-cx, -cy, width, height])
                 .attr(
                     'style',
                     'max-width: 100%; height: auto; font: 10px sans-serif;'
@@ -760,12 +762,12 @@ export default {
                         },0)`
                 )
                 .attr('fill', '#000')
-                .attr('r', 5);
+                .attr('r', 2.5);
 
             // Labels.
             svg.append('g')
                 .attr('stroke-linejoin', 'round')
-                .attr('stroke-width', 3)
+                .attr('stroke-width', 1)
                 .selectAll()
                 .data(root.descendants())
                 .join('text')
@@ -781,10 +783,11 @@ export default {
                 .attr('text-anchor', (d) =>
                     d.x < Math.PI === !d.children ? 'start' : 'end'
                 )
-                .attr('paint-order', 'stroke')
-                .attr('stroke', 'white')
-                .attr('fill', 'currentColor')
                 .text((d) => d.data.skill_name);
+            // .attr('paint-order', 'stroke')
+
+            //   .attr('fill', 'black')
+            // .attr('stroke', 'white');
 
             // .style('font-weight', function (d) {
             //     // If the node is a super node.
