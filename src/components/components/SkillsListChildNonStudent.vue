@@ -23,7 +23,6 @@ export default {
         'id',
         'children',
         'name',
-        'firstAncestor',
         'type',
         'level',
         'depth',
@@ -364,7 +363,6 @@ export default {
         v-for="subSkill in subSkills"
         :id="subSkill.id"
         :children="subSkill.children"
-        :firstAncestor="firstAncestor"
         :type="subSkill.type"
         :level="subSkill.level"
         :name="subSkill.name"
@@ -380,7 +378,6 @@ export default {
         v-for="child in childrenNotSubskills"
         :id="child.id"
         :children="child.children"
-        :firstAncestor="firstAncestor"
         :type="child.type"
         :level="child.level"
         :name="child.name"

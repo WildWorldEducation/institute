@@ -21,7 +21,6 @@ export default {
         'id',
         'children',
         'name',
-        'firstAncestor',
         'isUnlocked',
         'isMastered',
         'type',
@@ -106,93 +105,59 @@ export default {
         @click="toggleChildren"
     >
         <!-- Emoticons -->
-        <!-- If not a top level skill. -->
-        <div v-if="depth > 1">
-            <!-- Choose one of six emoticon colours -->
+        <div v-if="level != 'domain'">
+            <!-- Choose one of 5 emoticon colours based on skill level -->
             <!-- check if mastered or unlocked -->
             <!-- and, if locked, apply grayscale. -->
-            <!-- 1 Spoken Language -->
+            <!-- Grade School level -->
             <img
-                v-if="firstAncestor == 1 && isMastered == 1"
-                src="/images/skill-emoticons/spoken-language-mastered.png"
+                v-if="level == 'grade_school' && isMastered == 1"
+                src="/images/skill-emoticons/grade-school-mastered.png"
             />
             <img
-                v-else-if="firstAncestor == 1 && isUnlocked == 1"
-                src="/images/skill-emoticons/spoken-language-unlocked.png"
+                v-else-if="level == 'grade_school' && isUnlocked == 1"
+                src="/images/skill-emoticons/grade-school-unlocked.png"
+            />
+            <!-- Middle School level -->
+            <img
+                v-else-if="level == 'middle_school' && isMastered == 1"
+                src="/images/skill-emoticons/middle-school-mastered.png"
             />
             <img
-                v-else-if="firstAncestor == 1"
-                src="/images/skill-emoticons/spoken-language-unlocked.png"
-                class="locked-skill-styling"
+                v-else-if="level == 'middle_school' && isUnlocked == 1"
+                src="/images/skill-emoticons/middle-school-unlocked.png"
             />
-            <!-- 2 Written Language -->
+            <!-- High School level -->
             <img
-                v-if="firstAncestor == 2 && isMastered == 1"
-                src="/images/skill-emoticons/written-language-mastered.png"
-            />
-            <img
-                v-else-if="firstAncestor == 2 && isUnlocked == 1"
-                src="/images/skill-emoticons/written-language-unlocked.png"
+                v-else-if="level == 'high_school' && isMastered == 1"
+                src="/images/skill-emoticons/high-school-mastered.png"
             />
             <img
-                v-else-if="firstAncestor == 2"
-                src="/images/skill-emoticons/written-language-unlocked.png"
-                class="locked-skill-styling"
+                v-else-if="level == 'high_school' && isUnlocked == 1"
+                src="/images/skill-emoticons/high-school-unlocked.png"
             />
-            <!-- 3 Mathematics -->
+            <!-- College level -->
             <img
-                v-if="firstAncestor == 3 && isMastered == 1"
-                src="/images/skill-emoticons/mathematics-mastered.png"
-            />
-            <img
-                v-else-if="firstAncestor == 3 && isUnlocked == 1"
-                src="/images/skill-emoticons/mathematics-unlocked.png"
+                v-else-if="level == 'college' && isMastered == 1"
+                src="/images/skill-emoticons/college-mastered.png"
             />
             <img
-                v-else-if="firstAncestor == 3"
-                src="/images/skill-emoticons/mathematics-unlocked.png"
-                class="locked-skill-styling"
+                v-else-if="level == 'college' && isUnlocked == 1"
+                src="/images/skill-emoticons/college-unlocked.png"
             />
-            <!-- 4 Science -->
+            <!-- PHD level -->
             <img
-                v-if="firstAncestor == 4 && isMastered == 1"
-                src="/images/skill-emoticons/science-mastered.png"
-            />
-            <img
-                v-else-if="firstAncestor == 4 && isUnlocked == 1"
-                src="/images/skill-emoticons/science-unlocked.png"
+                v-else-if="level == 'phd' && isMastered == 1"
+                src="/images/skill-emoticons/phd-mastered.png"
             />
             <img
-                v-else-if="firstAncestor == 4"
-                src="/images/skill-emoticons/science-unlocked.png"
-                class="locked-skill-styling"
+                v-else-if="level == 'phd' && isUnlocked == 1"
+                src="/images/skill-emoticons/phd-unlocked.png"
             />
-            <!-- 5 History -->
+            <!-- If skill is locked -->
             <img
-                v-if="firstAncestor == 5 && isMastered == 1"
-                src="/images/skill-emoticons/history-mastered.png"
-            />
-            <img
-                v-else-if="firstAncestor == 5 && isUnlocked == 1"
-                src="/images/skill-emoticons/history-unlocked.png"
-            />
-            <img
-                v-else-if="firstAncestor == 5"
-                src="/images/skill-emoticons/history-unlocked.png"
-                class="locked-skill-styling"
-            />
-            <!-- 6 Life -->
-            <img
-                v-if="firstAncestor == 6 && isMastered == 1"
-                src="/images/skill-emoticons/life-mastered.png"
-            />
-            <img
-                v-else-if="firstAncestor == 6 && isUnlocked == 1"
-                src="/images/skill-emoticons/life-unlocked.png"
-            />
-            <img
-                v-else-if="firstAncestor == 6"
-                src="/images/skill-emoticons/life-unlocked.png"
+                v-else
+                src="/images/skill-emoticons/middle-school-unlocked.png"
                 class="locked-skill-styling"
             />
         </div>
@@ -332,7 +297,6 @@ export default {
         v-for="subSkill in subSkills"
         :id="subSkill.id"
         :children="subSkill.children"
-        :firstAncestor="firstAncestor"
         :isUnlocked="subSkill.is_accessible"
         :isMastered="subSkill.is_mastered"
         :type="subSkill.type"
@@ -350,7 +314,6 @@ export default {
         v-for="child in childrenNotSubskills"
         :id="child.id"
         :children="child.children"
-        :firstAncestor="firstAncestor"
         :isUnlocked="child.is_accessible"
         :isMastered="child.is_mastered"
         :type="child.type"
