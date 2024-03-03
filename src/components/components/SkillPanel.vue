@@ -60,6 +60,13 @@ export default {
                     Attained
                 </label>
             </div>
+            <div v-if="skill?.type != 'domain'" class="mt-4">
+                <h2>Mastery Requirements</h2>
+                <div
+                    class="truncate-overflow"
+                    v-html="skill?.masteryRequirements"
+                ></div>
+            </div>
             <hr />
             <router-link
                 class="btn green-btn"
@@ -180,5 +187,21 @@ export default {
     align-items: center;
     justify-content: center;
     background-color: #edf5fd;
+}
+
+/* To truncate the Mastery Requirements section to 3 lines */
+.truncate-overflow {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* number of lines to show */
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+/* Mastery Requirements header */
+h2 {
+    color: #8f7bd6;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: x-large;
 }
 </style>

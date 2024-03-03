@@ -236,7 +236,9 @@ export default {
                     id: node.data.id,
                     isMastered: node.data.is_mastered,
                     isUnlocked: node.data.is_accessible,
-                    name: node.data.skill_name
+                    name: node.data.skill_name,
+                    masteryRequirements: node.data.mastery_requirements,
+                    type: node.data.type
                 };
                 this.skill = skill;
 
@@ -345,7 +347,10 @@ export default {
                             id: node.data.subskills[i].id,
                             isMastered: node.data.subskills[i].is_mastered,
                             isUnlocked: node.data.subskills[i].is_accessible,
-                            name: node.data.subskills[i].skill_name
+                            name: node.data.subskills[i].skill_name,
+                            masteryRequirements:
+                                node.data.subskills[i].mastery_requirements,
+                            type: node.data.subskills[i].type
                         };
                         this.skill = skill;
 
