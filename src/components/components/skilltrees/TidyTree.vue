@@ -32,7 +32,8 @@ export default {
                 children: [],
                 isMastered: null,
                 isUnlocked: null,
-                name: null
+                name: null,
+                masteryRequirements: null
             },
             tree: {},
             root: {},
@@ -190,13 +191,15 @@ export default {
             // Interactivity.
             nodeGraphic.eventMode = 'static';
             nodeGraphic.cursor = 'pointer';
-            nodeGraphic.on('pointerdown', (event) => {
+            nodeGraphic.on('pointerdown', (event) => {              
                 // Create the  skill object:
                 var skill = {
                     id: node.data.id,
                     isMastered: node.data.is_mastered,
                     isUnlocked: node.data.is_accessible,
-                    name: node.data.skill_name
+                    name: node.data.skill_name,
+                    masteryRequirements: node.data.mastery_requirements,
+                    type: node.data.type
                 };
                 this.skill = skill;
 
