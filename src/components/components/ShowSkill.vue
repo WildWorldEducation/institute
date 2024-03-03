@@ -291,12 +291,13 @@ export default {
                 </div>
             </div>
         </div>
-
-        <div id="resource-hr">
-            <hr class="border border-1 opacity-100" />
-        </div>
-        <div v-if="skill.type != 'domain'" class="row mt-3 mb-3">
-            <Forum />
+        <div v-if="skill.type != 'domain'">
+            <div id="resource-hr">
+                <hr class="border border-1 opacity-100" />
+            </div>
+            <div class="row mt-3 mb-3">
+                <Forum />
+            </div>
         </div>
         <p>&nbsp;</p>
     </div>
