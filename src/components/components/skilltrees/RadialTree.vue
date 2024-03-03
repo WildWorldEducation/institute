@@ -49,13 +49,13 @@ export default {
     },
     created() {
         // Start the Pixi renderer.
-        this.$pixiApp.start();
+        //   this.$pixiApp.start();
         // Show this tree.
         this.$radialTreeContainer.visible = true;
         // Hide the tidy tree.
         this.$tidyTreeContainer.visible = false;
         // Set the background colour.
-        this.$pixiApp.renderer.background.color = 0x16022e;
+        //   this.$pixiApp.renderer.background.color = 0x16022e;
     },
     async mounted() {
         if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
@@ -100,7 +100,8 @@ export default {
             // Sort the tree and apply the layout.
             this.root = tree(d3.hierarchy(this.data));
             // draw the tree with hierarchy data
-            this.drawTree();
+            //this.drawTree();
+            this.createSVGTree();
         },
         drawTree() {
             /*
@@ -639,7 +640,7 @@ export default {
             await this.createSVGTree();
 
             // Select the element from the DOM.
-            var svg = document.getElementById('linearTree');
+            var svg = document.getElementById('radialTree');
             // Then select with D3
             var d3Svg = d3.select(svg);
             // Then select the SVG code with D3
@@ -688,45 +689,34 @@ export default {
             };
         },
         createSVGTree() {
-            // Redo D3 algorithm.
-            const root = d3.hierarchy(this.data);
-            // Different node size for the PDF, as doesnt need to be clickable.
-            const dx = 15;
-            const dy = this.width / (root.height + 1);
-            // Create a tree layout.
-            const tree = d3.tree().nodeSize([dx, dy]);
+            const cx = this.width * 0.5; // adjust as needed to fit
+            const cy = this.height * 0.59; // adjust as needed to fit
+            // Create a radial tree layout. The layout’s first dimension (x)
+            // is the angle, while the second (y) is the radius.
+            const tree = d3
+                .tree()
+                // increase the radius to space out the nodes.
+                .size([2 * Math.PI, this.radius * 16])
+                // Max separation between sibling nodes.
+                .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+
             // Sort the tree and apply the layout.
-            tree(root);
-
-            // Compute the extent of the tree. Note that x and y are swapped here
-            // because in the tree layout, x is the breadth, but when displayed, the
-            // tree extends right rather than down.
-            let x0 = Infinity;
-            let x1 = -x0;
-            root.each((d) => {
-                if (d.x > x1) x1 = d.x;
-                if (d.x < x0) x0 = d.x;
-            });
-
-            // Compute the adjusted height of the tree.
-            const height = x1 - x0 + this.dx * 2;
+            const root = tree(d3.hierarchy(this.data));
 
             let svg = d3
                 .create('svg')
                 // Add ID for the printing to PDF.
-                .attr('id', 'linearTree')
+                .attr('id', 'radialTree')
                 .attr('width', this.width)
-                .attr('height', height)
-                .attr('viewBox', [-dy / 3, x0 - dx, this.width, height])
+                .attr('height', this.height)
+                .attr('viewBox', [-cx, -cy, this.width, this.height])
                 .attr(
                     'style',
                     'max-width: 100%; height: auto; font: 10px sans-serif;'
                 );
 
-            const g = svg.append('g');
-
             // Links or connecting lines.
-            g.append('g')
+            svg.append('g')
                 .attr('fill', 'none')
                 .attr('stroke-opacity', 1)
                 .selectAll()
@@ -735,16 +725,16 @@ export default {
                 .attr(
                     'd',
                     d3
-                        .linkHorizontal()
-                        .x((d) => d.y)
-                        .y((d) => d.x)
+                        .linkRadial()
+                        .angle((d) => d.x)
+                        .radius((d) => d.y)
                 )
                 .attr('stroke', function (d) {
                     return '#000';
                 })
                 .attr('stroke-width', function (d) {
                     if (d.target.data.is_mastered == 1) {
-                        return 8;
+                        return 4;
                     } else return 1.5;
                 })
                 .style('stroke-dasharray', function (d) {
@@ -758,47 +748,72 @@ export default {
                     }
                 });
 
-            const node = g
-                .append('g')
+            svg.append('g')
+                .selectAll()
+                .data(root.descendants())
+                .join('circle')
+                .attr(
+                    'transform',
+                    (d) =>
+                        `rotate(${(d.x * 180) / Math.PI - 90}) translate(${
+                            d.y
+                        },0)`
+                )
+                .attr('fill', '#000')
+                .attr('r', 5);
+
+            // Labels.
+            svg.append('g')
                 .attr('stroke-linejoin', 'round')
                 .attr('stroke-width', 3)
                 .selectAll()
                 .data(root.descendants())
-                .join('g')
-                .attr('transform', (d) => `translate(${d.y},${d.x})`);
-
-            node.append('circle')
-                .attr('fill', (d) => (d.children ? '#555' : '#000'))
-                .attr('r', 2.5);
-
-            // Labels.
-            node.append('text')
-                .style('font-weight', function (d) {
-                    // If the node is a super node.
-                    if (d.data.type == 'super') {
-                        return '700';
-                    } else return '400';
-                })
-                .style('font-style', function (d) {
-                    // If the node is a sub node.
-                    if (d.data.type == 'sub') {
-                        return 'italic';
-                    }
-                })
+                .join('text')
+                .attr(
+                    'transform',
+                    (d) =>
+                        `rotate(${(d.x * 180) / Math.PI - 90}) translate(${
+                            d.y
+                        },0) rotate(${d.x >= Math.PI ? 180 : 0})`
+                )
                 .attr('dy', '0.31em')
-                .attr('x', (d) => (d.children ? -6 : 6))
-                .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
-                .text(function (d) {
-                    // If the node is a super node end node.
-                    if (d.data.position == 'end') {
-                        return '';
-                    } else return d.data.skill_name;
-                })
-                .clone(true)
-                .lower()
-                .attr('stroke', function (d) {
-                    return 'white';
-                });
+                .attr('x', (d) => (d.x < Math.PI === !d.children ? 6 : -6))
+                .attr('text-anchor', (d) =>
+                    d.x < Math.PI === !d.children ? 'start' : 'end'
+                )
+                .attr('paint-order', 'stroke')
+                .attr('stroke', 'white')
+                .attr('fill', 'currentColor')
+                .text((d) => d.data.skill_name);
+
+            // .style('font-weight', function (d) {
+            //     // If the node is a super node.
+            //     if (d.data.type == 'super') {
+            //         return '700';
+            //     } else return '400';
+            // })
+            // .style('font-style', function (d) {
+            //     // If the node is a sub node.
+            //     if (d.data.type == 'sub') {
+            //         return 'italic';
+            //     }
+            // })
+            // .attr('dy', '0.31em')
+            // .attr('x', (d) => (d.children ? -6 : 6))
+            // .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
+            // .text(function (d) {
+            //     // If the node is a super node end node.
+            //     if (d.data.position == 'end') {
+            //         return '';
+            //     } else return d.data.skill_name;
+            // })
+            // .attr('text-anchor', (d) =>
+            //     d.x < Math.PI === !d.children ? 'start' : 'end'
+            // )
+            // .attr('paint-order', 'stroke')
+            // .attr('stroke', function (d) {
+            //     return 'white';
+            // });
 
             // Append the SVG element.
             document.querySelector('#SVGskilltree').append(svg.node());
@@ -841,7 +856,7 @@ input[type='button'] {
 #wrapper {
     width: 100%;
     height: calc(100% - 86px);
-    overflow: hidden;
+    /*  overflow: hidden; */
     position: relative;
 }
 
@@ -885,7 +900,7 @@ input[type='button'] {
 #skilltree {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    /* overflow: hidden; */
     /* This is for the positioning of the information panel. */
     position: relative;
     background-color: white;
