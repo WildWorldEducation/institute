@@ -21,7 +21,6 @@ export default {
         'id',
         'children',
         'name',
-        'firstAncestor',
         'isUnlocked',
         'isMastered',
         'type',
@@ -106,7 +105,7 @@ export default {
         @click="toggleChildren"
     >
         <!-- Emoticons -->
-        <div>
+        <div v-if="level != 'domain'">
             <!-- Choose one of 5 emoticon colours based on skill level -->
             <!-- check if mastered or unlocked -->
             <!-- and, if locked, apply grayscale. -->
@@ -157,7 +156,7 @@ export default {
             />
             <!-- If skill is locked -->
             <img
-                v-else-if="level != 'domain'"
+                v-else
                 src="/images/skill-emoticons/middle-school-unlocked.png"
                 class="locked-skill-styling"
             />
@@ -298,7 +297,6 @@ export default {
         v-for="subSkill in subSkills"
         :id="subSkill.id"
         :children="subSkill.children"
-        :firstAncestor="firstAncestor"
         :isUnlocked="subSkill.is_accessible"
         :isMastered="subSkill.is_mastered"
         :type="subSkill.type"
@@ -316,7 +314,6 @@ export default {
         v-for="child in childrenNotSubskills"
         :id="child.id"
         :children="child.children"
-        :firstAncestor="firstAncestor"
         :isUnlocked="child.is_accessible"
         :isMastered="child.is_mastered"
         :type="child.type"
