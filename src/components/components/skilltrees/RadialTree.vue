@@ -784,40 +784,24 @@ export default {
                 .attr('text-anchor', (d) =>
                     d.x < Math.PI === !d.children ? 'start' : 'end'
                 )
-                .text((d) => d.data.skill_name);
-            // .attr('paint-order', 'stroke')
-
-            //   .attr('fill', 'black')
-            // .attr('stroke', 'white');
-
-            // .style('font-weight', function (d) {
-            //     // If the node is a super node.
-            //     if (d.data.type == 'super') {
-            //         return '700';
-            //     } else return '400';
-            // })
-            // .style('font-style', function (d) {
-            //     // If the node is a sub node.
-            //     if (d.data.type == 'sub') {
-            //         return 'italic';
-            //     }
-            // })
-            // .attr('dy', '0.31em')
-            // .attr('x', (d) => (d.children ? -6 : 6))
-            // .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
-            // .text(function (d) {
-            //     // If the node is a super node end node.
-            //     if (d.data.position == 'end') {
-            //         return '';
-            //     } else return d.data.skill_name;
-            // })
-            // .attr('text-anchor', (d) =>
-            //     d.x < Math.PI === !d.children ? 'start' : 'end'
-            // )
-            // .attr('paint-order', 'stroke')
-            // .attr('stroke', function (d) {
-            //     return 'white';
-            // });
+                .style('font-weight', function (d) {
+                    // If the node is a super node.
+                    if (d.data.type == 'super') {
+                        return '700';
+                    } else return '400';
+                })
+                .style('font-style', function (d) {
+                    // If the node is a sub node.
+                    if (d.data.type == 'sub') {
+                        return 'italic';
+                    }
+                })
+                .text(function (d) {
+                    // If the node is a super node end node.
+                    if (d.data.position == 'end') {
+                        return '';
+                    } else return d.data.skill_name;
+                });
 
             // Append the SVG element.
             document.querySelector('#SVGskilltree').append(svg.node());
