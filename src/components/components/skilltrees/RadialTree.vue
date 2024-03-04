@@ -49,13 +49,13 @@ export default {
     },
     created() {
         // Start the Pixi renderer.
-        //   this.$pixiApp.start();
+        this.$pixiApp.start();
         // Show this tree.
         this.$radialTreeContainer.visible = true;
         // Hide the tidy tree.
         this.$tidyTreeContainer.visible = false;
         // Set the background colour.
-        //   this.$pixiApp.renderer.background.color = 0x16022e;
+        this.$pixiApp.renderer.background.color = 0x16022e;
     },
     async mounted() {
         if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
@@ -100,8 +100,7 @@ export default {
             // Sort the tree and apply the layout.
             this.root = tree(d3.hierarchy(this.data));
             // draw the tree with hierarchy data
-            //this.drawTree();
-            //  this.createSVGTree();
+            this.drawTree();
         },
         drawTree() {
             /*
@@ -688,22 +687,107 @@ export default {
                 }
             };
         },
+        async getPrintAlgorithm() {
+            await this.skillTreeStore.getUserSkills();
+            const skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: this.skillTreeStore.userSkills
+            };
+            var skillsWithSubSkillsMoved = [];
+            skillsWithSubSkillsMoved = JSON.parse(
+                JSON.stringify(skill.children)
+            );
+
+            // Duplicate super skill node, and make second one a child of the first.
+            // Put all the subskills of the node in the second version.
+            // This is an attempt to show the subskills using only D3.
+            // Other options, such as having them circle around the super skill,
+            // like the D3 and Pixi version, were too complex.
+            function moveSubSkills(parentChildren) {
+                var i = parentChildren.length;
+                while (i--) {
+                    // If the skill is a super skill, and not an "end" super skill.
+                    if (
+                        parentChildren[i].type == 'super' &&
+                        parentChildren[i].position != 'end'
+                    ) {
+                        // Separate the child nodes.
+                        var subSkills = [];
+                        var regularChildSkills = [];
+                        for (
+                            let j = 0;
+                            j < parentChildren[i].children.length;
+                            j++
+                        ) {
+                            if (parentChildren[i].children[j].type == 'sub') {
+                                subSkills.push(parentChildren[i].children[j]);
+                            } else {
+                                regularChildSkills.push(
+                                    parentChildren[i].children[j]
+                                );
+                            }
+                        }
+
+                        // Create a new child node, with the subskills in it.
+                        var superSkillEndNode = {
+                            skill_name: parentChildren[i].skill_name,
+                            type: 'super',
+                            position: 'end',
+                            children: subSkills
+                        };
+
+                        // Empty the child nodes.
+                        parentChildren[i].children = [];
+                        // Add the new node.
+                        parentChildren[i].children.push(superSkillEndNode);
+                        // Add the other child nodes, excluding subskills.
+                        for (let j = 0; j < regularChildSkills.length; j++) {
+                            parentChildren[i].children.push(
+                                regularChildSkills[j]
+                            );
+                        }
+                    }
+
+                    if (typeof parentChildren[i] !== 'undefined') {
+                        /*
+                         * Run the above function again recursively.
+                         */
+                        if (
+                            parentChildren[i].children &&
+                            Array.isArray(parentChildren[i].children) &&
+                            parentChildren[i].children.length > 0
+                        )
+                            moveSubSkills(parentChildren[i].children);
+                    }
+                }
+            }
+
+            moveSubSkills(skillsWithSubSkillsMoved);
+
+            const data = {
+                skill_name: 'My skills',
+                children: skillsWithSubSkillsMoved
+            };
+
+            // Build the SVG tree.
+            await this.createSVGTree(data);
+        },
         async createSVGTree(data) {
-            const width = 20000;
-            const height = 20000;
-            const cx = width * 0.5;
+            const width = 24000;
+            const height = 24000;
+            const cx = width * 0.55;
             const cy = height * 0.59;
             // Create a radial tree layout. The layout’s first dimension (x)
             // is the angle, while the second (y) is the radius.
             const tree = d3
                 .tree()
                 // increase the radius to space out the nodes.
-                .size([2 * Math.PI, this.radius * 64])
+                .size([2 * Math.PI, this.radius * 50])
                 // Max separation between sibling nodes.
                 .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
 
             // Sort the tree and apply the layout.
-            console.log(data);
             const root = tree(d3.hierarchy(data));
 
             let svg = d3
@@ -796,6 +880,19 @@ export default {
                         return 'italic';
                     }
                 })
+                .style('paint-order', function (d) {
+                    return 'stroke';
+                })
+                // TODO: Add white stroke to labels.
+                // .style('stroke', function (d) {
+                //     return '#000000';
+                // })
+
+                .clone(true)
+                .lower()
+                .style('stroke-width', function (d) {
+                    return '1px';
+                })
                 .text(function (d) {
                     // If the node is a super node end node.
                     if (d.data.position == 'end') {
@@ -805,92 +902,6 @@ export default {
 
             // Append the SVG element.
             document.querySelector('#SVGskilltree').append(svg.node());
-        },
-        async getPrintAlgorithm() {
-            await this.skillTreeStore.getUserSkills();
-            const skill = {
-                name: 'SKILLS',
-                sprite: null,
-                children: this.skillTreeStore.userSkills
-            };
-            var skillsWithSubSkillsMoved = [];
-            skillsWithSubSkillsMoved = JSON.parse(
-                JSON.stringify(skill.children)
-            );
-
-            // Duplicate super skill node, and make second one a child of the first.
-            // Put all the subskills of the node in the second version.
-            // This is an attempt to show the subskills using only D3.
-            // Other options, such as having them circle around the super skill,
-            // like the D3 and Pixi version, were too complex.
-            function moveSubSkills(parentChildren) {
-                var i = parentChildren.length;
-                while (i--) {
-                    // If the skill is a super skill, and not an "end" super skill.
-                    if (
-                        parentChildren[i].type == 'super' &&
-                        parentChildren[i].position != 'end'
-                    ) {
-                        // Separate the child nodes.
-                        var subSkills = [];
-                        var regularChildSkills = [];
-                        for (
-                            let j = 0;
-                            j < parentChildren[i].children.length;
-                            j++
-                        ) {
-                            if (parentChildren[i].children[j].type == 'sub') {
-                                subSkills.push(parentChildren[i].children[j]);
-                            } else {
-                                regularChildSkills.push(
-                                    parentChildren[i].children[j]
-                                );
-                            }
-                        }
-
-                        // Create a new child node, with the subskills in it.
-                        var superSkillEndNode = {
-                            skill_name: parentChildren[i].skill_name,
-                            type: 'super',
-                            position: 'end',
-                            children: subSkills
-                        };
-
-                        // Empty the child nodes.
-                        parentChildren[i].children = [];
-                        // Add the new node.
-                        parentChildren[i].children.push(superSkillEndNode);
-                        // Add the other child nodes, excluding subskills.
-                        for (let j = 0; j < regularChildSkills.length; j++) {
-                            parentChildren[i].children.push(
-                                regularChildSkills[j]
-                            );
-                        }
-                    }
-
-                    if (typeof parentChildren[i] !== 'undefined') {
-                        /*
-                         * Run the above function again recursively.
-                         */
-                        if (
-                            parentChildren[i].children &&
-                            Array.isArray(parentChildren[i].children) &&
-                            parentChildren[i].children.length > 0
-                        )
-                            moveSubSkills(parentChildren[i].children);
-                    }
-                }
-            }
-
-            moveSubSkills(skillsWithSubSkillsMoved);
-
-            const data = {
-                skill_name: 'My skills',
-                children: skillsWithSubSkillsMoved
-            };
-
-            // Build the SVG tree.
-            await this.createSVGTree(data);
         }
     }
 };
@@ -930,7 +941,7 @@ input[type='button'] {
 #wrapper {
     width: 100%;
     height: calc(100% - 86px);
-    /*  overflow: hidden; */
+    overflow: hidden;
     position: relative;
 }
 
@@ -974,7 +985,7 @@ input[type='button'] {
 #skilltree {
     width: 100%;
     height: 100%;
-    /* overflow: hidden; */
+    overflow: hidden;
     /* This is for the positioning of the information panel. */
     position: relative;
     background-color: white;
