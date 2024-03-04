@@ -414,7 +414,7 @@ export default {
             PIXI.Assets.load('/font/popins.xml').then(() => {
                 const nameText = new PIXI.BitmapText(node.data.skill_name, {
                     fontName: 'Poppins-Black',
-                    fontSize: 75,
+                    fontSize: 90,
                     align: 'right'
                 });
                 // const nameText = new PIXI.Text(node.data.skill_name, style);
