@@ -514,9 +514,9 @@ export default {
             const nodeLink = new PIXI.Graphics();
             // If skill is mastered, make line thicker.
             if (link.target.data.is_mastered == '1') {
-                nodeLink.lineStyle(16, 0xffffff, 1);
+                nodeLink.lineStyle(16, 0xabafb3, 1);
             } else {
-                nodeLink.lineStyle(2, 0xffffff, 1);
+                nodeLink.lineStyle(2, 0xabafb3, 1);
             }
 
             // Source node.
@@ -527,7 +527,14 @@ export default {
             // Target node.
             var targetX = Math.cos(link.target.x) * link.target.y;
             var targetY = Math.sin(link.target.x) * link.target.y;
-            nodeLink.lineTo(targetX, targetY);
+            //nodeLink.lineTo(targetX, targetY);
+
+            const c1x = sourceX + 500;
+            const c1y = sourceY;
+            const c2x = targetX;
+            const c2y = targetY - 800;
+
+            nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
 
             // Add to the global variable container for this chart.
             this.$radialTreeContainer.addChild(nodeLink);
