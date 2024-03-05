@@ -1,12 +1,17 @@
 <script>
 // Import the store.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useTagsStore } from '../../stores/TagsStore';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const tagsStore = useTagsStore();
+        // Run the GET request.
+        tagsStore.getTagsList();
         return {
-            skillsStore
+            skillsStore,
+            tagsStore
         };
     },
     data() {
@@ -70,7 +75,8 @@ export default {
                 orphan: false,
                 superValidate: false,
                 noChild: false
-            }
+            },
+            filters: []
         };
     },
     async mounted() {
@@ -166,6 +172,11 @@ export default {
                     break;
             }
         },
+        SubmitFilters() {
+            // 0 maybe check if the filters have changed
+            // 1 delete the existing filters
+            // 2 push the new filters
+        },
         Submit() {
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
@@ -227,11 +238,6 @@ export default {
                 this.validate.violated = true;
                 alert('please enter a skill name');
             }
-            // if (descriptionData === '<p><br></p>') {
-            //     alert('please enter description for skill');
-            //     this.validate.description = true;
-            //     this.validate.violated = true;
-            // }
 
             // We End function here if any of the validate is violated
             if (this.validate.violated) {
@@ -419,6 +425,22 @@ export default {
             <div class="col col-md-8 col-lg-5 mt-2">
                 <div v-if="skill.type != 'sub'">
                     <label class="form-label">Filter</label>
+                    <div class="col">
+                        <label
+                            v-for="tag in tagsStore.tagsList"
+                            class="control control-checkbox"
+                        >
+                            <span class="my-auto mx-2 me-4">
+                                {{ tag.name }}</span
+                            >
+                            <input
+                                type="checkbox"
+                                :value="tag.id"
+                                v-model="filters"
+                            />
+                            <div class="control_indicator"></div>
+                        </label>
+                    </div>
                     <div class="col">
                         <label class="control control-checkbox">
                             <span class="my-auto mx-2 me-4"
