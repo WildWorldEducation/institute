@@ -2,12 +2,17 @@
 import VueMultiselect from 'vue-multiselect';
 // Import the stores.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useTagsStore } from '../../stores/TagsStore';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const tagsStore = useTagsStore();
+        if (tagsStore.tagsList.length == 0) tagsStore.getTagsList();
+
         return {
-            skillsStore
+            skillsStore,
+            tagsStore
         };
     },
     components: { VueMultiselect },
@@ -23,8 +28,7 @@ export default {
                 banner_image: '',
                 mastery_requirements: '',
                 type: 'regular',
-                level: 'grade_school',
-                filter_1: 0
+                level: 'grade_school'
             },
             iconImage: '',
             bannerImage: '',
@@ -52,6 +56,7 @@ export default {
                     name: 'PhD'
                 }
             ],
+            filters: [],
             // Below are data for various input function and data
             parentInput: {
                 inputText: '',
@@ -193,8 +198,6 @@ export default {
                     if (
                         this.skill.parent == this.skillsStore.skillsList[i].id
                     ) {
-                        this.skill.filter_1 =
-                            this.skillsStore.skillsList[i].filter_1;
                         this.skill.level = this.skillsStore.skillsList[i].level;
                     }
                 }
@@ -232,7 +235,7 @@ export default {
                     mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
                     level: this.skill.level,
-                    filter_1: this.skill.filter_1
+                    filters: this.filters
                 })
             })
                 .then(() => {
@@ -466,19 +469,19 @@ export default {
         <div class="row">
             <div class="col col-md-8 col-lg-5 mt-2">
                 <div v-if="skill.type != 'sub'">
-                    <label class="form-label">Filter</label>
-
+                    <label class="form-label">Filters</label>
                     <div class="col">
-                        <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-4"
-                                >Contrary to strict Christian doctrine</span
+                        <label
+                            v-for="tag in tagsStore.tagsList"
+                            class="control control-checkbox"
+                        >
+                            <span class="my-auto mx-2 me-4">
+                                {{ tag.name }}</span
                             >
                             <input
                                 type="checkbox"
-                                name="nodeType"
-                                id="regularSkillRadio"
-                                value="regular"
-                                v-model="skill.filter_1"
+                                :value="tag.id"
+                                v-model="filters"
                             />
                             <div class="control_indicator"></div>
                         </label>

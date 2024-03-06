@@ -49,17 +49,59 @@ router.post('/add', (req, res, next) => {
             banner_image: req.body.banner_image,
             mastery_requirements: req.body.mastery_requirements,
             type: req.body.type,
-            level: req.body.level,
-            filter_1: req.body.filter_1
+            level: req.body.level
         };
 
+        // Insert the new skill.
         let sqlQuery1 = `INSERT INTO skills SET ?;`;
-
         let query = conn.query(sqlQuery1, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 } else {
+                    // Get its id.
+                    let sqlQuery2 = `SELECT LAST_INSERT_ID();`;
+                    let query = conn.query(sqlQuery2, data, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            } else {
+                                const skillId = Object.values(results[0])[0];
+
+                                // Insert any new filters for the skill.
+                                for (
+                                    let i = 0;
+                                    i < req.body.filters.length;
+                                    i++
+                                ) {
+                                    let sqlQuery3 =
+                                        `
+                                INSERT INTO skill_tree.skill_tags (skill_id, tag_id)
+                                VALUES(` +
+                                        skillId +
+                                        `, ` +
+                                        req.body.filters[i] +
+                                        `);`;
+
+                                    let query = conn.query(
+                                        sqlQuery3,
+                                        (err, results) => {
+                                            try {
+                                                if (err) {
+                                                    throw err;
+                                                }
+                                                res.end();
+                                            } catch (err) {
+                                                next(err);
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
                     res.end();
                 }
             } catch (err) {
@@ -232,8 +274,6 @@ router.put('/:id/edit', (req, res, next) => {
             req.body.type +
             `', level = '` +
             req.body.level +
-            `', filter_1 = '` +
-            req.body.filter_1 +
             `' WHERE id = ` +
             req.params.id;
 
