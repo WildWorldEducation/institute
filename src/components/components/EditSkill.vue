@@ -2,16 +2,19 @@
 // Import the store.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useTagsStore } from '../../stores/TagsStore';
+import { useSkillTagsStore } from '../../stores/SkillTagsStore';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
         const tagsStore = useTagsStore();
-        // Run the GET request.
-        tagsStore.getTagsList();
+        if (tagsStore.tagsList.length == 0) tagsStore.getTagsList();
+        const skillTagsStore = useSkillTagsStore();
+
         return {
             skillsStore,
-            tagsStore
+            tagsStore,
+            skillTagsStore
         };
     },
     data() {
@@ -130,7 +133,26 @@ export default {
                         return element.id === this.skill.parent;
                     });
                     this.parentInput.inputText = parentResult.name;
+
+                    this.getSkillFilters();
                 });
+        },
+        async getSkillFilters() {
+            // Run the GET request.
+            if (this.skillTagsStore.skillTagsList.length == 0)
+                await this.skillTagsStore.getSkillTagsList();
+
+            for (let i = 0; i < this.skillTagsStore.skillTagsList.length; i++) {
+                if (
+                    this.skillTagsStore.skillTagsList[i].skill_id ==
+                    this.skillId
+                ) {
+                    console.log(this.skillTagsStore.skillTagsList[i]);
+                    this.filters.push(
+                        this.skillTagsStore.skillTagsList[i].tag_id
+                    );
+                }
+            }
         },
         // For image upload.
         onFileChange(e, type) {
@@ -174,8 +196,23 @@ export default {
         },
         SubmitFilters() {
             // 0 maybe check if the filters have changed
-            // 1 delete the existing filters
-            // 2 push the new filters
+            // 1 delete the existing filters.
+            const result = fetch('/skill-tags/remove/' + this.skillId, {
+                method: 'DELETE'
+            });
+            if (result.error) {
+                console.log(result.error);
+            }
+
+            // 2 push the new filters.
+            var url = '/skill-tags/add/' + this.skillId;
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    filters: this.filters
+                })
+            });
         },
         Submit() {
             // Check if this skill was a super skill with skills, and is being changed to another type.
@@ -263,29 +300,12 @@ export default {
             fetch(url, requestOptions)
                 .then(() => {
                     this.skillsStore.getNestedSkillsList();
+                    this.SubmitFilters();
                 })
                 .then(() => {
                     this.$router.push('/skills');
                 });
         },
-        // changeTag(skillTag) {
-        //     var url;
-        //     // If the checkbox is checked, the DB entry is created.
-        //     if (skillTag.isChecked == true) {
-        //         url = "/skill-tags/add/" + this.skillId + "/" + skillTag.id
-        //         fetch(url, {
-        //             method: 'POST',
-        //             body: {}
-        //         });
-        //     }
-        //     // If the checkbox is unchecked, the DB entry is deleted.
-        //     else {
-        //         url = "/skill-tags/remove/" + this.skillId + "/" + skillTag.id
-        //         fetch(url, {
-        //             method: 'DELETE'
-        //         });
-        //     }
-        // }
         handleChooseSkillLevel(level) {
             this.showDropDown = false;
             this.showLevel = level.name;
