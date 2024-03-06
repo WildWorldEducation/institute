@@ -30,8 +30,7 @@ export default {
                 mastery_requirements: '',
                 tags: [],
                 type: null,
-                level: null,
-                filter_1: null
+                level: null
             },
             filterChecked: false,
             iconImage: '',
@@ -147,7 +146,6 @@ export default {
                     this.skillTagsStore.skillTagsList[i].skill_id ==
                     this.skillId
                 ) {
-                    console.log(this.skillTagsStore.skillTagsList[i]);
                     this.filters.push(
                         this.skillTagsStore.skillTagsList[i].tag_id
                     );
@@ -194,7 +192,7 @@ export default {
                     break;
             }
         },
-        SubmitFilters() {
+        SubmitFilters() {       
             // 0 maybe check if the filters have changed
             // 1 delete the existing filters.
             const result = fetch('/skill-tags/remove/' + this.skillId, {
@@ -237,6 +235,8 @@ export default {
             // Domains cant get filters or levels.
             if (this.skill.type == 'domain') {
                 this.skill.level = 'domain';
+
+                // For subskills.
             } else if (this.skill.type == 'sub') {
                 // Make sure user has assigned a parent skill.
                 if (this.skill.parent == 0) {
@@ -245,12 +245,10 @@ export default {
                     alert('cluster nodes must have a parent');
                 }
                 for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                    // Copy the filter from the parent node, for sub skills.
+                    // Copy the level from the parent node.
                     if (
                         this.skill.parent == this.skillsStore.skillsList[i].id
                     ) {
-                        this.skill.filter_1 =
-                            this.skillsStore.skillsList[i].filter_1;
                         this.skill.level = this.skillsStore.skillsList[i].level;
                     }
                     // Cant change a skill to be a sub skill, while it has its own child skills.
@@ -291,8 +289,7 @@ export default {
                     banner_image: this.skill.banner_image,
                     mastery_requirements: masteryRequirementsData,
                     type: this.skill.type,
-                    level: this.skill.level,
-                    filter_1: this.skill.filter_1
+                    level: this.skill.level
                 })
             };
 
@@ -444,7 +441,7 @@ export default {
         <div class="row">
             <div class="col col-md-8 col-lg-5 mt-2">
                 <div v-if="skill.type != 'sub'">
-                    <label class="form-label">Filter</label>
+                    <label class="form-label">Filters</label>
                     <div class="col">
                         <label
                             v-for="tag in tagsStore.tagsList"
@@ -457,21 +454,6 @@ export default {
                                 type="checkbox"
                                 :value="tag.id"
                                 v-model="filters"
-                            />
-                            <div class="control_indicator"></div>
-                        </label>
-                    </div>
-                    <div class="col">
-                        <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-4"
-                                >Contrary to strict Christian doctrine</span
-                            >
-                            <input
-                                type="checkbox"
-                                name="nodeType"
-                                id="regularSkillRadio"
-                                value="regular"
-                                v-model="skill.filter_1"
                             />
                             <div class="control_indicator"></div>
                         </label>
