@@ -516,7 +516,7 @@ export default {
             if (link.target.data.is_mastered == '1') {
                 nodeLink.lineStyle(16, 0xabafb3, 1);
             } else {
-                nodeLink.lineStyle(2, 0xabafb3, 1);
+                nodeLink.lineStyle(8, 0xabafb3, 1);
             }
 
             // Source node.
@@ -529,13 +529,88 @@ export default {
             var targetY = Math.sin(link.target.x) * link.target.y;
             //nodeLink.lineTo(targetX, targetY);
 
-            const c1x = sourceX + 500;
-            const c1y = sourceY;
-            const c2x = targetX;
-            const c2y = targetY - 800;
+            /**
+             *  A(a, b), B(c, d)
+             *  (b-d)(x-a)+(c-a)(y-b)=0
+             *  ------------------------
+             * FIND Y
+             *   (y-b) = -((b-d)(x-a))/(c-a)
+             *   y = -((0-d)(x-0))/(c-0)
+             *   y = dx/c
+             * -------------------------
+             * FIND X
+             * (x-a) = {-(c-a)(y-b)} / (b-d)
+             *  x - 0 = (-cy) / (-d)
+             *  x = cy/d
+             */
+
+            // we have to handle each radiant quadrant separately
+
+            let c1x, c1y, c2x, c2y;
+
+            // Root Node
+            if (sourceX === 0) {
+                c1x = sourceX;
+                c1y = 5000;
+                c2x = targetX - 800;
+                c2y = targetY - 800;
+            } else if (sourceX > 0) {
+                // right side of the circle graph
+                c1x = sourceX + 1500;
+                c1y = (sourceY * c1x) / sourceX;
+                c2x = targetX - 1500;
+                c2y = (targetY * c2x) / targetX;
+                if (targetX < 3000 && (targetY < -7000 || targetY > 7000)) {
+                    if (targetY < 0) {
+                        c1y = sourceY - 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY + 1500;
+                        c2x = (c2y * targetX) / targetY;
+                    } else {
+                        c1y = sourceY + 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY - 1500;
+                        c2x = (c2y * targetX) / targetY;
+                    }
+                }
+            } else {
+                // left side of the circle
+                c1x = sourceX - 1500;
+                c1y = (sourceY * c1x) / sourceX;
+                c2x = targetX + 1500;
+                c2y = (targetY * c2x) / targetX;
+                if (targetX > -3000 && (targetY < -7000 || targetY > 7000)) {
+                    if (targetY < 0) {
+                        c1y = sourceY - 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY + 1500;
+                        c2x = (c2y * targetX) / targetY;
+                    } else {
+                        c1y = sourceY + 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY - 1500;
+                        c2x = (c2y * targetX) / targetY;
+                    }
+                }
+            }
 
             nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
 
+            if (link.target.data.skill_name == 'Southeast Asia') {
+                console.log(link.target.data.skill_name);
+                console.log(
+                    `c1x: ${c1x} || c1y:${c1y} || c2x: ${c2x} || c2y: ${c2y} || sourceX: ${sourceX} ||  sourceY: ${sourceY} || targetX: ${targetX} || targetY: ${targetY}`
+                );
+                //nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
+            }
+
+            if (link.target.data.skill_name == 'India') {
+                console.log(link.target.data.skill_name);
+                console.log(
+                    `c1x: ${c1x} || c1y:${c1y} || c2x: ${c2x} || c2y: ${c2y} || sourceX: ${sourceX} ||  sourceY: ${sourceY} || targetX: ${targetX} || targetY: ${targetY}`
+                );
+                //nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
+            }
             // Add to the global variable container for this chart.
             this.$radialTreeContainer.addChild(nodeLink);
 
