@@ -18,6 +18,15 @@ export default {
         return {
             filters: []
         };
+    },
+    async created() {
+        // Load the filters
+        if (this.tagsStore.tagsList.length == 0)
+            await this.tagsStore.getTagsList();
+        for (let i = 0; i < this.tagsStore.tagsList.length; i++) {
+            if (this.tagsStore.tagsList[i].is_active == 'active')
+                this.filters.push(this.tagsStore.tagsList[i].id);
+        }
     }
 };
 </script>
