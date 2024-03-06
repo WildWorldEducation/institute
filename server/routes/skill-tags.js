@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-     password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -56,31 +56,33 @@ router.get('/list', (req, res, next) => {
 });
 
 /**
- * Add item
+ * Add items
  *
  * @return response()
  */
-router.post('/add/:id1/:id2', (req, res, next) => {
+router.post('/add/:skillId', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
-        INSERT INTO skill_tree.skill_tags (skill_id, tag_id) 
+        for (let i = 0; i < req.body.filters.length; i++) {
+            let sqlQuery =
+                `
+        INSERT INTO skill_tree.skill_tags (skill_id, tag_id)
         VALUES(` +
-            req.params.id1 +
-            `, ` +
-            req.params.id2 +
-            `);`;
+                req.params.skillId +
+                `, ` +
+                req.body.filters[i] +
+                `);`;
 
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
+            let query = conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.end();
+                } catch (err) {
+                    next(err);
                 }
-                res.end();
-            } catch (err) {
-                next(err);
-            }
-        });
+            });
+        }
     } else {
         res.redirect('/login');
     }
@@ -100,6 +102,35 @@ router.delete('/remove/:id1/:id2', (req, res, next) => {
             req.params.id1 +
             ` AND tag_id =` +
             req.params.id2 +
+            `;`;
+
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Remove All Filters from a Specific Skill.
+ *
+ * @return response()
+ */
+router.delete('/remove/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery =
+            `
+        DELETE FROM skill_tree.skill_tags 
+        WHERE skill_id =` +
+            req.params.skillId +
             `;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
