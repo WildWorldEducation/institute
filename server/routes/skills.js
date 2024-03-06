@@ -299,13 +299,25 @@ router.put('/:id/edit', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = 'DELETE FROM skills WHERE id=' + req.params.id;
-
-        let query = conn.query(sqlQuery, (err, results) => {
+        let sqlQuery1 = 'DELETE FROM skills WHERE id=' + req.params.id;
+        let query = conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
+                // Delete all skill filters.
+                let sqlQuery2 =
+                    'DELETE FROM skill_tags WHERE skill_id=' + req.params.id;
+                let query = conn.query(sqlQuery2, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
                 res.end();
             } catch (err) {
                 next(err);
