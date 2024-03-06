@@ -1,17 +1,23 @@
 <script>
 // Import the stores.
 import { useSettingsStore } from '../../stores/SettingsStore.js';
+import { useTagsStore } from '../../stores/TagsStore';
 
 export default {
     setup() {
         const settingsStore = useSettingsStore();
         settingsStore.getSettings();
+        const tagsStore = useTagsStore();
+        if (tagsStore.tagsList.length == 0) tagsStore.getTagsList();
         return {
-            settingsStore
+            settingsStore,
+            tagsStore
         };
     },
     data() {
-        return {};
+        return {
+            filters: []
+        };
     }
 };
 </script>
@@ -28,7 +34,23 @@ export default {
             max number of questions per quiz:
             {{ settingsStore.quizMaxQuestions }}
         </p>
-        <p>
+        <label class="form-label">Filters</label>
+        <div class="col">
+            <label
+                v-for="tag in tagsStore.tagsList"
+                class="control control-checkbox"
+            >
+                <span class="my-auto mx-2 me-4"> {{ tag.name }}</span>
+                <input
+                    type="checkbox"
+                    :value="tag.id"
+                    v-model="filters"
+                    disabled
+                />
+                <div class="control_indicator"></div>
+            </label>
+        </div>
+        <p class="mt-4">
             <router-link
                 to="/settings/edit"
                 class="btn green-btn"
@@ -62,6 +84,15 @@ export default {
 </template>
 
 <style scoped>
+.form-label {
+    font-family: 'Poppins' sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0em;
+    text-align: left;
+}
+
 .green-btn {
     background-color: #36c1af;
     color: white;
@@ -74,4 +105,103 @@ export default {
     align-items: center;
     max-width: fit-content;
 }
+
+/**-------------------------------------  */
+/* A lot of CSS to styling two check box */
+.control {
+    font-family: 'Poppins' sans-serif;
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 5px;
+    padding-top: 3px;
+    cursor: pointer;
+}
+
+.control > span {
+    font-weight: 500;
+    font-size: 0.938rem;
+    color: #667085;
+    text-align: center;
+}
+.control input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+.control_indicator {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    height: 29.09px;
+    width: 29.09px;
+    background: #f9f5ff;
+    border: 1.45px solid #9c7eec;
+    border-radius: 8.73px;
+}
+.control:hover input ~ .control_indicator,
+.control input:focus ~ .control_indicator {
+    background: #e7ddf6;
+}
+
+.plus-svg:hover {
+    cursor: pointer;
+}
+.control input:checked ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control:hover input:not([disabled]):checked ~ .control_indicator,
+.control input:checked:focus ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control input:disabled ~ .control_indicator {
+    background: #e6e6e6;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.control_indicator:after {
+    box-sizing: unset;
+    content: '';
+    position: absolute;
+    display: none;
+}
+.control input:checked ~ .control_indicator:after {
+    display: block;
+}
+.control-checkbox .control_indicator:after {
+    left: 4px;
+    top: 5px;
+    width: 13.58px;
+    height: 9.33px;
+    border: solid #9c7eec;
+    border-width: 0px 0px 2.9px 2.9px;
+    transform: rotate(-45deg);
+}
+.control-checkbox input:disabled ~ .control_indicator:after {
+    border-color: #7b7b7b;
+}
+.control-checkbox .control_indicator::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-left: -1.3rem;
+    margin-top: -1.3rem;
+    background: #9c7eec;
+    border-radius: 3rem;
+    opacity: 0.6;
+    z-index: 99999;
+    transform: scale(0);
+}
+
+.control-checkbox input + .control_indicator::before {
+    animation: s-ripple 250ms ease-out;
+}
+.control-checkbox input:checked + .control_indicator::before {
+    animation-name: s-ripple-dup;
+}
+/* End of check box styling */
 </style>

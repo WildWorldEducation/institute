@@ -285,6 +285,27 @@ app.put('/settings/edit', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+                // Update which skill filters are active.
+                for (let i = 0; i < req.body.tags.length; i++) {
+                    let sqlQuery2 =
+                        `UPDATE tags
+                    SET is_active = '` +
+                        req.body.tags[i].is_active +
+                        `'
+                    WHERE id = ` +
+                        req.body.tags[i].id +
+                        `;`;
+
+                    let query = conn.query(sqlQuery2, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                }
                 res.end();
             } catch (err) {
                 next(err);
