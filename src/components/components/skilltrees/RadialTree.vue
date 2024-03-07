@@ -643,6 +643,7 @@ export default {
                 }
             }
 
+            // use Pixi function to draw the beizer
             nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
 
             // Add to the global variable container for this chart.
