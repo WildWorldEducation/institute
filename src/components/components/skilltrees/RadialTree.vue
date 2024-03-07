@@ -529,8 +529,10 @@ export default {
             var targetY = Math.sin(link.target.x) * link.target.y;
             //nodeLink.lineTo(targetX, targetY);
 
+            // Some mathematic equation to calculate control point
             /**
              *  A(a, b), B(c, d)
+             *  -- Equation of Line create by two point A and B
              *  (b-d)(x-a)+(c-a)(y-b)=0
              *  ------------------------
              * FIND Y
@@ -543,6 +545,9 @@ export default {
              *  x - 0 = (-cy) / (-d)
              *  x = cy/d
              * -------------------------
+             *
+             * ** calculate angle between two vector
+             *
              * Normal Vector
              * m((b-d),(c-a)) => m(-d,c)
              *
@@ -558,34 +563,53 @@ export default {
 
             let c1x, c1y, c2x, c2y;
 
-            // Calculate the angle of the point in circle
+            // Calculate the angle of the point in circle (this to determine the position of point in radiant circle)
             const angle =
                 (Math.abs(targetY) /
                     Math.sqrt(targetY * targetY + targetX * targetX)) *
                 (180 / Math.PI);
+
             // Root Node
             if (sourceX === 0) {
                 c1x = sourceX;
-                c1y = 5000;
-
+                c1y = 3000;
                 c2x = targetX - 800;
                 c2y = (targetY * c2x) / targetX;
+                // top or bottom part of the radiant circle
+                if (angle > 45 && angle < 90) {
+                    if (targetY < 0) {
+                        c2y = targetY + 1500;
+                        c2x = (c2y * targetX) / targetY;
+                    } else {
+                        c2y = targetY - 1500;
+                        c2x = (c2y * targetX) / targetY;
+                    }
+                }
             } else if (sourceX > 0) {
                 // right side of the circle graph
                 c1x = sourceX + 1500;
                 c1y = (sourceY * c1x) / sourceX;
                 c2x = targetX - 2000;
+                if (targetX < 0) {
+                    c2x = targetX + 2000;
+                }
                 c2y = (targetY * c2x) / targetX;
                 if (angle > 45 && angle < 90) {
                     if (targetY < 0) {
                         c1y = sourceY - 1500;
                         c1x = (c1y * sourceX) / sourceY;
                         c2y = targetY + 2000;
+                        if (targetY > 0) {
+                            targetY = targetY - 2000;
+                        }
                         c2x = (c2y * targetX) / targetY;
                     } else {
                         c1y = sourceY + 1500;
                         c1x = (c1y * sourceX) / sourceY;
                         c2y = targetY - 2000;
+                        if (targetY < 0) {
+                            targetY = targetY + 2000;
+                        }
                         c2x = (c2y * targetX) / targetY;
                     }
                 }
@@ -594,33 +618,32 @@ export default {
                 c1x = sourceX - 1500;
                 c1y = (sourceY * c1x) / sourceX;
                 c2x = targetX + 2000;
+                if (targetX > 0) {
+                    c2x = targetX - 2000;
+                }
                 c2y = (targetY * c2x) / targetX;
                 if (angle > 45 && angle < 90) {
                     if (targetY < 0) {
                         c1y = sourceY - 1500;
                         c1x = (c1y * sourceX) / sourceY;
                         c2y = targetY + 2000;
+                        if (targetY > 0) {
+                            targetY = targetY - 2000;
+                        }
                         c2x = (c2y * targetX) / targetY;
                     } else {
                         c1y = sourceY + 1500;
                         c1x = (c1y * sourceX) / sourceY;
                         c2y = targetY - 2000;
+                        if (targetY < 0) {
+                            targetY = targetY + 2000;
+                        }
                         c2x = (c2y * targetX) / targetY;
                     }
                 }
             }
 
             nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
-
-            if (link.target.data.skill_name == 'Computer Science') {
-                console.log(link.target.data.skill_name);
-                console.log(
-                    `c1x: ${c1x} || c1y:${c1y} || c2x: ${c2x} || c2y: ${c2y} || sourceX: ${sourceX} ||  sourceY: ${sourceY} || targetX: ${targetX} || targetY: ${targetY} || linkx: ${link.target.x} || linky: ${link.target.y}`
-                );
-                console.log('angle: ' + angle);
-
-                //nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
-            }
 
             // Add to the global variable container for this chart.
             this.$radialTreeContainer.addChild(nodeLink);
