@@ -542,34 +542,50 @@ export default {
              * (x-a) = {-(c-a)(y-b)} / (b-d)
              *  x - 0 = (-cy) / (-d)
              *  x = cy/d
+             * -------------------------
+             * Normal Vector
+             * m((b-d),(c-a)) => m(-d,c)
+             *
+             * Normal Vector of the default line
+             * dm(-1,0)
+             * -------------------------
+             *  angel of the current line with default line
+             *  alpha = (absolute(d)) / sqrt(d^2 + c^2) || radiant
+             *  degree = alpha * 180/pi
              */
 
             // we have to handle each radiant quadrant separately
 
             let c1x, c1y, c2x, c2y;
 
+            // Calculate the angle of the point in circle
+            const angle =
+                (Math.abs(targetY) /
+                    Math.sqrt(targetY * targetY + targetX * targetX)) *
+                (180 / Math.PI);
             // Root Node
             if (sourceX === 0) {
                 c1x = sourceX;
                 c1y = 5000;
+
                 c2x = targetX - 800;
-                c2y = targetY - 800;
+                c2y = (targetY * c2x) / targetX;
             } else if (sourceX > 0) {
                 // right side of the circle graph
                 c1x = sourceX + 1500;
                 c1y = (sourceY * c1x) / sourceX;
-                c2x = targetX - 1500;
+                c2x = targetX - 2000;
                 c2y = (targetY * c2x) / targetX;
-                if (targetX < 3000 && (targetY < -7000 || targetY > 7000)) {
+                if (angle > 45 && angle < 90) {
                     if (targetY < 0) {
                         c1y = sourceY - 1500;
                         c1x = (c1y * sourceX) / sourceY;
-                        c2y = targetY + 1500;
+                        c2y = targetY + 2000;
                         c2x = (c2y * targetX) / targetY;
                     } else {
                         c1y = sourceY + 1500;
                         c1x = (c1y * sourceX) / sourceY;
-                        c2y = targetY - 1500;
+                        c2y = targetY - 2000;
                         c2x = (c2y * targetX) / targetY;
                     }
                 }
@@ -577,18 +593,18 @@ export default {
                 // left side of the circle
                 c1x = sourceX - 1500;
                 c1y = (sourceY * c1x) / sourceX;
-                c2x = targetX + 1500;
+                c2x = targetX + 2000;
                 c2y = (targetY * c2x) / targetX;
-                if (targetX > -3000 && (targetY < -7000 || targetY > 7000)) {
+                if (angle > 45 && angle < 90) {
                     if (targetY < 0) {
                         c1y = sourceY - 1500;
                         c1x = (c1y * sourceX) / sourceY;
-                        c2y = targetY + 1500;
+                        c2y = targetY + 2000;
                         c2x = (c2y * targetX) / targetY;
                     } else {
                         c1y = sourceY + 1500;
                         c1x = (c1y * sourceX) / sourceY;
-                        c2y = targetY - 1500;
+                        c2y = targetY - 2000;
                         c2x = (c2y * targetX) / targetY;
                     }
                 }
@@ -596,21 +612,16 @@ export default {
 
             nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
 
-            if (link.target.data.skill_name == 'Southeast Asia') {
+            if (link.target.data.skill_name == 'Computer Science') {
                 console.log(link.target.data.skill_name);
                 console.log(
-                    `c1x: ${c1x} || c1y:${c1y} || c2x: ${c2x} || c2y: ${c2y} || sourceX: ${sourceX} ||  sourceY: ${sourceY} || targetX: ${targetX} || targetY: ${targetY}`
+                    `c1x: ${c1x} || c1y:${c1y} || c2x: ${c2x} || c2y: ${c2y} || sourceX: ${sourceX} ||  sourceY: ${sourceY} || targetX: ${targetX} || targetY: ${targetY} || linkx: ${link.target.x} || linky: ${link.target.y}`
                 );
+                console.log('angle: ' + angle);
+
                 //nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
             }
 
-            if (link.target.data.skill_name == 'India') {
-                console.log(link.target.data.skill_name);
-                console.log(
-                    `c1x: ${c1x} || c1y:${c1y} || c2x: ${c2x} || c2y: ${c2y} || sourceX: ${sourceX} ||  sourceY: ${sourceY} || targetX: ${targetX} || targetY: ${targetY}`
-                );
-                //nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
-            }
             // Add to the global variable container for this chart.
             this.$radialTreeContainer.addChild(nodeLink);
 
