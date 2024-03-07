@@ -257,8 +257,7 @@ router.get('/nested-list-filtered', (req, res, next) => {
                                         if (
                                             skills[i].id == filteredSkillIds[j]
                                         ) {
-                                            skills[i].isFiltered = true;
-                                            console.log(skills[i]);
+                                            skills[i].isFiltered = true;                                           
                                         } else {
                                             skills[i].isFiltered = false;
                                         }

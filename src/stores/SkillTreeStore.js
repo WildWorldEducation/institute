@@ -7,7 +7,8 @@ export const useSkillTreeStore = defineStore('skillTree', {
     state: () => ({
         userSkills: [],
         userSkillsNoSubSkills: [],
-        userSkillsSubSkillsSeparate: []
+        userSkillsSubSkillsSeparate: [],
+        nestedSkillsListWithFilters: []
     }),
     actions: {
         async getUserSkills() {
@@ -37,6 +38,15 @@ export const useSkillTreeStore = defineStore('skillTree', {
                 '/user-skills/separate-subskills/' + userDetails.userId
             );
             this.userSkillsSubSkillsSeparate = await result.json();
+        },
+        async getUserSkillsListWithFilters() {
+            const userDetailsStore = useUserDetailsStore();
+            const userDetails = await userDetailsStore.getUserDetails();
+            const result = await fetch(
+                '/user-skills/filtered/' + userDetails.userId
+            );
+            const data = await result.json();
+            this.nestedSkillsListWithFilters = data;
         }
     }
 });

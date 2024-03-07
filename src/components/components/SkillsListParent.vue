@@ -3,7 +3,6 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
-import { useSkillTagsStore } from '../../stores/SkillTagsStore.js';
 
 // Nested components.
 import SkillsListChildStudent from './SkillsListChildStudent.vue';
@@ -14,12 +13,11 @@ export default {
         const skillsStore = useSkillsStore();
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
-        const skillTagsStore = useSkillTagsStore();
+
         return {
             skillsStore,
             userDetailsStore,
-            skillTreeStore,
-            skillTagsStore
+            skillTreeStore
         };
     },
     data() {
@@ -28,18 +26,17 @@ export default {
         };
     },
     async created() {
-        if (this.skillTagsStore.skillTagsList.length == 0)
-            await this.skillTagsStore.getSkillTagsList();
-
         // Admins.
         if (this.userDetailsStore.role != 'student')
             await this.skillsStore.getNestedSkillsListWithFilters();
         // Students.
         else if (this.userDetailsStore.role == 'student') {
-            if (this.skillTreeStore.userSkills.length == 0) {
-                await this.skillTreeStore.getUserSkills();
+            if (this.skillTreeStore.nestedSkillsListWithFilters.length == 0) {
+                await this.skillTreeStore.getUserSkillsListWithFilters();
             }
-            this.userSkills = this.skillTreeStore.userSkills;
+            console.log(this.skillTreeStore.nestedSkillsListWithFilters);
+            this.userSkills = this.skillTreeStore.nestedSkillsListWithFilters;
+            //  this.userSkills = this.skillTreeStore.userSkills;
         }
     },
     computed: {},
@@ -71,6 +68,7 @@ export default {
                 :isMastered="skill.is_mastered"
                 :type="skill.type"
                 :level="skill.level"
+                :isFiltered="skill.isFiltered"
                 :role="userDetailsStore.role"
             >
             </SkillsListChildStudent>

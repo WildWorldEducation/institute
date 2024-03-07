@@ -27,6 +27,7 @@ export default {
         'level',
         'depth',
         'role',
+        'isFiltered',
         'DeleteSkill'
     ],
     computed: {
@@ -161,7 +162,7 @@ export default {
                 class="locked-skill-styling"
             />
         </div>
-        <span style="text-align: left">{{ name }}</span>
+        <span style="text-align: left">{{ name }} {{ isFiltered }}</span>
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
             <button
@@ -302,6 +303,7 @@ export default {
         :type="subSkill.type"
         :level="subSkill.level"
         :name="subSkill.skill_name"
+        :isFiltered="subSkill.isFiltered"
         :role="role"
         :DeleteSkill="DeleteSkill"
         :depth="depth + 1"
@@ -319,6 +321,7 @@ export default {
         :type="child.type"
         :level="child.level"
         :name="child.skill_name"
+        :isFiltered="child.isFiltered"
         :role="role"
         :DeleteSkill="DeleteSkill"
         :depth="depth + 1"
