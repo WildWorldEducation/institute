@@ -3,6 +3,7 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useSkillTagsStore } from '../../stores/SkillTagsStore.js';
 
 // Nested components.
 import SkillsListChildStudent from './SkillsListChildStudent.vue';
@@ -11,13 +12,14 @@ import SkillsListChildNonStudent from './SkillsListChildNonStudent.vue';
 export default {
     setup() {
         const skillsStore = useSkillsStore();
-        // Run the GET request.
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
+        const skillTagsStore = useSkillTagsStore();
         return {
             skillsStore,
             userDetailsStore,
-            skillTreeStore
+            skillTreeStore,
+            skillTagsStore
         };
     },
     data() {
@@ -26,10 +28,13 @@ export default {
         };
     },
     async created() {
-        await this.skillsStore.getSkillsList();
+        if (this.skillTagsStore.skillTagsList.length == 0)
+            await this.skillTagsStore.getSkillTagsList();
 
+        // Admins.
         if (this.userDetailsStore.role != 'student')
-            await this.skillsStore.getNestedSkillsList();
+            await this.skillsStore.getNestedSkillsListWithFilters();
+        // Students.
         else if (this.userDetailsStore.role == 'student') {
             if (this.skillTreeStore.userSkills.length == 0) {
                 await this.skillTreeStore.getUserSkills();
@@ -70,7 +75,7 @@ export default {
             >
             </SkillsListChildStudent>
         </div>
-        <div v-else v-for="skill in skillsStore.nestedSkillsList">
+        <div v-else v-for="skill in skillsStore.nestedSkillsListWithFilters">
             <SkillsListChildNonStudent
                 :id="skill.id"
                 :children="skill.children"
@@ -78,6 +83,7 @@ export default {
                 :name="skill.name"
                 :type="skill.type"
                 :level="skill.level"
+                :isFiltered="skill.isFiltered"
                 :role="userDetailsStore.role"
                 :DeleteSkill="DeleteSkill"
             >

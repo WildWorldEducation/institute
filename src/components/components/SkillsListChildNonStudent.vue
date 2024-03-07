@@ -1,14 +1,10 @@
 <script>
-import { useSkillsStore } from '../../stores/SkillsStore.js';
 // Import
 import router from '../../router';
 
 export default {
     setup() {
-        const skillsStore = useSkillsStore();
-        return {
-            skillsStore
-        };
+        return {};
     },
     data() {
         return {
@@ -27,6 +23,7 @@ export default {
         'level',
         'depth',
         'role',
+        'isFiltered',
         'DeleteSkill'
     ],
     computed: {
@@ -59,9 +56,6 @@ export default {
         }
     },
     async created() {
-        //  await this.skillsStore.getNestedSkillsList();
-        //  await this.skillsStore.getSkillsList();
-
         for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].type == 'sub') {
                 this.subSkills.push(this.children[i]);
@@ -120,6 +114,7 @@ export default {
         :style="indent"
         :class="{
             domains: type == 'domain',
+            'is-filtered': isFiltered == true,
             // Colors and background images for top level skills.
             'sub-skill-button': type == 'sub',
             'grade-school-level': level == 'grade_school',
@@ -367,6 +362,7 @@ export default {
         :level="subSkill.level"
         :name="subSkill.name"
         :role="role"
+        :isFiltered="subSkill.isFiltered"
         :DeleteSkill="DeleteSkill"
         :depth="depth + 1"
     >
@@ -382,6 +378,7 @@ export default {
         :level="child.level"
         :name="child.name"
         :role="role"
+        :isFiltered="child.isFiltered"
         :DeleteSkill="DeleteSkill"
         :depth="depth + 1"
     >
@@ -438,6 +435,10 @@ export default {
     border-color: black;
     flex-direction: column;
     background-position: right;
+}
+
+.is-filtered {
+    background-color: lightsalmon;
 }
 
 .grade-school-level {
