@@ -78,43 +78,38 @@ export default {
                     )
                 ) {
                     return;
-                } else {
-                    const questionArray = [];
-                    // For each question.
-                    for (let i = 0; i < this.questionsArray.length; i++) {
-                        const questionObject = {};
-                        questionObject.skillId = this.questionsArray[i][0];
-                        questionObject.name = this.questionsArray[i][1];
-                        questionObject.question = this.questionsArray[i][2];
-                        questionObject.correct_answer =
-                            this.questionsArray[i][3];
-                        questionObject.incorrect_answer_1 =
-                            this.questionsArray[i][4];
-                        questionObject.incorrect_answer_2 =
-                            this.questionsArray[i][5];
-                        questionObject.incorrect_answer_3 =
-                            this.questionsArray[i][6];
-                        questionObject.incorrect_answer_4 =
-                            this.questionsArray[i][7];
-                        questionObject.explanation = this.questionsArray[i][8];
-
-                        questionArray.push(questionObject);
-                    }
-
-                    const requestOptions = {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            questionArray
-                        })
-                    };
-                    var url = '/questions/mc-questions/bulk-add';
-
-                    fetch(url, requestOptions).then(() => {
-                        alert('Questions uploaded.');
-                    });
                 }
             }
+
+            const questionArray = [];
+            // For each question.
+            for (let i = 0; i < this.questionsArray.length; i++) {
+                const questionObject = {};
+                questionObject.skillId = this.questionsArray[i][0];
+                questionObject.name = this.questionsArray[i][1];
+                questionObject.question = this.questionsArray[i][2];
+                questionObject.correct_answer = this.questionsArray[i][3];
+                questionObject.incorrect_answer_1 = this.questionsArray[i][4];
+                questionObject.incorrect_answer_2 = this.questionsArray[i][5];
+                questionObject.incorrect_answer_3 = this.questionsArray[i][6];
+                questionObject.incorrect_answer_4 = this.questionsArray[i][7];
+                questionObject.explanation = this.questionsArray[i][8];
+
+                questionArray.push(questionObject);
+            }
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    questionArray
+                })
+            };
+            var url = '/questions/mc-questions/bulk-add';
+
+            fetch(url, requestOptions).then(() => {
+                alert('Questions uploaded.');
+            });
         }
     }
 };
