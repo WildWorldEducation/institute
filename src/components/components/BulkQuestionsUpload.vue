@@ -22,16 +22,20 @@ export default {
             reader.onload = (e) => {
                 let incorrectlyFormattedQuestions = false;
                 var CSVString = e.target.result;
+
                 // Break CSV into individual questions.
                 var CSVArray = CSVString.split(/\r?\n|\r|\n/g);
+
                 // Break individual questions into arrays.
                 // Validation.
-                //reverse loop to not mess with splicing.
+                //reverse loops to not mess with splicing.
                 for (let i = CSVArray.length - 1; i >= 0; i--) {
                     // Remove any empty lines.
                     if (CSVArray[i] == '') {
                         CSVArray.splice(i, 1);
                     }
+                }
+                for (let i = CSVArray.length - 1; i >= 0; i--) {
                     // Check for missing fields.
                     // If found, omit this question.
                     if (CSVArray[i].split('|').length != 9) {
@@ -39,6 +43,7 @@ export default {
                         CSVArray.splice(i, 1);
                     }
                 }
+
                 // Add the correctly formatted questions to the array.
                 for (let i = 0; i < CSVArray.length; i++) {
                     this.questionsArray.push(CSVArray[i].split('|'));
