@@ -34,9 +34,7 @@ export default {
             if (this.skillTreeStore.nestedSkillsListWithFilters.length == 0) {
                 await this.skillTreeStore.getUserSkillsListWithFilters();
             }
-            console.log(this.skillTreeStore.nestedSkillsListWithFilters);
             this.userSkills = this.skillTreeStore.nestedSkillsListWithFilters;
-            //  this.userSkills = this.skillTreeStore.userSkills;
         }
     },
     computed: {},
