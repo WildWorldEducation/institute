@@ -357,6 +357,7 @@ router.post('/essay-questions/add', (req, res, next) => {
  * @return response()
  */
 router.post('/mc-questions/bulk-add', (req, res, next) => {
+    console.log('test');
     if (req.session.userName) {
         // For each question.
         // No need to escape single quotes for SQL to accept,
