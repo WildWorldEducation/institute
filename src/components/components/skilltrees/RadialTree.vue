@@ -55,7 +55,7 @@ export default {
         // Hide the tidy tree.
         this.$tidyTreeContainer.visible = false;
         // Set the background colour.
-        this.$pixiApp.renderer.background.color = 0x16022e;
+        this.$pixiApp.renderer.background.color = 0x1e293b;
     },
     async mounted() {
         if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
@@ -111,17 +111,21 @@ export default {
             centerNodeSprite.x = this.root.x;
             centerNodeSprite.y = this.root.y;
             centerNodeSprite.anchor.set(0.5);
-            // Add to the global variable container for this chart.
-            this.$radialTreeContainer.addChild(centerNodeSprite);
 
             // Get the data from D3.
             const nodes = this.root.descendants();
             const links = this.root.links();
 
+            // Draw a circle like in the figma design
+            this.drawCircle(this.root);
+
             // Draw the actual shapes.
             for (const link of links) {
                 this.drawLink(link);
             }
+
+            // Add to the global variable container for this chart. (we add the center node after the link so it will render above the line)
+            this.$radialTreeContainer.addChild(centerNodeSprite);
             for (const node of nodes) {
                 this.drawNode(node);
             }
@@ -414,7 +418,7 @@ export default {
             PIXI.Assets.load('/font/popins.xml').then(() => {
                 const nameText = new PIXI.BitmapText(node.data.skill_name, {
                     fontName: 'Poppins-Black',
-                    fontSize: 90,
+                    fontSize: 200,
                     align: 'right'
                 });
                 // const nameText = new PIXI.Text(node.data.skill_name, style);
@@ -512,11 +516,33 @@ export default {
         },
         drawLink(link) {
             const nodeLink = new PIXI.Graphics();
+            let lineWidth = 0;
             // If skill is mastered, make line thicker.
             if (link.target.data.is_mastered == '1') {
-                nodeLink.lineStyle(16, 0xabafb3, 1);
+                lineWidth = 30;
             } else {
-                nodeLink.lineStyle(8, 0xabafb3, 1);
+                lineWidth = 18;
+            }
+
+            switch (link.target.depth) {
+                case 1:
+                    nodeLink.lineStyle(lineWidth, 0xd4d4d8, 1);
+                    break;
+                case 2:
+                    nodeLink.lineStyle(lineWidth, 0xa1a1aa, 1);
+                    break;
+                case 3:
+                    nodeLink.lineStyle(lineWidth, 0x71717a, 1);
+                    break;
+                case 4:
+                    nodeLink.lineStyle(lineWidth, 0x52525b, 1);
+                    break;
+                case 5:
+                    nodeLink.lineStyle(lineWidth, 0x404040, 1);
+                    break;
+                default:
+                    nodeLink.lineStyle(lineWidth, 0x44403c, 1);
+                    break;
             }
 
             // Source node.
@@ -572,7 +598,7 @@ export default {
             // Root Node
             if (sourceX === 0) {
                 c1x = sourceX;
-                c1y = 3000;
+                c1y = 4500;
                 c2x = targetX - 800;
                 c2y = (targetY * c2x) / targetX;
                 // top or bottom part of the radiant circle
@@ -717,6 +743,27 @@ export default {
             // );
             // // Add to the global variable container for this chart.
             // this.$radialTreeContainer.addChild(nodeLink);
+        },
+        drawCircle(root) {
+            let node = root;
+            const childNode = node.children.find((e) => e.children);
+            /**
+             * Calculate distance between two point A(x1,y1) B(x2,y2)
+             * d(A,B) = sqrt((x2-x1)^2 + (y2-y1)^2)
+             *
+             */
+            const distance = Math.sqrt(
+                (childNode.x - root.x) * (childNode.x - root.x) +
+                    (childNode.y - root.y) * (childNode.y - root.y)
+            );
+            for (let index = 0; index < root.height; index++) {
+                const gr = new PIXI.Graphics();
+                gr.lineStyle(30, 0x334155, 0.9);
+                gr.drawCircle(0, 0, distance * (index + 1));
+                gr.endFill();
+                node = childNode;
+                this.$radialTreeContainer.addChild(gr);
+            }
         },
         showInfoPanel() {
             // If panel is not showing.
