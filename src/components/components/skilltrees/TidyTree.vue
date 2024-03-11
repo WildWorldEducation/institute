@@ -182,7 +182,7 @@ export default {
             // Attempting to increase performance with the below line.
             nodeGraphic.interactiveChildren = false;
             nodeGraphic.lineStyle(0);
-            nodeGraphic.beginFill(0x000, 1);
+            nodeGraphic.beginFill(0xb4b4b4, 1);
             nodeGraphic.drawCircle(node.y, node.x, 15);
             nodeGraphic.endFill();
             // Add to the global variable container for this chart.
@@ -225,7 +225,7 @@ export default {
                 });
 
                 // fill the text with black color
-                nameText.tint = 0x000000;
+                nameText.tint = 0x474747;
 
                 // Attempting to increase performance with the below line.
                 nameText.interactiveChildren = false;
@@ -287,9 +287,13 @@ export default {
             ) {
                 // Use dashed line.
                 const shader = new DashLineShader({ dash: 5, gap: 8 });
-                nodeLink.lineStyle({ width: lineWidth, color: 0x000, shader });
+                nodeLink.lineStyle({
+                    width: lineWidth,
+                    color: 0x949494,
+                    shader
+                });
             } else {
-                nodeLink.lineStyle({ width: lineWidth, color: 0x000 });
+                nodeLink.lineStyle({ width: lineWidth, color: 0x949494 });
             }
 
             nodeLink.position.x = startingPointArray[0];
