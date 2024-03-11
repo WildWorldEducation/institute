@@ -229,10 +229,23 @@ export default {
 
                 // Attempting to increase performance with the below line.
                 nameText.interactiveChildren = false;
-                nameText.anchor.set(0, 0.5);
-                nameText.x = node.y + 15;
-                nameText.y = node.x;
-                nameText.scale.set(0.5, 0.5);
+
+                // We move skill name the node that have children to the left of the sprite and leaf node to the right
+                if (!node.children) {
+                    nameText.anchor.set(0, 0.5);
+                    nameText.x = node.y;
+                    nameText.y = node.x;
+                    nameText.x += 25;
+                    nameText.y -= 3;
+                    nameText.scale.set(0.5, 0.5);
+                } else {
+                    nameText.anchor.set(1, 0.5);
+                    nameText.x = node.y;
+                    nameText.y = node.x;
+                    nameText.x -= 25;
+                    nameText.y -= 3;
+                    nameText.scale.set(0.5, 0.5);
+                }
                 // Add to the global variable container for this chart.
                 this.$tidyTreeContainer.addChild(nameText);
             });
