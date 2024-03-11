@@ -191,7 +191,7 @@ export default {
             // Interactivity.
             nodeGraphic.eventMode = 'static';
             nodeGraphic.cursor = 'pointer';
-            nodeGraphic.on('pointerdown', (event) => {              
+            nodeGraphic.on('pointerdown', (event) => {
                 // Create the  skill object:
                 var skill = {
                     id: node.data.id,
@@ -217,15 +217,25 @@ export default {
                 strokeThickness: 4
             });
 
-            const nameText = new PIXI.Text(node.data.skill_name, style);
-            // Attempting to increase performance with the below line.
-            nameText.interactiveChildren = false;
-            nameText.anchor.set(0, 0.5);
-            nameText.x = node.y + 15;
-            nameText.y = node.x;
-            nameText.scale.set(0.5, 0.5);
-            // Add to the global variable container for this chart.
-            this.$tidyTreeContainer.addChild(nameText);
+            PIXI.Assets.load('/font/popins.xml').then(() => {
+                const nameText = new PIXI.BitmapText(node.data.skill_name, {
+                    fontName: 'Poppins-Black',
+                    fontSize: 30,
+                    align: 'right'
+                });
+
+                // fill the text with black color
+                nameText.tint = 0x000000;
+
+                // Attempting to increase performance with the below line.
+                nameText.interactiveChildren = false;
+                nameText.anchor.set(0, 0.5);
+                nameText.x = node.y + 15;
+                nameText.y = node.x;
+                nameText.scale.set(0.5, 0.5);
+                // Add to the global variable container for this chart.
+                this.$tidyTreeContainer.addChild(nameText);
+            });
         },
         drawLink(link) {
             // D3 function to generate the link path data.

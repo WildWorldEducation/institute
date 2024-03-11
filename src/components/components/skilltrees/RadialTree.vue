@@ -41,7 +41,10 @@ export default {
             // Max size before overlap.
             secondLevelNodeSize: 100,
             regularNodeSize: 50,
-            subSkillRadius: 50
+            subSkillRadius: 50,
+            sprite: {
+                domainNode: null
+            }
         };
     },
     components: {
@@ -62,6 +65,10 @@ export default {
             await this.skillTreeStore.getUserSkillsSubSkillsSeparate();
         }
 
+        this.sprite.domainNode = PIXI.Sprite.from(
+            'images/skill-tree-nodes/domain.png'
+        );
+
         // Only generate this chart, if it has not already been generated.
         if (this.$radialTreeContainer.children.length == 0) {
             this.width = window.innerWidth;
@@ -79,6 +86,42 @@ export default {
         document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
     },
     methods: {
+        handelNodeSprite(nodeGraphic, node, nodeContainer) {
+            console.log(nodeGraphic);
+            nodeGraphic.anchor.set(0.5);
+            // Increase the size of the first level nodes.
+            if (node.depth == 1) {
+                nodeGraphic.width = this.firstLevelNodeSize;
+                nodeGraphic.height = this.firstLevelNodeSize;
+            } else if (node.depth == 2) {
+                nodeGraphic.width = this.secondLevelNodeSize;
+                nodeGraphic.height = this.secondLevelNodeSize;
+            } else {
+                nodeGraphic.width = this.regularNodeSize;
+                nodeGraphic.height = this.regularNodeSize;
+            }
+            nodeContainer.addChild(nodeGraphic);
+
+            // Interactivity.
+            nodeGraphic.eventMode = 'static';
+            nodeGraphic.cursor = 'pointer';
+            nodeGraphic.on('pointerdown', (event) => {
+                // Create the  skill object:
+                var skill = {
+                    id: node.data.id,
+                    isMastered: node.data.is_mastered,
+                    isUnlocked: node.data.is_accessible,
+                    name: node.data.skill_name,
+                    masteryRequirements: node.data.mastery_requirements,
+                    type: node.data.type
+                };
+                this.skill = skill;
+
+                if (!this.isSkillInfoPanelShown) {
+                    this.showInfoPanel();
+                }
+            });
+        },
         getAlgorithm() {
             var skillsNoSubSkills = [];
             skillsNoSubSkills = JSON.parse(JSON.stringify(this.skill.children));
