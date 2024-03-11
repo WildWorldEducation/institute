@@ -4,7 +4,10 @@ export default {
         return {
             questionCSVFile: '',
             filesArray: [],
-            questionsArray: []
+            questionsArray: [],
+            counter1: 0,
+            counter2: 0,
+            incorrectlyFormattedQuestions: false
         };
     },
     methods: {
@@ -19,41 +22,65 @@ export default {
         // Convert file to string, and then to array.
         ReadFile(file) {
             var reader = new FileReader();
+
             reader.onload = (e) => {
-                let incorrectlyFormattedQuestions = false;
                 var CSVString = e.target.result;
+
                 // Break CSV into individual questions.
                 var CSVArray = CSVString.split(/\r?\n|\r|\n/g);
+
                 // Break individual questions into arrays.
                 // Validation.
-                //reverse loop to not mess with splicing.
+                //reverse loops to not mess with splicing.
                 for (let i = CSVArray.length - 1; i >= 0; i--) {
                     // Remove any empty lines.
-                    if (CSVArray[i] == '') {
-                        CSVArray.splice(i, 1);
-                    }
-                    // Check for missing fields.
-                    // If found, omit this question.
-                    if (CSVArray[i].split('|').length != 9) {
-                        incorrectlyFormattedQuestions = true;
+                    if (CSVArray[i] == '' || CSVArray[i] == ' ') {
                         CSVArray.splice(i, 1);
                     }
                 }
+                // Check for wrong number of fields.
+                // If found, omit this question.
+                for (let i = CSVArray.length - 1; i >= 0; i--) {
+                    if (CSVArray[i].split('|').length != 9) {
+                        this.incorrectlyFormattedQuestions = true;
+                        CSVArray.splice(i, 1);
+                    }
+                }
+                // Check for error where the skill ID is not an integer.
+                // If found, omit this question.
+                for (let i = CSVArray.length - 1; i >= 0; i--) {
+                    if (
+                        isNaN(CSVArray[i].split('|')[0]) ||
+                        isNaN(parseFloat(CSVArray[i].split('|')[0]))
+                    ) {
+                        this.incorrectlyFormattedQuestions = true;
+                        CSVArray.splice(i, 1);
+                    }
+                }
+
                 // Add the correctly formatted questions to the array.
                 for (let i = 0; i < CSVArray.length; i++) {
                     this.questionsArray.push(CSVArray[i].split('|'));
                 }
-
-                // Let the user know they had some incorrectly formatted questions.
-                if (incorrectlyFormattedQuestions) {
-                    alert(
-                        'At least one question has the wrong number of fields and has been omitted.'
-                    );
-                }
             };
+
             reader.readAsText(file);
         },
         Submit() {
+            if (this.incorrectlyFormattedQuestions) {
+                // Let the user know they had some incorrectly formatted questions.
+                // Check if they want to continue.
+                if (
+                    !confirm(
+                        'Incorrectly formatted question were found. Only ' +
+                            this.questionsArray.length +
+                            ' questions will be uploaded. Continue?'
+                    )
+                ) {
+                    return;
+                }
+            }
+
             const questionArray = [];
             // For each question.
             for (let i = 0; i < this.questionsArray.length; i++) {
