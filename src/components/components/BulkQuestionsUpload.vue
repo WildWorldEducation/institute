@@ -34,7 +34,7 @@ export default {
                 //reverse loops to not mess with splicing.
                 for (let i = CSVArray.length - 1; i >= 0; i--) {
                     // Remove any empty lines.
-                    if (CSVArray[i] == '') {
+                    if (CSVArray[i] == '' || CSVArray[i] == ' ') {
                         CSVArray.splice(i, 1);
                     }
                 }
