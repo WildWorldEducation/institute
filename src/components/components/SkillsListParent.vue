@@ -28,13 +28,13 @@ export default {
     async created() {
         // Admins.
         if (this.userDetailsStore.role != 'student')
-            await this.skillsStore.getNestedSkillsListWithFilters();
+            await this.skillsStore.getNestedSkillsList();
         // Students.
         else if (this.userDetailsStore.role == 'student') {
-            if (this.skillTreeStore.nestedSkillsListWithFilters.length == 0) {
-                await this.skillTreeStore.getUserSkillsListWithFilters();
+            if (this.skillTreeStore.userSkills.length == 0) {
+                await this.skillTreeStore.getUserSkills();
             }
-            this.userSkills = this.skillTreeStore.nestedSkillsListWithFilters;
+            this.userSkills = this.skillTreeStore.userSkills;
         }
     },
     computed: {},
@@ -66,12 +66,11 @@ export default {
                 :isMastered="skill.is_mastered"
                 :type="skill.type"
                 :level="skill.level"
-                :isFiltered="skill.isFiltered"
                 :role="userDetailsStore.role"
             >
             </SkillsListChildStudent>
         </div>
-        <div v-else v-for="skill in skillsStore.nestedSkillsListWithFilters">
+        <div v-else v-for="skill in skillsStore.nestedSkillsList">
             <SkillsListChildNonStudent
                 :id="skill.id"
                 :children="skill.children"
@@ -79,7 +78,7 @@ export default {
                 :name="skill.name"
                 :type="skill.type"
                 :level="skill.level"
-                :isFiltered="skill.isFiltered"
+                :isFiltered="skill.is_filtered"
                 :role="userDetailsStore.role"
                 :DeleteSkill="DeleteSkill"
             >

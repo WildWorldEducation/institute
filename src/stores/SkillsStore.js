@@ -2,8 +2,7 @@ import { defineStore } from 'pinia';
 
 export const useSkillsStore = defineStore('skills', {
     state: () => ({
-        nestedSkillsList: [],
-        nestedSkillsListWithFilters: [],
+        nestedSkillsList: [],     
         skillsList: []
     }),
     actions: {
@@ -63,11 +62,6 @@ export const useSkillsStore = defineStore('skills', {
                 // Update the store.
                 this.getNestedSkillsList();
             }
-        },
-        async getNestedSkillsListWithFilters() {
-            const result = await fetch('/skills/nested-list-filtered');
-            const data = await result.json();
-            this.nestedSkillsListWithFilters = data;
         }
     }
 });

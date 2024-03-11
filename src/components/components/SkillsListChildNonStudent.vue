@@ -114,7 +114,7 @@ export default {
         :style="indent"
         :class="{
             domains: type == 'domain',
-            'is-filtered': isFiltered == true,
+            'is-filtered': isFiltered == 'filtered',
             // Colors and background images for top level skills.
             'sub-skill-button': type == 'sub',
             'grade-school-level': level == 'grade_school',
@@ -127,7 +127,7 @@ export default {
         class="skill-button d-flex justify-content-between"
         @click="toggleChildren"
     >
-        <span style="text-align: left">{{ name }}</span>
+        <span style="text-align: left">{{ name }} {{ isFiltered }}</span>
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
             <button
@@ -362,7 +362,7 @@ export default {
         :level="subSkill.level"
         :name="subSkill.name"
         :role="role"
-        :isFiltered="subSkill.isFiltered"
+        :isFiltered="subSkill.is_filtered"
         :DeleteSkill="DeleteSkill"
         :depth="depth + 1"
     >
@@ -378,7 +378,7 @@ export default {
         :level="child.level"
         :name="child.name"
         :role="role"
-        :isFiltered="child.isFiltered"
+        :isFiltered="child.is_filtered"
         :DeleteSkill="DeleteSkill"
         :depth="depth + 1"
     >
