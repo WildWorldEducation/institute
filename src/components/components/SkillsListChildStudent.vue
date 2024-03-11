@@ -162,7 +162,7 @@ export default {
                 class="locked-skill-styling"
             />
         </div>
-        <span style="text-align: left">{{ name }} {{ isFiltered }}</span>
+        <span style="text-align: left">{{ name }}</span>
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
             <button

@@ -45,7 +45,7 @@ router.get('/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` +
             req.params.id +
-            `
+            ` AND is_filtered = 'available'
 
     UNION
     SELECT skill_tree.skills.id, name, parent, "", "", description, type, level, mastery_requirements
@@ -58,7 +58,7 @@ router.get('/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id =` +
             req.params.id +
-            `)
+            `) AND is_filtered = 'available'
     ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
@@ -109,10 +109,6 @@ router.get('/filtered/:id', (req, res, next) => {
         // Declare variables
         let skills = [];
         let nestedStudentSkills = [];
-        let tags = [];
-        let skillTags = [];
-        let filteredTags = [];
-        let filteredSkillIds = [];
         let sqlQuery1 =
             `
     SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level, mastery_requirements
@@ -121,7 +117,7 @@ router.get('/filtered/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` +
             req.params.id +
-            `
+            ` AND is_filtered = 'available'
 
     UNION
     SELECT skill_tree.skills.id, name, parent, "", "", description, type, level, mastery_requirements
@@ -134,7 +130,7 @@ router.get('/filtered/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id =` +
             req.params.id +
-            `)
+            `) AND is_filtered = 'available'
     ORDER BY id;`;
 
         let query1 = conn.query(sqlQuery1, (err, results) => {
@@ -144,117 +140,33 @@ router.get('/filtered/:id', (req, res, next) => {
                 }
                 skills = results;
 
-                // Get list of all filters (tags).
-                let sqlQuery2 = `
- SELECT *
- FROM skill_tree.tags`;
-                let query2 = conn.query(sqlQuery2, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
-                        }
-                        tags = results;
+                // Create the 'children' array, for the skills.
+                for (var i = 0; i < skills.length; i++) {
+                    skills[i].children = [];
+                }
 
-                        // Get list of filters that have been added to skills.
-                        let sqlQuery3 = `
- SELECT *
- FROM skill_tree.skill_tags`;
-                        let query3 = conn.query(sqlQuery3, (err, results) => {
-                            try {
-                                if (err) {
-                                    throw err;
-                                }
-                                skillTags = results;
+                for (var i = 0; i < skills.length; i++) {
+                    if (skills[i].parent != null && skills[i].parent != 0) {
+                        var parentId = skills[i].parent;
 
-                                // Get list of filters that have been activated by the admin user.
-                                for (let i = 0; i < tags.length; i++) {
-                                    if (tags[i].is_active == 'active') {
-                                        filteredTags.push(tags[i]);
-                                    }
-                                }
-
-                                // Get list of skill IDs, where the skill has an active filter applied currently.
-                                for (let i = 0; i < filteredTags.length; i++) {
-                                    for (let j = 0; j < skillTags.length; j++) {
-                                        if (
-                                            filteredTags[i].id ==
-                                            skillTags[j].tag_id
-                                        ) {
-                                            filteredSkillIds.push(
-                                                skillTags[j].skill_id
-                                            );
-                                        }
-                                    }
-                                }
-
-                                // Add the active filter data to the relevant skills.
-                                for (let i = 0; i < skills.length; i++) {
-                                    for (
-                                        let j = 0;
-                                        j < filteredSkillIds.length;
-                                        j++
-                                    ) {
-                                        if (
-                                            skills[i].id == filteredSkillIds[j]
-                                        ) {
-                                            skills[i].isFiltered = true;
-                                        } else {
-                                            skills[i].isFiltered = false;
-                                        }
-                                    }
-                                }
-
-                                // Create the 'children' array, for the skills.
-                                for (var i = 0; i < skills.length; i++) {
-                                    skills[i].children = [];
-                                }
-
-                                for (var i = 0; i < skills.length; i++) {
-                                    if (
-                                        skills[i].parent != null &&
-                                        skills[i].parent != 0
-                                    ) {
-                                        var parentId = skills[i].parent;
-
-                                        // go through all rows again, add children
-                                        for (
-                                            let j = 0;
-                                            j < skills.length;
-                                            j++
-                                        ) {
-                                            if (skills[j].id == parentId) {
-                                                if (skills[j].isFiltered) {
-                                                    skills[i].isFiltered = true;
-                                                }
-                                                // bug
-                                                skills[j].children.push(
-                                                    skills[i]
-                                                );
-                                            }
-                                        }
-                                    }
-                                }
-
-                                for (var i = 0; i < skills.length; i++) {
-                                    if (
-                                        skills[i].parent == null ||
-                                        skills[i].parent == 0
-                                    ) {
-                                        nestedStudentSkills.push(skills[i]);
-                                    }
-                                }
-
-                                //   console.log(nestedStudentSkills);
-
-                                res.json(nestedStudentSkills);
-                            } catch (err) {
-                                next(err);
+                        // go through all rows again, add children
+                        for (let j = 0; j < skills.length; j++) {
+                            if (skills[j].id == parentId) {
+                                skills[j].children.push(skills[i]);
                             }
-                        });
-                    } catch (err) {
-                        next(err);
+                        }
                     }
-                });
+                }
+
+                for (var i = 0; i < skills.length; i++) {
+                    if (skills[i].parent == null || skills[i].parent == 0) {
+                        nestedStudentSkills.push(skills[i]);
+                    }
+                }
+
+                //   console.log(nestedStudentSkills);
+
+                res.json(nestedStudentSkills);
             } catch (err) {
                 next(err);
             }
