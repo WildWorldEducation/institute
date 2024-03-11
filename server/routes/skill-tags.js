@@ -63,7 +63,7 @@ router.get('/list', (req, res, next) => {
 router.post('/add/:skillId', (req, res, next) => {
     if (req.session.userName) {
         for (let i = 0; i < req.body.filters.length; i++) {
-            let sqlQuery =
+            let sqlQuery1 =
                 `
         INSERT INTO skill_tree.skill_tags (skill_id, tag_id)
         VALUES(` +
@@ -72,11 +72,30 @@ router.post('/add/:skillId', (req, res, next) => {
                 req.body.filters[i] +
                 `);`;
 
-            let query = conn.query(sqlQuery, (err, results) => {
+            let query1 = conn.query(sqlQuery1, (err, results) => {
                 try {
                     if (err) {
                         throw err;
                     }
+
+                    let sqlQuery2 =
+                        `
+            UPDATE skill_tree.skills 
+            SET is_filtered = 'filtered'
+            WHERE id = ` +
+                        req.params.skillId +
+                        `;`;
+
+                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+
                     res.end();
                 } catch (err) {
                     next(err);
@@ -138,6 +157,25 @@ router.delete('/remove/:skillId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+
+                let sqlQuery2 =
+                    `
+    UPDATE skill_tree.skills 
+    SET is_filtered = 'available'
+    WHERE id = ` +
+                    req.params.skillId +
+                    `;`;
+
+                let query2 = conn.query(sqlQuery2, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+
                 res.end();
             } catch (err) {
                 next(err);
