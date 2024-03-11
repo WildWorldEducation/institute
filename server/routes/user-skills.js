@@ -100,16 +100,14 @@ router.get('/:id', (req, res, next) => {
     }
 });
 
-/* Nested list of Skills with Skill Mastery Data Included. */
-// And With Filter Data Included.
-router.get('/filtered/:id', (req, res, next) => {
+/* Nested list */
+// Individual user and user-skills.
+// Used for skill tree component, editing the user skill mastery component, and the skills list component.
+router.get('/separate-subskills/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
-        // Declare variables
-        let skills = [];
-        let nestedStudentSkills = [];
-        let sqlQuery1 =
+        let sqlQuery =
             `
     SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level, mastery_requirements
     FROM skill_tree.skills
@@ -131,78 +129,6 @@ router.get('/filtered/:id', (req, res, next) => {
     WHERE skill_tree.user_skills.user_id =` +
             req.params.id +
             `) AND is_filtered = 'available'
-    ORDER BY id;`;
-
-        let query1 = conn.query(sqlQuery1, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                skills = results;
-
-                // Create the 'children' array, for the skills.
-                for (var i = 0; i < skills.length; i++) {
-                    skills[i].children = [];
-                }
-
-                for (var i = 0; i < skills.length; i++) {
-                    if (skills[i].parent != null && skills[i].parent != 0) {
-                        var parentId = skills[i].parent;
-
-                        // go through all rows again, add children
-                        for (let j = 0; j < skills.length; j++) {
-                            if (skills[j].id == parentId) {
-                                skills[j].children.push(skills[i]);
-                            }
-                        }
-                    }
-                }
-
-                for (var i = 0; i < skills.length; i++) {
-                    if (skills[i].parent == null || skills[i].parent == 0) {
-                        nestedStudentSkills.push(skills[i]);
-                    }
-                }
-
-                //   console.log(nestedStudentSkills);
-
-                res.json(nestedStudentSkills);
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-});
-
-/* Nested list */
-// Individual user and user-skills.
-// Used for skill tree component, editing the user skill mastery component, and the skills list component.
-router.get('/separate-subskills/:id', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-
-        let sqlQuery =
-            `
-    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level, mastery_requirements
-    FROM skill_tree.skills
-    LEFT OUTER JOIN skill_tree.user_skills
-    ON skill_tree.skills.id = skill_tree.user_skills.skill_id
-    WHERE skill_tree.user_skills.user_id = ` +
-            req.params.id +
-            `
-
-    UNION
-    SELECT skill_tree.skills.id, name, parent, "", "", description, type, level, mastery_requirements
-    FROM skill_tree.skills
-    WHERE skill_tree.skills.id NOT IN 
-
-    (SELECT skill_tree.skills.id
-    FROM skill_tree.skills
-    LEFT OUTER JOIN skill_tree.user_skills
-    ON skill_tree.skills.id = skill_tree.user_skills.skill_id
-    WHERE skill_tree.user_skills.user_id =` +
-            req.params.id +
-            `)
     ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
@@ -263,7 +189,7 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` +
             req.params.id +
-            ` AND skill_tree.skills.type <> 'sub'
+            ` AND skill_tree.skills.type <> 'sub'          
 
     UNION
     SELECT skill_tree.skills.id, name, parent, "", "", description, type, mastery_requirements
@@ -276,7 +202,7 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id =` +
             req.params.id +
-            `)  AND skill_tree.skills.type <> 'sub'
+            `)  AND skill_tree.skills.type <> 'sub'            
     ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
