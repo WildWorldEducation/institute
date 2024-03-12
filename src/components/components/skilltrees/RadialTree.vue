@@ -415,12 +415,13 @@ export default {
                 return;
             }
 
-            PIXI.Assets.load('/font/popins.xml').then(() => {
+            PIXI.Assets.load('/font/Poppins Bold White.xml').then(() => {
                 const nameText = new PIXI.BitmapText(node.data.skill_name, {
-                    fontName: 'Poppins-Black',
-                    fontSize: 200,
+                    fontName: 'Poppins-White-Bold',
+                    fontSize: 180,
                     align: 'right'
                 });
+
                 // const nameText = new PIXI.Text(node.data.skill_name, style);
                 // Rotate skill name base on if their are parent or not
                 if (node.depth == 0 || node.depth == 1) {
