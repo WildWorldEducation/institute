@@ -583,31 +583,12 @@ export default {
             let lineWidth = 0;
             // If skill is mastered, make line thicker.
             if (link.target.data.is_mastered == '1') {
-                lineWidth = 30;
+                lineWidth = 23;
             } else {
-                lineWidth = 18;
+                lineWidth = 15;
             }
 
-            switch (link.target.depth) {
-                case 1:
-                    nodeLink.lineStyle(lineWidth, 0xd4d4d8, 1);
-                    break;
-                case 2:
-                    nodeLink.lineStyle(lineWidth, 0xa1a1aa, 1);
-                    break;
-                case 3:
-                    nodeLink.lineStyle(lineWidth, 0x71717a, 1);
-                    break;
-                case 4:
-                    nodeLink.lineStyle(lineWidth, 0x52525b, 1);
-                    break;
-                case 5:
-                    nodeLink.lineStyle(lineWidth, 0x404040, 1);
-                    break;
-                default:
-                    nodeLink.lineStyle(lineWidth, 0x44403c, 1);
-                    break;
-            }
+            nodeLink.lineStyle(lineWidth, 0x71717a, 0.85);
 
             // Source node.
             var sourceX = Math.cos(link.source.x) * link.source.y;
