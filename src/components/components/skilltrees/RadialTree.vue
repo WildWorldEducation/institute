@@ -388,10 +388,10 @@ export default {
                 fontSize = 200;
                 fill = '#000000';
             } else if (node.depth == 1) {
-                fontSize = 100;
+                fontSize = 150;
                 fill = '#ffffff';
             } else {
-                fontSize = 90;
+                fontSize = 120;
                 fill = '#ffffff';
             }
 
@@ -418,7 +418,7 @@ export default {
             PIXI.Assets.load('/font/Poppins Bold White.xml').then(() => {
                 const nameText = new PIXI.BitmapText(node.data.skill_name, {
                     fontName: 'Poppins-White-Bold',
-                    fontSize: 180,
+                    fontSize: fontSize,
                     align: 'right'
                 });
 
@@ -428,7 +428,7 @@ export default {
                     // and not rotated.
                     nameText.anchor.set(0.5, 0.5);
                 }
-                // The node of depth 2 have a lager sprite than their greater depth node
+                // The node of depth 2 have a lager sprite than their greater depth node So we have to move it a little bit farther
                 else if (node.depth == 2) {
                     // Because this node have bigger sprite so we move them a little farther
                     nameText.angle = (node.x * 180) / Math.PI - 90;
@@ -442,6 +442,13 @@ export default {
                                 nameText.x + 80 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y + 80 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         } else {
                             nameText.anchor.set(1, 0.5);
                             // move the tile base on vector math
@@ -449,6 +456,13 @@ export default {
                                 nameText.x - 80 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y - 80 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         }
                     } else {
                         nameText.anchor.set(0, 0.5);
@@ -460,18 +474,33 @@ export default {
                                 nameText.x - 80 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y - 80 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x +
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y +
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         } else {
                             // move the tile base on vector math
                             nameText.x =
                                 nameText.x + 80 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y + 80 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         }
                     }
                 } else if (node.depth > 2) {
                     // For all the outer nodes, the text is only partly centred,
                     // and it is rotated.
                     nameText.angle = (node.x * 180) / Math.PI - 90;
+                    // Right side of the circle
                     if (nodeContainer.x > 0) {
                         nameText.angle = nameText.angle + 90;
                         // If node is a leaf it will be on the outside
@@ -482,17 +511,36 @@ export default {
                                 nameText.x + 50 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y + 50 * Math.sin(nameText.rotation);
-                        } else {
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
+                        }
+                        // If the name skill of the node that have children it will be on the inside
+                        else {
                             nameText.anchor.set(1, 0.5);
                             // move the tile base on vector math
                             nameText.x =
                                 nameText.x - 50 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y - 50 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x +
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         }
-                    } else {
+                    }
+                    // Left side of the circle
+                    else {
                         nameText.anchor.set(0, 0.5);
                         nameText.angle = nameText.angle - 90;
+                        // Leaf node
                         if (!node.children) {
                             nameText.anchor.set(1, 0.5);
                             // move the tile base on vector math
@@ -500,15 +548,30 @@ export default {
                                 nameText.x - 50 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y - 50 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         } else {
                             // move the tile base on vector math
                             nameText.x =
                                 nameText.x + 50 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y + 50 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         }
                     }
                 }
+
                 nameText.scale.set(0.5, 0.5);
 
                 // Add to the global variable container for this chart.
