@@ -208,24 +208,12 @@ export default {
                 }
             });
 
-            // Skill names.
-            const style = new PIXI.TextStyle({
-                fontFamily: 'Arial',
-                fontSize: 24,
-                fill: '#000',
-                stroke: '#fff',
-                strokeThickness: 4
-            });
-
-            PIXI.Assets.load('/font/popins.xml').then(() => {
+            PIXI.Assets.load('/font/poppins-gray.xml').then(() => {
                 const nameText = new PIXI.BitmapText(node.data.skill_name, {
-                    fontName: 'Poppins-Black',
+                    fontName: 'Poppins',
                     fontSize: 30,
                     align: 'right'
                 });
-
-                // fill the text with black color
-                nameText.tint = 0x474747;
 
                 // Attempting to increase performance with the below line.
                 nameText.interactiveChildren = false;
