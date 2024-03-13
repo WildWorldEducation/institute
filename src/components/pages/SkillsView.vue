@@ -41,7 +41,9 @@ export default {
                 />
             </svg>
         </router-link>
-        <!-- <router-link class="btn purple-btn" to="/tags">Skill Tags</router-link> -->
+        <router-link class="btn purple-btn" to="/tags"
+            >Skill Filters</router-link
+        >
     </div>
     <SkillsListParent />
 </template>

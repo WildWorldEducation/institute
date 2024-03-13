@@ -1,6 +1,7 @@
 <script>
 // Import the store.
 import { useTagsStore } from '../../stores/TagsStore.js';
+import { useSkillTagsStore } from '../../stores/SkillTagsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
@@ -12,6 +13,7 @@ import Forum from './Forum.vue';
 export default {
     setup() {
         const tagsStore = useTagsStore();
+        const skillTagsStore = useSkillTagsStore();
         const userDetailsStore = useUserDetailsStore();
         const skillsStore = useSkillsStore();
         const skillTreeStore = useSkillTreeStore();
@@ -25,6 +27,7 @@ export default {
 
         return {
             tagsStore,
+            skillTagsStore,
             userDetailsStore,
             skillsStore,
             skillTreeStore,
@@ -38,7 +41,7 @@ export default {
             userSkills: [],
             isMastered: false,
             isUnlocked: false,
-            skillRequirements: []
+            filters: []
         };
     },
     components: {
@@ -57,28 +60,30 @@ export default {
                 })
                 .then((data) => (this.skill = data))
                 .then(() => {
-                    // Go through all the skill tags.
-                    for (let i = 0; i < this.tagsStore.tagsList.length; i++) {
-                        // Go through this skill's tags.
-                        for (let j = 0; j < this.skill.tags.length; j++) {
-                            // Get the name of the tag, from its ID.
-                            if (
-                                this.tagsStore.tagsList[i].id ==
-                                this.skill.tags[j].tag_id
-                            ) {
-                                this.skill.tags[j].name =
-                                    this.tagsStore.tagsList[i].name;
-                            }
-                        }
-                    }
+                    // Load skill filters
+                    this.getSkillFilters();
 
                     const icon = document.getElementsByTagName('svg');
                     if (icon.length > 0) {
                         icon[0].style.height = '50px';
                     }
-
-                    this.skillRequirements.push(this.skill.parent);
                 });
+        },
+        async getSkillFilters() {
+            // Run the GET request.
+            if (this.skillTagsStore.skillTagsList.length == 0)
+                await this.skillTagsStore.getSkillTagsList();
+
+            for (let i = 0; i < this.skillTagsStore.skillTagsList.length; i++) {
+                if (
+                    this.skillTagsStore.skillTagsList[i].skill_id ==
+                    this.skillId
+                ) {
+                    this.filters.push(
+                        this.skillTagsStore.skillTagsList[i].tag_id
+                    );
+                }
+            }
         },
         getUserSkills() {
             fetch('/user-skills/unnested-list/' + this.userDetailsStore.userId)
@@ -97,18 +102,6 @@ export default {
                     }
                 });
         },
-        // getOtherSkillRequirements() {
-        //     fetch('/skills/' + this.skillId + '/other-skill-requirements')
-        //         .then(function (response) {
-        //             return response.json();
-        //         })
-        //         .then((data) => {
-        //             for (let i = 0; i < data.length; i++) {
-        //                 this.skillRequirements.push(data[i].other_skill_requirement_id)
-        //             }
-        //             console.log(this.skillRequirements)
-        //         })
-        // },
         async MakeMastered() {
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
@@ -231,12 +224,22 @@ export default {
                         />
                     </div>
                 </div>
+                <!-- Filters -->
                 <div class="row mt-3">
                     <h2>Filter</h2>
-                    <span v-if="skill.filter_1 == 1"
-                        >contrary to strict Christian doctrine</span
+                    <label
+                        v-for="tag in tagsStore.tagsList"
+                        class="control control-checkbox"
                     >
-                    <span v-else>none</span>
+                        <span class="my-auto mx-2 me-4"> {{ tag.name }}</span>
+                        <input
+                            type="checkbox"
+                            :value="tag.id"
+                            v-model="filters"
+                            disabled
+                        />
+                        <div class="control_indicator"></div>
+                    </label>
                 </div>
             </div>
             <!-- A line divide -->

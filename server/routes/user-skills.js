@@ -45,7 +45,7 @@ router.get('/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` +
             req.params.id +
-            `
+            ` AND is_filtered = 'available'
 
     UNION
     SELECT skill_tree.skills.id, name, parent, "", "", description, type, level, mastery_requirements
@@ -58,7 +58,7 @@ router.get('/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id =` +
             req.params.id +
-            `)
+            `) AND is_filtered = 'available'
     ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
@@ -115,7 +115,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` +
             req.params.id +
-            `
+            ` AND is_filtered = 'available'
 
     UNION
     SELECT skill_tree.skills.id, name, parent, "", "", description, type, level, mastery_requirements
@@ -128,7 +128,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id =` +
             req.params.id +
-            `)
+            `) AND is_filtered = 'available'
     ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
@@ -189,7 +189,7 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` +
             req.params.id +
-            ` AND skill_tree.skills.type <> 'sub'
+            ` AND skill_tree.skills.type <> 'sub'          
 
     UNION
     SELECT skill_tree.skills.id, name, parent, "", "", description, type, mastery_requirements
@@ -202,7 +202,7 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id =` +
             req.params.id +
-            `)  AND skill_tree.skills.type <> 'sub'
+            `)  AND skill_tree.skills.type <> 'sub'            
     ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
