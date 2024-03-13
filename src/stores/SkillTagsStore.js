@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
-export const useSkillTagsStore = defineStore("skillTags", {
+export const useSkillTagsStore = defineStore('skillTags', {
     state: () => ({
         skillTagsList: []
     }),
@@ -9,6 +9,6 @@ export const useSkillTagsStore = defineStore("skillTags", {
             const result = await fetch('/skill-tags/list');
             const data = await result.json();
             this.skillTagsList = data;
-        },
+        }
     }
 });

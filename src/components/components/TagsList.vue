@@ -1,25 +1,22 @@
 <script>
 // Import the tags store.
-import { useTagsStore } from '../../stores/TagsStore'
+import { useTagsStore } from '../../stores/TagsStore';
 
 export default {
     setup() {
         const tagsStore = useTagsStore();
         // Run the GET request.
-        tagsStore.getTagsList()
+        tagsStore.getTagsList();
         return {
             tagsStore
-        }
+        };
     },
     data() {
-        return {
-        }
+        return {};
     },
-    computed: {
-    },
-    methods: {
-    }
-} 
+    computed: {},
+    methods: {}
+};
 </script>
 
 <template>
@@ -40,14 +37,18 @@ export default {
                         {{ tag.name }}
                     </td>
                     <td>
-                        <button type="button" @click="tagsStore.deleteTag(tag.id)"
-                            class="btn btn-danger delete-btn">Delete</button>
+                        <button
+                            type="button"
+                            @click="tagsStore.tagCheck(tag.id)"
+                            class="btn btn-danger delete-btn"
+                        >
+                            Delete
+                        </button>
                     </td>
                 </tr>
             </table>
         </div>
     </div>
 </template>
-
 
 <style scoped></style>

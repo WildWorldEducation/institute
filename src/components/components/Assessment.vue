@@ -300,7 +300,7 @@ export default {
                     {{ this.questionNumber + 1 }}
                 </div>
                 <div id="question-content">
-                    {{ question.name }}: {{ question.question }}
+                    {{ question.question }}
                 </div>
             </div>
             <!-- Multiple Choice Question -->

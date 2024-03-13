@@ -49,17 +49,59 @@ router.post('/add', (req, res, next) => {
             banner_image: req.body.banner_image,
             mastery_requirements: req.body.mastery_requirements,
             type: req.body.type,
-            level: req.body.level,
-            filter_1: req.body.filter_1
+            level: req.body.level
         };
 
+        // Insert the new skill.
         let sqlQuery1 = `INSERT INTO skills SET ?;`;
-
         let query = conn.query(sqlQuery1, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 } else {
+                    // Get its id.
+                    let sqlQuery2 = `SELECT LAST_INSERT_ID();`;
+                    let query = conn.query(sqlQuery2, data, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            } else {
+                                const skillId = Object.values(results[0])[0];
+
+                                // Insert any new filters for the skill.
+                                for (
+                                    let i = 0;
+                                    i < req.body.filters.length;
+                                    i++
+                                ) {
+                                    let sqlQuery3 =
+                                        `
+                                INSERT INTO skill_tree.skill_tags (skill_id, tag_id)
+                                VALUES(` +
+                                        skillId +
+                                        `, ` +
+                                        req.body.filters[i] +
+                                        `);`;
+
+                                    let query = conn.query(
+                                        sqlQuery3,
+                                        (err, results) => {
+                                            try {
+                                                if (err) {
+                                                    throw err;
+                                                }
+                                                res.end();
+                                            } catch (err) {
+                                                next(err);
+                                            }
+                                        }
+                                    );
+                                }
+                            }
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
                     res.end();
                 }
             } catch (err) {
@@ -99,7 +141,7 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name, parent, type, level
+    SELECT skill_tree.skills.id, name, parent, type, level, is_filtered
     FROM skill_tree.skills`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -232,8 +274,6 @@ router.put('/:id/edit', (req, res, next) => {
             req.body.type +
             `', level = '` +
             req.body.level +
-            `', filter_1 = '` +
-            req.body.filter_1 +
             `' WHERE id = ` +
             req.params.id;
 
@@ -259,13 +299,25 @@ router.put('/:id/edit', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = 'DELETE FROM skills WHERE id=' + req.params.id;
-
-        let query = conn.query(sqlQuery, (err, results) => {
+        let sqlQuery1 = 'DELETE FROM skills WHERE id=' + req.params.id;
+        let query = conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
+                // Delete all skill filters.
+                let sqlQuery2 =
+                    'DELETE FROM skill_tags WHERE skill_id=' + req.params.id;
+                let query = conn.query(sqlQuery2, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
                 res.end();
             } catch (err) {
                 next(err);

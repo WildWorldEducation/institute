@@ -562,9 +562,9 @@ export default {
             const nodeLink = new PIXI.Graphics();
             // If skill is mastered, make line thicker.
             if (link.target.data.is_mastered == '1') {
-                nodeLink.lineStyle(16, 0xffffff, 1);
+                nodeLink.lineStyle(16, 0xabafb3, 1);
             } else {
-                nodeLink.lineStyle(2, 0xffffff, 1);
+                nodeLink.lineStyle(8, 0xabafb3, 1);
             }
 
             // Source node.
@@ -575,7 +575,124 @@ export default {
             // Target node.
             var targetX = Math.cos(link.target.x) * link.target.y;
             var targetY = Math.sin(link.target.x) * link.target.y;
-            nodeLink.lineTo(targetX, targetY);
+            //nodeLink.lineTo(targetX, targetY);
+
+            // Some mathematic equation to calculate control point
+            /**
+             *  A(a, b), B(c, d)
+             *  -- Equation of Line create by two point A and B
+             *  (b-d)(x-a)+(c-a)(y-b)=0
+             *  ------------------------
+             * FIND Y
+             *   (y-b) = -((b-d)(x-a))/(c-a)
+             *   y = -((0-d)(x-0))/(c-0)
+             *   y = dx/c
+             * -------------------------
+             * FIND X
+             * (x-a) = {-(c-a)(y-b)} / (b-d)
+             *  x - 0 = (-cy) / (-d)
+             *  x = cy/d
+             * -------------------------
+             *
+             * ** calculate angle between two vector
+             *
+             * Normal Vector
+             * m((b-d),(c-a)) => m(-d,c)
+             *
+             * Normal Vector of the default line
+             * dm(-1,0)
+             * -------------------------
+             *  angel of the current line with default line
+             *  alpha = (absolute(d)) / sqrt(d^2 + c^2) || radiant
+             *  degree = alpha * 180/pi
+             */
+
+            // we have to handle each radiant quadrant separately
+
+            let c1x, c1y, c2x, c2y;
+
+            // Calculate the angle of the point in circle (this to determine the position of point in radiant circle)
+            const angle =
+                (Math.abs(targetY) /
+                    Math.sqrt(targetY * targetY + targetX * targetX)) *
+                (180 / Math.PI);
+
+            // Root Node
+            if (sourceX === 0) {
+                c1x = sourceX;
+                c1y = 3000;
+                c2x = targetX - 800;
+                c2y = (targetY * c2x) / targetX;
+                // top or bottom part of the radiant circle
+                if (angle > 45 && angle < 90) {
+                    if (targetY < 0) {
+                        c2y = targetY + 1500;
+                        c2x = (c2y * targetX) / targetY;
+                    } else {
+                        c2y = targetY - 1500;
+                        c2x = (c2y * targetX) / targetY;
+                    }
+                }
+            } else if (sourceX > 0) {
+                // right side of the circle graph
+                c1x = sourceX + 1500;
+                c1y = (sourceY * c1x) / sourceX;
+                c2x = targetX - 2000;
+                if (targetX < 0) {
+                    c2x = targetX + 2000;
+                }
+                c2y = (targetY * c2x) / targetX;
+                if (angle > 45 && angle < 90) {
+                    if (targetY < 0) {
+                        c1y = sourceY - 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY + 2000;
+                        if (targetY > 0) {
+                            targetY = targetY - 2000;
+                        }
+                        c2x = (c2y * targetX) / targetY;
+                    } else {
+                        c1y = sourceY + 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY - 2000;
+                        if (targetY < 0) {
+                            targetY = targetY + 2000;
+                        }
+                        c2x = (c2y * targetX) / targetY;
+                    }
+                }
+            } else {
+                // left side of the circle
+                c1x = sourceX - 1500;
+                c1y = (sourceY * c1x) / sourceX;
+                c2x = targetX + 2000;
+                if (targetX > 0) {
+                    c2x = targetX - 2000;
+                }
+                c2y = (targetY * c2x) / targetX;
+                if (angle > 45 && angle < 90) {
+                    if (targetY < 0) {
+                        c1y = sourceY - 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY + 2000;
+                        if (targetY > 0) {
+                            targetY = targetY - 2000;
+                        }
+                        c2x = (c2y * targetX) / targetY;
+                    } else {
+                        c1y = sourceY + 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY - 2000;
+                        if (targetY < 0) {
+                            targetY = targetY + 2000;
+                        }
+                        c2x = (c2y * targetX) / targetY;
+                    }
+                }
+            }
+
+            // use Pixi function to draw the beizer
+            nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
 
             // Add to the global variable container for this chart.
             this.$radialTreeContainer.addChild(nodeLink);
