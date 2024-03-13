@@ -60,7 +60,7 @@ router.get('/list', (req, res, next) => {
  *
  * @return response()
  */
-router.post('/add/:skillId', (req, res, next) => {
+router.post('/add/:skillId', (req, res, next) => {    
     if (req.session.userName) {
         for (let i = 0; i < req.body.filters.length; i++) {
             let sqlQuery1 =
@@ -78,12 +78,13 @@ router.post('/add/:skillId', (req, res, next) => {
                         throw err;
                     }
 
+                    // Check if the relevant filter has been applied on the app settings.
                     let sqlQuery2 =
                         `
-            UPDATE skill_tree.skills 
-            SET is_filtered = 'filtered'
+            SELECT is_active
+            FROM skill_tree.tags
             WHERE id = ` +
-                        req.params.skillId +
+                        req.body.filters[i] +
                         `;`;
 
                     let query2 = conn.query(sqlQuery2, (err, results) => {
@@ -91,12 +92,40 @@ router.post('/add/:skillId', (req, res, next) => {
                             if (err) {
                                 throw err;
                             }
+
+                            if (results[0].is_active == 'active') {                                
+                                // Update the field in the skill table.
+                                // Note I am aware this is slightly redundant, but have added the
+                                // 'is_filtered' field to the skills table to improve processing speed.
+                                let sqlQuery3 =
+                                    `
+            UPDATE skill_tree.skills 
+            SET is_filtered = 'filtered'
+            WHERE id = ` +
+                                    req.params.skillId +
+                                    `;`;
+
+                                let query3 = conn.query(
+                                    sqlQuery3,
+                                    (err, results) => {
+                                        try {
+                                            if (err) {
+                                                throw err;
+                                            }
+                                        } catch (err) {
+                                            next(err);
+                                        }
+                                    }
+                                );
+
+                                res.end();
+                            } else {
+                                res.end();
+                            }
                         } catch (err) {
                             next(err);
                         }
                     });
-
-                    res.end();
                 } catch (err) {
                     next(err);
                 }

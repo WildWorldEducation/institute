@@ -127,7 +127,7 @@ export default {
         class="skill-button d-flex justify-content-between"
         @click="toggleChildren"
     >
-        <span style="text-align: left">{{ name }} {{ isFiltered }}</span>
+        <span style="text-align: left">{{ name }}</span>
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
             <button
