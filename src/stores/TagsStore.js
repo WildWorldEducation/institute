@@ -55,7 +55,9 @@ export const useTagsStore = defineStore('tags', {
                     }
                 }
             }
-            console.log(affectedSkillNames);
+
+            // Let the user know which skills ahve the filter applied.
+            // Filter cannot be deleted until it is deactivated there.
             if (affectedSkillIDs.length > 0) {
                 alert(
                     'the following skills have this filter activated: ' +
@@ -63,9 +65,10 @@ export const useTagsStore = defineStore('tags', {
                         '. Please deactivate it on these skills before deleting it.'
                 );
                 return;
-            }
-
-            if (window.confirm('test')) {
+            } else if (
+                // Otehrwise make sure they want to.
+                window.confirm('Are you sure you want to delete this filter?')
+            ) {
                 this.deleteTag(id);
             }
         }
