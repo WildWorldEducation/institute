@@ -11,9 +11,9 @@ import SkillsListChildNonStudent from './SkillsListChildNonStudent.vue';
 export default {
     setup() {
         const skillsStore = useSkillsStore();
-        // Run the GET request.
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
+
         return {
             skillsStore,
             userDetailsStore,
@@ -26,10 +26,10 @@ export default {
         };
     },
     async created() {
-        await this.skillsStore.getSkillsList();
-
+        // Admins.
         if (this.userDetailsStore.role != 'student')
             await this.skillsStore.getNestedSkillsList();
+        // Students.
         else if (this.userDetailsStore.role == 'student') {
             if (this.skillTreeStore.userSkills.length == 0) {
                 await this.skillTreeStore.getUserSkills();
@@ -78,6 +78,7 @@ export default {
                 :name="skill.name"
                 :type="skill.type"
                 :level="skill.level"
+                :isFiltered="skill.is_filtered"
                 :role="userDetailsStore.role"
                 :DeleteSkill="DeleteSkill"
             >
