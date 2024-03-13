@@ -1,0 +1,1 @@
+import{V as t}from"./main-f2534bd2.js";const l=t("skillTags",{state:()=>({skillTagsList:[]}),actions:{async getSkillTagsList(){const s=await(await fetch("/skill-tags/list")).json();this.skillTagsList=s}}});export{l as u};
