@@ -39,7 +39,7 @@ export default {
                     <td>
                         <button
                             type="button"
-                            @click="tagsStore.deleteTag(tag.id)"
+                            @click="tagsStore.tagCheck(tag.id)"
                             class="btn btn-danger delete-btn"
                         >
                             Delete
