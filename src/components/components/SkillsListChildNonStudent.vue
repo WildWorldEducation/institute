@@ -470,6 +470,10 @@ export default {
     background-color: lightsalmon;
 }
 
+.is-filtered:hover {
+    background-color: darksalmon;
+}
+
 .grade-school-level {
     border-color: #40b9a9;
 }
