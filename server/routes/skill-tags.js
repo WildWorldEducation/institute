@@ -60,7 +60,7 @@ router.get('/list', (req, res, next) => {
  *
  * @return response()
  */
-router.post('/add/:skillId', (req, res, next) => {    
+router.post('/add/:skillId', (req, res, next) => {
     if (req.session.userName) {
         for (let i = 0; i < req.body.filters.length; i++) {
             let sqlQuery1 =
@@ -93,7 +93,7 @@ router.post('/add/:skillId', (req, res, next) => {
                                 throw err;
                             }
 
-                            if (results[0].is_active == 'active') {                                
+                            if (results[0].is_active == 'active') {
                                 // Update the field in the skill table.
                                 // Note I am aware this is slightly redundant, but have added the
                                 // 'is_filtered' field to the skills table to improve processing speed.
@@ -141,31 +141,31 @@ router.post('/add/:skillId', (req, res, next) => {
  *
  * @return response()
  */
-router.delete('/remove/:id1/:id2', (req, res, next) => {
-    if (req.session.userName) {
-        let sqlQuery =
-            `
-        DELETE FROM skill_tree.skill_tags 
-        WHERE skill_id =` +
-            req.params.id1 +
-            ` AND tag_id =` +
-            req.params.id2 +
-            `;`;
+// router.delete('/remove/:id1/:id2', (req, res, next) => {
+//     if (req.session.userName) {
+//         let sqlQuery =
+//             `
+//         DELETE FROM skill_tree.skill_tags
+//         WHERE skill_id =` +
+//             req.params.id1 +
+//             ` AND tag_id =` +
+//             req.params.id2 +
+//             `;`;
 
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.end();
-            } catch (err) {
-                next(err);
-            }
-        });
-    } else {
-        res.redirect('/login');
-    }
-});
+//         let query = conn.query(sqlQuery, (err, results) => {
+//             try {
+//                 if (err) {
+//                     throw err;
+//                 }
+//                 res.end();
+//             } catch (err) {
+//                 next(err);
+//             }
+//         });
+//     } else {
+//         res.redirect('/login');
+//     }
+// });
 
 /**
  * Remove All Filters from a Specific Skill.

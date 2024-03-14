@@ -66,7 +66,7 @@ export const useTagsStore = defineStore('tags', {
                 );
                 return;
             } else if (
-                // Otehrwise make sure they want to.
+                // Otherwise make sure they want to.
                 window.confirm('Are you sure you want to delete this filter?')
             ) {
                 this.deleteTag(id);

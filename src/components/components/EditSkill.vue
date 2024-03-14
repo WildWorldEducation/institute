@@ -192,25 +192,22 @@ export default {
                     break;
             }
         },
-        SubmitFilters() {       
-            // 0 maybe check if the filters have changed
+        SubmitFilters() {
             // 1 delete the existing filters.
-            const result = fetch('/skill-tags/remove/' + this.skillId, {
+            fetch('/skill-tags/remove/' + this.skillId, {
                 method: 'DELETE'
-            });
-            if (result.error) {
-                console.log(result.error);
-            }
-
-            // 2 push the new filters.
-            var url = '/skill-tags/add/' + this.skillId;
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    filters: this.filters
-                })
-            });
+                // 2 push the new filters.
+            }).then(() => {
+                var url = '/skill-tags/add/' + this.skillId;
+                // do stuff with `data`, call second `fetch`
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        filters: this.filters
+                    })
+                });
+            });        
         },
         Submit() {
             // Check if this skill was a super skill with skills, and is being changed to another type.
