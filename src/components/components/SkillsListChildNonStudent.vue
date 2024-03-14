@@ -353,8 +353,22 @@ export default {
     </div>
 
     <!-- Sub skills -->
+    <!-- Instructor Role -->
     <SkillsListChildNonStudent
-        v-if="showSubskills && isFiltered == 'filtered'"
+        v-if="showSubskills && role == 'instructor'"
+        v-for="subSkill in subSkills"
+        :id="subSkill.id"
+        :children="subSkill.children"
+        :type="subSkill.type"
+        :level="subSkill.level"
+        :name="subSkill.name"
+        :role="role"
+        :depth="depth + 1"
+    >
+    </SkillsListChildNonStudent>
+    <!-- Admin Role -->
+    <SkillsListChildNonStudent
+        v-else-if="showSubskills && isFiltered == 'filtered'"
         v-for="subSkill in subSkills"
         :id="subSkill.id"
         :children="subSkill.children"
@@ -384,8 +398,22 @@ export default {
 
     <!-- Recursive nesting of component -->
     <!-- if parent is filtered, show children as filtered also -->
+    <!-- Instructor Role -->
     <SkillsListChildNonStudent
-        v-if="showChildren && isFiltered == 'filtered'"
+        v-if="showChildren && role == 'instructor'"
+        v-for="child in childrenNotSubskills"
+        :id="child.id"
+        :children="child.children"
+        :type="child.type"
+        :level="child.level"
+        :name="child.name"
+        :role="role"
+        :depth="depth + 1"
+    >
+    </SkillsListChildNonStudent>
+    <!-- Admin Role -->
+    <SkillsListChildNonStudent
+        v-else-if="showChildren && isFiltered == 'filtered'"
         v-for="child in childrenNotSubskills"
         :id="child.id"
         :children="child.children"

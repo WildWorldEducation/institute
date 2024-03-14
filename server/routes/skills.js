@@ -136,7 +136,7 @@ router.get('/list', (req, res, next) => {
     }
 });
 
-// Nested List
+// Nested List - for "Admin Role"
 router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -174,6 +174,52 @@ router.get('/nested-list', (req, res, next) => {
                 }
 
                 res.json(nestedSkills);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// Filtered Nested List - for "Instructor Role"
+router.get('/filtered-nested-list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `
+    SELECT skill_tree.skills.id, name, parent, type, level
+    FROM skill_tree.skills
+    WHERE is_filtered = 'available';`;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                // Create the 'children' array.
+                for (var i = 0; i < results.length; i++) {
+                    results[i].children = [];
+                }
+
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].parent != null && results[i].parent != 0) {
+                        var parentId = results[i].parent;
+                        // go through all rows again, add children
+                        for (let j = 0; j < results.length; j++) {
+                            if (results[j].id == parentId) {
+                                results[j].children.push(results[i]);
+                            }
+                        }
+                    }
+                }
+
+                let filteredNestedSkills = [];
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].parent == null || results[i].parent == 0) {
+                        filteredNestedSkills.push(results[i]);
+                    }
+                }
+
+                res.json(filteredNestedSkills);
             } catch (err) {
                 next(err);
             }

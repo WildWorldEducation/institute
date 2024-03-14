@@ -2,14 +2,22 @@ import { defineStore } from 'pinia';
 
 export const useSkillsStore = defineStore('skills', {
     state: () => ({
-        nestedSkillsList: [],     
+        nestedSkillsList: [],
+        filteredNestedSkillsList: [],
         skillsList: []
     }),
     actions: {
+        // For 'Admin' role
         async getNestedSkillsList() {
             const result = await fetch('/skills/nested-list');
             const data = await result.json();
             this.nestedSkillsList = data;
+        },
+        // For 'Instructor' role
+        async getFilteredNestedSkillsList() {
+            const result = await fetch('/skills/filtered-nested-list');
+            const data = await result.json();
+            this.filteredNestedSkillsList = data;
         },
         async getSkillsList() {
             const result = await fetch('/skills/list');
