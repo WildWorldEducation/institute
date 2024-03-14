@@ -27,8 +27,11 @@ export default {
     },
     async created() {
         // Admins.
-        if (this.userDetailsStore.role != 'student')
+        if (this.userDetailsStore.role == 'admin')
             await this.skillsStore.getNestedSkillsList();
+        // Instructors.
+        else if (this.userDetailsStore.role == 'instructor')
+            await this.skillsStore.getFilteredNestedSkillsList();
         // Students.
         else if (this.userDetailsStore.role == 'student') {
             if (this.skillTreeStore.userSkills.length == 0) {
@@ -37,7 +40,6 @@ export default {
             this.userSkills = this.skillTreeStore.userSkills;
         }
     },
-    computed: {},
     methods: {
         async DeleteSkill(id) {
             await this.skillsStore.deleteSkill(id);
@@ -53,6 +55,7 @@ export default {
 
 <template>
     <div class="container mt-3" style="overflow: auto">
+        <!-- Students -->
         <div
             v-if="this.userDetailsStore.role == 'student'"
             v-for="skill in userSkills"
@@ -70,6 +73,23 @@ export default {
             >
             </SkillsListChildStudent>
         </div>
+        <!-- Admins -->
+        <div
+            v-else-if="this.userDetailsStore.role == 'instructor'"
+            v-for="skill in skillsStore.filteredNestedSkillsList"
+        >
+            <SkillsListChildNonStudent
+                :id="skill.id"
+                :children="skill.children"
+                :depth="1"
+                :name="skill.name"
+                :type="skill.type"
+                :level="skill.level"
+                :role="userDetailsStore.role"
+            >
+            </SkillsListChildNonStudent>
+        </div>
+        <!-- Admins -->
         <div v-else v-for="skill in skillsStore.nestedSkillsList">
             <SkillsListChildNonStudent
                 :id="skill.id"
