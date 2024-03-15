@@ -329,12 +329,14 @@ export default {
             if (!hidden) ctx.fillStyle = '#000';
             ctx.fill();
 
-            ctx.beginPath();
-            ctx.strokeStyle = '#FFF';
-            ctx.lineWidth = 4;
-            ctx.strokeText(node.data.skill_name, node.y + 10, node.x + 2);
-            ctx.fillStyle = '#000';
-            ctx.fillText(node.data.skill_name, node.y + 10, node.x + 2);
+            if (this.scale > 0.8) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#FFF';
+                ctx.lineWidth = 4;
+                ctx.strokeText(node.data.skill_name, node.y + 10, node.x + 2);
+                ctx.fillStyle = '#000';
+                ctx.fillText(node.data.skill_name, node.y + 10, node.x + 2);
+            }
         },
         drawLink(link) {
             const linkGenerator = d3
