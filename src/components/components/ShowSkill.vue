@@ -243,15 +243,6 @@ export default {
                 </div>
             </div>
             <!-- A line divide -->
-<<<<<<< HEAD
-            <div class="row">
-                <div class="col col-md-8 p-4 p-md-0">
-                    <hr id="hr-parent" class="border border-2 opacity-100" />
-                </div>
-            </div>
-            <!-- Edit Assessment for admin only -->
-=======
->>>>>>> main
             <div
                 v-if="
                     userDetailsStore.role == 'admin' && skill.type != 'domain'
