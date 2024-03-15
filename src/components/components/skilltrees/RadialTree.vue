@@ -628,14 +628,16 @@ export default {
         drawLink(link) {
             const nodeLink = new PIXI.Graphics();
             let lineWidth = 0;
+            let color = 0x71717a;
             // If skill is mastered, make line thicker.
             if (link.target.data.is_mastered == '1') {
                 lineWidth = 23;
+                color = 0xffffff;
             } else {
                 lineWidth = 15;
             }
 
-            nodeLink.lineStyle(lineWidth, 0x71717a, 0.85);
+            nodeLink.lineStyle(lineWidth, color, 0.85);
 
             // Source node.
             var sourceX = Math.cos(link.source.x) * link.source.y;
