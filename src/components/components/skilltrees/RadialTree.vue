@@ -58,7 +58,7 @@ export default {
         // Hide the tidy tree.
         this.$tidyTreeContainer.visible = false;
         // Set the background colour.
-        this.$pixiApp.renderer.background.color = 0x16022e;
+        this.$pixiApp.renderer.background.color = 0x1e293b;
     },
     async mounted() {
         if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
@@ -153,17 +153,21 @@ export default {
             centerNodeSprite.x = this.root.x;
             centerNodeSprite.y = this.root.y;
             centerNodeSprite.anchor.set(0.5);
-            // Add to the global variable container for this chart.
-            this.$radialTreeContainer.addChild(centerNodeSprite);
 
             // Get the data from D3.
             const nodes = this.root.descendants();
             const links = this.root.links();
 
+            // Draw a circle like in the figma design
+            this.drawCircle(this.root);
+
             // Draw the actual shapes.
             for (const link of links) {
                 this.drawLink(link);
             }
+
+            // Add to the global variable container for this chart. (we add the center node after the link so it will render above the line)
+            this.$radialTreeContainer.addChild(centerNodeSprite);
             for (const node of nodes) {
                 this.drawNode(node);
             }
@@ -431,10 +435,10 @@ export default {
                 fontSize = 200;
                 fill = '#000000';
             } else if (node.depth == 1) {
-                fontSize = 100;
+                fontSize = 150;
                 fill = '#ffffff';
             } else {
-                fontSize = 90;
+                fontSize = 120;
                 fill = '#ffffff';
             }
 
@@ -461,16 +465,17 @@ export default {
             PIXI.Assets.load('/font/Poppins Bold White.xml').then(() => {
                 const nameText = new PIXI.BitmapText(node.data.skill_name, {
                     fontName: 'Poppins-White-Bold',
-                    fontSize: 90,
+                    fontSize: fontSize,
                     align: 'right'
                 });
+
                 // const nameText = new PIXI.Text(node.data.skill_name, style);
                 // Rotate skill name base on if their are parent or not
                 if (node.depth == 0 || node.depth == 1) {
                     // and not rotated.
                     nameText.anchor.set(0.5, 0.5);
                 }
-                // The node of depth 2 have a lager sprite than their greater depth node
+                // The node of depth 2 have a lager sprite than their greater depth node So we have to move it a little bit farther
                 else if (node.depth == 2) {
                     // Because this node have bigger sprite so we move them a little farther
                     nameText.angle = (node.x * 180) / Math.PI - 90;
@@ -484,6 +489,13 @@ export default {
                                 nameText.x + 80 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y + 80 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         } else {
                             nameText.anchor.set(1, 0.5);
                             // move the tile base on vector math
@@ -491,6 +503,13 @@ export default {
                                 nameText.x - 80 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y - 80 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         }
                     } else {
                         nameText.anchor.set(0, 0.5);
@@ -502,18 +521,33 @@ export default {
                                 nameText.x - 80 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y - 80 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x +
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y +
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         } else {
                             // move the tile base on vector math
                             nameText.x =
                                 nameText.x + 80 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y + 80 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         }
                     }
                 } else if (node.depth > 2) {
                     // For all the outer nodes, the text is only partly centred,
                     // and it is rotated.
                     nameText.angle = (node.x * 180) / Math.PI - 90;
+                    // Right side of the circle
                     if (nodeContainer.x > 0) {
                         nameText.angle = nameText.angle + 90;
                         // If node is a leaf it will be on the outside
@@ -524,17 +558,36 @@ export default {
                                 nameText.x + 50 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y + 50 * Math.sin(nameText.rotation);
-                        } else {
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
+                        }
+                        // If the name skill of the node that have children it will be on the inside
+                        else {
                             nameText.anchor.set(1, 0.5);
                             // move the tile base on vector math
                             nameText.x =
                                 nameText.x - 50 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y - 50 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x +
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         }
-                    } else {
+                    }
+                    // Left side of the circle
+                    else {
                         nameText.anchor.set(0, 0.5);
                         nameText.angle = nameText.angle - 90;
+                        // Leaf node
                         if (!node.children) {
                             nameText.anchor.set(1, 0.5);
                             // move the tile base on vector math
@@ -542,15 +595,30 @@ export default {
                                 nameText.x - 50 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y - 50 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         } else {
                             // move the tile base on vector math
                             nameText.x =
                                 nameText.x + 50 * Math.cos(nameText.rotation);
                             nameText.y =
                                 nameText.y + 50 * Math.sin(nameText.rotation);
+                            // move the name text toward the middle of the node
+                            nameText.x =
+                                nameText.x -
+                                20 * Math.cos(nameText.rotation + Math.PI / 2);
+                            nameText.y =
+                                nameText.y -
+                                20 * Math.sin(nameText.rotation + Math.PI / 2);
                         }
                     }
                 }
+
                 nameText.scale.set(0.5, 0.5);
 
                 // Add to the global variable container for this chart.
@@ -559,12 +627,15 @@ export default {
         },
         drawLink(link) {
             const nodeLink = new PIXI.Graphics();
+            let lineWidth = 0;
             // If skill is mastered, make line thicker.
             if (link.target.data.is_mastered == '1') {
-                nodeLink.lineStyle(16, 0xffffff, 1);
+                lineWidth = 23;
             } else {
-                nodeLink.lineStyle(2, 0xffffff, 1);
+                lineWidth = 15;
             }
+
+            nodeLink.lineStyle(lineWidth, 0x71717a, 0.85);
 
             // Source node.
             var sourceX = Math.cos(link.source.x) * link.source.y;
@@ -574,7 +645,124 @@ export default {
             // Target node.
             var targetX = Math.cos(link.target.x) * link.target.y;
             var targetY = Math.sin(link.target.x) * link.target.y;
-            nodeLink.lineTo(targetX, targetY);
+            //nodeLink.lineTo(targetX, targetY);
+
+            // Some mathematic equation to calculate control point
+            /**
+             *  A(a, b), B(c, d)
+             *  -- Equation of Line create by two point A and B
+             *  (b-d)(x-a)+(c-a)(y-b)=0
+             *  ------------------------
+             * FIND Y
+             *   (y-b) = -((b-d)(x-a))/(c-a)
+             *   y = -((0-d)(x-0))/(c-0)
+             *   y = dx/c
+             * -------------------------
+             * FIND X
+             * (x-a) = {-(c-a)(y-b)} / (b-d)
+             *  x - 0 = (-cy) / (-d)
+             *  x = cy/d
+             * -------------------------
+             *
+             * ** calculate angle between two vector
+             *
+             * Normal Vector
+             * m((b-d),(c-a)) => m(-d,c)
+             *
+             * Normal Vector of the default line
+             * dm(-1,0)
+             * -------------------------
+             *  angel of the current line with default line
+             *  alpha = (absolute(d)) / sqrt(d^2 + c^2) || radiant
+             *  degree = alpha * 180/pi
+             */
+
+            // we have to handle each radiant quadrant separately
+
+            let c1x, c1y, c2x, c2y;
+
+            // Calculate the angle of the point in circle (this to determine the position of point in radiant circle)
+            const angle =
+                (Math.abs(targetY) /
+                    Math.sqrt(targetY * targetY + targetX * targetX)) *
+                (180 / Math.PI);
+
+            // Root Node
+            if (sourceX === 0) {
+                c1x = sourceX;
+                c1y = 4500;
+                c2x = targetX - 800;
+                c2y = (targetY * c2x) / targetX;
+                // top or bottom part of the radiant circle
+                if (angle > 45 && angle < 90) {
+                    if (targetY < 0) {
+                        c2y = targetY + 1500;
+                        c2x = (c2y * targetX) / targetY;
+                    } else {
+                        c2y = targetY - 1500;
+                        c2x = (c2y * targetX) / targetY;
+                    }
+                }
+            } else if (sourceX > 0) {
+                // right side of the circle graph
+                c1x = sourceX + 1500;
+                c1y = (sourceY * c1x) / sourceX;
+                c2x = targetX - 2000;
+                if (targetX < 0) {
+                    c2x = targetX + 2000;
+                }
+                c2y = (targetY * c2x) / targetX;
+                if (angle > 45 && angle < 90) {
+                    if (targetY < 0) {
+                        c1y = sourceY - 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY + 2000;
+                        if (targetY > 0) {
+                            targetY = targetY - 2000;
+                        }
+                        c2x = (c2y * targetX) / targetY;
+                    } else {
+                        c1y = sourceY + 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY - 2000;
+                        if (targetY < 0) {
+                            targetY = targetY + 2000;
+                        }
+                        c2x = (c2y * targetX) / targetY;
+                    }
+                }
+            } else {
+                // left side of the circle
+                c1x = sourceX - 1500;
+                c1y = (sourceY * c1x) / sourceX;
+                c2x = targetX + 2000;
+                if (targetX > 0) {
+                    c2x = targetX - 2000;
+                }
+                c2y = (targetY * c2x) / targetX;
+                if (angle > 45 && angle < 90) {
+                    if (targetY < 0) {
+                        c1y = sourceY - 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY + 2000;
+                        if (targetY > 0) {
+                            targetY = targetY - 2000;
+                        }
+                        c2x = (c2y * targetX) / targetY;
+                    } else {
+                        c1y = sourceY + 1500;
+                        c1x = (c1y * sourceX) / sourceY;
+                        c2y = targetY - 2000;
+                        if (targetY < 0) {
+                            targetY = targetY + 2000;
+                        }
+                        c2x = (c2y * targetX) / targetY;
+                    }
+                }
+            }
+
+            // use Pixi function to draw the beizer
+            nodeLink.bezierCurveTo(c1x, c1y, c2x, c2y, targetX, targetY);
 
             // Add to the global variable container for this chart.
             this.$radialTreeContainer.addChild(nodeLink);
@@ -647,6 +835,27 @@ export default {
             // );
             // // Add to the global variable container for this chart.
             // this.$radialTreeContainer.addChild(nodeLink);
+        },
+        drawCircle(root) {
+            let node = root;
+            const childNode = node.children.find((e) => e.children);
+            /**
+             * Calculate distance between two point A(x1,y1) B(x2,y2)
+             * d(A,B) = sqrt((x2-x1)^2 + (y2-y1)^2)
+             *
+             */
+            const distance = Math.sqrt(
+                (childNode.x - root.x) * (childNode.x - root.x) +
+                    (childNode.y - root.y) * (childNode.y - root.y)
+            );
+            for (let index = 0; index < root.height; index++) {
+                const gr = new PIXI.Graphics();
+                gr.lineStyle(30, 0x334155, 0.9);
+                gr.drawCircle(0, 0, distance * (index + 1));
+                gr.endFill();
+                node = childNode;
+                this.$radialTreeContainer.addChild(gr);
+            }
         },
         showInfoPanel() {
             // If panel is not showing.
