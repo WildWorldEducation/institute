@@ -1,12 +1,13 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
 // Import another store.
-import { useUserDetailsStore } from './UserDetailsStore.js'
+import { useUserDetailsStore } from './UserDetailsStore.js';
 
-export const useSkillTreeStore = defineStore("skillTree", {
+export const useSkillTreeStore = defineStore('skillTree', {
     state: () => ({
         userSkills: [],
-        userSkillsNoSubSkills: []
+        userSkillsNoSubSkills: [],
+        userSkillsSubSkillsSeparate: []
     }),
     actions: {
         async getUserSkills() {
@@ -22,8 +23,20 @@ export const useSkillTreeStore = defineStore("skillTree", {
             const userDetailsStore = useUserDetailsStore();
             const userDetails = await userDetailsStore.getUserDetails();
 
-            const result = await fetch('/user-skills/no-sub-skills/' + userDetails.userId);
+            const result = await fetch(
+                '/user-skills/no-sub-skills/' + userDetails.userId
+            );
             this.userSkillsNoSubSkills = await result.json();
         },
+        async getUserSkillsSubSkillsSeparate() {
+            // API call for skill tree.
+            const userDetailsStore = useUserDetailsStore();
+            const userDetails = await userDetailsStore.getUserDetails();
+
+            const result = await fetch(
+                '/user-skills/separate-subskills/' + userDetails.userId
+            );
+            this.userSkillsSubSkillsSeparate = await result.json();
+        }
     }
-}); 
+});

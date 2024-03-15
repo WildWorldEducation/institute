@@ -8,6 +8,7 @@ export default {
     setup() {
         const settingsStore = useSettingsStore();
         const tagsStore = useTagsStore();
+
         return {
             settingsStore,
             tagsStore
@@ -15,7 +16,7 @@ export default {
     },
     data() {
         return {
-            checkedFilters: []
+            filters: []
         };
     },
     async created() {
@@ -26,26 +27,38 @@ export default {
         ) {
             await this.settingsStore.getSettings();
         }
-
-        await this.tagsStore.getTagsList();
+        if (this.tagsStore.tagsList.length == 0)
+            await this.tagsStore.getTagsList();
+        for (let i = 0; i < this.tagsStore.tagsList.length; i++) {
+            if (this.tagsStore.tagsList[i].is_active == 'active')
+                this.filters.push(this.tagsStore.tagsList[i].id);
+        }
     },
     methods: {
         Submit() {
+            for (let i = 0; i < this.tagsStore.tagsList.length; i++) {
+                if (this.filters.includes(this.tagsStore.tagsList[i].id)) {
+                    this.tagsStore.tagsList[i].is_active = 'active';
+                } else {
+                    this.tagsStore.tagsList[i].is_active = 'inactive';
+                }
+            }
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     skill_degradation_days:
                         this.settingsStore.skillDegradationDays,
-                    quiz_max_questions: this.settingsStore.quizMaxQuestions
+                    quiz_max_questions: this.settingsStore.quizMaxQuestions,
+                    tags: this.tagsStore.tagsList
                 })
             };
             var url = '/settings/edit';
             fetch(url, requestOptions).then(() => {
                 this.$router.push('/profile-settings');
             });
-        },
-        ApplyFilter() {}
+        }
     }
 };
 </script>
@@ -89,8 +102,7 @@ export default {
                         type="checkbox"
                         :value="tag.id"
                         id="flexCheckDefault"
-                        v-model="checkedFilters"
-                        @change="ApplyFilter()"
+                        v-model="filters"
                     />
                     <label class="form-check-label" for="flexCheckDefault">
                         {{ tag.name }}

@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-   //  password: 'password',
+    //   password: 'password',
     database: 'skill_tree'
 });
 
@@ -39,16 +39,16 @@ router.get('/:id', (req, res, next) => {
 
         let sqlQuery =
             `
-    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level
+    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level, mastery_requirements
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` +
             req.params.id +
-            `
+            ` AND is_filtered = 'available'
 
     UNION
-    SELECT skill_tree.skills.id, name, parent, "", "", description, type, level
+    SELECT skill_tree.skills.id, name, parent, "", "", description, type, level, mastery_requirements
     FROM skill_tree.skills
     WHERE skill_tree.skills.id NOT IN 
 
@@ -58,7 +58,7 @@ router.get('/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id =` +
             req.params.id +
-            `)
+            `) AND is_filtered = 'available'
     ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
@@ -100,25 +100,25 @@ router.get('/:id', (req, res, next) => {
     }
 });
 
-/* Nested list - without subskills */
+/* Nested list */
 // Individual user and user-skills.
 // Used for skill tree component, editing the user skill mastery component, and the skills list component.
-router.get('/no-sub-skills/:id', (req, res, next) => {
+router.get('/separate-subskills/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery =
             `
-    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type
+    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level, mastery_requirements
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id = ` +
             req.params.id +
-            ` AND skill_tree.skills.type <> 'sub'
+            ` AND is_filtered = 'available'
 
     UNION
-    SELECT skill_tree.skills.id, name, parent, "", "", description, type
+    SELECT skill_tree.skills.id, name, parent, "", "", description, type, level, mastery_requirements
     FROM skill_tree.skills
     WHERE skill_tree.skills.id NOT IN 
 
@@ -128,7 +128,81 @@ router.get('/no-sub-skills/:id', (req, res, next) => {
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
     WHERE skill_tree.user_skills.user_id =` +
             req.params.id +
-            `)  AND skill_tree.skills.type <> 'sub'
+            `) AND is_filtered = 'available'
+    ORDER BY id;`;
+
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                for (var i = 0; i < results.length; i++) {
+                    results[i].children = [];
+                    results[i].subskills = [];
+                }
+
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].parent != null && results[i].parent != 0) {
+                        var parentId = results[i].parent;
+
+                        // go through all rows again, add children
+                        for (let j = 0; j < results.length; j++) {
+                            if (results[j].id == parentId) {
+                                if (results[i].type == 'sub') {
+                                    results[j].subskills.push(results[i]);
+                                } else {
+                                    results[j].children.push(results[i]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                let studentSkills = [];
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].parent == null || results[i].parent == 0) {
+                        studentSkills.push(results[i]);
+                    }
+                }
+
+                res.json(studentSkills);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Nested list - without subskills */
+// Individual user and user-skills.
+// Used for skill tree component, editing the user skill mastery component, and the skills list component.
+router.get('/no-sub-skills/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery =
+            `
+    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, mastery_requirements
+    FROM skill_tree.skills
+    LEFT OUTER JOIN skill_tree.user_skills
+    ON skill_tree.skills.id = skill_tree.user_skills.skill_id
+    WHERE skill_tree.user_skills.user_id = ` +
+            req.params.id +
+            ` AND skill_tree.skills.type <> 'sub'          
+
+    UNION
+    SELECT skill_tree.skills.id, name, parent, "", "", description, type, mastery_requirements
+    FROM skill_tree.skills
+    WHERE skill_tree.skills.id NOT IN 
+
+    (SELECT skill_tree.skills.id
+    FROM skill_tree.skills
+    LEFT OUTER JOIN skill_tree.user_skills
+    ON skill_tree.skills.id = skill_tree.user_skills.skill_id
+    WHERE skill_tree.user_skills.user_id =` +
+            req.params.id +
+            `)  AND skill_tree.skills.type <> 'sub'            
     ORDER BY id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {

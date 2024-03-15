@@ -11,9 +11,9 @@ import SkillsListChildNonStudent from './SkillsListChildNonStudent.vue';
 export default {
     setup() {
         const skillsStore = useSkillsStore();
-        // Run the GET request.
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
+
         return {
             skillsStore,
             userDetailsStore,
@@ -26,10 +26,13 @@ export default {
         };
     },
     async created() {
-        await this.skillsStore.getSkillsList();
-
-        if (this.userDetailsStore.role != 'student')
+        // Admins.
+        if (this.userDetailsStore.role == 'admin')
             await this.skillsStore.getNestedSkillsList();
+        // Instructors.
+        else if (this.userDetailsStore.role == 'instructor')
+            await this.skillsStore.getFilteredNestedSkillsList();
+        // Students.
         else if (this.userDetailsStore.role == 'student') {
             if (this.skillTreeStore.userSkills.length == 0) {
                 await this.skillTreeStore.getUserSkills();
@@ -37,7 +40,6 @@ export default {
             this.userSkills = this.skillTreeStore.userSkills;
         }
     },
-    computed: {},
     methods: {
         async DeleteSkill(id) {
             await this.skillsStore.deleteSkill(id);
@@ -53,6 +55,7 @@ export default {
 
 <template>
     <div class="container mt-3" style="overflow: auto">
+        <!-- Students -->
         <div
             v-if="this.userDetailsStore.role == 'student'"
             v-for="skill in userSkills"
@@ -62,7 +65,6 @@ export default {
                 :children="skill.children"
                 :depth="1"
                 :name="skill.skill_name"
-                :firstAncestor="skill.first_ancestor"
                 :isUnlocked="skill.is_accessible"
                 :isMastered="skill.is_mastered"
                 :type="skill.type"
@@ -71,15 +73,32 @@ export default {
             >
             </SkillsListChildStudent>
         </div>
+        <!-- Admins -->
+        <div
+            v-else-if="this.userDetailsStore.role == 'instructor'"
+            v-for="skill in skillsStore.filteredNestedSkillsList"
+        >
+            <SkillsListChildNonStudent
+                :id="skill.id"
+                :children="skill.children"
+                :depth="1"
+                :name="skill.name"
+                :type="skill.type"
+                :level="skill.level"
+                :role="userDetailsStore.role"
+            >
+            </SkillsListChildNonStudent>
+        </div>
+        <!-- Admins -->
         <div v-else v-for="skill in skillsStore.nestedSkillsList">
             <SkillsListChildNonStudent
                 :id="skill.id"
                 :children="skill.children"
                 :depth="1"
                 :name="skill.name"
-                :firstAncestor="skill.first_ancestor"
                 :type="skill.type"
                 :level="skill.level"
+                :isFiltered="skill.is_filtered"
                 :role="userDetailsStore.role"
                 :DeleteSkill="DeleteSkill"
             >

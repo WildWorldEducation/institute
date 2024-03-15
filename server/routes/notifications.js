@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    //  password: 'password',
     database: 'skill_tree'
 });
 
@@ -64,9 +64,15 @@ router.put('/edit', (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
         if (req.body.notification1 != null)
-            req.body.notification1 = req.body.notification1.replace(/'/g, "'");
+            req.body.notification1 = req.body.notification1.replace(
+                /'/g,
+                "\\'"
+            );
         if (req.body.notification2 != null)
-            req.body.notification2 = req.body.notification2.replace(/'/g, "'");
+            req.body.notification2 = req.body.notification2.replace(
+                /'/g,
+                "\\'"
+            );
 
         // Add data.
         let sqlQuery =

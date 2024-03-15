@@ -14,6 +14,14 @@ export default {
             sessionDetailsStore,
             userDetailsStore
         };
+    },
+    methods: {
+        // To stop the Pixi app when it is in the background,
+        // to save client browser resources
+        // for better experience.
+        stopPixiApp() {
+            this.$pixiApp.stop();
+        }
     }
 };
 </script>
@@ -47,58 +55,37 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink to="/pixi-tree" class="nav-link"
-                                >Radial Tree</RouterLink
+                        <li class="nav-item">
+                            <!-- ".native is used because Vue doesnt really allow for click handlers for routerlinks" -->
+                            <RouterLink
+                                @click.native="stopPixiApp()"
+                                to="/"
+                                class="nav-link"
+                                >Hub</RouterLink
                             >
                         </li>
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink to="/radial-tidy-tree" class="nav-link"
-                                >Radial Tidy Tree</RouterLink
-                            >
-                        </li> -->
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink
-                                to="/radial-cluster-tree"
-                                class="nav-link"
-                                >Radial Cluster Tree</RouterLink
-                            >
-                        </li> -->
-                        <!-- <li
+                        <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/tidy-tree" class="nav-link"
-                                >SVG Tidy Tree</RouterLink
+                                >Tidy Tree</RouterLink
                             >
-                        </li> -->
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink to="/canvas-tidy-tree" class="nav-link"
-                                >Canvas Tidy Tree</RouterLink
-                            >
-                        </li> -->
+                        </li>
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
-                            <RouterLink to="/pixi-tidy-tree" class="nav-link"
-                                >Tidy Tree</RouterLink
+                            <RouterLink to="/radial-tree" class="nav-link"
+                                >Radial Tree</RouterLink
                             >
                         </li>
                         <li class="nav-item">
-                            <RouterLink to="/skills" class="nav-link">
+                            <RouterLink
+                                @click.native="stopPixiApp()"
+                                to="/skills"
+                                class="nav-link"
+                            >
                                 <span> Skills </span>
                             </RouterLink>
                         </li>
@@ -106,7 +93,11 @@ export default {
                             v-if="userDetailsStore.role != 'student'"
                             class="nav-item"
                         >
-                            <RouterLink to="/users" class="nav-link">
+                            <RouterLink
+                                @click.native="stopPixiApp()"
+                                to="/users"
+                                class="nav-link"
+                            >
                                 <span v-if="userDetailsStore.role == 'admin'"
                                     >Users
                                 </span>
@@ -121,7 +112,11 @@ export default {
                     </ul>
                     <ul class="navbar-nav d-flex">
                         <li class="nav-item me-2">
-                            <RouterLink to="/profile-settings" class="nav-link">
+                            <RouterLink
+                                @click.native="stopPixiApp()"
+                                to="/profile-settings"
+                                class="nav-link"
+                            >
                                 <img
                                     id="user-avatar"
                                     :src="userDetailsStore.avatar"

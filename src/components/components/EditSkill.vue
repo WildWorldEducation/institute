@@ -1,12 +1,20 @@
 <script>
 // Import the store.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useTagsStore } from '../../stores/TagsStore';
+import { useSkillTagsStore } from '../../stores/SkillTagsStore';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const tagsStore = useTagsStore();
+        if (tagsStore.tagsList.length == 0) tagsStore.getTagsList();
+        const skillTagsStore = useSkillTagsStore();
+
         return {
-            skillsStore
+            skillsStore,
+            tagsStore,
+            skillTagsStore
         };
     },
     data() {
@@ -22,8 +30,7 @@ export default {
                 mastery_requirements: '',
                 tags: [],
                 type: null,
-                level: null,
-                filter_1: null
+                level: null
             },
             filterChecked: false,
             iconImage: '',
@@ -70,7 +77,8 @@ export default {
                 orphan: false,
                 superValidate: false,
                 noChild: false
-            }
+            },
+            filters: []
         };
     },
     async mounted() {
@@ -124,7 +132,25 @@ export default {
                         return element.id === this.skill.parent;
                     });
                     this.parentInput.inputText = parentResult.name;
+
+                    this.getSkillFilters();
                 });
+        },
+        async getSkillFilters() {
+            // Run the GET request.
+            if (this.skillTagsStore.skillTagsList.length == 0)
+                await this.skillTagsStore.getSkillTagsList();
+
+            for (let i = 0; i < this.skillTagsStore.skillTagsList.length; i++) {
+                if (
+                    this.skillTagsStore.skillTagsList[i].skill_id ==
+                    this.skillId
+                ) {
+                    this.filters.push(
+                        this.skillTagsStore.skillTagsList[i].tag_id
+                    );
+                }
+            }
         },
         // For image upload.
         onFileChange(e, type) {
@@ -166,6 +192,23 @@ export default {
                     break;
             }
         },
+        SubmitFilters() {
+            // 1 delete the existing filters.
+            fetch('/skill-tags/remove/' + this.skillId, {
+                method: 'DELETE'
+                // 2 push the new filters.
+            }).then(() => {
+                var url = '/skill-tags/add/' + this.skillId;
+                // do stuff with `data`, call second `fetch`
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        filters: this.filters
+                    })
+                });
+            });        
+        },
         Submit() {
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
@@ -189,6 +232,8 @@ export default {
             // Domains cant get filters or levels.
             if (this.skill.type == 'domain') {
                 this.skill.level = 'domain';
+
+                // For subskills.
             } else if (this.skill.type == 'sub') {
                 // Make sure user has assigned a parent skill.
                 if (this.skill.parent == 0) {
@@ -197,12 +242,10 @@ export default {
                     alert('cluster nodes must have a parent');
                 }
                 for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                    // Copy the filter from the parent node, for sub skills.
+                    // Copy the level from the parent node.
                     if (
                         this.skill.parent == this.skillsStore.skillsList[i].id
                     ) {
-                        this.skill.filter_1 =
-                            this.skillsStore.skillsList[i].filter_1;
                         this.skill.level = this.skillsStore.skillsList[i].level;
                     }
                     // Cant change a skill to be a sub skill, while it has its own child skills.
@@ -227,11 +270,6 @@ export default {
                 this.validate.violated = true;
                 alert('please enter a skill name');
             }
-            // if (descriptionData === '<p><br></p>') {
-            //     alert('please enter description for skill');
-            //     this.validate.description = true;
-            //     this.validate.violated = true;
-            // }
 
             // We End function here if any of the validate is violated
             if (this.validate.violated) {
@@ -248,8 +286,7 @@ export default {
                     banner_image: this.skill.banner_image,
                     mastery_requirements: masteryRequirementsData,
                     type: this.skill.type,
-                    level: this.skill.level,
-                    filter_1: this.skill.filter_1
+                    level: this.skill.level
                 })
             };
 
@@ -257,29 +294,12 @@ export default {
             fetch(url, requestOptions)
                 .then(() => {
                     this.skillsStore.getNestedSkillsList();
+                    this.SubmitFilters();
                 })
                 .then(() => {
                     this.$router.push('/skills');
                 });
         },
-        // changeTag(skillTag) {
-        //     var url;
-        //     // If the checkbox is checked, the DB entry is created.
-        //     if (skillTag.isChecked == true) {
-        //         url = "/skill-tags/add/" + this.skillId + "/" + skillTag.id
-        //         fetch(url, {
-        //             method: 'POST',
-        //             body: {}
-        //         });
-        //     }
-        //     // If the checkbox is unchecked, the DB entry is deleted.
-        //     else {
-        //         url = "/skill-tags/remove/" + this.skillId + "/" + skillTag.id
-        //         fetch(url, {
-        //             method: 'DELETE'
-        //         });
-        //     }
-        // }
         handleChooseSkillLevel(level) {
             this.showDropDown = false;
             this.showLevel = level.name;
@@ -418,18 +438,19 @@ export default {
         <div class="row">
             <div class="col col-md-8 col-lg-5 mt-2">
                 <div v-if="skill.type != 'sub'">
-                    <label class="form-label">Filter</label>
+                    <label class="form-label">Filters</label>
                     <div class="col">
-                        <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-4"
-                                >Contrary to strict Christian doctrine</span
+                        <label
+                            v-for="tag in tagsStore.tagsList"
+                            class="control control-checkbox"
+                        >
+                            <span class="my-auto mx-2 me-4">
+                                {{ tag.name }}</span
                             >
                             <input
                                 type="checkbox"
-                                name="nodeType"
-                                id="regularSkillRadio"
-                                value="regular"
-                                v-model="skill.filter_1"
+                                :value="tag.id"
+                                v-model="filters"
                             />
                             <div class="control_indicator"></div>
                         </label>
@@ -778,7 +799,7 @@ export default {
         </div>
 
         <!-- Mastery Requirement summernote -->
-        <div class="mb-3">
+        <div v-if="skill.type != 'domain'" class="mb-3">
             <label for="mastery_requirements" class="form-label"
                 >Mastery Requirements</label
             >

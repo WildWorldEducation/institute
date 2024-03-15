@@ -1,50 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import PostLoginView from '../components/pages/PostLoginView.vue';
-// import LoginView from '../components/pages/LoginView.vue'
+import TidyTreeView from '../components/pages/TidyTreeView.vue';
 
 import { useSessionDetailsStore } from '../stores/SessionDetailsStore';
 import { useUserDetailsStore } from '../stores/UserDetailsStore';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
-    routes: [
-        {
-            path: '/',
-            name: 'post-login',
-            component: PostLoginView
-        },
-        {
-            path: '/pixi-tree',
-            name: 'pixi-tree',
-            component: () => import('../components/pages/PixiTreeView.vue')
-        },
-        {
-            path: '/radial-tidy-tree',
-            name: 'radial-tidy-tree',
-            component: () =>
-                import('../components/pages/RadialTidyTreeView.vue')
-        },
-        {
-            path: '/radial-cluster-tree',
-            name: 'radial-cluster-tree',
-            component: () =>
-                import('../components/pages/RadialClusterTreeView.vue')
-        },
+    routes: [     
         {
             path: '/tidy-tree',
             name: 'tidy-tree',
-            component: () => import('../components/pages/TidyTreeView.vue')
+            component: TidyTreeView
         },
         {
-            path: '/canvas-tidy-tree',
-            name: 'canvas-tidy-tree',
-            component: () =>
-                import('../components/pages/CanvasTidyTreeView.vue')
+            path: '/',
+            name: 'hub',
+            component: () => import('../components/pages/HubView.vue')
         },
         {
-            path: '/pixi-tidy-tree',
-            name: 'pixi-tidy-tree',
-            component: () => import('../components/pages/PixiTidyTreeView.vue')
+            path: '/radial-tree',
+            name: 'radial-tree',
+            component: () => import('../components/pages/RadialTreeView.vue')
         },
         {
             path: '/:id/skill-tree',

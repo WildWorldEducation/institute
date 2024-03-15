@@ -19,16 +19,16 @@ app.use(cors());
 var jwt = require('jsonwebtoken');
 
 // Limit effects max image size that can be uploaded.
-app.use(bodyParser.json({ limit: '5mb' }));
+app.use(bodyParser.json({ limit: '100mb' }));
 app.use(
     bodyParser.urlencoded({
-        limit: '5mb',
+        limit: '100mb',
         extended: true,
         parameterLimit: 50000
     })
 );
-app.use(express.json({ limit: '5mb' }));
-app.use(express.urlencoded({ limit: '5mb', extended: true }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
@@ -91,7 +91,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-   //   password: 'password',
+    //   password: 'password',
     database: 'skill_tree'
 });
 
@@ -174,9 +174,9 @@ app.post('/login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Escape single quotes for SQL to accept.
     if (req.body.username != null)
-        req.body.username = req.body.username.replace(/'/g, "'");
+        req.body.username = req.body.username.replace(/'/g, "\\'");
     if (req.body.password != null)
-        req.body.password = req.body.password.replace(/'/g, "'");
+        req.body.password = req.body.password.replace(/'/g, "\\'");
 
     // Execute SQL query that'll select the account from the database based on the specified username and password.
     let sqlQuery1 =
@@ -198,7 +198,7 @@ app.post('/login-attempt', (req, res, next) => {
                 req.session.lastName = results[0].last_name;
                 req.session.skillTreeTheme = results[0].skilltree_theme;
                 req.session.role = results[0].role;
-                res.json({ account: 'authorized' });
+                res.json({ account: 'authorized', role: req.session.role });
             } else {
                 // If both the username and password are not correct, check if the account exists.
                 let sqlQuery2 =
@@ -272,7 +272,7 @@ app.get('/settings', (req, res, next) => {
 // Edit app settings.
 app.put('/settings/edit', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
+        let sqlQuery1 =
             `
         UPDATE settings 
         SET skill_degradation_days = ` +
@@ -280,10 +280,92 @@ app.put('/settings/edit', (req, res, next) => {
             `, quiz_max_questions = ` +
             req.body.quiz_max_questions;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
+                }
+                // Update which skill filters are active.
+                for (let i = 0; i < req.body.tags.length; i++) {
+                    // This variable is used lower down when updating each relevant skill.
+                    let skillFilteredStatus;
+                    if (req.body.tags[i].is_active == 'active') {
+                        skillFilteredStatus = 'filtered';
+                    } else {
+                        skillFilteredStatus = 'available';
+                    }
+
+                    let sqlQuery2 =
+                        `UPDATE tags
+                    SET is_active = '` +
+                        req.body.tags[i].is_active +
+                        `'
+                    WHERE id = ` +
+                        req.body.tags[i].id +
+                        `;`;
+
+                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            // Next we change the 'is_filtered' field in the skills table
+                            // for all the relevant skills
+
+                            // 1 Find all the relevant skills.
+                            let sqlQuery3 =
+                                `SELECT skill_id
+                                FROM skill_tags
+                                WHERE tag_id = ` +
+                                req.body.tags[i].id +
+                                `;`;
+
+                            let query3 = conn.query(
+                                sqlQuery3,
+                                (err, results) => {
+                                    try {
+                                        if (err) {
+                                            throw err;
+                                        }
+
+                                        // Update the relevant skills.
+                                        let relevantSkills = results;
+                                        for (
+                                            let j = 0;
+                                            j < relevantSkills.length;
+                                            j++
+                                        ) {
+                                            let sqlQuery4 =
+                                                `UPDATE skills
+                                        SET is_filtered = '` +
+                                                skillFilteredStatus +
+                                                `'
+                                        WHERE id = ` +
+                                                relevantSkills[j].skill_id +
+                                                `;`;
+
+                                            let query4 = conn.query(
+                                                sqlQuery4,
+                                                (err, results) => {
+                                                    try {
+                                                        if (err) {
+                                                            throw err;
+                                                        }
+                                                    } catch (err) {
+                                                        next(err);
+                                                    }
+                                                }
+                                            );
+                                        }
+                                    } catch (err) {
+                                        next(err);
+                                    }
+                                }
+                            );
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
                 }
                 res.end();
             } catch (err) {

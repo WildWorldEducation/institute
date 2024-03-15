@@ -1,5 +1,5 @@
 <script setup>
-import CanvasTidyTree from '../components/skilltrees/CanvasTidyTree.vue';
+//import CanvasTidyTree from '../components/skilltrees/CanvasTidyTree.vue';
 </script>
 
 <template>

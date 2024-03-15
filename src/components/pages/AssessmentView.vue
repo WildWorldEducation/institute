@@ -27,6 +27,7 @@ export default {
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList();
         }
+
         // Find the correct skill path (first ancestor skill), and level in hierarchy
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
             if (this.skillId == this.skillsStore.skillsList[i].id) {
