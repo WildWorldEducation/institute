@@ -472,41 +472,7 @@ export default {
         //     this.panY = 0;
         //     this.panY = this.panY - 50 / this.scale;
         //     this.redraw();
-        // },
-        // redraw() {
-        //     // Store the current transformation matrix
-        //     this.context.save();
-
-        //     // Use the identity matrix while clearing the canvas
-        //     this.context.setTransform(1, 0, 0, 1, 0, 0);
-        //     this.context.clearRect(
-        //         0,
-        //         0,
-        //         this.context.canvas.width,
-        //         this.context.canvas.height
-        //     );
-        //     this.context.beginPath();
-
-        //     // Restore the transform
-        //     this.context.restore();
-        //     this.drawTree();
-        // },
-        // zoomOut() {
-        //     // this.scale = this.scale / 2;
-        //     // this.context.scale(0.5, 0.5);
-        //     // this.redraw();
-
-        //     this.scale /= this.scaleMultiplier;
-        //     this.drawTree(this.scale, this.translatePos);
-        // },
-        // zoomIn() {
-        //     // this.scale = this.scale * 2;
-        //     // this.context.scale(2, 2);
-        //     // this.redraw();
-
-        //     this.scale *= this.scaleMultiplier;
-        //     this.drawTree(this.scale, this.translatePos);
-        // }
+        // },    
     }
 };
 </script>
