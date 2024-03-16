@@ -63,6 +63,12 @@ export default {
             y: canvas.height / 2
         };
         // zoom
+        let zoomSlider = document.getElementById('zoomRange');
+        zoomSlider.step = '0.1';
+        zoomSlider.addEventListener('mouseup', () => {
+            this.scale = zoomSlider.value;
+            this.drawTree(false);
+        });
         // add button event listeners
         document.getElementById('plus').addEventListener(
             'click',
@@ -472,7 +478,7 @@ export default {
         //     this.panY = 0;
         //     this.panY = this.panY - 50 / this.scale;
         //     this.redraw();
-        // },    
+        // },
     }
 };
 </script>
@@ -482,23 +488,72 @@ export default {
         <SkillPanel :skill="skill" />
         <canvas id="canvas" width="1500" height="1500"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
-        <div id="buttonWrapper">
+        <div id="controlsWrapper">
             <input type="button" id="plus" value="+" /><input
                 type="button"
                 id="minus"
                 value="-"
             />
+            <div class="slidecontainer">
+                <input
+                    type="range"
+                    min="0.1"
+                    max="2"
+                    value="1"
+                    class="slider"
+                    id="zoomRange"
+                />
+            </div>
         </div>
+
         <div id="sidepanel-backdrop"></div>
     </div>
 </template>
 
 <style scoped>
-#buttonWrapper {
+#controlsWrapper {
     position: absolute;
-    width: 30px;
-    top: 2px;
-    right: 2px;
+    width: 200px;
+    bottom: 2px;
+    left: 2px;
+}
+
+.slidecontainer {
+    width: 100%; /* Width of the outside container */
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: 0.2s;
+    transition: opacity 0.2s;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04aa6d;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04aa6d;
+    cursor: pointer;
+}
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
 }
 
 #wrapper {
