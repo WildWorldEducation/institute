@@ -7,6 +7,9 @@ import SkillPanel from './../SkillPanel.vue';
 
 import * as d3 from 'd3';
 
+// Module
+import nipplejs from 'nipplejs';
+
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -54,6 +57,33 @@ export default {
         SkillPanel
     },
     async mounted() {
+        var panJoystick = nipplejs.create({
+            zone: document.getElementById('panJoystick'),
+            mode: 'static',
+            position: { left: '25%', top: '25%' },
+            color: 'blue'
+        });
+
+        function bindJoystick() {
+            panJoystick
+                .on('start end', function (evt, data) {
+                    //  console.log('1');
+                })
+                .on('move', function (evt, data) {
+                    // console.log('2');
+                })
+                .on(
+                    'dir:up plain:up dir:left plain:left dir:down ' +
+                        'plain:down dir:right plain:right',
+                    function (evt, data) {
+                        console.log(data.direction.angle);
+                    }
+                )
+                .on('pressure', function (evt, data) {
+                    //  console.log('4');
+                });
+        }
+        bindJoystick();
         //  document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
         let canvas = document.getElementById('canvas');
         this.context = canvas.getContext('2d');
@@ -62,31 +92,14 @@ export default {
             x: canvas.width / 2,
             y: canvas.height / 2
         };
-        // zoom
+
+        // Zoom range slider.
         let zoomSlider = document.getElementById('zoomRange');
         zoomSlider.step = '0.1';
         zoomSlider.addEventListener('mouseup', () => {
             this.scale = zoomSlider.value;
             this.drawTree(false);
         });
-        // add button event listeners
-        document.getElementById('plus').addEventListener(
-            'click',
-            () => {
-                this.scale /= this.scaleMultiplier;
-                this.drawTree(false);
-            },
-            false
-        );
-
-        document.getElementById('minus').addEventListener(
-            'click',
-            () => {
-                this.scale *= this.scaleMultiplier;
-                this.drawTree(false);
-            },
-            false
-        );
 
         // ---
 
@@ -105,14 +118,6 @@ export default {
         };
 
         this.getAlgorithm();
-
-        // Pan and zoom.
-        // d3.select(this.context.canvas).call(
-        //     d3
-        //         .zoom()
-        //         .scaleExtent([0.2, 8])
-        //         .on('zoom', ({ transform }) => this.zoomed(transform))
-        // );
 
         // Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
@@ -489,11 +494,7 @@ export default {
         <canvas id="canvas" width="1500" height="1500"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="controlsWrapper">
-            <input type="button" id="plus" value="+" /><input
-                type="button"
-                id="minus"
-                value="-"
-            />
+            <div id="panJoystick"></div>
             <div class="slidecontainer">
                 <input
                     type="range"
@@ -516,6 +517,11 @@ export default {
     width: 200px;
     bottom: 2px;
     left: 2px;
+}
+
+#panJoystick {
+    width: 100px;
+    height: 100px;
 }
 
 .slidecontainer {
