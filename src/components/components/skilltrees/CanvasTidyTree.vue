@@ -49,7 +49,8 @@ export default {
             firstRender: true,
             scale: 1,
             panX: 0,
-            panY: 0
+            panY: 0,
+            hiddenCanvasInitiated: false
         };
     },
     components: {
@@ -93,10 +94,15 @@ export default {
         // Zoom range slider.
         let zoomSlider = document.getElementById('zoomRange');
         zoomSlider.step = '0.1';
+        // Mouse.
         zoomSlider.addEventListener('mouseup', () => {
             this.scale = zoomSlider.value;
-            this.drawTree(false);
-            this.drawTree(true);
+            this.drawTree();
+        });
+        // Touch.
+        zoomSlider.addEventListener('touchend', () => {
+            this.scale = zoomSlider.value;
+            this.drawTree();
         });
 
         // ---
@@ -120,14 +126,13 @@ export default {
         // Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
         this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
-        hiddenCanvas.style.display = 'none';
+        //    hiddenCanvas.style.display = 'none';
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', (e) => {
             // We actually only need to draw the hidden canvas when
             // there is an interaction. This sketch can draw it on
             // each loop, but that is only for demonstration.
-            this.drawTree(true);
 
             var data = this.nodes;
             //Figure out where the mouse click occurred.
@@ -265,43 +270,51 @@ export default {
             canvas.width = this.width;
             canvas.height = this.height;
             this.context = canvas.getContext('2d');
+            let hiddenCanvas = document.getElementById('hidden-canvas');
+            this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
 
-            this.drawTree(false);
+            this.drawTree();
         },
-        drawTree(hidden) {
+        drawTree() {
             //  console.log('draw');
 
             this.nodes = this.root.descendants();
 
             // For the visible canvas.
-            if (!hidden) {
-                this.context.save();
-                // clear canvas
-                this.context.clearRect(
-                    0,
-                    0,
-                    this.context.canvas.width,
-                    this.context.canvas.height
-                );
 
-                // Zoom.
-                this.context.scale(this.scale, this.scale);
+            // Zoom and pan.
+            this.context.save();
+            this.hiddenCanvasContext.save();
+            // clear canvas
+            this.context.clearRect(
+                0,
+                0,
+                this.context.canvas.width,
+                this.context.canvas.height
+            );
+            this.hiddenCanvasContext.clearRect(
+                0,
+                0,
+                this.hiddenCanvasContext.canvas.width,
+                this.hiddenCanvasContext.canvas.height
+            );
 
-                // Pan.
-                this.context.translate(this.panX, this.panY);
+            // Zoom.
+            this.context.scale(this.scale, this.scale);
+            this.hiddenCanvasContext.scale(this.scale, this.scale);
 
-                const links = this.root.links();
-                this.context.beginPath();
-                for (const link of links) {
-                    this.drawLink(link);
-                }
+            // Pan.
+            this.context.translate(this.panX, this.panY);
+            this.hiddenCanvasContext.translate(this.panX, this.panY);
+
+            // Links.
+            const links = this.root.links();
+            this.context.beginPath();
+            for (const link of links) {
+                this.drawLink(link);
             }
 
-            if (hidden) {
-                this.hiddenCanvasContext.scale(this.scale, this.scale);
-                this.hiddenCanvasContext.translate(this.panX, this.panY);
-            }
-
+            // Nodes.
             this.context.beginPath();
             for (const node of this.nodes) {
                 if (node.renderCol) {
@@ -316,45 +329,50 @@ export default {
                 //  If we are rendering to the hidden canvas each element
                 // should get its own color.
                 //
-                if (hidden) {
-                    if (node.__pickColor === undefined) {
-                        // If we have never drawn the node to the hidden canvas get a new
-                        // color for it and put it in the dictionary. genColor returns a new color
-                        // every time it is called.
-                        node.__pickColor = this.genColor();
-                        this.colToNode[node.__pickColor] = node;
-                    }
-                    // On the hidden canvas each rectangle gets a unique color.
-                    this.hiddenCanvasContext.fillStyle = node.__pickColor;
+
+                if (node.__pickColor === undefined) {
+                    // If we have never drawn the node to the hidden canvas get a new
+                    // color for it and put it in the dictionary. genColor returns a new color
+                    // every time it is called.
+                    node.__pickColor = this.genColor();
+                    this.colToNode[node.__pickColor] = node;
                 }
+                // On the hidden canvas each rectangle gets a unique color.
+                this.hiddenCanvasContext.fillStyle = node.__pickColor;
 
                 // Draw the actual shape
-                this.drawNode(hidden, node);
+                this.drawNode(node);
             }
 
+            this.hiddenCanvasContext.restore();
             this.context.restore();
         },
-        drawNode(hidden, node) {
+        drawNode(node) {
             //   console.log('node');
             let ctx;
-            if (hidden) {
-                ctx = this.hiddenCanvasContext;
-            } else {
-                ctx = this.context;
-            }
-            ctx.beginPath();
-            ctx.moveTo(node.y, node.x);
-            ctx.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-            if (!hidden) ctx.fillStyle = '#000';
-            ctx.fill();
+            // if (hidden) {
+            let ctx2 = this.hiddenCanvasContext;
+            // } else {
+            let ctx1 = this.context;
+            //}
+            ctx1.beginPath();
+            ctx1.moveTo(node.y, node.x);
+            ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+            ctx1.fillStyle = '#000';
+            ctx1.fill();
+
+            ctx2.beginPath();
+            ctx2.moveTo(node.y, node.x);
+            ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+            ctx2.fill();
 
             if (this.scale > 0.8) {
-                ctx.beginPath();
-                ctx.strokeStyle = '#FFF';
-                ctx.lineWidth = 4;
-                ctx.strokeText(node.data.skill_name, node.y + 10, node.x + 2);
-                ctx.fillStyle = '#000';
-                ctx.fillText(node.data.skill_name, node.y + 10, node.x + 2);
+                ctx1.beginPath();
+                ctx1.strokeStyle = '#FFF';
+                ctx1.lineWidth = 4;
+                ctx1.strokeText(node.data.skill_name, node.y + 10, node.x + 2);
+                ctx1.fillStyle = '#000';
+                ctx1.fillText(node.data.skill_name, node.y + 10, node.x + 2);
             }
         },
         drawLink(link) {
@@ -538,10 +556,11 @@ export default {
 }
 
 #wrapper {
+    width: 100%;
+    height: 100%;
+    /* height: calc(100% - 86px); */
+    /* overflow: hidden; */
     position: relative;
-    border: 1px solid #9c9898;
-    width: 578px;
-    height: 200px;
 }
 
 #buttonWrapper {
@@ -559,13 +578,6 @@ input[type='button'] {
 .skill-tree-container {
     /* Subtract the purple banner and the navigation bar. */
     height: calc(100% - 20px - 66px);
-}
-
-#wrapper {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    position: relative;
 }
 
 #sidepanel-backdrop {
@@ -608,7 +620,7 @@ input[type='button'] {
 #skilltree {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    /* overflow: hidden; */
     /* This is for the positioning of the information panel. */
     position: relative;
     background-color: white;
