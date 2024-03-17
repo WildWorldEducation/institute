@@ -6,7 +6,7 @@ import { useUserDetailsStore } from '../stores/UserDetailsStore';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
-    routes: [     
+    routes: [
         {
             path: '/tidy-tree',
             name: 'tidy-tree',
@@ -16,6 +16,12 @@ const router = createRouter({
             path: '/',
             name: 'hub',
             component: () => import('../components/pages/HubView.vue')
+        },
+        {
+            path: '/canvas-tidy-tree',
+            name: 'canvas-tidy-tree',
+            component: () =>
+                import('../components/pages/CanvasTidyTreeView.vue')
         },
         {
             path: '/radial-tree',

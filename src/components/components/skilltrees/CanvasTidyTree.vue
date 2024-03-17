@@ -1,17 +1,15 @@
 <script>
 // Import the stores.
-//import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
-//import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested component.
-//import SkillPanel from './../SkillPanel.vue';
+import SkillPanel from './../SkillPanel.vue';
 
+// Algorithm.
 import * as d3 from 'd3';
-// // Import Pixi JS.
-// import * as PIXI from 'pixi.js';
-// // Import Pixi Viewprt.
-// import { Viewport } from 'pixi-viewport';
-// // For pixi to use custom fonts.
-// import FontFaceObserver from 'fontfaceobserver';
+
+// Joystick.
+import nipplejs from 'nipplejs';
 
 export default {
     setup() {
@@ -41,10 +39,6 @@ export default {
             root: {},
             context: {},
             hiddenCanvasContext: {},
-            panX: 5,
-            panY: 0,
-            scale: 0.5,
-            translatePos: { x: 50, y: 50 },
             scaleMultiplier: 0.8,
             startDragOffset: { x: 0, y: 0 },
             mouseDown: false,
@@ -53,13 +47,60 @@ export default {
             nextCol: 1,
             colToNode: {},
             isSkillInfoPanelShown: false,
-            firstRender: true
+            //  firstRender: true,
+            scale: 1,
+            panX: 0,
+            panY: 0,
+            hiddenCanvasInitiated: false
         };
     },
     components: {
         SkillPanel
     },
     async mounted() {
+        // Panning, using NippleJS.
+        var panJoystick = nipplejs.create({
+            zone: document.getElementById('panJoystick'),
+            mode: 'static',
+            position: { left: '25%', top: '25%' },
+            color: 'blue'
+        });
+
+        panJoystick
+            .on(
+                'dir:up plain:up dir:left plain:left dir:down ' +
+                    'plain:down dir:right plain:right',
+                (evt, data) => {
+                    if (data.direction.angle == 'right')
+                        this.panX = this.panX - 20 / this.scale;
+                    else if (data.direction.angle == 'left')
+                        this.panX = this.panX + 20 / this.scale;
+                    else if (data.direction.angle == 'up')
+                        this.panY = this.panY + 20 / this.scale;
+                    else if (data.direction.angle == 'down')
+                        this.panY = this.panY - 20 / this.scale;
+                }
+            )
+            .on('end', (evt, data) => {
+                this.drawTree();
+            });
+
+        // Zoom range slider.
+        let zoomSlider = document.getElementById('zoomRange');
+        zoomSlider.step = '0.1';
+        // Mouse.
+        zoomSlider.addEventListener('mouseup', () => {
+            this.scale = zoomSlider.value;
+            this.drawTree();
+        });
+        // Touch.
+        zoomSlider.addEventListener('touchend', () => {
+            this.scale = zoomSlider.value;
+            this.drawTree();
+        });
+
+        // ---
+
         if (this.skillTreeStore.userSkills.length == 0) {
             await this.skillTreeStore.getUserSkills();
         }
@@ -67,10 +108,6 @@ export default {
         // Specify the chart’s dimensions.
         //  this.width = window.innerWidth;
         this.height = window.innerHeight;
-
-        //  document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
-        let canvas = document.getElementById('canvas');
-        this.context = canvas.getContext('2d');
 
         this.skill = {
             name: 'SKILLS',
@@ -80,15 +117,7 @@ export default {
 
         this.getAlgorithm();
 
-        // Pan and zoom.
-        d3.select(this.context.canvas).call(
-            d3
-                .zoom()
-                .scaleExtent([0.2, 8])
-                .on('zoom', ({ transform }) => this.zoomed(transform))
-        );
-
-        // Interactivity.
+        // Set up the Hidden Canvas for Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
         this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
         hiddenCanvas.style.display = 'none';
@@ -98,7 +127,6 @@ export default {
             // We actually only need to draw the hidden canvas when
             // there is an interaction. This sketch can draw it on
             // each loop, but that is only for demonstration.
-            this.drawTree(true);
 
             var data = this.nodes;
             //Figure out where the mouse click occurred.
@@ -108,10 +136,11 @@ export default {
             // Get the corresponding pixel color on the hidden canvas
             // and look up the node in our map.
             var ctx = this.hiddenCanvasContext;
+
             // This will return that pixel's color
             var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
             //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
-            // console.log(col);
+
             //Our map uses these rgb strings as keys to nodes.
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
@@ -125,10 +154,6 @@ export default {
                 node.renderCol = node.__pickColor;
 
                 //Update the display with some data
-                //  controls.lastClickedIndex = node.index;
-                //   lastClicked.updateDisplay();
-                //  animateHidden.updateDisplay();
-                //  console.log('Clicked on node with index:', node.index, node);
                 this.skill.name = node.data.skill_name;
                 this.showInfoPanel();
             }
@@ -239,20 +264,48 @@ export default {
             canvas.width = this.width;
             canvas.height = this.height;
             this.context = canvas.getContext('2d');
+            let hiddenCanvas = document.getElementById('hidden-canvas');
+            this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
 
-            this.drawTree(false);
+            this.drawTree();
         },
-        drawTree(hidden) {
+        drawTree() {
             this.nodes = this.root.descendants();
 
-            if (!hidden) {
-                const links = this.root.links();
-                this.context.beginPath();
-                for (const link of links) {
-                    this.drawLink(link);
-                }
+            // Zoom and pan.
+            this.context.save();
+            this.hiddenCanvasContext.save();
+
+            // Clear canvases.
+            this.context.clearRect(
+                0,
+                0,
+                this.context.canvas.width,
+                this.context.canvas.height
+            );
+            this.hiddenCanvasContext.clearRect(
+                0,
+                0,
+                this.hiddenCanvasContext.canvas.width,
+                this.hiddenCanvasContext.canvas.height
+            );
+
+            // Zoom.
+            this.context.scale(this.scale, this.scale);
+            this.hiddenCanvasContext.scale(this.scale, this.scale);
+
+            // Pan.
+            this.context.translate(this.panX, this.panY);
+            this.hiddenCanvasContext.translate(this.panX, this.panY);
+
+            // Draw links.
+            const links = this.root.links();
+            this.context.beginPath();
+            for (const link of links) {
+                this.drawLink(link);
             }
 
+            // Draw nodes.
             this.context.beginPath();
             for (const node of this.nodes) {
                 if (node.renderCol) {
@@ -267,44 +320,50 @@ export default {
                 //  If we are rendering to the hidden canvas each element
                 // should get its own color.
                 //
-                if (hidden) {
-                    if (node.__pickColor === undefined) {
-                        // If we have never drawn the node to the hidden canvas get a new
-                        // color for it and put it in the dictionary. genColor returns a new color
-                        // every time it is called.
-                        node.__pickColor = this.genColor();
-                        this.colToNode[node.__pickColor] = node;
-                    }
-                    // On the hidden canvas each rectangle gets a unique color.
-                    this.hiddenCanvasContext.fillStyle = node.__pickColor;
+
+                if (node.__pickColor === undefined) {
+                    // If we have never drawn the node to the hidden canvas get a new
+                    // color for it and put it in the dictionary. genColor returns a new color
+                    // every time it is called.
+                    node.__pickColor = this.genColor();
+                    this.colToNode[node.__pickColor] = node;
                 }
+                // On the hidden canvas each rectangle gets a unique color.
+                this.hiddenCanvasContext.fillStyle = node.__pickColor;
 
                 // Draw the actual shape
-                this.drawNode(hidden, node);
+                this.drawNode(node);
             }
 
-            //    this.context.restore();
+            this.hiddenCanvasContext.restore();
+            this.context.restore();
         },
-        drawNode(hidden, node) {
-            //   console.log(node);
-            let ctx;
-            if (hidden) {
-                ctx = this.hiddenCanvasContext;
-            } else {
-                ctx = this.context;
-            }
-            ctx.beginPath();
-            ctx.moveTo(node.y, node.x);
-            ctx.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-            if (!hidden) ctx.fillStyle = '#000';
-            ctx.fill();
+        drawNode(node) {
+            let ctx1 = this.context;
+            let ctx2 = this.hiddenCanvasContext;
 
-            ctx.beginPath();
-            ctx.strokeStyle = '#FFF';
-            ctx.lineWidth = 4;
-            ctx.strokeText(node.data.skill_name, node.y + 10, node.x + 2);
-            ctx.fillStyle = '#000';
-            ctx.fillText(node.data.skill_name, node.y + 10, node.x + 2);
+            // Visible context.
+            ctx1.beginPath();
+            ctx1.moveTo(node.y, node.x);
+            ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+            ctx1.fillStyle = '#000';
+            ctx1.fill();
+
+            // Text.
+            if (this.scale > 0.8) {
+                ctx1.beginPath();
+                ctx1.strokeStyle = '#FFF';
+                ctx1.lineWidth = 4;
+                ctx1.strokeText(node.data.skill_name, node.y + 10, node.x + 2);
+                ctx1.fillStyle = '#000';
+                ctx1.fillText(node.data.skill_name, node.y + 10, node.x + 2);
+            }
+
+            // Hidden context.
+            ctx2.beginPath();
+            ctx2.moveTo(node.y, node.x);
+            ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+            ctx2.fill();
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -383,127 +442,91 @@ export default {
 
                 this.isSkillInfoPanelShown = false;
             }
-        },
-        zoomed(transform) {
-            // For the regular canvas.
-            this.context.save();
-            this.context.clearRect(
-                0,
-                0,
-                this.context.canvas.width,
-                this.context.canvas.height
-            );
-            this.context.translate(transform.x, transform.y);
-            this.context.scale(transform.k, transform.k);
-
-            this.drawTree(false);
-
-            this.context.fill();
-            this.context.restore();
-
-            // For the hidden canvas.
-            this.hiddenCanvasContext.save();
-            this.hiddenCanvasContext.clearRect(
-                0,
-                0,
-                this.hiddenCanvasContext.canvas.width,
-                this.hiddenCanvasContext.canvas.height
-            );
-            this.hiddenCanvasContext.translate(transform.x, transform.y);
-            this.hiddenCanvasContext.scale(transform.k, transform.k);
-
-            this.drawTree(true);
-
-            this.hiddenCanvasContext.fill();
-            this.hiddenCanvasContext.restore();
         }
-        // panRight() {
-        //     this.panX = 0;
-        //     this.panY = 0;
-        //     this.panX = this.panX + 50 / this.scale;
-        //     this.redraw();
-        // },
-        // panLeft() {
-        //     this.panX = 0;
-        //     this.panY = 0;
-        //     this.panX = this.panX - 50 / this.scale;
-        //     this.redraw();
-        // },
-        // panUp() {
-        //     this.panX = 0;
-        //     this.panY = 0;
-        //     this.panY = this.panY + 50 / this.scale;
-        //     this.redraw();
-        // },
-        // panDown() {
-        //     this.panX = 0;
-        //     this.panY = 0;
-        //     this.panY = this.panY - 50 / this.scale;
-        //     this.redraw();
-        // },
-        // redraw() {
-        //     // Store the current transformation matrix
-        //     this.context.save();
-
-        //     // Use the identity matrix while clearing the canvas
-        //     this.context.setTransform(1, 0, 0, 1, 0, 0);
-        //     this.context.clearRect(
-        //         0,
-        //         0,
-        //         this.context.canvas.width,
-        //         this.context.canvas.height
-        //     );
-        //     this.context.beginPath();
-
-        //     // Restore the transform
-        //     this.context.restore();
-        //     this.drawTree();
-        // },
-        // zoomOut() {
-        //     // this.scale = this.scale / 2;
-        //     // this.context.scale(0.5, 0.5);
-        //     // this.redraw();
-
-        //     this.scale /= this.scaleMultiplier;
-        //     this.drawTree(this.scale, this.translatePos);
-        // },
-        // zoomIn() {
-        //     // this.scale = this.scale * 2;
-        //     // this.context.scale(2, 2);
-        //     // this.redraw();
-
-        //     this.scale *= this.scaleMultiplier;
-        //     this.drawTree(this.scale, this.translatePos);
-        // }
     }
 };
 </script>
 
 <template>
-    <!-- <button @click="panLeft">pan left</button>
-    <button @click="panRight">pan right</button>
-    <button @click="panUp">pan up</button>
-    <button @click="panDown">pan down</button>
-    <div id="buttonWrapper">
-        <input type="button" @click="zoomOut" value="+" />
-        <input type="button" @click="zoomIn" value="-" />
-    </div> -->
-    <!-- <button @click="zoomOut">zoom out</button>
-    <button @click="zoomIn">zoom in</button> -->
     <div id="wrapper">
         <SkillPanel :skill="skill" />
         <canvas id="canvas" width="1500" height="1500"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
+        <div id="controlsWrapper">
+            <div id="panJoystick"></div>
+            <div class="slidecontainer">
+                <input
+                    type="range"
+                    min="0.1"
+                    max="2"
+                    value="1"
+                    class="slider"
+                    id="zoomRange"
+                />
+            </div>
+        </div>
+
         <div id="sidepanel-backdrop"></div>
     </div>
 </template>
 
 <style scoped>
+#controlsWrapper {
+    position: absolute;
+    width: 200px;
+    bottom: 2px;
+    left: 2px;
+}
+
+#panJoystick {
+    width: 100px;
+    height: 100px;
+}
+
+.slidecontainer {
+    width: 100%; /* Width of the outside container */
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: 0.2s;
+    transition: opacity 0.2s;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04aa6d;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04aa6d;
+    cursor: pointer;
+}
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+}
+
 #wrapper {
+    width: 100%;
+    height: 100%;
+    height: calc(100% - 86px);
+    overflow: hidden;
     position: relative;
-    border: 1px solid #9c9898;
-    width: 578px;
-    height: 200px;
 }
 
 #buttonWrapper {
@@ -521,13 +544,6 @@ input[type='button'] {
 .skill-tree-container {
     /* Subtract the purple banner and the navigation bar. */
     height: calc(100% - 20px - 66px);
-}
-
-#wrapper {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    position: relative;
 }
 
 #sidepanel-backdrop {
@@ -570,7 +586,7 @@ input[type='button'] {
 #skilltree {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    /* overflow: hidden; */
     /* This is for the positioning of the information panel. */
     position: relative;
     background-color: white;
