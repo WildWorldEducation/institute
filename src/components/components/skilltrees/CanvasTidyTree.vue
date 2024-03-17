@@ -38,10 +38,6 @@ export default {
             root: {},
             context: {},
             hiddenCanvasContext: {},
-            panX: 5,
-            panY: 0,
-            scale: 1,
-            translatePos: {},
             scaleMultiplier: 0.8,
             startDragOffset: { x: 0, y: 0 },
             mouseDown: false,
@@ -50,40 +46,46 @@ export default {
             nextCol: 1,
             colToNode: {},
             isSkillInfoPanelShown: false,
-            firstRender: true
+            firstRender: true,
+            scale: 1,
+            panX: 0,
+            panY: 0
         };
     },
     components: {
         SkillPanel
     },
     async mounted() {
-        var panJoystick = nipplejs.create({
-            zone: document.getElementById('panJoystick'),
-            mode: 'static',
-            position: { left: '25%', top: '25%' },
-            color: 'blue'
-        });
+        // var panJoystick = nipplejs.create({
+        //     zone: document.getElementById('panJoystick'),
+        //     mode: 'static',
+        //     position: { left: '25%', top: '25%' },
+        //     color: 'blue'
+        // });
 
-        function bindJoystick() {
-            panJoystick
-                .on('start end', function (evt, data) {
-                    //  console.log('1');
-                })
-                .on('move', function (evt, data) {
-                    // console.log('2');
-                })
-                .on(
-                    'dir:up plain:up dir:left plain:left dir:down ' +
-                        'plain:down dir:right plain:right',
-                    function (evt, data) {
-                        console.log(data.direction.angle);
-                    }
-                )
-                .on('pressure', function (evt, data) {
-                    //  console.log('4');
-                });
-        }
-        bindJoystick();
+        // function bindJoystick(panX, panY, drawTree, scale) {
+        //     panJoystick
+        //         .on(
+        //             'dir:up plain:up dir:left plain:left dir:down ' +
+        //                 'plain:down dir:right plain:right',
+        //             function (evt, data) {
+        //                 if (data.direction.angle == 'right')
+        //                     panX = panX - 20 / scale;
+        //                 else if (data.direction.angle == 'left')
+        //                     panX = panX + 20 / scale;
+        //                 else if (data.direction.angle == 'up')
+        //                     panY = panY + 20 / scale;
+        //                 else if (data.direction.angle == 'down')
+        //                     panY = panY - 20 / scale;
+        //                 // console.log(data.direction.angle);
+        //                 // console.log(panX);
+        //             }
+        //         )
+        //         .on('end', function (evt, data) {
+        //             drawTree(false, panX, panY);
+        //         });
+        // }
+        // bindJoystick(this.panX, this.panY, this.drawTree, this.scale);
         //  document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
         let canvas = document.getElementById('canvas');
         this.context = canvas.getContext('2d');
@@ -99,6 +101,7 @@ export default {
         zoomSlider.addEventListener('mouseup', () => {
             this.scale = zoomSlider.value;
             this.drawTree(false);
+            this.drawTree(true);
         });
 
         // ---
@@ -139,6 +142,7 @@ export default {
             // Get the corresponding pixel color on the hidden canvas
             // and look up the node in our map.
             var ctx = this.hiddenCanvasContext;
+
             // This will return that pixel's color
             var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
             //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
@@ -156,10 +160,6 @@ export default {
                 node.renderCol = node.__pickColor;
 
                 //Update the display with some data
-                //  controls.lastClickedIndex = node.index;
-                //   lastClicked.updateDisplay();
-                //  animateHidden.updateDisplay();
-                //  console.log('Clicked on node with index:', node.index, node);
                 this.skill.name = node.data.skill_name;
                 this.showInfoPanel();
             }
@@ -274,24 +274,36 @@ export default {
             this.drawTree(false);
         },
         drawTree(hidden) {
-            this.context.save();
-            // clear canvas
-            this.context.clearRect(
-                0,
-                0,
-                this.context.canvas.width,
-                this.context.canvas.height
-            );
+            //  console.log('draw');
 
-            this.context.scale(this.scale, this.scale);
             this.nodes = this.root.descendants();
 
+            // For the visible canvas.
             if (!hidden) {
+                this.context.save();
+                // clear canvas
+                this.context.clearRect(
+                    0,
+                    0,
+                    this.context.canvas.width,
+                    this.context.canvas.height
+                );
+
+                // Zoom.
+                this.context.scale(this.scale, this.scale);
+
+                // Pan.
+                //  this.context.translate(panX, panY);
+
                 const links = this.root.links();
                 this.context.beginPath();
                 for (const link of links) {
                     this.drawLink(link);
                 }
+            }
+
+            if (hidden) {
+                this.hiddenCanvasContext.scale(this.scale, this.scale);
             }
 
             this.context.beginPath();
@@ -427,39 +439,6 @@ export default {
                 this.isSkillInfoPanelShown = false;
             }
         }
-        // zoomed(transform) {
-        //     // For the regular canvas.
-        //     this.context.save();
-        //     this.context.clearRect(
-        //         0,
-        //         0,
-        //         this.context.canvas.width,
-        //         this.context.canvas.height
-        //     );
-        //     this.context.translate(transform.x, transform.y);
-        //     this.context.scale(transform.k, transform.k);
-
-        //     this.drawTree(false);
-
-        //     this.context.fill();
-        //     this.context.restore();
-
-        //     // For the hidden canvas.
-        //     this.hiddenCanvasContext.save();
-        //     this.hiddenCanvasContext.clearRect(
-        //         0,
-        //         0,
-        //         this.hiddenCanvasContext.canvas.width,
-        //         this.hiddenCanvasContext.canvas.height
-        //     );
-        //     this.hiddenCanvasContext.translate(transform.x, transform.y);
-        //     this.hiddenCanvasContext.scale(transform.k, transform.k);
-
-        //     this.drawTree(true);
-
-        //     this.hiddenCanvasContext.fill();
-        //     this.hiddenCanvasContext.restore();
-        // }
         // panRight() {
         //     this.panX = 0;
         //     this.panY = 0;
