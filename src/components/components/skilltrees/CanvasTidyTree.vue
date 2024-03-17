@@ -56,37 +56,32 @@ export default {
         SkillPanel
     },
     async mounted() {
-        // var panJoystick = nipplejs.create({
-        //     zone: document.getElementById('panJoystick'),
-        //     mode: 'static',
-        //     position: { left: '25%', top: '25%' },
-        //     color: 'blue'
-        // });
+        var panJoystick = nipplejs.create({
+            zone: document.getElementById('panJoystick'),
+            mode: 'static',
+            position: { left: '25%', top: '25%' },
+            color: 'blue'
+        });
 
-        // function bindJoystick(panX, panY, drawTree, scale) {
-        //     panJoystick
-        //         .on(
-        //             'dir:up plain:up dir:left plain:left dir:down ' +
-        //                 'plain:down dir:right plain:right',
-        //             function (evt, data) {
-        //                 if (data.direction.angle == 'right')
-        //                     panX = panX - 20 / scale;
-        //                 else if (data.direction.angle == 'left')
-        //                     panX = panX + 20 / scale;
-        //                 else if (data.direction.angle == 'up')
-        //                     panY = panY + 20 / scale;
-        //                 else if (data.direction.angle == 'down')
-        //                     panY = panY - 20 / scale;
-        //                 // console.log(data.direction.angle);
-        //                 // console.log(panX);
-        //             }
-        //         )
-        //         .on('end', function (evt, data) {
-        //             drawTree(false, panX, panY);
-        //         });
-        // }
-        // bindJoystick(this.panX, this.panY, this.drawTree, this.scale);
-        //  document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
+        panJoystick
+            .on(
+                'dir:up plain:up dir:left plain:left dir:down ' +
+                    'plain:down dir:right plain:right',
+                (evt, data) => {
+                    if (data.direction.angle == 'right')
+                        this.panX = this.panX - 20 / this.scale;
+                    else if (data.direction.angle == 'left')
+                        this.panX = this.panX + 20 / this.scale;
+                    else if (data.direction.angle == 'up')
+                        this.panY = this.panY + 20 / this.scale;
+                    else if (data.direction.angle == 'down')
+                        this.panY = this.panY - 20 / this.scale;
+                }
+            )
+            .on('end', (evt, data) => {
+                this.drawTree(false);
+            });
+
         let canvas = document.getElementById('canvas');
         this.context = canvas.getContext('2d');
 
@@ -293,7 +288,7 @@ export default {
                 this.context.scale(this.scale, this.scale);
 
                 // Pan.
-                //  this.context.translate(panX, panY);
+                this.context.translate(this.panX, this.panY);
 
                 const links = this.root.links();
                 this.context.beginPath();
@@ -304,6 +299,7 @@ export default {
 
             if (hidden) {
                 this.hiddenCanvasContext.scale(this.scale, this.scale);
+                this.hiddenCanvasContext.translate(this.panX, this.panY);
             }
 
             this.context.beginPath();
