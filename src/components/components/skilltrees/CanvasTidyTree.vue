@@ -5,9 +5,10 @@ import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested component.
 import SkillPanel from './../SkillPanel.vue';
 
+// Algorithm.
 import * as d3 from 'd3';
 
-// Module
+// Joystick.
 import nipplejs from 'nipplejs';
 
 export default {
@@ -46,7 +47,7 @@ export default {
             nextCol: 1,
             colToNode: {},
             isSkillInfoPanelShown: false,
-            firstRender: true,
+            //  firstRender: true,
             scale: 1,
             panX: 0,
             panY: 0,
@@ -57,6 +58,7 @@ export default {
         SkillPanel
     },
     async mounted() {
+        // Panning, using NippleJS.
         var panJoystick = nipplejs.create({
             zone: document.getElementById('panJoystick'),
             mode: 'static',
@@ -80,16 +82,8 @@ export default {
                 }
             )
             .on('end', (evt, data) => {
-                this.drawTree(false);
+                this.drawTree();
             });
-
-        let canvas = document.getElementById('canvas');
-        this.context = canvas.getContext('2d');
-
-        this.translatePos = {
-            x: canvas.width / 2,
-            y: canvas.height / 2
-        };
 
         // Zoom range slider.
         let zoomSlider = document.getElementById('zoomRange');
@@ -123,10 +117,10 @@ export default {
 
         this.getAlgorithm();
 
-        // Interactivity.
+        // Set up the Hidden Canvas for Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
         this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
-        //    hiddenCanvas.style.display = 'none';
+        hiddenCanvas.style.display = 'none';
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', (e) => {
@@ -146,7 +140,7 @@ export default {
             // This will return that pixel's color
             var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
             //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
-            // console.log(col);
+
             //Our map uses these rgb strings as keys to nodes.
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
@@ -276,16 +270,13 @@ export default {
             this.drawTree();
         },
         drawTree() {
-            //  console.log('draw');
-
             this.nodes = this.root.descendants();
-
-            // For the visible canvas.
 
             // Zoom and pan.
             this.context.save();
             this.hiddenCanvasContext.save();
-            // clear canvas
+
+            // Clear canvases.
             this.context.clearRect(
                 0,
                 0,
@@ -307,14 +298,14 @@ export default {
             this.context.translate(this.panX, this.panY);
             this.hiddenCanvasContext.translate(this.panX, this.panY);
 
-            // Links.
+            // Draw links.
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
                 this.drawLink(link);
             }
 
-            // Nodes.
+            // Draw nodes.
             this.context.beginPath();
             for (const node of this.nodes) {
                 if (node.renderCol) {
@@ -348,24 +339,17 @@ export default {
             this.context.restore();
         },
         drawNode(node) {
-            //   console.log('node');
-            let ctx;
-            // if (hidden) {
-            let ctx2 = this.hiddenCanvasContext;
-            // } else {
             let ctx1 = this.context;
-            //}
+            let ctx2 = this.hiddenCanvasContext;
+
+            // Visible context.
             ctx1.beginPath();
             ctx1.moveTo(node.y, node.x);
             ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
             ctx1.fillStyle = '#000';
             ctx1.fill();
 
-            ctx2.beginPath();
-            ctx2.moveTo(node.y, node.x);
-            ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-            ctx2.fill();
-
+            // Text.
             if (this.scale > 0.8) {
                 ctx1.beginPath();
                 ctx1.strokeStyle = '#FFF';
@@ -374,6 +358,12 @@ export default {
                 ctx1.fillStyle = '#000';
                 ctx1.fillText(node.data.skill_name, node.y + 10, node.x + 2);
             }
+
+            // Hidden context.
+            ctx2.beginPath();
+            ctx2.moveTo(node.y, node.x);
+            ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+            ctx2.fill();
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -453,30 +443,6 @@ export default {
                 this.isSkillInfoPanelShown = false;
             }
         }
-        // panRight() {
-        //     this.panX = 0;
-        //     this.panY = 0;
-        //     this.panX = this.panX + 50 / this.scale;
-        //     this.redraw();
-        // },
-        // panLeft() {
-        //     this.panX = 0;
-        //     this.panY = 0;
-        //     this.panX = this.panX - 50 / this.scale;
-        //     this.redraw();
-        // },
-        // panUp() {
-        //     this.panX = 0;
-        //     this.panY = 0;
-        //     this.panY = this.panY + 50 / this.scale;
-        //     this.redraw();
-        // },
-        // panDown() {
-        //     this.panX = 0;
-        //     this.panY = 0;
-        //     this.panY = this.panY - 50 / this.scale;
-        //     this.redraw();
-        // },
     }
 };
 </script>
@@ -558,8 +524,8 @@ export default {
 #wrapper {
     width: 100%;
     height: 100%;
-    /* height: calc(100% - 86px); */
-    /* overflow: hidden; */
+    height: calc(100% - 86px);
+    overflow: hidden;
     position: relative;
 }
 
