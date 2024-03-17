@@ -68,18 +68,21 @@ export default {
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
-                            <RouterLink to="/tidy-tree" class="nav-link"
+                            <RouterLink
+                                @click.native="stopPixiApp()"
+                                to="/tidy-tree"
+                                class="nav-link"
                                 >Tidy Tree</RouterLink
                             >
                         </li>
-                        <li
+                        <!-- <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/canvas-tidy-tree" class="nav-link"
                                 >Canvas Tidy Tree</RouterLink
                             >
-                        </li>
+                        </li> -->
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
