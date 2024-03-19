@@ -109,6 +109,10 @@ export default {
 
             fetch(url, requestOptions).then(() => {
                 alert('Questions uploaded.');
+                // Reset.
+                this.questionCSVFile = '';
+                this.filesArray = [];
+                this.questionsArray = [];
             });
         }
     }
