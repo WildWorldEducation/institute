@@ -469,4 +469,4 @@ export default {
     flex-direction: column;
   }
 }
-</style>
+</style>../../../../stores/UserDetailsStore../../../../stores/SkillTreeStore../../../../stores/SkillTagsStore

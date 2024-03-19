@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import CanvasTidyTreeView from '../components/pages/CanvasTidyTreeView.vue';
+import TidyTreeView from '../components/pages/TidyTreeView.vue';
 
 import { useSessionDetailsStore } from '../stores/SessionDetailsStore';
 import { useUserDetailsStore } from '../stores/UserDetailsStore';
@@ -10,19 +10,13 @@ const router = createRouter({
         {
             path: '/tidy-tree',
             name: 'tidy-tree',
-            component: CanvasTidyTreeView
+            component: TidyTreeView
         },
         {
             path: '/',
             name: 'hub',
             component: () => import('../components/pages/HubView.vue')
         },
-        // {
-        //     path: '/canvas-tidy-tree',
-        //     name: 'canvas-tidy-tree',
-        //     component: () =>
-        //         import('../components/pages/CanvasTidyTreeView.vue')
-        // },
         {
             path: '/radial-tree',
             name: 'radial-tree',
