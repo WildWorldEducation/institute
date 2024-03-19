@@ -375,9 +375,11 @@ export default {
     justify-content: space-between;
 }
 
-@media (max-width: 900px) {
-    .center-header {
-        justify-content: center;
+/* View Specific On Tablet */
+@media (min-width: 577px) and (max-width: 1023px) {
+    #skill-info-container {
+        padding-left: 15px;
+        padding-right: 15px;
     }
 }
 
@@ -405,8 +407,8 @@ export default {
         background-color: #f2edffcc;
         border-radius: 12px;
         padding-top: 59px;
-        padding-left: 0px;
-        padding-right: 0px;
+        padding-left: 10px;
+        padding-right: 10px;
     }
 }
 

@@ -213,13 +213,13 @@ export default {
 
 <template>
     <div class="container-fluid">
-        <div class="d-flex flex-column flex-lg-row justify-content-between">
-            <div class="d-flex align-items-lg-baseline align-items-start gap-2">
+        <div class="d-flex flex-column flex-md-row justify-content-between">
+            <div class="d-flex align-items-md-baseline align-items-start gap-2">
                 <h2>Best Place To Learn This</h2>
                 <!--TODO: get src from database -->
                 <img src="/images/recurso-69.png" class="" />
             </div>
-            <div class="mx-auto mx-lg-0 mt-3 mt-lg-0">
+            <div class="mx-auto mx-md-0 mt-3 mt-lg-0">
                 <router-link
                     :to="'/resources/add/' + skillId"
                     class="btn green-btn"
