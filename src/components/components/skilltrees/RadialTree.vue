@@ -53,12 +53,6 @@ export default {
     created() {
         // Start the Pixi renderer.
         this.$pixiApp.start();
-        // Show this tree.
-        this.$radialTreeContainer.visible = true;
-        // Hide the tidy tree.
-        this.$tidyTreeContainer.visible = false;
-        // Set the background colour.
-        this.$pixiApp.renderer.background.color = 0x1e293b;
     },
     async mounted() {
         if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {

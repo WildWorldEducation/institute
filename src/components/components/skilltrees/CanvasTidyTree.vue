@@ -350,7 +350,7 @@ export default {
             ctx1.fill();
 
             // Text.
-            if (this.scale > 0.8) {
+            if (this.scale > 0.6) {
                 ctx1.beginPath();
                 ctx1.strokeStyle = '#FFF';
                 ctx1.lineWidth = 4;
