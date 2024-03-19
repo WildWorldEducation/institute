@@ -6,7 +6,6 @@ import router from './router';
 
 // Import Pixi JS.
 import * as PIXI from 'pixi.js';
-//import * as PIXI from 'pixi.js-legacy';
 // Import Pixi Viewprt.
 import { Viewport } from 'pixi-viewport';
 
@@ -33,7 +32,7 @@ var pixiApp = new PIXI.Application({
     cullable: true,
     // Whether to use the canvas or WebGL.
     forceCanvas: false,
-    background: '#FFF',
+    background: 0x1e293b,
     clearBeforeRender: true
 });
 
@@ -66,13 +65,7 @@ viewport
     .decelerate()
     .clampZoom({ minScale: 0.001, maxScale: 10 });
 
-// Create Pixi containers for each skill tree.
-// So as to be able to hide them when the user moves to a different one,
-// so they dont print over one another.
-// Rather than clearing and rebuilding them, which would take time.
-// A bit like 2 scenes.
-app.config.globalProperties.$tidyTreeContainer = new PIXI.Container();
-viewport.addChild(app.config.globalProperties.$tidyTreeContainer);
+// Create Pixi container for skill tree.
 app.config.globalProperties.$radialTreeContainer = new PIXI.Container();
 viewport.addChild(app.config.globalProperties.$radialTreeContainer);
 

@@ -44,7 +44,8 @@ export default {
             subSkillRadius: 50,
             sprite: {
                 domainNode: null
-            }
+            },
+            nodes: null
         };
     },
     components: {
@@ -53,21 +54,24 @@ export default {
     created() {
         // Start the Pixi renderer.
         this.$pixiApp.start();
-        // Show this tree.
-        this.$radialTreeContainer.visible = true;
-        // Hide the tidy tree.
-        this.$tidyTreeContainer.visible = false;
-        // Set the background colour.
-        this.$pixiApp.renderer.background.color = 0x16022e;
     },
     async mounted() {
         if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
             await this.skillTreeStore.getUserSkillsSubSkillsSeparate();
         }
 
-        this.sprite.domainNode = PIXI.Sprite.from(
-            'images/skill-tree-nodes/domain.png'
+        // const sheet = await Assets.load('assets/spritesheet.json');
+        // const sprite = new Sprite(sheet.textures['image.png']);
+
+        /** WE PRELOAD ALL NODE SPRITE HERE USING PIXI LOADER */
+        const nodes = await PIXI.Assets.load(
+            '/images/skill-tree-nodes/sprite-sheet/spritesheet.json'
         );
+
+        // Preload bitmap font too
+        await PIXI.Assets.load('/font/Poppins Bold White.xml');
+
+        /**------------------------------------------------- */
 
         // Only generate this chart, if it has not already been generated.
         if (this.$radialTreeContainer.children.length == 0) {
@@ -80,49 +84,13 @@ export default {
                 sprite: null,
                 children: this.skillTreeStore.userSkillsSubSkillsSeparate
             };
-            this.getAlgorithm();
+            this.getAlgorithm(nodes);
         }
         // Add the canvas to the DOM.
         document.querySelector('#skilltree').appendChild(this.$pixiApp.view);
     },
     methods: {
-        handelNodeSprite(nodeGraphic, node, nodeContainer) {
-            console.log(nodeGraphic);
-            nodeGraphic.anchor.set(0.5);
-            // Increase the size of the first level nodes.
-            if (node.depth == 1) {
-                nodeGraphic.width = this.firstLevelNodeSize;
-                nodeGraphic.height = this.firstLevelNodeSize;
-            } else if (node.depth == 2) {
-                nodeGraphic.width = this.secondLevelNodeSize;
-                nodeGraphic.height = this.secondLevelNodeSize;
-            } else {
-                nodeGraphic.width = this.regularNodeSize;
-                nodeGraphic.height = this.regularNodeSize;
-            }
-            nodeContainer.addChild(nodeGraphic);
-
-            // Interactivity.
-            nodeGraphic.eventMode = 'static';
-            nodeGraphic.cursor = 'pointer';
-            nodeGraphic.on('pointerdown', (event) => {
-                // Create the  skill object:
-                var skill = {
-                    id: node.data.id,
-                    isMastered: node.data.is_mastered,
-                    isUnlocked: node.data.is_accessible,
-                    name: node.data.skill_name,
-                    masteryRequirements: node.data.mastery_requirements,
-                    type: node.data.type
-                };
-                this.skill = skill;
-
-                if (!this.isSkillInfoPanelShown) {
-                    this.showInfoPanel();
-                }
-            });
-        },
-        getAlgorithm() {
+        getAlgorithm(nodes) {
             var skillsNoSubSkills = [];
             skillsNoSubSkills = JSON.parse(JSON.stringify(this.skill.children));
 
@@ -143,34 +111,44 @@ export default {
             // Sort the tree and apply the layout.
             this.root = tree(d3.hierarchy(this.data));
             // draw the tree with hierarchy data
-            this.drawTree();
+            this.drawTree(nodes);
         },
-        drawTree() {
+        drawTree(spriteSheet) {
             /*
              * Central circle.
              */
             // Graphic.
-            const centerNodeSprite = PIXI.Sprite.from('center-node.png'); // central node sprite
+            /**
+             * Using Sprite sheet instead of a single image
+             */
+            const centerNodeSprite = new PIXI.Sprite(spriteSheet.textures[0]); // central node sprite
+
+            console.log(spriteSheet);
+
             centerNodeSprite.x = this.root.x;
             centerNodeSprite.y = this.root.y;
             centerNodeSprite.anchor.set(0.5);
-            // Add to the global variable container for this chart.
-            this.$radialTreeContainer.addChild(centerNodeSprite);
 
             // Get the data from D3.
             const nodes = this.root.descendants();
             const links = this.root.links();
 
+            // Draw a circle like in the figma design
+            this.drawCircle(this.root);
+
             // Draw the actual shapes.
             for (const link of links) {
                 this.drawLink(link);
             }
+
+            // Add to the global variable container for this chart. (we add the center node after the link so it will render above the line)
+            this.$radialTreeContainer.addChild(centerNodeSprite);
             for (const node of nodes) {
-                this.drawNode(node);
+                this.drawNode(node, spriteSheet);
             }
         },
         // Draw skill nodes and names.
-        drawNode(node) {
+        drawNode(node, spriteSheet) {
             /*
              * Create the skill node container.
              * Using the D3 algorithm to get the position.
@@ -188,73 +166,51 @@ export default {
             // Get node sprite based on it level and state
             if (node.data.level == 'grade_school') {
                 if (node.data.is_mastered)
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/grade-school-mastered.png'
-                    );
+                    // grade school mastered
+                    nodeGraphic = new PIXI.Sprite(spriteSheet.textures[9]);
                 else if (node.data.is_accessible)
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/grade-school-unlocked.png'
-                    );
-                else
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/grade-school-locked.png'
-                    );
+                    // grade school unlocked
+                    nodeGraphic = new PIXI.Sprite(spriteSheet.textures[13]);
+                // grade school locked
+                else nodeGraphic = new PIXI.Sprite(spriteSheet.textures[8]);
             } else if (node.data.level == 'middle_school') {
                 if (node.data.is_mastered)
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/middle-school-mastered.png'
-                    );
+                    // middle school mastered
+                    nodeGraphic = new PIXI.Sprite(spriteSheet.textures[21]);
                 else if (node.data.is_accessible)
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/middle-school-unlocked.png'
-                    );
-                else
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/middle-school-locked.png'
-                    );
+                    // middle school unlocked
+                    nodeGraphic = new PIXI.Sprite(spriteSheet.textures[25]);
+                // middle school locked
+                else nodeGraphic = new PIXI.Sprite(spriteSheet.textures[20]);
             } else if (node.data.level == 'high_school') {
                 if (node.data.is_mastered)
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/high-school-mastered.png'
-                    );
+                    // high school mastered
+                    nodeGraphic = new PIXI.Sprite(spriteSheet.textures[15]);
                 else if (node.data.is_accessible)
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/middle-school-unlocked.png'
-                    );
-                else
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/middle-school-locked.png'
-                    );
+                    // middle school unlocked
+                    nodeGraphic = new PIXI.Sprite(spriteSheet.textures[25]);
+                // middle school locked
+                else nodeGraphic = new PIXI.Sprite(spriteSheet.textures[20]);
             } else if (node.data.level == 'college') {
                 if (node.data.is_mastered)
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/college-mastered.png'
-                    );
+                    // college mastered
+                    nodeGraphic = new PIXI.Sprite(spriteSheet.textures[2]);
                 else if (node.data.is_accessible)
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/middle-school-unlocked.png'
-                    );
-                else
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/middle-school-locked.png'
-                    );
+                    // middle school unlocked
+                    nodeGraphic = new PIXI.Sprite(spriteSheet.textures[25]);
+                // middle school locked
+                else nodeGraphic = new PIXI.Sprite(spriteSheet.textures[20]);
             } else if (node.data.level == 'phd') {
                 if (node.data.is_mastered)
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/phd-mastered.png'
-                    );
+                    // php mastered
+                    nodeGraphic = new PIXI.Sprite(spriteSheet.textures[27]);
                 else if (node.data.is_accessible)
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/middle-school-unlocked.png'
-                    );
-                else
-                    nodeGraphic = PIXI.Sprite.from(
-                        'images/skill-tree-nodes/middle-school-locked.png'
-                    );
+                    // middle school unlocked
+                    nodeGraphic = new PIXI.Sprite(spriteSheet.textures[25]);
+                // middle school lock
+                else nodeGraphic = new PIXI.Sprite(spriteSheet.textures[20]);
             } else if (node.data.level == 'domain') {
-                nodeGraphic = PIXI.Sprite.from(
-                    'images/skill-tree-nodes/domain.png'
-                );
+                nodeGraphic = new PIXI.Sprite(spriteSheet.textures[7]);
             }
             nodeGraphic.anchor.set(0.5);
             // Increase the size of the first level nodes.
@@ -313,68 +269,83 @@ export default {
 
                     if (node.data.level == 'grade_school') {
                         if (node.data.is_mastered)
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/grade-school-small-mastered.png'
+                            // grade school small mastered
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[11]
                             );
                         else if (node.data.is_accessible)
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/grade-school-small-unlocked.png'
+                            // grade school small unlocked
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[12]
                             );
+                        // grade school small locked
                         else
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/grade-school-small-locked.png'
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[10]
                             );
                     } else if (node.data.level == 'middle_school') {
                         if (node.data.is_mastered)
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/middle-school-small-mastered.png'
+                            // middle school small mastered
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[23]
                             );
                         else if (node.data.is_accessible)
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/middle-school-small-unlocked.png'
+                            // middle school small unlocked
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[24]
                             );
+                        // middle school small locked
                         else
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/middle-school-small-locked.png'
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[22]
                             );
                     } else if (node.data.level == 'high_school') {
                         if (node.data.is_mastered)
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/high-school-small-mastered.png'
+                            // high school small mastered
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[17]
                             );
                         else if (node.data.is_accessible)
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/high-school-small-unlocked.png'
+                            // high school small unlocked
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[18]
                             );
+                        // high school small locked
                         else
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/high-school-small-locked.png'
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[16]
                             );
                     } else if (node.data.level == 'college') {
                         if (node.data.is_mastered)
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/college-smal-mastered.png'
+                            // college small mastered
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[4]
                             );
                         else if (node.data.is_accessible)
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/college-small-unlocked.png'
+                            // college small unlocked
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[5]
                             );
+                        // college small locked
                         else
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/college-small-locked.png'
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[3]
                             );
                     } else if (node.data.level == 'phd') {
                         if (node.data.is_mastered)
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/phd-small-mastered.png'
+                            // phd small mastered
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[29]
                             );
                         else if (node.data.is_accessible)
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/phd-small-unlocked.png'
+                            // phd small unlocked
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[30]
                             );
+                        // phd small locked
                         else
-                            nodeGraphic = PIXI.Sprite.from(
-                                'images/skill-tree-nodes/phd-small-locked.png'
+                            nodeGraphic = new PIXI.Sprite(
+                                spriteSheet.textures[28]
                             );
                     }
                     nodeGraphic.width = 15;
@@ -404,19 +375,11 @@ export default {
 
                     subNodeContainer.addChild(nodeGraphic);
 
-                    const style = new PIXI.TextStyle({
-                        fontFamily: 'Poppins900',
-                        fontSize: '10',
-                        fill: 'white',
-                        align: 'center',
-                        strokeThickness: 2,
-                        stroke: 'black'
+                    const nameText = new PIXI.BitmapText(node.data.skill_name, {
+                        fontName: 'Poppins-White-Bold',
+                        fontSize: 10,
+                        align: 'right'
                     });
-
-                    const nameText = new PIXI.Text(
-                        node.data.subskills[i].skill_name,
-                        style
-                    );
                     nameText.angle = angle;
                     subNodeContainer.addChild(nameText);
                     nodeContainer.addChild(subNodeContainer);
@@ -432,10 +395,10 @@ export default {
                 fontSize = 200;
                 fill = '#000000';
             } else if (node.depth == 1) {
-                fontSize = 100;
+                fontSize = 150;
                 fill = '#ffffff';
             } else {
-                fontSize = 90;
+                fontSize = 120;
                 fill = '#ffffff';
             }
 
@@ -459,113 +422,180 @@ export default {
                 return;
             }
 
-            PIXI.Assets.load('/font/popins.xml').then(() => {
-                const nameText = new PIXI.BitmapText(node.data.skill_name, {
-                    fontName: 'Poppins-Black',
-                    fontSize: 90,
-                    align: 'right'
-                });
-                // const nameText = new PIXI.Text(node.data.skill_name, style);
-                // Rotate skill name base on if their are parent or not
-                if (node.depth == 0 || node.depth == 1) {
-                    // and not rotated.
-                    nameText.anchor.set(0.5, 0.5);
-                }
-                // The node of depth 2 have a lager sprite than their greater depth node
-                else if (node.depth == 2) {
-                    // Because this node have bigger sprite so we move them a little farther
-                    nameText.angle = (node.x * 180) / Math.PI - 90;
-                    if (nodeContainer.x > 0) {
-                        nameText.angle = nameText.angle + 90;
-                        // If node is a leaf it will be on the outside
-                        if (!node.children) {
-                            nameText.anchor.set(0, 0.5);
-                            // move the tile base on vector math
-                            nameText.x =
-                                nameText.x + 80 * Math.cos(nameText.rotation);
-                            nameText.y =
-                                nameText.y + 80 * Math.sin(nameText.rotation);
-                        } else {
-                            nameText.anchor.set(1, 0.5);
-                            // move the tile base on vector math
-                            nameText.x =
-                                nameText.x - 80 * Math.cos(nameText.rotation);
-                            nameText.y =
-                                nameText.y - 80 * Math.sin(nameText.rotation);
-                        }
-                    } else {
-                        nameText.anchor.set(0, 0.5);
-                        nameText.angle = nameText.angle - 90;
-                        if (!node.children) {
-                            nameText.anchor.set(1, 0.5);
-                            // move the tile base on vector math
-                            nameText.x =
-                                nameText.x - 80 * Math.cos(nameText.rotation);
-                            nameText.y =
-                                nameText.y - 80 * Math.sin(nameText.rotation);
-                        } else {
-                            // move the tile base on vector math
-                            nameText.x =
-                                nameText.x + 80 * Math.cos(nameText.rotation);
-                            nameText.y =
-                                nameText.y + 80 * Math.sin(nameText.rotation);
-                        }
-                    }
-                } else if (node.depth > 2) {
-                    // For all the outer nodes, the text is only partly centred,
-                    // and it is rotated.
-                    nameText.angle = (node.x * 180) / Math.PI - 90;
-                    if (nodeContainer.x > 0) {
-                        nameText.angle = nameText.angle + 90;
-                        // If node is a leaf it will be on the outside
-                        if (!node.children) {
-                            nameText.anchor.set(0, 0.5);
-                            // move the tile base on vector math
-                            nameText.x =
-                                nameText.x + 50 * Math.cos(nameText.rotation);
-                            nameText.y =
-                                nameText.y + 50 * Math.sin(nameText.rotation);
-                        } else {
-                            nameText.anchor.set(1, 0.5);
-                            // move the tile base on vector math
-                            nameText.x =
-                                nameText.x - 50 * Math.cos(nameText.rotation);
-                            nameText.y =
-                                nameText.y - 50 * Math.sin(nameText.rotation);
-                        }
-                    } else {
-                        nameText.anchor.set(0, 0.5);
-                        nameText.angle = nameText.angle - 90;
-                        if (!node.children) {
-                            nameText.anchor.set(1, 0.5);
-                            // move the tile base on vector math
-                            nameText.x =
-                                nameText.x - 50 * Math.cos(nameText.rotation);
-                            nameText.y =
-                                nameText.y - 50 * Math.sin(nameText.rotation);
-                        } else {
-                            // move the tile base on vector math
-                            nameText.x =
-                                nameText.x + 50 * Math.cos(nameText.rotation);
-                            nameText.y =
-                                nameText.y + 50 * Math.sin(nameText.rotation);
-                        }
-                    }
-                }
-                nameText.scale.set(0.5, 0.5);
-
-                // Add to the global variable container for this chart.
-                nodeContainer.addChild(nameText);
+            const nameText = new PIXI.BitmapText(node.data.skill_name, {
+                fontName: 'Poppins-White-Bold',
+                fontSize: fontSize,
+                align: 'right'
             });
+
+            // const nameText = new PIXI.Text(node.data.skill_name, style);
+            // Rotate skill name base on if their are parent or not
+            if (node.depth == 0 || node.depth == 1) {
+                // and not rotated.
+                nameText.anchor.set(0.5, 0.5);
+            }
+            // The node of depth 2 have a lager sprite than their greater depth node So we have to move it a little bit farther
+            else if (node.depth == 2) {
+                // Because this node have bigger sprite so we move them a little farther
+                nameText.angle = (node.x * 180) / Math.PI - 90;
+                if (nodeContainer.x > 0) {
+                    nameText.angle = nameText.angle + 90;
+                    // If node is a leaf it will be on the outside
+                    if (!node.children) {
+                        nameText.anchor.set(0, 0.5);
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x + 80 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y + 80 * Math.sin(nameText.rotation);
+                        // move the name text toward the middle of the node
+                        nameText.x =
+                            nameText.x -
+                            20 * Math.cos(nameText.rotation + Math.PI / 2);
+                        nameText.y =
+                            nameText.y -
+                            20 * Math.sin(nameText.rotation + Math.PI / 2);
+                    } else {
+                        nameText.anchor.set(1, 0.5);
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x - 80 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y - 80 * Math.sin(nameText.rotation);
+                        // move the name text toward the middle of the node
+                        nameText.x =
+                            nameText.x -
+                            20 * Math.cos(nameText.rotation + Math.PI / 2);
+                        nameText.y =
+                            nameText.y -
+                            20 * Math.sin(nameText.rotation + Math.PI / 2);
+                    }
+                } else {
+                    nameText.anchor.set(0, 0.5);
+                    nameText.angle = nameText.angle - 90;
+                    if (!node.children) {
+                        nameText.anchor.set(1, 0.5);
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x - 80 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y - 80 * Math.sin(nameText.rotation);
+                        // move the name text toward the middle of the node
+                        nameText.x =
+                            nameText.x +
+                            20 * Math.cos(nameText.rotation + Math.PI / 2);
+                        nameText.y =
+                            nameText.y +
+                            20 * Math.sin(nameText.rotation + Math.PI / 2);
+                    } else {
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x + 80 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y + 80 * Math.sin(nameText.rotation);
+                        // move the name text toward the middle of the node
+                        nameText.x =
+                            nameText.x -
+                            20 * Math.cos(nameText.rotation + Math.PI / 2);
+                        nameText.y =
+                            nameText.y -
+                            20 * Math.sin(nameText.rotation + Math.PI / 2);
+                    }
+                }
+            } else if (node.depth > 2) {
+                // For all the outer nodes, the text is only partly centred,
+                // and it is rotated.
+                nameText.angle = (node.x * 180) / Math.PI - 90;
+                // Right side of the circle
+                if (nodeContainer.x > 0) {
+                    nameText.angle = nameText.angle + 90;
+                    // If node is a leaf it will be on the outside
+                    if (!node.children) {
+                        nameText.anchor.set(0, 0.5);
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x + 50 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y + 50 * Math.sin(nameText.rotation);
+                        // move the name text toward the middle of the node
+                        nameText.x =
+                            nameText.x -
+                            20 * Math.cos(nameText.rotation + Math.PI / 2);
+                        nameText.y =
+                            nameText.y -
+                            20 * Math.sin(nameText.rotation + Math.PI / 2);
+                    }
+                    // If the name skill of the node that have children it will be on the inside
+                    else {
+                        nameText.anchor.set(1, 0.5);
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x - 50 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y - 50 * Math.sin(nameText.rotation);
+                        // move the name text toward the middle of the node
+                        nameText.x =
+                            nameText.x +
+                            20 * Math.cos(nameText.rotation + Math.PI / 2);
+                        nameText.y =
+                            nameText.y -
+                            20 * Math.sin(nameText.rotation + Math.PI / 2);
+                    }
+                }
+                // Left side of the circle
+                else {
+                    nameText.anchor.set(0, 0.5);
+                    nameText.angle = nameText.angle - 90;
+                    // Leaf node
+                    if (!node.children) {
+                        nameText.anchor.set(1, 0.5);
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x - 50 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y - 50 * Math.sin(nameText.rotation);
+                        // move the name text toward the middle of the node
+                        nameText.x =
+                            nameText.x -
+                            20 * Math.cos(nameText.rotation + Math.PI / 2);
+                        nameText.y =
+                            nameText.y -
+                            20 * Math.sin(nameText.rotation + Math.PI / 2);
+                    } else {
+                        // move the tile base on vector math
+                        nameText.x =
+                            nameText.x + 50 * Math.cos(nameText.rotation);
+                        nameText.y =
+                            nameText.y + 50 * Math.sin(nameText.rotation);
+                        // move the name text toward the middle of the node
+                        nameText.x =
+                            nameText.x -
+                            20 * Math.cos(nameText.rotation + Math.PI / 2);
+                        nameText.y =
+                            nameText.y -
+                            20 * Math.sin(nameText.rotation + Math.PI / 2);
+                    }
+                }
+            }
+
+            nameText.scale.set(0.5, 0.5);
+
+            // Add to the global variable container for this chart.
+            nodeContainer.addChild(nameText);
         },
         drawLink(link) {
             const nodeLink = new PIXI.Graphics();
+            let lineWidth = 0;
+            let color = 0x71717a;
             // If skill is mastered, make line thicker.
             if (link.target.data.is_mastered == '1') {
-                nodeLink.lineStyle(16, 0xabafb3, 1);
+                lineWidth = 23;
+                color = 0xffffff;
             } else {
-                nodeLink.lineStyle(8, 0xabafb3, 1);
+                lineWidth = 15;
             }
+
+            nodeLink.lineStyle(lineWidth, color, 0.85);
 
             // Source node.
             var sourceX = Math.cos(link.source.x) * link.source.y;
@@ -620,7 +650,7 @@ export default {
             // Root Node
             if (sourceX === 0) {
                 c1x = sourceX;
-                c1y = 3000;
+                c1y = 4500;
                 c2x = targetX - 800;
                 c2y = (targetY * c2x) / targetX;
                 // top or bottom part of the radiant circle
@@ -765,6 +795,27 @@ export default {
             // );
             // // Add to the global variable container for this chart.
             // this.$radialTreeContainer.addChild(nodeLink);
+        },
+        drawCircle(root) {
+            let node = root;
+            const childNode = node.children.find((e) => e.children);
+            /**
+             * Calculate distance between two point A(x1,y1) B(x2,y2)
+             * d(A,B) = sqrt((x2-x1)^2 + (y2-y1)^2)
+             *
+             */
+            const distance = Math.sqrt(
+                (childNode.x - root.x) * (childNode.x - root.x) +
+                    (childNode.y - root.y) * (childNode.y - root.y)
+            );
+            for (let index = 0; index < root.height; index++) {
+                const gr = new PIXI.Graphics();
+                gr.lineStyle(30, 0x334155, 0.9);
+                gr.drawCircle(0, 0, distance * (index + 1));
+                gr.endFill();
+                node = childNode;
+                this.$radialTreeContainer.addChild(gr);
+            }
         },
         showInfoPanel() {
             // If panel is not showing.

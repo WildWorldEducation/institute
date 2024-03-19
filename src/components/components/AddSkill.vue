@@ -2,17 +2,13 @@
 import VueMultiselect from 'vue-multiselect';
 // Import the stores.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
-import { useTagsStore } from '../../stores/TagsStore';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
-        const tagsStore = useTagsStore();
-        if (tagsStore.tagsList.length == 0) tagsStore.getTagsList();
 
         return {
-            skillsStore,
-            tagsStore
+            skillsStore
         };
     },
     components: { VueMultiselect },
@@ -211,12 +207,6 @@ export default {
             this.skill.description = $('#summernote_description').summernote(
                 'code'
             );
-
-            // if (this.skill.description === '<p><br></p>') {
-            //     alert('please enter description for skill');
-            //     this.validate.description = true;
-            //     this.validate.violated = true;
-            // }
 
             // if any of the validate is violated we end the method here
             if (this.validate.violated) {
@@ -466,7 +456,7 @@ export default {
             </div>
         </div>
         <!-- Skill filter Checker-->
-        <div class="row">
+        <!-- <div class="row">
             <div class="col col-md-8 col-lg-5 mt-2">
                 <div v-if="skill.type != 'sub'">
                     <label class="form-label">Filters</label>
@@ -488,7 +478,7 @@ export default {
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Skills Types Radio choose -->
         <div class="row">
             <div class="col-12 col-md-8 col-lg-5 mt-2">
