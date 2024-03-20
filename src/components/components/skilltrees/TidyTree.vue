@@ -33,7 +33,8 @@ export default {
                 name: null,
                 description: null,
                 tagIDs: [],
-                sprite: null
+                sprite: null,
+                type: null
             },
             tree: {},
             root: {},
@@ -157,6 +158,8 @@ export default {
 
                 //Update the display with some data
                 this.skill.name = node.data.skill_name;
+                this.skill.id = node.data.id;
+                this.skill.type = node.data.type;
                 this.showInfoPanel();
             }
         });
