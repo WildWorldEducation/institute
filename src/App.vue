@@ -64,6 +64,15 @@ export default {
                                 >Hub</RouterLink
                             >
                         </li>
+                        <li class="nav-item">
+                            <RouterLink
+                                @click.native="stopPixiApp()"
+                                to="/skills"
+                                class="nav-link"
+                            >
+                                <span> Skills </span>
+                            </RouterLink>
+                        </li>
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
@@ -75,14 +84,6 @@ export default {
                                 >Tidy Tree</RouterLink
                             >
                         </li>
-                        <!-- <li
-                            v-if="userDetailsStore.role == 'student'"
-                            class="nav-item"
-                        >
-                            <RouterLink to="/canvas-tidy-tree" class="nav-link"
-                                >Canvas Tidy Tree</RouterLink
-                            >
-                        </li> -->
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
@@ -90,15 +91,6 @@ export default {
                             <RouterLink to="/radial-tree" class="nav-link"
                                 >Radial Tree</RouterLink
                             >
-                        </li>
-                        <li class="nav-item">
-                            <RouterLink
-                                @click.native="stopPixiApp()"
-                                to="/skills"
-                                class="nav-link"
-                            >
-                                <span> Skills </span>
-                            </RouterLink>
                         </li>
                         <li
                             v-if="userDetailsStore.role != 'student'"
