@@ -63,8 +63,6 @@ export default {
             }
         }
 
-        console.log(this.assessment);
-
         // Get users.
         if (this.usersStore.users.length == 0) {
             await this.usersStore.getUsers();
@@ -201,6 +199,12 @@ export default {
 </script>
 
 <template>
+    <div id="banner">
+        <img
+            src="/images/banners/general-banner.png"
+            class="img-fluid"
+        />
+    </div>
     <div class="container mt-3">
         <div id="page-tile">Unmarked Essay Questions</div>
         <div id="assessment-info">
@@ -208,13 +212,27 @@ export default {
             {{ this.assessment.skillName }}
         </div>
         <div v-if="this.answers.length > 0">
-            <h4>Assessment Total Grade</h4>
-            <p>{{ this.assessment.total_score }}</p>
-            <h4>Student Current Grade</h4>
-            <p>{{ this.assessment.current_score }}</p>
-
             <div id="question-bg">
-                <p>{{ this.answers[this.questionNumber].skillName }}</p>
+                <div class="d-flex w-100 flex-row justify-content-end">
+                    <span
+                        v-b-tooltip.hover
+                        title="student need to have at least 90% score per total score to pass"
+                        id="score-text"
+                        class="me-2"
+                    >
+                        score:
+                    </span>
+                    <span
+                        v-b-tooltip.hover
+                        title="current score"
+                        id="current-score"
+                    >
+                        {{ this.assessment.current_score }} /
+                    </span>
+                    <span title="total score" id="total-score">
+                        {{ this.assessment.total_score }}
+                    </span>
+                </div>
                 <div id="question" class="mb-3">
                     {{ this.answers[this.questionNumber].question }}
                 </div>
@@ -225,11 +243,8 @@ export default {
             </div>
         </div>
         <p v-else>No unmarked questions currently</p>
-        <div
-            v-if="this.answers.length > 0"
-            class="d-flex mt-3 mb-2 justify-content-between"
-        >
-            <div class="d-flex">
+        <div v-if="this.answers.length > 0" class="d-flex mt-3 mb-2">
+            <div class="d-flex w-100 justify-content-center gap-2">
                 <button
                     @click="MarkCorrect(this.answers[this.questionNumber])"
                     class="btn green-btn"
@@ -278,12 +293,17 @@ h2 {
     background: #f2edffcc;
     border-radius: 12px;
     padding: 10px;
+    margin-left: 34px;
+}
+
+#question-bg span:hover {
+    cursor: pointer;
 }
 
 #question {
     font-family: 'Poppins';
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 500;
     line-height: 28px;
     text-align: left;
     color: #667085;
@@ -313,7 +333,7 @@ h2 {
 }
 
 #assessment-info {
-    font-family: 'Poppins900';
+    font-family: 'Poppins';
     font-size: 32px;
     font-weight: 900;
     line-height: 28px;
@@ -324,12 +344,50 @@ h2 {
     padding-bottom: 23px;
 }
 
+#score-text {
+    font-family: 'Poppins';
+    color: #8f7bd6;
+    font-weight: 800;
+}
+
+#current-score {
+    font-family: 'Poppins';
+    color: #8f7bd6;
+    font-weight: 700;
+}
+
+#total-score {
+    font-family: 'Poppins';
+    color: #8f7bd6;
+    font-weight: 800;
+}
+
 .green-btn {
     background-color: #36c1af;
     color: white;
     border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    height: 44px;
+    border-radius: 8px;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+}
+
+.green-btn:hover {
+    background-color: #46f7df;
+}
+
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
     font-size: 16px;
     line-height: 24px;
     display: flex;
@@ -338,17 +396,7 @@ h2 {
     height: 44px;
 }
 
-.red-btn {
-    background-color: #da7033;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-    height: 44px;
+.red-btn:hover {
+    background-color: #fc7d7d;
 }
 </style>
