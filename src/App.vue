@@ -81,7 +81,7 @@ export default {
                                 @click.native="stopPixiApp()"
                                 to="/tidy-tree"
                                 class="nav-link"
-                                >Tidy Tree</RouterLink
+                                >Vertical Tree (Alpha)</RouterLink
                             >
                         </li>
                         <li
@@ -89,7 +89,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink to="/radial-tree" class="nav-link"
-                                >Radial Tree</RouterLink
+                                >Radial Tree (Alpha)</RouterLink
                             >
                         </li>
                         <li
