@@ -78,7 +78,15 @@ export default {
         // Set up the Hidden Canvas for Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
         this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
-        // hiddenCanvas.style.display = 'none';
+        hiddenCanvas.style.display = 'none';
+
+        // Zoom and pan.
+        d3.select(this.context.canvas).call(
+            d3
+                .zoom()
+                .scaleExtent([0.2, 8])
+                .on('zoom', ({ transform }) => this.zoomed(transform))
+        );
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', (e) => {
@@ -152,13 +160,13 @@ export default {
             let hiddenCanvas = document.getElementById('hidden-canvas');
             this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
 
-            this.drawTree();
-        },
-        drawTree() {
             // Centre chart.
             this.context.translate(this.width / 2, this.height / 2);
             this.hiddenCanvasContext.translate(this.width / 2, this.height / 2);
 
+            this.drawTree();
+        },
+        drawTree() {
             this.nodes = this.root.descendants();
 
             // Draw links.
@@ -265,6 +273,32 @@ export default {
             }
             var col = 'rgb(' + ret.join(',') + ')';
             return col;
+        },
+        zoomed(transform) {
+            // For the regular canvas.
+            this.context.save();
+            this.hiddenCanvasContext.save();
+            this.context.clearRect(
+                (this.width / 2) * -1,
+                (this.height / 2) * -1,
+                this.width,
+                this.height
+            );
+            this.hiddenCanvasContext.clearRect(
+                (this.width / 2) * -1,
+                (this.height / 2) * -1,
+                this.width,
+                this.height
+            );
+            this.context.translate(transform.x, transform.y);
+            this.context.scale(transform.k, transform.k);
+            this.hiddenCanvasContext.translate(transform.x, transform.y);
+            this.hiddenCanvasContext.scale(transform.k, transform.k);
+            this.drawTree();
+            this.context.fill();
+            this.context.restore();
+            this.hiddenCanvasContext.fill();
+            this.hiddenCanvasContext.restore();
         },
         showInfoPanel() {
             // If panel is not showing.
