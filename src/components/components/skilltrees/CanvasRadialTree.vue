@@ -22,7 +22,7 @@ export default {
             width: 6000,
             height: null,
             radius: 0,
-            radiusMultiplier: 0.8,
+            radiusMultiplier: 2,
             skill: {
                 id: null,
                 children: [],
@@ -47,7 +47,6 @@ export default {
             nextCol: 1,
             colToNode: {},
             isSkillInfoPanelShown: false,
-            //  firstRender: true,
             scale: 1,
             panX: 0,
             panY: 0,
@@ -74,14 +73,12 @@ export default {
             children: this.skillTreeStore.userSkillsSubSkillsSeparate
         };
 
-        console.log(this.skill);
-
         this.getAlgorithm();
 
         // Set up the Hidden Canvas for Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
         this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
-        hiddenCanvas.style.display = 'none';
+        // hiddenCanvas.style.display = 'none';
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', (e) => {
@@ -159,14 +156,13 @@ export default {
         },
         drawTree() {
             // Centre chart.
-            this.context.translate(500, 300);
+            this.context.translate(this.width / 2, this.height / 2);
+            this.hiddenCanvasContext.translate(this.width / 2, this.height / 2);
 
             this.nodes = this.root.descendants();
 
             // Draw links.
             const links = this.root.links();
-            console.log(this.nodes);
-            console.log(links);
             this.context.beginPath();
             for (const link of links) {
                 this.drawLink(link);
@@ -175,26 +171,26 @@ export default {
             // Draw nodes.
             this.context.beginPath();
             for (const node of this.nodes) {
-                // if (node.renderCol) {
-                //     // Render clicked nodes in the color of their corresponding node
-                //     // on the hidden canvas.
-                //     this.context.fillStyle = node.renderCol;
-                // } else {
-                //     this.context.fillStyle = 'RGBA(105, 105, 105, 0.8)';
-                // }
-                // //
-                // //  If we are rendering to the hidden canvas each element
-                // // should get its own color.
-                // //
-                // if (node.__pickColor === undefined) {
-                //     // If we have never drawn the node to the hidden canvas get a new
-                //     // color for it and put it in the dictionary. genColor returns a new color
-                //     // every time it is called.
-                //     node.__pickColor = this.genColor();
-                //     this.colToNode[node.__pickColor] = node;
-                // }
-                // // On the hidden canvas each rectangle gets a unique color.
-                // this.hiddenCanvasContext.fillStyle = node.__pickColor;
+                if (node.renderCol) {
+                    // Render clicked nodes in the color of their corresponding node
+                    // on the hidden canvas.
+                    this.context.fillStyle = node.renderCol;
+                } else {
+                    this.context.fillStyle = 'RGBA(105, 105, 105, 0.8)';
+                }
+                //
+                //  If we are rendering to the hidden canvas each element
+                // should get its own color.
+                //
+                if (node.__pickColor === undefined) {
+                    // If we have never drawn the node to the hidden canvas get a new
+                    // color for it and put it in the dictionary. genColor returns a new color
+                    // every time it is called.
+                    node.__pickColor = this.genColor();
+                    this.colToNode[node.__pickColor] = node;
+                }
+                // On the hidden canvas each rectangle gets a unique color.
+                this.hiddenCanvasContext.fillStyle = node.__pickColor;
                 // Draw the actual shape
                 this.drawNode(node);
             }
@@ -226,20 +222,20 @@ export default {
             ctx1.fill();
 
             // Text.
-            // if (this.scale > 0.6) {
-            //     ctx1.beginPath();
-            //     ctx1.strokeStyle = '#FFF';
-            //     ctx1.lineWidth = 4;
-            //     ctx1.strokeText(node.data.skill_name, x + 10, y + 2);
-            //     ctx1.fillStyle = '#000';
-            //     ctx1.fillText(node.data.skill_name, x + 10, y + 2);
-            // }
+            if (this.scale > 0.6) {
+                ctx1.beginPath();
+                ctx1.strokeStyle = '#FFF';
+                ctx1.lineWidth = 4;
+                ctx1.strokeText(node.data.skill_name, pos[0] + 10, pos[1] + 2);
+                ctx1.fillStyle = '#000';
+                ctx1.fillText(node.data.skill_name, pos[0] + 10, pos[1] + 2);
+            }
 
             // Hidden context.
-            // ctx2.beginPath();
-            // ctx2.moveTo(x, y);
-            // ctx2.arc(x, y, 10, 0, 2 * Math.PI);
-            // ctx2.fill();
+            ctx2.beginPath();
+            ctx2.moveTo(pos[0], pos[1]);
+            ctx2.arc(pos[0], pos[1], 10, 0, 2 * Math.PI);
+            ctx2.fill();
         },
         drawLink(link) {
             const linkGenerator = d3
