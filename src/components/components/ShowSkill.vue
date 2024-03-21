@@ -115,7 +115,10 @@ export default {
 
 <template>
     <div class="container mt-3">
-        <div id="skill-info-container">
+        <div
+            id="skill-info-container"
+            :class="{ domain: skill.type == 'domain' }"
+        >
             <div
                 v-if="
                     isUnlocked &&
@@ -327,9 +330,15 @@ export default {
 #skill-info-container {
     background-color: #f2edffcc;
     border-radius: 12px;
-    padding-top: 59px;
+    padding-top: 20px;
     padding-left: 48px;
     padding-bottom: 10px;
+}
+
+.domain {
+    border-width: 4px;
+    border-color: black;
+    border-style: solid;
 }
 
 .purple-btn {
@@ -404,7 +413,7 @@ export default {
     #skill-info-container {
         background-color: #f2edffcc;
         border-radius: 12px;
-        padding-top: 59px;
+        padding-top: 20px;
         padding-left: 0px;
         padding-right: 0px;
     }

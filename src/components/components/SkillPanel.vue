@@ -67,8 +67,9 @@ export default {
                     v-html="skill?.masteryRequirements"
                 ></div>
             </div>
-            <hr />
+            <hr v-if="skill.type != 'domain'" />
             <router-link
+                v-if="skill.type != 'domain'"
                 class="btn green-btn"
                 target="_blank"
                 id="skillLink"

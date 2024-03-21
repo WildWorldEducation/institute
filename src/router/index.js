@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import TidyTreeView from '../components/pages/TidyTreeView.vue';
+import SkillsView from '../components/pages/SkillsView.vue';
 
 import { useSessionDetailsStore } from '../stores/SessionDetailsStore';
 import { useUserDetailsStore } from '../stores/UserDetailsStore';
@@ -10,7 +10,7 @@ const router = createRouter({
         {
             path: '/tidy-tree',
             name: 'tidy-tree',
-            component: TidyTreeView
+            component: () => import('../components/pages/TidyTreeView.vue')
         },
         {
             path: '/',
@@ -36,7 +36,7 @@ const router = createRouter({
         {
             path: '/skills',
             name: 'skills',
-            component: () => import('../components/pages/SkillsView.vue')
+            component: SkillsView
         },
         {
             path: '/skills/:id',
