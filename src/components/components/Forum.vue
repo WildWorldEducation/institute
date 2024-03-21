@@ -215,7 +215,7 @@ export default {
     <div class="container-fluid">
         <div class="d-flex flex-column flex-md-row justify-content-between">
             <div class="d-flex align-items-md-baseline align-items-start gap-2">
-                <h2>Best Place To Learn This</h2>
+                <h2>Best Places To Learn This</h2>
                 <!--TODO: get src from database -->
                 <img src="/images/recurso-69.png" class="" />
             </div>
