@@ -4,6 +4,8 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested component.
 import SkillPanel from './../SkillPanel.vue';
+// Joystick control component.
+import JoystickControl from '../JoystickControl.vue';
 
 // Algorithm.
 import * as d3 from 'd3';
@@ -58,51 +60,52 @@ export default {
         };
     },
     components: {
-        SkillPanel
+        SkillPanel,
+        JoystickControl
     },
     async mounted() {
-        // Panning, using NippleJS.
-        var panJoystick = nipplejs.create({
-            zone: document.getElementById('panJoystick'),
-            mode: 'static',
-            position: { left: '25%', top: '25%' },
-            color: 'blue'
-        });
+        // // Panning, using NippleJS.
+        // var panJoystick = nipplejs.create({
+        //     zone: document.getElementById('panJoystick'),
+        //     mode: 'static',
+        //     position: { left: '25%', top: '25%' },
+        //     color: 'blue'
+        // });
 
-        panJoystick
-            .on(
-                'dir:up plain:up dir:left plain:left dir:down ' +
-                    'plain:down dir:right plain:right',
-                (evt, data) => {
-                    if (data.direction.angle == 'right')
-                        this.panX = this.panX - 20 / this.scale;
-                    else if (data.direction.angle == 'left')
-                        this.panX = this.panX + 20 / this.scale;
-                    else if (data.direction.angle == 'up')
-                        this.panY = this.panY + 20 / this.scale;
-                    else if (data.direction.angle == 'down')
-                        this.panY = this.panY - 20 / this.scale;
-                }
-            )
-            .on('end', (evt, data) => {
-                this.drawTree();
-            });
+        // panJoystick
+        //     .on(
+        //         'dir:up plain:up dir:left plain:left dir:down ' +
+        //             'plain:down dir:right plain:right',
+        //         (evt, data) => {
+        //             if (data.direction.angle == 'right')
+        //                 this.panX = this.panX - 20 / this.scale;
+        //             else if (data.direction.angle == 'left')
+        //                 this.panX = this.panX + 20 / this.scale;
+        //             else if (data.direction.angle == 'up')
+        //                 this.panY = this.panY + 20 / this.scale;
+        //             else if (data.direction.angle == 'down')
+        //                 this.panY = this.panY - 20 / this.scale;
+        //         }
+        //     )
+        //     .on('end', (evt, data) => {
+        //         this.drawTree();
+        //     });
 
-        // Zoom range slider.
-        let zoomSlider = document.getElementById('zoomRange');
-        zoomSlider.step = '0.1';
-        // Mouse.
-        zoomSlider.addEventListener('mouseup', () => {
-            this.scale = zoomSlider.value;
-            this.drawTree();
-        });
-        // Touch.
-        zoomSlider.addEventListener('touchend', () => {
-            this.scale = zoomSlider.value;
-            this.drawTree();
-        });
+        // // Zoom range slider.
+        // let zoomSlider = document.getElementById('zoomRange');
+        // zoomSlider.step = '0.1';
+        // // Mouse.
+        // zoomSlider.addEventListener('mouseup', () => {
+        //     this.scale = zoomSlider.value;
+        //     this.drawTree();
+        // });
+        // // Touch.
+        // zoomSlider.addEventListener('touchend', () => {
+        //     this.scale = zoomSlider.value;
+        //     this.drawTree();
+        // });
 
-        // ---
+        // ------------
 
         if (this.skillTreeStore.userSkills.length == 0) {
             await this.skillTreeStore.getUserSkills();
@@ -631,7 +634,7 @@ export default {
         <canvas id="canvas" width="1500" height="1500"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <div id="controlsWrapper">
+        <!-- <div id="controlsWrapper">
             <div id="panJoystick"></div>
             <div class="slidecontainer">
                 <input
@@ -643,13 +646,15 @@ export default {
                     id="zoomRange"
                 />
             </div>
-        </div>
+        </div> -->
+        <JoystickControl />
 
         <div id="sidepanel-backdrop"></div>
     </div>
 </template>
 
 <style scoped>
+/* ___________ Button Style ___________ */
 #controlsWrapper {
     position: absolute;
     width: 200px;
@@ -720,6 +725,9 @@ input[type='button'] {
     width: 30px;
     margin: 0px 0px 2px 0px;
 }
+
+/* ___________ End of Button Style ___________ */
+
 .skill-tree-container {
     /* Subtract the purple banner and the navigation bar. */
     height: calc(100% - 20px - 66px);
