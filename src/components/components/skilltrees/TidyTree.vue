@@ -33,7 +33,8 @@ export default {
                 name: null,
                 description: null,
                 tagIDs: [],
-                sprite: null
+                sprite: null,
+                type: null
             },
             tree: {},
             root: {},
@@ -51,7 +52,9 @@ export default {
             scale: 1,
             panX: 0,
             panY: 0,
-            hiddenCanvasInitiated: false
+            hiddenCanvasInitiated: false,
+            // Printing
+            data: {}
         };
     },
     components: {
@@ -155,6 +158,8 @@ export default {
 
                 //Update the display with some data
                 this.skill.name = node.data.skill_name;
+                this.skill.id = node.data.id;
+                this.skill.type = node.data.type;
                 this.showInfoPanel();
             }
         });
@@ -232,14 +237,14 @@ export default {
 
             moveSubSkills(skillsWithSubSkillsMoved);
 
-            var data = {
+            this.data = {
                 skill_name: 'My skills',
                 children: skillsWithSubSkillsMoved
             };
 
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
-            this.root = d3.hierarchy(data);
+            this.root = d3.hierarchy(this.data);
             const dx = 24;
             const dy = this.width / (this.root.height + 1);
 
@@ -442,16 +447,190 @@ export default {
 
                 this.isSkillInfoPanelShown = false;
             }
+        },
+        async printPDF() {
+            // Build the SVG tree.
+            await this.createSVGTree();
+
+            // Select the element from the DOM.
+            var svg = document.getElementById('linearTree');
+            // Then select with D3
+            var d3Svg = d3.select(svg);
+            // Then select the SVG code with D3
+            var d3SvgNode = d3Svg.node();
+
+            // Make it a string, to send to server.
+            var s = new XMLSerializer();
+            var str = s.serializeToString(d3SvgNode);
+
+            // Create a JSON object.
+            var dataObject = { svg: str, treeType: 'linear' };
+            var data = JSON.stringify(dataObject);
+
+            // POST request.
+            var xhttp = new XMLHttpRequest();
+            xhttp.responseType = 'arraybuffer';
+            xhttp.open('POST', '/skilltree/print-pdf', true);
+            xhttp.setRequestHeader(
+                'Content-type',
+                'application/json;charset=UTF-8'
+            );
+            xhttp.setRequestHeader(
+                'Accept',
+                'application/json, text/plain, */*'
+            );
+            xhttp.send(data);
+
+            // To download the file client side.
+            xhttp.onload = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Typical action to be performed when the document is ready:
+                    let pdfBlob = new Blob([xhttp.response], {
+                        type: 'application/pdf'
+                    });
+                    const url = window.URL.createObjectURL(pdfBlob);
+
+                    // To download and name the file.
+                    var a = document.createElement('a');
+                    document.body.appendChild(a);
+                    a.style = 'display: none';
+                    a.href = url;
+                    a.download = 'My-Skill-Tree.pdf';
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }
+            };
+        },
+        createSVGTree() {
+            // Redo D3 algorithm.
+            const root = d3.hierarchy(this.data);
+            // Different node size for the PDF, as doesnt need to be clickable.
+            const dx = 15;
+            const dy = this.width / (root.height + 1);
+            // Create a tree layout.
+            const tree = d3.tree().nodeSize([dx, dy]);
+            // Sort the tree and apply the layout.
+            tree(root);
+
+            // Compute the extent of the tree. Note that x and y are swapped here
+            // because in the tree layout, x is the breadth, but when displayed, the
+            // tree extends right rather than down.
+            let x0 = Infinity;
+            let x1 = -x0;
+            root.each((d) => {
+                if (d.x > x1) x1 = d.x;
+                if (d.x < x0) x0 = d.x;
+            });
+
+            // Compute the adjusted height of the tree.
+            const height = x1 - x0 + dx * 2;
+
+            let svg = d3
+                .create('svg')
+                // Add ID for the printing to PDF.
+                .attr('id', 'linearTree')
+                .attr('width', this.width)
+                .attr('height', height)
+                .attr('viewBox', [-dy / 3, x0 - dx, this.width, height])
+                .attr(
+                    'style',
+                    'max-width: 100%; height: auto; font: 10px sans-serif;'
+                );
+
+            const g = svg.append('g');
+
+            // Links or connecting lines.
+            g.append('g')
+                .attr('fill', 'none')
+                .attr('stroke-opacity', 1)
+                .selectAll()
+                .data(root.links())
+                .join('path')
+                .attr(
+                    'd',
+                    d3
+                        .linkHorizontal()
+                        .x((d) => d.y)
+                        .y((d) => d.x)
+                )
+                .attr('stroke', function (d) {
+                    return '#000';
+                })
+                .attr('stroke-width', function (d) {
+                    if (d.target.data.is_mastered == 1) {
+                        return 8;
+                    } else return 1.5;
+                })
+                .style('stroke-dasharray', function (d) {
+                    // If the node is a sub node.
+                    if (
+                        (d.source.data.type == 'super' &&
+                            d.target.data.position == 'end') ||
+                        d.target.data.type == 'sub'
+                    ) {
+                        return 5;
+                    }
+                });
+
+            const node = g
+                .append('g')
+                .attr('stroke-linejoin', 'round')
+                .attr('stroke-width', 3)
+                .selectAll()
+                .data(root.descendants())
+                .join('g')
+                .attr('transform', (d) => `translate(${d.y},${d.x})`);
+
+            node.append('circle')
+                .attr('fill', (d) => (d.children ? '#555' : '#000'))
+                .attr('r', 2.5);
+
+            // Labels.
+            node.append('text')
+                .style('font-weight', function (d) {
+                    // If the node is a super node.
+                    if (d.data.type == 'super') {
+                        return '700';
+                    } else return '400';
+                })
+                .style('font-style', function (d) {
+                    // If the node is a sub node.
+                    if (d.data.type == 'sub') {
+                        return 'italic';
+                    }
+                })
+                .attr('dy', '0.31em')
+                .attr('x', (d) => (d.children ? -6 : 6))
+                .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
+                .text(function (d) {
+                    // If the node is a super node end node.
+                    if (d.data.position == 'end') {
+                        return '';
+                    } else return d.data.skill_name;
+                })
+                .clone(true)
+                .lower()
+                .attr('stroke', function (d) {
+                    return 'white';
+                });
+
+            // Append the SVG element.
+            document.querySelector('#SVGskilltree').append(svg.node());
         }
     }
 };
 </script>
 
 <template>
+    <button id="print-btn" class="btn btn-info" @click="printPDF()">
+        Print
+    </button>
+    <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div id="wrapper">
         <SkillPanel :skill="skill" />
         <canvas id="canvas" width="1500" height="1500"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
+        <div id="SVGskilltree"></div>
         <div id="controlsWrapper">
             <div id="panJoystick"></div>
             <div class="slidecontainer">
