@@ -51,7 +51,7 @@ export default {
             colToNode: {},
             isSkillInfoPanelShown: false,
             //  firstRender: true,
-            scale: 1,
+            scale: 0.008,
             panX: 0,
             panY: 0,
             hiddenCanvasInitiated: false,

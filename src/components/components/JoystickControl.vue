@@ -64,11 +64,12 @@ export default {
         <div class="slidecontainer">
             <input
                 type="range"
-                min="0.1"
+                min="0.008"
                 max="2"
-                value="1"
+                value="0.5"
                 class="slider"
                 id="zoomRange"
+                step="0.05"
             />
         </div>
     </div>
