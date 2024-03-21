@@ -119,10 +119,6 @@ export default {
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
         >
-        <div
-            id="skill-info-container"
-            :class="{ domain: skill.type == 'domain' }"
-        >
             <div
                 v-if="
                     isUnlocked &&
