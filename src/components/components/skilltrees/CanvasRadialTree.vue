@@ -253,12 +253,15 @@ export default {
                 .context(this.context);
 
             // If skill is mastered.
-            if (link.target.data.is_mastered == 1) this.context.lineWidth = 4;
-            else this.context.lineWidth = 1;
+            let color = '#71717a';
+            if (link.target.data.is_mastered == 1) {
+                this.context.lineWidth = 4;
+                color = '#ffffff';
+            } else this.context.lineWidth = 1;
 
             this.context.beginPath();
             linkGenerator(link);
-            this.context.strokeStyle = '#000';
+            this.context.strokeStyle = color;
             this.context.stroke();
         },
         genColor() {
@@ -278,12 +281,15 @@ export default {
             // For the regular canvas.
             this.context.save();
             this.hiddenCanvasContext.save();
-            this.context.clearRect(
+            // Clear all content and repaint background colour.
+            this.context.fillStyle = '#1e293b';
+            this.context.fillRect(
                 (this.width / 2) * -1,
                 (this.height / 2) * -1,
                 this.width,
                 this.height
             );
+
             this.hiddenCanvasContext.clearRect(
                 (this.width / 2) * -1,
                 (this.height / 2) * -1,
@@ -295,6 +301,7 @@ export default {
 
             this.hiddenCanvasContext.translate(transform.x, transform.y);
             this.hiddenCanvasContext.scale(transform.k, transform.k);
+
             this.drawTree();
             this.context.fill();
             this.context.restore();
