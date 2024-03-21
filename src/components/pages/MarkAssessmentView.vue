@@ -77,6 +77,8 @@ export default {
             }
         }
 
+        console.log(this.assessment);
+
         // Get list of all skills.
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList();
@@ -200,16 +202,14 @@ export default {
 
 <template>
     <div id="banner">
-        <img
-            src="/images/banners/general-banner.png"
-            class="img-fluid"
-        />
+        <img src="/images/banners/general-banner.png" class="img-fluid" />
     </div>
     <div class="container mt-3">
         <div id="page-tile">Unmarked Essay Questions</div>
         <div id="assessment-info">
             {{ this.assessment.studentUsername }} :
             {{ this.assessment.skillName }}
+            <span id="date"> {{ this.assessment.date }}</span>
         </div>
         <div v-if="this.answers.length > 0">
             <div id="question-bg">
@@ -304,6 +304,15 @@ h2 {
     font-family: 'Poppins';
     font-size: 17px;
     font-weight: 500;
+    line-height: 28px;
+    text-align: left;
+    color: #667085;
+}
+
+#date {
+    font-family: 'Poppins';
+    font-size: 14px;
+    font-weight: 400;
     line-height: 28px;
     text-align: left;
     color: #667085;
