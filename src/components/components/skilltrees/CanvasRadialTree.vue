@@ -22,7 +22,7 @@ export default {
             width: 6000,
             height: null,
             radius: 0,
-            radiusMultiplier: 256,
+            radiusMultiplier: 32,
             skill: {
                 id: null,
                 children: [],
@@ -154,14 +154,13 @@ export default {
         },
         drawTree() {
             this.nodes = this.root.descendants();
-            console.log(this.nodes);
 
             // Draw links.
             const links = this.root.links();
             this.context.beginPath();
-            for (const link of links) {
-                this.drawLink(link);
-            }
+            // for (const link of links) {
+            //     this.drawLink(link);
+            // }
 
             // Draw nodes.
             this.context.beginPath();
@@ -194,33 +193,37 @@ export default {
             }
         },
         drawNode(node) {
-            //nodeContainer.x = Math.cos(node.x) * node.y;
-            //nodeContainer.y = Math.sin(node.x) * node.y;
-            //  console.log(node);
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
 
+            // Because it is a radial chart - need to convert values.
+            let x = Math.cos(node.x) * node.y;
+            let y = Math.sin(node.x) * node.y;
+
+            console.log(x);
+            console.log(y);
+
             // Visible context.
             ctx1.beginPath();
-            ctx1.moveTo(node.y, node.x);
-            ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+            ctx1.moveTo(x, y);
+            ctx1.arc(x, y, 10, 0, 2 * Math.PI);
             ctx1.fillStyle = '#000';
             ctx1.fill();
 
             // Text.
-            if (this.scale > 0.6) {
-                ctx1.beginPath();
-                ctx1.strokeStyle = '#FFF';
-                ctx1.lineWidth = 4;
-                ctx1.strokeText(node.data.skill_name, node.y + 10, node.x + 2);
-                ctx1.fillStyle = '#000';
-                ctx1.fillText(node.data.skill_name, node.y + 10, node.x + 2);
-            }
+            // if (this.scale > 0.6) {
+            //     ctx1.beginPath();
+            //     ctx1.strokeStyle = '#FFF';
+            //     ctx1.lineWidth = 4;
+            //     ctx1.strokeText(node.data.skill_name, y + 10, x + 2);
+            //     ctx1.fillStyle = '#000';
+            //     ctx1.fillText(node.data.skill_name, y + 10, x + 2);
+            // }
 
             // Hidden context.
             ctx2.beginPath();
-            ctx2.moveTo(node.y, node.x);
-            ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+            ctx2.moveTo(x, y);
+            ctx2.arc(x, y, 10, 0, 2 * Math.PI);
             ctx2.fill();
         },
         drawLink(link) {

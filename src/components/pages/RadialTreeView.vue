@@ -1,5 +1,5 @@
 <script setup>
-import RadialTree from '../components/skilltrees/RadialTree.vue';
+import CanvasRadialTree from '../components/skilltrees/CanvasRadialTree.vue';
 </script>
 
 <template>
@@ -7,7 +7,7 @@ import RadialTree from '../components/skilltrees/RadialTree.vue';
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
-            <RadialTree />
+            <CanvasRadialTree />
         </template>
         <template #fallback>
             <span>Loading...</span>
