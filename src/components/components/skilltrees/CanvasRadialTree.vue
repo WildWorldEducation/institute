@@ -21,6 +21,8 @@ export default {
         return {
             width: 6000,
             height: null,
+            radius: 0,
+            radiusMultiplier: 256,
             skill: {
                 id: null,
                 children: [],
@@ -63,13 +65,14 @@ export default {
         }
 
         // Specify the chart’s dimensions.
-        //  this.width = window.innerWidth;
+        this.width = window.innerWidth;
         this.height = window.innerHeight;
+        this.radius = Math.min(this.width, this.height) / 2 - 30;
 
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillTreeStore.userSkills
+            children: this.skillTreeStore.userSkillsSubSkillsSeparate
         };
 
         this.getAlgorithm();
@@ -151,32 +154,7 @@ export default {
         },
         drawTree() {
             this.nodes = this.root.descendants();
-
-            // Zoom and pan.
-            this.context.save();
-            this.hiddenCanvasContext.save();
-
-            // Clear canvases.
-            this.context.clearRect(
-                0,
-                0,
-                this.context.canvas.width,
-                this.context.canvas.height
-            );
-            this.hiddenCanvasContext.clearRect(
-                0,
-                0,
-                this.hiddenCanvasContext.canvas.width,
-                this.hiddenCanvasContext.canvas.height
-            );
-
-            // Zoom.
-            this.context.scale(this.scale, this.scale);
-            this.hiddenCanvasContext.scale(this.scale, this.scale);
-
-            // Pan.
-            this.context.translate(this.panX, this.panY);
-            this.hiddenCanvasContext.translate(this.panX, this.panY);
+            console.log(this.nodes);
 
             // Draw links.
             const links = this.root.links();
@@ -214,11 +192,11 @@ export default {
                 // Draw the actual shape
                 this.drawNode(node);
             }
-
-            this.hiddenCanvasContext.restore();
-            this.context.restore();
         },
         drawNode(node) {
+            //nodeContainer.x = Math.cos(node.x) * node.y;
+            //nodeContainer.y = Math.sin(node.x) * node.y;
+            //  console.log(node);
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
 
