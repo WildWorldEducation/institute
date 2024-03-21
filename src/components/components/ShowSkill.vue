@@ -119,6 +119,10 @@ export default {
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
         >
+        <div
+            id="skill-info-container"
+            :class="{ domain: skill.type == 'domain' }"
+        >
             <div
                 v-if="
                     isUnlocked &&
@@ -415,9 +419,9 @@ export default {
     #skill-info-container {
         background-color: #f2edffcc;
         border-radius: 12px;
-        padding-top: 59px;
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-top: 20px;
+        padding-left: 0px;
+        padding-right: 0px;
     }
 }
 
