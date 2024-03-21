@@ -22,7 +22,7 @@ export default {
             width: 6000,
             height: null,
             radius: 0,
-            radiusMultiplier: 2,
+            radiusMultiplier: 64,
             skill: {
                 id: null,
                 children: [],
@@ -42,7 +42,6 @@ export default {
             scaleMultiplier: 0.8,
             startDragOffset: { x: 0, y: 0 },
             mouseDown: false,
-            r: 1.5,
             nodes: [],
             nextCol: 1,
             colToNode: {},
@@ -74,11 +73,6 @@ export default {
         };
 
         this.getAlgorithm();
-
-        // Set up the Hidden Canvas for Interactivity.
-        let hiddenCanvas = document.getElementById('hidden-canvas');
-        this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
-        hiddenCanvas.style.display = 'none';
 
         // Zoom and pan.
         d3.select(this.context.canvas).call(
@@ -157,8 +151,14 @@ export default {
             canvas.width = this.width;
             canvas.height = this.height;
             this.context = canvas.getContext('2d');
+
+            // Background colour.
+            this.context.fillStyle = '#1e293b';
+            this.context.fillRect(0, 0, this.width, this.height);
+            // Set up the Hidden Canvas for Interactivity.
             let hiddenCanvas = document.getElementById('hidden-canvas');
             this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
+            hiddenCanvas.style.display = 'none';
 
             // Centre chart.
             this.context.translate(this.width / 2, this.height / 2);
@@ -292,6 +292,7 @@ export default {
             );
             this.context.translate(transform.x, transform.y);
             this.context.scale(transform.k, transform.k);
+
             this.hiddenCanvasContext.translate(transform.x, transform.y);
             this.hiddenCanvasContext.scale(transform.k, transform.k);
             this.drawTree();
@@ -340,11 +341,11 @@ export default {
             }
         },
         async printPDF() {
-            // Build the SVG tree.
-            await this.createSVGTree();
+            // Get the data for the print version (different to the digital version).
+            await this.getPrintAlgorithm();
 
             // Select the element from the DOM.
-            var svg = document.getElementById('linearTree');
+            var svg = document.getElementById('radialTree');
             // Then select with D3
             var d3Svg = d3.select(svg);
             // Then select the SVG code with D3
@@ -355,7 +356,7 @@ export default {
             var str = s.serializeToString(d3SvgNode);
 
             // Create a JSON object.
-            var dataObject = { svg: str, treeType: 'linear' };
+            var dataObject = { svg: str, treeType: 'radial' };
             var data = JSON.stringify(dataObject);
 
             // POST request.
@@ -392,46 +393,123 @@ export default {
                 }
             };
         },
-        createSVGTree() {
-            // Redo D3 algorithm.
-            const root = d3.hierarchy(this.data);
-            // Different node size for the PDF, as doesnt need to be clickable.
-            const dx = 15;
-            const dy = this.width / (root.height + 1);
-            // Create a tree layout.
-            const tree = d3.tree().nodeSize([dx, dy]);
+        async getPrintAlgorithm() {
+            await this.skillTreeStore.getUserSkills();
+            const skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: this.skillTreeStore.userSkills
+            };
+            var skillsWithSubSkillsMoved = [];
+            skillsWithSubSkillsMoved = JSON.parse(
+                JSON.stringify(skill.children)
+            );
+
+            // Duplicate super skill node, and make second one a child of the first.
+            // Put all the subskills of the node in the second version.
+            // This is an attempt to show the subskills using only D3.
+            // Other options, such as having them circle around the super skill,
+            // like the D3 and Pixi version, were too complex.
+            function moveSubSkills(parentChildren) {
+                var i = parentChildren.length;
+                while (i--) {
+                    // If the skill is a super skill, and not an "end" super skill.
+                    if (
+                        parentChildren[i].type == 'super' &&
+                        parentChildren[i].position != 'end'
+                    ) {
+                        // Separate the child nodes.
+                        var subSkills = [];
+                        var regularChildSkills = [];
+                        for (
+                            let j = 0;
+                            j < parentChildren[i].children.length;
+                            j++
+                        ) {
+                            if (parentChildren[i].children[j].type == 'sub') {
+                                subSkills.push(parentChildren[i].children[j]);
+                            } else {
+                                regularChildSkills.push(
+                                    parentChildren[i].children[j]
+                                );
+                            }
+                        }
+
+                        // Create a new child node, with the subskills in it.
+                        var superSkillEndNode = {
+                            skill_name: parentChildren[i].skill_name,
+                            type: 'super',
+                            position: 'end',
+                            children: subSkills
+                        };
+
+                        // Empty the child nodes.
+                        parentChildren[i].children = [];
+                        // Add the new node.
+                        parentChildren[i].children.push(superSkillEndNode);
+                        // Add the other child nodes, excluding subskills.
+                        for (let j = 0; j < regularChildSkills.length; j++) {
+                            parentChildren[i].children.push(
+                                regularChildSkills[j]
+                            );
+                        }
+                    }
+
+                    if (typeof parentChildren[i] !== 'undefined') {
+                        /*
+                         * Run the above function again recursively.
+                         */
+                        if (
+                            parentChildren[i].children &&
+                            Array.isArray(parentChildren[i].children) &&
+                            parentChildren[i].children.length > 0
+                        )
+                            moveSubSkills(parentChildren[i].children);
+                    }
+                }
+            }
+
+            moveSubSkills(skillsWithSubSkillsMoved);
+
+            const data = {
+                skill_name: 'My skills',
+                children: skillsWithSubSkillsMoved
+            };
+
+            // Build the SVG tree.
+            await this.createSVGTree(data);
+        },
+        async createSVGTree(data) {
+            const width = 24000;
+            const height = 24000;
+            const cx = width * 0.55;
+            const cy = height * 0.59;
+            // Create a radial tree layout. The layout’s first dimension (x)
+            // is the angle, while the second (y) is the radius.
+            const tree = d3
+                .tree()
+                // increase the radius to space out the nodes.
+                .size([2 * Math.PI, this.radius * 50])
+                // Max separation between sibling nodes.
+                .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+
             // Sort the tree and apply the layout.
-            tree(root);
-
-            // Compute the extent of the tree. Note that x and y are swapped here
-            // because in the tree layout, x is the breadth, but when displayed, the
-            // tree extends right rather than down.
-            let x0 = Infinity;
-            let x1 = -x0;
-            root.each((d) => {
-                if (d.x > x1) x1 = d.x;
-                if (d.x < x0) x0 = d.x;
-            });
-
-            // Compute the adjusted height of the tree.
-            const height = x1 - x0 + dx * 2;
+            const root = tree(d3.hierarchy(data));
 
             let svg = d3
                 .create('svg')
                 // Add ID for the printing to PDF.
-                .attr('id', 'linearTree')
-                .attr('width', this.width)
+                .attr('id', 'radialTree')
+                .attr('width', width)
                 .attr('height', height)
-                .attr('viewBox', [-dy / 3, x0 - dx, this.width, height])
+                .attr('viewBox', [-cx, -cy, width, height])
                 .attr(
                     'style',
                     'max-width: 100%; height: auto; font: 10px sans-serif;'
                 );
 
-            const g = svg.append('g');
-
             // Links or connecting lines.
-            g.append('g')
+            svg.append('g')
                 .attr('fill', 'none')
                 .attr('stroke-opacity', 1)
                 .selectAll()
@@ -440,16 +518,16 @@ export default {
                 .attr(
                     'd',
                     d3
-                        .linkHorizontal()
-                        .x((d) => d.y)
-                        .y((d) => d.x)
+                        .linkRadial()
+                        .angle((d) => d.x)
+                        .radius((d) => d.y)
                 )
                 .attr('stroke', function (d) {
                     return '#000';
                 })
                 .attr('stroke-width', function (d) {
                     if (d.target.data.is_mastered == 1) {
-                        return 8;
+                        return 4;
                     } else return 1.5;
                 })
                 .style('stroke-dasharray', function (d) {
@@ -463,21 +541,39 @@ export default {
                     }
                 });
 
-            const node = g
-                .append('g')
-                .attr('stroke-linejoin', 'round')
-                .attr('stroke-width', 3)
+            svg.append('g')
                 .selectAll()
                 .data(root.descendants())
-                .join('g')
-                .attr('transform', (d) => `translate(${d.y},${d.x})`);
-
-            node.append('circle')
-                .attr('fill', (d) => (d.children ? '#555' : '#000'))
+                .join('circle')
+                .attr(
+                    'transform',
+                    (d) =>
+                        `rotate(${(d.x * 180) / Math.PI - 90}) translate(${
+                            d.y
+                        },0)`
+                )
+                .attr('fill', '#000')
                 .attr('r', 2.5);
 
             // Labels.
-            node.append('text')
+            svg.append('g')
+                .attr('stroke-linejoin', 'round')
+                .attr('stroke-width', 1)
+                .selectAll()
+                .data(root.descendants())
+                .join('text')
+                .attr(
+                    'transform',
+                    (d) =>
+                        `rotate(${(d.x * 180) / Math.PI - 90}) translate(${
+                            d.y
+                        },0) rotate(${d.x >= Math.PI ? 180 : 0})`
+                )
+                .attr('dy', '0.31em')
+                .attr('x', (d) => (d.x < Math.PI === !d.children ? 6 : -6))
+                .attr('text-anchor', (d) =>
+                    d.x < Math.PI === !d.children ? 'start' : 'end'
+                )
                 .style('font-weight', function (d) {
                     // If the node is a super node.
                     if (d.data.type == 'super') {
@@ -490,19 +586,24 @@ export default {
                         return 'italic';
                     }
                 })
-                .attr('dy', '0.31em')
-                .attr('x', (d) => (d.children ? -6 : 6))
-                .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
+                .style('paint-order', function (d) {
+                    return 'stroke';
+                })
+                // TODO: Add white stroke to labels.
+                // .style('stroke', function (d) {
+                //     return '#000000';
+                // })
+
+                .clone(true)
+                .lower()
+                .style('stroke-width', function (d) {
+                    return '1px';
+                })
                 .text(function (d) {
                     // If the node is a super node end node.
                     if (d.data.position == 'end') {
                         return '';
                     } else return d.data.skill_name;
-                })
-                .clone(true)
-                .lower()
-                .attr('stroke', function (d) {
-                    return 'white';
                 });
 
             // Append the SVG element.
@@ -522,75 +623,12 @@ export default {
         <canvas id="canvas" width="1500" height="1500"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <div id="controlsWrapper">
-            <div id="panJoystick"></div>
-            <div class="slidecontainer">
-                <input
-                    type="range"
-                    min="0.1"
-                    max="2"
-                    value="1"
-                    class="slider"
-                    id="zoomRange"
-                />
-            </div>
-        </div>
 
         <div id="sidepanel-backdrop"></div>
     </div>
 </template>
 
 <style scoped>
-#controlsWrapper {
-    position: absolute;
-    width: 200px;
-    bottom: 2px;
-    left: 2px;
-}
-
-#panJoystick {
-    width: 100px;
-    height: 100px;
-}
-
-.slidecontainer {
-    width: 100%; /* Width of the outside container */
-}
-
-.slider {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 15px;
-    border-radius: 5px;
-    background: #d3d3d3;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: 0.2s;
-    transition: opacity 0.2s;
-}
-
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: #04aa6d;
-    cursor: pointer;
-}
-
-.slider::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: #04aa6d;
-    cursor: pointer;
-}
-/* Mouse-over effects */
-.slider:hover {
-    opacity: 1; /* Fully shown on mouse-over */
-}
-
 #wrapper {
     width: 100%;
     height: 100%;
@@ -626,14 +664,6 @@ input[type='button'] {
     opacity: 0.5;
     width: 100%;
     height: 100%;
-}
-
-#filter {
-    width: 300px;
-    position: absolute;
-    padding-left: 1%;
-    z-index: 1;
-    margin-top: 10px;
 }
 
 #print-btn {
