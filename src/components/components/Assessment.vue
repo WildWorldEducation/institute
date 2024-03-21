@@ -326,6 +326,7 @@ export default {
             <div v-else-if="this.question.questionType == 'essay'">
                 <div class="form-group">
                     <textarea
+                        id="essay-answer"
                         @input="UserAnswer()"
                         class="form-control"
                         v-model="questions[this.questionNumber].userAnswer"
