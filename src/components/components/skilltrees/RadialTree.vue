@@ -123,8 +123,6 @@ export default {
              */
             const centerNodeSprite = new PIXI.Sprite(spriteSheet.textures[0]); // central node sprite
 
-            console.log(spriteSheet);
-
             centerNodeSprite.x = this.root.x;
             centerNodeSprite.y = this.root.y;
             centerNodeSprite.anchor.set(0.5);
