@@ -77,8 +77,6 @@ export default {
             }
         }
 
-        console.log(this.assessment);
-
         // Get list of all skills.
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList();
