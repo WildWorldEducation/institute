@@ -22,7 +22,7 @@ export default {
             width: 6000,
             height: null,
             radius: 0,
-            radiusMultiplier: 128,
+            radiusMultiplier: 96,
             skill: {
                 id: null,
                 children: [],
@@ -33,7 +33,8 @@ export default {
                 description: null,
                 tagIDs: [],
                 sprite: null,
-                type: null
+                type: null,
+                subskills: []
             },
             tree: {},
             root: {},
@@ -117,6 +118,8 @@ export default {
                 this.skill.name = node.data.skill_name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
+                this.skill.masteryRequirements = node.data.mastery_requirements;
+                this.skill.subskills = node.data.subskills;
                 this.showInfoPanel();
             }
         });
@@ -244,6 +247,8 @@ export default {
             this.context.closePath();
         },
         drawNode(node) {
+            if (node.data.type == 'super') console.log(node);
+
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
 
@@ -278,10 +283,13 @@ export default {
                 color = '#9c7eec';
             }
 
+            let size;
+            if (node.depth == 1) size = 20;
+            else size = 10;
             // Visible context.
             ctx1.beginPath();
             ctx1.moveTo(pos[0], pos[1]);
-            ctx1.arc(pos[0], pos[1], 10, 0, 2 * Math.PI);
+            ctx1.arc(pos[0], pos[1], size, 0, 2 * Math.PI);
             ctx1.fillStyle = color;
             ctx1.fill();
 
@@ -324,7 +332,7 @@ export default {
             // Hidden context.
             ctx2.beginPath();
             ctx2.moveTo(pos[0], pos[1]);
-            ctx2.arc(pos[0], pos[1], 10, 0, 2 * Math.PI);
+            ctx2.arc(pos[0], pos[1], size, 0, 2 * Math.PI);
             ctx2.fill();
 
             // Render sub skills.

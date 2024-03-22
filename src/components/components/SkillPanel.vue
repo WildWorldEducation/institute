@@ -67,6 +67,19 @@ export default {
                     v-html="skill?.masteryRequirements"
                 ></div>
             </div>
+            <div v-if="skill.type == 'super'" class="mt-2">
+                <h2>Outer cluster nodes</h2>
+                <ul>
+                    <li v-for="subskill in skill.subskills">
+                        <router-link
+                            target="_blank"
+                            id="skillLink"
+                            :to="'/skills/' + subskill.id"
+                            >{{ subskill.skill_name }}
+                        </router-link>
+                    </li>
+                </ul>
+            </div>
             <hr v-if="skill.type != 'domain'" />
             <router-link
                 v-if="skill.type != 'domain'"
@@ -89,9 +102,9 @@ export default {
                     />
                 </svg>
             </router-link>
-            <!-- Image: character with a sign. -->
-            <img src="/images/char-with-sign.svg" />
         </div>
+        <!-- Image: character with a sign. -->
+        <img src="/images/char-with-sign.svg" />
     </div>
 </template>
 
