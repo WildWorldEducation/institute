@@ -256,7 +256,10 @@ export default {
                 ctx1.translate(pos[0], pos[1]);
                 ctx1.rotate(angle);
                 if (pos[0] < 0) {
+                    ctx1.textAlign = 'end';
                     ctx1.rotate(Math.PI);
+                } else {
+                    ctx1.textAlign = 'start';
                 }
 
                 ctx1.strokeStyle = '#1e293b';
