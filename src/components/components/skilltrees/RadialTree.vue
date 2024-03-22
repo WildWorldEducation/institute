@@ -247,8 +247,6 @@ export default {
             this.context.closePath();
         },
         drawNode(node) {
-            if (node.data.type == 'super') console.log(node);
-
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
 

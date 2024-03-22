@@ -104,7 +104,7 @@ export default {
             </router-link>
         </div>
         <!-- Image: character with a sign. -->
-        <img src="/images/char-with-sign.svg" />
+        <!-- <img src="/images/char-with-sign.svg" /> -->
     </div>
 </template>
 
@@ -150,7 +150,7 @@ export default {
 /* The sidepanel container */
 #skillInfoPanelContainer {
     padding: 20px;
-    height: calc(100% - 40px);
+    /* height: calc(100% - 40px); */
 }
 
 .skillInfoPanel img {
