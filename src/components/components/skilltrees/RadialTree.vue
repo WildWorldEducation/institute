@@ -22,7 +22,7 @@ export default {
             width: 6000,
             height: null,
             radius: 0,
-            radiusMultiplier: 64,
+            radiusMultiplier: 128,
             skill: {
                 id: null,
                 children: [],
@@ -78,7 +78,7 @@ export default {
         d3.select(this.context.canvas).call(
             d3
                 .zoom()
-                .scaleExtent([0.2, 8])
+                .scaleExtent([0.05, 8])
                 .on('zoom', ({ transform }) => this.zoomed(transform))
         );
 
@@ -127,7 +127,7 @@ export default {
             skillsNoSubSkills = JSON.parse(JSON.stringify(this.skill.children));
 
             this.data = {
-                skill_name: 'My skills',
+                skill_name: '',
                 children: skillsNoSubSkills
             };
 
@@ -202,6 +202,46 @@ export default {
                 // Draw the actual shape
                 this.drawNode(node);
             }
+
+            // Draw center node.
+            this.context.beginPath();
+            this.context.moveTo(0, 0);
+            this.context.arc(0, 0, 20, 0, 2 * Math.PI);
+            this.context.fillStyle = 'lightgreen';
+            this.context.fill();
+
+            //smiley
+            this.context.fillStyle = 'LawnGreen';
+            this.context.strokeStyle = 'black';
+            this.context.lineWidth = 5;
+            this.context.beginPath();
+            this.context.arc(0, 0, 50, 0, 2 * Math.PI);
+            this.context.fill();
+            this.context.stroke();
+            this.context.closePath();
+
+            //eyes
+            this.context.fillStyle = 'cyan';
+            this.context.beginPath();
+            this.context.arc(-12.5, -16.5, 7.5, 0, 2 * Math.PI);
+            this.context.fill();
+            this.context.stroke();
+            this.context.closePath();
+
+            this.context.beginPath();
+            this.context.arc(12.5, -16.5, 7.5, 0, 2 * Math.PI);
+            this.context.fill();
+            this.context.stroke();
+            this.context.closePath();
+
+            //mouth
+            this.context.fillStyle = 'LawnGreen';
+            this.context.strokeStyle = 'black';
+            this.context.lineWidth = 5;
+            this.context.beginPath();
+            this.context.arc(0, 0, 37.5, 0, -1 * Math.PI);
+            this.context.stroke();
+            this.context.closePath();
         },
         drawNode(node) {
             let ctx1 = this.context;
@@ -222,11 +262,20 @@ export default {
                 return [nx, ny];
             }
 
+            // Node colour.
             let color;
             if (node.data.type == 'domain') {
                 color = 'orange';
-            } else {
-                color = 'white';
+            } else if (node.data.level == 'grade_school') {
+                color = '#36c1af';
+            } else if (node.data.level == 'middle_school') {
+                color = '#6eb3f5';
+            } else if (node.data.level == 'high_school') {
+                color = '#3983dd';
+            } else if (node.data.level == 'college') {
+                color = '#baa9e1';
+            } else if (node.data.level == 'phd') {
+                color = '#9c7eec';
             }
 
             // Visible context.
@@ -252,9 +301,11 @@ export default {
 
             // Text.
             if (this.scale > 0.6) {
+                // Get the text's angle. Rotate it.
                 ctx1.save();
                 ctx1.translate(pos[0], pos[1]);
                 ctx1.rotate(angle);
+                // Flip if on left side of chart.
                 if (pos[0] < 0) {
                     ctx1.textAlign = 'end';
                     ctx1.rotate(Math.PI);
@@ -275,6 +326,31 @@ export default {
             ctx2.moveTo(pos[0], pos[1]);
             ctx2.arc(pos[0], pos[1], 10, 0, 2 * Math.PI);
             ctx2.fill();
+
+            // Render sub skills.
+            if (node.data.type == 'super') {
+                for (let i = 0; i < node.data.subskills.length; i++) {
+                    // Calculate the increment of the subskills, around a circle.
+                    let increment = 360 / node.data.subskills.length;
+                    // Get the correct index number.
+                    let subSkillsIndex = i;
+                    // Calculate the nodes angle.
+                    let angle = increment * subSkillsIndex;
+                    let rads = (angle * Math.PI) / 180;
+                    let x = 20 * Math.cos(rads);
+                    let y = 20 * Math.sin(rads);
+                    ctx1.beginPath();
+                    ctx1.moveTo(pos[0], pos[1]);
+                    ctx1.arc(pos[0] + x, pos[1] + y, 5, 0, 2 * Math.PI);
+                    ctx1.fillStyle = color;
+                    ctx1.fill();
+
+                    ctx2.beginPath();
+                    ctx2.moveTo(pos[0], pos[1]);
+                    ctx2.arc(pos[0] + x, pos[1] + y, 5, 0, 2 * Math.PI);
+                    ctx2.fill();
+                }
+            }
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -671,7 +747,7 @@ export default {
     width: 100%;
     height: 100%;
     height: calc(100% - 86px);
-    /* overflow: hidden; */
+    overflow: hidden;
     position: relative;
 }
 
@@ -724,7 +800,7 @@ input[type='button'] {
 #skilltree {
     width: 100%;
     height: 100%;
-    /* overflow: hidden; */
+    overflow: hidden;
     /* This is for the positioning of the information panel. */
     position: relative;
     background-color: white;
