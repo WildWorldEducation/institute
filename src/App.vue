@@ -73,14 +73,14 @@ export default {
                                 >Radial Tree (Alpha)</RouterLink
                             >
                         </li>
-                        <li
+                        <!-- <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/pixi-radial-tree" class="nav-link"
                                 >Pixi Radial Tree</RouterLink
                             >
-                        </li>
+                        </li> -->
                         <li
                             v-if="userDetailsStore.role != 'student'"
                             class="nav-item"
