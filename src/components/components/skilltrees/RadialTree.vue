@@ -236,14 +236,35 @@ export default {
             ctx1.fillStyle = color;
             ctx1.fill();
 
+            function angle(cx, cy, ex, ey) {
+                var dy = ey - cy;
+                var dx = ex - cx;
+                var theta = Math.atan2(dy, dx);
+                if (ex < 0) {
+                    //theta = theta + 270;
+                }
+
+                return theta;
+            }
+
+            // Take in the radians of the nodes.
+            var angle = angle(0, 0, pos[0], pos[1]);
+
             // Text.
             if (this.scale > 0.6) {
-                ctx1.beginPath();
+                ctx1.save();
+                ctx1.translate(pos[0], pos[1]);
+                ctx1.rotate(angle);
+                if (pos[0] < 0) {
+                    ctx1.rotate(Math.PI);
+                }
+
                 ctx1.strokeStyle = '#1e293b';
                 ctx1.lineWidth = 4;
-                ctx1.strokeText(node.data.skill_name, pos[0] + 10, pos[1] + 2);
+                ctx1.strokeText(node.data.skill_name, 0, 0);
                 ctx1.fillStyle = '#FFF';
-                ctx1.fillText(node.data.skill_name, pos[0] + 10, pos[1] + 2);
+                ctx1.fillText(node.data.skill_name, 0, 0);
+                ctx1.restore();
             }
 
             // Hidden context.
