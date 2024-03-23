@@ -4,16 +4,19 @@ import router from '../../router';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
         const usersStore = useUsersStore();
         const instructorStudentsStore = useInstructorStudentsStore();
+        const userSkillsStore = useUserSkillsStore();
         return {
             skillsStore,
             usersStore,
-            instructorStudentsStore
+            instructorStudentsStore,
+            userSkillsStore
         };
     },
     data() {
@@ -155,12 +158,10 @@ export default {
                             i < this.firstLevelSkillIds.length;
                             i++
                         ) {
-                            var url =
-                                '/user-skills/accessible/' +
-                                this.newUserId +
-                                '/' +
-                                this.firstLevelSkillIds[i];
-                            fetch(url);
+                            this.userSkillsStore.MakeMastered(
+                                this.newUserId,
+                                this.firstLevelSkillIds[i]
+                            );
                         }
                     }
                 })

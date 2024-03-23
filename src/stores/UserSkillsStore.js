@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 
 // Import another store.
 import { useSkillsStore } from './SkillsStore.js';
-import { useSkillTreeStore } from './SkillTreeStore.js';
 
 export const useUserSkillsStore = defineStore('userSkills', {
     state: () => ({
@@ -21,7 +20,7 @@ export const useUserSkillsStore = defineStore('userSkills', {
                 await skillsStore.getSkillsList();
             }
 
-            const skillTreeStore = useSkillTreeStore();
+            //    const skillTreeStore = useSkillTreeStore();
             // Update user skills if havent been yet.
             await this.getUnnestedList(userId);
 
@@ -29,13 +28,13 @@ export const useUserSkillsStore = defineStore('userSkills', {
 
             fetch(url).then(() => {
                 let skill = {};
-                // Check if is a sub skill.
+                // Get skill data.
                 for (let i = 0; i < skillsStore.skillsList.length; i++) {
                     if (skillsStore.skillsList[i].id == skillId) {
                         skill = skillsStore.skillsList[i];
                     }
                 }
-                // If not ...
+                // Check if is a sub skill.
                 if (skill.type != 'sub') {
                     // Get all the child skills.
                     const childSkills = [];
@@ -44,15 +43,14 @@ export const useUserSkillsStore = defineStore('userSkills', {
                             childSkills.push(skillsStore.skillsList[i]);
                         }
                     }
-                  
+
                     let subSkills = [];
                     // Make them accessible/unlocked if regular type skills.
                     for (let i = 0; i < childSkills.length; i++) {
-                        if (
-                            childSkills[i].type == 'regular' ||
-                            childSkills[i].type == 'domain'
-                        ) {
+                        if (childSkills[i].type == 'regular') {
                             this.MakeAccessible(userId, childSkills[i].id);
+                        } else if (childSkills[i].type == 'domain') {
+                            this.MakeMastered(userId, childSkills[i].id);
                         }
                         // If super type skills, make their subskills accessible.
                         else if (childSkills[i].type == 'super') {
@@ -111,7 +109,7 @@ export const useUserSkillsStore = defineStore('userSkills', {
                         this.MakeAccessible(userId, skill.parent);
                     }
                 }
-                skillTreeStore.getUserSkills();
+                // skillTreeStore.getUserSkills();
             });
         },
         async MakeAccessible(userId, skillId) {
