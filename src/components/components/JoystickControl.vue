@@ -56,11 +56,7 @@ export default {
             })
             .on('end', (evt, data) => {
                 clearInterval(this.interval);
-                if (this.$parent.scale < 1) {
-                    this.scaleDivider = 1 / this.$parent.scale;
-                } else {
-                    this.scaleDivider = this.$parent.scale;
-                }
+
                 switch (this.direction) {
                     case 'right':
                         this.$parent.panX =
