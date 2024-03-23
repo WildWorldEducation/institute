@@ -10,7 +10,8 @@ export default {
             panData: null,
             isPanning: true,
             direction: '',
-            distanceMultiplier: 3
+            distanceMultiplier: 300,
+            scaleDivider: 1
         };
     },
     computed: {},
@@ -19,7 +20,7 @@ export default {
         var panJoystick = nipplejs.create({
             zone: document.getElementById('panJoystick'),
             mode: 'static',
-            position: { left: '25%', top: '25%' },
+            position: { left: '25%', top: '5%' },
             color: 'blue'
         });
 
@@ -51,50 +52,47 @@ export default {
             .on('start', (evt, data) => {
                 this.interval = setInterval(() => {
                     this.holdTime += 1;
-                }, 1000);
+                }, 500);
             })
             .on('end', (evt, data) => {
                 clearInterval(this.interval);
-                console.log('scale: ' + this.$parent.scale);
+                if (this.$parent.scale < 1) {
+                    this.scaleDivider = 1 / this.$parent.scale;
+                } else {
+                    this.scaleDivider = this.$parent.scale;
+                }
                 switch (this.direction) {
                     case 'right':
                         this.$parent.panX =
-                            (((this.$parent.panX - 20) *
-                                this.distanceMultiplier) /
-                                this.$parent.scale) *
-                            this.holdTime;
+                            (this.$parent.panX -
+                                20 -
+                                this.holdTime * this.distanceMultiplier) /
+                            this.scaleDivider;
+
                         break;
                     case 'left':
                         this.$parent.panX =
-                            (((this.$parent.panX + 20) *
-                                this.distanceMultiplier) /
-                                this.$parent.scale) *
-                            this.holdTime;
+                            (this.$parent.panX +
+                                20 +
+                                this.holdTime * this.distanceMultiplier) /
+                            this.scaleDivider;
                         break;
                     case 'up':
                         this.$parent.panY =
-                            (((this.$parent.panY + 20) *
-                                this.distanceMultiplier) /
-                                this.$parent.scale) *
-                            this.holdTime;
+                            (this.$parent.panY +
+                                20 +
+                                this.holdTime * this.distanceMultiplier) /
+                            this.scaleDivider;
                         break;
                     case 'down':
                         this.$parent.panY =
-                            (((this.$parent.panY - 20) *
-                                this.distanceMultiplier) /
-                                this.$parent.scale) *
-                            this.holdTime;
+                            (this.$parent.panY -
+                                20 -
+                                this.holdTime * this.distanceMultiplier) /
+                            this.scaleDivider;
                     default:
                         break;
                 }
-                console.log(
-                    'PanX: ' +
-                        this.$parent.panX +
-                        ' || ' +
-                        'PanY: ' +
-                        this.$parent.panY
-                );
-
                 this.$parent.drawTree();
                 this.holdTime = 1;
             });
@@ -114,35 +112,7 @@ export default {
             this.drawTree();
         });
     },
-    watch: {
-        isPanning: {
-            handler(oldVal, newVal) {
-                // if (newVal) {
-                //     this.interval = setInterval(() => {
-                //         console.log('new val: ' + newVal);
-                //         console.log('old val: ' + oldVal);
-                //         console.log('Pandata: ');
-                //         console.log(this.panData);
-                //         // if (this.panData.direction.angle == 'right')
-                //         //     this.$parent.panX =
-                //         //         (this.$parent.panX - 20) / this.$parent.scale;
-                //         // else if (this.panData.direction.angle == 'left')
-                //         //     this.$parent.panX =
-                //         //         (this.$parent.panX + 20) / this.$parent.scale;
-                //         // else if (this.panData.direction.angle == 'up')
-                //         //     this.$parent.panY =
-                //         //         (this.$parent.panY + 20) / this.$parent.scale;
-                //         // else if (this.panData.direction.angle == 'down')
-                //         //     this.$parent.panY =
-                //         //         (this.$parent.panY - 20) / this.$parent.scale;
-                //     }, 1000);
-                // } else {
-                //     clearInterval(this.interval);
-                //     this.$parent.drawTree();
-                // }
-            }
-        }
-    },
+    watch: {},
     methods: {}
 };
 </script>
@@ -161,6 +131,13 @@ export default {
                 step="0.05"
             />
         </div>
+        <div class="flex flex-row bg-info">
+            <div>Scale: {{ this.$parent.scale }}</div>
+            <div>Direction: {{ this.direction }}</div>
+            <div>Time Multiplier: {{ this.holdTime }}</div>
+            <div>PanX: {{ this.$parent.panX }}</div>
+            <div>PanY: {{ this.$parent.panY }}</div>
+        </div>
     </div>
 </template>
 
@@ -168,7 +145,7 @@ export default {
 /* ___________ Button Style ___________ */
 #controlsWrapper {
     position: absolute;
-    width: 200px;
+    width: 500px;
     bottom: 2px;
     left: 2px;
 }
