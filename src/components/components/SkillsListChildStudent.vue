@@ -389,8 +389,10 @@ export default {
     height: 58px;
 }
 
-/* For the top level skills */
+/* Domain */
 .domains {
+    width: 360px;
+    height: 71px;
     color: black;
     font-size: 20px;
     font-weight: 400;
