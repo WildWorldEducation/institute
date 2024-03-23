@@ -172,6 +172,23 @@ export default {
         drawTree() {
             this.nodes = this.root.descendants();
 
+            // Concentric circles.
+            // for (let i = 50; i > 5; i = i - 5) {
+            //     this.context.beginPath();
+            //     this.context.arc(
+            //         0,
+            //         0,
+            //         i * (this.radius * this.radiusMultiplier),
+            //         0,
+            //         2 * Math.PI,
+            //         false
+            //     );
+
+            //     this.context.lineWidth = 3;
+            //     this.context.strokeStyle = 'red';
+            //     this.context.stroke();
+            // }
+
             // Draw links.
             const links = this.root.links();
             this.context.beginPath();
