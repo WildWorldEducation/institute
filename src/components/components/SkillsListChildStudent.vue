@@ -190,7 +190,7 @@ export default {
                 </svg>
             </button>
             <button
-                v-if="children.length != 0"
+                v-if="childrenNotSubskills.length != 0"
                 @click.stop="toggleChildren"
                 class="btn me-2 ci-btn"
             >
