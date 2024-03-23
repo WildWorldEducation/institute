@@ -278,6 +278,8 @@ export default {
             this.drawTree();
         },
         drawTree() {
+            console.log('draw tree');
+
             this.nodes = this.root.descendants();
 
             // Zoom and pan.
@@ -303,6 +305,7 @@ export default {
             this.hiddenCanvasContext.scale(this.scale, this.scale);
 
             // Pan.
+
             this.context.translate(this.panX, this.panY);
             this.hiddenCanvasContext.translate(this.panX, this.panY);
 

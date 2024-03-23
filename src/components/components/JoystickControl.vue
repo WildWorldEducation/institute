@@ -4,7 +4,14 @@ import nipplejs from 'nipplejs';
 export default {
     setup() {},
     data() {
-        return {};
+        return {
+            holdTime: 1,
+            interval: null,
+            panData: null,
+            isPanning: true,
+            direction: '',
+            distanceMultiplier: 3
+        };
     },
     computed: {},
     async mounted() {
@@ -21,22 +28,75 @@ export default {
                 'dir:up plain:up dir:left plain:left dir:down ' +
                     'plain:down dir:right plain:right',
                 (evt, data) => {
-                    if (data.direction.angle == 'right')
-                        this.$parent.panX =
-                            this.$parent.panX - 20 / this.$parent.scale;
-                    else if (data.direction.angle == 'left')
-                        this.$parent.panX =
-                            this.$parent.panX + 20 / this.$parent.scale;
-                    else if (data.direction.angle == 'up')
-                        this.$parent.panY =
-                            this.$parent.panY + 20 / this.$parent.scale;
-                    else if (data.direction.angle == 'down')
-                        this.$parent.panY =
-                            this.$parent.panY - 20 / this.$parent.scale;
+                    switch (data.direction.angle) {
+                        case 'right':
+                            this.direction = 'right';
+                            break;
+                        case 'left':
+                            this.direction = 'left';
+                            break;
+                        case 'up':
+                            this.direction = 'up';
+                            break;
+                        case 'down':
+                            this.direction = 'down';
+                        default:
+                            break;
+                    }
                 }
             )
+            .on('end', (evt, data) => {});
+
+        panJoystick
+            .on('start', (evt, data) => {
+                this.interval = setInterval(() => {
+                    this.holdTime += 1;
+                }, 1000);
+            })
             .on('end', (evt, data) => {
+                clearInterval(this.interval);
+                console.log('scale: ' + this.$parent.scale);
+                switch (this.direction) {
+                    case 'right':
+                        this.$parent.panX =
+                            (((this.$parent.panX - 20) *
+                                this.distanceMultiplier) /
+                                this.$parent.scale) *
+                            this.holdTime;
+                        break;
+                    case 'left':
+                        this.$parent.panX =
+                            (((this.$parent.panX + 20) *
+                                this.distanceMultiplier) /
+                                this.$parent.scale) *
+                            this.holdTime;
+                        break;
+                    case 'up':
+                        this.$parent.panY =
+                            (((this.$parent.panY + 20) *
+                                this.distanceMultiplier) /
+                                this.$parent.scale) *
+                            this.holdTime;
+                        break;
+                    case 'down':
+                        this.$parent.panY =
+                            (((this.$parent.panY - 20) *
+                                this.distanceMultiplier) /
+                                this.$parent.scale) *
+                            this.holdTime;
+                    default:
+                        break;
+                }
+                console.log(
+                    'PanX: ' +
+                        this.$parent.panX +
+                        ' || ' +
+                        'PanY: ' +
+                        this.$parent.panY
+                );
+
                 this.$parent.drawTree();
+                this.holdTime = 1;
             });
 
         // Zoom range slider.
@@ -53,6 +113,35 @@ export default {
             this.scale = zoomSlider.value;
             this.drawTree();
         });
+    },
+    watch: {
+        isPanning: {
+            handler(oldVal, newVal) {
+                // if (newVal) {
+                //     this.interval = setInterval(() => {
+                //         console.log('new val: ' + newVal);
+                //         console.log('old val: ' + oldVal);
+                //         console.log('Pandata: ');
+                //         console.log(this.panData);
+                //         // if (this.panData.direction.angle == 'right')
+                //         //     this.$parent.panX =
+                //         //         (this.$parent.panX - 20) / this.$parent.scale;
+                //         // else if (this.panData.direction.angle == 'left')
+                //         //     this.$parent.panX =
+                //         //         (this.$parent.panX + 20) / this.$parent.scale;
+                //         // else if (this.panData.direction.angle == 'up')
+                //         //     this.$parent.panY =
+                //         //         (this.$parent.panY + 20) / this.$parent.scale;
+                //         // else if (this.panData.direction.angle == 'down')
+                //         //     this.$parent.panY =
+                //         //         (this.$parent.panY - 20) / this.$parent.scale;
+                //     }, 1000);
+                // } else {
+                //     clearInterval(this.interval);
+                //     this.$parent.drawTree();
+                // }
+            }
+        }
     },
     methods: {}
 };
