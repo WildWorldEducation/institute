@@ -23,7 +23,8 @@ export default {
             assessmentId: this.$route.params.id,
             questionNumber: 0,
             answers: [],
-            assessment: {}
+            assessment: {},
+            skill: {}
         }
     },
     async created() {
@@ -67,6 +68,7 @@ export default {
             for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
                 if (this.answers[i].skillId == this.skillsStore.skillsList[j].id) {
                     this.answers[i].skillName = this.skillsStore.skillsList[j].name
+                    this.skill = this.skillsStore.skillsList[j]
                 }
             }
         }
@@ -98,7 +100,7 @@ export default {
                     if (this.assessmentsStore.assessments[i].num_unmarked_questions_remaining == 0) {
                         if ((this.assessmentsStore.assessments[i].current_score / this.assessmentsStore.assessments[i].total_score) * 100 >= 90) {
                             // Make skill mastered for this student.
-                            this.MakeMastered(this.assessmentsStore.assessments[i].student_id, this.assessmentsStore.assessments[i].skill_id)
+                            this.MakeMastered(this.assessmentsStore.assessments[i].student_id, this.skill)
                             alert("Student passed")
                         }
                     }
@@ -141,8 +143,8 @@ export default {
             // Now remove this element from the array.
             this.answers.splice(this.questionNumber, 1);
         },
-        async MakeMastered(studentId, skillId) {
-            await this.userSkillsStore.MakeMastered(studentId, skillId)
+        async MakeMastered(studentId, skill) {
+            await this.userSkillsStore.MakeMastered(studentId, skill)
         },
     }
 }

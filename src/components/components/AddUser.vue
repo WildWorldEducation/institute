@@ -24,7 +24,7 @@ export default {
             user: { role: 'student' },
             image: '',
             // To make the first level skills mastered for a new user.
-            firstLevelSkillIds: [],
+            firstLevelSkills: [],
             childrenOfFirstLevelSkillsIds: [],
             // The newly created ID number fo the user, from the DB.
             newUserId: null,
@@ -55,15 +55,15 @@ export default {
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
             if (this.skillsStore.skillsList[i].parent == 0) {
                 // Add them to the local array.
-                this.firstLevelSkillIds.push(this.skillsStore.skillsList[i].id);
+                this.firstLevelSkills.push(this.skillsStore.skillsList[i]);
             }
         }
         // Find the child skills of the first level skills - we will make these available/unlocked.
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            for (let j = 0; j < this.firstLevelSkillIds.length; j++) {
+            for (let j = 0; j < this.firstLevelSkills.length; j++) {
                 if (
                     this.skillsStore.skillsList[i].parent ==
-                    this.firstLevelSkillIds[j]
+                    this.firstLevelSkills[j].id
                 ) {
                     this.childrenOfFirstLevelSkillsIds.push(
                         this.skillsStore.skillsList[i].id
@@ -150,21 +150,18 @@ export default {
                     // Get the new user's id number from the DB.
                     this.newUserId = data.id;
                 })
+                // Make all relevant skills and domains available or mastered.
                 .then((data) => {
                     if (this.isValidated) {
-                        // Make all first level skills available
-                        for (
-                            let i = 0;
-                            i < this.firstLevelSkillIds.length;
-                            i++
-                        ) {
+                        for (let i = 0; i < this.firstLevelSkills.length; i++) {
                             this.userSkillsStore.MakeMastered(
                                 this.newUserId,
-                                this.firstLevelSkillIds[i]
+                                this.firstLevelSkills[i]
                             );
                         }
                     }
                 })
+                // If a student, give them an instructor.
                 .then((data) => {
                     if (this.user.role == 'student') {
                         const requestOptions = {
