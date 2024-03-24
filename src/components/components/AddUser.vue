@@ -150,17 +150,18 @@ export default {
                     // Get the new user's id number from the DB.
                     this.newUserId = data.id;
                 })
+                // Make all relevant skills and domains available or mastered.
                 .then((data) => {
                     if (this.isValidated) {
-                        // Make all first level skills available
                         for (let i = 0; i < this.firstLevelSkills.length; i++) {
                             this.userSkillsStore.MakeMastered(
                                 this.newUserId,
-                                this.firstLevelSkills[i]                                
+                                this.firstLevelSkills[i]
                             );
                         }
                     }
                 })
+                // If a student, give them an instructor.
                 .then((data) => {
                     if (this.user.role == 'student') {
                         const requestOptions = {

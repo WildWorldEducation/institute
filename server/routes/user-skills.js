@@ -441,7 +441,13 @@ router.get('/unmastered/:id1/:id2', (req, res, next) => {
 // });
 
 /**
- * Set Up User Skills for New User.
+ * For making a skill mastered,
+ * which includes the effects on all child skills.
+ * If children are domain (pass-through skills), the function is applied to them recursively also.
+ * If children are regular skills, they become unlocked.
+ * If children are super skills (inner cluster nodes), their sub skills become unlocked.
+ * If the skill this is applied to is a sub skill, and all its sibling skills are also mastered,
+ * its parent (super skill) becomes mastered.
  *
  * @return response()
  */
@@ -493,8 +499,6 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                         makeMastered(req.params.userId, skill);
 
                         function makeMastered(userId, skill) {
-                            // TODO - needs to be anynchronous!!!!??
-                            // TODO, what if not domains?
                             // Make the first level items unlocked and mastered.
                             let sqlQuery =
                                 `
@@ -548,9 +552,6 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                                     userId,
                                                     childSkills[i]
                                                 );
-                                                // console.log(
-                                                //     childSkills[i].name
-                                                // );
                                             }
                                             // If super type skills, make their subskills accessible.
                                             else if (
