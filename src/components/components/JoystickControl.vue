@@ -119,21 +119,21 @@ export default {
         <div class="slidecontainer">
             <input
                 type="range"
-                min="0.008"
+                min="0.108"
                 max="2"
-                value="0.5"
+                value="0.108"
                 class="slider"
                 id="zoomRange"
                 step="0.05"
             />
         </div>
-        <div class="flex flex-row bg-info">
+        <!-- <div class="flex flex-row bg-info">
             <div>Scale: {{ this.$parent.scale }}</div>
             <div>Direction: {{ this.direction }}</div>
             <div>Time Multiplier: {{ this.holdTime }}</div>
             <div>PanX: {{ this.$parent.panX }}</div>
             <div>PanY: {{ this.$parent.panY }}</div>
-        </div>
+        </div> -->
     </div>
 </template>
 
