@@ -12,28 +12,35 @@ export const useUserSkillsStore = defineStore('userSkills', {
             const result = await fetch('/user-skills/unnested-list/' + userId);
             this.unnestedList = await result.json();
         },
-        async MakeMastered(userId, skillId) {
+        async MakeMastered(userId, skill) {
             // API call for skills.
-            const skillsStore = useSkillsStore();
-            // Load the skills if havent been yet.
-            if (skillsStore.skillsList.length == 0) {
-                await skillsStore.getSkillsList();
-            }
+            // const skillsStore = useSkillsStore();
+            // // Load the skills if havent been yet.
+            // if (skillsStore.skillsList.length == 0) {
+            //     await skillsStore.getSkillsList();
+            // }
 
-            //    const skillTreeStore = useSkillTreeStore();
             // Update user skills if havent been yet.
-            await this.getUnnestedList(userId);
+            //   await this.getUnnestedList(userId);
 
-            let url = '/user-skills/mastered/' + userId + '/' + skillId;
+            // Update the database.
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skill: skill
+                })
+            };
 
-            fetch(url).then(() => {
-                let skill = {};
+            let url = '/user-skills/make-mastered/' + userId;
+            fetch(url, requestOptions).then(() => {
+                // let skill = {};
                 // Get skill data.
-                for (let i = 0; i < skillsStore.skillsList.length; i++) {
-                    if (skillsStore.skillsList[i].id == skillId) {
-                        skill = skillsStore.skillsList[i];
-                    }
-                }
+                // for (let i = 0; i < skillsStore.skillsList.length; i++) {
+                //     if (skillsStore.skillsList[i].id == skillId) {
+                //         skill = skillsStore.skillsList[i];
+                //     }
+                // }
                 // Check if is a sub skill.
                 if (skill.type != 'sub') {
                     // Get all the child skills.

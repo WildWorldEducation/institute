@@ -25,6 +25,7 @@ export default {
     data() {
         return {
             skillId: this.$route.params.id,
+            skill: {},
             mcQuestions: [],
             essayQuestions: [],
             questions: [],
@@ -53,6 +54,7 @@ export default {
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
             if (this.skillsStore.skillsList[i].id == this.skillId) {
                 skillType = this.skillsStore.skillsList[i].type;
+                this.skill = this.skillsStore.skillsList[i];
             }
         }
         // Get user skills, in case this is a sub skill. We have to check its siblings.
@@ -196,7 +198,7 @@ export default {
                 // Pass mark of 90%.
                 if ((this.score / this.numMCQuestions) * 100 >= 90) {
                     // Make skill mastered for this student.
-                    this.MakeMastered(this.skillId);
+                    this.MakeMastered(this.skill);
                     this.passModal = true;
                 } else {
                     this.failedModal = true;
@@ -262,10 +264,10 @@ export default {
                     });
             }
         },
-        async MakeMastered(skillId) {
+        async MakeMastered(skill) {
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
-                skillId
+                skill
             );
         },
         UserAnswer() {
