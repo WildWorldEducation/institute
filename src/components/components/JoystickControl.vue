@@ -10,7 +10,7 @@ export default {
             // we store interval id to clear it later
             interval: null,
             // fps is a constant to determine how many time the tree will re-draw each second
-            fps: 3
+            fps: 10
         };
     },
     computed: {},
