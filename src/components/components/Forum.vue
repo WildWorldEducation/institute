@@ -224,7 +224,7 @@ export default {
                     :to="'/resources/add/' + skillId"
                     class="btn green-btn"
                     role="button"
-                    >Add resource&nbsp;&nbsp;
+                    >Add source&nbsp;&nbsp;
                     <!-- Plus sign -->
                     <svg
                         width="18"
