@@ -118,6 +118,7 @@ export default {
         :style="indent"
         :class="{
             domains: type == 'domain',
+            'longer-domain-name': name.length > 28,
             'is-filtered': isFiltered == 'filtered',
             // Colors and background images for top level skills.
             'sub-skill-button': type == 'sub',
@@ -379,6 +380,10 @@ export default {
     border-color: black;
     /* flex-direction: column; */
     background-position: right;
+}
+
+.longer-domain-name {
+    font-size: 17px;
 }
 
 .is-filtered {

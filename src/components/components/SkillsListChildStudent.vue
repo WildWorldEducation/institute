@@ -68,6 +68,7 @@ export default {
             }
         }
     },
+    mounted() {},
     methods: {
         mainButtonPress() {
             if (this.type != 'domain') this.$router.push('/skills/' + this.id);
@@ -94,6 +95,7 @@ export default {
         :style="indent"
         :class="{
             domains: type == 'domain',
+            'longer-domain-name': name.length > 28,
             // Colors and background images for top level skills.
             locked: isUnlocked != 1,
             unlocked: isUnlocked == 1,
@@ -312,6 +314,10 @@ export default {
     border-color: black;
     background-position: right;
     flex-direction: row;
+}
+
+.longer-domain-name {
+    font-size: 17px;
 }
 
 .grade-school-level {
