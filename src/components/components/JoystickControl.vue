@@ -104,8 +104,8 @@ export default {
 
         // Touch.
         zoomSlider.addEventListener('touchend', () => {
-            this.scale = zoomSlider.value;
-            this.drawTree();
+            this.$parent.scale = zoomSlider.value;
+            this.$parent.drawTree();
         });
     },
     watch: {},
