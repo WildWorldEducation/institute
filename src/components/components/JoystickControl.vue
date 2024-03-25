@@ -5,13 +5,12 @@ export default {
     setup() {},
     data() {
         return {
+            // the time user hold the joystick
             holdTime: 1,
+            // we store interval id to clear it later
             interval: null,
-            panData: null,
-            isPanning: true,
-            direction: '',
-            distanceMultiplier: 300,
-            scaleDivider: 1
+            // fps is a constant to determine how many time the tree will re-draw each second
+            fps: 3
         };
     },
     computed: {},
@@ -24,74 +23,93 @@ export default {
             color: 'blue'
         });
 
+        // we calculate the interval time with fps
+        const intervalTime = Math.floor(1000 / this.fps) + 1;
+
         panJoystick
             .on(
                 'dir:up plain:up dir:left plain:left dir:down ' +
                     'plain:down dir:right plain:right',
                 (evt, data) => {
+                    clearInterval(this.interval);
                     switch (data.direction.angle) {
                         case 'right':
-                            this.direction = 'right';
+                            this.interval = setInterval(() => {
+                                this.$parent.panX = this.$parent.panX - 20;
+                                this.$parent.drawTree();
+                            }, intervalTime);
                             break;
                         case 'left':
-                            this.direction = 'left';
+                            this.interval = setInterval(() => {
+                                this.$parent.panX = this.$parent.panX + 20;
+                                this.$parent.drawTree();
+                            }, intervalTime);
                             break;
                         case 'up':
-                            this.direction = 'up';
+                            this.interval = setInterval(() => {
+                                this.$parent.panY = this.$parent.panY + 20;
+                                this.$parent.drawTree();
+                            }, intervalTime);
                             break;
                         case 'down':
-                            this.direction = 'down';
+                            this.interval = setInterval(() => {
+                                this.$parent.panY = this.$parent.panY - 20;
+                                this.$parent.drawTree();
+                            }, intervalTime);
+                            break;
                         default:
                             break;
                     }
                 }
             )
-            .on('end', (evt, data) => {});
-
-        panJoystick
-            .on('start', (evt, data) => {
-                this.interval = setInterval(() => {
-                    this.holdTime += 1;
-                }, 500);
-            })
             .on('end', (evt, data) => {
                 clearInterval(this.interval);
-
-                switch (this.direction) {
-                    case 'right':
-                        this.$parent.panX =
-                            (this.$parent.panX -
-                                20 -
-                                this.holdTime * this.distanceMultiplier) /
-                            this.scaleDivider;
-
-                        break;
-                    case 'left':
-                        this.$parent.panX =
-                            (this.$parent.panX +
-                                20 +
-                                this.holdTime * this.distanceMultiplier) /
-                            this.scaleDivider;
-                        break;
-                    case 'up':
-                        this.$parent.panY =
-                            (this.$parent.panY +
-                                20 +
-                                this.holdTime * this.distanceMultiplier) /
-                            this.scaleDivider;
-                        break;
-                    case 'down':
-                        this.$parent.panY =
-                            (this.$parent.panY -
-                                20 -
-                                this.holdTime * this.distanceMultiplier) /
-                            this.scaleDivider;
-                    default:
-                        break;
-                }
-                this.$parent.drawTree();
-                this.holdTime = 1;
             });
+
+        // panJoystick
+        //     .on('start', (evt, data) => {
+        //         this.interval = setInterval(() => {
+        //             this.holdTime += 1;
+        //         }, 500);
+        //     })
+        //     .on('end', (evt, data) => {
+        //         clearInterval(this.interval);
+
+        //         switch (this.direction) {
+        //             case 'right':
+        //                 this.$parent.panX =
+        //                     (this.$parent.panX -
+        //                         20 -
+        //                         this.holdTime * this.distanceMultiplier) /
+        //                     1;
+
+        //                 break;
+        //             case 'left':
+        //                 this.$parent.panX =
+        //                     (this.$parent.panX +
+        //                         20 +
+        //                         this.holdTime * this.distanceMultiplier) /
+        //                     1;
+        //                 break;
+        //             case 'up':
+        //                 this.$parent.panY =
+        //                     (this.$parent.panY +
+        //                         20 +
+        //                         this.holdTime * this.distanceMultiplier) /
+        //                     1;
+        //                 break;
+        //             case 'down':
+        //                 this.$parent.panY =
+        //                     (this.$parent.panY -
+        //                         20 -
+        //                         this.holdTime * this.distanceMultiplier) /
+        //                     1;
+        //             default:
+        //                 break;
+        //         }
+        //         this.$parent.drawTree();
+        //         this.holdTime = 1;
+        //     });
 
         // Zoom range slider.
         let zoomSlider = document.getElementById('zoomRange');
@@ -129,7 +147,6 @@ export default {
         </div>
         <div class="flex flex-row bg-info">
             <div>Scale: {{ this.$parent.scale }}</div>
-            <div>Direction: {{ this.direction }}</div>
             <div>Time Multiplier: {{ this.holdTime }}</div>
             <div>PanX: {{ this.$parent.panX }}</div>
             <div>PanY: {{ this.$parent.panY }}</div>

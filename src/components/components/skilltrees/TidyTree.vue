@@ -51,7 +51,7 @@ export default {
             colToNode: {},
             isSkillInfoPanelShown: false,
             //  firstRender: true,
-            scale: 0.008,
+            scale: 1,
             panX: 0,
             panY: 0,
             hiddenCanvasInitiated: false,
@@ -64,47 +64,6 @@ export default {
         JoystickControl
     },
     async mounted() {
-        // // Panning, using NippleJS.
-        // var panJoystick = nipplejs.create({
-        //     zone: document.getElementById('panJoystick'),
-        //     mode: 'static',
-        //     position: { left: '25%', top: '25%' },
-        //     color: 'blue'
-        // });
-
-        // panJoystick
-        //     .on(
-        //         'dir:up plain:up dir:left plain:left dir:down ' +
-        //             'plain:down dir:right plain:right',
-        //         (evt, data) => {
-        //             if (data.direction.angle == 'right')
-        //                 this.panX = this.panX - 20 / this.scale;
-        //             else if (data.direction.angle == 'left')
-        //                 this.panX = this.panX + 20 / this.scale;
-        //             else if (data.direction.angle == 'up')
-        //                 this.panY = this.panY + 20 / this.scale;
-        //             else if (data.direction.angle == 'down')
-        //                 this.panY = this.panY - 20 / this.scale;
-        //         }
-        //     )
-        //     .on('end', (evt, data) => {
-        //         this.drawTree();
-        //     });
-
-        // // Zoom range slider.
-        // let zoomSlider = document.getElementById('zoomRange');
-        // zoomSlider.step = '0.1';
-        // // Mouse.
-        // zoomSlider.addEventListener('mouseup', () => {
-        //     this.scale = zoomSlider.value;
-        //     this.drawTree();
-        // });
-        // // Touch.
-        // zoomSlider.addEventListener('touchend', () => {
-        //     this.scale = zoomSlider.value;
-        //     this.drawTree();
-        // });
-
         // ------------
 
         if (this.skillTreeStore.userSkills.length == 0) {
@@ -278,8 +237,6 @@ export default {
             this.drawTree();
         },
         drawTree() {
-            console.log('draw tree');
-
             this.nodes = this.root.descendants();
 
             // Zoom and pan.
