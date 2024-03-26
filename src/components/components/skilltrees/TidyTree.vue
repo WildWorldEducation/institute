@@ -125,6 +125,14 @@ export default {
                 this.showInfoPanel();
             }
         });
+
+        // Zoom d3 handler
+        d3.select(this.context.canvas).call(
+            d3
+                .zoom()
+                .scaleExtent([0.008, 2])
+                .on('zoom', ({ transform }) => this.handleMouseZoom(transform))
+        );
     },
     methods: {
         getAlgorithm() {
@@ -581,6 +589,14 @@ export default {
 
             // Append the SVG element.
             document.querySelector('#SVGskilltree').append(svg.node());
+        },
+
+        // handle mouse zoom
+        handleMouseZoom(transform) {
+            this.scale = transform.k;
+            this.panX = transform.x;
+            this.panY = transform.y;
+            this.drawTree();
         }
     }
 };

@@ -10,7 +10,7 @@ export default {
             // we store interval id to clear it later
             interval: null,
             // fps is a constant to determine how many time the tree will re-draw each second
-            fps: 30
+            fps: 100
         };
     },
     computed: {},
@@ -31,29 +31,39 @@ export default {
                 'dir:up plain:up dir:left plain:left dir:down ' +
                     'plain:down dir:right plain:right',
                 (evt, data) => {
+                    // if a new direction is fired we clear the old interval
                     clearInterval(this.interval);
+                    // if the scale < 0 we multiple the panning distance
+                    const scaleDivide =
+                        this.$parent.scale >= 0 ? 1 : this.$parent.scale;
+
+                    // call new interval with new direction
                     switch (data.direction.angle) {
                         case 'right':
                             this.interval = setInterval(() => {
-                                this.$parent.panX = this.$parent.panX - 20;
+                                this.$parent.panX =
+                                    (this.$parent.panX - 20) / scaleDivide;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
                         case 'left':
                             this.interval = setInterval(() => {
-                                this.$parent.panX = this.$parent.panX + 20;
+                                this.$parent.panX =
+                                    (this.$parent.panX + 20) / scaleDivide;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
                         case 'up':
                             this.interval = setInterval(() => {
-                                this.$parent.panY = this.$parent.panY + 20;
+                                this.$parent.panY =
+                                    (this.$parent.panY + 20) / scaleDivide;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
                         case 'down':
                             this.interval = setInterval(() => {
-                                this.$parent.panY = this.$parent.panY - 20;
+                                this.$parent.panY =
+                                    (this.$parent.panY - 20) / scaleDivide;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -137,20 +147,20 @@ export default {
         <div class="slidecontainer">
             <input
                 type="range"
-                min="0.108"
+                min="0.008"
                 max="2"
-                value="0.108"
+                v-model="this.$parent.scale"
                 class="slider"
                 id="zoomRange"
-                step="0.05"
+                step="0.008"
             />
         </div>
-        <!-- <div class="flex flex-row bg-info">
+        <div class="flex flex-row bg-info">
             <div>Scale: {{ this.$parent.scale }}</div>
             <div>Time Multiplier: {{ this.holdTime }}</div>
             <div>PanX: {{ this.$parent.panX }}</div>
             <div>PanY: {{ this.$parent.panY }}</div>
-        </div> -->
+        </div>
     </div>
 </template>
 
