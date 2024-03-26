@@ -33,37 +33,37 @@ export default {
                 (evt, data) => {
                     // if a new direction is fired we clear the old interval
                     clearInterval(this.interval);
-                    // if the scale < 0 we multiple the panning distance
-                    const scaleDivide =
-                        this.$parent.scale >= 0 ? 1 : this.$parent.scale;
+                    // if the scale < 0 we panning further
+                    const panAddition =
+                        this.$parent.scale >= 1 ? 0 : 15 / this.$parent.scale;
 
                     // call new interval with new direction
                     switch (data.direction.angle) {
                         case 'right':
                             this.interval = setInterval(() => {
                                 this.$parent.panX =
-                                    (this.$parent.panX - 20) / scaleDivide;
+                                    this.$parent.panX - 20 - panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
                         case 'left':
                             this.interval = setInterval(() => {
                                 this.$parent.panX =
-                                    (this.$parent.panX + 20) / scaleDivide;
+                                    this.$parent.panX + 20 + panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
                         case 'up':
                             this.interval = setInterval(() => {
                                 this.$parent.panY =
-                                    (this.$parent.panY + 20) / scaleDivide;
+                                    this.$parent.panY + 20 + panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
                         case 'down':
                             this.interval = setInterval(() => {
                                 this.$parent.panY =
-                                    (this.$parent.panY - 20) / scaleDivide;
+                                    this.$parent.panY - 20 - panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -127,12 +127,14 @@ export default {
         // Mouse.
         zoomSlider.addEventListener('mouseup', () => {
             this.$parent.scale = zoomSlider.value;
+            this.$parent.zoomWithWheel = false;
             this.$parent.drawTree();
         });
 
         // Touch.
         zoomSlider.addEventListener('touchend', () => {
             this.$parent.scale = zoomSlider.value;
+            this.$parent.zoomWithWheel = false;
             this.$parent.drawTree();
         });
     },
@@ -154,12 +156,6 @@ export default {
                 id="zoomRange"
                 step="0.008"
             />
-        </div>
-        <div class="flex flex-row bg-info">
-            <div>Scale: {{ this.$parent.scale }}</div>
-            <div>Time Multiplier: {{ this.holdTime }}</div>
-            <div>PanX: {{ this.$parent.panX }}</div>
-            <div>PanY: {{ this.$parent.panY }}</div>
         </div>
     </div>
 </template>

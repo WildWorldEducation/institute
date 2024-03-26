@@ -56,7 +56,9 @@ export default {
             panY: 0,
             hiddenCanvasInitiated: false,
             // Printing
-            data: {}
+            data: {},
+            // Flag for mouse wheel
+            zoomWithWheel: false
         };
     },
     components: {
@@ -126,12 +128,21 @@ export default {
             }
         });
 
-        // Zoom d3 handler
+        canvas.addEventListener('wheel', (e) => {
+            this.zoomWithWheel = true;
+        });
+
+        // Zoom and Panning with mouse d3 handler
         d3.select(this.context.canvas).call(
             d3
                 .zoom()
-                .scaleExtent([0.008, 2])
-                .on('zoom', ({ transform }) => this.handleMouseZoom(transform))
+                .scaleExtent([0.008, 5])
+                .on('zoom', ({ transform }) => {
+                    if (!this.zoomWithWheel) {
+                        transform.k = this.scale;
+                    }
+                    this.handleMouseZoom(transform);
+                })
         );
     },
     methods: {
@@ -590,12 +601,13 @@ export default {
             // Append the SVG element.
             document.querySelector('#SVGskilltree').append(svg.node());
         },
-
         // handle mouse zoom
         handleMouseZoom(transform) {
             this.scale = transform.k;
-            this.panX = transform.x;
-            this.panY = transform.y;
+            this.panX =
+                this.scale >= 1 ? transform.x : transform.x / this.scale;
+            this.panY =
+                this.scale >= 1 ? transform.y : transform.y / this.scale;
             this.drawTree();
         }
     }
@@ -612,21 +624,7 @@ export default {
         <canvas id="canvas" width="1500" height="1500"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <!-- <div id="controlsWrapper">
-            <div id="panJoystick"></div>
-            <div class="slidecontainer">
-                <input
-                    type="range"
-                    min="0.1"
-                    max="2"
-                    value="1"
-                    class="slider"
-                    id="zoomRange"
-                />
-            </div>
-        </div> -->
         <JoystickControl />
-
         <div id="sidepanel-backdrop"></div>
     </div>
 </template>
