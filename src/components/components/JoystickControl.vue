@@ -10,7 +10,7 @@ export default {
             // we store interval id to clear it later
             interval: null,
             // fps is a constant to determine how many time the tree will re-draw each second
-            fps: 10
+            fps: 30
         };
     },
     computed: {},
@@ -19,7 +19,7 @@ export default {
         var panJoystick = nipplejs.create({
             zone: document.getElementById('panJoystick'),
             mode: 'static',
-            position: { left: '25%', top: '5%' },
+            position: { left: '25%', top: '25%' },
             color: 'blue'
         });
 
