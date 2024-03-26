@@ -122,8 +122,8 @@ export default {
 
         // Touch.
         zoomSlider.addEventListener('touchend', () => {
-            this.scale = zoomSlider.value;
-            this.drawTree();
+            this.$parent.scale = zoomSlider.value;
+            this.$parent.drawTree();
         });
     },
     watch: {},
@@ -137,9 +137,9 @@ export default {
         <div class="slidecontainer">
             <input
                 type="range"
-                min="0.008"
+                min="0.108"
                 max="2"
-                value="0.5"
+                value="0.108"
                 class="slider"
                 id="zoomRange"
                 step="0.05"

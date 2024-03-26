@@ -23,6 +23,12 @@ const router = createRouter({
             component: () => import('../components/pages/RadialTreeView.vue')
         },
         {
+            path: '/pixi-radial-tree',
+            name: 'pixi-radial-tree',
+            component: () =>
+                import('../components/pages/PixiRadialTreeView.vue')
+        },
+        {
             path: '/:id/skill-tree',
             name: 'student-skill-tree',
             component: () =>

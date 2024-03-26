@@ -237,6 +237,8 @@ export default {
             this.drawTree();
         },
         drawTree() {
+            //  console.log('draw tree');
+
             this.nodes = this.root.descendants();
 
             // Zoom and pan.
