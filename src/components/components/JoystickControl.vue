@@ -145,12 +145,12 @@ export default {
                 step="0.05"
             />
         </div>
-        <div class="flex flex-row bg-info">
+        <!-- <div class="flex flex-row bg-info">
             <div>Scale: {{ this.$parent.scale }}</div>
             <div>Time Multiplier: {{ this.holdTime }}</div>
             <div>PanX: {{ this.$parent.panX }}</div>
             <div>PanY: {{ this.$parent.panY }}</div>
-        </div>
+        </div> -->
     </div>
 </template>
 
