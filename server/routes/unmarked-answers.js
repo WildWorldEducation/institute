@@ -66,7 +66,6 @@ router.get('/list/:assessmentId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                console.log(results.length);
                 res.json(results.length);
             } catch (err) {
                 next(err);
