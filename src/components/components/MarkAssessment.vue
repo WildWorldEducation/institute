@@ -115,25 +115,70 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
-        <h1>Unmarked Assessments</h1>
-        <ul v-for="assessment in this.assessments">
-            <li>
-                <RouterLink :to="'/mark-assessment/' + assessment.id">
+    <div class="container-fluid">
+        <div id="question-header">
+            <div id="assessment-tile">Assessments</div>
+        </div>
+        <div id="list-body">
+            <div class="assessment" v-for="assessment in this.assessments">
+                <RouterLink
+                    class="assessment-link"
+                    :to="'/mark-assessment/' + assessment.id"
+                >
                     {{ assessment.studentUsername }},
                     {{ assessment.skillName }},
                     {{ assessment.date }}
                 </RouterLink>
-            </li>
-        </ul>
+            </div>
+        </div>
     </div>
 </template>
 
 <style>
+.assessment {
+    border: 1px solid #dbd0f9;
+    margin: 0px;
+    padding: 10px 6px;
+}
+
 h2 {
     color: #8f7bd6;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
+}
+
+#assessment-tile {
+    font-family: 'Poppins';
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #ad9af3;
+}
+
+.assessment-link {
+    font-family: 'Poppins';
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+    text-decoration: none;
+    color: #667085;
+}
+
+#question-header {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 20px;
+    background: #e8e2f9;
+    border: 1px solid #dbd0f9;
+}
+
+#list-body {
+    height: 340px;
+    overflow: auto;
 }
 
 .green-btn {

@@ -4,80 +4,89 @@ import StudentMessages from '../components/StudentMessages.vue';
 import StudentProgress from '../components/StudentProgress.vue';
 import Notifications from '../components/Notifications.vue';
 import News from '../components/News.vue';
+import MarkAssessment from '../components/MarkAssessment.vue';
+
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 export default {
-  setup() {
-    const userDetailsStore = useUserDetailsStore();
-    // Run the GET request.
-    userDetailsStore.getUserDetails();
-    return {
-      userDetailsStore,
-    };
-  },
-  data() {
-    return {};
-  },
-  components: {
-    News,
-    Notifications,
-    StudentMessages,
-    StudentProgress,
-  },
-  computed: {
-    name() {
-      return (
-        this.userDetailsStore.firstName + ' ' + this.userDetailsStore.lastName
-      );
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        // Run the GET request.
+        userDetailsStore.getUserDetails();
+        return {
+            userDetailsStore
+        };
     },
-  },
-  methods: {},
+    data() {
+        return {};
+    },
+    components: {
+        News,
+        Notifications,
+        StudentMessages,
+        StudentProgress,
+        MarkAssessment
+    },
+    computed: {
+        name() {
+            return (
+                this.userDetailsStore.firstName +
+                ' ' +
+                this.userDetailsStore.lastName
+            );
+        }
+    },
+    methods: {}
 };
 </script>
 
 <template>
-  <div id="banner">
-    <img src="/images/banners/general-banner.png" class="" />
-  </div>
-  <div class="container post-login-container min-vh-100">
-    <div class="row text-center text-md-start">
-      <h1 id="user-name">{{ name }}</h1>
+    <div id="banner">
+        <img src="/images/banners/general-banner.png" class="" />
     </div>
-    <div class="row content-row">
-      <div id="profile-image-column" class="column col-lg-4 col-md-6 mx-0">
-        <!-- Avatar image -->
-        <img
-          id="profile-img"
-          :src="userDetailsStore.avatar"
-          class="img-fluid"
-        />
-      </div>
-      <div id="middle-profile-column" class="column col-lg-4 col-md-6">
-        <StudentProgress
-          v-if="userDetailsStore.role == 'student'"
-          :userId="userDetailsStore.userId"
-        />
-        <RouterLink
-          v-else-if="userDetailsStore.role == 'instructor'"
-          to="/assessments"
-          >Mark assessments
-        </RouterLink>
-      </div>
-      <div id="message-col" class="column col-lg-4 col-md-6">
-        <StudentMessages />
-      </div>
-      <div id="notif-col" class="column col-lg-3 col-md-6">
-        <Notifications />
-      </div>
-      <div id="sub-image" class="column col-lg-9 col-md-6 d-none d-lg-block">
-        <img src="/images/post-login.png" class="img-fluid" />
-      </div>
+    <div class="container post-login-container min-vh-100">
+        <div class="row text-center text-md-start">
+            <h1 id="user-name">{{ name }}</h1>
+        </div>
+        <div class="row content-row">
+            <div
+                id="profile-image-column"
+                class="column col-lg-4 col-md-6 mx-0"
+            >
+                <!-- Avatar image -->
+                <img
+                    id="profile-img"
+                    :src="userDetailsStore.avatar"
+                    class="img-fluid"
+                />
+            </div>
+            <div id="middle-profile-column" class="column col-lg-4 col-md-6">
+                <StudentProgress
+                    v-if="userDetailsStore.role == 'student'"
+                    :userId="userDetailsStore.userId"
+                />
+                <div v-else-if="userDetailsStore.role == 'instructor'">
+                    <MarkAssessment />
+                </div>
+            </div>
+            <div id="message-col" class="column col-lg-4 col-md-6">
+                <StudentMessages />
+            </div>
+            <div id="notif-col" class="column col-lg-3 col-md-6">
+                <Notifications />
+            </div>
+            <div
+                id="sub-image"
+                class="column col-lg-9 col-md-6 d-none d-lg-block"
+            >
+                <img src="/images/post-login.png" class="img-fluid" />
+            </div>
+        </div>
+        <div id="news-row" class="row">
+            <News />
+        </div>
     </div>
-    <div id="news-row" class="row">
-      <News />
-    </div>
-  </div>
 </template>
 
 <style>
@@ -85,153 +94,153 @@ export default {
 *  So we have to implement it
 */
 .img-fluid {
-  width: 100%;
-  height: auto;
+    width: 100%;
+    height: auto;
 }
 
 .content-row {
-  padding-bottom: 51px;
+    padding-bottom: 51px;
 }
 
 #banner {
-  width: 100%;
+    width: 100%;
 }
 
 #banner > img {
-  width: 100%;
-  height: auto;
+    width: 100%;
+    height: auto;
 }
 
 #purple-banner {
-  height: 77px;
-  background-color: #a48be640;
+    height: 77px;
+    background-color: #a48be640;
 }
 
 .post-login-container {
-  padding-top: 23px;
+    padding-top: 23px;
 }
 
 h1 {
-  color: #8f7bd6;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 900;
+    color: #8f7bd6;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
 }
 
 #user-name {
-  font-size: 2.375rem;
+    font-size: 2.375rem;
 }
 
 /* Because Boostrap doesn`t support the gap between column
    So we have do it manual here
 */
 #message-col {
-  padding-left: 41px;
+    padding-left: 41px;
 }
 
 #profile-image-column {
-  padding-right: 41px;
+    padding-right: 41px;
 }
 
 #middle-profile-column {
-  padding-left: 42px;
-  padding-right: 42px;
+    padding-left: 42px;
+    padding-right: 42px;
 }
 
 #notif-col {
-  margin-top: 51px;
+    margin-top: 51px;
 }
 
 #sub-image {
-  margin-top: 51px;
-  padding-left: 23px;
+    margin-top: 51px;
+    padding-left: 23px;
 }
 
 #news-row {
-  height: 100%;
+    height: 100%;
 }
 /* View Specific On Phone */
 @media (min-width: 320px) and (max-width: 576px) {
-  #message-col {
-    margin-top: 51px;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-bottom: 51px;
-  }
+    #message-col {
+        margin-top: 51px;
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-bottom: 51px;
+    }
 
-  #profile-image-column {
-    padding-right: 66px;
-    padding-left: 66px;
-  }
+    #profile-image-column {
+        padding-right: 66px;
+        padding-left: 66px;
+    }
 
-  #middle-profile-column {
-    margin-top: 36px;
-    padding-left: 12px;
-    padding-right: 12px;
-  }
+    #middle-profile-column {
+        margin-top: 36px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
 
-  #user-name {
-    padding-left: 100px;
-    padding-right: 100px;
-  }
+    #user-name {
+        padding-left: 100px;
+        padding-right: 100px;
+    }
 
-  .post-login-container {
-    padding-top: 23px;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
+    .post-login-container {
+        padding-top: 23px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
 
-  #notif-col {
-    margin-top: 0px;
-  }
+    #notif-col {
+        margin-top: 0px;
+    }
 }
 
 /* View Specific On Tablet */
 @media (min-width: 577px) and (max-width: 1023px) {
-  .content-row {
-    padding-bottom: 0px;
-    margin-bottom: 39px;
-  }
+    .content-row {
+        padding-bottom: 0px;
+        margin-bottom: 39px;
+    }
 
-  #message-col {
-    margin-top: 37px;
-    padding-left: 0px;
-    padding-right: 72px;
-  }
+    #message-col {
+        margin-top: 37px;
+        padding-left: 0px;
+        padding-right: 72px;
+    }
 
-  #notif-col {
-    margin-top: 37px;
-    padding-left: 72px;
-    padding-right: 0px;
-  }
+    #notif-col {
+        margin-top: 37px;
+        padding-left: 72px;
+        padding-right: 0px;
+    }
 
-  #profile-image-column {
-    padding-right: 120px;
-    padding-left: 0px;
-  }
+    #profile-image-column {
+        padding-right: 120px;
+        padding-left: 0px;
+    }
 
-  #middle-profile-column {
-    padding-left: 72px;
-    padding-right: 0px;
-    margin-right: 0px;
-  }
+    #middle-profile-column {
+        padding-left: 72px;
+        padding-right: 0px;
+        margin-right: 0px;
+    }
 
-  #user-name {
-    padding-left: 0px;
-    padding-right: 0px;
-  }
+    #user-name {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
 
-  .post-login-container {
-    padding-top: 23px;
-    display: relative;
-  }
+    .post-login-container {
+        padding-top: 23px;
+        display: relative;
+    }
 
-  #news-row {
-    min-height: 40vh;
-  }
+    #news-row {
+        min-height: 40vh;
+    }
 
-  #news-row > div {
-    margin-top: auto;
-    margin-bottom: 10px;
-  }
+    #news-row > div {
+        margin-top: auto;
+        margin-bottom: 10px;
+    }
 }
 </style>

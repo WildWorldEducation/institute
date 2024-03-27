@@ -291,8 +291,8 @@ export default {
 <template>
     <!--<button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div
-        v-if="this.questions.length > 0"
-        class="container mt-5 mb-3 p-3 pt-2"
+        v-if="this.questions.length"
+        class="container mt-5 mb-3 p-3 pt-2 mb-3"
         id="question-container"
     >
         <!-- To wait for questions to be loaded, before the DOM renders. -->
@@ -328,6 +328,7 @@ export default {
             <div v-else-if="this.question.questionType == 'essay'">
                 <div class="form-group">
                     <textarea
+                        id="essay-answer"
                         @input="UserAnswer()"
                         class="form-control"
                         v-model="questions[this.questionNumber].userAnswer"

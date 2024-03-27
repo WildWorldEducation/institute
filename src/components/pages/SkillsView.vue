@@ -22,7 +22,10 @@ export default {
 
 <template>
     <div id="banner">
-        <img src="/images/banners/skills-banner.png" class="img-fluid" />
+        <img
+            src="/images/banners/edit-mastery-skill-banner.png"
+            class="img-fluid"
+        />
     </div>
     <div v-if="userDetailsStore.role == 'admin'" class="topnav" id="skill-nav">
         <router-link class="btn purple-btn" to="/skills/add"
