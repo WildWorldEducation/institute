@@ -5,12 +5,14 @@ export default {
     setup() {},
     data() {
         return {
-            // the time user hold the joystick
+            // the time user hold the joystick in second
             holdTime: 1,
             // we store interval id to clear it later
             interval: null,
             // fps is a constant to determine how many time the tree will re-draw each second
-            fps: 100
+            fps: 10,
+            // another interval to calculate holdTime
+            holdTimeInterval: null
         };
     },
     computed: {},
@@ -35,35 +37,51 @@ export default {
                     clearInterval(this.interval);
                     // if the scale < 0 we panning further
                     const panAddition =
-                        this.$parent.scale >= 1 ? 0 : 15 / this.$parent.scale;
+                        /**
+                         * by divide with scale we can add more when the scale get smaller thus we will panning more
+                         */
+                        this.$parent.scale >= 1
+                            ? this.$parent.scale
+                            : 50 / this.$parent.scale;
 
                     // call new interval with new direction
                     switch (data.direction.angle) {
+                        /**
+                         * we add more panning base on the zoom scale and hold time
+                         */
                         case 'right':
                             this.interval = setInterval(() => {
                                 this.$parent.panX =
-                                    this.$parent.panX - 20 - panAddition;
+                                    this.$parent.panX -
+                                    panAddition -
+                                    (this.holdTime * 100 - panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
                         case 'left':
                             this.interval = setInterval(() => {
                                 this.$parent.panX =
-                                    this.$parent.panX + 20 + panAddition;
+                                    this.$parent.panX +
+                                    panAddition +
+                                    (this.holdTime * 100 + panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
                         case 'up':
                             this.interval = setInterval(() => {
                                 this.$parent.panY =
-                                    this.$parent.panY + 20 + panAddition;
+                                    this.$parent.panY +
+                                    panAddition +
+                                    (this.holdTime * 100 + panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
                         case 'down':
                             this.interval = setInterval(() => {
                                 this.$parent.panY =
-                                    this.$parent.panY - 20 - panAddition;
+                                    this.$parent.panY -
+                                    panAddition -
+                                    (this.holdTime * 100 - panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -74,6 +92,20 @@ export default {
             )
             .on('end', (evt, data) => {
                 clearInterval(this.interval);
+            });
+
+        /**
+         * Listen to joystick start and end event to calculate hold time
+         */
+        panJoystick
+            .on('start', (evt, data) => {
+                this.holdTimeInterval = setInterval(() => {
+                    this.holdTime += 1;
+                }, 1000);
+            })
+            .on('end', (evt, data) => {
+                clearInterval(this.holdTimeInterval);
+                this.holdTime = 0;
             });
 
         // panJoystick
@@ -127,6 +159,7 @@ export default {
         // Mouse.
         zoomSlider.addEventListener('mouseup', () => {
             this.$parent.scale = zoomSlider.value;
+            // we store a special flag to tell the D3 zoom listener to scroll along side the sliders
             this.$parent.zoomWithWheel = false;
             this.$parent.drawTree();
         });
@@ -134,6 +167,7 @@ export default {
         // Touch.
         zoomSlider.addEventListener('touchend', () => {
             this.$parent.scale = zoomSlider.value;
+            // we store a special flag to tell the D3 zoom listener to scroll along side the sliders
             this.$parent.zoomWithWheel = false;
             this.$parent.drawTree();
         });
