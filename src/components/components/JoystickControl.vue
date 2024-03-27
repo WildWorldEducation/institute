@@ -6,7 +6,7 @@ export default {
     data() {
         return {
             // the time user hold the joystick in second
-            holdTime: 1,
+            holdTime: 0,
             // we store interval id to clear it later
             interval: null,
             // fps is a constant to determine how many time the tree will re-draw each second
@@ -53,8 +53,9 @@ export default {
                             this.interval = setInterval(() => {
                                 this.$parent.panX =
                                     this.$parent.panX -
+                                    20 -
                                     panAddition -
-                                    (this.holdTime * 100 - panAddition);
+                                    (this.holdTime * 10 - panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -62,8 +63,9 @@ export default {
                             this.interval = setInterval(() => {
                                 this.$parent.panX =
                                     this.$parent.panX +
+                                    20 +
                                     panAddition +
-                                    (this.holdTime * 100 + panAddition);
+                                    (this.holdTime * 10 + panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -71,8 +73,9 @@ export default {
                             this.interval = setInterval(() => {
                                 this.$parent.panY =
                                     this.$parent.panY +
+                                    20 +
                                     panAddition +
-                                    (this.holdTime * 100 + panAddition);
+                                    (this.holdTime * 10 + panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -80,8 +83,9 @@ export default {
                             this.interval = setInterval(() => {
                                 this.$parent.panY =
                                     this.$parent.panY -
+                                    20 -
                                     panAddition -
-                                    (this.holdTime * 100 - panAddition);
+                                    (this.holdTime * 10 - panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
