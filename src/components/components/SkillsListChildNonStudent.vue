@@ -1,7 +1,4 @@
 <script>
-// Import
-//import router from '../../router';
-
 export default {
     setup() {
         return {};
@@ -81,7 +78,6 @@ export default {
     methods: {
         mainButtonPress() {
             if (this.type != 'domain') {
-                //this.$router.push('/skills/' + this.id);
                 window.open('/skills/' + this.id, '_blank');
             } else this.toggleChildren();
         },
