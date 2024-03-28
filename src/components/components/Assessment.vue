@@ -57,7 +57,6 @@ export default {
         // Get user skills, in case this is a sub skill. We have to check its siblings.
         // Need to get the questions for the quiz, before the DOM renders.
         if (skillType != 'super') {
-            console.log('test1');
             await this.fetchMCQuestions(this.skillId);
             await this.fetchEssayQuestions(this.skillId);
             // If it is a super skill, populate quiz from its subskills.
@@ -79,7 +78,6 @@ export default {
     },
     methods: {
         async fetchMCQuestions(skillId) {
-            console.log('test2');
             fetch('/questions/' + skillId + '/multiple-choice')
                 .then(function (response) {
                     return response.json();
