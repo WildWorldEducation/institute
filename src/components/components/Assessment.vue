@@ -1,12 +1,9 @@
 <script>
-// Import
-import router from '../../router';
 // Import the store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
-import { subset, tree } from 'd3';
 
 export default {
     setup() {
@@ -80,7 +77,7 @@ export default {
         }
     },
     methods: {
-        fetchMCQuestions(skillId) {
+        async fetchMCQuestions(skillId) {
             fetch('/questions/' + skillId + '/multiple-choice')
                 .then(function (response) {
                     return response.json();
@@ -127,7 +124,7 @@ export default {
                     }
                 });
         },
-        fetchEssayQuestions(skillId) {
+        async fetchEssayQuestions(skillId) {
             fetch('/questions/' + skillId + '/essay')
                 .then(function (response) {
                     return response.json();

@@ -3,7 +3,7 @@ import RadialTree from '../components/skilltrees/RadialTree.vue';
 </script>
 
 <template>
-    <div id="purple-banner"></div>
+    <div id="thin-purple-banner"></div>
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
@@ -16,8 +16,8 @@ import RadialTree from '../components/skilltrees/RadialTree.vue';
 </template>
 
 <style>
-#purple-banner {
-    height: 40px;
+#thin-purple-banner {
+    height: 20px;
     background-color: #a48be640;
 }
 </style>
