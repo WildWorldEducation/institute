@@ -21,6 +21,7 @@ export default {
     },
     data() {
         return {
+            loading: true,
             skillId: this.$route.params.id,
             skill: {},
             mcQuestions: [],
@@ -76,6 +77,7 @@ export default {
             }
         }
     },
+
     methods: {
         async fetchMCQuestions(skillId) {
             fetch('/questions/' + skillId + '/multiple-choice')
@@ -166,6 +168,9 @@ export default {
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
                     this.totalNumOfQuestions = this.questions.length;
+                })
+                .then(() => {
+                    this.loading = false;
                 });
         },
         Next() {
@@ -287,81 +292,87 @@ export default {
 
 <template>
     <!--<button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
-    <div
-        v-if="this.questions.length"
-        class="container mt-5 mb-3 p-3 pt-2 mb-3"
-        id="question-container"
-    >
-        <!-- To wait for questions to be loaded, before the DOM renders. -->
-        <div class="row">
-            <div class="col d-flex my-2 gap-2 align-items-lg-center">
-                <div id="question-number-div">
-                    {{ this.questionNumber + 1 }}
+    <div v-if="loading == true">Loading...</div>
+    <div v-if="loading == false">
+        <div
+            v-if="questions.length > 0"
+            class="container mt-5 mb-3 p-3 pt-2 mb-3"
+            id="question-container"
+        >
+            <!-- To wait for questions to be loaded, before the DOM renders. -->
+            <div class="row">
+                <div class="col d-flex my-2 gap-2 align-items-lg-center">
+                    <div id="question-number-div">
+                        {{ this.questionNumber + 1 }}
+                    </div>
+                    <div id="question-content">
+                        {{ question.question }}
+                    </div>
                 </div>
-                <div id="question-content">
-                    {{ question.question }}
+                <!-- Multiple Choice Question -->
+                <div v-if="this.question.questionType == 'mc'">
+                    <div
+                        v-for="(answerOption, index) in this.question
+                            .answerOptions"
+                        class="form-check my-3"
+                    >
+                        <label class="control control-checkbox">
+                            <span class="my-auto mx-2 me-4">{{
+                                answerOption.option
+                            }}</span>
+                            <input
+                                type="radio"
+                                name="nodeType"
+                                :value="answerOption.index"
+                                v-model="
+                                    questions[this.questionNumber].userAnswer
+                                "
+                            />
+                            <div class="control_indicator"></div>
+                        </label>
+                    </div>
                 </div>
-            </div>
-            <!-- Multiple Choice Question -->
-            <div v-if="this.question.questionType == 'mc'">
-                <div
-                    v-for="(answerOption, index) in this.question.answerOptions"
-                    class="form-check my-3"
-                >
-                    <label class="control control-checkbox">
-                        <span class="my-auto mx-2 me-4">{{
-                            answerOption.option
-                        }}</span>
-                        <input
-                            type="radio"
-                            name="nodeType"
-                            :value="answerOption.index"
+                <div v-else-if="this.question.questionType == 'essay'">
+                    <div class="form-group">
+                        <textarea
+                            id="essay-answer"
+                            @input="UserAnswer()"
+                            class="form-control"
                             v-model="questions[this.questionNumber].userAnswer"
-                        />
-                        <div class="control_indicator"></div>
-                    </label>
+                            rows="3"
+                        ></textarea>
+                    </div>
                 </div>
             </div>
-            <div v-else-if="this.question.questionType == 'essay'">
-                <div class="form-group">
-                    <textarea
-                        id="essay-answer"
-                        @input="UserAnswer()"
-                        class="form-control"
-                        v-model="questions[this.questionNumber].userAnswer"
-                        rows="3"
-                    ></textarea>
-                </div>
-            </div>
-        </div>
-        <div class="mt-3 d-flex justify-content-end">
-            <button
-                v-if="this.questionNumber > 0"
-                @click="Previous()"
-                class="btn red-btn me-2"
-            >
-                Previous
-            </button>
-            <button
-                v-if="this.questionNumber != questions.length - 1"
-                @click="Next()"
-                class="btn green-btn"
-            >
-                Next
-            </button>
-            <!-- <button disabled v-if="this.questionNumber == questions.length - 1 && !isAllQuestionsAnswered" @click="Submit()"
+            <div class="mt-3 d-flex justify-content-end">
+                <button
+                    v-if="this.questionNumber > 0"
+                    @click="Previous()"
+                    class="btn red-btn me-2"
+                >
+                    Previous
+                </button>
+                <button
+                    v-if="this.questionNumber != questions.length - 1"
+                    @click="Next()"
+                    class="btn green-btn"
+                >
+                    Next
+                </button>
+                <!-- <button disabled v-if="this.questionNumber == questions.length - 1 && !isAllQuestionsAnswered" @click="Submit()"
                 class="btn green-btn">Submit</button> -->
-            <button
-                v-if="this.questionNumber == questions.length - 1"
-                @click="Submit()"
-                class="btn green-btn"
-            >
-                Submit
-            </button>
+                <button
+                    v-if="this.questionNumber == questions.length - 1"
+                    @click="Submit()"
+                    class="btn green-btn"
+                >
+                    Submit
+                </button>
+            </div>
         </div>
-    </div>
-    <div v-else id="question-content">
-        There is no quiz for this skill yet. Please check again soon.
+        <div v-else id="question-content">
+            There is no quiz for this skill yet. Please check again soon.
+        </div>
     </div>
     <!-- Some modal to tell the student when their finish the assessment -->
     <!-- Pass Modal -->
