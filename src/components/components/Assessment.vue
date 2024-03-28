@@ -57,6 +57,7 @@ export default {
         // Get user skills, in case this is a sub skill. We have to check its siblings.
         // Need to get the questions for the quiz, before the DOM renders.
         if (skillType != 'super') {
+            console.log('test1');
             await this.fetchMCQuestions(this.skillId);
             await this.fetchEssayQuestions(this.skillId);
             // If it is a super skill, populate quiz from its subskills.
@@ -78,6 +79,7 @@ export default {
     },
     methods: {
         async fetchMCQuestions(skillId) {
+            console.log('test2');
             fetch('/questions/' + skillId + '/multiple-choice')
                 .then(function (response) {
                     return response.json();
@@ -288,7 +290,7 @@ export default {
 <template>
     <!--<button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div
-        v-if="this.questions.length"
+        v-if="this.questions.length > 0"
         class="container mt-5 mb-3 p-3 pt-2 mb-3"
         id="question-container"
     >
