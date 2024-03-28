@@ -59,7 +59,7 @@ export default {
         // Need to get the questions for the quiz, before the DOM renders.
         if (skillType != 'super') {
             await this.fetchMCQuestions(this.skillId);
-            await this.fetchEssayQuestions(this.skillId);
+            //  await this.fetchEssayQuestions(this.skillId);
             // If it is a super skill, populate quiz from its subskills.
         } else {
             let subSkills = [];
@@ -73,7 +73,7 @@ export default {
             }
             for (let i = 0; i < subSkills.length; i++) {
                 await this.fetchMCQuestions(subSkills[i].id);
-                await this.fetchEssayQuestions(subSkills[i].id);
+                //  await this.fetchEssayQuestions(subSkills[i].id);
             }
         }
     },
@@ -124,6 +124,9 @@ export default {
                         );
                         this.mcQuestions[i].answerOptions = answerOptions;
                     }
+                })
+                .then(() => {
+                    this.fetchEssayQuestions(skillId);
                 });
         },
         async fetchEssayQuestions(skillId) {
