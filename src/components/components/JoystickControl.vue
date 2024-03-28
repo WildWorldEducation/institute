@@ -117,6 +117,7 @@ export default {
         this.$parent.$refs.canvas.addEventListener(
             'keydown',
             (e) => {
+                console.log('key up: ' + e.code);
                 // Because this listener is hearing in interval so we just set interval once time
                 if (this.interval == null) {
                     // We count the press down time of key down too
@@ -176,6 +177,19 @@ export default {
                                     (this.holdTime * 10 - panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
+                            break;
+                        // We also add page up and page down to zoom in and out
+                        case 'PageUp':
+                            this.interval = setInterval(() => {
+                                this.$parent.scale = this.$parent.scale + 0.03;
+                                this.$parent.drawTree();
+                            }, 50);
+                            break;
+                        case 'PageDown':
+                            this.interval = setInterval(() => {
+                                this.$parent.scale = this.$parent.scale - 0.03;
+                                this.$parent.drawTree();
+                            }, 50);
                             break;
                         default:
                             break;
