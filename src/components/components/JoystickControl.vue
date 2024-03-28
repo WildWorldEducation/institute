@@ -110,7 +110,95 @@ export default {
             .on('end', (evt, data) => {
                 clearInterval(this.holdTimeInterval);
                 this.holdTime = 0;
+                this.interval = null;
             });
+
+        // Listen for the arrow key on canvas
+        this.$parent.$refs.canvas.addEventListener(
+            'keydown',
+            (e) => {
+                // Because this listener is hearing in interval so we just set interval once time
+                if (this.interval == null) {
+                    // We count the press down time of key down too
+                    this.holdTimeInterval = setInterval(() => {
+                        this.holdTime += 1;
+                    }, 1000);
+
+                    const panAddition =
+                        /**
+                         * by divide with scale we can add more when the scale get smaller thus we will panning more
+                         */
+                        this.$parent.scale >= 1
+                            ? this.$parent.scale
+                            : 50 / this.$parent.scale;
+                    console.log('hold time: ' + this.holdTime);
+
+                    switch (e.code) {
+                        /**
+                         * we add more panning base on the zoom scale and hold time
+                         */
+                        case 'ArrowRight':
+                            this.interval = setInterval(() => {
+                                this.$parent.panX =
+                                    this.$parent.panX -
+                                    20 -
+                                    panAddition -
+                                    (this.holdTime * 10 - panAddition);
+                                this.$parent.drawTree();
+                            }, intervalTime);
+                            break;
+                        case 'ArrowLeft':
+                            this.interval = setInterval(() => {
+                                this.$parent.panX =
+                                    this.$parent.panX +
+                                    20 +
+                                    panAddition +
+                                    (this.holdTime * 10 + panAddition);
+                                this.$parent.drawTree();
+                            }, intervalTime);
+                            break;
+                        case 'ArrowUp':
+                            this.interval = setInterval(() => {
+                                this.$parent.panY =
+                                    this.$parent.panY +
+                                    20 +
+                                    panAddition +
+                                    (this.holdTime * 10 + panAddition);
+                                this.$parent.drawTree();
+                            }, intervalTime);
+                            break;
+                        case 'ArrowDown':
+                            this.interval = setInterval(() => {
+                                this.$parent.panY =
+                                    this.$parent.panY -
+                                    20 -
+                                    panAddition -
+                                    (this.holdTime * 10 - panAddition);
+                                this.$parent.drawTree();
+                            }, intervalTime);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                e.preventDefault();
+            },
+            false
+        );
+
+        // Listen for the keyup event to clear the interval
+        this.$parent.$refs.canvas.addEventListener(
+            'keyup',
+            (e) => {
+                e.preventDefault();
+                clearInterval(this.interval);
+                clearInterval(this.holdTimeInterval);
+                // set this to null so next time a key is down it will set interval
+                this.interval = null;
+                this.holdTime = 0;
+            },
+            false
+        );
 
         // panJoystick
         //     .on('start', (evt, data) => {

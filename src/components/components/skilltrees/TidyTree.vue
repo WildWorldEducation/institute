@@ -132,7 +132,7 @@ export default {
             this.zoomWithWheel = true;
         });
 
-        // Zoom and Panning with mouse d3 handler
+        // Zoom and Panning with mouse, d3 handler
         d3.select(this.context.canvas).call(
             d3
                 .zoom()
@@ -621,7 +621,13 @@ export default {
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div id="wrapper">
         <SkillPanel :skill="skill" />
-        <canvas id="canvas" width="1500" height="1500"></canvas>
+        <canvas
+            id="canvas"
+            width="1500"
+            height="1500"
+            ref="canvas"
+            tabindex="1"
+        ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
         <JoystickControl />
