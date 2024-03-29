@@ -1,7 +1,4 @@
 <script>
-// Import
-import router from '../../router';
-
 export default {
     setup() {
         return {};
@@ -80,8 +77,9 @@ export default {
     },
     methods: {
         mainButtonPress() {
-            if (this.type != 'domain') this.$router.push('/skills/' + this.id);
-            else this.toggleChildren();
+            if (this.type != 'domain') {
+                window.open('/skills/' + this.id, '_blank');
+            } else this.toggleChildren();
         },
         // Save the state of the skills list to browser storage.
         toggleChildren() {

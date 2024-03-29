@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -66,7 +66,6 @@ router.get('/list/:assessmentId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                console.log(results.length);
                 res.json(results.length);
             } catch (err) {
                 next(err);
