@@ -74,6 +74,15 @@ export default {
         } else {
             this.showSubskills = false;
         }
+
+        /*
+         * Give longer domain names smaller font, otherwise they look bad.
+         * Do this by checking if they span more than one line (by checking height.)
+         */
+        if (this.type == 'domain') {
+            if (this.$refs.name.offsetHeight > 30)
+                this.$refs.name.classList.add('longer-domain-name');
+        }
     },
     methods: {
         mainButtonPress() {
@@ -130,7 +139,8 @@ export default {
         class="skill-button d-flex justify-content-between"
         @click="mainButtonPress()"
     >
-        <span style="text-align: left">{{ name }}</span>
+        <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
+        <span ref="name" style="text-align: left">{{ name }}</span>
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
             <button
