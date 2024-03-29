@@ -20,46 +20,15 @@ export default {
     },
     data() {
         return {
-            //  students: [],
             currentUserId: null
         };
     },
-    async created() {
-        // Get the instructor student list, if not yet loaded.
-        // if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
-        //     await this.instructorStudentsStore.getInstructorStudentsList();
-        // }
-    },
+    async created() {},
     methods: {
         changeUserId(user) {
             this.currentUserId = user.id;
             this.$emit('changeUserId', user);
         }
-        // getStudents() {
-        //     var studentIds = [];
-        //     for (
-        //         let i = 0;
-        //         i < this.instructorStudentsStore.instructorStudentsList.length;
-        //         i++
-        //     ) {
-        //         if (
-        //             this.instructorStudentsStore.instructorStudentsList[i]
-        //                 .instructor_id == this.userDetailsStore.userId
-        //         ) {
-        //             studentIds.push(
-        //                 this.instructorStudentsStore.instructorStudentsList[i]
-        //                     .student_id
-        //             );
-        //         }
-        //     }
-        //     for (let i = 0; i < this.usersStore.users.length; i++) {
-        //         for (let j = 0; j < studentIds.length; j++) {
-        //             if (this.usersStore.users[i].id == studentIds[j]) {
-        //                 this.students.push(this.usersStore.users[i]);
-        //             }
-        //         }
-        //     }
-        // }
     }
 };
 </script>
