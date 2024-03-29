@@ -84,11 +84,17 @@ export default {
 
         /*
          * Give longer domain names smaller font, otherwise they look bad.
-         * Do this by checking if they span more than one line (by checking height.)
+         * Do this by checking how many lines they span (by checking height.)
          */
         if (this.type == 'domain') {
-            if (this.$refs.name.offsetHeight > 30)
-                this.$refs.name.classList.add('longer-domain-name');
+            if (this.$refs.name.offsetHeight > 120)
+                this.$refs.name.classList.add('five-row-domain-name');
+            else if (this.$refs.name.offsetHeight > 90)
+                this.$refs.name.classList.add('four-row-domain-name');
+            else if (this.$refs.name.offsetHeight > 60)
+                this.$refs.name.classList.add('three-row-domain-name');
+            else if (this.$refs.name.offsetHeight > 30)
+                this.$refs.name.classList.add('two-row-domain-name');
         }
     },
     methods: {
@@ -353,10 +359,21 @@ export default {
     flex-direction: row;
 }
 
-.longer-domain-name {
+.two-row-domain-name {
     font-size: 17px;
 }
 
+.three-row-domain-name {
+    font-size: 14px;
+}
+
+.four-row-domain-name {
+    font-size: 13px;
+}
+
+.four-row-domain-name {
+    font-size: 12px;
+}
 .grade-school-level {
     border-color: #40b9a9;
 }
