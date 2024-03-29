@@ -5,153 +5,127 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 
 export default {
-  setup() {
-    const usersStore = useUsersStore();
-    const userDetailsStore = useUserDetailsStore();
-    const instructorStudentsStore = useInstructorStudentsStore();
+    setup() {
+        const usersStore = useUsersStore();
+        const userDetailsStore = useUserDetailsStore();
+        const instructorStudentsStore = useInstructorStudentsStore();
 
-    // Run the GET request.
-    if (usersStore.users.length < 1) usersStore.getUsers();
-    return {
-      usersStore,
-      userDetailsStore,
-      instructorStudentsStore,
-    };
-  },
-  data() {
-    return {
-      students: [],
-      currentUserId: null,
-    };
-  },
-  async created() {
-    // Get the instructor student list, if not yet loaded.
-    if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
-      await this.instructorStudentsStore.getInstructorStudentsList();
+        // Run the GET request.
+        if (usersStore.users.length < 1) usersStore.getUsers();
+        return {
+            usersStore,
+            userDetailsStore,
+            instructorStudentsStore
+        };
+    },
+    data() {
+        return {
+            currentUserId: null
+        };
+    },
+    async created() {},
+    methods: {
+        changeUserId(user) {
+            this.currentUserId = user.id;
+            this.$emit('changeUserId', user);
+        }
     }
-
-    if (this.userDetailsStore.role == 'instructor') this.getStudents();
-  },
-  methods: {
-    changeUserId(user) {
-      this.currentUserId = user.id;
-      this.$emit('changeUserId', user);
-    },
-    getStudents() {
-      var studentIds = [];
-      for (
-        let i = 0;
-        i < this.instructorStudentsStore.instructorStudentsList.length;
-        i++
-      ) {
-        if (
-          this.instructorStudentsStore.instructorStudentsList[i]
-            .instructor_id == this.userDetailsStore.userId
-        ) {
-          studentIds.push(
-            this.instructorStudentsStore.instructorStudentsList[i].student_id
-          );
-        }
-      }
-      for (let i = 0; i < this.usersStore.users.length; i++) {
-        for (let j = 0; j < studentIds.length; j++) {
-          if (this.usersStore.users[i].id == studentIds[j]) {
-            this.students.push(this.usersStore.users[i]);
-          }
-        }
-      }
-    },
-  },
 };
 </script>
 
 <template>
-  <div class="container mt-4">
-    <div
-      v-if="userDetailsStore.role == 'admin'"
-      v-for="user in usersStore.users"
-    >
-      <div class="d-flex">
-        <img
-          class="user-avatars"
-          v-if="user.avatar != null"
-          :src="user.avatar"
-        />
-        <button
-          :class="
-            user.id == currentUserId ? 'isCurrentlyChoose' : 'user-buttons'
-          "
-          @click="changeUserId(user)"
+    <div class="container mt-4">
+        <div
+            v-if="userDetailsStore.role == 'admin'"
+            v-for="user in usersStore.users"
         >
-          {{ user.first_name }} {{ user.last_name }}
-        </button>
-      </div>
-      <!-- divide line for pc and tablet view -->
-      <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
-      <!-- divide line for phone view specific -->
-      <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
-    </div>
-    <div
-      v-else-if="userDetailsStore.role == 'instructor'"
-      v-for="student in students"
-    >
-      <div class="d-flex">
-        <img
-          class="user-avatars"
-          v-if="student.avatar != null"
-          :src="student.avatar"
-        />
-        <button
-          :class="
-            student.id == currentUserId ? 'isCurrentlyChoose' : 'user-buttons'
-          "
-          @click="changeUserId(student)"
+            <div class="d-flex">
+                <img
+                    class="user-avatars"
+                    v-if="user.avatar != null"
+                    :src="user.avatar"
+                />
+                <button
+                    :class="
+                        user.id == currentUserId
+                            ? 'isCurrentlyChoose'
+                            : 'user-buttons'
+                    "
+                    @click="changeUserId(user)"
+                >
+                    {{ user.first_name }} {{ user.last_name }}
+                </button>
+            </div>
+            <!-- divide line for pc and tablet view -->
+            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <!-- divide line for phone view specific -->
+            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+        </div>
+        <div
+            v-else-if="userDetailsStore.role == 'instructor'"
+            v-for="student in $parent.students"
         >
-          {{ student.first_name }} {{ student.last_name }}
-        </button>
-      </div>
-      <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <div class="d-flex">
+                <img
+                    class="user-avatars"
+                    v-if="student.avatar != null"
+                    :src="student.avatar"
+                />
+                <button
+                    :class="
+                        student.id == currentUserId
+                            ? 'isCurrentlyChoose'
+                            : 'user-buttons'
+                    "
+                    @click="changeUserId(student)"
+                >
+                    {{ student.first_name }} {{ student.last_name }}
+                </button>
+            </div>
+            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <!-- divide line for phone view specific -->
+            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+        </div>
     </div>
-  </div>
 </template>
 
 <style scoped>
 .user-avatars {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
-  border: 1px solid #7f56d9;
-  margin-right: 22px;
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    border: 1px solid #7f56d9;
+    margin-right: 22px;
 }
 
 .user-buttons {
-  font-family: 'Poppins', sans-serif;
-  width: 283px;
-  height: 80px;
-  border-radius: 8px;
-  border: 1px solid #7f56d9;
-  background-color: #c8d7da;
-  color: white;
-  padding: 16px, 28px, 16px, 28px;
-  font-size: 1.25rem;
-  font-weight: 400;
+    font-family: 'Poppins', sans-serif;
+    width: 283px;
+    height: 80px;
+    border-radius: 8px;
+    border: 1px solid #7f56d9;
+    background-color: #c8d7da;
+    color: white;
+    padding: 16px, 28px, 16px, 28px;
+    font-size: 1.25rem;
+    font-weight: 400;
 }
 
 .user-buttons:hover {
-  background-color: #a48be6;
+    background-color: #a48be6;
 }
 
 /* The style when the user button is currently choose to show information */
 .isCurrentlyChoose {
-  font-family: 'Poppins', sans-serif;
-  width: 283px;
-  height: 80px;
-  border-radius: 8px;
-  border: 1px solid #7f56d9;
-  background-color: #a48be6;
-  color: white;
-  padding: 16px, 28px, 16px, 28px;
-  font-size: 1.25rem;
-  font-weight: 400;
+    font-family: 'Poppins', sans-serif;
+    width: 283px;
+    height: 80px;
+    border-radius: 8px;
+    border: 1px solid #7f56d9;
+    background-color: #a48be6;
+    color: white;
+    padding: 16px, 28px, 16px, 28px;
+    font-size: 1.25rem;
+    font-weight: 400;
 }
 </style>
