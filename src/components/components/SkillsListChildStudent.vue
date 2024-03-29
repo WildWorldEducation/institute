@@ -81,6 +81,15 @@ export default {
         } else {
             this.showSubskills = false;
         }
+
+        /*
+         * Give longer domain names smaller font, otherwise they look bad.
+         * Do this by checking if they span more than one line (by checking height.)
+         */
+        if (this.type == 'domain') {
+            if (this.$refs.name.offsetHeight > 30)
+                this.$refs.name.classList.add('longer-domain-name');
+        }
     },
     methods: {
         mainButtonPress() {
@@ -123,7 +132,6 @@ export default {
         :style="indent"
         :class="{
             domains: type == 'domain',
-            'longer-domain-name': name.length > 28,
             // Colors and background images for top level skills.
             locked: isUnlocked != 1,
             unlocked: isUnlocked == 1,
@@ -196,7 +204,8 @@ export default {
                 class="locked-skill-styling"
             />
         </div>
-        <span style="text-align: left">{{ name }}</span>
+        <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
+        <span ref="name" style="text-align: left">{{ name }}</span>
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
             <button
