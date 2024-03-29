@@ -77,11 +77,17 @@ export default {
 
         /*
          * Give longer domain names smaller font, otherwise they look bad.
-         * Do this by checking if they span more than one line (by checking height.)
+         * Do this by checking how many lines they span (by checking height.)
          */
         if (this.type == 'domain') {
-            if (this.$refs.name.offsetHeight > 30)
-                this.$refs.name.classList.add('longer-domain-name');
+            if (this.$refs.name.offsetHeight > 120)
+                this.$refs.name.classList.add('five-row-domain-name');
+            else if (this.$refs.name.offsetHeight > 90)
+                this.$refs.name.classList.add('four-row-domain-name');
+            else if (this.$refs.name.offsetHeight > 60)
+                this.$refs.name.classList.add('three-row-domain-name');
+            else if (this.$refs.name.offsetHeight > 30)
+                this.$refs.name.classList.add('two-row-domain-name');
         }
     },
     methods: {
@@ -125,7 +131,6 @@ export default {
         :style="indent"
         :class="{
             domains: type == 'domain',
-            'longer-domain-name': name.length > 28,
             'is-filtered': isFiltered == 'filtered',
             // Colors and background images for top level skills.
             'sub-skill-button': type == 'sub',
@@ -390,8 +395,20 @@ export default {
     background-position: right;
 }
 
-.longer-domain-name {
+.two-row-domain-name {
     font-size: 17px;
+}
+
+.three-row-domain-name {
+    font-size: 14px;
+}
+
+.four-row-domain-name {
+    font-size: 13px;
+}
+
+.four-row-domain-name {
+    font-size: 12px;
 }
 
 .is-filtered {
