@@ -12,7 +12,9 @@ export default {
             // fps is a constant to determine how many time the tree will re-draw each second
             fps: 10,
             // another interval to calculate holdTime
-            holdTimeInterval: null
+            holdTimeInterval: null,
+
+            debugValue: 0
         };
     },
     computed: {},
@@ -35,6 +37,8 @@ export default {
                 (evt, data) => {
                     // if a new direction is fired we clear the old interval
                     clearInterval(this.interval);
+                    // reset hold time
+                    this.holdTime = 0;
                     // if the scale < 0 we panning further
                     const panAddition =
                         /**
@@ -54,8 +58,9 @@ export default {
                                 this.$parent.panX =
                                     this.$parent.panX -
                                     20 -
-                                    panAddition -
-                                    (this.holdTime * 10 - panAddition);
+                                    (this.holdTime * 30 + panAddition);
+                                this.debugValue =
+                                    this.holdTime * 30 + panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -64,8 +69,9 @@ export default {
                                 this.$parent.panX =
                                     this.$parent.panX +
                                     20 +
-                                    panAddition +
-                                    (this.holdTime * 10 + panAddition);
+                                    (this.holdTime * 30 + panAddition);
+                                this.debugValue =
+                                    this.holdTime * 30 + panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -74,8 +80,9 @@ export default {
                                 this.$parent.panY =
                                     this.$parent.panY +
                                     20 +
-                                    panAddition +
-                                    (this.holdTime * 10 + panAddition);
+                                    (this.holdTime * 30 + panAddition);
+                                this.debugValue =
+                                    this.holdTime * 30 + panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -84,8 +91,9 @@ export default {
                                 this.$parent.panY =
                                     this.$parent.panY -
                                     20 -
-                                    panAddition -
-                                    (this.holdTime * 10 - panAddition);
+                                    (this.holdTime * 30 + panAddition);
+                                this.debugValue =
+                                    this.holdTime * 30 + panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -117,7 +125,7 @@ export default {
         this.$parent.$refs.canvas.addEventListener(
             'keydown',
             (e) => {
-                console.log('key up: ' + e.code);
+                console.log('key down: ' + e.code);
 
                 // Because this listener is hearing in interval so we just set interval once time
                 if (this.interval == null) {
@@ -144,7 +152,8 @@ export default {
                                     this.$parent.panX -
                                     20 -
                                     panAddition -
-                                    (this.holdTime * 10 - panAddition);
+                                    (this.holdTime * 30 - panAddition);
+
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -154,7 +163,7 @@ export default {
                                     this.$parent.panX +
                                     20 +
                                     panAddition +
-                                    (this.holdTime * 10 + panAddition);
+                                    (this.holdTime * 30 + panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -164,7 +173,7 @@ export default {
                                     this.$parent.panY +
                                     20 +
                                     panAddition +
-                                    (this.holdTime * 10 + panAddition);
+                                    (this.holdTime * 30 + panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -174,7 +183,7 @@ export default {
                                     this.$parent.panY -
                                     20 -
                                     panAddition -
-                                    (this.holdTime * 10 - panAddition);
+                                    (this.holdTime * 30 - panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
