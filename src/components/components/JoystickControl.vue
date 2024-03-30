@@ -276,6 +276,7 @@ export default {
             this.$parent.scale = zoomSlider.value;
             // we store a special flag to tell the D3 zoom listener to scroll along side the sliders
             this.$parent.zoomWithWheel = false;
+            console.log(this.$parent.zoomWithWheel);
             this.$parent.drawTree();
         });
 
