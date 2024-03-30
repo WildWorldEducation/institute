@@ -13,8 +13,8 @@ export default {
             fps: 10,
             // another interval to calculate holdTime
             holdTimeInterval: null,
-
-            debugValue: 0
+            // press state of cntrl and shift key
+            fnZoomKey: false
         };
     },
     computed: {},
@@ -58,9 +58,9 @@ export default {
                                 this.$parent.panX =
                                     this.$parent.panX -
                                     20 -
-                                    (this.holdTime * 30 + panAddition);
+                                    (this.holdTime * 130 + panAddition);
                                 this.debugValue =
-                                    this.holdTime * 30 + panAddition;
+                                    this.holdTime * 130 + panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -69,9 +69,9 @@ export default {
                                 this.$parent.panX =
                                     this.$parent.panX +
                                     20 +
-                                    (this.holdTime * 30 + panAddition);
+                                    (this.holdTime * 130 + panAddition);
                                 this.debugValue =
-                                    this.holdTime * 30 + panAddition;
+                                    this.holdTime * 130 + panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -80,9 +80,9 @@ export default {
                                 this.$parent.panY =
                                     this.$parent.panY +
                                     20 +
-                                    (this.holdTime * 30 + panAddition);
+                                    (this.holdTime * 130 + panAddition);
                                 this.debugValue =
-                                    this.holdTime * 30 + panAddition;
+                                    this.holdTime * 130 + panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -91,9 +91,9 @@ export default {
                                 this.$parent.panY =
                                     this.$parent.panY -
                                     20 -
-                                    (this.holdTime * 30 + panAddition);
+                                    (this.holdTime * 130 + panAddition);
                                 this.debugValue =
-                                    this.holdTime * 30 + panAddition;
+                                    this.holdTime * 130 + panAddition;
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -125,8 +125,6 @@ export default {
         this.$parent.$refs.canvas.addEventListener(
             'keydown',
             (e) => {
-                console.log('key down: ' + e.code);
-
                 // Because this listener is hearing in interval so we just set interval once time
                 if (this.interval == null) {
                     // We count the press down time of key down too
@@ -151,8 +149,7 @@ export default {
                                 this.$parent.panX =
                                     this.$parent.panX -
                                     20 -
-                                    panAddition -
-                                    (this.holdTime * 30 - panAddition);
+                                    (this.holdTime * 130 + panAddition);
 
                                 this.$parent.drawTree();
                             }, intervalTime);
@@ -162,8 +159,7 @@ export default {
                                 this.$parent.panX =
                                     this.$parent.panX +
                                     20 +
-                                    panAddition +
-                                    (this.holdTime * 30 + panAddition);
+                                    (this.holdTime * 130 + panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -172,8 +168,7 @@ export default {
                                 this.$parent.panY =
                                     this.$parent.panY +
                                     20 +
-                                    panAddition +
-                                    (this.holdTime * 30 + panAddition);
+                                    (this.holdTime * 130 + panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -182,8 +177,7 @@ export default {
                                 this.$parent.panY =
                                     this.$parent.panY -
                                     20 -
-                                    panAddition -
-                                    (this.holdTime * 30 - panAddition);
+                                    (this.holdTime * 130 + panAddition);
                                 this.$parent.drawTree();
                             }, intervalTime);
                             break;
@@ -204,6 +198,13 @@ export default {
                             break;
                     }
                 }
+
+                /*
+                 * This part is to handle zoom with Apple mouse
+                 */
+                if (e.code.includes('Shift') || e.code.includes('Control')) {
+                    this.fnZoomKey = true;
+                }
                 e.preventDefault();
             },
             false
@@ -219,6 +220,9 @@ export default {
                 // set this to null so next time a key is down it will set interval
                 this.interval = null;
                 this.holdTime = 0;
+                if (e.code.includes('Shift') || e.code.includes('Control')) {
+                    this.fnZoomKey = false;
+                }
             },
             false
         );
@@ -276,7 +280,6 @@ export default {
             this.$parent.scale = zoomSlider.value;
             // we store a special flag to tell the D3 zoom listener to scroll along side the sliders
             this.$parent.zoomWithWheel = false;
-            console.log(this.$parent.zoomWithWheel);
             this.$parent.drawTree();
         });
 

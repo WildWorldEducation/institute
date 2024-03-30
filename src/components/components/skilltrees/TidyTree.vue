@@ -58,7 +58,7 @@ export default {
             // Printing
             data: {},
             // Flag for mouse wheel
-            zoomWithWheel: false
+            zoomWithWheel: true
         };
     },
     components: {
@@ -128,21 +128,20 @@ export default {
             }
         });
 
+        // listen to wheel event to scale properly
         canvas.addEventListener('wheel', (e) => {
             this.zoomWithWheel = true;
         });
-        console.log(this.zoomWithWheel);
         // Zoom and Panning with mouse, d3 handler
         d3.select(this.context.canvas).call(
             d3
                 .zoom()
                 .scaleExtent([0.05, 5])
                 .on('zoom', ({ transform }) => {
-                    console.log(this.zoomWithWheel);
                     if (!this.zoomWithWheel) {
-                        console.log('scale now: ' + this.scale);
                         transform.k = this.scale;
                     }
+                    console.log(transform);
                     this.handleMouseZoom(transform);
                 })
         );
