@@ -136,7 +136,7 @@ export default {
         d3.select(this.context.canvas).call(
             d3
                 .zoom()
-                .scaleExtent([0.008, 5])
+                .scaleExtent([0.05, 5])
                 .on('zoom', ({ transform }) => {
                     if (!this.zoomWithWheel) {
                         transform.k = this.scale;

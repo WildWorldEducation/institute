@@ -118,6 +118,7 @@ export default {
             'keydown',
             (e) => {
                 console.log('key up: ' + e.code);
+
                 // Because this listener is hearing in interval so we just set interval once time
                 if (this.interval == null) {
                     // We count the press down time of key down too
@@ -132,7 +133,6 @@ export default {
                         this.$parent.scale >= 1
                             ? this.$parent.scale
                             : 50 / this.$parent.scale;
-                    console.log('hold time: ' + this.holdTime);
 
                     switch (e.code) {
                         /**
@@ -289,12 +289,12 @@ export default {
         <div class="slidecontainer">
             <input
                 type="range"
-                min="0.008"
+                min="0.05"
                 max="2"
                 v-model="this.$parent.scale"
                 class="slider"
                 id="zoomRange"
-                step="0.008"
+                step="0.01"
             />
         </div>
     </div>
