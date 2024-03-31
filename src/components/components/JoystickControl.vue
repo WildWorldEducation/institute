@@ -154,7 +154,6 @@ export default {
                                     (this.holdTime * 130 + panAddition);
 
                                 this.$parent.drawTree();
-                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, intervalTime);
                             break;
                         case 'ArrowLeft':
@@ -164,7 +163,6 @@ export default {
                                     20 +
                                     (this.holdTime * 130 + panAddition);
                                 this.$parent.drawTree();
-                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, intervalTime);
                             break;
                         case 'ArrowUp':
@@ -174,7 +172,6 @@ export default {
                                     20 +
                                     (this.holdTime * 130 + panAddition);
                                 this.$parent.drawTree();
-                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, intervalTime);
                             break;
                         case 'ArrowDown':
@@ -184,7 +181,6 @@ export default {
                                     20 -
                                     (this.holdTime * 130 + panAddition);
                                 this.$parent.drawTree();
-                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, intervalTime);
                             break;
                         // We also add page up and page down to zoom in and out
@@ -192,14 +188,12 @@ export default {
                             this.interval = setInterval(() => {
                                 this.$parent.scale = this.$parent.scale + 0.03;
                                 this.$parent.drawTree();
-                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, 50);
                             break;
                         case 'PageDown':
                             this.interval = setInterval(() => {
                                 this.$parent.scale = this.$parent.scale - 0.03;
                                 this.$parent.drawTree();
-                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, 50);
                             break;
                         default:
@@ -214,6 +208,11 @@ export default {
                     this.fnZoomKey = true;
                     e.preventDefault(); // move the prevent default here to make other key still function as default
                 }
+
+                // prevent default behavior of arrow keys
+                if (e.code.includes('Arrow')) {
+                    e.preventDefault();
+                }
             },
             false
         );
@@ -222,7 +221,6 @@ export default {
         this.$parent.$refs.canvas.addEventListener(
             'keyup',
             (e) => {
-                e.preventDefault();
                 clearInterval(this.interval);
                 clearInterval(this.holdTimeInterval);
                 // set this to null so next time a key is down it will set interval

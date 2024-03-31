@@ -51,7 +51,7 @@ export default {
             colToNode: {},
             isSkillInfoPanelShown: false,
             //  firstRender: true,
-            scale: 1,
+            scale: 0.3,
             panX: 0,
             panY: 0,
             hiddenCanvasInitiated: false,
@@ -141,7 +141,6 @@ export default {
                     if (!this.zoomWithWheel) {
                         transform.k = this.scale;
                     }
-                    console.log(transform);
                     this.handleMouseZoom(transform);
                 })
         );
