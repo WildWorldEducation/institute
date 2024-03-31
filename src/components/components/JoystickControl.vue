@@ -14,7 +14,9 @@ export default {
             // another interval to calculate holdTime
             holdTimeInterval: null,
             // press state of cntrl and shift key
-            fnZoomKey: false
+            fnZoomKey: false,
+            // old mouse y position
+            oldMY: 0
         };
     },
     computed: {},
@@ -152,6 +154,7 @@ export default {
                                     (this.holdTime * 130 + panAddition);
 
                                 this.$parent.drawTree();
+                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, intervalTime);
                             break;
                         case 'ArrowLeft':
@@ -161,6 +164,7 @@ export default {
                                     20 +
                                     (this.holdTime * 130 + panAddition);
                                 this.$parent.drawTree();
+                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, intervalTime);
                             break;
                         case 'ArrowUp':
@@ -170,6 +174,7 @@ export default {
                                     20 +
                                     (this.holdTime * 130 + panAddition);
                                 this.$parent.drawTree();
+                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, intervalTime);
                             break;
                         case 'ArrowDown':
@@ -179,6 +184,7 @@ export default {
                                     20 -
                                     (this.holdTime * 130 + panAddition);
                                 this.$parent.drawTree();
+                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, intervalTime);
                             break;
                         // We also add page up and page down to zoom in and out
@@ -186,12 +192,14 @@ export default {
                             this.interval = setInterval(() => {
                                 this.$parent.scale = this.$parent.scale + 0.03;
                                 this.$parent.drawTree();
+                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, 50);
                             break;
                         case 'PageDown':
                             this.interval = setInterval(() => {
                                 this.$parent.scale = this.$parent.scale - 0.03;
                                 this.$parent.drawTree();
+                                e.preventDefault(); // move the prevent default here to make other key still function as default
                             }, 50);
                             break;
                         default:
@@ -204,8 +212,8 @@ export default {
                  */
                 if (e.code.includes('Shift') || e.code.includes('Control')) {
                     this.fnZoomKey = true;
+                    e.preventDefault(); // move the prevent default here to make other key still function as default
                 }
-                e.preventDefault();
             },
             false
         );
@@ -226,6 +234,23 @@ export default {
             },
             false
         );
+
+        // listen to mouse move for zoom without wheel function
+        this.$parent.$refs.canvas.addEventListener('mousemove', (e) => {
+            // only zoom when cntrl or shift key is press
+            if (this.fnZoomKey) {
+                console.log('mouse move: ');
+                if (e.pageY < this.oldMY) {
+                    this.$parent.scale += 0.05;
+                    this.$parent.drawTree();
+                } else {
+                    this.$parent.scale -= 0.05;
+                    this.$parent.drawTree();
+                }
+            }
+            // re-assign the old-y
+            this.oldMY = e.pageY;
+        });
 
         // panJoystick
         //     .on('start', (evt, data) => {
