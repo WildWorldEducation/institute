@@ -115,7 +115,7 @@ export default {
             .on('start', (evt, data) => {
                 this.holdTimeInterval = setInterval(() => {
                     this.holdTime += 1;
-                }, 1000);
+                }, 700);
             })
             .on('end', (evt, data) => {
                 clearInterval(this.holdTimeInterval);
