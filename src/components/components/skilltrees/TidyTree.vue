@@ -57,8 +57,8 @@ export default {
             hiddenCanvasInitiated: false,
             // Printing
             data: {},
-            // Flag for mouse wheel
-            zoomWithWheel: true
+            // We store the d3 zoom call so the slider can call it
+            d3Zoom: null
         };
     },
     components: {
@@ -128,22 +128,15 @@ export default {
             }
         });
 
-        // listen to wheel event to scale properly
-        canvas.addEventListener('wheel', (e) => {
-            this.zoomWithWheel = true;
-        });
+        this.d3Zoom = d3
+            .zoom()
+            .scaleExtent([0.05, 5])
+            .on('zoom', ({ transform }) => {
+                this.handleMouseZoom(transform);
+            });
+
         // Zoom and Panning with mouse, d3 handler
-        d3.select(this.context.canvas).call(
-            d3
-                .zoom()
-                .scaleExtent([0.05, 5])
-                .on('zoom', ({ transform }) => {
-                    if (!this.zoomWithWheel) {
-                        transform.k = this.scale;
-                    }
-                    this.handleMouseZoom(transform);
-                })
-        );
+        d3.select(this.context.canvas).call(this.d3Zoom);
     },
     methods: {
         getAlgorithm() {
@@ -256,10 +249,7 @@ export default {
             this.drawTree();
         },
         drawTree() {
-            //  console.log('draw tree');
-
             this.nodes = this.root.descendants();
-
             // Zoom and pan.
             this.context.save();
             this.hiddenCanvasContext.save();
@@ -610,6 +600,13 @@ export default {
                 this.scale >= 1 ? transform.y : transform.y / this.scale;
 
             this.drawTree();
+        },
+        // programmatic d3 zoom
+        zoomInD3(scale) {
+            d3.select(this.context.canvas).call(
+                this.d3Zoom.transform,
+                d3.zoomIdentity.scale(scale)
+            );
         }
     }
 };

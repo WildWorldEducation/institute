@@ -15,6 +15,8 @@ export default {
             holdTimeInterval: null,
             // press state of cntrl and shift key
             fnZoomKey: false,
+            // also store the left mouse click state
+            lefClick: false,
             // old mouse y position
             oldMY: 0
         };
@@ -235,15 +237,14 @@ export default {
 
         // listen to mouse move for zoom without wheel function
         this.$parent.$refs.canvas.addEventListener('mousemove', (e) => {
-            // only zoom when cntrl or shift key is press
+            // only zoom when cntrl or shift key is press and left click is press down
             if (this.fnZoomKey) {
-                console.log('mouse move: ');
                 if (e.pageY < this.oldMY) {
                     this.$parent.scale += 0.05;
-                    this.$parent.drawTree();
+                    this.$parent.zoomInD3((this.$parent.scale += 0.05));
                 } else {
                     this.$parent.scale -= 0.05;
-                    this.$parent.drawTree();
+                    this.$parent.zoomInD3((this.$parent.scale -= 0.05));
                 }
             }
             // re-assign the old-y
@@ -301,17 +302,13 @@ export default {
         // Mouse.
         zoomSlider.addEventListener('mouseup', () => {
             this.$parent.scale = zoomSlider.value;
-            // we store a special flag to tell the D3 zoom listener to scroll along side the sliders
-            this.$parent.zoomWithWheel = false;
-            this.$parent.drawTree();
+            this.$parent.zoomInD3(zoomSlider.value);
         });
 
         // Touch.
         zoomSlider.addEventListener('touchend', () => {
             this.$parent.scale = zoomSlider.value;
-            // we store a special flag to tell the D3 zoom listener to scroll along side the sliders
-            this.$parent.zoomWithWheel = false;
-            this.$parent.drawTree();
+            this.$parent.zoomInD3(zoomSlider.value);
         });
     },
     watch: {},
