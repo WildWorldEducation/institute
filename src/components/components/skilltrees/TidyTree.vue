@@ -137,6 +137,12 @@ export default {
 
         // Zoom and Panning with mouse, d3 handler
         d3.select(this.context.canvas).call(this.d3Zoom);
+
+        // Save the default scale value to d3
+        d3.select(this.context.canvas).call(
+            this.d3Zoom.transform,
+            d3.zoomIdentity.scale(this.scale)
+        );
     },
     methods: {
         getAlgorithm() {
