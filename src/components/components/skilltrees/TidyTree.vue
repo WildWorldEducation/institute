@@ -5,13 +5,11 @@ import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested component.
 import SkillPanel from './../SkillPanel.vue';
 // Joystick control component.
-import JoystickControl from '../JoystickControl.vue';
+import JoystickControl from './JoystickControl.vue';
+import SliderControl from './SliderControl.vue';
 
 // Algorithm.
 import * as d3 from 'd3';
-
-// Joystick.
-import nipplejs from 'nipplejs';
 
 export default {
     setup() {
@@ -63,7 +61,8 @@ export default {
     },
     components: {
         SkillPanel,
-        JoystickControl
+        JoystickControl,
+        SliderControl
     },
     async mounted() {
         // ------------
@@ -613,7 +612,9 @@ export default {
                 this.d3Zoom.transform,
                 d3.zoomIdentity.scale(scale)
             );
-        }
+        },
+        // programmatic d3 panning
+        panInD3(panX, panY) {}
     }
 };
 </script>
@@ -635,6 +636,7 @@ export default {
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
         <JoystickControl />
+        <SliderControl />
         <div id="sidepanel-backdrop"></div>
     </div>
 </template>
