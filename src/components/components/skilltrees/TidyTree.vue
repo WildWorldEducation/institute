@@ -56,9 +56,7 @@ export default {
             // Printing
             data: {},
             // We store the d3 zoom call so the slider can call it
-            d3Zoom: null,
-            // have to handle panning with joystick and key differently
-            d3PanKey: null
+            d3Zoom: null
         };
     },
     components: {
@@ -134,14 +132,6 @@ export default {
             .scaleExtent([0.05, 5])
             .on('zoom', ({ transform }) => {
                 this.handleMouseZoom(transform);
-            });
-
-        // we have a different caller for panning with key board and joystick
-        this.d3PanKey = d3
-            .zoom()
-            .scaleExtent([0.05, 5])
-            .on('zoom', ({ transform }) => {
-                this.handleKeyPan(transform);
             });
 
         // Zoom and Panning with mouse, d3 handler
@@ -615,13 +605,6 @@ export default {
             this.scale = transform.k;
             this.drawTree();
         },
-        // handle panning with joystick and keyboard
-        handleKeyPan(transform) {
-            this.panX = transform.x;
-            this.panY = transform.y;
-            this.scale = transform.k;
-            this.drawTree();
-        },
         // programmatic d3 zoom
         zoomInD3(scale) {
             d3.select(this.context.canvas).call(
@@ -631,9 +614,18 @@ export default {
         },
         // programmatic d3 panning
         panInD3(panX, panY) {
+            /*
+                 because we divide scale to handle mouse drag so we have to 
+                 multiply the pan value with scale here in order to cancel out the divide 
+            */
+            const smallPanX = this.scale >= 1 ? panX : panX * this.scale;
+            const smallPanY = this.scale >= 1 ? panY : panY * this.scale;
+
             d3.select(this.context.canvas).call(
-                this.d3PanKey.transform,
-                d3.zoomIdentity.translate(panX, panY).scale(this.scale)
+                this.d3Zoom.transform,
+                d3.zoomIdentity
+                    .translate(smallPanX, smallPanY)
+                    .scale(this.scale)
             );
         }
     }

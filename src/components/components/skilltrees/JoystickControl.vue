@@ -51,7 +51,13 @@ export default {
                          */
                         this.$parent.scale >= 1
                             ? this.$parent.scale * 10
-                            : 1 / this.$parent.scale;
+                            : 20 / this.$parent.scale;
+
+                    // hold time multiplier is scale with zoom too
+                    const holdTimeMultiplier =
+                        this.$parent.scale > 1
+                            ? this.$parent.scale * 15
+                            : 20 / this.$parent.scale;
 
                     // call new interval with new direction if there are no interval
                     if (this.interval == null) {
@@ -64,7 +70,8 @@ export default {
                                     this.$parent.panX =
                                         this.$parent.panX -
                                         20 -
-                                        (this.holdTime * 10 + panAddition);
+                                        (this.holdTime * holdTimeMultiplier +
+                                            panAddition);
                                     this.$parent.panInD3(
                                         this.$parent.panX,
                                         this.$parent.panY
@@ -76,7 +83,8 @@ export default {
                                     this.$parent.panX =
                                         this.$parent.panX +
                                         20 +
-                                        (this.holdTime * 10 + panAddition);
+                                        (this.holdTime * holdTimeMultiplier +
+                                            panAddition);
                                     this.$parent.panInD3(
                                         this.$parent.panX,
                                         this.$parent.panY
@@ -88,7 +96,8 @@ export default {
                                     this.$parent.panY =
                                         this.$parent.panY +
                                         20 +
-                                        (this.holdTime * 10 + panAddition);
+                                        (this.holdTime * holdTimeMultiplier +
+                                            panAddition);
                                     this.$parent.panInD3(
                                         this.$parent.panX,
                                         this.$parent.panY
@@ -100,7 +109,8 @@ export default {
                                     this.$parent.panY =
                                         this.$parent.panY -
                                         20 -
-                                        (this.holdTime * 10 + panAddition);
+                                        (this.holdTime * holdTimeMultiplier +
+                                            panAddition);
                                     this.$parent.panInD3(
                                         this.$parent.panX,
                                         this.$parent.panY
@@ -124,7 +134,7 @@ export default {
             .on('start', (evt, data) => {
                 this.holdTimeInterval = setInterval(() => {
                     this.holdTime += 1;
-                }, 700);
+                }, 300);
             })
             .on('end', (evt, data) => {
                 clearInterval(this.holdTimeInterval);
@@ -141,14 +151,20 @@ export default {
                     // We count the press down time of key down too
                     this.holdTimeInterval = setInterval(() => {
                         this.holdTime += 1;
-                    }, 700);
+                    }, 300);
                     const panAddition =
                         /**
                          * by divide with scale we can add more when the scale get smaller thus we will panning more
                          */
                         this.$parent.scale >= 1
                             ? this.$parent.scale / 10
-                            : 1 / this.$parent.scale;
+                            : 50 / this.$parent.scale;
+
+                    // hold time multiplier is scale with zoom too
+                    const holdTimeMultiplier =
+                        this.$parent.scale > 1
+                            ? this.$parent.scale * 15
+                            : 10 / this.$parent.scale;
 
                     switch (e.code) {
                         /**
@@ -159,7 +175,8 @@ export default {
                                 this.$parent.panX =
                                     this.$parent.panX -
                                     20 -
-                                    (this.holdTime * 10 + panAddition);
+                                    (this.holdTime * holdTimeMultiplier +
+                                        panAddition);
 
                                 this.$parent.panInD3(
                                     this.$parent.panX,
@@ -172,7 +189,8 @@ export default {
                                 this.$parent.panX =
                                     this.$parent.panX +
                                     20 +
-                                    (this.holdTime * 10 + panAddition);
+                                    (this.holdTime * holdTimeMultiplier +
+                                        panAddition);
                                 this.$parent.panInD3(
                                     this.$parent.panX,
                                     this.$parent.panY
@@ -184,7 +202,8 @@ export default {
                                 this.$parent.panY =
                                     this.$parent.panY +
                                     20 +
-                                    (this.holdTime * 10 + panAddition);
+                                    (this.holdTime * holdTimeMultiplier +
+                                        panAddition);
                                 this.$parent.panInD3(
                                     this.$parent.panX,
                                     this.$parent.panY
@@ -196,7 +215,8 @@ export default {
                                 this.$parent.panY =
                                     this.$parent.panY -
                                     20 -
-                                    (this.holdTime * 10 + panAddition);
+                                    (this.holdTime * holdTimeMultiplier +
+                                        panAddition);
                                 this.$parent.panInD3(
                                     this.$parent.panX,
                                     this.$parent.panY
