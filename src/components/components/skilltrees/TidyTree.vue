@@ -56,7 +56,9 @@ export default {
             // Printing
             data: {},
             // We store the d3 zoom call so the slider can call it
-            d3Zoom: null
+            d3Zoom: null,
+            // have to handle panning with joystick and key differently
+            d3PanKey: null
         };
     },
     components: {
@@ -132,6 +134,14 @@ export default {
             .scaleExtent([0.05, 5])
             .on('zoom', ({ transform }) => {
                 this.handleMouseZoom(transform);
+            });
+
+        // we have a different caller for panning with key board and joystick
+        this.d3PanKey = d3
+            .zoom()
+            .scaleExtent([0.05, 5])
+            .on('zoom', ({ transform }) => {
+                this.handleKeyPan(transform);
             });
 
         // Zoom and Panning with mouse, d3 handler
@@ -598,12 +608,18 @@ export default {
         },
         // handle mouse zoom
         handleMouseZoom(transform) {
-            this.scale = transform.k;
             this.panX =
                 this.scale >= 1 ? transform.x : transform.x / this.scale;
             this.panY =
                 this.scale >= 1 ? transform.y : transform.y / this.scale;
-
+            this.scale = transform.k;
+            this.drawTree();
+        },
+        // handle panning with joystick and keyboard
+        handleKeyPan(transform) {
+            this.panX = transform.x;
+            this.panY = transform.y;
+            this.scale = transform.k;
             this.drawTree();
         },
         // programmatic d3 zoom
@@ -614,7 +630,12 @@ export default {
             );
         },
         // programmatic d3 panning
-        panInD3(panX, panY) {}
+        panInD3(panX, panY) {
+            d3.select(this.context.canvas).call(
+                this.d3PanKey.transform,
+                d3.zoomIdentity.translate(panX, panY).scale(this.scale)
+            );
+        }
     }
 };
 </script>

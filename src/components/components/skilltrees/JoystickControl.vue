@@ -41,6 +41,7 @@ export default {
                 (evt, data) => {
                     // if a new direction is fired we clear the old interval
                     clearInterval(this.interval);
+                    this.interval = null;
                     // reset hold time
                     this.holdTime = 0;
                     // if the scale < 0 we panning further
@@ -49,52 +50,66 @@ export default {
                          * by divide with scale we can add more when the scale get smaller thus we will panning more
                          */
                         this.$parent.scale >= 1
-                            ? this.$parent.scale / 2
-                            : 50 / this.$parent.scale;
+                            ? this.$parent.scale * 10
+                            : 1 / this.$parent.scale;
 
-                    // call new interval with new direction
-                    switch (data.direction.angle) {
-                        /**
-                         * we add more panning base on the zoom scale and hold time
-                         */
-                        case 'right':
-                            this.interval = setInterval(() => {
-                                this.$parent.panX =
-                                    this.$parent.panX -
-                                    20 -
-                                    (this.holdTime * 10 + panAddition);
-                                this.$parent.drawTree();
-                            }, intervalTime);
-                            break;
-                        case 'left':
-                            this.interval = setInterval(() => {
-                                this.$parent.panX =
-                                    this.$parent.panX +
-                                    20 +
-                                    (this.holdTime * 10 + panAddition);
-                                this.$parent.drawTree();
-                            }, intervalTime);
-                            break;
-                        case 'up':
-                            this.interval = setInterval(() => {
-                                this.$parent.panY =
-                                    this.$parent.panY +
-                                    20 +
-                                    (this.holdTime * 10 + panAddition);
-                                this.$parent.drawTree();
-                            }, intervalTime);
-                            break;
-                        case 'down':
-                            this.interval = setInterval(() => {
-                                this.$parent.panY =
-                                    this.$parent.panY -
-                                    20 -
-                                    (this.holdTime * 10 + panAddition);
-                                this.$parent.drawTree();
-                            }, intervalTime);
-                            break;
-                        default:
-                            break;
+                    // call new interval with new direction if there are no interval
+                    if (this.interval == null) {
+                        switch (data.direction.angle) {
+                            /**
+                             * we add more panning base on the zoom scale and hold time
+                             */
+                            case 'right':
+                                this.interval = setInterval(() => {
+                                    this.$parent.panX =
+                                        this.$parent.panX -
+                                        20 -
+                                        (this.holdTime * 10 + panAddition);
+                                    this.$parent.panInD3(
+                                        this.$parent.panX,
+                                        this.$parent.panY
+                                    );
+                                }, intervalTime);
+                                break;
+                            case 'left':
+                                this.interval = setInterval(() => {
+                                    this.$parent.panX =
+                                        this.$parent.panX +
+                                        20 +
+                                        (this.holdTime * 10 + panAddition);
+                                    this.$parent.panInD3(
+                                        this.$parent.panX,
+                                        this.$parent.panY
+                                    );
+                                }, intervalTime);
+                                break;
+                            case 'up':
+                                this.interval = setInterval(() => {
+                                    this.$parent.panY =
+                                        this.$parent.panY +
+                                        20 +
+                                        (this.holdTime * 10 + panAddition);
+                                    this.$parent.panInD3(
+                                        this.$parent.panX,
+                                        this.$parent.panY
+                                    );
+                                }, intervalTime);
+                                break;
+                            case 'down':
+                                this.interval = setInterval(() => {
+                                    this.$parent.panY =
+                                        this.$parent.panY -
+                                        20 -
+                                        (this.holdTime * 10 + panAddition);
+                                    this.$parent.panInD3(
+                                        this.$parent.panX,
+                                        this.$parent.panY
+                                    );
+                                }, intervalTime);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             )
@@ -133,7 +148,7 @@ export default {
                          */
                         this.$parent.scale >= 1
                             ? this.$parent.scale / 10
-                            : 50 / this.$parent.scale;
+                            : 1 / this.$parent.scale;
 
                     switch (e.code) {
                         /**
@@ -146,7 +161,10 @@ export default {
                                     20 -
                                     (this.holdTime * 10 + panAddition);
 
-                                this.$parent.drawTree();
+                                this.$parent.panInD3(
+                                    this.$parent.panX,
+                                    this.$parent.panY
+                                );
                             }, intervalTime);
                             break;
                         case 'ArrowLeft':
@@ -155,7 +173,10 @@ export default {
                                     this.$parent.panX +
                                     20 +
                                     (this.holdTime * 10 + panAddition);
-                                this.$parent.drawTree();
+                                this.$parent.panInD3(
+                                    this.$parent.panX,
+                                    this.$parent.panY
+                                );
                             }, intervalTime);
                             break;
                         case 'ArrowUp':
@@ -164,7 +185,10 @@ export default {
                                     this.$parent.panY +
                                     20 +
                                     (this.holdTime * 10 + panAddition);
-                                this.$parent.drawTree();
+                                this.$parent.panInD3(
+                                    this.$parent.panX,
+                                    this.$parent.panY
+                                );
                             }, intervalTime);
                             break;
                         case 'ArrowDown':
@@ -173,20 +197,23 @@ export default {
                                     this.$parent.panY -
                                     20 -
                                     (this.holdTime * 10 + panAddition);
-                                this.$parent.drawTree();
+                                this.$parent.panInD3(
+                                    this.$parent.panX,
+                                    this.$parent.panY
+                                );
                             }, intervalTime);
                             break;
                         // We also add page up and page down to zoom in and out
                         case 'PageUp':
                             this.interval = setInterval(() => {
                                 this.$parent.scale = this.$parent.scale + 0.03;
-                                this.$parent.drawTree();
+                                this.$parent.zoomInD3(this.$parent.scale);
                             }, 50);
                             break;
                         case 'PageDown':
                             this.interval = setInterval(() => {
                                 this.$parent.scale = this.$parent.scale - 0.03;
-                                this.$parent.drawTree();
+                                this.$parent.zoomInD3(this.$parent.scale);
                             }, 50);
                             break;
                         default:
