@@ -18,11 +18,15 @@ export default {
             // also store the left mouse click state
             lefClick: false,
             // old mouse y position
-            oldMY: 0
+            oldMY: 0,
+            // old scale value
+            oldScale: 0
         };
     },
     computed: {},
     async mounted() {
+        // store initial scale
+        this.oldScale = this.$parent.scale;
         // Panning, using NippleJS.
         var panJoystick = nipplejs.create({
             zone: document.getElementById('panJoystick'),
@@ -278,19 +282,47 @@ export default {
             // only zoom when cntrl or shift key is press and left click is press down
             if (this.fnZoomKey) {
                 if (e.pageY < this.oldMY) {
-                    this.$parent.scale += 0.05;
-                    this.$parent.zoomInD3(
-                        (this.$parent.scale += 0.05),
-                        this.$parent.panX,
-                        this.$parent.panY
-                    );
+                    this.$parent.scale += 0.005;
+                    // calculate the proportion of new scale and ole scale
+                    const scaleProportion = this.oldScale / this.$parent.scale;
+                    // just like the panning we have to multiple the pan value when scale is smaller than 0
+                    // because in the d3 handler we divide the value with scale
+                    let panX =
+                        this.$parent.scale >= 1
+                            ? this.$parent.panX
+                            : this.$parent.panX * this.$parent.scale;
+                    let panY =
+                        this.$parent.scale >= 1
+                            ? this.$parent.panY
+                            : this.$parent.panY * this.$parent.scale;
+                    // calculate pan value so we can zoom into center of the screen
+                    panX = panX * scaleProportion;
+                    panY = panY * scaleProportion;
+
+                    // store new scale value
+                    this.oldScale = this.$parent.scale;
+                    this.$parent.zoomInD3(this.$parent.scale, panX, panY);
                 } else {
-                    this.$parent.scale -= 0.05;
-                    this.$parent.zoomInD3(
-                        (this.$parent.scale -= 0.05),
-                        this.$parent.panX,
-                        this.$parent.panY
-                    );
+                    this.$parent.scale -= 0.005;
+                    // calculate the proportion of new scale and ole scale
+                    const scaleProportion = this.oldScale / this.$parent.scale;
+                    // just like the panning we have to multiple the pan value when scale is smaller than 0
+                    // because in the d3 handler we divide the value with scale
+                    let panX =
+                        this.$parent.scale >= 1
+                            ? this.$parent.panX
+                            : this.$parent.panX * this.$parent.scale;
+                    let panY =
+                        this.$parent.scale >= 1
+                            ? this.$parent.panY
+                            : this.$parent.panY * this.$parent.scale;
+                    // calculate pan value so we can zoom into center of the screen
+                    panX = panX * scaleProportion;
+                    panY = panY * scaleProportion;
+
+                    // store new scale value
+                    this.oldScale = this.$parent.scale;
+                    this.$parent.zoomInD3(this.$parent.scale, panX, panY);
                 }
             }
             // re-assign the old-y
@@ -305,11 +337,6 @@ export default {
 <template>
     <div id="controlsWrapper">
         <div id="panJoystick"></div>
-        <div class="bg-primary text-bg-light p-2 rounded-2">
-            <div>panX: {{ this.$parent.panX }}</div>
-            <div>panY: {{ this.$parent.panY }}</div>
-            <div>scale: {{ this.$parent.scale }}</div>
-        </div>
     </div>
 </template>
 

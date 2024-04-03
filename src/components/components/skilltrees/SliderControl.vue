@@ -2,42 +2,60 @@
 export default {
     setup() {},
     data() {
-        return {};
+        return {
+            // we store old scale value for zooming function
+            oldScale: 0
+        };
     },
     computed: {},
     async mounted() {
         // Zoom range slider.
         let zoomSlider = document.getElementById('zoomRange');
         zoomSlider.step = '0.1';
+
+        // store initial scale value
+        this.oldScale = this.$parent.scale;
+
         // Mouse.
         zoomSlider.addEventListener('mouseup', () => {
+            // calculate the proportion of new scale and ole scale
+            const scaleProportion = this.oldScale / this.$parent.scale;
             // just like the panning we have to multiple the pan value when scale is smaller than 0
             // because in the d3 handler we divide the value with scale
-            const panX =
+            let panX =
                 zoomSlider.value >= 1
                     ? this.$parent.panX
                     : this.$parent.panX * zoomSlider.value;
-            const panY =
+            let panY =
                 zoomSlider.value >= 1
                     ? this.$parent.panY
                     : this.$parent.panY * zoomSlider.value;
+            // calculate pan value so we can zoom into center of the screen
+            panX = panX * scaleProportion;
+            panY = panY * scaleProportion;
             this.$parent.scale = zoomSlider.value;
+            // store new scale value
+            this.oldScale = zoomSlider.value;
             this.$parent.zoomInD3(zoomSlider.value, panX, panY);
         });
 
         // Touch.
         zoomSlider.addEventListener('touchend', () => {
+            // calculate the proportion of new scale and ole scale
+            const scaleProportion = zoomSlider.value / this.$parent.scale;
             // just like the panning we have to multiple the pan value when scale is smaller than 0
             // because in the d3 handler we divide the value with scale
-            const panX =
+            let panX =
                 zoomSlider.value >= 1
                     ? this.$parent.panX
                     : this.$parent.panX * zoomSlider.value;
-            const panY =
+            let panY =
                 zoomSlider.value >= 1
                     ? this.$parent.panY
                     : this.$parent.panY * zoomSlider.value;
-
+            // calculate pan value so we can zoom into center of the screen
+            panX = panX * scaleProportion;
+            panY = panY * scaleProportion;
             this.$parent.scale = zoomSlider.value;
             this.$parent.zoomInD3(zoomSlider.value, panX, panY);
         });
