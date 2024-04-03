@@ -11,16 +11,32 @@ export default {
         zoomSlider.step = '0.1';
         // Mouse.
         zoomSlider.addEventListener('mouseup', () => {
-            const panX = this.$parent.panX;
-            const panY = this.$parent.panY;
+            // just like the panning we have to multiple the pan value when scale is smaller than 0
+            // because in the d3 handler we divide the value with scale
+            const panX =
+                zoomSlider.value >= 1
+                    ? this.$parent.panX
+                    : this.$parent.panX * zoomSlider.value;
+            const panY =
+                zoomSlider.value >= 1
+                    ? this.$parent.panY
+                    : this.$parent.panY * zoomSlider.value;
             this.$parent.scale = zoomSlider.value;
             this.$parent.zoomInD3(zoomSlider.value, panX, panY);
         });
 
         // Touch.
         zoomSlider.addEventListener('touchend', () => {
-            const panX = this.$parent.panX * scaleMultiplier;
-            const panY = this.$parent.panY * scaleMultiplier;
+            // just like the panning we have to multiple the pan value when scale is smaller than 0
+            // because in the d3 handler we divide the value with scale
+            const panX =
+                zoomSlider.value >= 1
+                    ? this.$parent.panX
+                    : this.$parent.panX * zoomSlider.value;
+            const panY =
+                zoomSlider.value >= 1
+                    ? this.$parent.panY
+                    : this.$parent.panY * zoomSlider.value;
 
             this.$parent.scale = zoomSlider.value;
             this.$parent.zoomInD3(zoomSlider.value, panX, panY);

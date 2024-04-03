@@ -279,60 +279,23 @@ export default {
             if (this.fnZoomKey) {
                 if (e.pageY < this.oldMY) {
                     this.$parent.scale += 0.05;
-                    this.$parent.zoomInD3((this.$parent.scale += 0.05));
+                    this.$parent.zoomInD3(
+                        (this.$parent.scale += 0.05),
+                        this.$parent.panX,
+                        this.$parent.panY
+                    );
                 } else {
                     this.$parent.scale -= 0.05;
-                    this.$parent.zoomInD3((this.$parent.scale -= 0.05));
+                    this.$parent.zoomInD3(
+                        (this.$parent.scale -= 0.05),
+                        this.$parent.panX,
+                        this.$parent.panY
+                    );
                 }
             }
             // re-assign the old-y
             this.oldMY = e.pageY;
         });
-
-        // panJoystick
-        //     .on('start', (evt, data) => {
-        //         this.interval = setInterval(() => {
-        //             this.holdTime += 1;
-        //         }, 500);
-        //     })
-        //     .on('end', (evt, data) => {
-        //         clearInterval(this.interval);
-
-        //         switch (this.direction) {
-        //             case 'right':
-        //                 this.$parent.panX =
-        //                     (this.$parent.panX -
-        //                         20 -
-        //                         this.holdTime * this.distanceMultiplier) /
-        //                     1;
-
-        //                 break;
-        //             case 'left':
-        //                 this.$parent.panX =
-        //                     (this.$parent.panX +
-        //                         20 +
-        //                         this.holdTime * this.distanceMultiplier) /
-        //                     1;
-        //                 break;
-        //             case 'up':
-        //                 this.$parent.panY =
-        //                     (this.$parent.panY +
-        //                         20 +
-        //                         this.holdTime * this.distanceMultiplier) /
-        //                     1;
-        //                 break;
-        //             case 'down':
-        //                 this.$parent.panY =
-        //                     (this.$parent.panY -
-        //                         20 -
-        //                         this.holdTime * this.distanceMultiplier) /
-        //                     1;
-        //             default:
-        //                 break;
-        //         }
-        //         this.$parent.drawTree();
-        //         this.holdTime = 1;
-        //     });
     },
     watch: {},
     methods: {}
@@ -342,7 +305,7 @@ export default {
 <template>
     <div id="controlsWrapper">
         <div id="panJoystick"></div>
-        <div class="bg-body p-2 rounded-2">
+        <div class="bg-primary text-bg-light p-2 rounded-2">
             <div>panX: {{ this.$parent.panX }}</div>
             <div>panY: {{ this.$parent.panY }}</div>
             <div>scale: {{ this.$parent.scale }}</div>
