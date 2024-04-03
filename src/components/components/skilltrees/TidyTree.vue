@@ -606,10 +606,10 @@ export default {
             this.drawTree();
         },
         // programmatic d3 zoom
-        zoomInD3(scale) {
+        zoomInD3(scale, panX, panY) {
             d3.select(this.context.canvas).call(
                 this.d3Zoom.transform,
-                d3.zoomIdentity.scale(scale)
+                d3.zoomIdentity.translate(panX, panY).scale(scale)
             );
         },
         // programmatic d3 panning

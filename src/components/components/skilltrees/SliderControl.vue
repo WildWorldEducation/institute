@@ -11,14 +11,19 @@ export default {
         zoomSlider.step = '0.1';
         // Mouse.
         zoomSlider.addEventListener('mouseup', () => {
+            const panX = this.$parent.panX;
+            const panY = this.$parent.panY;
             this.$parent.scale = zoomSlider.value;
-            this.$parent.zoomInD3(zoomSlider.value);
+            this.$parent.zoomInD3(zoomSlider.value, panX, panY);
         });
 
         // Touch.
         zoomSlider.addEventListener('touchend', () => {
+            const panX = this.$parent.panX * scaleMultiplier;
+            const panY = this.$parent.panY * scaleMultiplier;
+
             this.$parent.scale = zoomSlider.value;
-            this.$parent.zoomInD3(zoomSlider.value);
+            this.$parent.zoomInD3(zoomSlider.value, panX, panY);
         });
     },
     methods: {}

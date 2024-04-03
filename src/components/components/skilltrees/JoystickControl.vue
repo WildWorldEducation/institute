@@ -333,21 +333,6 @@ export default {
         //         this.$parent.drawTree();
         //         this.holdTime = 1;
         //     });
-
-        // Zoom range slider.
-        let zoomSlider = document.getElementById('zoomRange');
-        zoomSlider.step = '0.1';
-        // Mouse.
-        zoomSlider.addEventListener('mouseup', () => {
-            this.$parent.scale = zoomSlider.value;
-            this.$parent.zoomInD3(zoomSlider.value);
-        });
-
-        // Touch.
-        zoomSlider.addEventListener('touchend', () => {
-            this.$parent.scale = zoomSlider.value;
-            this.$parent.zoomInD3(zoomSlider.value);
-        });
     },
     watch: {},
     methods: {}
@@ -357,6 +342,11 @@ export default {
 <template>
     <div id="controlsWrapper">
         <div id="panJoystick"></div>
+        <div class="bg-body p-2 rounded-2">
+            <div>panX: {{ this.$parent.panX }}</div>
+            <div>panY: {{ this.$parent.panY }}</div>
+            <div>scale: {{ this.$parent.scale }}</div>
+        </div>
     </div>
 </template>
 
