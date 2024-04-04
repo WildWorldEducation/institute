@@ -328,12 +328,23 @@ export default {
 
             // Visible context.
             // If not a domain, make node a circle.
+            // console.log(node.data.is_mastered);
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
-                ctx1.moveTo(node.y, node.x);
                 ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-                ctx1.fillStyle = '#000';
-                ctx1.fill();
+                // If mastered, make a solid shape.
+                if (node.data.is_mastered == 1) {
+                    ctx1.fillStyle = '#000';
+                    ctx1.fill();
+                }
+                // If not, just an outline.
+                else {
+                    ctx1.lineWidth = 2;
+                    ctx1.fillStyle = '#FFF';
+                    ctx1.fill();
+                    ctx1.strokeStyle = '#000';
+                    ctx1.stroke();
+                }
             }
             // If is a domain, make node a diamond.
             else {
@@ -347,11 +358,27 @@ export default {
                 ctx1.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
                 // closing the path automatically creates the top right edge.
                 ctx1.closePath();
-                ctx1.lineWidth = 2;
-                ctx1.strokeStyle = 'black';
-                ctx1.fillStyle = 'white';
-                ctx1.fill();
-                ctx1.stroke();
+                // If mastered, make a solid shape.
+                if (node.data.is_mastered == 1) {
+                    ctx1.fillStyle = '#000';
+                    ctx1.fill();
+                }
+                // If unlocked, light grey.
+                else if (node.data.is_accessible == 1) {
+                    ctx1.lineWidth = 2;
+                    ctx1.fillStyle = '#D3D3D3';
+                    ctx1.fill();
+                    ctx1.strokeStyle = '#000';
+                    ctx1.stroke();
+                }
+                // If not, just an outline.
+                else {
+                    ctx1.lineWidth = 2;
+                    ctx1.fillStyle = '#FFF';
+                    ctx1.fill();
+                    ctx1.strokeStyle = '#000';
+                    ctx1.stroke();
+                }
             }
 
             // Text.
@@ -652,8 +679,8 @@ export default {
         // programmatic d3 panning
         panInD3(panX, panY) {
             /*
-                 because we divide scale to handle mouse drag so we have to 
-                 multiply the pan value with scale here in order to cancel out the divide 
+                 because we divide scale to handle mouse drag so we have to
+                 multiply the pan value with scale here in order to cancel out the divide
             */
             const smallPanX = this.scale >= 1 ? panX : panX * this.scale;
             const smallPanY = this.scale >= 1 ? panY : panY * this.scale;
