@@ -5,13 +5,11 @@ import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested component.
 import SkillPanel from './../SkillPanel.vue';
 // Joystick control component.
-import JoystickControl from '../JoystickControl.vue';
+import JoystickControl from './JoystickControl.vue';
+import SliderControl from './SliderControl.vue';
 
 // Algorithm.
 import * as d3 from 'd3';
-
-// Joystick.
-import nipplejs from 'nipplejs';
 
 export default {
     setup() {
@@ -63,7 +61,8 @@ export default {
     },
     components: {
         SkillPanel,
-        JoystickControl
+        JoystickControl,
+        SliderControl
     },
     async mounted() {
         // ------------
@@ -599,19 +598,34 @@ export default {
         },
         // handle mouse zoom
         handleMouseZoom(transform) {
-            this.scale = transform.k;
             this.panX =
                 this.scale >= 1 ? transform.x : transform.x / this.scale;
             this.panY =
                 this.scale >= 1 ? transform.y : transform.y / this.scale;
-
+            this.scale = transform.k;
             this.drawTree();
         },
         // programmatic d3 zoom
-        zoomInD3(scale) {
+        zoomInD3(scale, panX, panY) {
             d3.select(this.context.canvas).call(
                 this.d3Zoom.transform,
-                d3.zoomIdentity.scale(scale)
+                d3.zoomIdentity.translate(panX, panY).scale(scale)
+            );
+        },
+        // programmatic d3 panning
+        panInD3(panX, panY) {
+            /*
+                 because we divide scale to handle mouse drag so we have to 
+                 multiply the pan value with scale here in order to cancel out the divide 
+            */
+            const smallPanX = this.scale >= 1 ? panX : panX * this.scale;
+            const smallPanY = this.scale >= 1 ? panY : panY * this.scale;
+
+            d3.select(this.context.canvas).call(
+                this.d3Zoom.transform,
+                d3.zoomIdentity
+                    .translate(smallPanX, smallPanY)
+                    .scale(this.scale)
             );
         }
     }
@@ -635,6 +649,7 @@ export default {
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
         <JoystickControl />
+        <SliderControl />
         <div id="sidepanel-backdrop"></div>
     </div>
 </template>
