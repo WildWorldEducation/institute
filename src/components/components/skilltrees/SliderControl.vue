@@ -72,7 +72,6 @@ export default {
                 min="0.05"
                 max="2"
                 v-model="this.$parent.scale"
-                class="verticalSlider"
                 id="zoomRange"
                 step="0.01"
             />
@@ -84,52 +83,104 @@ export default {
 /* ___________ Button Style ___________ */
 #sliderWrapper {
     position: absolute;
-    width: 40px;
-    bottom: 2px;
-    right: 2px;
+    width: 16px;
+    bottom: 15px;
+    right: 18px;
 }
 
 .slideContainer {
     width: 100%; /* Width of the outside container */
-    height: 500px;
+    height: 300px;
+}
+
+/** custom slider style */
+
+input[type='range'] {
+    appearance: slider-vertical !important;
+    height: 300px;
 }
 
 input[type='range'] {
-    appearance: slider-vertical;
+    -webkit-appearance: none;
+    margin: 10px 0;
+    width: 100%;
 }
-
-.verticalSlider {
+input[type='range']:focus {
+    outline: none;
+}
+input[type='range']::-webkit-slider-runnable-track {
     -webkit-appearance: none;
     width: 100%;
-    height: 500px;
-    border-radius: 5px;
-    background: #d3d3d3;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: 0.2s;
-    transition: opacity 0.2s;
+    height: 200px;
+    cursor: pointer;
+    animate: 0.2s;
+    background: #c4d2df;
+    border-radius: 29px;
 }
-
-.verticalSlider::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
+    box-shadow: 0px 0px 1px #ffffff;
+    border: 1px solid #ffffff;
+    height: 30px;
+    width: 30px;
+    border-radius: 50px;
+    background: #5fb5d4;
     -webkit-appearance: none;
-    appearance: none;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: #04aa6d;
+    margin-top: -1px;
+    cursor: pointer;
+    color: #18913c;
+}
+input[type='range']:focus::-webkit-slider-runnable-track {
+    background: #c4d2df;
+}
+input[type='range']::-moz-range-track {
+    width: 100%;
+    height: 200px;
+    cursor: pointer;
+    animate: 0.2s;
+    background: #c4d2df;
+    border-radius: 29px;
+}
+input[type='range']::-moz-range-thumb {
+    box-shadow: 0px 0px 1px #ffffff;
+    border: 1px solid #ffffff;
+    height: 30px;
+    width: 30px;
+    border-radius: 50px;
+    background: #5fb5d4;
     cursor: pointer;
 }
-
-.verticalSlider::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: #04aa6d;
+input[type='range']::-ms-track {
+    width: 100%;
+    height: 200px;
+    cursor: pointer;
+    animate: 0.2s;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+input[type='range']::-ms-fill-lower {
+    background: #c4d2df;
+    border: 0px solid #f3efef;
+    border-radius: 58px;
+}
+input[type='range']::-ms-fill-upper {
+    background: #c4d2df;
+    border-radius: 58px;
+}
+input[type='range']::-ms-thumb {
+    box-shadow: 0px 0px 1px #ffffff;
+    border: 1px solid #ffffff;
+    height: 30px;
+    width: 30px;
+    border-radius: 50px;
+    background: #5fb5d4;
     cursor: pointer;
 }
-/* Mouse-over effects */
-.verticalSlider:hover {
-    opacity: 1; /* Fully shown on mouse-over */
+input[type='range']:focus::-ms-fill-lower {
+    background: #c4d2df;
+}
+input[type='range']:focus::-ms-fill-upper {
+    background: #c4d2df;
 }
 
 /* ___________ End of Button Style ___________ */

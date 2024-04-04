@@ -675,7 +675,7 @@ export default {
 .slider {
     -webkit-appearance: none;
     width: 100%;
-    height: 15px;
+    height: 200px;
     border-radius: 5px;
     background: #d3d3d3;
     outline: none;
@@ -690,7 +690,6 @@ export default {
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    background: #04aa6d;
     cursor: pointer;
 }
 
@@ -698,7 +697,6 @@ export default {
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    background: #04aa6d;
     cursor: pointer;
 }
 /* Mouse-over effects */
