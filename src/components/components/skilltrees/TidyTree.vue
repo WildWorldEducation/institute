@@ -327,11 +327,32 @@ export default {
             let ctx2 = this.hiddenCanvasContext;
 
             // Visible context.
-            ctx1.beginPath();
-            ctx1.moveTo(node.y, node.x);
-            ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-            ctx1.fillStyle = '#000';
-            ctx1.fill();
+            // If not a domain, make node a circle.
+            if (node.data.type != 'domain') {
+                ctx1.beginPath();
+                ctx1.moveTo(node.y, node.x);
+                ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                ctx1.fillStyle = '#000';
+                ctx1.fill();
+            }
+            // If is a domain, make node a diamond.
+            else {
+                ctx1.beginPath();
+                ctx1.moveTo(node.y, node.x - 10);
+                // top left edge.
+                ctx1.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+                // bottom left edge.
+                ctx1.lineTo(node.y, node.x - 10 + 20);
+                // bottom right edge.
+                ctx1.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+                // closing the path automatically creates the top right edge.
+                ctx1.closePath();
+                ctx1.lineWidth = 2;
+                ctx1.strokeStyle = 'black';
+                ctx1.fillStyle = 'white';
+                ctx1.fill();
+                ctx1.stroke();
+            }
 
             // Text.
             if (this.scale > 0.6) {
@@ -344,10 +365,26 @@ export default {
             }
 
             // Hidden context.
-            ctx2.beginPath();
-            ctx2.moveTo(node.y, node.x);
-            ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-            ctx2.fill();
+            if (node.data.type != 'domain') {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x);
+                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                ctx2.fill();
+            } else {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x - 10);
+                // top left edge.
+                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+                // bottom left edge.
+                ctx2.lineTo(node.y, node.x - 10 + 20);
+                // bottom right edge.
+                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+                // closing the path automatically creates the top right edge.
+                ctx2.closePath();
+                ctx2.lineWidth = 2;
+                ctx2.fill();
+                ctx2.stroke();
+            }
         },
         drawLink(link) {
             const linkGenerator = d3
