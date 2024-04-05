@@ -355,39 +355,6 @@ router.get('/inaccessible/:id1/:id2', (req, res, next) => {
  *
  * @return response()
  */
-router.get('/mastered/:id1/:id2', (req, res, next) => {
-    if (req.session.userName) {
-        let sqlQuery =
-            `
-        INSERT INTO skill_tree.user_skills (user_id, skill_id, is_mastered, is_accessible) 
-        VALUES(` +
-            req.params.id1 +
-            `, ` +
-            req.params.id2 +
-            `, 1, 1) 
-        ON DUPLICATE KEY UPDATE is_mastered=1, is_accessible=1;
-        `;
-
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.redirect('back');
-            } catch (err) {
-                next(err);
-            }
-        });
-    } else {
-        res.redirect('/login');
-    }
-});
-
-/**
- * Edit item
- *
- * @return response()
- */
 router.get('/unmastered/:id1/:id2', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
@@ -441,9 +408,9 @@ router.get('/unmastered/:id1/:id2', (req, res, next) => {
 // });
 
 /**
- * For making a skill mastered,
+ * For making a skill mastered (not a domain), or a domain unlocked,
  * which includes the effects on all child skills.
- * If children are domain (pass-through skills), the function is applied to them recursively also.
+ * If children are domains (pass-through skills), the function is applied to them recursively also.
  * If children are regular skills, they become unlocked.
  * If children are super skills (inner cluster nodes), their sub skills become unlocked.
  * If the skill this is applied to is a sub skill, and all its sibling skills are also mastered,
@@ -499,7 +466,13 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                         makeMastered(req.params.userId, skill);
 
                         function makeMastered(userId, skill) {
-                            // Make the first level items unlocked and mastered.
+                            let value;
+                            if (skill.type == 'domain') {
+                                value = 0;
+                            } else {
+                                value = 1;
+                            }
+
                             let sqlQuery =
                                 `
                             INSERT INTO skill_tree.user_skills (user_id, skill_id, is_mastered, is_accessible) 
@@ -507,8 +480,12 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                 req.params.userId +
                                 `, ` +
                                 skill.id +
-                                `, 1, 1) 
-                            ON DUPLICATE KEY UPDATE is_mastered=1, is_accessible=1;
+                                `, ` +
+                                value +
+                                `, 1) 
+                            ON DUPLICATE KEY UPDATE is_mastered=` +
+                                value +
+                                `, is_accessible=1;
                             `;
                             //
                             let query = conn.query(sqlQuery, (err, results) => {
@@ -579,7 +556,6 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                             i < subSkills.length;
                                             i++
                                         ) {
-                                            // TODO
                                             makeAccessible(
                                                 userId,
                                                 subSkills[i]

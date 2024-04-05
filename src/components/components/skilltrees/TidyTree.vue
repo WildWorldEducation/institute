@@ -327,11 +327,59 @@ export default {
             let ctx2 = this.hiddenCanvasContext;
 
             // Visible context.
-            ctx1.beginPath();
-            ctx1.moveTo(node.y, node.x);
-            ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-            ctx1.fillStyle = '#000';
-            ctx1.fill();
+            // If not a domain, make node a circle.
+            // console.log(node.data.is_mastered);
+            if (node.data.type != 'domain') {
+                ctx1.beginPath();
+                ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                // If mastered, make a solid shape.
+                if (node.data.is_mastered == 1) {
+                    ctx1.fillStyle = '#000';
+                    ctx1.fill();
+                }
+                // If not, just an outline.
+                else {
+                    ctx1.lineWidth = 2;
+                    ctx1.fillStyle = '#FFF';
+                    ctx1.fill();
+                    ctx1.strokeStyle = '#000';
+                    ctx1.stroke();
+                }
+            }
+            // If is a domain, make node a diamond.
+            else {
+                ctx1.beginPath();
+                ctx1.moveTo(node.y, node.x - 10);
+                // top left edge.
+                ctx1.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+                // bottom left edge.
+                ctx1.lineTo(node.y, node.x - 10 + 20);
+                // bottom right edge.
+                ctx1.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+                // closing the path automatically creates the top right edge.
+                ctx1.closePath();
+                // If mastered, make a solid shape.
+                if (node.data.is_mastered == 1) {
+                    ctx1.fillStyle = '#000';
+                    ctx1.fill();
+                }
+                // If unlocked, light grey.
+                else if (node.data.is_accessible == 1) {
+                    ctx1.lineWidth = 2;
+                    ctx1.fillStyle = '#D3D3D3';
+                    ctx1.fill();
+                    ctx1.strokeStyle = '#000';
+                    ctx1.stroke();
+                }
+                // If not, just an outline.
+                else {
+                    ctx1.lineWidth = 2;
+                    ctx1.fillStyle = '#FFF';
+                    ctx1.fill();
+                    ctx1.strokeStyle = '#000';
+                    ctx1.stroke();
+                }
+            }
 
             // Text.
             if (this.scale > 0.6) {
@@ -344,10 +392,26 @@ export default {
             }
 
             // Hidden context.
-            ctx2.beginPath();
-            ctx2.moveTo(node.y, node.x);
-            ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
-            ctx2.fill();
+            if (node.data.type != 'domain') {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x);
+                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                ctx2.fill();
+            } else {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x - 10);
+                // top left edge.
+                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+                // bottom left edge.
+                ctx2.lineTo(node.y, node.x - 10 + 20);
+                // bottom right edge.
+                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+                // closing the path automatically creates the top right edge.
+                ctx2.closePath();
+                ctx2.lineWidth = 2;
+                ctx2.fill();
+                ctx2.stroke();
+            }
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -615,8 +679,8 @@ export default {
         // programmatic d3 panning
         panInD3(panX, panY) {
             /*
-                 because we divide scale to handle mouse drag so we have to 
-                 multiply the pan value with scale here in order to cancel out the divide 
+                 because we divide scale to handle mouse drag so we have to
+                 multiply the pan value with scale here in order to cancel out the divide
             */
             const smallPanX = this.scale >= 1 ? panX : panX * this.scale;
             const smallPanY = this.scale >= 1 ? panY : panY * this.scale;
