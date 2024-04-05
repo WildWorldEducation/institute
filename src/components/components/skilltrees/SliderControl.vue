@@ -74,6 +74,7 @@ export default {
                 v-model="this.$parent.scale"
                 id="zoomRange"
                 step="0.01"
+                orient="vertical"
             />
         </div>
     </div>
@@ -90,7 +91,7 @@ export default {
 
 .slideContainer {
     width: 100%; /* Width of the outside container */
-    height: 300px;
+    height: 200px;
 }
 
 /** custom slider style */
@@ -99,7 +100,8 @@ input[type='range'] {
     margin: 10px 0;
     width: 100%;
     appearance: slider-vertical !important;
-    height: 300px;
+    -webkit-appearance: none;
+    height: 200px;
 }
 input[type='range']:focus {
     outline: none;
@@ -116,16 +118,15 @@ input[type='range']::-webkit-slider-runnable-track {
     border-radius: 29px;
 }
 input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
     box-shadow: 0px 0px 1px #ffffff;
     border: 1px solid #ffffff;
     height: 30px;
     width: 30px;
     border-radius: 50px;
     background: #5fb5d4;
-    -webkit-appearance: none;
     margin-top: -1px;
     cursor: pointer;
-    color: #18913c;
 }
 input[type='range']:focus::-webkit-slider-runnable-track {
     background: #c4d2df;
@@ -140,25 +141,22 @@ input[type='range']::-moz-range-track {
     background: #c4d2df;
     border-radius: 29px;
     margin: 10px 0;
-    width: 100%;
-    appearance: slider-vertical !important;
-    height: 300px;
 }
 input[type='range']::-moz-range-thumb {
-    box-shadow: 0px 0px 1px #ffffff;
-    border: 1px solid #ffffff;
-    height: 30px;
-    width: 30px;
+    height: 0px;
+    width: 0px;
     border-radius: 50px;
-    background: #5fb5d4;
-    -webkit-appearance: none;
-    margin-top: -1px;
+    border-width: 0px;
+    background: #184e80;
     cursor: pointer;
-    color: #18913c;
+    pointer-events: all;
 }
 
 input[type='range']::-moz-range-progress {
     background-color: #184e80;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 50px;
 }
 
 /* internet browser and edge styling */
