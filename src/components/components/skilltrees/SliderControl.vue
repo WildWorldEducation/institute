@@ -96,18 +96,16 @@ export default {
 /** custom slider style */
 
 input[type='range'] {
-    appearance: slider-vertical !important;
-    height: 300px;
-}
-
-input[type='range'] {
-    -webkit-appearance: none;
     margin: 10px 0;
     width: 100%;
+    appearance: slider-vertical !important;
+    height: 300px;
 }
 input[type='range']:focus {
     outline: none;
 }
+
+/* Chrome Style */
 input[type='range']::-webkit-slider-runnable-track {
     -webkit-appearance: none;
     width: 100%;
@@ -132,6 +130,8 @@ input[type='range']::-webkit-slider-thumb {
 input[type='range']:focus::-webkit-slider-runnable-track {
     background: #c4d2df;
 }
+
+/* Fire Fox Style  */
 input[type='range']::-moz-range-track {
     width: 100%;
     height: 200px;
@@ -139,6 +139,10 @@ input[type='range']::-moz-range-track {
     animate: 0.2s;
     background: #c4d2df;
     border-radius: 29px;
+    margin: 10px 0;
+    width: 100%;
+    appearance: slider-vertical !important;
+    height: 300px;
 }
 input[type='range']::-moz-range-thumb {
     box-shadow: 0px 0px 1px #ffffff;
@@ -147,8 +151,17 @@ input[type='range']::-moz-range-thumb {
     width: 30px;
     border-radius: 50px;
     background: #5fb5d4;
+    -webkit-appearance: none;
+    margin-top: -1px;
     cursor: pointer;
+    color: #18913c;
 }
+
+input[type='range']::-moz-range-progress {
+    background-color: #184e80;
+}
+
+/* internet browser and edge styling */
 input[type='range']::-ms-track {
     width: 100%;
     height: 200px;
@@ -177,7 +190,7 @@ input[type='range']::-ms-thumb {
     cursor: pointer;
 }
 input[type='range']:focus::-ms-fill-lower {
-    background: #c4d2df;
+    background: #184e80;
 }
 input[type='range']:focus::-ms-fill-upper {
     background: #c4d2df;
