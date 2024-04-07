@@ -231,13 +231,66 @@ export default {
                         case 'PageUp':
                             this.interval = setInterval(() => {
                                 this.$parent.scale = this.$parent.scale + 0.03;
-                                this.$parent.zoomInD3(this.$parent.scale);
+                                // calculate the proportion of new scale and ole scale
+                                const scaleProportion =
+                                    this.oldScale / this.$parent.scale;
+                                // just like the panning we have to multiple the pan value when scale is smaller than 0
+                                // because in the d3 handler we divide the value with scale
+                                let panX =
+                                    this.$parent.scale >= 1
+                                        ? this.$parent.panX
+                                        : this.$parent.panX *
+                                          this.$parent.scale;
+                                let panY =
+                                    this.$parent.scale >= 1
+                                        ? this.$parent.panY
+                                        : this.$parent.panY *
+                                          this.$parent.scale;
+                                // calculate pan value so we can zoom into center of the screen
+                                panX = panX * scaleProportion;
+                                panY = panY * scaleProportion;
+
+                                // store new scale value
+                                this.oldScale = this.$parent.scale;
+                                this.$parent.zoomInD3(
+                                    this.$parent.scale,
+                                    panX,
+                                    panY
+                                );
+                                console.log('page up: ' + panX + ' ' + panY);
+                                e.preventDefault();
                             }, 50);
                             break;
                         case 'PageDown':
                             this.interval = setInterval(() => {
                                 this.$parent.scale = this.$parent.scale - 0.03;
-                                this.$parent.zoomInD3(this.$parent.scale);
+                                // calculate the proportion of new scale and ole scale
+                                const scaleProportion =
+                                    this.oldScale / this.$parent.scale;
+                                // just like the panning we have to multiple the pan value when scale is smaller than 0
+                                // because in the d3 handler we divide the value with scale
+                                let panX =
+                                    this.$parent.scale >= 1
+                                        ? this.$parent.panX
+                                        : this.$parent.panX *
+                                          this.$parent.scale;
+                                let panY =
+                                    this.$parent.scale >= 1
+                                        ? this.$parent.panY
+                                        : this.$parent.panY *
+                                          this.$parent.scale;
+                                // calculate pan value so we can zoom into center of the screen
+                                panX = panX * scaleProportion;
+                                panY = panY * scaleProportion;
+
+                                // store new scale value
+                                this.oldScale = this.$parent.scale;
+                                this.$parent.zoomInD3(
+                                    this.$parent.scale,
+                                    panX,
+                                    panY
+                                );
+                                console.log('page downs: ' + panX + ' ' + panY);
                             }, 50);
                             break;
                         default:
@@ -254,7 +307,7 @@ export default {
                 }
 
                 // prevent default behavior of arrow keys
-                if (e.code.includes('Arrow')) {
+                if (e.code.includes('Arrow') || e.code.includes('Page')) {
                     e.preventDefault();
                 }
             },
@@ -265,6 +318,7 @@ export default {
         this.$parent.$refs.canvas.addEventListener(
             'keyup',
             (e) => {
+                console.log('key up: ' + e.code);
                 clearInterval(this.interval);
                 clearInterval(this.holdTimeInterval);
                 // set this to null so next time a key is down it will set interval
