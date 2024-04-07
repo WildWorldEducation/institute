@@ -4,7 +4,9 @@ export default {
     data() {
         return {
             // we store old scale value for zooming function
-            oldScale: 0
+            oldScale: 0,
+            // we calculate percent to dynamic change background of the slider
+            scalePercent: '0%'
         };
     },
     computed: {},
@@ -15,6 +17,8 @@ export default {
 
         // store initial scale value
         this.oldScale = this.$parent.scale;
+        const scalePercentNumber = (this.$parent.scale / 2) * 100;
+        this.scalePercent = scalePercentNumber + '%';
 
         // Mouse.
         zoomSlider.addEventListener('mouseup', () => {
@@ -37,6 +41,7 @@ export default {
             // store new scale value
             this.oldScale = zoomSlider.value;
             this.$parent.zoomInD3(zoomSlider.value, panX, panY);
+            // we re-calculate scale percent to dynamic change the backgrounds
         });
 
         // Touch.
@@ -60,7 +65,12 @@ export default {
             this.$parent.zoomInD3(zoomSlider.value, panX, panY);
         });
     },
-    methods: {}
+    methods: {
+        changeGradientBG() {
+            const percentNum = (this.$parent.scale / 2) * 100;
+            this.scalePercent = percentNum + '%';
+        }
+    }
 };
 </script>
 
@@ -75,6 +85,7 @@ export default {
                 id="zoomRange"
                 step="0.01"
                 orient="vertical"
+                @input="changeGradientBG()"
             />
         </div>
     </div>
@@ -97,13 +108,15 @@ export default {
 /** custom slider style */
 
 input[type='range'] {
+    -webkit-appearance: none;
     margin: 10px 0;
     width: 100%;
     appearance: slider-vertical !important;
-    -webkit-appearance: none;
     height: 200px;
 }
+
 input[type='range']:focus {
+    -webkit-appearance: none;
     outline: none;
 }
 
@@ -114,22 +127,41 @@ input[type='range']::-webkit-slider-runnable-track {
     height: 200px;
     cursor: pointer;
     animate: 0.2s;
-    background: #c4d2df;
     border-radius: 29px;
+    background: linear-gradient(
+        to top,
+        #184e80 0%,
+        #184e80 v-bind(scalePercent),
+        #c4d2df v-bind(scalePercent),
+        #c4d2df 100%
+    );
 }
+
 input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
-    box-shadow: 0px 0px 1px #ffffff;
-    border: 1px solid #ffffff;
-    height: 30px;
-    width: 30px;
-    border-radius: 50px;
-    background: #5fb5d4;
-    margin-top: -1px;
+    border: 0px solid #ffffff;
+    height: 16px;
+    width: 16px;
+    background-color: #184e80;
+    color: #184e80;
+    opacity: 0;
     cursor: pointer;
 }
+
 input[type='range']:focus::-webkit-slider-runnable-track {
-    background: #c4d2df;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 200px;
+    cursor: pointer;
+    animate: 0.2s;
+    border-radius: 29px;
+    background: linear-gradient(
+        to top,
+        #184e80 0%,
+        #184e80 v-bind(scalePercent),
+        #c4d2df v-bind(scalePercent),
+        #c4d2df 100%
+    );
 }
 
 /* Fire Fox Style  */
@@ -149,7 +181,6 @@ input[type='range']::-moz-range-thumb {
     border-width: 0px;
     background: #184e80;
     cursor: pointer;
-    pointer-events: all;
 }
 
 input[type='range']::-moz-range-progress {

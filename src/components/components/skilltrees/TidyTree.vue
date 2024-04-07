@@ -603,6 +603,8 @@ export default {
             this.panY =
                 this.scale >= 1 ? transform.y : transform.y / this.scale;
             this.scale = transform.k;
+            // update slider percent
+            this.$refs.sliderControl.changeGradientBG();
             this.drawTree();
         },
         // programmatic d3 zoom
@@ -649,7 +651,7 @@ export default {
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
         <JoystickControl />
-        <SliderControl />
+        <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
     </div>
 </template>
