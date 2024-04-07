@@ -728,7 +728,7 @@ ORDER BY id;`;
                             }
                         }
                         // Save it and move to next function.
-                        CheckIfDomainIsMastered(domainChildren);
+                        CheckIfDomainIsMastered(parent, domainChildren, userId);
                     } else {
                         // Run again for parent.
                         FindFirstAncestorDomain(userSkills, parent);
@@ -736,7 +736,7 @@ ORDER BY id;`;
                 }
             }
         } catch (err) {
-            next(err);
+            console.log(err);
         }
     });
 }
@@ -745,7 +745,7 @@ ORDER BY id;`;
 // If they are all mastered, the domain gets mastered.
 // If the domain gets mastered, function then needs to find the next domain up and
 // go again with that one.
-function CheckIfDomainIsMastered(parentChildren) {
+function CheckIfDomainIsMastered(domain, parentChildren, userId) {
     let domainIsNowMastered = true;
     var i = parentChildren.length;
     while (i--) {
@@ -770,10 +770,35 @@ function CheckIfDomainIsMastered(parentChildren) {
             }
         }
     }
-    console.log('test');
-    // Should be true if the domain should now be mastered.
-    // Seems to be working.
-    console.log(domainIsNowMastered);
+    MakeDomainMastered(domain, userId);
+}
+
+// Need to make the domain mastered,
+// and then check its first ancestor domain, to see if it should
+// be made mastered.
+function MakeDomainMastered(domain, userId) {
+    let sqlQuery =
+        `
+INSERT INTO skill_tree.user_skills (user_id, skill_id, is_mastered, is_accessible) 
+VALUES(` +
+        userId +
+        `, ` +
+        domain.id +
+        `, 1, 1) 
+ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
+`;
+
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            // Then need to check if this domain's parent is ready to become mastered.
+            FindFirstAncestorDomain(domain, userId);
+        } catch (err) {
+            console.log(err);
+        }
+    });
 }
 
 router.get('*', (req, res) => {
