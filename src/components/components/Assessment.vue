@@ -287,14 +287,14 @@ export default {
         },
         // For development purposes.
         TestPass() {
-            this.MakeMastered(this.skillId);
+            this.MakeMastered(this.skill);
         }
     }
 };
 </script>
 
 <template>
-    <!--<button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
+    <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button>
     <div v-if="loading == true">Loading...</div>
     <div v-if="loading == false">
         <div

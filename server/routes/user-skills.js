@@ -517,7 +517,6 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                             if (
                                                 childSkills[i].type == 'regular'
                                             ) {
-                                                // TODO
                                                 makeAccessible(
                                                     userId,
                                                     childSkills[i].id
@@ -561,6 +560,12 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                                 subSkills[i]
                                             );
                                         }
+
+                                        // Check if domain is now mastered.
+                                        FindFirstAncestorDomain(
+                                            skill,
+                                            req.params.userId
+                                        );
                                     }
                                     // If this skill is a sub skill.
                                     else {
@@ -662,6 +667,139 @@ router.post('/make-mastered/:userId', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+/*
+ * For mastering domains.
+ */
+
+function FindFirstAncestorDomain(skill, userId) {
+    // Exit if this is a first level node.
+    if (skill.parent == 0) {
+        return;
+    }
+
+    // Get an updated list of user skills.
+
+    let sqlQuery =
+        `
+SELECT skill_tree.skills.id, name, is_accessible, is_mastered, type, parent
+FROM skill_tree.skills
+LEFT OUTER JOIN skill_tree.user_skills
+ON skill_tree.skills.id = skill_tree.user_skills.skill_id
+WHERE skill_tree.user_skills.user_id = ` +
+        userId +
+        `
+
+UNION
+SELECT skill_tree.skills.id, name, "", "", type, parent
+FROM skill_tree.skills
+WHERE skill_tree.skills.id NOT IN 
+
+(SELECT skill_tree.skills.id
+FROM skill_tree.skills
+LEFT OUTER JOIN skill_tree.user_skills
+ON skill_tree.skills.id = skill_tree.user_skills.skill_id
+WHERE skill_tree.user_skills.user_id =` +
+        userId +
+        `)
+ORDER BY id;`;
+
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            let userSkills = results;
+            // Go up hierarchy to find the first domain node we can.
+            // Store that as "domain".
+            //
+            // Go through all skills.
+            for (let i = 0; i < userSkills.length; i++) {
+                // Find skill parent.
+                if (skill.parent == userSkills[i].id) {
+                    let parent = userSkills[i];
+                    if (parent.type == 'domain') {
+                        // Get all of the domain's children.
+                        let domainChildren = [];
+                        for (let j = 0; j < userSkills.length; j++) {
+                            if (userSkills[j].parent == parent.id) {
+                                domainChildren.push(userSkills[j]);
+                            }
+                        }
+                        // Save it and move to next function.
+                        CheckIfDomainIsMastered(parent, domainChildren, userId);
+                    } else {
+                        // Run again for parent.
+                        FindFirstAncestorDomain(userSkills, parent);
+                    }
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+
+// Recursively check the domain's children, excluding subskills, including domains.
+// If they are all mastered, the domain gets mastered.
+// If the domain gets mastered, function then needs to find the next domain up and
+// go again with that one.
+function CheckIfDomainIsMastered(domain, parentChildren, userId) {
+    let domainIsNowMastered = true;
+    var i = parentChildren.length;
+    while (i--) {
+        // Check if mastered.
+        // If not, exit.
+        if (parentChildren[i].is_mastered != 1) {
+            domainIsNowMastered = false;
+            return;
+        }
+        // If yes, check if its descendants are also mastered.
+        else {
+            if (typeof parentChildren[i] !== 'undefined') {
+                /*
+                 * Run the above function again recursively.
+                 */
+                if (
+                    parentChildren[i].children &&
+                    Array.isArray(parentChildren[i].children) &&
+                    parentChildren[i].children.length > 0
+                )
+                    CheckIfDomainIsMastered(parentChildren[i].children);
+            }
+        }
+    }
+    MakeDomainMastered(domain, userId);
+}
+
+// Need to make the domain mastered,
+// and then check its first ancestor domain, to see if it should
+// be made mastered.
+function MakeDomainMastered(domain, userId) {
+    let sqlQuery =
+        `
+INSERT INTO skill_tree.user_skills (user_id, skill_id, is_mastered, is_accessible) 
+VALUES(` +
+        userId +
+        `, ` +
+        domain.id +
+        `, 1, 1) 
+ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
+`;
+
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            // Then need to check if this domain's parent is ready to become mastered.
+            FindFirstAncestorDomain(domain, userId);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
 
 router.get('*', (req, res) => {
     res.redirect('/');
