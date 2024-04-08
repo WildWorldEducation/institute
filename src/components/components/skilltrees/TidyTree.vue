@@ -662,11 +662,19 @@ export default {
         },
         // handle mouse zoom
         handleMouseZoom(transform) {
+            // only show label when user zoom
+            if (transform.k != this.scale) {
+                // show scale label
+                this.$refs.sliderControl.showScaleLabel();
+            }
+            // update slider percent
+            this.$refs.sliderControl.changeGradientBG();
             this.panX =
                 this.scale >= 1 ? transform.x : transform.x / this.scale;
             this.panY =
                 this.scale >= 1 ? transform.y : transform.y / this.scale;
             this.scale = transform.k;
+
             this.drawTree();
         },
         // programmatic d3 zoom
@@ -675,6 +683,7 @@ export default {
                 this.d3Zoom.transform,
                 d3.zoomIdentity.translate(panX, panY).scale(scale)
             );
+            this.$refs.sliderControl.showScaleLabel();
         },
         // programmatic d3 panning
         panInD3(panX, panY) {
@@ -691,6 +700,16 @@ export default {
                     .translate(smallPanX, smallPanY)
                     .scale(this.scale)
             );
+        },
+        resetPos() {
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(700)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity.translate(0, 0).scale(0.3)
+                );
+            this.$refs.sliderControl.showScaleLabel();
         }
     }
 };
@@ -699,6 +718,9 @@ export default {
 <template>
     <button id="print-btn" class="btn btn-info" @click="printPDF()">
         Print
+    </button>
+    <button id="reset-btn" class="btn btn-primary" @click="resetPos()">
+        Reset
     </button>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div id="wrapper">
@@ -713,7 +735,7 @@ export default {
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
         <JoystickControl />
-        <SliderControl />
+        <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
     </div>
 </template>
@@ -739,7 +761,7 @@ export default {
 .slider {
     -webkit-appearance: none;
     width: 100%;
-    height: 15px;
+    height: 200px;
     border-radius: 5px;
     background: #d3d3d3;
     outline: none;
@@ -754,7 +776,6 @@ export default {
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    background: #04aa6d;
     cursor: pointer;
 }
 
@@ -762,7 +783,6 @@ export default {
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    background: #04aa6d;
     cursor: pointer;
 }
 /* Mouse-over effects */
@@ -824,6 +844,28 @@ input[type='button'] {
     z-index: 1;
     margin-top: 10px;
     margin-right: 10px;
+    background-color: #184e80;
+    border: #184e80;
+    color: white;
+}
+
+#print-btn:hover {
+    background-color: #133b61;
+}
+
+#reset-btn {
+    position: absolute;
+    right: 80px;
+    z-index: 1;
+    margin-top: 10px;
+    margin-right: 10px;
+    background-color: #c4d2df;
+    border-color: #c4d2df;
+    color: black;
+}
+
+#reset-btn:hover {
+    background-color: #9da7b1;
 }
 
 #reset-button {
