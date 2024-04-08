@@ -636,6 +636,16 @@ export default {
                     .translate(smallPanX, smallPanY)
                     .scale(this.scale)
             );
+        },
+        resetPos() {
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(700)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity.translate(0, 0).scale(0.3)
+                );
+            this.$refs.sliderControl.showScaleLabel();
         }
     }
 };
@@ -644,6 +654,9 @@ export default {
 <template>
     <button id="print-btn" class="btn btn-info" @click="printPDF()">
         Print
+    </button>
+    <button id="reset-btn" class="btn btn-primary" @click="resetPos()">
+        Reset
     </button>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div id="wrapper">
@@ -764,6 +777,14 @@ input[type='button'] {
 #print-btn {
     position: absolute;
     right: 0;
+    z-index: 1;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+#reset-btn {
+    position: absolute;
+    right: 80px;
     z-index: 1;
     margin-top: 10px;
     margin-right: 10px;

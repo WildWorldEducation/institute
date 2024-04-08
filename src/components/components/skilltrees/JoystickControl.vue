@@ -31,7 +31,7 @@ export default {
         var panJoystick = nipplejs.create({
             zone: document.getElementById('panJoystick'),
             mode: 'static',
-            position: { right: '65%', bottom: '53%' },
+            position: { right: '65%', bottom: '33%' },
             color: 'blue'
         });
 
@@ -401,6 +401,9 @@ export default {
     width: 200px;
     bottom: 0px;
     left: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 160px;
 }
 
 #panJoystick {
