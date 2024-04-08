@@ -31,8 +31,8 @@ export default {
         var panJoystick = nipplejs.create({
             zone: document.getElementById('panJoystick'),
             mode: 'static',
-            position: { right: '65%', bottom: '33%' },
-            color: 'blue'
+            position: { right: '70%', bottom: '33%' },
+            color: '#184e80'
         });
 
         // we calculate the interval time with fps

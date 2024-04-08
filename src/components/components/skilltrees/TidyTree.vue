@@ -780,6 +780,13 @@ input[type='button'] {
     z-index: 1;
     margin-top: 10px;
     margin-right: 10px;
+    background-color: #184e80;
+    border: #184e80;
+    color: white;
+}
+
+#print-btn:hover {
+    background-color: #133b61;
 }
 
 #reset-btn {
@@ -788,6 +795,13 @@ input[type='button'] {
     z-index: 1;
     margin-top: 10px;
     margin-right: 10px;
+    background-color: #c4d2df;
+    border-color: #c4d2df;
+    color: black;
+}
+
+#reset-btn:hover {
+    background-color: #9da7b1;
 }
 
 #reset-button {
