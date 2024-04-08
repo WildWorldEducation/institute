@@ -1,4 +1,5 @@
 <script>
+import { ref } from 'vue';
 export default {
     setup() {},
     data() {
@@ -6,7 +7,9 @@ export default {
             // we store old scale value for zooming function
             oldScale: 0,
             // we calculate percent to dynamic change background of the slider
-            scalePercent: '0%'
+            scalePercent: '0%',
+            // only show scale number when there a change
+            showLabel: ref(false)
         };
     },
     computed: {},
@@ -69,6 +72,12 @@ export default {
         changeGradientBG() {
             const percentNum = (this.$parent.scale / 2) * 100;
             this.scalePercent = percentNum + '%';
+        },
+        showScaleLabel() {
+            this.showLabel = true;
+            setTimeout(() => {
+                this.showLabel = false;
+            }, 1500);
         }
     }
 };
@@ -76,6 +85,11 @@ export default {
 
 <template>
     <div id="sliderWrapper">
+        <Transition>
+            <div v-if="showLabel" id="scaleLabel">
+                {{ Number.parseFloat(this.$parent.scale).toFixed(2) }}x
+            </div>
+        </Transition>
         <div class="slideContainer">
             <input
                 type="range"
@@ -103,6 +117,12 @@ export default {
 .slideContainer {
     width: 100%; /* Width of the outside container */
     height: 200px;
+}
+
+#scaleLabel {
+    font-size: small;
+    color: #184e80;
+    margin-left: -5px;
 }
 
 /** custom slider style */
@@ -226,4 +246,14 @@ input[type='range']:focus::-ms-fill-upper {
 }
 
 /* ___________ End of Button Style ___________ */
+
+/* Animation for scale label */
+
+.v-leave-active {
+    transition: opacity 1.5s ease;
+}
+
+.v-leave-to {
+    opacity: 0;
+}
 </style>

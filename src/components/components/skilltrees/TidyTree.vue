@@ -598,13 +598,19 @@ export default {
         },
         // handle mouse zoom
         handleMouseZoom(transform) {
+            // only show label when user zoom
+            if (transform.k != this.scale) {
+                // show scale label
+                this.$refs.sliderControl.showScaleLabel();
+            }
+            // update slider percent
+            this.$refs.sliderControl.changeGradientBG();
             this.panX =
                 this.scale >= 1 ? transform.x : transform.x / this.scale;
             this.panY =
                 this.scale >= 1 ? transform.y : transform.y / this.scale;
             this.scale = transform.k;
-            // update slider percent
-            this.$refs.sliderControl.changeGradientBG();
+
             this.drawTree();
         },
         // programmatic d3 zoom
@@ -613,6 +619,7 @@ export default {
                 this.d3Zoom.transform,
                 d3.zoomIdentity.translate(panX, panY).scale(scale)
             );
+            this.$refs.sliderControl.showScaleLabel();
         },
         // programmatic d3 panning
         panInD3(panX, panY) {
