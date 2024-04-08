@@ -278,7 +278,6 @@ export default {
             this.hiddenCanvasContext.scale(this.scale, this.scale);
 
             // Pan.
-
             this.context.translate(this.panX, this.panY);
             this.hiddenCanvasContext.translate(this.panX, this.panY);
 

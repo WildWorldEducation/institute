@@ -257,7 +257,7 @@ export default {
                                     panX,
                                     panY
                                 );
-                                console.log('page up: ' + panX + ' ' + panY);
+
                                 e.preventDefault();
                             }, 50);
                             break;
@@ -290,7 +290,6 @@ export default {
                                     panX,
                                     panY
                                 );
-                                console.log('page downs: ' + panX + ' ' + panY);
                             }, 50);
                             break;
                         default:
@@ -318,7 +317,6 @@ export default {
         this.$parent.$refs.canvas.addEventListener(
             'keyup',
             (e) => {
-                console.log('key up: ' + e.code);
                 clearInterval(this.interval);
                 clearInterval(this.holdTimeInterval);
                 // set this to null so next time a key is down it will set interval
@@ -409,6 +407,7 @@ export default {
 #panJoystick {
     width: 100px;
     height: 100px;
+    opacity: 0.7;
 }
 
 #wrapper {
