@@ -2,7 +2,8 @@
 // Import the stores.
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
-
+// Nested component.
+import SkillPanel from './../SkillPanel.vue';
 // Algorithm.
 import * as d3 from 'd3';
 
@@ -54,10 +55,10 @@ export default {
             d3Zoom: null
         };
     },
-    components: {},
+    components: {
+        SkillPanel
+    },
     async mounted() {
-        // ------------
-
         if (this.skillTreeStore.userSkills.length == 0) {
             await this.skillTreeStore.getUserSkills();
         }
@@ -74,7 +75,51 @@ export default {
 
         this.getAlgorithm();
 
-        //Zoom.
+        // Set up the Hidden Canvas for Interactivity.
+        let hiddenCanvas = document.getElementById('hidden-canvas');
+        this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
+        hiddenCanvas.style.display = 'none';
+
+        // Listen for clicks on the main canvas
+        canvas.addEventListener('click', (e) => {
+            // We actually only need to draw the hidden canvas when
+            // there is an interaction. This sketch can draw it on
+            // each loop, but that is only for demonstration.
+
+            var data = this.nodes;
+            //Figure out where the mouse click occurred.
+            var mouseX = e.layerX;
+            var mouseY = e.layerY;
+
+            // Get the corresponding pixel color on the hidden canvas
+            // and look up the node in our map.
+            var ctx = this.hiddenCanvasContext;
+
+            // This will return that pixel's color
+            var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+            //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
+
+            //Our map uses these rgb strings as keys to nodes.
+            var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+            var node = this.colToNode[colString];
+
+            // console.log(this.colToNode);
+
+            if (node) {
+                // We clicked on something, lets set the color of the node
+                // we also have access to the data associated with it, which in
+                // this case is just its original index in the data array.
+                node.renderCol = node.__pickColor;
+
+                //Update the display with some data
+                this.skill.name = node.data.skill_name;
+                this.skill.id = node.data.id;
+                this.skill.type = node.data.type;
+                this.showInfoPanel();
+            }
+        });
+
+        //Zoom and pan with mouse.
         d3.select(this.context.canvas).call(
             d3
                 .zoom()
@@ -187,6 +232,8 @@ export default {
             canvas.width = this.width;
             canvas.height = this.height;
             this.context = canvas.getContext('2d');
+            let hiddenCanvas = document.getElementById('hidden-canvas');
+            this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
 
             this.drawTree(d3.zoomIdentity);
         },
@@ -195,6 +242,7 @@ export default {
 
             // Zoom and pan.
             this.context.save();
+            this.hiddenCanvasContext.save();
             // Clear canvases.
             this.context.clearRect(
                 0,
@@ -202,8 +250,16 @@ export default {
                 this.context.canvas.width,
                 this.context.canvas.height
             );
+            this.hiddenCanvasContext.clearRect(
+                0,
+                0,
+                this.hiddenCanvasContext.canvas.width,
+                this.hiddenCanvasContext.canvas.height
+            );
             this.context.translate(transform.x, transform.y);
+            this.hiddenCanvasContext.translate(transform.x, transform.y);
             this.context.scale(transform.k, transform.k);
+            this.hiddenCanvasContext.scale(transform.k, transform.k);
 
             // For node labels to appear at correct zoom level.
             this.scale = transform.k;
@@ -218,14 +274,38 @@ export default {
             // Draw nodes.
             this.context.beginPath();
             for (const node of this.nodes) {
+                if (node.renderCol) {
+                    // Render clicked nodes in the color of their corresponding node
+                    // on the hidden canvas.
+                    this.context.fillStyle = node.renderCol;
+                } else {
+                    this.context.fillStyle = 'RGBA(105, 105, 105, 0.8)';
+                }
+
+                //
+                //  If we are rendering to the hidden canvas each element
+                // should get its own color.
+                //
+
+                if (node.__pickColor === undefined) {
+                    // If we have never drawn the node to the hidden canvas get a new
+                    // color for it and put it in the dictionary. genColor returns a new color
+                    // every time it is called.
+                    node.__pickColor = this.genColor();
+                    this.colToNode[node.__pickColor] = node;
+                }
+                // On the hidden canvas each rectangle gets a unique color.
+                this.hiddenCanvasContext.fillStyle = node.__pickColor;
                 // Draw the actual shape
                 this.drawNode(node);
             }
 
             this.context.restore();
+            this.hiddenCanvasContext.restore();
         },
         drawNode(node) {
             let ctx1 = this.context;
+            let ctx2 = this.hiddenCanvasContext;
 
             // Visible context.
             // If not a domain, make node a circle.
@@ -291,6 +371,28 @@ export default {
                 ctx1.fillStyle = '#000';
                 ctx1.fillText(node.data.skill_name, node.y + 15, node.x + 2);
             }
+
+            // Hidden context.
+            if (node.data.type != 'domain') {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x);
+                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                ctx2.fill();
+            } else {
+                ctx2.beginPath();
+                ctx2.moveTo(node.y, node.x - 10);
+                // top left edge.
+                ctx2.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
+                // bottom left edge.
+                ctx2.lineTo(node.y, node.x - 10 + 20);
+                // bottom right edge.
+                ctx2.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
+                // closing the path automatically creates the top right edge.
+                ctx2.closePath();
+                ctx2.lineWidth = 2;
+                ctx2.fill();
+                ctx2.stroke();
+            }
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -318,6 +420,58 @@ export default {
             this.context.strokeStyle = '#000';
             this.context.stroke();
         },
+        genColor() {
+            var ret = [];
+            // via http://stackoverflow.com/a/15804183
+            if (this.nextCol < 16777215) {
+                ret.push(this.nextCol & 0xff); // R
+                ret.push((this.nextCol & 0xff00) >> 8); // G
+                ret.push((this.nextCol & 0xff0000) >> 16); // B
+
+                this.nextCol += 100; // This is exagerated for this example and would ordinarily be 1.
+            }
+            var col = 'rgb(' + ret.join(',') + ')';
+            return col;
+        },
+        showInfoPanel() {
+            // If panel is not showing.
+            if (!this.isSkillInfoPanelShown) {
+                this.isSkillInfoPanelShown = true;
+                // To display the panel.
+                // Responsive.
+                // Laptop etc.
+                if (screen.width > 800) {
+                    document.getElementById('skillInfoPanel').style.width =
+                        '474px';
+                }
+                // Mobile device.
+                else {
+                    document.getElementById('skillInfoPanel').style.height =
+                        '474px';
+                }
+            }
+        },
+        hideInfoPanel() {
+            // If panel is showing.
+            if (this.isSkillInfoPanelShown) {
+                // Responsive.
+                // Laptop etc.
+                if (screen.width > 800) {
+                    document.getElementById('skillInfoPanel').style.width =
+                        '0px';
+                }
+                // Mobile device.
+                else {
+                    document.getElementById('skillInfoPanel').style.height =
+                        '0px';
+                }
+                // Hide the background.
+                document.getElementById('sidepanel-backdrop').style.display =
+                    'none';
+
+                this.isSkillInfoPanelShown = false;
+            }
+        },
 
         // handle mouse zoom
         handleMouseZoom() {}
@@ -334,6 +488,7 @@ export default {
     </button>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div id="wrapper">
+        <SkillPanel :skill="skill" />
         <canvas
             id="canvas"
             width="1500"
