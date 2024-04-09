@@ -120,12 +120,12 @@ export default {
         });
 
         //Zoom and pan with mouse.
-        d3.select(this.context.canvas).call(
-            d3
-                .zoom()
-                .scaleExtent([0.1, 5])
-                .on('zoom', ({ transform }) => this.drawTree(transform))
-        );
+        this.d3Zoom = d3
+            .zoom()
+            .scaleExtent([0.1, 5])
+            .on('zoom', ({ transform }) => this.drawTree(transform));
+
+        d3.select(this.context.canvas).call(this.d3Zoom);
     },
     methods: {
         getAlgorithm() {
@@ -642,8 +642,16 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
 
-        // handle mouse zoom
-        handleMouseZoom() {}
+        resetPos() {
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(700)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity.translate(0, 0).scale(0.3)
+                );
+            this.$refs.sliderControl.showScaleLabel();
+        }
     }
 };
 </script>
