@@ -334,7 +334,7 @@ export default {
             // only zoom when cntrl or shift key is press and left click is press down
             if (this.fnZoomKey) {
                 if (e.pageY < this.oldMY) {
-                    this.$parent.scale += 0.005;
+                    this.$parent.scale += 0.01;
                     // calculate the proportion of new scale and ole scale
                     const scaleProportion = this.oldScale / this.$parent.scale;
                     // just like the panning we have to multiple the pan value when scale is smaller than 0
@@ -355,7 +355,7 @@ export default {
                     this.oldScale = this.$parent.scale;
                     this.$parent.zoomInD3(this.$parent.scale, panX, panY);
                 } else {
-                    this.$parent.scale -= 0.005;
+                    this.$parent.scale -= 0.01;
                     // calculate the proportion of new scale and ole scale
                     const scaleProportion = this.oldScale / this.$parent.scale;
                     // just like the panning we have to multiple the pan value when scale is smaller than 0
