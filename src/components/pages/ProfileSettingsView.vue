@@ -2,6 +2,7 @@
 import ProfileDetails from '../components/ProfileDetails.vue';
 import Settings from '../components/Settings.vue';
 import BulkQuestionsUpload from '../components/BulkQuestionsUpload.vue';
+import AutoGenerateSources from '../components/AutoGenerateSources.vue';
 // Import the store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
@@ -18,7 +19,8 @@ export default {
     components: {
         ProfileDetails,
         Settings,
-        BulkQuestionsUpload
+        BulkQuestionsUpload,
+        AutoGenerateSources
     }
 };
 </script>
@@ -31,6 +33,7 @@ export default {
     <!--Only show if admin -->
     <Settings v-if="userDetailsStore.role == 'admin'" />
     <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
+    <AutoGenerateSources v-if="userDetailsStore.role == 'admin'" />
 </template>
 
 <style></style>
