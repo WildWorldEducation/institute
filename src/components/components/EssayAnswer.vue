@@ -1,26 +1,15 @@
 <script>
-// Import
-import router from '../../router';
-
-// Import the store.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-
 export default {
     data() {
         return {
             skillId: this.$route.params.id
         };
     },
-    setup() {
-        const userDetailsStore = useUserDetailsStore();
-        return {
-            userDetailsStore
-        };
-    },
+    setup() {},
     mounted: function () {
         //  summernote config
         $('#summernote').summernote({
-            placeholder: '',
+            placeholder: 'write down your answer here',
             tabsize: 2,
             height: 120,
             toolbar: [
@@ -40,37 +29,26 @@ export default {
             }
         });
     },
-    methods: {
-        Submit() {
-            var url = '/resources/add/' + this.skillId;
-            var resourceData = $('#summernote').summernote('code');
-
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: this.userDetailsStore.userId,
-                    editordata: resourceData
-                })
-            };
-            fetch(url, requestOptions).then(() => {
-                this.$router.push('/skills/' + this.skillId);
-            });
-        }
-    }
+    methods: {}
 };
 </script>
 
 <template>
     <div class="container mt-3">
-        <h1>Add Learning Resource</h1>
         <div class="row">
             <div class="mb-3">
                 <textarea id="summernote" name="editordata"></textarea>
             </div>
-            <button class="btn btn-dark" @click="Submit()">Submit</button>
         </div>
     </div>
 </template>
 
-<style scoped></style>
+<style>
+#summernote {
+    background-color: white !important;
+}
+
+.note-editable {
+    background-color: white !important;
+}
+</style>

@@ -4,6 +4,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import EssayAnswer from './EssayAnswer.vue';
 
 export default {
     setup() {
@@ -41,6 +42,30 @@ export default {
             waitForMarkModal: false
         };
     },
+    mounted: function () {
+        console.log('hniec');
+        //  Summer note config
+        $('.summernote').summernote({
+            placeholder: 'this is the summer note',
+            tabsize: 2,
+            height: 120,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            maximumImageFileSize: 2048 * 1024, // 2 MB
+            callbacks: {
+                onImageUploadError: function (msg) {
+                    alert('Max image size is 2MB.');
+                }
+            }
+        });
+    },
     async created() {
         // Load the max quiz question number setting.
         if (this.settingsStore.quizMaxQuestions == null) {
@@ -77,7 +102,9 @@ export default {
             }
         }
     },
-
+    components: {
+        EssayAnswer
+    },
     methods: {
         async fetchMCQuestions(skillId) {
             fetch('/questions/' + skillId + '/multiple-choice')
@@ -296,6 +323,7 @@ export default {
 <template>
     <!-- <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div v-if="loading == true">Loading...</div>
+
     <div v-if="loading == false">
         <div
             v-if="questions.length > 0"
@@ -312,6 +340,7 @@ export default {
                         {{ question.question }}
                     </div>
                 </div>
+
                 <!-- Multiple Choice Question -->
                 <div v-if="this.question.questionType == 'mc'">
                     <div
@@ -335,15 +364,17 @@ export default {
                         </label>
                     </div>
                 </div>
+                <!-- Essay Question -->
                 <div v-else-if="this.question.questionType == 'essay'">
                     <div class="form-group">
-                        <textarea
+                        <!-- <textarea
                             id="essay-answer"
                             @input="UserAnswer()"
                             class="form-control"
                             v-model="questions[this.questionNumber].userAnswer"
                             rows="3"
-                        ></textarea>
+                        ></textarea> -->
+                        <EssayAnswer />
                     </div>
                 </div>
             </div>
