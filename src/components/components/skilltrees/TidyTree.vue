@@ -385,9 +385,9 @@ export default {
                 ctx1.beginPath();
                 ctx1.strokeStyle = '#FFF';
                 ctx1.lineWidth = 4;
-                ctx1.strokeText(node.data.skill_name, node.y + 10, node.x + 2);
+                ctx1.strokeText(node.data.skill_name, node.y + 15, node.x + 2);
                 ctx1.fillStyle = '#000';
-                ctx1.fillText(node.data.skill_name, node.y + 10, node.x + 2);
+                ctx1.fillText(node.data.skill_name, node.y + 15, node.x + 2);
             }
 
             // Hidden context.
