@@ -5,6 +5,7 @@ import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
 import SliderControl from './SliderControl.vue';
+import JoystickControl from './JoystickControl.vue';
 // Algorithm.
 import * as d3 from 'd3';
 
@@ -58,7 +59,8 @@ export default {
     },
     components: {
         SkillPanel,
-        SliderControl
+        SliderControl,
+        JoystickControl
     },
     async mounted() {
         if (this.skillTreeStore.userSkills.length == 0) {
@@ -132,6 +134,8 @@ export default {
             });
 
         d3.select(this.context.canvas).call(this.d3Zoom);
+
+        this.resetPos();
     },
     methods: {
         getAlgorithm() {
@@ -269,6 +273,8 @@ export default {
 
             // For node labels to appear at correct zoom level.
             this.scale = transform.k;
+            this.panX = transform.x;
+            this.panY = transform.y;
 
             // Draw links.
             const links = this.root.links();
@@ -664,6 +670,22 @@ export default {
                 d3.zoomIdentity.translate(panX, panY).scale(scale)
             );
             this.$refs.sliderControl.showScaleLabel();
+        },
+        // programmatic d3 panning
+        panInD3(panX, panY) {
+            /*
+                 because we divide scale to handle mouse drag so we have to
+                 multiply the pan value with scale here in order to cancel out the divide
+            */
+            const smallPanX = this.scale >= 1 ? panX : panX * this.scale;
+            const smallPanY = this.scale >= 1 ? panY : panY * this.scale;
+
+            d3.select(this.context.canvas).call(
+                this.d3Zoom.transform,
+                d3.zoomIdentity
+                    .translate(smallPanX, smallPanY)
+                    .scale(this.scale)
+            );
         }
     }
 };
@@ -688,6 +710,7 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
+        <JoystickControl />
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
     </div>
