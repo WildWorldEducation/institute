@@ -2,8 +2,9 @@
 // Import the stores.
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
-// Nested component.
+// Nested components.
 import SkillPanel from './../SkillPanel.vue';
+import SliderControl from './SliderControl.vue';
 // Algorithm.
 import * as d3 from 'd3';
 
@@ -56,7 +57,8 @@ export default {
         };
     },
     components: {
-        SkillPanel
+        SkillPanel,
+        SliderControl
     },
     async mounted() {
         if (this.skillTreeStore.userSkills.length == 0) {
@@ -123,7 +125,11 @@ export default {
         this.d3Zoom = d3
             .zoom()
             .scaleExtent([0.1, 5])
-            .on('zoom', ({ transform }) => this.drawTree(transform));
+            .on('zoom', ({ transform }) => {
+                this.drawTree(transform);
+                // update slider percent
+                this.$refs.sliderControl.changeGradientBG();
+            });
 
         d3.select(this.context.canvas).call(this.d3Zoom);
     },
@@ -641,7 +647,6 @@ export default {
             // Append the SVG element.
             document.querySelector('#SVGskilltree').append(svg.node());
         },
-
         resetPos() {
             d3.select(this.context.canvas)
                 .transition()
@@ -650,6 +655,14 @@ export default {
                     this.d3Zoom.transform,
                     d3.zoomIdentity.translate(0, 0).scale(0.3)
                 );
+            this.$refs.sliderControl.showScaleLabel();
+        },
+        // programmatic d3 zoom
+        zoomInD3(scale, panX, panY) {
+            d3.select(this.context.canvas).call(
+                this.d3Zoom.transform,
+                d3.zoomIdentity.translate(panX, panY).scale(scale)
+            );
             this.$refs.sliderControl.showScaleLabel();
         }
     }
@@ -675,6 +688,7 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
+        <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
     </div>
 </template>
