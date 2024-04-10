@@ -204,31 +204,48 @@ export default {
                 });
         },
         Next() {
-            // Get the summernote answer code
-            const summerNote = this.$refs.essayAnswer.getAnswer();
-            // Store user answer in questions array before move to next questions
-            this.questions[this.questionNumber].userAnswer = summerNote;
-            // Clear the summernote text
-            this.$refs.essayAnswer.clearAnswer();
+            // Handle essay answer with summernote
+            if (this.question.questionType == 'essay') {
+                // Get the summernote answer code
+                const summerNote = this.$refs.essayAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = summerNote;
+                // Clear the summernote text
+                this.$refs.essayAnswer.clearAnswer();
+            }
             // Get next question data
             this.questionNumber++;
             this.question = this.questions[this.questionNumber];
-            // Set the next answer content if there are any
-            if (this.question.userAnswer) {
-                this.$refs.essayAnswer.setAnswer(this.question.userAnswer);
+            //  If the next question is essay question we have to handle with summernote
+            if (this.question.questionType == 'essay') {
+                // Set the next answer content if there are any
+                if (this.question.userAnswer) {
+                    this.$refs.essayAnswer.setAnswer(this.question.userAnswer);
+                }
             }
         },
         Previous() {
-            // Get the summernote answer code
-            const summerNote = this.$refs.essayAnswer.getAnswer();
-            // Store user answer in questions array before move to next questions
-            this.questions[this.questionNumber].userAnswer = summerNote;
+            if (this.question.questionType == 'essay') {
+                // Get the summernote answer code
+                const summerNote = this.$refs.essayAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = summerNote;
+            }
             this.questionNumber--;
             this.question = this.questions[this.questionNumber];
-            // Set the summernote to previous answer
-            this.$refs.essayAnswer.setAnswer(this.question.userAnswer);
+            if (this.question.questionType == 'essay') {
+                // Set the summernote to previous answer
+                this.$refs.essayAnswer.setAnswer(this.question.userAnswer);
+            }
         },
         Submit() {
+            // if the last answer is also an essay question we handle it just like with the next and previous
+            if (this.question.questionType == 'essay') {
+                // Get the summernote answer code
+                const summerNote = this.$refs.essayAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = summerNote;
+            }
             // Mark the MC questions (if there are any).
             for (let i = 0; i < this.questions.length; i++) {
                 // Tally the score.

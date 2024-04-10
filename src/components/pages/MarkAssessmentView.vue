@@ -147,6 +147,10 @@ export default {
 
             // Delete from store and DB.
             this.unmarkedAnswersStore.deleteUnmarkedAnswer(answer);
+
+            // Update assessmentsStore
+            console.log(this.assessment);
+
             //  Now remove this element from the array.
             this.answers.splice(this.questionNumber, 1);
         },
