@@ -6,7 +6,16 @@ export default {
         };
     },
     methods: {
-        GenerateSources() {}
+        async GenerateSources() {
+            var url = '/resources/generate-sources';
+            await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    numSources: this.numOfSourcesPerSkill
+                })
+            });
+        }
     }
 };
 </script>
@@ -18,7 +27,9 @@ export default {
         <div class="row">
             <div class="col-sm-4">
                 <p>Number of sources per skill to generate:</p>
-                <button class="btn green-btn">Button</button>
+                <button class="btn green-btn" @click="GenerateSources">
+                    Generate Sources
+                </button>
             </div>
         </div>
     </div>

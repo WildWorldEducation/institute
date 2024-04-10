@@ -34,7 +34,7 @@ conn.connect((err) => {
 });
 
 /**
- * Create New Item
+ * Create New Source
  *
  * @return response()
  */
@@ -66,7 +66,7 @@ router.post('/add/:skillId', (req, res, next) => {
 });
 
 /**
- * Delete Item
+ * Delete Source
  *
  * @return response()
  */
@@ -112,7 +112,7 @@ router.delete('/delete/:resourceId', (req, res, next) => {
 });
 
 /**
- * Edit Item
+ * Edit Source
  *
  * @return response()
  */
@@ -155,7 +155,7 @@ router.put('/edit/:id', (req, res, next) => {
 });
 
 /**
- * Show Item
+ * Show Source
  *
  * @return response()
  */
@@ -175,6 +175,75 @@ router.get('/show/:id', (req, res) => {
         });
     }
 });
+
+/**
+ * Generate Sources
+ *
+ * @return response()
+//  */
+
+const { OpenAI } = require('openai');
+
+const openai = new OpenAI({
+    // TODO: remove from code.
+    apiKey: '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'
+});
+// Used for choosing parent skill when adding a new skill.
+router.post('/generate-sources', (req, res, next) => {
+    if (req.session.userName) {
+        let skills;
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM skills';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                skills = results;
+                // Testing just one skill.
+                // replace underscore with space.
+                let numOfSouces = 3;
+                let level = skills[2].level.replace(/_/g, ' ');
+                let name = skills[2].name;
+                //  let description = skills[2].description;
+                let prompt =
+                    `
+                I am a ` +
+                    level +
+                    ` student.
+                    Please provide me with an array` +
+                    numOfSouces +
+                    ` URL links so I can learn more about ` +
+                    name +
+                    `Please name the array "links".`;
+
+                openAITest(prompt);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+async function openAITest(prompt) {
+    const completion = await openai.chat.completions.create({
+        messages: [
+            { role: 'system', content: 'You are a helpful assistant.' },
+            {
+                role: 'user',
+                content: prompt + ` Please respond with a JSON object.`
+            }
+        ],
+        model: 'gpt-3.5-turbo',
+        response_format: { type: 'json_object' }
+    });
+    let responseJSON = completion.choices[0].message.content;
+    // Escape newline characters in response.
+    escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
+    // Convert string to object.
+    var responseObj = JSON.parse(escapedResponseJSON);
+    let sources = responseObj.links;
+    console.log(sources);
+}
 
 router.get('*', (req, res) => {
     res.redirect('/');
