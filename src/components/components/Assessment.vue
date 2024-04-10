@@ -206,6 +206,11 @@ export default {
         Next() {
             this.questionNumber++;
             this.question = this.questions[this.questionNumber];
+            // Get the summernote answer code
+            const summerNote = this.$refs.essayAnswer.getAnswer();
+            console.log(summerNote);
+            // Clear the summernote text
+            this.$refs.essayAnswer.clearAnswer();
         },
         Previous() {
             this.questionNumber--;
@@ -374,7 +379,7 @@ export default {
                             v-model="questions[this.questionNumber].userAnswer"
                             rows="3"
                         ></textarea> -->
-                        <EssayAnswer />
+                        <EssayAnswer ref="essayAnswer" />
                     </div>
                 </div>
             </div>

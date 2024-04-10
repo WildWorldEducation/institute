@@ -29,7 +29,19 @@ export default {
             }
         });
     },
-    methods: {}
+    methods: {
+        //methods will be called on parent component to manipulate summernote text
+        getAnswer() {
+            const code = $('#summernote').summernote('code');
+            return code;
+        },
+        clearAnswer() {
+            $('#summernote').summernote('code', '');
+        },
+        setAnswer(code) {
+            $('#summernote').summernote('code', code);
+        }
+    }
 };
 </script>
 
@@ -37,7 +49,7 @@ export default {
     <div class="container mt-3">
         <div class="row">
             <div class="mb-3">
-                <textarea id="summernote" name="editordata"></textarea>
+                <textarea id="summernote" name="answerdata"></textarea>
             </div>
         </div>
     </div>
