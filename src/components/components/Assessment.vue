@@ -204,17 +204,29 @@ export default {
                 });
         },
         Next() {
-            this.questionNumber++;
-            this.question = this.questions[this.questionNumber];
             // Get the summernote answer code
             const summerNote = this.$refs.essayAnswer.getAnswer();
-            console.log(summerNote);
+            // Store user answer in questions array before move to next questions
+            this.questions[this.questionNumber].userAnswer = summerNote;
             // Clear the summernote text
             this.$refs.essayAnswer.clearAnswer();
+            // Get next question data
+            this.questionNumber++;
+            this.question = this.questions[this.questionNumber];
+            // Set the next answer content if there are any
+            if (this.question.userAnswer) {
+                this.$refs.essayAnswer.setAnswer(this.question.userAnswer);
+            }
         },
         Previous() {
+            // Get the summernote answer code
+            const summerNote = this.$refs.essayAnswer.getAnswer();
+            // Store user answer in questions array before move to next questions
+            this.questions[this.questionNumber].userAnswer = summerNote;
             this.questionNumber--;
             this.question = this.questions[this.questionNumber];
+            // Set the summernote to previous answer
+            this.$refs.essayAnswer.setAnswer(this.question.userAnswer);
         },
         Submit() {
             // Mark the MC questions (if there are any).
