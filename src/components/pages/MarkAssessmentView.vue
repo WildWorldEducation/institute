@@ -29,7 +29,7 @@ export default {
             answers: [],
             assessment: {},
             skill: {}
-        }
+        };
     },
     async created() {
         // Preparing the questions and answers array. -------------------
@@ -85,9 +85,12 @@ export default {
         // Add the skill name.
         for (let i = 0; i < this.answers.length; i++) {
             for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
-                if (this.answers[i].skillId == this.skillsStore.skillsList[j].id) {
-                    this.answers[i].skillName = this.skillsStore.skillsList[j].name
-                    this.skill = this.skillsStore.skillsList[j]
+                if (
+                    this.answers[i].skillId == this.skillsStore.skillsList[j].id
+                ) {
+                    this.answers[i].skillName =
+                        this.skillsStore.skillsList[j].name;
+                    this.skill = this.skillsStore.skillsList[j];
                 }
             }
         }
@@ -132,8 +135,11 @@ export default {
                             90
                         ) {
                             // Make skill mastered for this student.
-                            this.MakeMastered(this.assessmentsStore.assessments[i].student_id, this.skill)
-                            alert("Student passed")
+                            this.MakeMastered(
+                                this.assessmentsStore.assessments[i].student_id,
+                                this.skill
+                            );
+                            alert('Student passed');
                         }
                     }
                 }
@@ -188,17 +194,17 @@ export default {
             this.answers.splice(this.questionNumber, 1);
         },
         async MakeMastered(studentId, skill) {
-            await this.userSkillsStore.MakeMastered(studentId, skill)
-        },
+            await this.userSkillsStore.MakeMastered(studentId, skill);
+        }
     }
-}
+};
 </script>
 
 <template>
     <div id="banner">
         <img src="/images/banners/general-banner.png" class="img-fluid" />
     </div>
-    <div class="container mt-3">
+    <div class="container mt-3 pb-4">
         <div id="page-tile">Unmarked Essay Questions</div>
         <div id="assessment-info">
             {{ this.assessment.studentUsername }} :
@@ -231,9 +237,11 @@ export default {
                     {{ this.answers[this.questionNumber].question }}
                 </div>
 
-                <div id="answer" class="mb-3">
-                    {{ this.answers[this.questionNumber].answer }}
-                </div>
+                <div
+                    id="answer"
+                    class="mb-3"
+                    v-html="this.answers[this.questionNumber].answer"
+                ></div>
             </div>
         </div>
         <p v-else>No unmarked questions currently</p>
@@ -320,6 +328,10 @@ h2 {
     text-align: left;
     color: #667085;
     padding-left: 17px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: white;
+    border-radius: 15px;
 }
 
 #page-tile {
@@ -337,7 +349,7 @@ h2 {
 
 #assessment-info {
     font-family: 'Poppins';
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 900;
     line-height: 28px;
     text-align: left;
