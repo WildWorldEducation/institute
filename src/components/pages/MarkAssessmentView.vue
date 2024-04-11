@@ -28,7 +28,9 @@ export default {
             questionNumber: 0,
             answers: [],
             assessment: {},
-            skill: {}
+            skill: {},
+            studentName: '',
+            skillName: ''
         };
     },
     async created() {
@@ -74,6 +76,7 @@ export default {
                 if (this.answers[i].studentId == this.usersStore.users[j].id) {
                     this.answers[i].studentUsername =
                         this.usersStore.users[j].username;
+                    this.studentName = this.usersStore.users[j].username;
                 }
             }
         }
@@ -91,6 +94,7 @@ export default {
                     this.answers[i].skillName =
                         this.skillsStore.skillsList[j].name;
                     this.skill = this.skillsStore.skillsList[j];
+                    this.skillName = this.skillsStore.skillsList[j].name;
                 }
             }
         }
@@ -122,6 +126,8 @@ export default {
                     this.assessmentsStore.assessments[i].id ==
                     answer.assessment_id
                 ) {
+                    // update the assessment data
+                    this.assessment = this.assessmentsStore.assessments[i];
                     if (
                         this.assessmentsStore.assessments[i]
                             .num_unmarked_questions_remaining == 0
@@ -139,6 +145,7 @@ export default {
                                 this.assessmentsStore.assessments[i].student_id,
                                 this.skill
                             );
+                            console.log(this.assessmentsStore.assessments[i]);
                             alert('Student passed');
                         }
                     }
@@ -149,7 +156,6 @@ export default {
             this.unmarkedAnswersStore.deleteUnmarkedAnswer(answer);
 
             // Update assessmentsStore
-            console.log(this.assessment);
 
             //  Now remove this element from the array.
             this.answers.splice(this.questionNumber, 1);
@@ -185,6 +191,13 @@ export default {
                                 100 <
                             90
                         ) {
+                            //  Update assessment store so the mark assessment component can show probably
+                            console.log('assessment in marking page: ');
+                            console.log(this.assessmentsStore.assessments);
+                            console.log(
+                                'length: ' +
+                                    this.assessmentsStore.assessments.length
+                            );
                             // Notify admin that they failed.
                             alert('Student failed');
                         }
@@ -211,8 +224,8 @@ export default {
     <div class="container mt-3 pb-4">
         <div id="page-tile">Unmarked Essay Questions</div>
         <div id="assessment-info">
-            {{ this.assessment.studentUsername }} :
-            {{ this.assessment.skillName }}
+            {{ this.studentName }} :
+            {{ this.skillName }}
             <span id="date"> {{ this.assessment.date }}</span>
         </div>
         <div v-if="this.answers.length > 0">

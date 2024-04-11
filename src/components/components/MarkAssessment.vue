@@ -27,12 +27,14 @@ export default {
             studentIds: []
         };
     },
-    async created() {
+    async mounted() {
         // Create the assessments array ---------------------------------
         // Get unmarked assessments, if not yet loaded.
-        if (this.assessmentsStore.assessments.length == 0) {
-            await this.assessmentsStore.getAssessments();
-        }
+
+        await this.assessmentsStore.getAssessments();
+
+        console.log('hub component mount: ');
+        console.log(this.assessmentsStore.assessments);
 
         // Get the instructor student list, if not yet loaded.
         if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
