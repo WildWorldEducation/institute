@@ -43,7 +43,6 @@ export default {
         };
     },
     mounted: function () {
-        console.log('hniec');
         //  Summer note config
         $('.summernote').summernote({
             placeholder: 'this is the summer note',

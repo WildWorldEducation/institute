@@ -145,7 +145,6 @@ export default {
                                 this.assessmentsStore.assessments[i].student_id,
                                 this.skill
                             );
-                            console.log(this.assessmentsStore.assessments[i]);
                             alert('Student passed');
                         }
                     }
@@ -191,13 +190,6 @@ export default {
                                 100 <
                             90
                         ) {
-                            //  Update assessment store so the mark assessment component can show probably
-                            console.log('assessment in marking page: ');
-                            console.log(this.assessmentsStore.assessments);
-                            console.log(
-                                'length: ' +
-                                    this.assessmentsStore.assessments.length
-                            );
                             // Notify admin that they failed.
                             alert('Student failed');
                         }
