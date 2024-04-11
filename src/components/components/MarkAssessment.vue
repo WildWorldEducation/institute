@@ -29,8 +29,7 @@ export default {
     },
     async mounted() {
         // Create the assessments array ---------------------------------
-        // Get unmarked assessments
-
+        // Get unmarked assessments if there no assessment store before
         await this.assessmentsStore.getAssessments();
 
         // Get the instructor student list, if not yet loaded.

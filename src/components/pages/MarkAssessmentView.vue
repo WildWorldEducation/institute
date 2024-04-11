@@ -147,6 +147,11 @@ export default {
                             );
                             alert('Student passed');
                         }
+                        // There are a chance that the last question is correct but the student still fails
+                        else {
+                            // Notify admin that they failed.
+                            alert('Student failed');
+                        }
                     }
                 }
             }
@@ -291,6 +296,7 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Modal Section -->
 </template>
 
 <style scoped>
