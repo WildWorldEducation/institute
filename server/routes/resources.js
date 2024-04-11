@@ -180,41 +180,9 @@ router.get('/show/:id', (req, res) => {
  * Generate Sources
  *
  * @return response()
-//  */
-
+ */
+// Import OpenAI.
 const { OpenAI } = require('openai');
-//const sdk = require('api')('@pplx/v0#29jnn2rlt35the2');
-
-const perplexityAI = new OpenAI({
-    // TODO: remove from code.
-    apiKey: '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',
-    baseURL: 'https://api.perplexity.ai'
-});
-// async function perplexityAITest() {
-//     const completion = await perplexityAI.chat.completions.create({
-//         messages: [
-//             { role: 'system', content: 'You are a helpful assistant.' },
-//             {
-//                 role: 'user',
-//                 content: `I am a fifth grade student.
-//                 Please provide me with 3 free online resources so I can learn more about punctuation.
-//                 Please provide a mix of worksheets, videos, games and other material.
-//                 Please provide these in an array of objects. Please provide only the array, no other text.
-//                 Each object should include the resource name, and link, and no other text.
-//                 Please respond with a JSON object.`
-//             }
-//         ],
-//         //  model: 'gpt-3.5-turbo',
-//         model: 'sonar-medium-online'
-//         //  response_format: { type: 'json_object' }
-//     });
-//     let responseJSON = completion.choices[0];
-
-//     console.log(responseJSON);
-// }
-
-// perplexityAITest();
-
 const openai = new OpenAI({
     // TODO: remove from code.
     apiKey: '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'
@@ -235,30 +203,39 @@ router.post('/generate-sources', (req, res, next) => {
                 // Testing just one skill.
                 // TODO, change to loop of all skills.
                 // replace underscore with space.
-                let numOfSouces = 3;
-                let skillId = skills[3].id;
-                let level = skills[3].level.replace(/_/g, ' ');
-                let name = skills[3].name;
-                //  let description = skills[2].description;
-                let prompt =
-                    `
-                I am a ` +
-                    level +
-                    ` student.
-                    Please provide me with an array of ` +
-                    numOfSouces +
-                    ` URL links with site/page/subject names so I can learn more about ` +
-                    name +
-                    `Please name the array "links".`;
+                let numOfSoucesRequired = 3;
+                for (let i = 0; i < numOfSoucesRequired; i++) {
+                    let skillId = skills[4].id;
+                    let level = skills[4].level.replace(/_/g, ' ');
+                    let name = skills[4].name;
 
-                openAITest(userId, skillId, prompt);
+                    let prompt =
+                        `
+                    I am a ` +
+                        level +
+                        ` student.
+                        Please provide me with a JSON object containing a URL link, named "url",
+                        with site/page/subject name, named "name", so I can learn more about ` +
+                        name +
+                        `. The link should be for a video, article, worksheets, game, or other educational resource.`;
+
+                    let usedLinks = [];
+                    let brokenLinkCount = 0;
+                    getSource(
+                        userId,
+                        skillId,
+                        prompt,
+                        usedLinks,
+                        brokenLinkCount
+                    );
+                }
             } catch (err) {
                 next(err);
             }
         });
     }
 });
-async function openAITest(userId, skillId, prompt) {
+async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
     const completion = await openai.chat.completions.create({
         messages: [
             { role: 'system', content: 'You are a helpful assistant.' },
@@ -267,12 +244,11 @@ async function openAITest(userId, skillId, prompt) {
                 content:
                     prompt +
                     ` Please respond with a JSON object.
-                Please first check that none of the links are outdated or broken.`
+                Do not provide any of the following links: ` +
+                    usedLinks
             }
         ],
         model: 'gpt-4-turbo',
-        // model: 'sonar-medium-online'
-
         response_format: { type: 'json_object' }
     });
     let responseJSON = completion.choices[0].message.content;
@@ -280,33 +256,47 @@ async function openAITest(userId, skillId, prompt) {
     // Escape newline characters in response.
     escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
     // Convert string to object.
-    var responseObjArray = JSON.parse(escapedResponseJSON);
-    //console.log(responseObjArray.links);
-    for (let i = 0; i < responseObjArray.links.length; i++) {
-        checkSources(userId, skillId, responseObjArray.links[i]);
-    }
+    var responseObj = JSON.parse(escapedResponseJSON);
+    checkSources(
+        userId,
+        skillId,
+        prompt,
+        responseObj,
+        usedLinks,
+        brokenLinkCount
+    );
 }
 
 const urlExists = require('url-exists');
-async function checkSources(userId, skillId, source) {
-    await urlExists(source.url, function (err, exists) {
-        console.log(source);
-        console.log(exists); // true
+async function checkSources(
+    userId,
+    skillId,
+    prompt,
+    responseObj,
+    usedLinks,
+    brokenLinkCount
+) {
+    urlExists(responseObj.url, function (err, exists) {
+        //console.log(responseObj);
+        //console.log(exists);
+        usedLinks.push(responseObj.url);
         if (exists) {
-            addSource(userId, skillId, source);
+            addSource(userId, skillId, responseObj);
+        } else {
+            brokenLinkCount++;
+            console.log(brokenLinkCount);
+            getSource(userId, skillId, prompt, usedLinks, brokenLinkCount);
         }
     });
 }
 
-async function addSource(userId, skillId, source) {
+async function addSource(userId, skillId, responseObj) {
     let link =
         '<p><a href="' +
-        source.url +
+        responseObj.url +
         '" target="_blank">' +
-        source.site_name +
+        responseObj.name +
         '</a></p>';
-
-    console.log(link);
 
     let data = {
         user_id: userId,
@@ -320,33 +310,13 @@ async function addSource(userId, skillId, source) {
             if (err) {
                 throw err;
             } else {
-                //  console.log(link);
+                console.log(link);
             }
         } catch (err) {
             next(err);
         }
     });
 }
-
-// async function openAICheckForBrokenLinks(link) {
-//     const completion = await perplexityAI.chat.completions.create({
-//         messages: [
-//             { role: 'system', content: 'You are a helpful assistant.' },
-//             {
-//                 role: 'user',
-//                 content:
-//                     `If the following webpage, ` +
-//                     link +
-//                     `, contains any of the words: "sorry"; "exist"; "exists"; "Oops!"; "404", return the word "false". Else return the word "true".
-//                     Return no other text.`
-//             }
-//         ],
-//         model: 'sonar-medium-online'
-//     });
-//     let responseJSON = completion.choices[0].message.content;
-//     console.log(link);
-//     console.log(responseJSON);
-// }
 
 router.get('*', (req, res) => {
     res.redirect('/');
