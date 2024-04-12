@@ -184,9 +184,11 @@ router.get('/show/:id', (req, res) => {
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 // Include API key.
+// To access the .env file.
+require('dotenv').config();
 const openai = new OpenAI({
     // TODO: remove from code.
-    apiKey: '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'
+    apiKey: process.env.CHAT_GPT_API_KEY
 });
 // This package is to prevent either ChatGPT or the server from being overwhelmed.
 const throttledQueue = require('throttled-queue');
@@ -211,7 +213,8 @@ router.post('/generate-sources', (req, res, next) => {
                 // User input number of sources per skill required.
                 let numOfSoucesRequired = req.body.numSources;
                 // Go through all skills that are not domains.
-                for (let i = 0; i < skills.length; i++) {
+                for (let i = 0; i < 1; i++) {
+                    //for (let i = 0; i < skills.length; i++) {
                     for (let j = 0; j < numOfSoucesRequired; j++) {
                         let skillId = skills[i].id;
                         // Replace underscore with space.
@@ -252,36 +255,41 @@ router.post('/generate-sources', (req, res, next) => {
 });
 // Get source from ChatGPT.
 async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
-    console.log('Get source: ' + skillId);
-    const completion = await openai.chat.completions.create({
-        messages: [
-            { role: 'system', content: 'You are a helpful assistant.' },
-            {
-                role: 'user',
-                content:
-                    prompt +
-                    ` Please respond with a JSON object.
+    // Attempting to prevent the app from crashing if anythign goes wrong with the API call.
+    try {
+        console.log('Get source: ' + skillId);
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: 'system', content: 'You are a helpful assistant.' },
+                {
+                    role: 'user',
+                    content:
+                        prompt +
+                        ` Please respond with a JSON object.
                 Do not provide any of the following links: ` +
-                    usedLinks
-            }
-        ],
-        model: 'gpt-4-turbo',
-        response_format: { type: 'json_object' }
-    });
-    let responseJSON = completion.choices[0].message.content;
-    // Escape newline characters in response.
-    escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
-    // Convert string to object.
-    var responseObj = JSON.parse(escapedResponseJSON);
-    // Check if webpages actually exist (because with GPT4 +- half links dont exist.)
-    checkSources(
-        userId,
-        skillId,
-        prompt,
-        responseObj,
-        usedLinks,
-        brokenLinkCount
-    );
+                        usedLinks
+                }
+            ],
+            model: 'gpt-4-turbo',
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
+        // Convert string to object.
+        var responseObj = JSON.parse(escapedResponseJSON);
+        // Check if webpages actually exist (because with GPT4 +- half links dont exist.)
+        checkSources(
+            userId,
+            skillId,
+            prompt,
+            responseObj,
+            usedLinks,
+            brokenLinkCount
+        );
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+    }
 }
 
 // Check if the source link actually exists.
