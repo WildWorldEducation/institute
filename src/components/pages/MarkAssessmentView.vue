@@ -30,7 +30,10 @@ export default {
             assessment: {},
             skill: {},
             studentName: '',
-            skillName: ''
+            skillName: '',
+            showModal: false,
+            modalMessage: '',
+            isFailed: false
         };
     },
     async created() {
@@ -145,12 +148,16 @@ export default {
                                 this.assessmentsStore.assessments[i].student_id,
                                 this.skill
                             );
-                            alert('Student passed');
+                            this.modalMessage = 'Student passed';
+                            this.showModal = true;
+                            this.isFailed = false;
                         }
                         // There are a chance that the last question is correct but the student still fails
                         else {
                             // Notify admin that they failed.
-                            alert('Student failed');
+                            this.modalMessage = 'Student failed';
+                            this.showModal = true;
+                            this.isFailed = true;
                         }
                     }
                 }
@@ -196,7 +203,9 @@ export default {
                             90
                         ) {
                             // Notify admin that they failed.
-                            alert('Student failed');
+                            this.modalMessage = 'Student failed';
+                            this.isFailed = true;
+                            this.showModal = true;
                         }
                     }
                 }
@@ -258,7 +267,11 @@ export default {
                 ></div>
             </div>
         </div>
-        <p v-else>No unmarked questions currently</p>
+        <div class="d-flex flex-column" v-else>
+            <p>No unmarked questions currently</p>
+            <p v-if="isFailed">Student has failed</p>
+            <p v-else>Student has passed and mastered this skill</p>
+        </div>
         <div v-if="this.answers.length > 0" class="d-flex mt-3 mb-2">
             <div class="d-flex w-100 justify-content-center gap-2">
                 <button
@@ -297,6 +310,22 @@ export default {
         </div>
     </div>
     <!-- Modal Section -->
+    <div v-if="showModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p class="modal-message">{{ modalMessage }}</p>
+                <div style="display: flex; gap: 10px">
+                    <router-link class="btn green-btn" to="/"
+                        >To Hub</router-link
+                    >
+                    <button class="btn purple-btn" @click="showModal = false">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -428,5 +457,47 @@ h2 {
 
 .red-btn:hover {
     background-color: #fc7d7d;
+}
+
+.purple-btn:hover {
+    background-color: #a48ef3;
+}
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    /* Could be more or less, depending on screen size */
+}
+
+.modal-message {
+    font-size: 20px;
+    font-weight: 500;
+    color: #667085;
 }
 </style>
