@@ -213,8 +213,7 @@ router.post('/generate-sources', (req, res, next) => {
                 // User input number of sources per skill required.
                 let numOfSoucesRequired = req.body.numSources;
                 // Go through all skills that are not domains.
-                for (let i = 0; i < 1; i++) {
-                    //for (let i = 0; i < skills.length; i++) {
+                for (let i = 0; i < skills.length; i++) {
                     for (let j = 0; j < numOfSoucesRequired; j++) {
                         let skillId = skills[i].id;
                         // Replace underscore with space.
