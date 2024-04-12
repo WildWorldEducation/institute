@@ -2,11 +2,14 @@
 export default {
     data() {
         return {
-            numOfSourcesPerSkill: 7
+            numOfSourcesPerSkill: 3
         };
     },
     methods: {
         async GenerateSources() {
+            alert(
+                'Sources will now be generated for all skills. This will take some time.'
+            );
             var url = '/resources/generate-sources';
             await fetch(url, {
                 method: 'POST',

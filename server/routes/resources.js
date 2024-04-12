@@ -181,8 +181,9 @@ router.get('/show/:id', (req, res) => {
  *
  * @return response()
  */
-// Import OpenAI.
+// Import OpenAI package.
 const { OpenAI } = require('openai');
+// Include API key.
 const openai = new OpenAI({
     // TODO: remove from code.
     apiKey: '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'
@@ -190,44 +191,52 @@ const openai = new OpenAI({
 // Used for choosing parent skill when adding a new skill.
 router.post('/generate-sources', (req, res, next) => {
     if (req.session.userName) {
+        // The user posting the source.
         let userId = req.session.userId;
         let skills;
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM skills';
+        // As we are posting sources for all skills, we get all skills.
+        let sqlQuery =
+            "SELECT * FROM skills WHERE type <> 'domain' ORDER BY id";
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
                 skills = results;
-                // Testing just one skill.
-                // TODO, change to loop of all skills.
-                // replace underscore with space.
-                let numOfSoucesRequired = 3;
-                for (let i = 0; i < numOfSoucesRequired; i++) {
-                    let skillId = skills[4].id;
-                    let level = skills[4].level.replace(/_/g, ' ');
-                    let name = skills[4].name;
-
-                    let prompt =
-                        `
+                // User input number of sources per skill required.
+                let numOfSoucesRequired = req.body.numSources;
+                // Go through all skills that are not domains.
+                //for (let i = 0; i < skills.length; i++) {
+                for (let i = 0; i < 100; i++) {
+                    for (let j = 0; j < numOfSoucesRequired; j++) {
+                        let skillId = skills[i].id;
+                        // Replace underscore with space.
+                        let level = skills[i].level.replace(/_/g, ' ');
+                        let name = skills[i].name;
+                        let prompt =
+                            `
                     I am a ` +
-                        level +
-                        ` student.
+                            level +
+                            ` student.
                         Please provide me with a JSON object containing a URL link, named "url",
                         with site/page/subject name, named "name", so I can learn more about ` +
-                        name +
-                        `. The link should be for a video, article, worksheets, game, or other educational resource.`;
+                            name +
+                            `. The link should be for an article, worksheets, game, video or other educational resource. 
+                            Please do not provide Youtube videos.`;
 
-                    let usedLinks = [];
-                    let brokenLinkCount = 0;
-                    getSource(
-                        userId,
-                        skillId,
-                        prompt,
-                        usedLinks,
-                        brokenLinkCount
-                    );
+                        // To try to prevent duplication from ChatGPT.
+                        let usedLinks = [];
+                        // For dev to check if wasting too many ChatGPT tokens.
+                        let brokenLinkCount = 0;
+                        getSource(
+                            userId,
+                            skillId,
+                            prompt,
+                            usedLinks,
+                            brokenLinkCount
+                        );
+                    }
                 }
             } catch (err) {
                 next(err);
@@ -235,6 +244,7 @@ router.post('/generate-sources', (req, res, next) => {
         });
     }
 });
+// Get source from ChatGPT.
 async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
     const completion = await openai.chat.completions.create({
         messages: [
@@ -252,11 +262,11 @@ async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
         response_format: { type: 'json_object' }
     });
     let responseJSON = completion.choices[0].message.content;
-    //console.log(responseJSON);
     // Escape newline characters in response.
     escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
     // Convert string to object.
     var responseObj = JSON.parse(escapedResponseJSON);
+    // Check if webpages actually exist (because with GPT4 +- half links dont exist.)
     checkSources(
         userId,
         skillId,
@@ -267,7 +277,9 @@ async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
     );
 }
 
+// Check if the source link actually exists.
 const urlExists = require('url-exists');
+
 async function checkSources(
     userId,
     skillId,
@@ -276,21 +288,38 @@ async function checkSources(
     usedLinks,
     brokenLinkCount
 ) {
-    urlExists(responseObj.url, function (err, exists) {
-        //console.log(responseObj);
-        //console.log(exists);
+    // Make this synchronous
+    // so as to not waste tokens on duplicates,
+    // and more importantly, prvent ChatGPT API from crashing due to being overwhelmed.
+    const urlExistsPromise = (url) =>
+        new Promise((resolve, reject) =>
+            urlExists(url, (err, exists) =>
+                err ? reject(err) : resolve(exists)
+            )
+        );
+    urlExistsPromise(responseObj.url).then((exists) => {
+        // To try to prevent duplication, thereby saving ChatGPT tokens.
         usedLinks.push(responseObj.url);
         if (exists) {
+            // Add to database.
             addSource(userId, skillId, responseObj);
         } else {
             brokenLinkCount++;
-            console.log(brokenLinkCount);
+            console.log(
+                'Broken link: ' +
+                    responseObj.url +
+                    '. Num of broken links from ChatGPT (tokens wasted): ' +
+                    brokenLinkCount
+            );
+            // Get another source.
             getSource(userId, skillId, prompt, usedLinks, brokenLinkCount);
         }
     });
 }
 
+// Add to DB.
 async function addSource(userId, skillId, responseObj) {
+    // Create source.
     let link =
         '<p><a href="' +
         responseObj.url +
@@ -305,12 +334,12 @@ async function addSource(userId, skillId, responseObj) {
     };
 
     let sqlQuery = 'INSERT INTO resources SET ?';
-    let query = conn.query(sqlQuery, data, (err, results) => {
+    let query = conn.query(sqlQuery, data, (err, results, next) => {
         try {
             if (err) {
                 throw err;
             } else {
-                console.log(link);
+                console.log('Added skill id: ' + skillId);
             }
         } catch (err) {
             next(err);
