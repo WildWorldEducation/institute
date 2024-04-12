@@ -2,12 +2,10 @@
 // Import the stores.
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
-// Nested component.
+// Nested components.
 import SkillPanel from './../SkillPanel.vue';
-// Joystick control component.
-import JoystickControl from './JoystickControl.vue';
 import SliderControl from './SliderControl.vue';
-
+import JoystickControl from './JoystickControl.vue';
 // Algorithm.
 import * as d3 from 'd3';
 
@@ -40,19 +38,14 @@ export default {
             root: {},
             context: {},
             hiddenCanvasContext: {},
-            scaleMultiplier: 0.8,
-            startDragOffset: { x: 0, y: 0 },
-            mouseDown: false,
             r: 1.5,
             nodes: [],
             nextCol: 1,
             colToNode: {},
             isSkillInfoPanelShown: false,
-            //  firstRender: true,
             scale: 0.3,
             panX: 0,
             panY: 0,
-            hiddenCanvasInitiated: false,
             // Printing
             data: {},
             // We store the d3 zoom call so the slider can call it
@@ -61,18 +54,15 @@ export default {
     },
     components: {
         SkillPanel,
-        JoystickControl,
-        SliderControl
+        SliderControl,
+        JoystickControl
     },
     async mounted() {
-        // ------------
-
         if (this.skillTreeStore.userSkills.length == 0) {
             await this.skillTreeStore.getUserSkills();
         }
 
         // Specify the chart’s dimensions.
-        //  this.width = window.innerWidth;
         this.height = window.innerHeight;
 
         this.skill = {
@@ -127,21 +117,20 @@ export default {
             }
         });
 
+        //Zoom and pan with mouse.
         this.d3Zoom = d3
             .zoom()
-            .scaleExtent([0.05, 5])
+            .scaleExtent([0.1, 5])
             .on('zoom', ({ transform }) => {
-                this.handleMouseZoom(transform);
+                this.drawTree(transform);
+                // update slider percent
+                this.$refs.sliderControl.changeGradientBG();
             });
 
-        // Zoom and Panning with mouse, d3 handler
         d3.select(this.context.canvas).call(this.d3Zoom);
 
-        // Save the default scale value to d3
-        d3.select(this.context.canvas).call(
-            this.d3Zoom.transform,
-            d3.zoomIdentity.scale(this.scale)
-        );
+        // Set initial zoom.
+        this.resetPos();
     },
     methods: {
         getAlgorithm() {
@@ -251,14 +240,14 @@ export default {
             let hiddenCanvas = document.getElementById('hidden-canvas');
             this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
 
-            this.drawTree();
+            this.drawTree(d3.zoomIdentity);
         },
-        drawTree() {
+        drawTree(transform) {
             this.nodes = this.root.descendants();
+
             // Zoom and pan.
             this.context.save();
             this.hiddenCanvasContext.save();
-
             // Clear canvases.
             this.context.clearRect(
                 0,
@@ -272,15 +261,15 @@ export default {
                 this.hiddenCanvasContext.canvas.width,
                 this.hiddenCanvasContext.canvas.height
             );
+            this.context.translate(transform.x, transform.y);
+            this.hiddenCanvasContext.translate(transform.x, transform.y);
+            this.context.scale(transform.k, transform.k);
+            this.hiddenCanvasContext.scale(transform.k, transform.k);
 
-            // Zoom.
-            this.context.scale(this.scale, this.scale);
-            this.hiddenCanvasContext.scale(this.scale, this.scale);
-
-            // Pan.
-
-            this.context.translate(this.panX, this.panY);
-            this.hiddenCanvasContext.translate(this.panX, this.panY);
+            // For node labels to appear at correct zoom level.
+            this.scale = transform.k;
+            this.panX = transform.x;
+            this.panY = transform.y;
 
             // Draw links.
             const links = this.root.links();
@@ -314,13 +303,12 @@ export default {
                 }
                 // On the hidden canvas each rectangle gets a unique color.
                 this.hiddenCanvasContext.fillStyle = node.__pickColor;
-
                 // Draw the actual shape
                 this.drawNode(node);
             }
 
-            this.hiddenCanvasContext.restore();
             this.context.restore();
+            this.hiddenCanvasContext.restore();
         },
         drawNode(node) {
             let ctx1 = this.context;
@@ -386,9 +374,9 @@ export default {
                 ctx1.beginPath();
                 ctx1.strokeStyle = '#FFF';
                 ctx1.lineWidth = 4;
-                ctx1.strokeText(node.data.skill_name, node.y + 10, node.x + 2);
+                ctx1.strokeText(node.data.skill_name, node.y + 15, node.x + 2);
                 ctx1.fillStyle = '#000';
-                ctx1.fillText(node.data.skill_name, node.y + 10, node.x + 2);
+                ctx1.fillText(node.data.skill_name, node.y + 15, node.x + 2);
             }
 
             // Hidden context.
@@ -660,22 +648,15 @@ export default {
             // Append the SVG element.
             document.querySelector('#SVGskilltree').append(svg.node());
         },
-        // handle mouse zoom
-        handleMouseZoom(transform) {
-            // only show label when user zoom
-            if (transform.k != this.scale) {
-                // show scale label
-                this.$refs.sliderControl.showScaleLabel();
-            }
-            // update slider percent
-            this.$refs.sliderControl.changeGradientBG();
-            this.panX =
-                this.scale >= 1 ? transform.x : transform.x / this.scale;
-            this.panY =
-                this.scale >= 1 ? transform.y : transform.y / this.scale;
-            this.scale = transform.k;
-
-            this.drawTree();
+        resetPos() {
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(700)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity.translate(0, 0).scale(0.3)
+                );
+            this.$refs.sliderControl.showScaleLabel();
         },
         // programmatic d3 zoom
         zoomInD3(scale, panX, panY) {
@@ -700,16 +681,6 @@ export default {
                     .translate(smallPanX, smallPanY)
                     .scale(this.scale)
             );
-        },
-        resetPos() {
-            d3.select(this.context.canvas)
-                .transition()
-                .duration(700)
-                .call(
-                    this.d3Zoom.transform,
-                    d3.zoomIdentity.translate(0, 0).scale(0.3)
-                );
-            this.$refs.sliderControl.showScaleLabel();
         }
     }
 };
@@ -879,8 +850,7 @@ input[type='button'] {
 
 #skilltree {
     width: 100%;
-    height: 100%;
-    /* overflow: hidden; */
+    height: 100%;   
     /* This is for the positioning of the information panel. */
     position: relative;
     background-color: white;

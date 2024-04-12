@@ -257,7 +257,7 @@ export default {
                                     panX,
                                     panY
                                 );
-                                console.log('page up: ' + panX + ' ' + panY);
+
                                 e.preventDefault();
                             }, 50);
                             break;
@@ -290,7 +290,6 @@ export default {
                                     panX,
                                     panY
                                 );
-                                console.log('page downs: ' + panX + ' ' + panY);
                             }, 50);
                             break;
                         default:
@@ -318,7 +317,6 @@ export default {
         this.$parent.$refs.canvas.addEventListener(
             'keyup',
             (e) => {
-                console.log('key up: ' + e.code);
                 clearInterval(this.interval);
                 clearInterval(this.holdTimeInterval);
                 // set this to null so next time a key is down it will set interval
@@ -336,7 +334,7 @@ export default {
             // only zoom when cntrl or shift key is press and left click is press down
             if (this.fnZoomKey) {
                 if (e.pageY < this.oldMY) {
-                    this.$parent.scale += 0.005;
+                    this.$parent.scale += 0.01;
                     // calculate the proportion of new scale and ole scale
                     const scaleProportion = this.oldScale / this.$parent.scale;
                     // just like the panning we have to multiple the pan value when scale is smaller than 0
@@ -357,7 +355,7 @@ export default {
                     this.oldScale = this.$parent.scale;
                     this.$parent.zoomInD3(this.$parent.scale, panX, panY);
                 } else {
-                    this.$parent.scale -= 0.005;
+                    this.$parent.scale -= 0.01;
                     // calculate the proportion of new scale and ole scale
                     const scaleProportion = this.oldScale / this.$parent.scale;
                     // just like the panning we have to multiple the pan value when scale is smaller than 0
@@ -409,6 +407,7 @@ export default {
 #panJoystick {
     width: 100px;
     height: 100px;
+    opacity: 0.7;
 }
 
 #wrapper {

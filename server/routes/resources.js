@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //  password: 'password',
+    // password: 'password',
     database: 'skill_tree'
 });
 
@@ -34,7 +34,7 @@ conn.connect((err) => {
 });
 
 /**
- * Create New Item
+ * Create New Source
  *
  * @return response()
  */
@@ -66,7 +66,7 @@ router.post('/add/:skillId', (req, res, next) => {
 });
 
 /**
- * Delete Item
+ * Delete Source
  *
  * @return response()
  */
@@ -112,7 +112,7 @@ router.delete('/delete/:resourceId', (req, res, next) => {
 });
 
 /**
- * Edit Item
+ * Edit Source
  *
  * @return response()
  */
@@ -155,7 +155,7 @@ router.put('/edit/:id', (req, res, next) => {
 });
 
 /**
- * Show Item
+ * Show Source
  *
  * @return response()
  */
@@ -175,6 +175,193 @@ router.get('/show/:id', (req, res) => {
         });
     }
 });
+
+/**
+ * Generate Sources
+ *
+ * @return response()
+ */
+// Import OpenAI package.
+const { OpenAI } = require('openai');
+// Include API key.
+// To access the .env file.
+require('dotenv').config();
+const openai = new OpenAI({
+    // TODO: remove from code.
+    apiKey: process.env.CHAT_GPT_API_KEY
+});
+// This package is to prevent either ChatGPT or the server from being overwhelmed.
+const throttledQueue = require('throttled-queue');
+// API calling is throttled to 2 per second.
+const throttle = throttledQueue(2, 1000);
+// Used for choosing parent skill when adding a new skill.
+router.post('/generate-sources', (req, res, next) => {
+    if (req.session.userName) {
+        // The user posting the source.
+        let userId = req.session.userId;
+        let skills;
+        res.setHeader('Content-Type', 'application/json');
+        // As we are posting sources for all skills, we get all skills.
+        let sqlQuery =
+            "SELECT * FROM skills WHERE type <> 'domain' ORDER BY id";
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                skills = results;
+                // User input number of sources per skill required.
+                let numOfSoucesRequired = req.body.numSources;
+                // Go through all skills that are not domains.
+
+                for (let i = 0; i < skills.length; i++) {
+                    for (let j = 0; j < numOfSoucesRequired; j++) {
+                        let skillId = skills[i].id;
+                        // Replace underscore with space.
+                        let level = skills[i].level.replace(/_/g, ' ');
+                        let name = skills[i].name;
+                        let prompt =
+                            `
+                    I am a ` +
+                            level +
+                            ` student.
+                        Please provide me with a JSON object containing a URL link, named "url",
+                        with site/page/subject name, named "name", so I can learn more about ` +
+                            name +
+                            `. The link should be for an article, worksheets, game, video or other educational resource. 
+                            Please do not provide Youtube videos.`;
+
+                        // To try to prevent duplication from ChatGPT.
+                        let usedLinks = [];
+                        // For dev to check if wasting too many ChatGPT tokens.
+                        let brokenLinkCount = 0;
+                        // Implement throttle.
+                        throttle(() => {
+                            getSource(
+                                userId,
+                                skillId,
+                                prompt,
+                                usedLinks,
+                                brokenLinkCount
+                            );
+                        });
+                    }
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+// Get source from ChatGPT.
+async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
+    // Attempting to prevent the app from crashing if anythign goes wrong with the API call.
+    try {
+        console.log('Get source: ' + skillId);
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: 'system', content: 'You are a helpful assistant.' },
+                {
+                    role: 'user',
+                    content:
+                        prompt +
+                        ` Please respond with a JSON object.
+                Do not provide any of the following links: ` +
+                        usedLinks
+                }
+            ],
+            model: 'gpt-4-turbo',
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
+        // Convert string to object.
+        var responseObj = JSON.parse(escapedResponseJSON);
+        // Check if webpages actually exist (because with GPT4 +- half links dont exist.)
+        checkSources(
+            userId,
+            skillId,
+            prompt,
+            responseObj,
+            usedLinks,
+            brokenLinkCount
+        );
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+        return;
+    }
+}
+
+// Check if the source link actually exists.
+const urlExists = require('url-exists');
+
+async function checkSources(
+    userId,
+    skillId,
+    prompt,
+    responseObj,
+    usedLinks,
+    brokenLinkCount
+) {
+    // Make this synchronous
+    // so as to not waste tokens on duplicates,
+    // and more importantly, prevent ChatGPT API from crashing due to being overwhelmed.
+    const urlExistsPromise = (url) =>
+        new Promise((resolve, reject) =>
+            urlExists(url, (err, exists) =>
+                err ? reject(err) : resolve(exists)
+            )
+        );
+    urlExistsPromise(responseObj.url).then((exists) => {
+        // To try to prevent duplication, thereby saving ChatGPT tokens.
+        usedLinks.push(responseObj.url);
+        if (exists) {
+            // Add to database.
+            addSource(userId, skillId, responseObj);
+        } else {
+            brokenLinkCount++;
+            console.log(
+                'Broken link: ' +
+                    responseObj.url +
+                    '. Num of broken links from ChatGPT (tokens wasted): ' +
+                    brokenLinkCount
+            );
+            // Get another source.
+            getSource(userId, skillId, prompt, usedLinks, brokenLinkCount);
+        }
+    });
+}
+
+// Add to DB.
+async function addSource(userId, skillId, responseObj) {
+    // Create source.
+    let link =
+        '<p><a href="' +
+        responseObj.url +
+        '" target="_blank">' +
+        responseObj.name +
+        '</a></p>';
+
+    let data = {
+        user_id: userId,
+        skill_id: skillId,
+        content: link
+    };
+
+    let sqlQuery = 'INSERT INTO resources SET ?';
+    let query = conn.query(sqlQuery, data, (err, results, next) => {
+        try {
+            if (err) {
+                throw err;
+            } else {
+                console.log('Added skill id: ' + skillId);
+            }
+        } catch (err) {
+            next(err);
+        }
+    });
+}
 
 router.get('*', (req, res) => {
     res.redirect('/');
