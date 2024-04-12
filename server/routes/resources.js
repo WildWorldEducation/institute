@@ -213,6 +213,7 @@ router.post('/generate-sources', (req, res, next) => {
                 // User input number of sources per skill required.
                 let numOfSoucesRequired = req.body.numSources;
                 // Go through all skills that are not domains.
+
                 for (let i = 0; i < skills.length; i++) {
                     for (let j = 0; j < numOfSoucesRequired; j++) {
                         let skillId = skills[i].id;
@@ -288,6 +289,7 @@ async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
         );
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
+        return;
     }
 }
 
