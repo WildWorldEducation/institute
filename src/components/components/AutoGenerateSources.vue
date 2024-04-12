@@ -46,6 +46,9 @@ export default {
                 <button class="btn green-btn mt-3" @click="GenerateSources">
                     Generate Sources
                 </button>
+                <p style="font-size: 14px">
+                    <em>Warning, this costs around or over $4 each time.</em>
+                </p>
             </div>
         </div>
     </div>
