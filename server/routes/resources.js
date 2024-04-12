@@ -188,6 +188,10 @@ const openai = new OpenAI({
     // TODO: remove from code.
     apiKey: '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'
 });
+// This package is to prevent either ChatGPT or the server from being overwhelmed.
+const throttledQueue = require('throttled-queue');
+// API calling is throttled to 2 per second.
+const throttle = throttledQueue(2, 1000);
 // Used for choosing parent skill when adding a new skill.
 router.post('/generate-sources', (req, res, next) => {
     if (req.session.userName) {
@@ -207,8 +211,7 @@ router.post('/generate-sources', (req, res, next) => {
                 // User input number of sources per skill required.
                 let numOfSoucesRequired = req.body.numSources;
                 // Go through all skills that are not domains.
-                //for (let i = 0; i < skills.length; i++) {
-                for (let i = 0; i < 100; i++) {
+                for (let i = 0; i < skills.length; i++) {
                     for (let j = 0; j < numOfSoucesRequired; j++) {
                         let skillId = skills[i].id;
                         // Replace underscore with space.
@@ -229,13 +232,16 @@ router.post('/generate-sources', (req, res, next) => {
                         let usedLinks = [];
                         // For dev to check if wasting too many ChatGPT tokens.
                         let brokenLinkCount = 0;
-                        getSource(
-                            userId,
-                            skillId,
-                            prompt,
-                            usedLinks,
-                            brokenLinkCount
-                        );
+                        // Implement throttle.
+                        throttle(() => {
+                            getSource(
+                                userId,
+                                skillId,
+                                prompt,
+                                usedLinks,
+                                brokenLinkCount
+                            );
+                        });
                     }
                 }
             } catch (err) {
@@ -246,6 +252,7 @@ router.post('/generate-sources', (req, res, next) => {
 });
 // Get source from ChatGPT.
 async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
+    console.log('Get source: ' + skillId);
     const completion = await openai.chat.completions.create({
         messages: [
             { role: 'system', content: 'You are a helpful assistant.' },
@@ -290,7 +297,7 @@ async function checkSources(
 ) {
     // Make this synchronous
     // so as to not waste tokens on duplicates,
-    // and more importantly, prvent ChatGPT API from crashing due to being overwhelmed.
+    // and more importantly, prevent ChatGPT API from crashing due to being overwhelmed.
     const urlExistsPromise = (url) =>
         new Promise((resolve, reject) =>
             urlExists(url, (err, exists) =>
