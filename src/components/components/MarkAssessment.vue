@@ -27,7 +27,7 @@ export default {
             studentIds: []
         };
     },
-    async mounted() {
+    async created() {
         // Create the assessments array ---------------------------------
         // Get unmarked assessments if there no assessment store before
         await this.assessmentsStore.getAssessments();
@@ -54,7 +54,6 @@ export default {
                 );
             }
         }
-
         // Get the assessments for those students.
         for (let i = 0; i < this.assessmentsStore.assessments.length; i++) {
             for (let j = 0; j < this.studentIds.length; j++) {
