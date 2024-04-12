@@ -38,19 +38,14 @@ export default {
             root: {},
             context: {},
             hiddenCanvasContext: {},
-            scaleMultiplier: 0.8,
-            startDragOffset: { x: 0, y: 0 },
-            mouseDown: false,
             r: 1.5,
             nodes: [],
             nextCol: 1,
             colToNode: {},
             isSkillInfoPanelShown: false,
-            //  firstRender: true,
             scale: 0.3,
             panX: 0,
             panY: 0,
-            hiddenCanvasInitiated: false,
             // Printing
             data: {},
             // We store the d3 zoom call so the slider can call it
@@ -68,7 +63,6 @@ export default {
         }
 
         // Specify the chart’s dimensions.
-        //  this.width = window.innerWidth;
         this.height = window.innerHeight;
 
         this.skill = {
@@ -135,6 +129,7 @@ export default {
 
         d3.select(this.context.canvas).call(this.d3Zoom);
 
+        // Set initial zoom.
         this.resetPos();
     },
     methods: {
@@ -855,8 +850,7 @@ input[type='button'] {
 
 #skilltree {
     width: 100%;
-    height: 100%;
-    /* overflow: hidden; */
+    height: 100%;   
     /* This is for the positioning of the information panel. */
     position: relative;
     background-color: white;
