@@ -259,7 +259,6 @@ export default {
                 <div id="question" class="mb-3">
                     {{ this.answers[this.questionNumber].question }}
                 </div>
-
                 <div
                     id="answer"
                     class="mb-3"
@@ -273,7 +272,7 @@ export default {
             <p v-else>Student has passed and mastered this skill</p>
         </div>
         <div v-if="this.answers.length > 0" class="d-flex mt-3 mb-2">
-            <div class="d-flex w-100 justify-content-center gap-2">
+            <div class="d-flex w-100 justify-content-lg-center gap-2">
                 <button
                     @click="MarkCorrect(this.answers[this.questionNumber])"
                     class="btn green-btn"
@@ -499,5 +498,41 @@ h2 {
     font-size: 20px;
     font-weight: 500;
     color: #667085;
+}
+
+/* Styling for phone */
+@media (max-width: 575px) {
+    #question-bg {
+        margin-left: 0px;
+    }
+
+    #page-tile {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    #assessment-info {
+        font-size: 18px;
+        padding-top: 5px;
+    }
+
+    #question {
+        font-size: 17px;
+    }
+
+    .red-btn {
+        font-size: 12px;
+    }
+
+    .green-btn {
+        font-size: 12px;
+    }
+}
+
+/* Styling for tablet */
+@media (min-width: 576px) and (max-width: 992px) {
+    #question-bg {
+        margin-left: 0px;
+    }
 }
 </style>
