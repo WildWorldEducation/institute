@@ -29,10 +29,8 @@ export default {
     },
     async created() {
         // Create the assessments array ---------------------------------
-        // Get unmarked assessments, if not yet loaded.
-        if (this.assessmentsStore.assessments.length == 0) {
-            await this.assessmentsStore.getAssessments();
-        }
+        // Get unmarked assessments if there no assessment store before
+        await this.assessmentsStore.getAssessments();
 
         // Get the instructor student list, if not yet loaded.
         if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
@@ -56,7 +54,6 @@ export default {
                 );
             }
         }
-
         // Get the assessments for those students.
         for (let i = 0; i < this.assessmentsStore.assessments.length; i++) {
             for (let j = 0; j < this.studentIds.length; j++) {
@@ -125,9 +122,13 @@ export default {
                     class="assessment-link"
                     :to="'/mark-assessment/' + assessment.id"
                 >
-                    {{ assessment.studentUsername }},
-                    {{ assessment.skillName }},
-                    {{ assessment.date }}
+                    <span id="student-name">
+                        {{ assessment.studentUsername }},
+                    </span>
+                    <span id="skill-name"> {{ assessment.skillName }}, </span>
+                    <span id="date">
+                        {{ assessment.date }}
+                    </span>
                 </RouterLink>
             </div>
         </div>
@@ -166,6 +167,29 @@ h2 {
     text-align: left;
     text-decoration: none;
     color: #667085;
+}
+
+#student-name {
+    color: #8f7bd6;
+}
+
+#date {
+    color: #dbd0f9;
+}
+
+.assessment-link:hover #date {
+    color: #7f56d9;
+    cursor: pointer;
+}
+
+.assessment-link:hover {
+    color: #7f56d9;
+    cursor: pointer;
+}
+
+.assessment-link:hover #student-name {
+    color: #7f56d9;
+    cursor: pointer;
 }
 
 #question-header {
