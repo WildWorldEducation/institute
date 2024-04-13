@@ -4,6 +4,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import EssayAnswer from './EssayAnswer.vue';
 
 export default {
     setup() {
@@ -41,6 +42,29 @@ export default {
             waitForMarkModal: false
         };
     },
+    mounted: function () {
+        //  Summer note config
+        $('.summernote').summernote({
+            placeholder: 'this is the summer note',
+            tabsize: 2,
+            height: 120,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            maximumImageFileSize: 2048 * 1024, // 2 MB
+            callbacks: {
+                onImageUploadError: function (msg) {
+                    alert('Max image size is 2MB.');
+                }
+            }
+        });
+    },
     async created() {
         // Load the max quiz question number setting.
         if (this.settingsStore.quizMaxQuestions == null) {
@@ -77,7 +101,9 @@ export default {
             }
         }
     },
-
+    components: {
+        EssayAnswer
+    },
     methods: {
         async fetchMCQuestions(skillId) {
             fetch('/questions/' + skillId + '/multiple-choice')
@@ -177,14 +203,48 @@ export default {
                 });
         },
         Next() {
+            // Handle essay answer with summernote
+            if (this.question.questionType == 'essay') {
+                // Get the summernote answer code
+                const summerNote = this.$refs.essayAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = summerNote;
+                // Clear the summernote text
+                this.$refs.essayAnswer.clearAnswer();
+            }
+            // Get next question data
             this.questionNumber++;
             this.question = this.questions[this.questionNumber];
+            //  If the next question is essay question we have to handle with summernote
+            if (this.question.questionType == 'essay') {
+                // Set the next answer content if there are any
+                if (this.question.userAnswer) {
+                    this.$refs.essayAnswer.setAnswer(this.question.userAnswer);
+                }
+            }
         },
         Previous() {
+            if (this.question.questionType == 'essay') {
+                // Get the summernote answer code
+                const summerNote = this.$refs.essayAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = summerNote;
+            }
             this.questionNumber--;
             this.question = this.questions[this.questionNumber];
+            if (this.question.questionType == 'essay') {
+                // Set the summernote to previous answer
+                this.$refs.essayAnswer.setAnswer(this.question.userAnswer);
+            }
         },
         Submit() {
+            // if the last answer is also an essay question we handle it just like with the next and previous
+            if (this.question.questionType == 'essay') {
+                // Get the summernote answer code
+                const summerNote = this.$refs.essayAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = summerNote;
+            }
             // Mark the MC questions (if there are any).
             for (let i = 0; i < this.questions.length; i++) {
                 // Tally the score.
@@ -296,6 +356,7 @@ export default {
 <template>
     <!-- <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div v-if="loading == true">Loading...</div>
+
     <div v-if="loading == false">
         <div
             v-if="questions.length > 0"
@@ -312,6 +373,7 @@ export default {
                         {{ question.question }}
                     </div>
                 </div>
+
                 <!-- Multiple Choice Question -->
                 <div v-if="this.question.questionType == 'mc'">
                     <div
@@ -335,15 +397,17 @@ export default {
                         </label>
                     </div>
                 </div>
+                <!-- Essay Question -->
                 <div v-else-if="this.question.questionType == 'essay'">
                     <div class="form-group">
-                        <textarea
+                        <!-- <textarea
                             id="essay-answer"
                             @input="UserAnswer()"
                             class="form-control"
                             v-model="questions[this.questionNumber].userAnswer"
                             rows="3"
-                        ></textarea>
+                        ></textarea> -->
+                        <EssayAnswer ref="essayAnswer" />
                     </div>
                 </div>
             </div>

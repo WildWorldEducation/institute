@@ -28,8 +28,13 @@ export default {
             questionNumber: 0,
             answers: [],
             assessment: {},
-            skill: {}
-        }
+            skill: {},
+            studentName: '',
+            skillName: '',
+            showModal: false,
+            modalMessage: '',
+            isFailed: false
+        };
     },
     async created() {
         // Preparing the questions and answers array. -------------------
@@ -74,6 +79,7 @@ export default {
                 if (this.answers[i].studentId == this.usersStore.users[j].id) {
                     this.answers[i].studentUsername =
                         this.usersStore.users[j].username;
+                    this.studentName = this.usersStore.users[j].username;
                 }
             }
         }
@@ -85,9 +91,13 @@ export default {
         // Add the skill name.
         for (let i = 0; i < this.answers.length; i++) {
             for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
-                if (this.answers[i].skillId == this.skillsStore.skillsList[j].id) {
-                    this.answers[i].skillName = this.skillsStore.skillsList[j].name
-                    this.skill = this.skillsStore.skillsList[j]
+                if (
+                    this.answers[i].skillId == this.skillsStore.skillsList[j].id
+                ) {
+                    this.answers[i].skillName =
+                        this.skillsStore.skillsList[j].name;
+                    this.skill = this.skillsStore.skillsList[j];
+                    this.skillName = this.skillsStore.skillsList[j].name;
                 }
             }
         }
@@ -119,6 +129,8 @@ export default {
                     this.assessmentsStore.assessments[i].id ==
                     answer.assessment_id
                 ) {
+                    // update the assessment data
+                    this.assessment = this.assessmentsStore.assessments[i];
                     if (
                         this.assessmentsStore.assessments[i]
                             .num_unmarked_questions_remaining == 0
@@ -132,8 +144,20 @@ export default {
                             90
                         ) {
                             // Make skill mastered for this student.
-                            this.MakeMastered(this.assessmentsStore.assessments[i].student_id, this.skill)
-                            alert("Student passed")
+                            this.MakeMastered(
+                                this.assessmentsStore.assessments[i].student_id,
+                                this.skill
+                            );
+                            this.modalMessage = 'Student passed';
+                            this.showModal = true;
+                            this.isFailed = false;
+                        }
+                        // There are a chance that the last question is correct but the student still fails
+                        else {
+                            // Notify admin that they failed.
+                            this.modalMessage = 'Student failed';
+                            this.showModal = true;
+                            this.isFailed = true;
                         }
                     }
                 }
@@ -141,6 +165,9 @@ export default {
 
             // Delete from store and DB.
             this.unmarkedAnswersStore.deleteUnmarkedAnswer(answer);
+
+            // Update assessmentsStore
+
             //  Now remove this element from the array.
             this.answers.splice(this.questionNumber, 1);
         },
@@ -176,7 +203,9 @@ export default {
                             90
                         ) {
                             // Notify admin that they failed.
-                            alert('Student failed');
+                            this.modalMessage = 'Student failed';
+                            this.isFailed = true;
+                            this.showModal = true;
                         }
                     }
                 }
@@ -188,21 +217,21 @@ export default {
             this.answers.splice(this.questionNumber, 1);
         },
         async MakeMastered(studentId, skill) {
-            await this.userSkillsStore.MakeMastered(studentId, skill)
-        },
+            await this.userSkillsStore.MakeMastered(studentId, skill);
+        }
     }
-}
+};
 </script>
 
 <template>
     <div id="banner">
         <img src="/images/banners/general-banner.png" class="img-fluid" />
     </div>
-    <div class="container mt-3">
+    <div class="container mt-3 pb-4">
         <div id="page-tile">Unmarked Essay Questions</div>
         <div id="assessment-info">
-            {{ this.assessment.studentUsername }} :
-            {{ this.assessment.skillName }}
+            {{ this.studentName }} :
+            {{ this.skillName }}
             <span id="date"> {{ this.assessment.date }}</span>
         </div>
         <div v-if="this.answers.length > 0">
@@ -210,7 +239,7 @@ export default {
                 <div class="d-flex w-100 flex-row justify-content-end">
                     <span
                         v-b-tooltip.hover
-                        title="student need to have at least 90% score per total score to pass"
+                        title="The student needs to get at least 90% to pass"
                         id="score-text"
                         class="me-2"
                     >
@@ -230,15 +259,20 @@ export default {
                 <div id="question" class="mb-3">
                     {{ this.answers[this.questionNumber].question }}
                 </div>
-
-                <div id="answer" class="mb-3">
-                    {{ this.answers[this.questionNumber].answer }}
-                </div>
+                <div
+                    id="answer"
+                    class="mb-3"
+                    v-html="this.answers[this.questionNumber].answer"
+                ></div>
             </div>
         </div>
-        <p v-else>No unmarked questions currently</p>
+        <div class="d-flex flex-column" v-else>
+            <p>No unmarked questions currently</p>
+            <p v-if="isFailed">Student has failed</p>
+            <p v-else>Student has passed and mastered this skill</p>
+        </div>
         <div v-if="this.answers.length > 0" class="d-flex mt-3 mb-2">
-            <div class="d-flex w-100 justify-content-center gap-2">
+            <div class="d-flex w-100 justify-content-lg-center gap-2">
                 <button
                     @click="MarkCorrect(this.answers[this.questionNumber])"
                     class="btn green-btn"
@@ -271,6 +305,23 @@ export default {
                 >
                     Next
                 </button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Section -->
+    <div v-if="showModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p class="modal-message">{{ modalMessage }}</p>
+                <div style="display: flex; gap: 10px">
+                    <router-link class="btn green-btn" to="/"
+                        >To Hub</router-link
+                    >
+                    <button class="btn purple-btn" @click="showModal = false">
+                        OK
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -320,6 +371,10 @@ h2 {
     text-align: left;
     color: #667085;
     padding-left: 17px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: white;
+    border-radius: 15px;
 }
 
 #page-tile {
@@ -337,7 +392,7 @@ h2 {
 
 #assessment-info {
     font-family: 'Poppins';
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 900;
     line-height: 28px;
     text-align: left;
@@ -401,5 +456,83 @@ h2 {
 
 .red-btn:hover {
     background-color: #fc7d7d;
+}
+
+.purple-btn:hover {
+    background-color: #a48ef3;
+}
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    /* Could be more or less, depending on screen size */
+}
+
+.modal-message {
+    font-size: 20px;
+    font-weight: 500;
+    color: #667085;
+}
+
+/* Styling for phone */
+@media (max-width: 575px) {
+    #question-bg {
+        margin-left: 0px;
+    }
+
+    #page-tile {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    #assessment-info {
+        font-size: 18px;
+        padding-top: 5px;
+    }
+
+    #question {
+        font-size: 17px;
+    }
+
+    .red-btn {
+        font-size: 12px;
+    }
+
+    .green-btn {
+        font-size: 12px;
+    }
+}
+
+/* Styling for tablet */
+@media (min-width: 576px) and (max-width: 992px) {
+    #question-bg {
+        margin-left: 0px;
+    }
 }
 </style>

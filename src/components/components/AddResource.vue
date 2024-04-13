@@ -1,24 +1,24 @@
 <script>
 // Import
-import router from "../../router";
+import router from '../../router';
 
 // Import the store.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore'
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 export default {
     data() {
         return {
-            skillId: this.$route.params.id,
-        }
+            skillId: this.$route.params.id
+        };
     },
     setup() {
         const userDetailsStore = useUserDetailsStore();
         return {
             userDetailsStore
-        }
+        };
     },
     mounted: function () {
-
+        //  summernote config
         $('#summernote').summernote({
             placeholder: '',
             tabsize: 2,
@@ -35,31 +35,30 @@ export default {
             maximumImageFileSize: 2048 * 1024, // 2 MB
             callbacks: {
                 onImageUploadError: function (msg) {
-                    alert("Max image size is 2MB.")
+                    alert('Max image size is 2MB.');
                 }
             }
         });
     },
     methods: {
         Submit() {
-            var url = "/resources/add/" + this.skillId;
-            var resourceData = $('#summernote').summernote("code");
+            var url = '/resources/add/' + this.skillId;
+            var resourceData = $('#summernote').summernote('code');
 
             const requestOptions = {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
                     editordata: resourceData
                 })
             };
-            fetch(url, requestOptions)
-                .then(() => {
-                    this.$router.push("/skills/" + this.skillId);
-                });
+            fetch(url, requestOptions).then(() => {
+                this.$router.push('/skills/' + this.skillId);
+            });
         }
     }
-}
+};
 </script>
 
 <template>
@@ -73,6 +72,5 @@ export default {
         </div>
     </div>
 </template>
-
 
 <style scoped></style>
