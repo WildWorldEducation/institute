@@ -11,10 +11,8 @@ export const useSessionDetailsStore = defineStore("sessionDetails", {
         async getSessionDetails() {
             const result = await fetch('/get-session-details');
             const data = await result.json();
-
             this.isLoggedIn = data.isLoggedIn;
             this.userId = data.userId;
-
             return this.$state;
         },
     }

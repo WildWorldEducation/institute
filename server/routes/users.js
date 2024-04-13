@@ -379,39 +379,6 @@ router.put('/:id/edit/instructor', (req, res, next) => {
     }
 });
 
-/**
- * Update User Message
- *
- * @return response()
- */
-router.put('/:id/edit-message', (req, res, next) => {
-    if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.message != null)
-            req.body.message = req.body.message.replace(/'/g, "\\'");
-
-        // Add data.
-        let sqlQuery =
-            `UPDATE users SET message = '` +
-            req.body.message +
-            `' WHERE id=` +
-            req.params.id +
-            `;`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.end();
-            } catch (err) {
-                next(err);
-            }
-        });
-    } else {
-        res.redirect('/login');
-    }
-});
-
 // Edit from profile page
 router.put('/profile/:id/edit', (req, res, next) => {
     if (req.session.userName) {
