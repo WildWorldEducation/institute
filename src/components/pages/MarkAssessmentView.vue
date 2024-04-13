@@ -239,7 +239,7 @@ export default {
                 <div class="d-flex w-100 flex-row justify-content-end">
                     <span
                         v-b-tooltip.hover
-                        title="student need to have at least 90% score per total score to pass"
+                        title="The student needs to get at least 90% to pass"
                         id="score-text"
                         class="me-2"
                     >
