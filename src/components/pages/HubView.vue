@@ -1,6 +1,5 @@
 <script>
 // import components.
-import StudentMessages from '../components/StudentMessages.vue';
 import StudentProgress from '../components/StudentProgress.vue';
 import Notifications from '../components/Notifications.vue';
 import News from '../components/News.vue';
@@ -24,7 +23,6 @@ export default {
     components: {
         News,
         Notifications,
-        StudentMessages,
         StudentProgress,
         MarkAssessment
     },
@@ -70,9 +68,8 @@ export default {
                     <MarkAssessment />
                 </div>
             </div>
-            <div id="message-col" class="column col-lg-4 col-md-6">
-                <StudentMessages />
-            </div>
+            <!-- A blank column (This way we will have easier time in the future if we want to  add something here) -->
+            <div class="column col-lg-4 col-md-6"></div>
             <div id="notif-col" class="column col-lg-3 col-md-6">
                 <Notifications />
             </div>
@@ -133,9 +130,6 @@ h1 {
 /* Because Boostrap doesn`t support the gap between column
    So we have do it manual here
 */
-#message-col {
-    padding-left: 41px;
-}
 
 #profile-image-column {
     padding-right: 41px;
@@ -160,13 +154,6 @@ h1 {
 }
 /* View Specific On Phone */
 @media (min-width: 320px) and (max-width: 576px) {
-    #message-col {
-        margin-top: 51px;
-        padding-left: 12px;
-        padding-right: 12px;
-        padding-bottom: 51px;
-    }
-
     #profile-image-column {
         padding-right: 66px;
         padding-left: 66px;
@@ -199,12 +186,6 @@ h1 {
     .content-row {
         padding-bottom: 0px;
         margin-bottom: 39px;
-    }
-
-    #message-col {
-        margin-top: 37px;
-        padding-left: 0px;
-        padding-right: 72px;
     }
 
     #notif-col {
