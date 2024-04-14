@@ -118,10 +118,6 @@ export default {
                         'code',
                         this.skill.mastery_requirements
                     );
-                    $('#description-summernote').summernote(
-                        'code',
-                        this.skill.description
-                    );
                     // handle some input variable
                     const skillResult = this.levels.find((level) => {
                         return level.id === this.skill.level;
@@ -207,7 +203,7 @@ export default {
                         filters: this.filters
                     })
                 });
-            });        
+            });
         },
         Submit() {
             // Check if this skill was a super skill with skills, and is being changed to another type.
@@ -259,11 +255,11 @@ export default {
                 }
             }
 
-            // Update the skill.
-            var masteryRequirementsData = $('#summernote').summernote('code');
-            const descriptionData = $('#description-summernote').summernote(
-                'code'
-            );
+            if (this.skill.type != 'domain') {
+                // Update the skill.
+                this.skill.mastery_requirements =
+                    $('#summernote').summernote('code');
+            }
 
             if (this.skill.name === '' || this.skill.name === null) {
                 this.validate.name = true;
@@ -281,10 +277,10 @@ export default {
                 body: JSON.stringify({
                     name: this.skill.name,
                     parent: this.skill.parent,
-                    description: descriptionData,
+                    description: this.skill.description,
                     icon_image: this.skill.icon_image,
                     banner_image: this.skill.banner_image,
-                    mastery_requirements: masteryRequirementsData,
+                    mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
                     level: this.skill.level
                 })
@@ -776,7 +772,7 @@ export default {
             </div>
         </div>
 
-        <!-- Description summernote -->
+        <!-- Description -->
         <div class="row">
             <div class="col">
                 <div class="mb-3">
@@ -786,8 +782,7 @@ export default {
                     <textarea
                         v-model="skill.description"
                         class="form-control"
-                        id="description-summernote"
-                        rows="3"
+                        rows="2"
                     ></textarea>
                 </div>
                 <div>
