@@ -254,7 +254,7 @@ export default {
             <div id="question-bg">
                 <div class="d-flex w-100 flex-row justify-content-end">
                     <span
-                        v-b-tooltip.hover
+                        b-tooltip.hover
                         title="The student needs to get at least 90% to pass"
                         id="score-text"
                         class="me-2"
@@ -262,7 +262,7 @@ export default {
                         score:
                     </span>
                     <span
-                        v-b-tooltip.hover
+                        b-tooltip.hover
                         title="current score"
                         id="current-score"
                     >
