@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -364,39 +364,6 @@ router.put('/:id/edit/instructor', (req, res, next) => {
             req.body.instructor_id +
             `;`;
 
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.end();
-            } catch (err) {
-                next(err);
-            }
-        });
-    } else {
-        res.redirect('/login');
-    }
-});
-
-/**
- * Update User Message
- *
- * @return response()
- */
-router.put('/:id/edit-message', (req, res, next) => {
-    if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.message != null)
-            req.body.message = req.body.message.replace(/'/g, "\\'");
-
-        // Add data.
-        let sqlQuery =
-            `UPDATE users SET message = '` +
-            req.body.message +
-            `' WHERE id=` +
-            req.params.id +
-            `;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

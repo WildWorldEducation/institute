@@ -1,7 +1,6 @@
 <script>
 import UsersList from '../components/UsersList.vue';
 import UserDetails from '../components/userdetails.vue';
-import WriteMessage from '../components/WriteMessage.vue';
 
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
@@ -40,8 +39,7 @@ export default {
     },
     components: {
         UsersList,
-        UserDetails,
-        WriteMessage
+        UserDetails
     },
     async created() {
         // Set up the first user in the array to be selected on the page initially.
@@ -193,16 +191,6 @@ export default {
                         :userRole="user.role"
                     />
                 </div>
-                <div class="row user-form-data-row">
-                    <WriteMessage
-                        v-if="
-                            userDetailsStore.role == 'admin' ||
-                            (userDetailsStore.role == 'instructor' &&
-                                students.length > 0)
-                        "
-                        :userId="user.id"
-                    />
-                </div>
             </div>
             <!-- User detail view specific for phone -->
             <div
@@ -212,9 +200,6 @@ export default {
             >
                 <div class="row">
                     <UserDetails :userId="user.id" :userRole="user.role" />
-                </div>
-                <div class="row">
-                    <WriteMessage :userId="user.id" />
                 </div>
             </div>
         </div>
