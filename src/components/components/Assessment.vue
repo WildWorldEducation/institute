@@ -563,7 +563,10 @@ export default {
         <div id="" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>You already have an assessment need to mark</p>
+                <p>
+                    You already have an assessment need to mark. Please wait for
+                    your instructor mark it first
+                </p>
                 <div class="d-flex flex-row-reverse">
                     <button
                         type="button"
