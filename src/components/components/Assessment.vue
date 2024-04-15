@@ -42,10 +42,7 @@ export default {
             // flag for which modal to show
             passModal: false,
             failedModal: false,
-            waitForMarkModal: false,
-            // flag and stage for checking user can only take one assessment of a time
-            waitForMark: false,
-            showWaitModal: false
+            waitForMarkModal: false
         };
     },
     mounted: function () {
@@ -72,25 +69,6 @@ export default {
         });
     },
     async created() {
-        /**
-         * We get assessment list every time the component is created
-         * to assure that if this assessment available at the time
-         */
-        await this.assessmentsStore.getAssessments();
-        const assessments = this.assessmentsStore.assessments;
-
-        // Get current user Details
-        const userDetails = await this.userDetailsStore.getUserDetails();
-
-        // find if student have an un-mark assessment for this skill
-        const oldAssessment = assessments.find((assessment) => {
-            return assessment.student_id === userDetails.userId;
-        });
-        if (oldAssessment !== undefined) {
-            this.waitForMark = true;
-            this.showWaitModal = true;
-        }
-
         // Load the max quiz question number setting.
         if (this.settingsStore.quizMaxQuestions == null) {
             await this.settingsStore.getSettings();
@@ -384,7 +362,7 @@ export default {
 
     <div v-if="loading == false">
         <div
-            v-if="questions.length > 0 && waitForMark == false"
+            v-if="questions.length > 0"
             class="container mt-5 mb-3 p-3 pt-2 mb-3"
             id="question-container"
         >
@@ -425,13 +403,6 @@ export default {
                 <!-- Essay Question -->
                 <div v-else-if="this.question.questionType == 'essay'">
                     <div class="form-group">
-                        <!-- <textarea
-                            id="essay-answer"
-                            @input="UserAnswer()"
-                            class="form-control"
-                            v-model="questions[this.questionNumber].userAnswer"
-                            rows="3"
-                        ></textarea> -->
                         <EssayAnswer ref="essayAnswer" />
                     </div>
                 </div>
@@ -462,12 +433,8 @@ export default {
                 </button>
             </div>
         </div>
-        <div v-else-if="waitForMark == false" id="question-content">
+        <div v-else="waitForMark == false" id="question-content">
             There is no quiz for this skill yet. Please check again soon.
-        </div>
-        <div v-else-if="waitForMark == true">
-            Please wait for your previous assessment get marking to know you
-            mastered this skill or not.
         </div>
     </div>
     <!-- Some modal to tell the student when their finish the assessment -->
@@ -551,27 +518,6 @@ export default {
                         type="button"
                         class="btn green-btn"
                         @click="this.$router.push('/')"
-                    >
-                        OK
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Prevent Take Another assessment if in wait for mark mode -->
-    <div v-if="showWaitModal">
-        <div id="" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <p>
-                    You already have an assessment need to mark. Please wait for
-                    your instructor mark it first
-                </p>
-                <div class="d-flex flex-row-reverse">
-                    <button
-                        type="button"
-                        class="btn green-btn"
-                        @click="showWaitModal = false"
                     >
                         OK
                     </button>
