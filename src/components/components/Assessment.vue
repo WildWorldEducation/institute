@@ -4,6 +4,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useAssessmentsStore } from '../../stores/AssessmentsStore';
 import EssayAnswer from './EssayAnswer.vue';
 
 export default {
@@ -12,12 +13,14 @@ export default {
         const userSkillsStore = useUserSkillsStore();
         const settingsStore = useSettingsStore();
         const skillsStore = useSkillsStore();
+        const assessmentsStore = useAssessmentsStore();
 
         return {
             userDetailsStore,
             userSkillsStore,
             settingsStore,
-            skillsStore
+            skillsStore,
+            assessmentsStore
         };
     },
     data() {
@@ -39,7 +42,10 @@ export default {
             // flag for which modal to show
             passModal: false,
             failedModal: false,
-            waitForMarkModal: false
+            waitForMarkModal: false,
+            // flag and stage for checking user can only take one assessment of a time
+            waitForMark: false,
+            showWaitModal: false
         };
     },
     mounted: function () {
@@ -66,6 +72,25 @@ export default {
         });
     },
     async created() {
+        /**
+         * We get assessment list every time the component is created
+         * to assure that if this assessment available at the time
+         */
+        await this.assessmentsStore.getAssessments();
+        const assessments = this.assessmentsStore.assessments;
+
+        // Get current user Details
+        const userDetails = await this.userDetailsStore.getUserDetails();
+
+        // find if student have an un-mark assessment for this skill
+        const oldAssessment = assessments.find((assessment) => {
+            return assessment.student_id === userDetails.userId;
+        });
+        if (oldAssessment !== undefined) {
+            this.waitForMark = true;
+            this.showWaitModal = true;
+        }
+
         // Load the max quiz question number setting.
         if (this.settingsStore.quizMaxQuestions == null) {
             await this.settingsStore.getSettings();
@@ -359,7 +384,7 @@ export default {
 
     <div v-if="loading == false">
         <div
-            v-if="questions.length > 0"
+            v-if="questions.length > 0 && waitForMark == false"
             class="container mt-5 mb-3 p-3 pt-2 mb-3"
             id="question-container"
         >
@@ -437,8 +462,12 @@ export default {
                 </button>
             </div>
         </div>
-        <div v-else id="question-content">
+        <div v-else-if="waitForMark == false" id="question-content">
             There is no quiz for this skill yet. Please check again soon.
+        </div>
+        <div v-else-if="waitForMark == true">
+            Please wait for your previous assessment get marking to know you
+            mastered this skill or not.
         </div>
     </div>
     <!-- Some modal to tell the student when their finish the assessment -->
