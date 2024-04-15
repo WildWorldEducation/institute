@@ -15,7 +15,6 @@ export const useUserDetailsStore = defineStore("userDetails", {
             email: null,
             skillTreeTheme: null,
             userId: null,
-            message: null
         }
     },
     actions: {
@@ -36,7 +35,6 @@ export const useUserDetailsStore = defineStore("userDetails", {
                 this.lastName = data.last_name;
                 this.role = data.role;
                 this.skillTreeTheme = data.skilltree_theme;
-                this.message = data.message;
                 this.password = data.password;
                 this.email = data.email;
 

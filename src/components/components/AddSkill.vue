@@ -102,26 +102,6 @@ export default {
                 }
             }
         });
-        $('#summernote_description').summernote({
-            placeholder: '',
-            tabsize: 2,
-            height: 120,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            maximumImageFileSize: 2048 * 1024, // 2 MB
-            callbacks: {
-                onImageUploadError: function (msg) {
-                    alert('Max image size is 2MB.');
-                }
-            }
-        });
     },
     methods: {
         getParentSkills() {
@@ -203,10 +183,6 @@ export default {
             // Get the Summernote HTML.
             this.skill.mastery_requirements =
                 $('#summernote').summernote('code');
-
-            this.skill.description = $('#summernote_description').summernote(
-                'code'
-            );
 
             // if any of the validate is violated we end the method here
             if (this.validate.violated) {
@@ -738,9 +714,8 @@ export default {
                     <textarea
                         v-model="skill.description"
                         class="form-control"
-                        id="summernote_description"
                         placeholder="description"
-                        rows="3"
+                        rows="2"
                     ></textarea>
                 </div>
                 <div>
