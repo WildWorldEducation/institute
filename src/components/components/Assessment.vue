@@ -42,7 +42,9 @@ export default {
             // flag for which modal to show
             passModal: false,
             failedModal: false,
-            waitForMarkModal: false
+            waitForMarkModal: false,
+            // the flag to determine whether the student update assessment
+            updatedAssessment: false
         };
     },
     mounted: function () {
@@ -287,6 +289,8 @@ export default {
                 let fetchMethod = 'POST';
                 if (oldAssessment !== undefined) {
                     fetchMethod = 'PUT';
+                    // turn the flag for updated on
+                    this.updatedAssessment = true;
                 }
 
                 // create an unmarked assessment record
@@ -524,10 +528,15 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>
+                <div class="mb-2" v-if="updatedAssessment">
+                    You are taking a new assessment while your old assessment is
+                    still waiting to be marked. Please note that your old answer
+                    will be replaced with the answer for this assessment.
+                </div>
+                <div>
                     There is at least one question that needs to be marked
                     manually. Please check whether you passed later.
-                </p>
+                </div>
                 <div class="d-flex flex-row-reverse">
                     <button
                         type="button"
