@@ -74,6 +74,9 @@ export default {
             await this.settingsStore.getSettings();
         }
 
+        // Refetch assessment list
+        await this.assessmentsStore.getAssessments();
+
         // Check skill type.
         let skillType;
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
@@ -274,9 +277,21 @@ export default {
             } else {
                 // Deal with the essay questions.
 
+                const assessmentsList = this.assessmentsStore.assessments;
+                // Find if user have an un-mark assessments before
+                const oldAssessment = assessmentsList.find(
+                    (assessment) =>
+                        (assessment.student_id = this.userDetailsStore.userId)
+                );
+
+                let fetchMethod = 'POST';
+                if (oldAssessment !== undefined) {
+                    fetchMethod = 'PUT';
+                }
+
                 // create an unmarked assessment record
                 const requestOptions = {
-                    method: 'POST',
+                    method: fetchMethod,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         totalScore: this.totalNumOfQuestions,
