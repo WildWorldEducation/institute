@@ -187,14 +187,10 @@ const { OpenAI } = require('openai');
 // To access the .env file.
 require('dotenv').config();
 const openai = new OpenAI({
-    // TODO: remove from code.
     apiKey: process.env.CHAT_GPT_API_KEY
 });
-// This package is to prevent either ChatGPT or the server from being overwhelmed.
-const throttledQueue = require('throttled-queue');
-// API calling is throttled to 2 per second.
-const throttle = throttledQueue(2, 1000);
-// Used for choosing parent skill when adding a new skill.
+
+let breakLoop = false;
 router.post('/generate-sources', (req, res, next) => {
     if (req.session.userName) {
         // The user posting the source.
@@ -213,39 +209,60 @@ router.post('/generate-sources', (req, res, next) => {
                 // User input number of sources per skill required.
                 let numOfSoucesRequired = req.body.numSources;
                 // Go through all skills that are not domains.
-
-                for (let i = 0; i < skills.length; i++) {
-                    for (let j = 0; j < numOfSoucesRequired; j++) {
-                        let skillId = skills[i].id;
-                        // Replace underscore with space.
-                        let level = skills[i].level.replace(/_/g, ' ');
-                        let name = skills[i].name;
-                        let prompt =
-                            `
-                    I am a ` +
-                            level +
-                            ` student.
-                        Please provide me with a JSON object containing a URL link, named "url",
-                        with site/page/subject name, named "name", so I can learn more about ` +
-                            name +
-                            `. The link should be for an article, worksheets, game, video or other educational resource. 
-                            Please do not provide Youtube videos.`;
-
-                        // To try to prevent duplication from ChatGPT.
-                        let usedLinks = [];
-                        // For dev to check if wasting too many ChatGPT tokens.
-                        let brokenLinkCount = 0;
-                        // Implement throttle.
-                        throttle(() => {
-                            getSource(
-                                userId,
-                                skillId,
-                                prompt,
-                                usedLinks,
-                                brokenLinkCount
-                            );
-                        });
+                // Using a recursive function, rather than a regular for loop,
+                // So that it can break if error detected.
+                function loop(index, timeDelay, skillCount) {
+                    // Error handling. Break the loop if some problem with ChatGPT (eg no funds).
+                    if (breakLoop == true) {
+                        printFailState();
+                        return;
                     }
+                    if (index < skillCount) {
+                        index++;
+                        setTimeout(() => {
+                            // code
+                            for (let j = 0; j < numOfSoucesRequired; j++) {
+                                let skillId = skills[index].id;
+                                // Replace underscore with space.
+                                let level = skills[index].level.replace(
+                                    /_/g,
+                                    ' '
+                                );
+                                let name = skills[index].name;
+                                let prompt =
+                                    `
+                                I am a ` +
+                                    level +
+                                    ` student.
+                                    Please provide me with a JSON object containing a URL link, named "url",
+                                    with site/page/subject name, named "name", so I can learn more about ` +
+                                    name +
+                                    `. The link should be for an article, worksheets, game, video or other educational resource.
+                                        Please do not provide Youtube videos.`;
+
+                                // To try to prevent duplication from ChatGPT.
+                                let usedLinks = [];
+                                // For dev to check if wasting too many ChatGPT tokens.
+                                let brokenLinkCount = 0;
+                                // Implement throttle.
+
+                                getSource(
+                                    userId,
+                                    skillId,
+                                    prompt,
+                                    usedLinks,
+                                    brokenLinkCount
+                                );
+                            }
+                            loop(index, timeDelay, skillCount);
+                        }, timeDelay);
+                    }
+                }
+
+                loop(0, 500, skills.length);
+
+                function printFailState() {
+                    console.log('Operation failed, check console for error.');
                 }
             } catch (err) {
                 next(err);
@@ -288,6 +305,8 @@ async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
             brokenLinkCount
         );
     } catch (err) {
+        // Variable to stop the loop through the skills.
+        breakLoop = true;
         console.log('Error with ChatGPT API call: ' + err);
         return;
     }
@@ -295,7 +314,6 @@ async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
 
 // Check if the source link actually exists.
 const urlExists = require('url-exists');
-
 async function checkSources(
     userId,
     skillId,
