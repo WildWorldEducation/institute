@@ -558,6 +558,24 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Prevent Take Another assessment if in wait for mark mode -->
+    <div v-if="showWaitModal">
+        <div id="" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>You already have an assessment need to mark</p>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn green-btn"
+                        @click="showWaitModal = false"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
