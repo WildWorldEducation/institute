@@ -229,6 +229,16 @@ router.post('/generate-sources', (req, res, next) => {
                                     ' '
                                 );
                                 let name = skills[index].name;
+
+                                // Remove HTML formatting.
+                                let masteryRequirements = skills[
+                                    index
+                                ].mastery_requirements.replace(
+                                    /<[^>]*>?/gm,
+                                    ''
+                                );
+                                console.log(masteryRequirements);
+
                                 let prompt =
                                     `
                                 I am a ` +
@@ -237,6 +247,8 @@ router.post('/generate-sources', (req, res, next) => {
                                     Please provide me with a JSON object containing a URL link, named "url",
                                     with site/page/subject name, named "name", so I can learn more about ` +
                                     name +
+                                    `, as described by this text: ` +
+                                    masteryRequirements +
                                     `. The link should be for an article, worksheets, game, video or other educational resource.
                                         Please do not provide Youtube videos.`;
 
@@ -244,17 +256,16 @@ router.post('/generate-sources', (req, res, next) => {
                                 let usedLinks = [];
                                 // For dev to check if wasting too many ChatGPT tokens.
                                 let brokenLinkCount = 0;
-                                // Implement throttle.
 
-                                getSource(
-                                    userId,
-                                    skillId,
-                                    prompt,
-                                    usedLinks,
-                                    brokenLinkCount
-                                );
+                                // getSource(
+                                //     userId,
+                                //     skillId,
+                                //     prompt,
+                                //     usedLinks,
+                                //     brokenLinkCount
+                                // );
                             }
-                            loop(index, timeDelay, skillCount);
+                            loop(index, timeDelay, 1);
                         }, timeDelay);
                     }
                 }
