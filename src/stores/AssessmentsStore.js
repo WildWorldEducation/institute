@@ -10,6 +10,9 @@ export const useAssessmentsStore = defineStore("assessments", {
         async getAssessments() {
             const result = await fetch('/assessments/list');
             const data = await result.json();
+            console.log('call assessment store: ');
+            console.log(data)
+
             this.assessments = data;
             return this.$state;
         },

@@ -47,6 +47,7 @@ router.get('/list', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+
                 res.json(results);
             } catch (err) {
                 next(err);
@@ -160,7 +161,7 @@ router.put('/:studentId/:skillId', (req, res, next) => {
                             if (err) {
                                 throw err;
                             } else {
-                                res.json(results[0]);
+                                res.json({ mess: 'success' });
                             }
                         } catch (err) {
                             next(err);

@@ -44,6 +44,7 @@ export default {
             failedModal: false,
             waitForMarkModal: false,
             // the flag to determine whether the student update assessment
+            oldAssessment: undefined,
             updatedAssessment: false
         };
     },
@@ -78,6 +79,13 @@ export default {
 
         // Refetch assessment list
         await this.assessmentsStore.getAssessments();
+
+        const assessmentsList = this.assessmentsStore.assessments;
+        // Find if user have an un-mark assessments before
+        this.oldAssessment = assessmentsList.find(
+            (assessment) =>
+                (assessment.student_id = this.userDetailsStore.userId)
+        );
 
         // Check skill type.
         let skillType;
@@ -279,14 +287,8 @@ export default {
             } else {
                 // Deal with the essay questions.
 
-                const assessmentsList = this.assessmentsStore.assessments;
-                // Find if user have an un-mark assessments before
-                const oldAssessment = assessmentsList.find(
-                    (assessment) =>
-                        (assessment.student_id = this.userDetailsStore.userId)
-                );
-
                 let fetchMethod = 'POST';
+
                 if (oldAssessment !== undefined) {
                     fetchMethod = 'PUT';
                     // turn the flag for updated on
