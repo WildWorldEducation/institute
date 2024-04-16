@@ -133,6 +133,7 @@ router.put('/:studentId/:skillId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         // Get the current date and time.
+        console.log(JSON.stringify(req.body))
         var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
         let sqlQuery =
             `
@@ -161,7 +162,8 @@ router.put('/:studentId/:skillId', (req, res, next) => {
                             if (err) {
                                 throw err;
                             } else {
-                                res.json({ mess: 'success' });
+
+                                res.json(results[0]);
                             }
                         } catch (err) {
                             next(err);

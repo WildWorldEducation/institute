@@ -77,15 +77,25 @@ export default {
             await this.settingsStore.getSettings();
         }
 
-        // Refetch assessment list
+        /**
+         * We get assessment list every time the component is created
+         * to assure that if this assessment available at the time
+         */
         await this.assessmentsStore.getAssessments();
+        const assessments = this.assessmentsStore.assessments;
 
-        const assessmentsList = this.assessmentsStore.assessments;
-        // Find if user have an un-mark assessments before
-        this.oldAssessment = assessmentsList.find(
-            (assessment) =>
-                (assessment.student_id = this.userDetailsStore.userId)
-        );
+        // Get current user Details
+        const userDetails = await this.userDetailsStore.getUserDetails();
+
+        // find if student have an un-mark assessment for this skill
+        this.oldAssessment = assessments.find((assessment) => {
+            return assessment.student_id === userDetails.userId;
+        });
+
+        if (this.oldAssessment !== undefined) {
+            // turn the flag for updated on
+            this.updatedAssessment = true;
+        }
 
         // Check skill type.
         let skillType;
@@ -289,10 +299,8 @@ export default {
 
                 let fetchMethod = 'POST';
 
-                if (oldAssessment !== undefined) {
+                if (this.oldAssessment !== undefined) {
                     fetchMethod = 'PUT';
-                    // turn the flag for updated on
-                    this.updatedAssessment = true;
                 }
 
                 // create an unmarked assessment record
@@ -382,6 +390,29 @@ export default {
     <div v-if="loading == true">Loading...</div>
 
     <div v-if="loading == false">
+        <!-- Show student a warning if their take this assessment before and still wait for marking -->
+        <div v-if="updatedAssessment">
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <div class="mb-2">
+                        You are taking a new assessment while your old
+                        assessment is still waiting to be marked. Please note
+                        that your old answer will be replaced with the new
+                        answer for this assessment.
+                    </div>
+                    <div class="d-flex flex-row-reverse">
+                        <button
+                            type="button"
+                            class="btn green-btn"
+                            @click="this.updatedAssessment = false"
+                        >
+                            OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div
             v-if="questions.length > 0"
             class="container mt-5 mb-3 p-3 pt-2 mb-3"
@@ -530,11 +561,6 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <div class="mb-2" v-if="updatedAssessment">
-                    You are taking a new assessment while your old assessment is
-                    still waiting to be marked. Please note that your old answer
-                    will be replaced with the answer for this assessment.
-                </div>
                 <div>
                     There is at least one question that needs to be marked
                     manually. Please check whether you passed later.
