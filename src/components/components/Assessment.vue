@@ -396,10 +396,9 @@ export default {
                 <!-- Modal content -->
                 <div class="modal-content">
                     <div class="mb-2">
-                        You are taking a new assessment while your old
-                        assessment is still waiting to be marked. Please note
-                        that your old answer will be replaced with the new
-                        answer for this assessment.
+                        You are taking a new quiz for this skill while your old
+                        one is still waiting to be marked. Please note that your
+                        old answers will be replaced.
                     </div>
                     <div class="d-flex flex-row-reverse">
                         <button

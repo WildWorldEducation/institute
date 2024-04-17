@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -123,11 +123,6 @@ router.post('/:studentId/:skillId', (req, res, next) => {
     }
 });
 
-
-
-
-
-
 /**
  * Edit Item
  *
@@ -209,8 +204,7 @@ router.put('/:studentId/:skillId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        let sqlQuery =
-            `
+        let sqlQuery = `
         UPDATE skill_tree.unmarked_assessments 
         SET total_score = ${req.body.totalScore}, current_score = ${req.body.currentScore}, num_unmarked_questions_remaining = ${req.body.numUnmarkedQuestions}, date = '${date}'
         WHERE student_id = '${req.params.studentId}' AND skill_id = '${req.params.skillId}'
@@ -236,7 +230,6 @@ router.put('/:studentId/:skillId', (req, res, next) => {
                             if (err) {
                                 throw err;
                             } else {
-
                                 res.json(results[0]);
                             }
                         } catch (err) {
