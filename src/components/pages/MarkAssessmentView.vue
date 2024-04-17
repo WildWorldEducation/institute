@@ -110,6 +110,16 @@ export default {
         Previous() {
             this.questionNumber--;
         },
+        dateFormat() {
+            // Format Date for better ux
+            const dateObject = new Date(this.assessment.date);
+            return dateObject.toLocaleDateString('default', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        },
         async MarkCorrect(answer) {
             var url =
                 '/assessments/' + answer.assessment_id + '/increase-grade';
@@ -124,6 +134,7 @@ export default {
 
             // Check if the student passed.
             await this.assessmentsStore.getAssessments();
+
             for (let i = 0; i < this.assessmentsStore.assessments.length; i++) {
                 if (
                     this.assessmentsStore.assessments[i].id ==
@@ -170,6 +181,9 @@ export default {
 
             //  Now remove this element from the array.
             this.answers.splice(this.questionNumber, 1);
+
+            //  Formate Date For better UX
+            this.assessment.date = this.dateFormat();
         },
         async MarkIncorrect(answer) {
             var url =
@@ -210,11 +224,13 @@ export default {
                     }
                 }
             }
-
             // Delete from store and DB.
             this.unmarkedAnswersStore.deleteUnmarkedAnswer(answer);
             // Now remove this element from the array.
             this.answers.splice(this.questionNumber, 1);
+
+            //  Formate Date For better UX
+            this.assessment.date = this.dateFormat();
         },
         async MakeMastered(studentId, skill) {
             await this.userSkillsStore.MakeMastered(studentId, skill);
@@ -238,7 +254,7 @@ export default {
             <div id="question-bg">
                 <div class="d-flex w-100 flex-row justify-content-end">
                     <span
-                        v-b-tooltip.hover
+                        b-tooltip.hover
                         title="The student needs to get at least 90% to pass"
                         id="score-text"
                         class="me-2"
@@ -246,7 +262,7 @@ export default {
                         score:
                     </span>
                     <span
-                        v-b-tooltip.hover
+                        b-tooltip.hover
                         title="current score"
                         id="current-score"
                     >
