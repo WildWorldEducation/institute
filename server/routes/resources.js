@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //  password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -237,7 +237,7 @@ router.post('/generate-sources', (req, res, next) => {
                                     /<[^>]*>?/gm,
                                     ''
                                 );
-                                console.log(masteryRequirements);
+                                // console.log(masteryRequirements);
 
                                 let prompt =
                                     `
@@ -257,20 +257,20 @@ router.post('/generate-sources', (req, res, next) => {
                                 // For dev to check if wasting too many ChatGPT tokens.
                                 let brokenLinkCount = 0;
 
-                                // getSource(
-                                //     userId,
-                                //     skillId,
-                                //     prompt,
-                                //     usedLinks,
-                                //     brokenLinkCount
-                                // );
+                                getSource(
+                                    userId,
+                                    skillId,
+                                    prompt,
+                                    usedLinks,
+                                    brokenLinkCount
+                                );
                             }
                             loop(index, timeDelay, 1);
                         }, timeDelay);
                     }
                 }
 
-                loop(0, 500, skills.length);
+                loop(0, 500, 1);
 
                 function printFailState() {
                     console.log('Operation failed, check console for error.');
