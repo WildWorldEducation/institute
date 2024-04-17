@@ -124,60 +124,7 @@ router.post('/:studentId/:skillId', (req, res, next) => {
 });
 
 
-/**
- * Add Item
- *
- * @return response()
- */
-router.put('/:studentId/:skillId', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        // Get the current date and time.
-        console.log(JSON.stringify(req.body))
-        var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        let sqlQuery =
-            `
-        UPDATE skill_tree.unmarked_assessments 
-        SET total_score = ${req.body.totalScore}, current_score = ${req.body.currentScore}, num_unmarked_questions_remaining = ${req.body.numUnmarkedQuestions}, date = '${date}'
-        WHERE student_id = '${req.params.studentId}' AND skill_id = '${req.params.skillId}'
-        `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                } else {
-                    // If both the username and password are not correct, check if the account exists.
-                    let sqlQuery2 =
-                        `SELECT id FROM skill_tree.unmarked_assessments
-                     WHERE skill_tree.unmarked_assessments.student_id = ` +
-                        req.params.studentId +
-                        `
-                        AND skill_tree.unmarked_assessments.skill_id = ` +
-                        req.params.skillId +
-                        `;`;
-
-                    let query2 = conn.query(sqlQuery2, (err, results) => {
-                        try {
-                            if (err) {
-                                throw err;
-                            } else {
-
-                                res.json(results[0]);
-                            }
-                        } catch (err) {
-                            next(err);
-                        }
-                    });
-                }
-            } catch (err) {
-                next(err);
-            }
-        });
-    } else {
-        res.redirect('/login');
-    }
-});
 
 
 
@@ -244,6 +191,59 @@ router.delete('/:id', (req, res, next) => {
                     throw err;
                 }
                 res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Add Item
+ *
+ * @return response()
+ */
+router.put('/:studentId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        let sqlQuery =
+            `
+        UPDATE skill_tree.unmarked_assessments 
+        SET total_score = ${req.body.totalScore}, current_score = ${req.body.currentScore}, num_unmarked_questions_remaining = ${req.body.numUnmarkedQuestions}, date = '${date}'
+        WHERE student_id = '${req.params.studentId}' AND skill_id = '${req.params.skillId}'
+        `;
+
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // If both the username and password are not correct, check if the account exists.
+                    let sqlQuery2 =
+                        `SELECT id FROM skill_tree.unmarked_assessments
+                     WHERE skill_tree.unmarked_assessments.student_id = ` +
+                        req.params.studentId +
+                        `
+                        AND skill_tree.unmarked_assessments.skill_id = ` +
+                        req.params.skillId +
+                        `;`;
+
+                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            } else {
+
+                                res.json(results[0]);
+                            }
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                }
             } catch (err) {
                 next(err);
             }
