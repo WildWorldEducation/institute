@@ -5,6 +5,8 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
 
 export default {
     setup() {
@@ -43,8 +45,14 @@ export default {
                 email: false,
                 emailFormat: false,
                 password: false
-            }
+            },
+            // Flag and data of crop image component
+            showCropModal: false,
+            cropCanvas: ''
         };
+    },
+    components: {
+        Cropper
     },
     async created() {
         // Load all skills.
@@ -201,6 +209,9 @@ export default {
         removeImage: function (e) {
             this.image = '';
             this.user.avatar = this.image;
+        },
+        cropImageChange({ coordinates, canvas }) {
+            this.cropCanvas = canvas.toDataURL();
         }
     }
 };
@@ -274,6 +285,12 @@ export default {
                                             fill="white"
                                         />
                                     </svg>
+                                </button>
+                                <button
+                                    class="btn green-btn"
+                                    @click="showCropModal = true"
+                                >
+                                    Crop Image
                                 </button>
                             </p>
                         </div>
@@ -495,6 +512,39 @@ export default {
                 </div>
             </div>
         </div>
+        <div v-if="showCropModal">
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <cropper
+                        :src="image"
+                        @change="cropImageChange"
+                        :stencil-props="{
+                            handlers: {},
+                            movable: false,
+                            resizable: false,
+                            aspectRatio: 1
+                        }"
+                        :resize-image="{
+                            adjustStencil: false
+                        }"
+                        image-restriction="stencil"
+                    />
+                    <button class="btn red-btn" @click="showCropModal = false">
+                        cancel
+                    </button>
+                    <button
+                        class="btn green-btn"
+                        @click="
+                            image = cropCanvas;
+                            showCropModal = false;
+                        "
+                    >
+                        ok
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -706,4 +756,42 @@ export default {
 }
 
 /* End of CSS style for Custom Select */
+
+/* Styling for crop modal */
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    /* Could be more or less, depending on screen size */
+}
+
+.modal-message {
+    font-size: 20px;
+    font-weight: 500;
+    color: #667085;
+}
 </style>
