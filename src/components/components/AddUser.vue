@@ -263,26 +263,26 @@ export default {
                                 <img
                                     :src="image"
                                     height="300"
+                                    width="300"
                                     style="background-color: lightgrey"
                                 />
                             </p>
-                            <p>
+                            <div class="d-flex flex-row gap-2">
                                 <button
                                     class="btn red-btn"
                                     @click="removeImage"
                                 >
-                                    Remove Image &nbsp;
+                                    Remove &nbsp;
                                     <!-- X icon -->
                                     <svg
-                                        width="14"
-                                        height="14"
-                                        viewBox="0 0 20 20"
-                                        fill="none"
                                         xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 448 512"
+                                        fill="white"
+                                        width="16"
+                                        height="16"
                                     >
                                         <path
-                                            d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
-                                            fill="white"
+                                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
                                         />
                                     </svg>
                                 </button>
@@ -290,9 +290,20 @@ export default {
                                     class="btn green-btn"
                                     @click="showCropModal = true"
                                 >
-                                    Crop Image
+                                    Crop &nbsp;
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 512 512"
+                                        width="18"
+                                        height="18"
+                                        fill="white"
+                                    >
+                                        <path
+                                            d="M448 109.3l54.6-54.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L402.7 64 160 64v64l178.7 0L128 338.7V32c0-17.7-14.3-32-32-32S64 14.3 64 32V64H32C14.3 64 0 78.3 0 96s14.3 32 32 32H64V384c0 35.3 28.7 64 64 64H352V384H173.3L384 173.3 384 480c0 17.7 14.3 32 32 32s32-14.3 32-32V448h32c17.7 0 32-14.3 32-32s-14.3-32-32-32H448l0-274.7z"
+                                        />
+                                    </svg>
                                 </button>
-                            </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -516,6 +527,8 @@ export default {
             <div id="myModal" class="modal">
                 <!-- Modal content -->
                 <div class="modal-content">
+                    <!-- Preview Crop Result -->
+                    <div id="crop-result"></div>
                     <cropper
                         :src="image"
                         @change="cropImageChange"
@@ -529,19 +542,47 @@ export default {
                             adjustStencil: false
                         }"
                         image-restriction="stencil"
+                        class="cropper"
                     />
-                    <button class="btn red-btn" @click="showCropModal = false">
-                        cancel
-                    </button>
-                    <button
-                        class="btn green-btn"
-                        @click="
-                            image = cropCanvas;
-                            showCropModal = false;
-                        "
-                    >
-                        ok
-                    </button>
+                    <div class="d-flex flex-row-reverse gap-2 mt-2">
+                        <button
+                            class="btn red-btn"
+                            @click="showCropModal = false"
+                        >
+                            Cancel &nbsp;
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                fill="white"
+                                width="16"
+                                height="16"
+                            >
+                                <path
+                                    d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"
+                                />
+                            </svg>
+                        </button>
+                        <button
+                            class="btn green-btn"
+                            @click="
+                                image = cropCanvas;
+                                showCropModal = false;
+                            "
+                        >
+                            Crop &nbsp;
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                fill="white"
+                                width="16"
+                                height="16"
+                            >
+                                <path
+                                    d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                                />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -774,7 +815,7 @@ export default {
     /* Full height */
     overflow: auto;
     /* Enable scroll if needed */
-    background-color: rgb(0, 0, 0);
+    background-color: rgba(255, 255, 255, 0.459);
     /* Fallback color */
     background-color: rgba(0, 0, 0, 0.4);
     /* Black w/ opacity */
@@ -782,16 +823,32 @@ export default {
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
+    margin: 5% auto;
     /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     /* Could be more or less, depending on screen size */
+    width: 80%;
+    height: 75%;
 }
 
 .modal-message {
     font-size: 20px;
     font-weight: 500;
     color: #667085;
+}
+
+/* Cropper Style */
+.cropper {
+    height: 75%;
+}
+
+.cropper :deep(.vue-advanced-cropper__background) {
+    background: white;
+}
+
+.cropper :deep(.vue-advanced-cropper__foreground) {
+    background: #667085;
+    border-radius: 12px;
 }
 </style>
