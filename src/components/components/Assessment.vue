@@ -42,7 +42,10 @@ export default {
             // flag for which modal to show
             passModal: false,
             failedModal: false,
-            waitForMarkModal: false
+            waitForMarkModal: false,
+            // the flag to determine whether the student update assessment
+            oldAssessment: undefined,
+            updatedAssessment: false
         };
     },
     mounted: function () {
@@ -72,6 +75,26 @@ export default {
         // Load the max quiz question number setting.
         if (this.settingsStore.quizMaxQuestions == null) {
             await this.settingsStore.getSettings();
+        }
+
+        /**
+         * We get assessment list every time the component is created
+         * to assure that if this assessment available at the time
+         */
+        await this.assessmentsStore.getAssessments();
+        const assessments = this.assessmentsStore.assessments;
+
+        // Get current user Details
+        const userDetails = await this.userDetailsStore.getUserDetails();
+
+        // find if student have an un-mark assessment for this skill
+        this.oldAssessment = assessments.find((assessment) => {
+            return assessment.student_id === userDetails.userId;
+        });
+
+        if (this.oldAssessment !== undefined) {
+            // turn the flag for updated on
+            this.updatedAssessment = true;
         }
 
         // Check skill type.
@@ -274,9 +297,15 @@ export default {
             } else {
                 // Deal with the essay questions.
 
+                let fetchMethod = 'POST';
+
+                if (this.oldAssessment !== undefined) {
+                    fetchMethod = 'PUT';
+                }
+
                 // create an unmarked assessment record
                 const requestOptions = {
-                    method: 'POST',
+                    method: fetchMethod,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         totalScore: this.totalNumOfQuestions,
@@ -361,6 +390,29 @@ export default {
     <div v-if="loading == true">Loading...</div>
 
     <div v-if="loading == false">
+        <!-- Show student a warning if their take this assessment before and still wait for marking -->
+        <div v-if="updatedAssessment">
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <div class="mb-2">
+                        You are taking a new assessment while your old
+                        assessment is still waiting to be marked. Please note
+                        that your old answer will be replaced with the new
+                        answer for this assessment.
+                    </div>
+                    <div class="d-flex flex-row-reverse">
+                        <button
+                            type="button"
+                            class="btn green-btn"
+                            @click="this.updatedAssessment = false"
+                        >
+                            OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div
             v-if="questions.length > 0"
             class="container mt-5 mb-3 p-3 pt-2 mb-3"
@@ -509,10 +561,10 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>
+                <div>
                     There is at least one question that needs to be marked
                     manually. Please check whether you passed later.
-                </p>
+                </div>
                 <div class="d-flex flex-row-reverse">
                     <button
                         type="button"
