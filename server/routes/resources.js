@@ -267,12 +267,12 @@ router.post('/generate-sources', (req, res, next) => {
                                     brokenLinkCount
                                 );
                             }
-                            loop(index, timeDelay, 1);
+                            loop(index, timeDelay, skillCount);
                         }, timeDelay);
                     }
                 }
 
-                loop(0, 500, 1);
+                loop(0, 500, skills.length);
 
                 function printFailState() {
                     console.log('Operation failed, check console for error.');
