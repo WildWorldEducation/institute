@@ -356,7 +356,6 @@ export default {
 <template>
     <!-- <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div v-if="loading == true">Loading...</div>
-
     <div v-if="loading == false">
         <div
             v-if="questions.length > 0"
