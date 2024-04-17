@@ -198,8 +198,10 @@ router.post('/generate-sources', (req, res, next) => {
         let skills;
         res.setHeader('Content-Type', 'application/json');
         // As we are posting sources for all skills, we get all skills.
-        let sqlQuery =
-            "SELECT * FROM skills WHERE type <> 'domain' ORDER BY id";
+        let sqlQuery = `SELECT * FROM skills 
+        WHERE type <> 'domain'
+        AND id > 526
+        ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -265,12 +267,12 @@ router.post('/generate-sources', (req, res, next) => {
                                     brokenLinkCount
                                 );
                             }
-                            loop(index, timeDelay, 1);
+                            loop(index, timeDelay, skillCount);
                         }, timeDelay);
                     }
                 }
 
-                loop(0, 500, 1);
+                loop(0, 500, skills.length);
 
                 function printFailState() {
                     console.log('Operation failed, check console for error.');
