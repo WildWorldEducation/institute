@@ -204,6 +204,7 @@ export default {
                 this.image = e.target.result;
                 this.user.avatar = this.image;
             };
+
             reader.readAsDataURL(file);
         },
         removeImage: function (e) {
@@ -212,6 +213,11 @@ export default {
         },
         cropImageChange({ coordinates, canvas }) {
             this.cropCanvas = canvas.toDataURL();
+        },
+        handleCropImage() {
+            this.user.avatar = this.cropCanvas;
+            this.image = this.cropCanvas;
+            this.showCropModal = false;
         }
     }
 };
@@ -572,13 +578,7 @@ export default {
                                 />
                             </svg>
                         </button>
-                        <button
-                            class="btn green-btn"
-                            @click="
-                                image = cropCanvas;
-                                showCropModal = false;
-                            "
-                        >
+                        <button class="btn green-btn" @click="handleCropImage">
                             Crop &nbsp;
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
