@@ -199,8 +199,7 @@ router.post('/generate-sources', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
-        WHERE type <> 'domain'
-        AND id > 526
+        WHERE type <> 'domain'      
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -222,57 +221,51 @@ router.post('/generate-sources', (req, res, next) => {
                     if (index < skillCount) {
                         index++;
                         setTimeout(() => {
-                            // code
-                            for (let j = 0; j < numOfSoucesRequired; j++) {
-                                let skillId = skills[index].id;
-                                // Replace underscore with space.
-                                let level = skills[index].level.replace(
-                                    /_/g,
-                                    ' '
-                                );
-                                let name = skills[index].name;
+                            // To try to prevent duplication from ChatGPT.
+                            let usedLinks = [];
 
-                                // Remove HTML formatting.
-                                let masteryRequirements = skills[
-                                    index
-                                ].mastery_requirements.replace(
-                                    /<[^>]*>?/gm,
-                                    ''
-                                );
-                                // console.log(masteryRequirements);
-
-                                let prompt =
-                                    `
+                            // Get the skill data.
+                            let skillId = skills[index].id;
+                            // Replace underscore with space.
+                            let level = skills[index].level.replace(/_/g, ' ');
+                            let name = skills[index].name;
+                            // Remove HTML formatting.
+                            let masteryRequirements = skills[
+                                index
+                            ].mastery_requirements.replace(/<[^>]*>?/gm, '');
+                            let prompt =
+                                `
                                 I am a ` +
-                                    level +
-                                    ` student.
+                                level +
+                                ` student.
                                     Please provide me with a JSON object containing a URL link, named "url",
                                     with site/page/subject name, named "name", so I can learn more about ` +
-                                    name +
-                                    `, as described by this text: ` +
-                                    masteryRequirements +
-                                    `. The link should be for an article, worksheets, game, video or other educational resource.
+                                name +
+                                `, as described by this text: ` +
+                                masteryRequirements +
+                                `. The link should be for an article, worksheets, game, video or other educational resource.
                                         Please do not provide Youtube videos.`;
 
-                                // To try to prevent duplication from ChatGPT.
-                                let usedLinks = [];
-                                // For dev to check if wasting too many ChatGPT tokens.
-                                let brokenLinkCount = 0;
+                            // For dev to check if wasting too many ChatGPT tokens.
+                            let brokenLinkCount = 0;
 
-                                getSource(
-                                    userId,
-                                    skillId,
-                                    prompt,
-                                    usedLinks,
-                                    brokenLinkCount
-                                );
-                            }
+                            getSource(
+                                userId,
+                                skillId,
+                                prompt,
+                                usedLinks,
+                                brokenLinkCount,
+                                numOfSoucesRequired
+                            );
+
+                            // Next skill.
                             loop(index, timeDelay, skillCount);
                         }, timeDelay);
                     }
                 }
 
-                loop(0, 500, skills.length);
+                //loop(0, 500, skills.length);
+                loop(0, 2000, 5);
 
                 function printFailState() {
                     console.log('Operation failed, check console for error.');
@@ -284,7 +277,15 @@ router.post('/generate-sources', (req, res, next) => {
     }
 });
 // Get source from ChatGPT.
-async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
+async function getSource(
+    userId,
+    skillId,
+    prompt,
+    usedLinks,
+    brokenLinkCount,
+    numOfSoucesRequired
+) {
+    console.log(numOfSoucesRequired);
     // Attempting to prevent the app from crashing if anythign goes wrong with the API call.
     try {
         console.log('Get source: ' + skillId);
@@ -296,7 +297,7 @@ async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
                     content:
                         prompt +
                         ` Please respond with a JSON object.
-                Do not provide any of the following links: ` +
+                Do not provide any of the following URLs: ` +
                         usedLinks
                 }
             ],
@@ -315,7 +316,8 @@ async function getSource(userId, skillId, prompt, usedLinks, brokenLinkCount) {
             prompt,
             responseObj,
             usedLinks,
-            brokenLinkCount
+            brokenLinkCount,
+            numOfSoucesRequired
         );
     } catch (err) {
         // Variable to stop the loop through the skills.
@@ -333,8 +335,24 @@ async function checkSources(
     prompt,
     responseObj,
     usedLinks,
-    brokenLinkCount
+    brokenLinkCount,
+    numOfSoucesRequired
 ) {
+    console.log(usedLinks);
+
+    if (usedLinks.includes(responseObj.url)) {
+        console.log('Duplicate link: ' + responseObj.url + '.');
+        // Get another source.
+        getSource(
+            userId,
+            skillId,
+            prompt,
+            usedLinks,
+            brokenLinkCount,
+            numOfSoucesRequired
+        );
+        return;
+    }
     // Make this synchronous
     // so as to not waste tokens on duplicates,
     // and more importantly, prevent ChatGPT API from crashing due to being overwhelmed.
@@ -349,7 +367,15 @@ async function checkSources(
         usedLinks.push(responseObj.url);
         if (exists) {
             // Add to database.
-            addSource(userId, skillId, responseObj);
+            addSource(
+                userId,
+                skillId,
+                responseObj,
+                prompt,
+                usedLinks,
+                brokenLinkCount,
+                numOfSoucesRequired
+            );
         } else {
             brokenLinkCount++;
             console.log(
@@ -359,13 +385,28 @@ async function checkSources(
                     brokenLinkCount
             );
             // Get another source.
-            getSource(userId, skillId, prompt, usedLinks, brokenLinkCount);
+            getSource(
+                userId,
+                skillId,
+                prompt,
+                usedLinks,
+                brokenLinkCount,
+                numOfSoucesRequired
+            );
         }
     });
 }
 
 // Add to DB.
-async function addSource(userId, skillId, responseObj) {
+async function addSource(
+    userId,
+    skillId,
+    responseObj,
+    prompt,
+    usedLinks,
+    brokenLinkCount,
+    numOfSoucesRequired
+) {
     // Create source.
     let link =
         '<p><a href="' +
@@ -387,6 +428,17 @@ async function addSource(userId, skillId, responseObj) {
                 throw err;
             } else {
                 console.log('Added skill id: ' + skillId);
+                numOfSoucesRequired--;
+                if (numOfSoucesRequired > 0) {
+                    getSource(
+                        userId,
+                        skillId,
+                        prompt,
+                        usedLinks,
+                        brokenLinkCount,
+                        numOfSoucesRequired
+                    );
+                }
             }
         } catch (err) {
             next(err);
