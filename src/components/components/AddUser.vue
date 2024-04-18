@@ -526,25 +526,35 @@ export default {
         <div v-if="showCropModal">
             <div id="myModal" class="modal">
                 <!-- Modal content -->
-                <div class="modal-content">
-                    <!-- Preview Crop Result -->
-                    <div id="crop-result"></div>
-                    <cropper
-                        :src="image"
-                        @change="cropImageChange"
-                        :stencil-props="{
-                            handlers: {},
-                            movable: false,
-                            resizable: false,
-                            aspectRatio: 1
-                        }"
-                        :resize-image="{
-                            adjustStencil: false
-                        }"
-                        image-restriction="stencil"
-                        class="cropper"
-                    />
-                    <div class="d-flex flex-row-reverse gap-2 mt-2">
+                <div class="modal-content d-flex flex-column">
+                    <div id="crop-component">
+                        <cropper
+                            :src="image"
+                            @change="cropImageChange"
+                            :stencil-props="{
+                                handlers: {},
+                                movable: false,
+                                resizable: false,
+                                aspectRatio: 1
+                            }"
+                            :resize-image="{
+                                adjustStencil: false
+                            }"
+                            image-restriction="stencil"
+                            class="cropper"
+                        />
+                        <!-- Preview Crop Result -->
+                        <div id="crop-result">
+                            <div class="form-label">Result:</div>
+                            <img
+                                :src="cropCanvas"
+                                alt="preview Image"
+                                width="100"
+                                height="100"
+                            />
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row-reverse gap-2 mt-5">
                         <button
                             class="btn red-btn"
                             @click="showCropModal = false"
@@ -839,16 +849,33 @@ export default {
 }
 
 /* Cropper Style */
-.cropper {
-    height: 75%;
+#crop-component {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .cropper :deep(.vue-advanced-cropper__background) {
     background: white;
+    z-index: 0;
 }
 
 .cropper :deep(.vue-advanced-cropper__foreground) {
     background: #667085;
+    z-index: 0;
     border-radius: 12px;
+}
+
+#crop-result {
+    top: 10px;
+    right: 10px;
+    position: absolute;
+    z-index: 10 !important;
+}
+
+.cropper {
+    position: absolute;
+    top: 10px;
+    z-index: 0;
 }
 </style>
