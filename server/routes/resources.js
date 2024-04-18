@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //  password: 'password',
+    // password: 'password',
     database: 'skill_tree'
 });
 
@@ -198,8 +198,10 @@ router.post('/generate-sources', (req, res, next) => {
         let skills;
         res.setHeader('Content-Type', 'application/json');
         // As we are posting sources for all skills, we get all skills.
-        let sqlQuery =
-            "SELECT * FROM skills WHERE type <> 'domain' ORDER BY id";
+        let sqlQuery = `SELECT * FROM skills 
+        WHERE type <> 'domain'
+        AND id > 526
+        ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -237,7 +239,7 @@ router.post('/generate-sources', (req, res, next) => {
                                     /<[^>]*>?/gm,
                                     ''
                                 );
-                                console.log(masteryRequirements);
+                                // console.log(masteryRequirements);
 
                                 let prompt =
                                     `
@@ -257,15 +259,15 @@ router.post('/generate-sources', (req, res, next) => {
                                 // For dev to check if wasting too many ChatGPT tokens.
                                 let brokenLinkCount = 0;
 
-                                // getSource(
-                                //     userId,
-                                //     skillId,
-                                //     prompt,
-                                //     usedLinks,
-                                //     brokenLinkCount
-                                // );
+                                getSource(
+                                    userId,
+                                    skillId,
+                                    prompt,
+                                    usedLinks,
+                                    brokenLinkCount
+                                );
                             }
-                            loop(index, timeDelay, 1);
+                            loop(index, timeDelay, skillCount);
                         }, timeDelay);
                     }
                 }
