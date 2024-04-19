@@ -829,5 +829,5 @@ export default {
     width: 100%;
     height: 100%;
 }
-/* End of CSS style for Custom Select */
+/* End of CSS Cropping style  */
 </style>
