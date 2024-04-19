@@ -210,8 +210,8 @@ router.post('/generate-sources', (req, res, next) => {
                     throw err;
                 }
                 skills = results;
-                //skillsLength = skills.length;
-                skillsLength = 5;
+                skillsLength = skills.length;
+                // skillsLength = 5;
 
                 // User input number of sources per skill required.
                 numSourcesRequired = req.body.numSources;
