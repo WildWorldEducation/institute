@@ -211,24 +211,11 @@ router.post('/generate-sources', (req, res, next) => {
                 }
                 skills = results;
                 //skillsLength = skills.length;
-                skillsLength = 2;
+                skillsLength = 5;
 
                 // User input number of sources per skill required.
                 numSourcesRequired = req.body.numSources;
                 numSourcesForSkillRemaining = numSourcesRequired;
-                // Go through all skills that are not domains.
-                // Using a recursive function, rather than a regular for loop,
-                // So that it can break if error detected.
-                //                function loop(index, timeDelay, skillCount) {
-                // Error handling. Break the loop if some problem with ChatGPT (eg no funds).
-                // if (breakLoop == true) {
-                //     printFailState();
-                //     return;
-                // }
-                //if (index < skillCount) {
-                //  index++;
-                //   setTimeout(() => {
-                // To try to prevent duplication from ChatGPT.
                 let index = 0;
                 let usedLinks = [];
 
@@ -241,19 +228,6 @@ router.post('/generate-sources', (req, res, next) => {
                     index,
                     numSourcesForSkillRemaining
                 );
-
-                // Next skill.
-                //  loop(index, timeDelay, skillCount);
-                //    }, timeDelay);
-                //   }
-                //  }
-
-                //loop(0, 500, skills.length);
-                //   loop(0, 2000, 2);
-
-                // function printFailState() {
-                //     console.log('Operation failed, check console for error.');
-                // }
             } catch (err) {
                 next(err);
             }
@@ -340,8 +314,6 @@ async function checkSources(
     index,
     numSourcesForSkillRemaining
 ) {
-    //console.log(usedLinks);
-
     if (usedLinks.includes(responseObj.url)) {
         console.log('Duplicate link: ' + responseObj.url + '.');
         // Get another source.
@@ -376,12 +348,6 @@ async function checkSources(
             );
         } else {
             brokenLinkCount++;
-            // console.log(
-            //     'Broken link: ' +
-            //         responseObj.url +
-            //         '. Num of broken links from ChatGPT (tokens wasted): ' +
-            //         brokenLinkCount
-            // );
             // Get another source.
             getSource(
                 usedLinks,
@@ -441,7 +407,8 @@ async function addSource(
                         numSourcesForSkillRemaining
                     );
                 } else {
-                    //end
+                    //end.
+                    console.log('All sources created.');
                 }
             }
         } catch (err) {
