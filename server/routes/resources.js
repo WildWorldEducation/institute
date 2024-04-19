@@ -216,12 +216,14 @@ router.post('/generate-sources', (req, res, next) => {
                 // User input number of sources per skill required.
                 numSourcesRequired = req.body.numSources;
                 numSourcesForSkillRemaining = numSourcesRequired;
+                // For going through all skills.
                 let index = 0;
+                // To prevent duplication of links.
                 let usedLinks = [];
-
                 // For dev to check if wasting too many ChatGPT tokens.
                 let brokenLinkCount = 0;
 
+                // We go through all skills sequencially, one at a time.
                 getSource(
                     usedLinks,
                     brokenLinkCount,
@@ -241,15 +243,16 @@ async function getSource(
     index,
     numSourcesForSkillRemaining
 ) {
-    // Get the skill data.
+    // Get the skill data.-----
     // Replace underscore with space.
     let level = skills[index].level.replace(/_/g, ' ');
     let name = skills[index].name;
-    // Remove HTML formatting.
+    // Remove HTML formatting from mastery requirements.
     let masteryRequirements = skills[index].mastery_requirements.replace(
         /<[^>]*>?/gm,
         ''
     );
+    // Create prompt for ChatGPT.
     let prompt =
         `
                    I am a ` +
@@ -263,7 +266,8 @@ async function getSource(
         `. The link should be for an article, worksheets, game, video or other educational resource.
                            Please do not provide Youtube videos.`;
 
-    // Attempting to prevent the app from crashing if anythign goes wrong with the API call.
+    // Attempting to prevent the app from crashing if anything goes wrong with the API call.
+    // ie, error handling.
     try {
         console.log('Get source: ' + name);
         console.log(
@@ -305,7 +309,8 @@ async function getSource(
     }
 }
 
-// Check if the source link actually exists.
+// Check if the source link actually exists,
+// and has not been hallucinated by ChatGPT.
 const urlExists = require('url-exists');
 async function checkSources(
     responseObj,
@@ -390,6 +395,7 @@ async function addSource(
             } else {
                 console.log('Added skill id: ' + skillId);
                 numSourcesForSkillRemaining--;
+                // Get next source for same skill.
                 if (numSourcesForSkillRemaining > 0) {
                     getSource(
                         usedLinks,
@@ -397,7 +403,9 @@ async function addSource(
                         index,
                         numSourcesForSkillRemaining
                     );
-                } else if (index < skillsLength - 1) {
+                }
+                // Get first source for next skill.
+                else if (index < skillsLength - 1) {
                     numSourcesForSkillRemaining = numSourcesRequired;
                     index++;
                     getSource(
@@ -406,7 +414,9 @@ async function addSource(
                         index,
                         numSourcesForSkillRemaining
                     );
-                } else {
+                }
+                // When all finished.
+                else {
                     //end.
                     console.log('All sources created.');
                 }
