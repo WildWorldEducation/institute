@@ -113,6 +113,7 @@ export default {
                 this.skill.name = node.data.skill_name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
+                this.skill.masteryRequirements = node.data.mastery_requirements;
                 this.showInfoPanel();
             }
         });
@@ -850,7 +851,7 @@ input[type='button'] {
 
 #skilltree {
     width: 100%;
-    height: 100%;   
+    height: 100%;
     /* This is for the positioning of the information panel. */
     position: relative;
     background-color: white;
