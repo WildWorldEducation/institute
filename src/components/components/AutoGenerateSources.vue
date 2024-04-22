@@ -47,7 +47,7 @@ export default {
                     Generate Sources
                 </button>
                 <p style="font-size: 14px">
-                    <em>Warning, this costs around or over $15 each time.</em>
+                    <em>Warning, this can cost a lot each time.</em>
                 </p>
             </div>
         </div>
