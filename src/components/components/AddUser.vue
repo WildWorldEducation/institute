@@ -7,6 +7,7 @@ import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { Cropper } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
+import 'vue-advanced-cropper/dist/theme.compact.css';
 
 export default {
     setup() {
@@ -44,7 +45,9 @@ export default {
                 last_name: false,
                 email: false,
                 emailFormat: false,
-                password: false
+                password: false,
+                // this validate is fire when image profile upload is not square
+                notSquareImg: false
             },
             // Flag and data of crop image component
             showCropModal: false,
@@ -195,14 +198,23 @@ export default {
             this.createImage(files[0]);
         },
         createImage(file) {
-            var image = new Image();
+            var imageFile = new Image();
             var reader = new FileReader();
             var vm = this;
 
             reader.onload = (e) => {
                 vm.image = e.target.result;
                 this.image = e.target.result;
+                imageFile.src = e.target.result;
                 this.user.avatar = this.image;
+            };
+
+            imageFile.onload = () => {
+                if (imageFile.width / imageFile.height !== 1) {
+                    this.validate.notSquareImg = true;
+                } else {
+                    this.validate.notSquareImg = false;
+                }
             };
 
             reader.readAsDataURL(file);
@@ -215,9 +227,22 @@ export default {
             this.cropCanvas = canvas.toDataURL();
         },
         handleCropImage() {
+            var imageFile = new Image();
+            imageFile.src = this.cropCanvas;
             this.user.avatar = this.cropCanvas;
             this.image = this.cropCanvas;
             this.showCropModal = false;
+            // turn off the validate because we alway crop a spare img
+            this.validate.notSquareImg = false;
+        },
+        stencilSize({ boundaries }) {
+            return {
+                width: Math.min(boundaries.height, boundaries.width) - 48,
+                height: Math.min(boundaries.height, boundaries.width) - 48
+            };
+        },
+        handlePhoneCropper() {
+            this.$refs.cropper.zoom(2.5);
         }
     }
 };
@@ -272,6 +297,17 @@ export default {
                                     width="300"
                                     style="background-color: lightgrey"
                                 />
+                            </p>
+                            <p
+                                v-if="validate.notSquareImg"
+                                style="font-size: 14px"
+                            >
+                                <em id="warning-text">
+                                    Your profile picture is not in 1:1 aspect
+                                    ratio. Please be aware that it may not
+                                    display correctly. It is recommended that
+                                    you crop the image.
+                                </em>
                             </p>
                             <div class="d-flex flex-row gap-2">
                                 <button
@@ -534,20 +570,39 @@ export default {
                 <!-- Modal content -->
                 <div class="modal-content d-flex flex-column">
                     <div id="crop-component">
+                        <!-- This Cropper  Is For  Desktop view -->
                         <cropper
                             :src="image"
                             @change="cropImageChange"
                             :stencil-props="{
-                                handlers: {},
-                                movable: false,
-                                resizable: false,
+                                movable: true,
+                                resizable: true,
                                 aspectRatio: 1
                             }"
                             :resize-image="{
                                 adjustStencil: false
                             }"
                             image-restriction="stencil"
-                            class="cropper"
+                            class="cropper d-lg-block d-none"
+                            ref="cropper  "
+                        />
+                        <!-- This Cropper Is For Phone  View -->
+                        <cropper
+                            :src="image"
+                            @change="cropImageChange"
+                            @ready="handlePhoneCropper"
+                            :stencil-props="{
+                                movable: true,
+                                resizable: true,
+                                aspectRatio: 1
+                            }"
+                            :resize-image="{
+                                adjustStencil: false
+                            }"
+                            :stencil-size="stencilSize"
+                            image-restriction="stencil"
+                            class="cropper d-lg-none"
+                            ref="cropper"
                         />
                         <!-- Preview Crop Result -->
                         <div id="crop-result">
@@ -858,12 +913,16 @@ export default {
 .cropper :deep(.vue-advanced-cropper__background) {
     background: white;
     z-index: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .cropper :deep(.vue-advanced-cropper__foreground) {
     background: #667085;
     z-index: 0;
     border-radius: 12px;
+    width: 100%;
+    height: 100%;
 }
 
 #crop-result {
@@ -877,5 +936,28 @@ export default {
     position: absolute;
     top: 10px;
     z-index: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#warning-text {
+    color: rgb(160, 28, 28);
+}
+/* ======== End Of Desktop Styling =========*/
+
+/* Mobile */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 100%;
+        height: 100%;
+        padding: 3px;
+        margin: 0% auto;
+        background-color: white;
+    }
+    .cropper {
+        position: static;
+
+        width: 100%;
+    }
 }
 </style>
