@@ -242,7 +242,7 @@ export default {
             };
         },
         handlePhoneCropper() {
-            this.$refs.cropper.zoom(2.5);
+            this.$refs.cropper.zoom(2);
         }
     }
 };
@@ -956,7 +956,7 @@ export default {
     }
     .cropper {
         position: static;
-
+        height: 90%;
         width: 100%;
     }
 }
