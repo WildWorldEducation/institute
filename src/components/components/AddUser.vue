@@ -6,6 +6,7 @@ import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { Cropper } from 'vue-advanced-cropper';
+
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
 
@@ -22,6 +23,7 @@ export default {
             userSkillsStore
         };
     },
+
     data() {
         return {
             user: { role: 'student' },
@@ -242,7 +244,16 @@ export default {
             };
         },
         handlePhoneCropper() {
-            this.$refs.cropper.zoom(2);
+            const cropperHeight = this.$refs.cropComponent.clientHeight;
+            const { visibleArea } = this.$refs.cropper.getResult();
+            /**
+             * We want to zoom the image on phone view so it will cover
+             * all the cropper height
+             */
+            const zoomValue = visibleArea.height / cropperHeight;
+
+            // Zoom the image if the cropper is open on phone view
+            this.$refs.cropper.zoom(zoomValue);
         }
     }
 };
@@ -569,7 +580,7 @@ export default {
             <div id="myModal" class="modal">
                 <!-- Modal content -->
                 <div class="modal-content d-flex flex-column">
-                    <div id="crop-component">
+                    <div id="crop-component" ref="cropComponent">
                         <!-- This Cropper  Is For  Desktop view -->
                         <cropper
                             :src="image"
@@ -585,6 +596,7 @@ export default {
                             image-restriction="stencil"
                             class="cropper d-lg-block d-none"
                             ref="cropper  "
+                            minHeight="30"
                         />
                         <!-- This Cropper Is For Phone  View -->
                         <cropper
@@ -596,10 +608,6 @@ export default {
                                 resizable: true,
                                 aspectRatio: 1
                             }"
-                            :resize-image="{
-                                adjustStencil: false
-                            }"
-                            :stencil-size="stencilSize"
                             image-restriction="stencil"
                             class="cropper d-lg-none"
                             ref="cropper"
@@ -615,12 +623,18 @@ export default {
                             />
                         </div>
                     </div>
-                    <div class="d-flex flex-row-reverse gap-2 mt-5">
+                    <!-- Zoom Range Input -->
+
+                    <div
+                        class="d-flex flex-lg-row-reverse flex-row justify-content-between justify-content-lg-end gap-2 mt-5 pb-2 pb-lg-0"
+                    >
                         <button
                             class="btn red-btn"
                             @click="showCropModal = false"
                         >
-                            Cancel &nbsp;
+                            <span class="d-none d-lg-block">
+                                Cancel &nbsp;
+                            </span>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
@@ -634,7 +648,7 @@ export default {
                             </svg>
                         </button>
                         <button class="btn green-btn" @click="handleCropImage">
-                            Crop &nbsp;
+                            <span class="d-none d-lg-block"> Crop &nbsp; </span>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
@@ -938,6 +952,7 @@ export default {
     z-index: 0;
     width: 100%;
     height: 100%;
+    border-radius: 12px;
 }
 
 #warning-text {
@@ -958,6 +973,10 @@ export default {
         position: static;
         height: 90%;
         width: 100%;
+    }
+
+    .cropper :deep(.vue-advanced-cropper__foreground) {
+        background: white;
     }
 }
 </style>
