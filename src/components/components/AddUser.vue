@@ -244,13 +244,14 @@ export default {
             };
         },
         handlePhoneCropper() {
-            const cropperHeight = this.$refs.cropComponent.clientHeight;
-            const { visibleArea } = this.$refs.cropper.getResult();
+            const { visibleArea, image } = this.$refs.cropper.getResult();
             /**
              * We want to zoom the image on phone view so it will cover
              * all the cropper height
              */
-            const zoomValue = visibleArea.height / cropperHeight;
+            console.log(visibleArea);
+            const zoomValue = visibleArea.height / image.height;
+            console.log(zoomValue);
 
             // Zoom the image if the cropper is open on phone view
             this.$refs.cropper.zoom(zoomValue);
@@ -611,6 +612,7 @@ export default {
                             image-restriction="stencil"
                             class="cropper d-lg-none"
                             ref="cropper"
+                            minHeight="30"
                         />
                         <!-- Preview Crop Result -->
                         <div id="crop-result">
