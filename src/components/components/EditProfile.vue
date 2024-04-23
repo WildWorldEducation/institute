@@ -2,6 +2,8 @@
 import router from '../../router';
 // Import the stores.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
 
 export default {
     setup() {
@@ -27,8 +29,14 @@ export default {
                 email: false,
                 emailFormat: false,
                 password: false
-            }
+            },
+            // Flag and data of crop image component
+            showCropModal: false,
+            cropCanvas: ''
         };
+    },
+    components: {
+        Cropper
     },
     computed: {},
     methods: {
@@ -106,6 +114,14 @@ export default {
         openImage() {
             const input = document.getElementById('image-input');
             input.click();
+        },
+        cropImageChange({ coordinates, canvas }) {
+            this.cropCanvas = canvas.toDataURL();
+        },
+        handleCropImage() {
+            this.avatar = this.cropCanvas;
+            this.image = this.cropCanvas;
+            this.showCropModal = false;
         }
     }
 };
@@ -126,10 +142,14 @@ export default {
                             class="position-relative"
                             style="width: fit-content"
                         >
+                            <!-- ** The Plus Icon ** -->
+                            <!-- desktop view -->
                             <div
                                 id="plus-svg"
                                 @click="openImage()"
                                 class="d-none d-lg-block"
+                                b-tooltip.hover
+                                title="add another image"
                             >
                                 <!-- The plus Icon On Top Of the avatar -->
                                 <svg
@@ -164,10 +184,13 @@ export default {
                                     </defs>
                                 </svg>
                             </div>
+                            <!-- phone view -->
                             <div
                                 id="plus-svg"
                                 @click="openImage()"
                                 class="d-lg-none"
+                                b-tooltip.hover
+                                title="add another image"
                             >
                                 <!-- The plus Icon On Top Of the avatar -->
                                 <svg
@@ -202,10 +225,52 @@ export default {
                                     </defs>
                                 </svg>
                             </div>
+                            <!-- ** The Crop Icon -->
+                            <!-- desktop view -->
+                            <div
+                                id="crop-icon"
+                                b-tooltip.hover
+                                title="crop image"
+                                class="d-none d-lg-block"
+                                @click="showCropModal = true"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="35"
+                                    height="35"
+                                    fill="white"
+                                >
+                                    <path
+                                        d="M128 32c0-17.7-14.3-32-32-32S64 14.3 64 32V64H32C14.3 64 0 78.3 0 96s14.3 32 32 32H64V384c0 35.3 28.7 64 64 64H352V384H128V32zM384 480c0 17.7 14.3 32 32 32s32-14.3 32-32V448h32c17.7 0 32-14.3 32-32s-14.3-32-32-32H448l0-256c0-35.3-28.7-64-64-64L160 64v64l224 0 0 352z"
+                                    />
+                                </svg>
+                            </div>
+                            <!-- phone view -->
+                            <div
+                                id="crop-icon"
+                                b-tooltip.hover
+                                title="crop image"
+                                class="d-lg-none"
+                                @click="showCropModal = true"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="28"
+                                    height="28"
+                                    fill="white"
+                                >
+                                    <path
+                                        d="M128 32c0-17.7-14.3-32-32-32S64 14.3 64 32V64H32C14.3 64 0 78.3 0 96s14.3 32 32 32H64V384c0 35.3 28.7 64 64 64H352V384H128V32zM384 480c0 17.7 14.3 32 32 32s32-14.3 32-32V448h32c17.7 0 32-14.3 32-32s-14.3-32-32-32H448l0-256c0-35.3-28.7-64-64-64L160 64v64l224 0 0 352z"
+                                    />
+                                </svg>
+                            </div>
                             <img
                                 id="img-background"
                                 :src="avatar"
                                 height="428"
+                                width="428"
                                 style="background-color: lightgrey"
                                 class="d-none d-lg-block"
                             />
@@ -213,6 +278,7 @@ export default {
                                 id="img-background"
                                 :src="avatar"
                                 height="240"
+                                width="240"
                                 style="background-color: lightgrey"
                                 class="d-lg-none"
                             />
@@ -335,6 +401,70 @@ export default {
             </div>
         </div>
     </div>
+    <div v-if="showCropModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content d-flex flex-column">
+                <div id="crop-component">
+                    <cropper
+                        :src="avatar"
+                        @change="cropImageChange"
+                        :stencil-props="{
+                            handlers: {},
+                            movable: false,
+                            resizable: false,
+                            aspectRatio: 1
+                        }"
+                        :resize-image="{
+                            adjustStencil: false
+                        }"
+                        image-restriction="stencil"
+                        class="cropper"
+                    />
+                    <!-- Preview Crop Result -->
+                    <div id="crop-result">
+                        <div class="form-label">Result:</div>
+                        <img
+                            :src="cropCanvas"
+                            alt="preview Image"
+                            width="100"
+                            height="100"
+                        />
+                    </div>
+                </div>
+                <div class="d-flex flex-row-reverse gap-2 mt-5">
+                    <button class="btn red-btn" @click="showCropModal = false">
+                        Cancel &nbsp;
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="white"
+                            width="16"
+                            height="16"
+                        >
+                            <path
+                                d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"
+                            />
+                        </svg>
+                    </button>
+                    <button class="btn green-btn" @click="handleCropImage">
+                        Crop &nbsp;
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="white"
+                            width="16"
+                            height="16"
+                        >
+                            <path
+                                d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -344,6 +474,19 @@ export default {
     top: 15px;
 }
 #plus-svg:hover {
+    cursor: pointer;
+}
+
+#crop-icon {
+    position: absolute;
+    right: 15px;
+    top: 80px;
+    background-color: #d9d9d9;
+    border-radius: 50px;
+    padding: 10px;
+}
+
+#crop-icon:hover {
     cursor: pointer;
 }
 
@@ -377,6 +520,24 @@ export default {
 
 .purple-btn:hover {
     background-color: #9a7ceb;
+}
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    height: auto;
+    width: fit-content;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
 }
 
 #img-background {
@@ -538,6 +699,78 @@ export default {
     animation-name: s-ripple-dup;
 }
 /* End of check box styling */
+
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgba(255, 255, 255, 0.459);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    /* Could be more or less, depending on screen size */
+    width: 80%;
+    height: 75%;
+}
+
+.modal-message {
+    font-size: 20px;
+    font-weight: 500;
+    color: #667085;
+}
+
+/* Cropper Style */
+#crop-component {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cropper :deep(.vue-advanced-cropper__background) {
+    background: white;
+    z-index: 0;
+}
+
+.cropper :deep(.vue-advanced-cropper__foreground) {
+    background: #667085;
+    z-index: 0;
+    border-radius: 12px;
+}
+
+#crop-result {
+    top: 10px;
+    right: 10px;
+    position: absolute;
+    z-index: 10 !important;
+}
+
+.cropper {
+    position: absolute;
+    top: 10px;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+}
+
 /* Mobile */
 @media (max-width: 480px) {
     #page-tile {
@@ -551,6 +784,23 @@ export default {
         position: absolute;
         right: 10px;
         top: 10px;
+    }
+
+    #crop-icon {
+        position: absolute;
+        right: 8px;
+        top: 60px;
+        background-color: #d9d9d9;
+        border-radius: 50px;
+        padding: 8px;
+    }
+}
+
+/** Tablet */
+@media (min-width: 481px) and (max-width: 991px) {
+    #crop-icon {
+        top: 63px;
+        padding: 7px;
     }
 }
 </style>
