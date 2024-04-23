@@ -204,7 +204,7 @@ router.post('/generate-sources', (req, res, next) => {
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'      
         AND id < 212
-        AND id > 106
+        AND id > 129
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
