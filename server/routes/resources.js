@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -203,6 +203,9 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'      
+        AND id < 95
+        AND id > 53
+        
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -319,6 +322,7 @@ async function checkSources(
     index,
     numSourcesForSkillRemaining
 ) {
+    // Check if link has already been used.
     if (usedLinks.includes(responseObj.url)) {
         console.log('Duplicate link: ' + responseObj.url + '.');
         // Get another source.
@@ -353,6 +357,7 @@ async function checkSources(
             );
         } else {
             brokenLinkCount++;
+            console.log('Broken links: ' + brokenLinkCount);
             // Get another source.
             getSource(
                 usedLinks,
@@ -408,6 +413,8 @@ async function addSource(
                 else if (index < skillsLength - 1) {
                     numSourcesForSkillRemaining = numSourcesRequired;
                     index++;
+                    // Clear these for the next skill.
+                    usedLinks = [];
                     getSource(
                         usedLinks,
                         brokenLinkCount,
