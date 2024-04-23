@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    //password: 'password',
     database: 'skill_tree'
 });
 

@@ -113,6 +113,7 @@ export default {
                 this.skill.name = node.data.skill_name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
+                this.skill.masteryRequirements = node.data.mastery_requirements;
                 this.showInfoPanel();
             }
         });
@@ -666,19 +667,12 @@ export default {
             );
             this.$refs.sliderControl.showScaleLabel();
         },
-        // programmatic d3 panning
-        panInD3(panX, panY) {
-            /*
-                 because we divide scale to handle mouse drag so we have to
-                 multiply the pan value with scale here in order to cancel out the divide
-            */
-            const smallPanX = this.scale >= 1 ? panX : panX * this.scale;
-            const smallPanY = this.scale >= 1 ? panY : panY * this.scale;
-
+        // Pan with arrow keys and joystick.
+        panInD3() {
             d3.select(this.context.canvas).call(
                 this.d3Zoom.transform,
                 d3.zoomIdentity
-                    .translate(smallPanX, smallPanY)
+                    .translate(this.panX, this.panY)
                     .scale(this.scale)
             );
         }
@@ -850,7 +844,7 @@ input[type='button'] {
 
 #skilltree {
     width: 100%;
-    height: 100%;   
+    height: 100%;
     /* This is for the positioning of the information panel. */
     position: relative;
     background-color: white;
