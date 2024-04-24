@@ -5,6 +5,7 @@ import BulkQuestionsUpload from '../components/BulkQuestionsUpload.vue';
 import AutoGenerateSources from '../components/AutoGenerateSources.vue';
 // Import the store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { RouterLink } from 'vue-router';
 
 export default {
     setup() {
@@ -34,6 +35,9 @@ export default {
     <Settings v-if="userDetailsStore.role == 'admin'" />
     <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
     <AutoGenerateSources v-if="userDetailsStore.role == 'admin'" />
+    <section>
+        <router-link to="/content-errors">Content Errors</router-link>
+    </section>
 </template>
 
 <style></style>
