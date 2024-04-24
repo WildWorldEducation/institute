@@ -204,7 +204,7 @@ router.post('/generate-sources', (req, res, next) => {
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'      
         AND id < 212
-        AND id > 129
+        AND id > 130
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -288,6 +288,7 @@ async function getSource(
                         usedLinks
                 }
             ],
+            //model: 'gpt-3.5-turbo-0125',
             model: 'gpt-4-turbo',
             response_format: { type: 'json_object' }
         });
