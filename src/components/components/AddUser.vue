@@ -261,8 +261,17 @@ export default {
                 this.$refs.cropper.zoom(this.zoomValue);
             }
         },
-        cropperProgrammaticZoom() {
-            this.$refs.cropper.zoom(this.zoomValue);
+        cropperZoomIn() {
+            const visibleHeight = this.$refs.cropper.visibleArea.height;
+            if (visibleHeight > 30) {
+                this.$refs.cropper.zoom(2);
+            }
+        },
+        cropperZoomOut() {
+            const visibleHeight = this.$refs.cropper.visibleArea.height;
+            if (visibleHeight < 3000) {
+                this.$refs.cropper.zoom(0.5);
+            }
         }
     }
 };
@@ -602,7 +611,6 @@ export default {
                             image-restriction="stencil"
                             class="cropper"
                             ref="cropper"
-                            minHeight="30"
                         />
                         <!-- Preview Crop Result -->
                         <div id="crop-result">
@@ -617,7 +625,10 @@ export default {
                     </div>
                     <!-- Programmatic Zoom -->
                     <div id="zoom-range">
-                        <span class="mt-1 me-1">
+                        <span
+                            class="mt-1 me-1 zoom-icon"
+                            @click="cropperZoomOut"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
@@ -631,7 +642,10 @@ export default {
                             </svg>
                         </span>
 
-                        <span class="mt-1 ms-1">
+                        <span
+                            class="mt-1 ms-1 zoom-icon"
+                            @click="cropperZoomIn"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
@@ -988,6 +1002,10 @@ export default {
 
 #warning-text {
     color: rgb(160, 28, 28);
+}
+
+.zoom-icon:hover {
+    cursor: pointer;
 }
 
 /* ======== End Of Desktop Styling =========*/
