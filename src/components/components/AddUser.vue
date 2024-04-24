@@ -53,7 +53,10 @@ export default {
             },
             // Flag and data of crop image component
             showCropModal: false,
-            cropCanvas: ''
+            cropCanvas: '',
+            // Zoom relate state data
+            lastZoomValue: 0,
+            zoomValue: 0
         };
     },
     components: {
@@ -244,17 +247,22 @@ export default {
             };
         },
         handlePhoneCropper() {
-            const { visibleArea, image } = this.$refs.cropper.getResult();
-            /**
-             * We want to zoom the image on phone view so it will cover
-             * all the cropper height
-             */
-            console.log(visibleArea);
-            const zoomValue = visibleArea.height / image.height;
-            console.log(zoomValue);
+            // Special handle for phone ui
+            if (window.innerWidth < 940) {
+                const { visibleArea, image } = this.$refs.cropper.getResult();
+                /**
+                 * We want to zoom the image on phone view so it will cover
+                 * all the cropper height
+                 */
 
-            // Zoom the image if the cropper is open on phone view
-            this.$refs.cropper.zoom(zoomValue);
+                this.zoomValue = visibleArea.height / image.height;
+                this.lastZoomValue = this.zoomValue;
+                // Zoom the image if the cropper is open on phone view
+                this.$refs.cropper.zoom(this.zoomValue);
+            }
+        },
+        cropperProgrammaticZoom() {
+            this.$refs.cropper.zoom(this.zoomValue);
         }
     }
 };
@@ -582,24 +590,6 @@ export default {
                 <!-- Modal content -->
                 <div class="modal-content d-flex flex-column">
                     <div id="crop-component" ref="cropComponent">
-                        <!-- This Cropper  Is For  Desktop view -->
-                        <cropper
-                            :src="image"
-                            @change="cropImageChange"
-                            :stencil-props="{
-                                movable: true,
-                                resizable: true,
-                                aspectRatio: 1
-                            }"
-                            :resize-image="{
-                                adjustStencil: false
-                            }"
-                            image-restriction="stencil"
-                            class="cropper d-lg-block d-none"
-                            ref="cropper  "
-                            minHeight="30"
-                        />
-                        <!-- This Cropper Is For Phone  View -->
                         <cropper
                             :src="image"
                             @change="cropImageChange"
@@ -610,7 +600,7 @@ export default {
                                 aspectRatio: 1
                             }"
                             image-restriction="stencil"
-                            class="cropper d-lg-none"
+                            class="cropper"
                             ref="cropper"
                             minHeight="30"
                         />
@@ -625,10 +615,38 @@ export default {
                             />
                         </div>
                     </div>
-                    <!-- Zoom Range Input -->
+                    <!-- Programmatic Zoom -->
+                    <div id="zoom-range">
+                        <span class="mt-1 me-1">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="20"
+                                height="20"
+                                fill="gray"
+                            >
+                                <path
+                                    d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM136 184c-13.3 0-24 10.7-24 24s10.7 24 24 24H280c13.3 0 24-10.7 24-24s-10.7-24-24-24H136z"
+                                />
+                            </svg>
+                        </span>
 
+                        <span class="mt-1 ms-1">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="20"
+                                height="20"
+                                fill="gray"
+                            >
+                                <path
+                                    d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM184 296c0 13.3 10.7 24 24 24s24-10.7 24-24V232h64c13.3 0 24-10.7 24-24s-10.7-24-24-24H232V120c0-13.3-10.7-24-24-24s-24 10.7-24 24v64H120c-13.3 0-24 10.7-24 24s10.7 24 24 24h64v64z"
+                                />
+                            </svg>
+                        </span>
+                    </div>
                     <div
-                        class="d-flex flex-lg-row-reverse flex-row justify-content-between justify-content-lg-end gap-2 mt-5 pb-2 pb-lg-0"
+                        class="d-flex flex-row justify-content-between justify-content-lg-end gap-2 mt-5 pb-2 pb-lg-0"
                     >
                         <button
                             class="btn red-btn"
@@ -877,6 +895,17 @@ export default {
     background: #bca3ff1a;
 }
 
+#zoom-range {
+    width: 60%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* End of CSS style for Custom Select */
 
 /* Styling for crop modal */
@@ -960,6 +989,7 @@ export default {
 #warning-text {
     color: rgb(160, 28, 28);
 }
+
 /* ======== End Of Desktop Styling =========*/
 
 /* Mobile */
