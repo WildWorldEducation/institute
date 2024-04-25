@@ -178,9 +178,9 @@ const router = createRouter({
             component: () => import('../components/pages/EditSettingsView.vue')
         },
         {
-            path: '/content-errors',
-            name: 'content-errors',
-            component: () => import('../components/pages/ContentErrorsView.vue')
+            path: '/content-flags',
+            name: 'content-flags',
+            component: () => import('../components/pages/ContentFlagsView.vue')
         }
     ]
 });

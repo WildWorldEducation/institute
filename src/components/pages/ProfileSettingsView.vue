@@ -36,7 +36,7 @@ export default {
     <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
     <AutoGenerateSources v-if="userDetailsStore.role == 'admin'" />
     <section>
-        <router-link to="/content-errors">Content Errors</router-link>
+        <router-link to="/content-flags">Content Errors</router-link>
     </section>
 </template>
 
