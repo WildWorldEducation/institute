@@ -5,7 +5,7 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
-import { Cropper } from 'vue-advanced-cropper';
+import { Cropper, Preview } from 'vue-advanced-cropper';
 
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
@@ -54,13 +54,18 @@ export default {
             // Flag and data of crop image component
             showCropModal: false,
             cropCanvas: '',
+            cropResult: {
+                coordinates: null,
+                image: null
+            },
             // Zoom relate state data
             lastZoomValue: 0,
             zoomValue: 0
         };
     },
     components: {
-        Cropper
+        Cropper,
+        Preview
     },
     async created() {
         // Load all skills.
@@ -229,7 +234,11 @@ export default {
             this.image = '';
             this.user.avatar = this.image;
         },
-        cropImageChange({ coordinates, canvas }) {
+        cropImageChange({ coordinates, canvas, image }) {
+            this.cropResult = {
+                coordinates,
+                image
+            };
             this.cropCanvas = canvas.toDataURL();
         },
         handleCropImage() {
@@ -612,15 +621,16 @@ export default {
                             image-restriction="stencil"
                             class="cropper"
                             ref="cropper"
+                            :debounce="false"
                         />
                         <!-- Preview Crop Result -->
                         <div id="crop-result">
                             <div class="form-label">Result:</div>
-                            <img
-                                :src="cropCanvas"
-                                alt="preview Image"
-                                width="100"
-                                height="100"
+                            <preview
+                                :width="120"
+                                :height="120"
+                                :image="cropResult.image"
+                                :coordinates="cropResult.coordinates"
                             />
                         </div>
                     </div>
