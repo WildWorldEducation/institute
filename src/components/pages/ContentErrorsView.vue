@@ -18,7 +18,7 @@ export default {
     data() {
         return {
             contentFlags: [],
-            skillMasteryRequirementsFlags: [],
+            skillFlags: [],
             resourcesFlags: [],
             mcQuestionFlags: []
         };
@@ -53,10 +53,7 @@ export default {
                 })
                 .then(() => {
                     for (let i = 0; i < this.contentFlags.length; i++) {
-                        if (
-                            this.contentFlags[i].content_type ==
-                            'skill_mastery_requirements'
-                        ) {
+                        if (this.contentFlags[i].content_type == 'skill') {
                             for (
                                 let j = 0;
                                 j < this.skillsStore.skillsList.length;
@@ -66,7 +63,7 @@ export default {
                                     this.contentFlags[i].content_id ==
                                     this.skillsStore.skillsList[j].id
                                 ) {
-                                    this.skillMasteryRequirementsFlags.push(
+                                    this.skillFlags.push(
                                         this.skillsStore.skillsList[j]
                                     );
                                 }
@@ -110,7 +107,7 @@ export default {
                     }
                     console.log(this.mcQuestionFlags);
                     console.log(this.resourcesFlags);
-                    console.log(this.skillMasteryRequirementsFlags);
+                    console.log(this.skillFlags);
                 });
         }
     }
@@ -122,7 +119,25 @@ export default {
     <h2>MC Question Flags</h2>
     <div v-for="(question, index) in mcQuestionFlags" class="flag-container">
         <h5>Flag {{ index + 1 }}:</h5>
-        {{ question.question }}
+        <p><strong>Question:</strong> {{ question.question }}</p>
+        <p><strong>Correct Answer:</strong> {{ question.correct_answer }}</p>
+        <p>
+            <strong>Incorrect Answer 1:</strong>
+            {{ question.incorrect_answer_1 }}
+        </p>
+        <p>
+            <strong>Incorrect Answer 2:</strong>
+            {{ question.incorrect_answer_2 }}
+        </p>
+        <p>
+            <strong>Incorrect Answer 3:</strong>
+            {{ question.incorrect_answer_3 }}
+        </p>
+        <p>
+            <strong>Incorrect Answer 4:</strong>
+            {{ question.incorrect_answer_4 }}
+        </p>
+        <p><strong>Explanation:</strong> {{ question.explanation }}</p>
         <div class="d-flex justify-content-end mt-3">
             <button class="btn purple-btn">
                 Edit&nbsp;
@@ -213,13 +228,11 @@ export default {
         </div>
     </div>
     <h2 class="mt-3">Skill Mastery Requirements Flags</h2>
-    <div
-        v-for="(skill, index) in skillMasteryRequirementsFlags"
-        class="flag-container"
-    >
+    <div v-for="(skill, index) in skillFlags" class="flag-container">
         <h5>Flag {{ index + 1 }}:</h5>
-        <p>Skill: {{ skill.name }}</p>
-        <!-- <div v-html="skill.mastery_requirements"></div> -->
+        <p><strong>Skill: </strong>{{ skill.name }}</p>
+        <p><strong>Mastery Requirements: </strong></p>
+        <div v-html="skill.mastery_requirements"></div>
         <div class="d-flex justify-content-end mt-3">
             <button class="btn purple-btn">
                 Edit&nbsp;
