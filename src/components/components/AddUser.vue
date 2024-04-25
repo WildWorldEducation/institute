@@ -217,6 +217,7 @@ export default {
             imageFile.onload = () => {
                 if (imageFile.width / imageFile.height !== 1) {
                     this.validate.notSquareImg = true;
+                    this.showCropModal = true;
                 } else {
                     this.validate.notSquareImg = false;
                 }
