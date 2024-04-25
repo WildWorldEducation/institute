@@ -37,7 +37,7 @@ conn.connect((err) => {
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM content_errors;';
+        let sqlQuery = 'SELECT * FROM content_flags;';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

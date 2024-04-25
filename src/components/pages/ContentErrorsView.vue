@@ -17,10 +17,10 @@ export default {
     },
     data() {
         return {
-            contentErrors: [],
-            skillMasteryRequirementsErrors: [],
-            resourcesErrors: [],
-            mcQuestionErrors: []
+            contentFlags: [],
+            skillMasteryRequirementsFlags: [],
+            resourcesFlags: [],
+            mcQuestionFlags: []
         };
     },
     components: {},
@@ -39,22 +39,22 @@ export default {
             console.log('3');
         }
 
-        await this.getContentErrors();
+        await this.getContentFlags();
     },
     methods: {
-        async getContentErrors() {
-            fetch('/content-errors/list')
+        async getContentFlags() {
+            fetch('/content-flags/list')
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => {
-                    this.contentErrors = data;
-                    console.log(this.contentErrors);
+                    this.contentFlags = data;
+                    console.log(this.contentFlags);
                 })
                 .then(() => {
-                    for (let i = 0; i < this.contentErrors.length; i++) {
+                    for (let i = 0; i < this.contentFlags.length; i++) {
                         if (
-                            this.contentErrors[i].content_type ==
+                            this.contentFlags[i].content_type ==
                             'skill_mastery_requirements'
                         ) {
                             for (
@@ -63,16 +63,16 @@ export default {
                                 j++
                             ) {
                                 if (
-                                    this.contentErrors[i].content_id ==
+                                    this.contentFlags[i].content_id ==
                                     this.skillsStore.skillsList[j].id
                                 ) {
-                                    this.skillMasteryRequirementsErrors.push(
+                                    this.skillMasteryRequirementsFlags.push(
                                         this.skillsStore.skillsList[j]
                                     );
                                 }
                             }
                         } else if (
-                            this.contentErrors[i].content_type == 'resource'
+                            this.contentFlags[i].content_type == 'resource'
                         ) {
                             for (
                                 let j = 0;
@@ -80,17 +80,16 @@ export default {
                                 j++
                             ) {
                                 if (
-                                    this.contentErrors[i].content_id ==
+                                    this.contentFlags[i].content_id ==
                                     this.resourcesStore.resourcesList[j].id
                                 ) {
-                                    this.resourcesErrors.push(
+                                    this.resourcesFlags.push(
                                         this.resourcesStore.resourcesList[j]
                                     );
                                 }
                             }
-                            console.log(this.resourcesErrors);
                         } else if (
-                            this.contentErrors[i].content_type == 'mc_question'
+                            this.contentFlags[i].content_type == 'mc_question'
                         ) {
                             for (
                                 let j = 0;
@@ -99,19 +98,19 @@ export default {
                                 j++
                             ) {
                                 if (
-                                    this.contentErrors[i].content_id ==
+                                    this.contentFlags[i].content_id ==
                                     this.mcQuestionsStore.mcQuestionsList[j].id
                                 ) {
-                                    this.mcQuestionErrors.push(
+                                    this.mcQuestionFlags.push(
                                         this.mcQuestionsStore.mcQuestionsList[j]
                                     );
                                 }
                             }
                         }
                     }
-                    console.log(this.mcQuestionErrors);
-                    console.log(this.resourcesErrors);
-                    console.log(this.skillMasteryRequirementsErrors);
+                    console.log(this.mcQuestionFlags);
+                    console.log(this.resourcesFlags);
+                    console.log(this.skillMasteryRequirementsFlags);
                 });
         }
     }
@@ -119,10 +118,10 @@ export default {
 </script>
 
 <template>
-    <h1 class="mt-3">Content Errors</h1>
-    <h2>MC Question Errors</h2>
-    <div v-for="(question, index) in mcQuestionErrors">
-        <h5>Error {{ index + 1 }}:</h5>
+    <h1 class="mt-3">Content Flags</h1>
+    <h2>MC Question Flags</h2>
+    <div v-for="(question, index) in mcQuestionFlags" class="flag-container">
+        <h5>Flag {{ index + 1 }}:</h5>
         {{ question.question }}
         <div class="d-flex justify-content-end mt-3">
             <button class="btn purple-btn">
@@ -150,7 +149,7 @@ export default {
                 </svg></button
             >&nbsp;&nbsp;
             <button class="btn red-btn">
-                Delete&nbsp;
+                Dismiss&nbsp;
                 <!-- X icon -->
                 <svg
                     width="18"
@@ -167,9 +166,9 @@ export default {
             </button>
         </div>
     </div>
-    <h2>Sources Errors</h2>
-    <div v-for="(resource, index) in resourcesErrors">
-        <h5>Error {{ index + 1 }}:</h5>
+    <h2 class="mt-3">Sources Flags</h2>
+    <div v-for="(resource, index) in resourcesFlags" class="flag-container">
+        <h5>Flag {{ index + 1 }}:</h5>
         <div class="d-flex justify-content-end mt-3">
             <button class="btn purple-btn">
                 Edit&nbsp;
@@ -196,7 +195,7 @@ export default {
                 </svg></button
             >&nbsp;&nbsp;
             <button class="btn red-btn">
-                Delete&nbsp;
+                Dismiss&nbsp;
                 <!-- X icon -->
                 <svg
                     width="18"
@@ -213,9 +212,12 @@ export default {
             </button>
         </div>
     </div>
-    <h2>Skill Mastery Requirements Errors</h2>
-    <div v-for="(skill, index) in skillMasteryRequirementsErrors">
-        <h5>Error {{ index + 1 }}:</h5>
+    <h2 class="mt-3">Skill Mastery Requirements Flags</h2>
+    <div
+        v-for="(skill, index) in skillMasteryRequirementsFlags"
+        class="flag-container"
+    >
+        <h5>Flag {{ index + 1 }}:</h5>
         <p>Skill: {{ skill.name }}</p>
         <!-- <div v-html="skill.mastery_requirements"></div> -->
         <div class="d-flex justify-content-end mt-3">
@@ -244,7 +246,7 @@ export default {
                 </svg></button
             >&nbsp;&nbsp;
             <button class="btn red-btn">
-                Delete&nbsp;
+                Dismiss&nbsp;
                 <!-- X icon -->
                 <svg
                     width="18"
@@ -274,6 +276,14 @@ h2 {
     color: #8f7bd6;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
+}
+
+.flag-container {
+    background-color: #f2edff;
+    border-radius: 12px;
+    padding: 5px;
+    padding-top: 25px;
+    padding-bottom: 30px;
 }
 
 .purple-btn {
