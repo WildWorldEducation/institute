@@ -6,7 +6,6 @@ import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { Cropper, Preview } from 'vue-advanced-cropper';
-
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
 
@@ -234,6 +233,7 @@ export default {
             this.image = '';
             this.user.avatar = this.image;
         },
+        // Cropping image methods
         cropImageChange({ coordinates, canvas, image }) {
             this.cropResult = {
                 coordinates,
@@ -920,17 +920,6 @@ export default {
     background: #bca3ff1a;
 }
 
-#zoom-range {
-    width: 60%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 /* End of CSS style for Custom Select */
 
 /* Styling for crop modal */
@@ -1013,6 +1002,17 @@ export default {
 
 #warning-text {
     color: rgb(160, 28, 28);
+}
+
+#zoom-range {
+    width: 60%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .zoom-icon:hover {
