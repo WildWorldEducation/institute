@@ -753,33 +753,7 @@ export default {
     z-index: 99999;
     transform: scale(0);
 }
-/* @keyframes s-ripple {
-    0% {
-        transform: scale(0);
-    }
-    20% {
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1);
-    }
-}
-@keyframes s-ripple-dup {
-    0% {
-        transform: scale(0);
-    }
-    30% {
-        transform: scale(1);
-    }
-    60% {
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1);
-    }
-} */
+
 .control-checkbox input + .control_indicator::before {
     animation: s-ripple 250ms ease-out;
 }
@@ -931,6 +905,22 @@ export default {
     #crop-icon {
         top: 63px;
         padding: 7px;
+    }
+    .modal-content {
+        width: 100%;
+        height: 80%;
+        padding: 3px;
+        margin: 15% 0%;
+        background-color: white;
+    }
+    .cropper {
+        position: static;
+        height: 90%;
+        width: 100%;
+    }
+
+    .cropper :deep(.vue-advanced-cropper__foreground) {
+        background: white;
     }
 }
 </style>
