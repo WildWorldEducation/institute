@@ -19,7 +19,10 @@ export default {
                     (this.userSkills[i].is_accessible == 1) &
                     (this.userSkills[i].is_mastered != 1)
                 ) {
-                    availableSkills.push(this.userSkills[i].name);
+                    availableSkills.push({
+                        name: this.userSkills[i].name,
+                        id: this.userSkills[i].id
+                    });
                 }
             }
             if (availableSkills.length > 0) {
@@ -39,7 +42,12 @@ export default {
     <div id="tile">Available Skill</div>
     <div id="skill-list">
         <div v-for="availableSkill in availableSkills">
-            <td>{{ availableSkill }}</td>
+            <router-link
+                class="skill-link"
+                :to="`/skills/${availableSkill.id}`"
+            >
+                {{ availableSkill.name }}
+            </router-link>
         </div>
         <div v-if="noSkills" id="no-skill-cell"></div>
     </div>
@@ -77,6 +85,11 @@ export default {
     line-height: 28px;
     text-align: left;
     padding: 10px 6px;
+    color: #667085;
+}
+
+.skill-link {
+    text-decoration: none !important;
     color: #667085;
 }
 
