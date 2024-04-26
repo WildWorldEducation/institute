@@ -105,6 +105,9 @@ export default {
                         }
                     }
                 });
+            console.log(this.skillFlags);
+            console.log(this.resourcesFlags); // skill id available
+            console.log(this.mcQuestionFlags);
         },
         dismissFlag() {
             console.log('dismiss');
@@ -144,6 +147,12 @@ export default {
             </p>
             <p><strong>Explanation:</strong> {{ question.explanation }}</p>
             <div class="d-flex justify-content-end mt-3">
+                <router-link
+                    :to="'/skills/' + question.skill_id"
+                    class="btn purple-btn me-2"
+                    target="_blank"
+                    >Go to skill</router-link
+                >
                 <router-link
                     :to="'/mc-questions/edit/' + question.id"
                     class="btn purple-btn"
@@ -198,6 +207,12 @@ export default {
             </p>
             <div class="d-flex justify-content-end mt-3">
                 <router-link
+                    :to="'/skills/' + resource.skill_id"
+                    class="btn purple-btn me-2"
+                    target="_blank"
+                    >Go to skill</router-link
+                >
+                <router-link
                     :to="'/resources/edit/' + resource.id"
                     class="btn purple-btn"
                     target="_blank"
@@ -249,6 +264,12 @@ export default {
             <p><strong>Mastery Requirements: </strong></p>
             <div v-html="skill.mastery_requirements"></div>
             <div class="d-flex justify-content-end mt-3">
+                <router-link
+                    :to="'/skills/' + skill.id"
+                    class="btn purple-btn me-2"
+                    target="_blank"
+                    >Go to skill</router-link
+                >
                 <router-link
                     :to="'/skills/edit/' + skill.id"
                     class="btn purple-btn"

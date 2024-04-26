@@ -33,11 +33,37 @@ export default {
     <ProfileDetails />
     <!--Only show if admin -->
     <Settings v-if="userDetailsStore.role == 'admin'" />
+    <section
+        class="container mt-1 px-3 px-lg-0 mb-5"
+        v-if="userDetailsStore.role == 'admin'"
+    >
+        <hr />
+        <h1>Content Errors</h1>
+        <router-link class="btn green-btn mt-3" to="/content-flags"
+            >Go to page</router-link
+        >
+    </section>
     <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
     <AutoGenerateSources v-if="userDetailsStore.role == 'admin'" />
-    <section>
-        <router-link to="/content-flags">Content Errors</router-link>
-    </section>
 </template>
 
-<style></style>
+<style>
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    height: auto;
+    width: fit-content;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
+    color: white;
+}
+</style>
