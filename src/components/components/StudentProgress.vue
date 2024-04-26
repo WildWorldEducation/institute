@@ -101,4 +101,11 @@ export default {
 #no-skill-cell {
     height: 41px;
 }
+
+@media (max-width: 480px) {
+    #skill-list {
+        max-height: 200px;
+        margin-left: 1px;
+    }
+}
 </style>
