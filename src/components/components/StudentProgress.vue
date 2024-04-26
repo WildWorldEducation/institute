@@ -17,7 +17,8 @@ export default {
             for (let i = 0; i < this.userSkills.length; i++) {
                 if (
                     (this.userSkills[i].is_accessible == 1) &
-                    (this.userSkills[i].is_mastered != 1)
+                    (this.userSkills[i].is_mastered != 1) &
+                    (this.userSkills[i].type != 'domain')
                 ) {
                     availableSkills.push({
                         name: this.userSkills[i].name,
@@ -45,6 +46,7 @@ export default {
             <router-link
                 class="skill-link"
                 :to="`/skills/${availableSkill.id}`"
+                target="_blank"
             >
                 {{ availableSkill.name }}
             </router-link>
