@@ -49,7 +49,6 @@ export default {
                 })
                 .then((data) => {
                     this.contentFlags = data;
-                    console.log(this.contentFlags);
                 })
                 .then(() => {
                     for (let i = 0; i < this.contentFlags.length; i++) {
@@ -105,9 +104,6 @@ export default {
                             }
                         }
                     }
-                    console.log(this.mcQuestionFlags);
-                    console.log(this.resourcesFlags);
-                    console.log(this.skillFlags);
                 });
         },
         dismissFlag() {

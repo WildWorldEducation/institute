@@ -60,7 +60,7 @@ router.post('/add', (req, res, next) => {
             content_type: req.body.content_type,
             content_id: req.body.content_id
         };
-        let sqlQuery = 'INSERT INTO content_flags SET ?';
+        let sqlQuery = 'INSERT IGNORE INTO content_flags SET ?';
         let query = conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
