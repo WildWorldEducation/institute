@@ -125,6 +125,9 @@ export default {
                 console.log(result.error);
             }
 
+            this.skillFlags = [];
+            this.resourcesFlags = [];
+            this.mcQuestionFlags = [];
             this.getContentFlags();
         }
     }
