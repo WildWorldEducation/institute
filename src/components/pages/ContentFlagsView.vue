@@ -115,12 +115,8 @@ export default {
                     }
                     this.isContentFlagsLoaded = true;
                 });
-            console.log(this.skillFlags);
-            console.log(this.resourcesFlags); // skill id available
-            console.log(this.mcQuestionFlags);
         },
         dismissFlag(flagId) {
-            console.log(flagId);
             const result = fetch('/content-flags/' + flagId, {
                 method: 'DELETE'
             });
@@ -128,6 +124,8 @@ export default {
             if (result.error) {
                 console.log(result.error);
             }
+
+            this.getContentFlags();
         }
     }
 };
@@ -136,9 +134,12 @@ export default {
 <template>
     <div class="container">
         <span v-if="isContentFlagsLoaded == false">Loading...</span>
+        <span v-else-if="contentFlags.length == 0"
+            >No content flagged currently</span
+        >
         <div v-else>
             <h1 class="mt-3">Content Flags</h1>
-            <h2>MC Questions</h2>
+            <h2 v-if="mcQuestionFlags.length > 0">MC Questions</h2>
             <div
                 v-for="(question, index) in mcQuestionFlags"
                 class="flag-container"
@@ -221,7 +222,7 @@ export default {
                     </button>
                 </div>
             </div>
-            <h2 class="mt-3">Sources</h2>
+            <h2 v-if="resourcesFlags.length > 0" class="mt-3">Sources</h2>
             <div
                 v-for="(resource, index) in resourcesFlags"
                 class="flag-container"
@@ -286,7 +287,7 @@ export default {
                     </button>
                 </div>
             </div>
-            <h2 class="mt-3">Skills</h2>
+            <h2 v-if="skillFlags.length > 0" class="mt-3">Skills</h2>
             <div v-for="(skill, index) in skillFlags" class="flag-container">
                 <h5>Flag {{ index + 1 }}:</h5>
                 <p><strong>Skill: </strong>{{ skill.name }}</p>
