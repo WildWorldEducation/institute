@@ -35,76 +35,54 @@ export default {
 <template>
     <!-- <h1 class="text-center text-md-start d-lg-none">My Progress</h1>
   <h2 class="text-center text-md-start d-lg-none">2023 - Active</h2> -->
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr id="th-row">
-                    <th scope="col">Available Skills</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-if="noSkills">
-                    <td id="no-skill-cell"></td>
-                </tr>
-                <tr v-for="availableSkill in availableSkills">
-                    <td>{{ availableSkill }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="table-responsive"></div>
+    <div id="tile">Available Skill</div>
+    <div id="skill-list">
+        <div v-for="availableSkill in availableSkills">
+            <td>{{ availableSkill }}</td>
+        </div>
+        <div v-if="noSkills" id="no-skill-cell"></div>
     </div>
 </template>
 
 <style scoped>
-/* separate the content of the table from the header of the table. */
-table tbody,
-table thead {
-    display: block;
-}
-
-table tbody {
-    overflow: auto;
-    height: 200px;
-}
-
-table {
-    width: 352px; /* can be dynamic */
-}
-
-th {
-    width: 352px;
-}
-
-/* -==- */
 .table-responsive {
-    height: 100%;
-    width: 100%;
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
 }
 
-h1 {
-    color: #ad9af3;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
+#skill-list {
+    overflow: auto;
+    max-height: 300px;
 }
 
-h2 {
-    color: #dcd1fd;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-th {
+#tile {
     background-color: #e8e2f9;
     border-color: #dbd0f9;
     color: #ad9af3;
+    padding: 14px 20px;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
+    font-size: 20px;
 }
 
-td {
+#skill-list div {
+    border-collapse: collapse;
+    border: 1px solid #ad9af3;
+    border-top: 0px;
     font-family: 'Poppins', sans-serif;
+    font-size: 20px;
     font-weight: 500;
-    color: #857d99;
-    border-color: #dbd0f9;
+    line-height: 28px;
+    text-align: left;
+    padding: 10px 6px;
+    color: #667085;
+}
+
+#skill-list div:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 #no-skill-cell {
