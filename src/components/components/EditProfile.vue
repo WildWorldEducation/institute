@@ -191,7 +191,7 @@ export default {
         </h1>
         <div class="row mt-4">
             <div class="col-12 col-lg-5">
-                <div class="row mx-0 px-md-0">
+                <div class="row mx-0 px-md-0 mb-4 mb-lg-0">
                     <div
                         class="d-flex justify-content-center justify-content-md-start ps-lg-0"
                     >
