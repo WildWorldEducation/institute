@@ -110,7 +110,6 @@ export default {
             this.getUserSkills();
         },
         flagSkill() {
-            console.log('flag skill');
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
