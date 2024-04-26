@@ -22,12 +22,12 @@ const router = createRouter({
             name: 'radial-tree',
             component: () => import('../components/pages/RadialTreeView.vue')
         },
-        {
-            path: '/pixi-radial-tree',
-            name: 'pixi-radial-tree',
-            component: () =>
-                import('../components/pages/PixiRadialTreeView.vue')
-        },
+        // {
+        //     path: '/pixi-radial-tree',
+        //     name: 'pixi-radial-tree',
+        //     component: () =>
+        //         import('../components/pages/PixiRadialTreeView.vue')
+        // },
         {
             path: '/:id/skill-tree',
             name: 'student-skill-tree',
@@ -176,6 +176,11 @@ const router = createRouter({
             path: '/settings/edit',
             name: 'edit-settings',
             component: () => import('../components/pages/EditSettingsView.vue')
+        },
+        {
+            path: '/content-flags',
+            name: 'content-flags',
+            component: () => import('../components/pages/ContentFlagsView.vue')
         }
     ]
 });

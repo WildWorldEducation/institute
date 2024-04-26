@@ -66,16 +66,21 @@ export default {
         /> -->
     </div>
     <div class="container mt-3">
-        <div class="d-flex">
-            <!-- Display a default skill icon if the current skill doesn`t have one -->
-            <img v-if="this.skill.image" :src="this.skill.image" />
-            <img
-                v-else
-                src="/images/skill-avatar/recurso.png"
-                alt="default skill icon"
-            />
-            <h1 class="ms-3">{{ this.skill.name }} Quiz</h1>
+        <div class="d-flex justify-content-between">
+            <div class="d-flex">
+                <!-- Display a default skill icon if the current skill doesn`t have one -->
+                <img v-if="this.skill.image" :src="this.skill.image" />
+                <img
+                    v-else
+                    src="/images/skill-avatar/recurso.png"
+                    alt="default skill icon"
+                />
+                <h1 class="ms-3 d-flex justify-content-end">
+                    {{ this.skill.name }} Quiz
+                </h1>
+            </div>
         </div>
+
         <div class="mt-4 mb-4">
             <hr
                 class="border border-2 opacity-100 w-75"
