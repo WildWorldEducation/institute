@@ -141,6 +141,8 @@ export default {
                 coordinates,
                 image
             };
+            console.log('Image: ');
+            console.log(image);
             this.cropCanvas = canvas.toDataURL();
         },
         handleCropImage() {
@@ -148,12 +150,11 @@ export default {
             imageFile.src = this.cropCanvas;
             this.avatar = this.cropCanvas;
             this.image = this.cropCanvas;
-            console.log(this.image);
             this.showCropModal = false;
         },
 
         handlePhoneCropper() {
-            console.log('open cropper: ');
+            console.log('Image url');
             console.log(this.image);
             // Special handle for phone ui
             if (window.innerWidth < 940) {
@@ -464,7 +465,7 @@ export default {
             <div class="modal-content d-flex flex-column">
                 <div id="crop-component" ref="cropComponent">
                     <cropper
-                        :src="image"
+                        :src="avatar"
                         @change="cropImageChange"
                         @ready="handlePhoneCropper"
                         :stencil-props="{
