@@ -34,6 +34,26 @@ conn.connect((err) => {
 });
 
 /**
+ * List Sources
+ */
+router.get('/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM resources';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * Create New Source
  *
  * @return response()
@@ -435,8 +455,8 @@ async function addSource(
     });
 }
 
-router.get('*', (req, res) => {
-    res.redirect('/');
-});
+// router.get('*', (req, res) => {
+//     res.redirect('/');
+// });
 
 module.exports = router;
