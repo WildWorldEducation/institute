@@ -206,6 +206,19 @@ export default {
         },
         closeWarningModal() {
             this.showModal = false;
+        },
+        flagSource() {
+            console.log('flag source');
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content_type: 'resource',
+                    content_id: this.resourceId
+                })
+            };
+            var url = '/content-flags/add';
+            fetch(url, requestOptions);
         }
     }
 };
@@ -355,7 +368,7 @@ export default {
                                 />
                             </svg>
                         </button>
-                        <button type="button" class="btn">
+                        <button type="button" class="btn" @click="flagSource">
                             <div class="d-flex flex-row-reverse">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"

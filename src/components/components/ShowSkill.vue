@@ -108,6 +108,19 @@ export default {
                 this.skillId
             );
             this.getUserSkills();
+        },
+        flagSkill() {
+            console.log('flag skill');
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content_type: 'skill',
+                    content_id: this.skill.id
+                })
+            };
+            var url = '/content-flags/add';
+            fetch(url, requestOptions);
         }
     }
 };
@@ -219,7 +232,7 @@ export default {
                     </div>
                     <div v-html="skill.mastery_requirements"></div>
                     <div class="d-flex flex-row-reverse">
-                        <button type="button" class="btn">
+                        <button @click="flagSkill" type="button" class="btn">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 448 512"

@@ -51,5 +51,31 @@ router.get('/list', (req, res, next) => {
     }
 });
 
+router.post('/add', (req, res, next) => {
+    if (req.session.userName) {
+        // No need to escape single quotes for SQL to accept,
+        // as using '?'.
+        // Add data.
+        let data = {
+            content_type: req.body.content_type,
+            content_id: req.body.content_id
+        };
+        let sqlQuery = 'INSERT INTO content_flags SET ?';
+        let query = conn.query(sqlQuery, data, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
