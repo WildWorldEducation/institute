@@ -76,7 +76,8 @@ th {
 
 /* -==- */
 .table-responsive {
-    max-height: 300px;
+    height: 100%;
+    width: 100%;
 }
 
 h1 {
