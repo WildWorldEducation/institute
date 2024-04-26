@@ -145,7 +145,7 @@ export default {
             <h2 v-if="mcQuestionFlags.length > 0">MC Questions</h2>
             <div
                 v-for="(question, index) in mcQuestionFlags"
-                class="flag-container"
+                class="flag-container mb-2"
             >
                 <h5>Flag {{ index + 1 }}:</h5>
                 <p><strong>Question:</strong> {{ question.question }}</p>
@@ -228,7 +228,7 @@ export default {
             <h2 v-if="resourcesFlags.length > 0" class="mt-3">Sources</h2>
             <div
                 v-for="(resource, index) in resourcesFlags"
-                class="flag-container"
+                class="flag-container mb-2"
             >
                 <h5>Flag {{ index + 1 }}:</h5>
                 <p>
@@ -291,7 +291,10 @@ export default {
                 </div>
             </div>
             <h2 v-if="skillFlags.length > 0" class="mt-3">Skills</h2>
-            <div v-for="(skill, index) in skillFlags" class="flag-container">
+            <div
+                v-for="(skill, index) in skillFlags"
+                class="flag-container mb-2"
+            >
                 <h5>Flag {{ index + 1 }}:</h5>
                 <p><strong>Skill: </strong>{{ skill.name }}</p>
                 <p><strong>Mastery Requirements: </strong></p>
