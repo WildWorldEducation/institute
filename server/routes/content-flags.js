@@ -77,5 +77,28 @@ router.post('/add', (req, res, next) => {
     }
 });
 
+/**
+ * Delete Item
+ *
+ * @return response()
+ */
+router.delete('/:id', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = 'DELETE FROM content_flags WHERE id=' + req.params.id;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
