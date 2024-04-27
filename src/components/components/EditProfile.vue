@@ -141,8 +141,7 @@ export default {
                 coordinates,
                 image
             };
-            console.log('Image: ');
-            console.log(image);
+
             this.cropCanvas = canvas.toDataURL();
         },
         handleCropImage() {
@@ -154,8 +153,6 @@ export default {
         },
 
         handlePhoneCropper() {
-            console.log('Image url');
-            console.log(this.image);
             // Special handle for phone ui
             if (window.innerWidth < 940) {
                 const { visibleArea, image } = this.$refs.cropper.getResult();
@@ -166,6 +163,7 @@ export default {
                 this.zoomValue = visibleArea.height / image.height;
                 this.lastZoomValue = this.zoomValue;
                 // Zoom the image if the cropper is open on phone view
+
                 this.$refs.cropper.zoom(this.zoomValue);
             }
         },
