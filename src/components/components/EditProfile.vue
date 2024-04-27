@@ -156,15 +156,18 @@ export default {
             // Special handle for phone ui
             if (window.innerWidth < 940) {
                 const { visibleArea, image } = this.$refs.cropper.getResult();
+                const imageRatio = image.height / image.width;
                 /**
                  * We want to zoom the image on phone view so it will cover
                  * all the cropper height
                  */
-                this.zoomValue = visibleArea.height / image.height;
+                this.zoomValue =
+                    imageRatio > 1
+                        ? visibleArea.height / image.height
+                        : visibleArea.width / image.width;
                 this.lastZoomValue = this.zoomValue;
-                // Zoom the image if the cropper is open on phone view
 
-                this.$refs.cropper.zoom(this.zoomValue);
+                imageRatio < 1 && this.$refs.cropper.zoom(this.zoomValue);
             }
         },
         cropperZoomIn() {
@@ -474,6 +477,7 @@ export default {
                         image-restriction="stencil"
                         class="cropper"
                         ref="cropper"
+                        default-boundaries="fill"
                         :debounce="false"
                     />
                     <!-- Preview Crop Result -->
@@ -905,21 +909,10 @@ export default {
         top: 63px;
         padding: 7px;
     }
-    .modal-content {
-        width: 100%;
-        height: 80%;
-        padding: 3px;
-        margin: 15% 0%;
-        background-color: white;
-    }
-    .cropper {
-        position: static;
-        height: 90%;
-        width: 100%;
-    }
 
-    .cropper :deep(.vue-advanced-cropper__foreground) {
-        background: white;
+    .modal-content {
+        margin: 15% 0%;
+        width: 100%;
     }
 }
 </style>

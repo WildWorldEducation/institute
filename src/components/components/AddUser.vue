@@ -1044,20 +1044,8 @@ export default {
 /** Tablet */
 @media (min-width: 481px) and (max-width: 991px) {
     .modal-content {
-        width: 100%;
-        height: 80%;
-        padding: 3px;
         margin: 15% 0%;
-        background-color: white;
-    }
-    .cropper {
-        position: static;
-        height: 90%;
         width: 100%;
-    }
-
-    .cropper :deep(.vue-advanced-cropper__foreground) {
-        background: white;
     }
 }
 </style>
