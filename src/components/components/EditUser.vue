@@ -34,7 +34,11 @@ export default {
                 last_name: false,
                 email: false,
                 emailFormat: false,
-                password: false
+                password: false,
+                // this validate is fire when image profile upload is not square
+                notSquareImg: false,
+                // flag to show warning when cancel crop
+                notCropped: false
             },
             // Flag and data of crop image component
             showCropModal: false,
@@ -220,6 +224,17 @@ export default {
             this.showCropModal = false;
             // turn off the validate because we alway crop a spare img
             this.validate.notSquareImg = false;
+            this.validate.notCropped = false;
+        },
+        handleCancelCrop() {
+            if (this.validate.notSquareImg) {
+                this.validate.notCropped = true;
+                setTimeout(() => {
+                    this.validate.notCropped = false;
+                }, 2000);
+            } else {
+                this.showCropModal = false;
+            }
         },
         stencilSize({ boundaries }) {
             return {
@@ -627,10 +642,19 @@ export default {
                         </svg>
                     </span>
                 </div>
+                <div class="d-flex flex-row justify-content-center mt-2">
+                    <div
+                        id="warning-line"
+                        v-if="validate.notCropped"
+                        :class="{ shake: validate.notCropped }"
+                    >
+                        Please crop your image to square aspect ratio
+                    </div>
+                </div>
                 <div
                     class="d-flex flex-row justify-content-between justify-content-lg-end gap-2 mt-5 pb-2 pb-lg-0"
                 >
-                    <button class="btn red-btn" @click="showCropModal = false">
+                    <button class="btn red-btn" @click="handleCancelCrop">
                         <span class="d-none d-lg-block"> Cancel &nbsp; </span>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -945,6 +969,39 @@ export default {
 
 .zoom-icon:hover {
     cursor: pointer;
+}
+
+#warning-line {
+    color: rgb(218, 180, 13);
+}
+
+/* Shake animation for waring line */
+.shake {
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake {
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
 }
 
 /* ======== End Of Desktop Styling =========*/

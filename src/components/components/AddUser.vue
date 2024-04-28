@@ -251,6 +251,7 @@ export default {
             this.showCropModal = false;
             // turn off the validate because we alway crop a spare img
             this.validate.notSquareImg = false;
+            this.validate.notCropped = false;
         },
         handleCancelCrop() {
             if (this.validate.notSquareImg) {
@@ -260,6 +261,7 @@ export default {
                 }, 2000);
             } else {
                 this.showCropModal = false;
+                this.validate.notCropped = false;
             }
         },
         stencilSize({ boundaries }) {
