@@ -33,21 +33,17 @@ conn.connect((err) => {
     console.log('MariaDB connected...');
 });
 
-/**
- * List Items
- *
- * @return response()
- */
+// Load all essay type questions.
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT notification_1, notification_2 FROM notifications`;
+        let sqlQuery = 'SELECT * FROM content_flags;';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.json(results[0]);
+                res.json(results);
             } catch (err) {
                 next(err);
             }
@@ -55,33 +51,40 @@ router.get('/list', (req, res, next) => {
     }
 });
 
+router.post('/add', (req, res, next) => {
+    if (req.session.userName) {
+        // No need to escape single quotes for SQL to accept,
+        // as using '?'.
+        // Add data.
+        let data = {
+            content_type: req.body.content_type,
+            content_id: req.body.content_id
+        };
+        let sqlQuery = 'INSERT IGNORE INTO content_flags SET ?';
+        let query = conn.query(sqlQuery, data, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 /**
- * Update Items
+ * Delete Item
  *
  * @return response()
  */
-router.put('/edit', (req, res, next) => {
+router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.notification1 != null)
-            req.body.notification1 = req.body.notification1.replace(
-                /'/g,
-                "\\'"
-            );
-        if (req.body.notification2 != null)
-            req.body.notification2 = req.body.notification2.replace(
-                /'/g,
-                "\\'"
-            );
-
-        // Add data.
-        let sqlQuery =
-            `UPDATE notifications 
-        SET notification_1='` +
-            req.body.notification1 +
-            `', notification_2 = '` +
-            req.body.notification2 +
-            `';`;
+        let sqlQuery = 'DELETE FROM content_flags WHERE id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

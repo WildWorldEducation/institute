@@ -59,7 +59,10 @@ export default {
                     class="img-fluid"
                 />
             </div>
-            <div id="middle-profile-column" class="column col-lg-4 col-md-6">
+            <div
+                id="middle-profile-column"
+                class="column col-lg-4 col-md-6 mb-5 mb-md-0"
+            >
                 <StudentProgress
                     v-if="userDetailsStore.role == 'student'"
                     :userId="userDetailsStore.userId"

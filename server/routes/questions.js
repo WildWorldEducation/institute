@@ -277,6 +277,24 @@ router.get('/essay/list', (req, res, next) => {
     }
 });
 
+// Load all mc type questions.
+router.get('/mc/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM mc_questions;';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * Create New MC Question Manually (not from CSV.)
  *

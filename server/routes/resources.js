@@ -34,6 +34,26 @@ conn.connect((err) => {
 });
 
 /**
+ * List Sources
+ */
+router.get('/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM resources';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * Create New Source
  *
  * @return response()
@@ -204,7 +224,7 @@ router.post('/generate-sources', (req, res, next) => {
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'      
         AND id < 212
-        AND id > 106
+        AND id > 138
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -288,6 +308,7 @@ async function getSource(
                         usedLinks
                 }
             ],
+            //model: 'gpt-3.5-turbo-0125',
             model: 'gpt-4-turbo',
             response_format: { type: 'json_object' }
         });
@@ -434,8 +455,8 @@ async function addSource(
     });
 }
 
-router.get('*', (req, res) => {
-    res.redirect('/');
-});
+// router.get('*', (req, res) => {
+//     res.redirect('/');
+// });
 
 module.exports = router;

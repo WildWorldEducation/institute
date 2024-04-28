@@ -79,6 +79,8 @@ const instructorStudentsRouter = require('./routes/instructor-students');
 app.use('/instructor-students', instructorStudentsRouter);
 const skillTreeRouter = require('./routes/skilltree');
 app.use('/skilltree', skillTreeRouter);
+const contentFlagsRouter = require('./routes/content-flags');
+app.use('/content-flags', contentFlagsRouter);
 
 app.locals.title = 'Skill Tree';
 
