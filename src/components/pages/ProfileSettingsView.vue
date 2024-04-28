@@ -38,7 +38,7 @@ export default {
         v-if="userDetailsStore.role == 'admin'"
     >
         <hr />
-        <h1>Content Errors</h1>
+        <h1>Content Flags</h1>
         <router-link class="btn green-btn mt-3" to="/content-flags"
             >Go to page</router-link
         >

@@ -142,6 +142,6 @@ export default {
 #user-avatar {
     width: 40px;
     height: 40px;
-    border-radius: 40px;
+    border-radius: 8px;
 }
 </style>
