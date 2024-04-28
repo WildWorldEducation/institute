@@ -5,7 +5,7 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
-import { Cropper } from 'vue-advanced-cropper';
+import { Cropper, Preview } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
 
@@ -22,6 +22,7 @@ export default {
             userSkillsStore
         };
     },
+
     data() {
         return {
             user: { role: 'student' },
@@ -47,15 +48,25 @@ export default {
                 emailFormat: false,
                 password: false,
                 // this validate is fire when image profile upload is not square
-                notSquareImg: false
+                notSquareImg: false,
+                // flag to show warning when cancel crop
+                notCropped: false
             },
             // Flag and data of crop image component
             showCropModal: false,
-            cropCanvas: ''
+            cropCanvas: '',
+            cropResult: {
+                coordinates: null,
+                image: null
+            },
+            // Zoom relate state data
+            lastZoomValue: 0,
+            zoomValue: 0
         };
     },
     components: {
-        Cropper
+        Cropper,
+        Preview
     },
     async created() {
         // Load all skills.
@@ -212,6 +223,7 @@ export default {
             imageFile.onload = () => {
                 if (imageFile.width / imageFile.height !== 1) {
                     this.validate.notSquareImg = true;
+                    this.showCropModal = true;
                 } else {
                     this.validate.notSquareImg = false;
                 }
@@ -223,7 +235,12 @@ export default {
             this.image = '';
             this.user.avatar = this.image;
         },
-        cropImageChange({ coordinates, canvas }) {
+        // Cropping image methods
+        cropImageChange({ coordinates, canvas, image }) {
+            this.cropResult = {
+                coordinates,
+                image
+            };
             this.cropCanvas = canvas.toDataURL();
         },
         handleCropImage() {
@@ -234,6 +251,18 @@ export default {
             this.showCropModal = false;
             // turn off the validate because we alway crop a spare img
             this.validate.notSquareImg = false;
+            this.validate.notCropped = false;
+        },
+        handleCancelCrop() {
+            if (this.validate.notSquareImg) {
+                this.validate.notCropped = true;
+                setTimeout(() => {
+                    this.validate.notCropped = false;
+                }, 2000);
+            } else {
+                this.showCropModal = false;
+                this.validate.notCropped = false;
+            }
         },
         stencilSize({ boundaries }) {
             return {
@@ -242,7 +271,31 @@ export default {
             };
         },
         handlePhoneCropper() {
-            this.$refs.cropper.zoom(2);
+            // Special handle for phone ui
+            if (window.innerWidth < 940) {
+                const { visibleArea, image } = this.$refs.cropper.getResult();
+                /**
+                 * We want to zoom the image on phone view so it will cover
+                 * all the cropper height
+                 */
+
+                this.zoomValue = visibleArea.height / image.height;
+                this.lastZoomValue = this.zoomValue;
+                // Zoom the image if the cropper is open on phone view
+                this.$refs.cropper.zoom(this.zoomValue);
+            }
+        },
+        cropperZoomIn() {
+            const visibleHeight = this.$refs.cropper.visibleArea.height;
+            if (visibleHeight > 30) {
+                this.$refs.cropper.zoom(2);
+            }
+        },
+        cropperZoomOut() {
+            const visibleHeight = this.$refs.cropper.visibleArea.height;
+            if (visibleHeight < 3000) {
+                this.$refs.cropper.zoom(0.5);
+            }
         }
     }
 };
@@ -569,24 +622,7 @@ export default {
             <div id="myModal" class="modal">
                 <!-- Modal content -->
                 <div class="modal-content d-flex flex-column">
-                    <div id="crop-component">
-                        <!-- This Cropper  Is For  Desktop view -->
-                        <cropper
-                            :src="image"
-                            @change="cropImageChange"
-                            :stencil-props="{
-                                movable: true,
-                                resizable: true,
-                                aspectRatio: 1
-                            }"
-                            :resize-image="{
-                                adjustStencil: false
-                            }"
-                            image-restriction="stencil"
-                            class="cropper d-lg-block d-none"
-                            ref="cropper  "
-                        />
-                        <!-- This Cropper Is For Phone  View -->
+                    <div id="crop-component" ref="cropComponent">
                         <cropper
                             :src="image"
                             @change="cropImageChange"
@@ -596,31 +632,74 @@ export default {
                                 resizable: true,
                                 aspectRatio: 1
                             }"
-                            :resize-image="{
-                                adjustStencil: false
-                            }"
-                            :stencil-size="stencilSize"
                             image-restriction="stencil"
-                            class="cropper d-lg-none"
+                            class="cropper"
                             ref="cropper"
+                            :debounce="false"
                         />
                         <!-- Preview Crop Result -->
                         <div id="crop-result">
                             <div class="form-label">Result:</div>
-                            <img
-                                :src="cropCanvas"
-                                alt="preview Image"
-                                width="100"
-                                height="100"
+                            <preview
+                                :width="120"
+                                :height="120"
+                                :image="cropResult.image"
+                                :coordinates="cropResult.coordinates"
                             />
                         </div>
                     </div>
-                    <div class="d-flex flex-row-reverse gap-2 mt-5">
-                        <button
-                            class="btn red-btn"
-                            @click="showCropModal = false"
+                    <!-- Programmatic Zoom -->
+                    <div id="zoom-range">
+                        <span
+                            class="mt-1 me-1 zoom-icon"
+                            @click="cropperZoomOut"
                         >
-                            Cancel &nbsp;
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="20"
+                                height="20"
+                                fill="gray"
+                            >
+                                <path
+                                    d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM136 184c-13.3 0-24 10.7-24 24s10.7 24 24 24H280c13.3 0 24-10.7 24-24s-10.7-24-24-24H136z"
+                                />
+                            </svg>
+                        </span>
+
+                        <span
+                            class="mt-1 ms-1 zoom-icon"
+                            @click="cropperZoomIn"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="20"
+                                height="20"
+                                fill="gray"
+                            >
+                                <path
+                                    d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM184 296c0 13.3 10.7 24 24 24s24-10.7 24-24V232h64c13.3 0 24-10.7 24-24s-10.7-24-24-24H232V120c0-13.3-10.7-24-24-24s-24 10.7-24 24v64H120c-13.3 0-24 10.7-24 24s10.7 24 24 24h64v64z"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="d-flex flex-row justify-content-center mt-2">
+                        <div
+                            id="warning-line"
+                            v-if="validate.notCropped"
+                            :class="{ shake: validate.notCropped }"
+                        >
+                            Please crop your image to square aspect ratio
+                        </div>
+                    </div>
+                    <div
+                        class="d-flex flex-row justify-content-between justify-content-lg-end gap-2 mt-5 pb-2 pb-lg-0"
+                    >
+                        <button class="btn red-btn" @click="handleCancelCrop">
+                            <span class="d-none d-lg-block">
+                                Cancel &nbsp;
+                            </span>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
@@ -634,7 +713,7 @@ export default {
                             </svg>
                         </button>
                         <button class="btn green-btn" @click="handleCropImage">
-                            Crop &nbsp;
+                            <span class="d-none d-lg-block"> Crop &nbsp; </span>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
@@ -938,11 +1017,61 @@ export default {
     z-index: 0;
     width: 100%;
     height: 100%;
+    border-radius: 12px;
 }
 
 #warning-text {
     color: rgb(160, 28, 28);
 }
+
+#zoom-range {
+    width: 60%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.zoom-icon:hover {
+    cursor: pointer;
+}
+
+#warning-line {
+    color: rgb(218, 180, 13);
+}
+
+/* Shake animation for waring line */
+.shake {
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake {
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
 /* ======== End Of Desktop Styling =========*/
 
 /* Mobile */
@@ -957,6 +1086,18 @@ export default {
     .cropper {
         position: static;
         height: 90%;
+        width: 100%;
+    }
+
+    .cropper :deep(.vue-advanced-cropper__foreground) {
+        background: white;
+    }
+}
+
+/** Tablet */
+@media (min-width: 481px) and (max-width: 991px) {
+    .modal-content {
+        margin: 15% 0%;
         width: 100%;
     }
 }
