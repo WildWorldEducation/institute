@@ -21,7 +21,7 @@ export default {
             avatar: this.userDetailsStore.avatar,
             email: this.userDetailsStore.email,
             password: this.userDetailsStore.password,
-            image: '',
+            image: this.userDetailsStore.avatar,
             firstName: this.userDetailsStore.firstName,
             lastName: this.userDetailsStore.lastName,
             validate: {
@@ -52,6 +52,7 @@ export default {
         Preview
     },
     computed: {},
+
     methods: {
         ValidateForm() {
             if (this.firstName == '' || this.firstName == null) {
