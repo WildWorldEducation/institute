@@ -31,8 +31,10 @@ export default {
         <img src="/images/banners/general-banner.png" class="w-100 h-auto" />
     </div>
     <ProfileDetails />
-    <!--Only show if admin -->
+    <!--Only show if admin ----------------->
+    <!-- App Settings --->
     <Settings v-if="userDetailsStore.role == 'admin'" />
+    <!-- Link to Content Flags page --->
     <section
         class="container mt-1 px-3 px-lg-0 mb-5"
         v-if="userDetailsStore.role == 'admin'"
@@ -43,11 +45,19 @@ export default {
             >Go to page</router-link
         >
     </section>
+    <!-- Ability to bulk upload multiple choice questions --->
     <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
+    <!-- Ability to autogenerate sources for all skills. At the moment, has to be done by programmer --->
     <AutoGenerateSources v-if="userDetailsStore.role == 'admin'" />
 </template>
 
 <style>
+h1 {
+    color: #8f7bd6;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+}
+
 .green-btn {
     background-color: #36c1af;
     color: white;

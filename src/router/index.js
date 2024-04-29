@@ -22,12 +22,6 @@ const router = createRouter({
             name: 'radial-tree',
             component: () => import('../components/pages/RadialTreeView.vue')
         },
-        // {
-        //     path: '/pixi-radial-tree',
-        //     name: 'pixi-radial-tree',
-        //     component: () =>
-        //         import('../components/pages/PixiRadialTreeView.vue')
-        // },
         {
             path: '/:id/skill-tree',
             name: 'student-skill-tree',
@@ -126,6 +120,11 @@ const router = createRouter({
             component: () => import('../components/pages/AddTagView.vue')
         },
         {
+            path: '/tags/select',
+            name: 'select-tags',
+            component: () => import('../components/pages/SelectFiltersView.vue')
+        },
+        {
             path: '/resources/add/:id',
             name: 'add-resource',
             component: () => import('../components/pages/AddResourceView.vue')
@@ -171,6 +170,11 @@ const router = createRouter({
             path: '/profile/edit',
             name: 'edit-profile',
             component: () => import('../components/pages/EditProfileView.vue')
+        },
+        {
+            path: '/settings/edit',
+            name: 'edit-settings',
+            component: () => import('../components/pages/EditSettingsView.vue')
         },
         {
             path: '/settings/edit',
