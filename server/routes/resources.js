@@ -224,7 +224,7 @@ router.post('/generate-sources', (req, res, next) => {
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'      
         AND id < 212
-        AND id > 138
+        AND id > 179
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -282,7 +282,8 @@ async function getSource(
         level +
         ` student.
                        Please provide me with a JSON object containing a URL link, named "url",
-                       with site/page/subject name, named "name", so I can learn more about ` +
+                       with site/page/subject name, named "name", and a description of the webpage, named
+                       "description", so I can learn more about ` +
         name +
         `, as described by this text: ` +
         masteryRequirements +
@@ -317,6 +318,7 @@ async function getSource(
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
+        console.log(responseObj);
         // Check if webpages actually exist (because with GPT4 +- half links dont exist.)
         checkSources(
             responseObj,
@@ -400,6 +402,9 @@ async function addSource(
 ) {
     // Create source.
     let link =
+        '<p>' +
+        responseObj.description +
+        '</p>' +
         '<p><a href="' +
         responseObj.url +
         '" target="_blank">' +
