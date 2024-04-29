@@ -464,7 +464,6 @@ async function addSource(
 router.post('/delete-domain', (req, res, next) => {
     if (req.session.userName) {
         let rootDomain = req.body.rootDomain;
-        console.log(rootDomain);
 
         let sqlQuery =
             `DELETE FROM resources

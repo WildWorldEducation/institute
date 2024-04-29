@@ -21,14 +21,17 @@ export default {
             });
         },
         DeleteSourcesByRootDomain() {
-            var url = '/resources/delete-domain';
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    rootDomain: this.rootDomain
-                })
-            });
+            let text = 'Are you sure?';
+            if (confirm(text) == true) {
+                var url = '/resources/delete-domain';
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        rootDomain: this.rootDomain
+                    })
+                });
+            }
         }
     }
 };
