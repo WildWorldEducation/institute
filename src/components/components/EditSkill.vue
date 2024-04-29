@@ -118,16 +118,21 @@ export default {
                         'code',
                         this.skill.mastery_requirements
                     );
-                    // handle some input variable
-                    const skillResult = this.levels.find((level) => {
-                        return level.id === this.skill.level;
-                    });
-                    this.showLevel = skillResult.name;
+                    // Levels
+                    if (this.skill.level != 'domain') {
+                        const skillResult = this.levels.find((level) => {
+                            return level.id === this.skill.level;
+                        });
+                        this.showLevel = skillResult.name;
+                    }
 
-                    const parentResult = this.skills.find((element) => {
-                        return element.id === this.skill.parent;
-                    });
-                    this.parentInput.inputText = parentResult.name;
+                    // Parent skill
+                    if (this.skill.parent != 0) {
+                        const parentResult = this.skills.find((element) => {
+                            return element.id === this.skill.parent;
+                        });
+                        this.parentInput.inputText = parentResult.name;
+                    }
 
                     this.getSkillFilters();
                 });
