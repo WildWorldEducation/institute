@@ -274,7 +274,7 @@ app.get('/settings', (req, res, next) => {
 // Edit app settings.
 app.put('/settings/edit', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery1 =
+        let sqlQuery =
             `
         UPDATE settings 
         SET skill_degradation_days = ` +
@@ -282,93 +282,12 @@ app.put('/settings/edit', (req, res, next) => {
             `, quiz_max_questions = ` +
             req.body.quiz_max_questions;
 
-        let query1 = conn.query(sqlQuery1, (err, results) => {
+        let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                // Update which skill filters are active.
-                for (let i = 0; i < req.body.tags.length; i++) {
-                    // This variable is used lower down when updating each relevant skill.
-                    let skillFilteredStatus;
-                    if (req.body.tags[i].is_active == 'active') {
-                        skillFilteredStatus = 'filtered';
-                    } else {
-                        skillFilteredStatus = 'available';
-                    }
 
-                    let sqlQuery2 =
-                        `UPDATE tags
-                    SET is_active = '` +
-                        req.body.tags[i].is_active +
-                        `'
-                    WHERE id = ` +
-                        req.body.tags[i].id +
-                        `;`;
-
-                    let query2 = conn.query(sqlQuery2, (err, results) => {
-                        try {
-                            if (err) {
-                                throw err;
-                            }
-                            // Next we change the 'is_filtered' field in the skills table
-                            // for all the relevant skills
-
-                            // 1 Find all the relevant skills.
-                            let sqlQuery3 =
-                                `SELECT skill_id
-                                FROM skill_tags
-                                WHERE tag_id = ` +
-                                req.body.tags[i].id +
-                                `;`;
-
-                            let query3 = conn.query(
-                                sqlQuery3,
-                                (err, results) => {
-                                    try {
-                                        if (err) {
-                                            throw err;
-                                        }
-
-                                        // Update the relevant skills.
-                                        let relevantSkills = results;
-                                        for (
-                                            let j = 0;
-                                            j < relevantSkills.length;
-                                            j++
-                                        ) {
-                                            let sqlQuery4 =
-                                                `UPDATE skills
-                                        SET is_filtered = '` +
-                                                skillFilteredStatus +
-                                                `'
-                                        WHERE id = ` +
-                                                relevantSkills[j].skill_id +
-                                                `;`;
-
-                                            let query4 = conn.query(
-                                                sqlQuery4,
-                                                (err, results) => {
-                                                    try {
-                                                        if (err) {
-                                                            throw err;
-                                                        }
-                                                    } catch (err) {
-                                                        next(err);
-                                                    }
-                                                }
-                                            );
-                                        }
-                                    } catch (err) {
-                                        next(err);
-                                    }
-                                }
-                            );
-                        } catch (err) {
-                            next(err);
-                        }
-                    });
-                }
                 res.end();
             } catch (err) {
                 next(err);
