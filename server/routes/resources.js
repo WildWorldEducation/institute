@@ -460,6 +460,33 @@ async function addSource(
     });
 }
 
+// Delete all sources from a particular root domain.
+router.post('/delete-domain', (req, res, next) => {
+    if (req.session.userName) {
+        let rootDomain = req.body.rootDomain;
+        console.log(rootDomain);
+
+        let sqlQuery =
+            `DELETE FROM resources
+        WHERE content LIKE '%` +
+            rootDomain +
+            `%'`;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });

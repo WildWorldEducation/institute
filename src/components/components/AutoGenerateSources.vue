@@ -2,7 +2,8 @@
 export default {
     data() {
         return {
-            numOfSourcesPerSkill: 3
+            numOfSourcesPerSkill: 3,
+            rootDomain: null
         };
     },
     methods: {
@@ -16,6 +17,16 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     numSources: this.numOfSourcesPerSkill
+                })
+            });
+        },
+        DeleteSourcesByRootDomain() {
+            var url = '/resources/delete-domain';
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    rootDomain: this.rootDomain
                 })
             });
         }
@@ -50,6 +61,17 @@ export default {
                     <em>Warning, this can cost a lot each time.</em>
                 </p>
             </div>
+        </div>
+        <h4>Delete All Sources From...</h4>
+        <div class="mb-3">
+            <label class="form-label">Domain:</label>
+            <input type="text" v-model="rootDomain" class="form-control" />
+            <button
+                class="btn green-btn mt-3"
+                @click="DeleteSourcesByRootDomain"
+            >
+                Delete
+            </button>
         </div>
     </div>
 </template>
