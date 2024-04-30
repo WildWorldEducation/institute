@@ -85,15 +85,11 @@ export default {
                 </p>
             </div>
         </div>
-        <h4>Delete All Sources and Block the Following Root Domain:</h4>
+        <h4>Delete Sources and Block Domain:</h4>
         <div class="mb-3">
-            <label class="form-label">Domain:</label>
             <input type="text" v-model="rootDomain" class="form-control" />
-            <button
-                class="btn green-btn mt-3"
-                @click="DeleteSourcesByRootDomain"
-            >
-                Delete
+            <button class="btn red-btn mt-3" @click="DeleteSourcesByRootDomain">
+                Delete & Block
             </button>
         </div>
         <h4>Blocked Domains:</h4>
