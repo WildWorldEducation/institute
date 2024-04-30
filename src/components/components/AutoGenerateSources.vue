@@ -42,10 +42,13 @@ export default {
             const data = await result.json();
             this.blockedRootDomains = data;
         },
-        UnBlockRootDomain(rootDomainId) {
-            const result = fetch('/resources/unblock-domain/' + rootDomainId, {
-                method: 'DELETE'
-            });
+        async UnBlockRootDomain(rootDomainId) {
+            const result = await fetch(
+                '/resources/unblock-domain/' + rootDomainId,
+                {
+                    method: 'DELETE'
+                }
+            );
 
             if (result.error) {
                 console.log(result.error);
