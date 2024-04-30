@@ -53,9 +53,16 @@ export default {
                     editordata: resourceData
                 })
             };
-            fetch(url, requestOptions).then(() => {
-                this.$router.push('/skills/' + this.skillId);
-            });
+            fetch(url, requestOptions)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log(data);
+                })
+                .then(() => {
+                    this.$router.push('/skills/' + this.skillId);
+                });
         }
     }
 };

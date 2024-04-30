@@ -68,13 +68,40 @@ router.post('/add/:skillId', (req, res, next) => {
             user_id: req.body.userId,
             content: req.body.editordata
         };
-        let sqlQuery = 'INSERT INTO resources SET ?';
-        let query = conn.query(sqlQuery, data, (err, results) => {
+
+        // Check that source is not in the list of blocked domains.
+        let sqlQuery1 = `SELECT * FROM blacklisted_sources`;
+        let query1 = conn.query(sqlQuery1, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 } else {
-                    res.end();
+                    // Check if url is in blocked domains.
+                    // Get the blocked domain urls.
+                    let blockedDomains = [];
+                    for (let i = 0; i < results.length; i++) {
+                        blockedDomains.push(results[i].root_domain);
+                    }
+                    for (let i = 0; i < blockedDomains.length; i++) {
+                        if (data.content.includes(blockedDomains[i])) {
+                            res.json('blocked');
+                            return;
+                        }
+                    }
+
+                    // Add the source.
+                    let sqlQuery2 = 'INSERT INTO resources SET ?';
+                    let query2 = conn.query(sqlQuery2, data, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
                 }
             } catch (err) {
                 next(err);
