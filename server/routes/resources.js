@@ -465,17 +465,33 @@ router.post('/delete-domain', (req, res, next) => {
     if (req.session.userName) {
         let rootDomain = req.body.rootDomain;
 
-        let sqlQuery =
+        let sqlQuery1 =
             `DELETE FROM resources
         WHERE content LIKE '%` +
             rootDomain +
             `%'`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 } else {
-                    res.end();
+                    // Add to blacklisted root domain list.
+                    let sqlQuery2 =
+                        `INSERT IGNORE INTO resources (root_domain)
+        VALUES ('` +
+                        rootDomain +
+                        `')`;
+                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -483,6 +499,51 @@ router.post('/delete-domain', (req, res, next) => {
         });
     } else {
         res.redirect('/login');
+    }
+});
+
+/**
+ * List Blocked Root Domains
+ *
+ * @return response()
+ */
+router.get('/list-blocked-domains', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM `blacklisted_sources`';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }              
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Unblock Blocked Root Domain
+ *
+ */
+router.delete('/unblock-domain/:domainId', (req, res, next) => {
+    console.log("test")
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            'DELETE FROM blacklisted_sources WHERE id=' + req.params.domainId;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
     }
 });
 
