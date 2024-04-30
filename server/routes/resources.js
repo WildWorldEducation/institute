@@ -477,7 +477,7 @@ router.post('/delete-domain', (req, res, next) => {
                 } else {
                     // Add to blacklisted root domain list.
                     let sqlQuery2 =
-                        `INSERT IGNORE INTO resources (root_domain)
+                        `INSERT IGNORE INTO blacklisted_sources (root_domain)
         VALUES ('` +
                         rootDomain +
                         `')`;
@@ -515,7 +515,7 @@ router.get('/list-blocked-domains', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
-                }              
+                }
                 res.json(results);
             } catch (err) {
                 next(err);
@@ -529,7 +529,7 @@ router.get('/list-blocked-domains', (req, res, next) => {
  *
  */
 router.delete('/unblock-domain/:domainId', (req, res, next) => {
-    console.log("test")
+    console.log('test');
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
