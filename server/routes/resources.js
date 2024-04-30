@@ -366,7 +366,7 @@ async function getSource(
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
-        console.log(responseObj);
+        //   console.log(responseObj);
         // Check if webpages actually exist (because with GPT4 +- half links dont exist.)
         checkSources(
             responseObj,
