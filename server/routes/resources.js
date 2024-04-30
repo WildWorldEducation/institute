@@ -224,7 +224,7 @@ router.post('/generate-sources', (req, res, next) => {
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'      
         AND id < 212
-        AND id > 138
+        AND id > 179
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -282,7 +282,8 @@ async function getSource(
         level +
         ` student.
                        Please provide me with a JSON object containing a URL link, named "url",
-                       with site/page/subject name, named "name", so I can learn more about ` +
+                       with site/page/subject name, named "name", and a description of the webpage, named
+                       "description", so I can learn more about ` +
         name +
         `, as described by this text: ` +
         masteryRequirements +
@@ -317,6 +318,7 @@ async function getSource(
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
+        console.log(responseObj);
         // Check if webpages actually exist (because with GPT4 +- half links dont exist.)
         checkSources(
             responseObj,
@@ -400,6 +402,9 @@ async function addSource(
 ) {
     // Create source.
     let link =
+        '<p>' +
+        responseObj.description +
+        '</p>' +
         '<p><a href="' +
         responseObj.url +
         '" target="_blank">' +
@@ -454,6 +459,93 @@ async function addSource(
         }
     });
 }
+
+// Delete all sources from a particular root domain.
+router.post('/delete-domain', (req, res, next) => {
+    if (req.session.userName) {
+        let rootDomain = req.body.rootDomain;
+
+        let sqlQuery1 =
+            `DELETE FROM resources
+        WHERE content LIKE '%` +
+            rootDomain +
+            `%'`;
+        let query1 = conn.query(sqlQuery1, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // Add to blacklisted root domain list.
+                    let sqlQuery2 =
+                        `INSERT IGNORE INTO resources (root_domain)
+        VALUES ('` +
+                        rootDomain +
+                        `')`;
+                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * List Blocked Root Domains
+ *
+ * @return response()
+ */
+router.get('/list-blocked-domains', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM `blacklisted_sources`';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }              
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Unblock Blocked Root Domain
+ *
+ */
+router.delete('/unblock-domain/:domainId', (req, res, next) => {
+    console.log("test")
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            'DELETE FROM blacklisted_sources WHERE id=' + req.params.domainId;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
 
 // router.get('*', (req, res) => {
 //     res.redirect('/');
