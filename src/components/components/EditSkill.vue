@@ -3,18 +3,19 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useTagsStore } from '../../stores/TagsStore';
 import { useSkillTagsStore } from '../../stores/SkillTagsStore';
-
+import { useRouter } from 'vue-router';
 export default {
     setup() {
         const skillsStore = useSkillsStore();
         const tagsStore = useTagsStore();
         if (tagsStore.tagsList.length == 0) tagsStore.getTagsList();
         const skillTagsStore = useSkillTagsStore();
-
+        const router = useRouter();
         return {
             skillsStore,
             tagsStore,
-            skillTagsStore
+            skillTagsStore,
+            router
         };
     },
     data() {
@@ -22,6 +23,7 @@ export default {
             skillId: this.$route.params.id,
             skills: [],
             skill: {
+                id: '',
                 name: '',
                 parent: '',
                 description: '',
@@ -154,6 +156,16 @@ export default {
                     );
                 }
             }
+        },
+        async DeleteSkill(id) {
+            // check confirm state
+            if (!this.step1Confirm || !this.step2Confirm) {
+                return;
+            }
+
+            await this.skillsStore.deleteSkill(id);
+            // redirect user back to skill list page
+            this.router.push('/skills');
         },
         // For image upload.
         onFileChange(e, type) {
@@ -356,9 +368,10 @@ export default {
         handleCancelDeleteSkill() {
             this.showModal = false;
             this.step1Confirm = false;
+            this.step2Confirm = false;
+            this.skillNameConfirm = '';
         },
         handleConfirmInputChange() {
-            console.log(this.skillNameConfirm);
             if (this.skillNameConfirm == this.skill.name) {
                 this.step2Confirm = true;
             } else {
@@ -940,7 +953,7 @@ export default {
                     :class="[
                         step2Confirm ? 'btn red-btn' : 'btn button-inactive'
                     ]"
-                    @click="step1Confirm = true"
+                    @click="DeleteSkill(skill.id)"
                 >
                     Delete Skill
                 </button>
