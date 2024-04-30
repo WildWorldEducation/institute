@@ -53,9 +53,18 @@ export default {
                     editordata: resourceData
                 })
             };
-            fetch(url, requestOptions).then(() => {
-                this.$router.push('/skills/' + this.skillId);
-            });
+            fetch(url, requestOptions)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data == 'blocked') {
+                        alert('Unfortunately, that source cannot be added.');
+                    }
+                })
+                .then(() => {
+                    this.$router.push('/skills/' + this.skillId);
+                });
         }
     }
 };

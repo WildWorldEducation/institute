@@ -68,13 +68,40 @@ router.post('/add/:skillId', (req, res, next) => {
             user_id: req.body.userId,
             content: req.body.editordata
         };
-        let sqlQuery = 'INSERT INTO resources SET ?';
-        let query = conn.query(sqlQuery, data, (err, results) => {
+
+        // Check that source is not in the list of blocked domains.
+        let sqlQuery1 = `SELECT * FROM blacklisted_sources`;
+        let query1 = conn.query(sqlQuery1, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 } else {
-                    res.end();
+                    // Check if url is in blocked domains.
+                    // Get the blocked domain urls.
+                    let blockedDomains = [];
+                    for (let i = 0; i < results.length; i++) {
+                        blockedDomains.push(results[i].root_domain);
+                    }
+                    for (let i = 0; i < blockedDomains.length; i++) {
+                        if (data.content.includes(blockedDomains[i])) {
+                            res.json('blocked');
+                            return;
+                        }
+                    }
+
+                    // Add the source.
+                    let sqlQuery2 = 'INSERT INTO resources SET ?';
+                    let query2 = conn.query(sqlQuery2, data, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.json('');
+                            }
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -224,7 +251,7 @@ router.post('/generate-sources', (req, res, next) => {
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'      
         AND id < 212
-        AND id > 179
+        AND id > 180
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -232,6 +259,7 @@ router.post('/generate-sources', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+
                 skills = results;
                 skillsLength = skills.length;
                 // skillsLength = 5;
@@ -245,26 +273,46 @@ router.post('/generate-sources', (req, res, next) => {
                 let usedLinks = [];
                 // For dev to check if wasting too many ChatGPT tokens.
                 let brokenLinkCount = 0;
+                // Check new urls agains this list.
+                let blockedDomains = [];
 
-                // We go through all skills sequencially, one at a time.
-                getSource(
-                    usedLinks,
-                    brokenLinkCount,
-                    index,
-                    numSourcesForSkillRemaining
-                );
+                // As we are posting sources for all skills, we get all skills.
+                let sqlQuery2 = `SELECT * FROM blacklisted_sources`;
+                let query2 = conn.query(sqlQuery2, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+                        // Get the blocked domain urls.
+                        for (let i = 0; i < results.length; i++) {
+                            blockedDomains.push(results[i].root_domain);
+                        }
+                        // We go through all skills sequencially, one at a time.
+                        getSource(
+                            usedLinks,
+                            brokenLinkCount,
+                            index,
+                            numSourcesForSkillRemaining,
+                            blockedDomains
+                        );
+                    } catch (err) {
+                        next(err);
+                    }
+                });
             } catch (err) {
                 next(err);
             }
         });
     }
 });
+
 // Get source from ChatGPT.
 async function getSource(
     usedLinks,
     brokenLinkCount,
     index,
-    numSourcesForSkillRemaining
+    numSourcesForSkillRemaining,
+    blockedDomains
 ) {
     // Get the skill data.-----
     // Replace underscore with space.
@@ -318,14 +366,15 @@ async function getSource(
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
-        console.log(responseObj);
+        //   console.log(responseObj);
         // Check if webpages actually exist (because with GPT4 +- half links dont exist.)
         checkSources(
             responseObj,
             usedLinks,
             brokenLinkCount,
             index,
-            numSourcesForSkillRemaining
+            numSourcesForSkillRemaining,
+            blockedDomains
         );
     } catch (err) {
         // Variable to stop the loop through the skills.
@@ -343,7 +392,8 @@ async function checkSources(
     usedLinks,
     brokenLinkCount,
     index,
-    numSourcesForSkillRemaining
+    numSourcesForSkillRemaining,
+    blockedDomains
 ) {
     // Check if link has already been used.
     if (usedLinks.includes(responseObj.url)) {
@@ -353,13 +403,25 @@ async function checkSources(
             usedLinks,
             brokenLinkCount,
             index,
-            numSourcesForSkillRemaining
+            numSourcesForSkillRemaining,
+            blockedDomains
         );
         return;
     }
-    // Make this synchronous
-    // so as to not waste tokens on duplicates,
-    // and more importantly, prevent ChatGPT API from crashing due to being overwhelmed.
+    // Check if in blocked domains list.
+    if (blockedDomains.includes(responseObj.url)) {
+        console.log('Blacklisted domain: ' + responseObj.url + '.');
+        // Get another source.
+        getSource(
+            usedLinks,
+            brokenLinkCount,
+            index,
+            numSourcesForSkillRemaining,
+            blockedDomains
+        );
+        return;
+    }
+    // Check if url exists.
     const urlExistsPromise = (url) =>
         new Promise((resolve, reject) =>
             urlExists(url, (err, exists) =>
@@ -386,7 +448,8 @@ async function checkSources(
                 usedLinks,
                 brokenLinkCount,
                 index,
-                numSourcesForSkillRemaining
+                numSourcesForSkillRemaining,
+                blockedDomains
             );
         }
     });
