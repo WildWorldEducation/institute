@@ -58,7 +58,9 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
+                    if (data == 'blocked') {
+                        alert('Unfortunately, that source cannot be added.');
+                    }
                 })
                 .then(() => {
                     this.$router.push('/skills/' + this.skillId);

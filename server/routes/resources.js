@@ -96,7 +96,7 @@ router.post('/add/:skillId', (req, res, next) => {
                             if (err) {
                                 throw err;
                             } else {
-                                res.end();
+                                res.json('');
                             }
                         } catch (err) {
                             next(err);
