@@ -102,11 +102,11 @@ export default {
 
         // For image upload.
         onFileChange(e) {
+            var files = e.target.files || e.dataTransfer.files;
+            if (!files.length) return;
             // delete the old image first
             this.image = '';
             this.avatar = this.image;
-            var files = e.target.files || e.dataTransfer.files;
-            if (!files.length) return;
             this.createImage(files[0]);
         },
         createImage(file) {

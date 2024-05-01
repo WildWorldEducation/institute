@@ -249,9 +249,8 @@ router.post('/generate-sources', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
-        WHERE type <> 'domain'      
-        AND id < 212
-        AND id > 180
+        WHERE type <> 'domain'              
+        AND id > 592
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -323,6 +322,8 @@ async function getSource(
         /<[^>]*>?/gm,
         ''
     );
+    let preferredDomains =
+        'Wikipedia, Khan Academy, Art of Problem Solving, Grammarly';
     // Create prompt for ChatGPT.
     let prompt =
         `
@@ -336,7 +337,10 @@ async function getSource(
         `, as described by this text: ` +
         masteryRequirements +
         `. The link should be for an article, worksheets, game, video or other educational resource.
-                           Please do not provide Youtube videos.`;
+                           Please do not provide Youtube videos.
+        Please preference sites from the following domains:` +
+        preferredDomains +
+        `.`;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
@@ -409,17 +413,19 @@ async function checkSources(
         return;
     }
     // Check if in blocked domains list.
-    if (blockedDomains.includes(responseObj.url)) {
-        console.log('Blacklisted domain: ' + responseObj.url + '.');
-        // Get another source.
-        getSource(
-            usedLinks,
-            brokenLinkCount,
-            index,
-            numSourcesForSkillRemaining,
-            blockedDomains
-        );
-        return;
+    for (let i = 0; i < blockedDomains.length; i++) {
+        if (responseObj.url.includes(blockedDomains[i])) {
+            console.log('Blacklisted domain: ' + responseObj.url + '.');
+            // Get another source.
+            getSource(
+                usedLinks,
+                brokenLinkCount,
+                index,
+                numSourcesForSkillRemaining,
+                blockedDomains
+            );
+            return;
+        }
     }
     // Check if url exists.
     const urlExistsPromise = (url) =>
@@ -438,7 +444,8 @@ async function checkSources(
                 usedLinks,
                 brokenLinkCount,
                 index,
-                numSourcesForSkillRemaining
+                numSourcesForSkillRemaining,
+                blockedDomains
             );
         } else {
             brokenLinkCount++;
@@ -461,7 +468,8 @@ async function addSource(
     usedLinks,
     brokenLinkCount,
     index,
-    numSourcesForSkillRemaining
+    numSourcesForSkillRemaining,
+    blockedDomains
 ) {
     // Create source.
     let link =
@@ -495,7 +503,8 @@ async function addSource(
                         usedLinks,
                         brokenLinkCount,
                         index,
-                        numSourcesForSkillRemaining
+                        numSourcesForSkillRemaining,
+                        blockedDomains
                     );
                 }
                 // Get first source for next skill.
@@ -508,7 +517,8 @@ async function addSource(
                         usedLinks,
                         brokenLinkCount,
                         index,
-                        numSourcesForSkillRemaining
+                        numSourcesForSkillRemaining,
+                        blockedDomains
                     );
                 }
                 // When all finished.
@@ -607,6 +617,76 @@ router.delete('/unblock-domain/:domainId', (req, res, next) => {
                 next(err);
             }
         });
+    }
+});
+
+/**
+ * Delete Duplicate Sources.
+ */
+function deleteDuplicateSources() {
+    // Get all sources.
+    let sqlQuery1 = `SELECT * FROM resources ORDER BY id`;
+    let query1 = conn.query(sqlQuery1, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            let sources = results;
+            let duplicateSources = [];
+            for (let i = 0; i < sources.length; i++) {
+                // extract the url.
+                var source1 = sources[i].content.match(`href="(.*)" target`);
+                if (source1 != null) {
+                    var source1Content = source1[1];
+                    for (let j = 0; j < sources.length; j++) {
+                        // extract the url.
+                        var source2 =
+                            sources[j].content.match(`href="(.*)" target`);
+                        if (source2 != null) {
+                            var source2Content = source2[1];
+                            // Only compare for the same skill.
+                            if (sources[i].skill_id == sources[j].skill_id) {
+                                // Make sure not the same source.
+                                if (sources[i].id != sources[j].id) {
+                                    if (source1Content == source2Content) {
+                                        duplicateSources.push(sources[j].id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // Delete them.
+            if (duplicateSources.length > 0) {
+                let sqlQuery2 =
+                    `DELETE from resources WHERE id IN (` +
+                    duplicateSources +
+                    `);`;
+                let query2 = conn.query(sqlQuery2, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+                        console.log(
+                            'Duplicate sources: ' + duplicateSources.length
+                        );
+                    } catch (err) {
+                        console.log(err);
+                    }
+                });
+            } else {
+                console.log('No duplicate sources found.');
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+router.delete('/delete-duplicate-sources', (req, res, next) => {
+    if (req.session.userName) {
+        deleteDuplicateSources();
     }
 });
 
