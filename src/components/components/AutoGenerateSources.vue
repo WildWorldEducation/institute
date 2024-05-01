@@ -55,6 +55,15 @@ export default {
             }
 
             this.ListBlockedRootDomains();
+        },
+        DeleteDuplicateSources() {
+            const result = fetch('/resources/delete-duplicate-sources', {
+                method: 'DELETE'
+            });
+
+            if (result.error) {
+                console.log(result.error);
+            }
         }
     }
 };
@@ -120,6 +129,10 @@ export default {
                 ></span>
             </li>
         </ul>
+        <h4>Delete Duplicate Sources</h4>
+        <button class="btn red-btn mt-3" @click="DeleteDuplicateSources">
+            Delete
+        </button>
     </div>
 </template>
 
