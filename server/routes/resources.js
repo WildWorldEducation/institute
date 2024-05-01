@@ -322,7 +322,7 @@ async function getSource(
         /<[^>]*>?/gm,
         ''
     );
-    let preferredDomains =
+    let whiteListedDomains =
         'Wikipedia, Khan Academy, Art of Problem Solving, Grammarly';
     // Create prompt for ChatGPT.
     let prompt =
@@ -338,8 +338,8 @@ async function getSource(
         masteryRequirements +
         `. The link should be for an article, worksheets, game, video or other educational resource.
                            Please do not provide Youtube videos.
-        Please preference sites from the following domains:` +
-        preferredDomains +
+        Please only select resources from the following domains:` +
+        whiteListedDomains +
         `.`;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
@@ -536,7 +536,7 @@ async function addSource(
 // Delete all sources from a particular root domain.
 router.post('/delete-domain', (req, res, next) => {
     if (req.session.userName) {
-        let rootDomain = req.body.rootDomain;
+        let rootDomain = req.body.blockedRootDomain;
 
         let sqlQuery1 =
             `DELETE FROM resources
@@ -607,6 +607,75 @@ router.delete('/unblock-domain/:domainId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
             'DELETE FROM blacklisted_sources WHERE id=' + req.params.domainId;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// Add root domain to whitelist for sources.
+router.post('/add-domain-to-whitelist', (req, res, next) => {
+    if (req.session.userName) {
+        let rootDomain = req.body.whiteListedRootDomain;
+
+        let sqlQuery =
+            `INSERT IGNORE INTO whitelisted_sources (root_domain)
+        VALUES ('` +
+            rootDomain +
+            `')`;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * List Whitelisted Root Domains
+ *
+ * @return response()
+ */
+router.get('/list-whitelisted-domains', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM `whitelisted_sources`';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Unblock Blocked Root Domain
+ */
+router.delete('/remove-domain-from-whitelist/:domainId', (req, res, next) => {
+    console.log('test');
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            'DELETE FROM whitelisted_sources WHERE id=' + req.params.domainId;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
