@@ -508,6 +508,8 @@ async function addSource(
         content: link
     };
 
+    console.log(responseObj.url);
+
     let sqlQuery = 'INSERT INTO resources SET ?';
     let query = conn.query(sqlQuery, data, (err, results, next) => {
         try {
