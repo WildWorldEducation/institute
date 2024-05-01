@@ -124,6 +124,8 @@ export default {
                 alert(
                     'Thanks you for flagging this skill. We will take a look as soon as possible '
                 );
+                // turn off the modal
+                this.showModal = false;
             });
         }
     }
@@ -375,14 +377,14 @@ export default {
                         class="btn red-btn w-25"
                         @click="showModal = false"
                     >
-                        No
+                        <span> No </span>
                     </button>
                     <button
                         type="button"
                         class="btn green-btn w-25"
-                        @click="deletePost(this.resourceId)"
+                        @click="flagSkill"
                     >
-                        Yes
+                        <span> Yes </span>
                     </button>
                 </div>
             </div>
@@ -450,11 +452,7 @@ export default {
     line-height: 24px;
     display: flex;
     align-items: center;
-    height: 44px;
-    padding-left: 18px;
-    padding-right: 18px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    justify-content: center;
 }
 
 .green-btn:hover {
@@ -468,9 +466,9 @@ export default {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 16px;
-
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .red-btn:hover {
@@ -485,11 +483,11 @@ export default {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 1rem;
-
     display: flex;
     align-items: center;
     height: auto;
-    width: fit-content;
+    align-items: center;
+    justify-content: center;
 }
 
 .green-btn:hover {

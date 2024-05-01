@@ -9,7 +9,9 @@ export default {
             votes: [],
             user: {},
             showModal: false,
-            resourceId: null
+            resourceId: null,
+            showFlaggingModal: false,
+            flagPost: ''
         };
     },
     computed: {
@@ -221,9 +223,14 @@ export default {
             fetch(url, requestOptions).then(() => {
                 console.log('getting response');
                 alert(
-                    'Thanks for flagging this skill. We will take a look soon'
+                    'Thanks for flagging this resource. We will take a look soon'
                 );
+                this.showFlaggingModal = false;
             });
+        },
+        handleOpenFlagModal(postId) {
+            this.flagPost = postId;
+            this.showFlaggingModal = true;
         }
     }
 };
@@ -379,7 +386,7 @@ export default {
                             title="flagging this resource for its error."
                             type="button"
                             class="btn"
-                            @click="flagSource(post.id)"
+                            @click="handleOpenFlagModal"
                         >
                             <div class="d-flex flex-row-reverse">
                                 <svg
@@ -445,6 +452,31 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- Modal of flagging resource -->
+        <div v-if="showFlaggingModal">
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <p>Are you sure you want to flagging this resource?</p>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn red-btn w-25"
+                            @click="showFlaggingModal = false"
+                        >
+                            <span> No </span>
+                        </button>
+                        <button
+                            type="button"
+                            class="btn green-btn w-25"
+                            @click="flagSource(flagPost)"
+                        >
+                            <span> Yes </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -464,6 +496,41 @@ export default {
     padding-right: 18px;
     padding-top: 10px;
     padding-bottom: 10px;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
+}
+
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    border: 1px solid #d33622;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.red-btn:hover {
+    background-color: #cc3535;
+    color: white;
+}
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    height: auto;
+    align-items: center;
+    justify-content: center;
 }
 
 .green-btn:hover {
