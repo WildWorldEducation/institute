@@ -237,7 +237,13 @@ export default {
 
                     <!-- Flag the skill button -->
                     <div class="d-flex flex-row-reverse">
-                        <button @click="flagSkill" type="button" class="btn">
+                        <button
+                            @click="flagSkill"
+                            type="button"
+                            class="btn"
+                            b-tooltip.hover
+                            title="flagging this skill for its error."
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 448 512"

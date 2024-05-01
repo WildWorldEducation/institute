@@ -382,7 +382,7 @@ export default {
             this.MakeMastered(this.skill);
         },
         flagQuestion(questionId) {
-            // Determine type of question
+            // Determine the type of flag based on question type
             const questionType =
                 this.question.questionType == 'mc'
                     ? 'mc_question'
@@ -447,6 +447,8 @@ export default {
                     </div>
                     <!-- Flag Icon -->
                     <button
+                        b-tooltip.hover
+                        title="flagging this question for its error."
                         @click="flagQuestion(question.id)"
                         type="button"
                         class="btn"

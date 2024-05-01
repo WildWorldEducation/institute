@@ -375,6 +375,8 @@ export default {
                         </button>
                         <!-- Flag button -->
                         <button
+                            b-tooltip.hover
+                            title="flagging this resource for its error."
                             type="button"
                             class="btn"
                             @click="flagSource(post.id)"
@@ -383,7 +385,9 @@ export default {
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 448 512"
-                                    style="height: 27px; opacity: 0.5"
+                                    style="opacity: 0.5"
+                                    height="20"
+                                    width="20"
                                 >
                                     <path
                                         fill="#8f7bd6"
