@@ -3,18 +3,19 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useTagsStore } from '../../stores/TagsStore';
 import { useSkillTagsStore } from '../../stores/SkillTagsStore';
-
+import { useRouter } from 'vue-router';
 export default {
     setup() {
         const skillsStore = useSkillsStore();
         const tagsStore = useTagsStore();
         if (tagsStore.tagsList.length == 0) tagsStore.getTagsList();
         const skillTagsStore = useSkillTagsStore();
-
+        const router = useRouter();
         return {
             skillsStore,
             tagsStore,
-            skillTagsStore
+            skillTagsStore,
+            router
         };
     },
     data() {
@@ -22,6 +23,7 @@ export default {
             skillId: this.$route.params.id,
             skills: [],
             skill: {
+                id: '',
                 name: '',
                 parent: '',
                 description: '',
@@ -78,7 +80,14 @@ export default {
                 superValidate: false,
                 noChild: false
             },
-            filters: []
+            filters: [],
+            // A flag to determine if delete button is hover or not
+            deleteButtonHover: false,
+            // modals relate states
+            showModal: false,
+            step1Confirm: false,
+            skillNameConfirm: '',
+            step2Confirm: false
         };
     },
     async mounted() {
@@ -152,6 +161,16 @@ export default {
                     );
                 }
             }
+        },
+        async DeleteSkill(id) {
+            // check confirm state
+            if (!this.step1Confirm || !this.step2Confirm) {
+                return;
+            }
+
+            await this.skillsStore.deleteSkill(id);
+            // redirect user back to skill list page
+            this.router.push('/skills');
         },
         // For image upload.
         onFileChange(e, type) {
@@ -346,11 +365,23 @@ export default {
                     });
             }
         },
-
         handleChooseSuperSkill(skill) {
             this.clusterParentInput.suggestSuperSkills = [];
             this.skill.parent = skill.id;
             this.clusterParentInput.inputText = skill.name;
+        },
+        handleCancelDeleteSkill() {
+            this.showModal = false;
+            this.step1Confirm = false;
+            this.step2Confirm = false;
+            this.skillNameConfirm = '';
+        },
+        handleConfirmInputChange() {
+            if (this.skillNameConfirm == this.skill.name) {
+                this.step2Confirm = true;
+            } else {
+                this.step2Confirm = false;
+            }
         }
     }
 };
@@ -811,6 +842,40 @@ export default {
             ></textarea>
         </div>
 
+        <!-- Delete Button -->
+        <div class="d-flex flex-column">
+            <div id="danger-label-div">
+                <div
+                    v-if="deleteButtonHover"
+                    id="danger-label"
+                    :class="{ shake: deleteButtonHover }"
+                >
+                    Danger !!!
+                </div>
+            </div>
+            <div>
+                <button
+                    class="btn red-btn"
+                    @mouseover="deleteButtonHover = true"
+                    @mouseleave="deleteButtonHover = false"
+                    @click="showModal = true"
+                >
+                    Delete Skill &nbsp;&nbsp;
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 448 512"
+                        width="20"
+                        height="20"
+                        fill="white"
+                    >
+                        <path
+                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                        />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
         <!-- Submit and cancel button -->
         <div class="row">
             <div class="col">
@@ -822,6 +887,81 @@ export default {
                         Submit
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <!-- Warning Modal  -->
+    <div v-if="showModal" id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content d-flex flex-column">
+            <div class="mb-4">
+                Delete {{ skill.name }}
+                <span>
+                    <img
+                        :src="skill.icon_image"
+                        alt="skill image"
+                        width="50"
+                        height="50"
+                    />
+                </span>
+            </div>
+            <!-- Warning section  -->
+            <div
+                v-if="!step1Confirm"
+                id="warning-section"
+                class="d-flex align-items-center"
+            >
+                <div class="me-3">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="#eed888"
+                    >
+                        <path
+                            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+                        />
+                    </svg>
+                </div>
+                <div>
+                    This action may remove this skill data and it relate content
+                    <span class="strong-warning">forever</span>!!
+                </div>
+            </div>
+            <!-- Type Name Confirm -->
+            <div v-if="step1Confirm">
+                <label for="name" class="conform-label"
+                    >Enter "{{ skill.name }}" in the box below to confirm</label
+                >
+                <input
+                    v-model="skillNameConfirm"
+                    class="form-control"
+                    type="text"
+                    placeholder="name"
+                    @input="handleConfirmInputChange"
+                />
+            </div>
+            <div class="mt-3 d-flex justify-content-between">
+                <button class="btn green-btn" @click="handleCancelDeleteSkill">
+                    Cancel
+                </button>
+                <button
+                    v-if="!step1Confirm"
+                    class="btn red-btn"
+                    @click="step1Confirm = true"
+                >
+                    I still want to delete this skill
+                </button>
+                <button
+                    v-if="step1Confirm"
+                    :class="[
+                        step2Confirm ? 'btn red-btn' : 'btn button-inactive'
+                    ]"
+                    @click="DeleteSkill(skill.id)"
+                >
+                    Delete Skill
+                </button>
             </div>
         </div>
     </div>
@@ -839,6 +979,10 @@ export default {
     display: flex;
     align-items: center;
     max-width: fit-content;
+}
+
+.green-btn:hover {
+    background-color: #65e0a5;
 }
 
 #page-tile {
@@ -1195,6 +1339,114 @@ export default {
     color: red;
     font-weight: 300;
 }
+
+#danger-label {
+    font-size: 1rem;
+    color: red;
+    font-weight: 300;
+}
+
+/* Shake animation for waring line */
+.shake {
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake {
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+#danger-label-div {
+    height: 1.5rem;
+}
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 670px;
+    /* Could be more or less, depending on screen size */
+}
+
+#warning-section {
+    background-color: #fff8c5;
+    border-radius: 5px;
+    border: 1px solid #eed888;
+    padding: 20px 10px;
+    margin: 10px 0px;
+}
+
+.strong-warning {
+    font-weight: 500;
+}
+
+.conform-label {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 4px;
+}
+
+.button-inactive {
+    background-color: #868888;
+    color: white;
+    border: 1px solid #868686;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.button-inactive:hover {
+    cursor: not-allowed;
+}
+
+/* _-_ End of warning modal styling _-_ */
 
 /* Style specific for phone view */
 @media (max-width: 767px) {
