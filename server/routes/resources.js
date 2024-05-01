@@ -274,6 +274,7 @@ router.post('/generate-sources', (req, res, next) => {
                 let brokenLinkCount = 0;
                 // Check new urls agains this list.
                 let blockedDomains = [];
+                let whiteListedDomains = [];
 
                 // As we are posting sources for all skills, we get all skills.
                 let sqlQuery2 = `SELECT * FROM blacklisted_sources`;
@@ -286,14 +287,32 @@ router.post('/generate-sources', (req, res, next) => {
                         for (let i = 0; i < results.length; i++) {
                             blockedDomains.push(results[i].root_domain);
                         }
-                        // We go through all skills sequencially, one at a time.
-                        getSource(
-                            usedLinks,
-                            brokenLinkCount,
-                            index,
-                            numSourcesForSkillRemaining,
-                            blockedDomains
-                        );
+                        // As we are posting sources for all skills, we get all skills.
+                        let sqlQuery3 = `SELECT * FROM whitelisted_sources`;
+                        let query3 = conn.query(sqlQuery3, (err, results) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                }
+                                // Get the whitelisted domain urls.
+                                for (let i = 0; i < results.length; i++) {
+                                    whiteListedDomains.push(
+                                        results[i].root_domain
+                                    );
+                                }
+                                // We go through all skills sequencially, one at a time.
+                                getSource(
+                                    usedLinks,
+                                    brokenLinkCount,
+                                    index,
+                                    numSourcesForSkillRemaining,
+                                    blockedDomains,
+                                    whiteListedDomains
+                                );
+                            } catch (err) {
+                                next(err);
+                            }
+                        });
                     } catch (err) {
                         next(err);
                     }
@@ -311,7 +330,8 @@ async function getSource(
     brokenLinkCount,
     index,
     numSourcesForSkillRemaining,
-    blockedDomains
+    blockedDomains,
+    whiteListedDomains
 ) {
     // Get the skill data.-----
     // Replace underscore with space.
@@ -322,8 +342,7 @@ async function getSource(
         /<[^>]*>?/gm,
         ''
     );
-    let whiteListedDomains =
-        'Wikipedia, Khan Academy, Art of Problem Solving, Grammarly';
+
     // Create prompt for ChatGPT.
     let prompt =
         `
