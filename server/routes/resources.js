@@ -677,13 +677,19 @@ function deleteDuplicateSources() {
                         console.log(err);
                     }
                 });
+            } else {
+                console.log('No duplicate sources found.');
             }
         } catch (err) {
             console.log(err);
         }
     });
 }
-//deleteDuplicateSources();
+router.delete('/delete-duplicate-sources', (req, res, next) => {
+    if (req.session.userName) {
+        deleteDuplicateSources();
+    }
+});
 
 // router.get('*', (req, res) => {
 //     res.redirect('/');
