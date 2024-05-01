@@ -635,6 +635,7 @@ router.post('/add-domain-to-whitelist', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
+                    res.end();
                 }
             } catch (err) {
                 next(err);
