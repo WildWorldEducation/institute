@@ -251,7 +251,7 @@ router.post('/generate-sources', (req, res, next) => {
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'      
         AND id < 212
-        AND id > 180
+        AND id > 181
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -409,17 +409,19 @@ async function checkSources(
         return;
     }
     // Check if in blocked domains list.
-    if (blockedDomains.includes(responseObj.url)) {
-        console.log('Blacklisted domain: ' + responseObj.url + '.');
-        // Get another source.
-        getSource(
-            usedLinks,
-            brokenLinkCount,
-            index,
-            numSourcesForSkillRemaining,
-            blockedDomains
-        );
-        return;
+    for (let i = 0; i < blockedDomains.length; i++) {
+        if (responseObj.url.includes(blockedDomains[i])) {
+            console.log('Blacklisted domain: ' + responseObj.url + '.');
+            // Get another source.
+            getSource(
+                usedLinks,
+                brokenLinkCount,
+                index,
+                numSourcesForSkillRemaining,
+                blockedDomains
+            );
+            return;
+        }
     }
     // Check if url exists.
     const urlExistsPromise = (url) =>
@@ -438,7 +440,8 @@ async function checkSources(
                 usedLinks,
                 brokenLinkCount,
                 index,
-                numSourcesForSkillRemaining
+                numSourcesForSkillRemaining,
+                blockedDomains
             );
         } else {
             brokenLinkCount++;
@@ -461,7 +464,8 @@ async function addSource(
     usedLinks,
     brokenLinkCount,
     index,
-    numSourcesForSkillRemaining
+    numSourcesForSkillRemaining,
+    blockedDomains
 ) {
     // Create source.
     let link =
@@ -495,7 +499,8 @@ async function addSource(
                         usedLinks,
                         brokenLinkCount,
                         index,
-                        numSourcesForSkillRemaining
+                        numSourcesForSkillRemaining,
+                        blockedDomains
                     );
                 }
                 // Get first source for next skill.
@@ -508,7 +513,8 @@ async function addSource(
                         usedLinks,
                         brokenLinkCount,
                         index,
-                        numSourcesForSkillRemaining
+                        numSourcesForSkillRemaining,
+                        blockedDomains
                     );
                 }
                 // When all finished.
