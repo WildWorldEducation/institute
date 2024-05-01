@@ -42,7 +42,7 @@ export default {
             isMastered: false,
             isUnlocked: false,
             filters: [],
-            showModal: true
+            showModal: false
         };
     },
     components: {
