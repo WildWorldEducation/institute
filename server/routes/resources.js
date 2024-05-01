@@ -323,6 +323,7 @@ async function getSource(
         /<[^>]*>?/gm,
         ''
     );
+    let preferredDomains = [];
     // Create prompt for ChatGPT.
     let prompt =
         `
@@ -336,7 +337,10 @@ async function getSource(
         `, as described by this text: ` +
         masteryRequirements +
         `. The link should be for an article, worksheets, game, video or other educational resource.
-                           Please do not provide Youtube videos.`;
+                           Please do not provide Youtube videos.
+        Please preference sites from the following domains:` +
+        preferredDomains +
+        `.`;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
@@ -615,6 +619,70 @@ router.delete('/unblock-domain/:domainId', (req, res, next) => {
         });
     }
 });
+
+/**
+ * Delete Duplicate Sources.
+ */
+function deleteDuplicateSources() {
+    // Get all sources.
+    let sqlQuery1 = `SELECT * FROM resources ORDER BY id`;
+    let query1 = conn.query(sqlQuery1, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            let sources = results;
+            let duplicateSources = [];
+            for (let i = 0; i < sources.length; i++) {
+                // extract the url.
+                var source1 = sources[i].content.match(`href="(.*)" target`);
+                if (source1 != null) {
+                    var source1Content = source1[1];
+                    for (let j = 0; j < sources.length; j++) {
+                        // extract the url.
+                        var source2 =
+                            sources[j].content.match(`href="(.*)" target`);
+                        if (source2 != null) {
+                            var source2Content = source2[1];
+                            // Only compare for the same skill.
+                            if (sources[i].skill_id == sources[j].skill_id) {
+                                // Make sure not the same source.
+                                if (sources[i].id != sources[j].id) {
+                                    if (source1Content == source2Content) {
+                                        duplicateSources.push(sources[j].id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // Delete them.
+            if (duplicateSources.length > 0) {
+                let sqlQuery2 =
+                    `DELETE from resources WHERE id IN (` +
+                    duplicateSources +
+                    `);`;
+                let query2 = conn.query(sqlQuery2, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+                        console.log(
+                            'Duplicate sources: ' + duplicateSources.length
+                        );
+                    } catch (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+//deleteDuplicateSources();
 
 // router.get('*', (req, res) => {
 //     res.redirect('/');
