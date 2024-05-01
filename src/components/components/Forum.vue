@@ -576,6 +576,7 @@ h2 {
     width: 300px;
     /* Could be more or less, depending on screen size */
 }
+/* End of Warning modal styling */
 
 .post-user-row {
     display: flex;
