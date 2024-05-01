@@ -323,7 +323,8 @@ async function getSource(
         /<[^>]*>?/gm,
         ''
     );
-    let preferredDomains = [];
+    let preferredDomains =
+        'Wikipedia, Khan Academy, Art of Problem Solving, Grammarly';
     // Create prompt for ChatGPT.
     let prompt =
         `
