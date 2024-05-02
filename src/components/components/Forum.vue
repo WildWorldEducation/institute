@@ -481,27 +481,6 @@ export default {
 </template>
 
 <style scoped>
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    height: 44px;
-    padding-left: 18px;
-    padding-right: 18px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.green-btn:hover {
-    background-color: #3eb3a3;
-}
-
 .red-btn {
     background-color: #e24d4d;
     color: white;

@@ -21,7 +21,9 @@ export default {
             skillFlags: [],
             resourcesFlags: [],
             mcQuestionFlags: [],
-            isContentFlagsLoaded: false
+            isContentFlagsLoaded: false,
+            showDismissModal: false,
+            flagId: ''
         };
     },
     components: {},
@@ -29,17 +31,18 @@ export default {
     async mounted() {
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList();
-            console.log('1');
+            console.log('skill list data acquired');
         }
         if (this.resourcesStore.resourcesList.length == 0) {
             await this.resourcesStore.getResourcesList();
-            console.log('2');
+            console.log('resource list data acquired');
         }
         if (this.mcQuestionsStore.mcQuestionsList.length == 0) {
             await this.mcQuestionsStore.getMCQuestionsList();
-            console.log('3');
+            console.log('question list data acquired');
         }
 
+        // call to content flags route
         await this.getContentFlags();
     },
     methods: {
@@ -128,7 +131,12 @@ export default {
             this.skillFlags = [];
             this.resourcesFlags = [];
             this.mcQuestionFlags = [];
+            this.showDismissModal = false;
             this.getContentFlags();
+        },
+        handleOpenDismissModal(flagId) {
+            this.flagId = flagId;
+            this.showDismissModal = true;
         }
     }
 };
@@ -206,7 +214,7 @@ export default {
                     >&nbsp;&nbsp;
                     <button
                         class="btn red-btn"
-                        @click="dismissFlag(question.flagId)"
+                        @click="handleOpenDismissModal(question.flagId)"
                     >
                         Dismiss&nbsp;
                         <!-- X icon -->
@@ -271,7 +279,7 @@ export default {
                     >&nbsp;&nbsp;
                     <button
                         class="btn red-btn"
-                        @click="dismissFlag(resource.flagId)"
+                        @click="handleOpenDismissModal(resource.flagId)"
                     >
                         Dismiss&nbsp;
                         <!-- X icon -->
@@ -335,7 +343,7 @@ export default {
                     >&nbsp;&nbsp;
                     <button
                         class="btn red-btn"
-                        @click="dismissFlag(skill.flagId)"
+                        @click="handleOpenDismissModal(skill.flagId)"
                     >
                         Dismiss&nbsp;
                         <!-- X icon -->
@@ -351,6 +359,31 @@ export default {
                                 fill="white"
                             />
                         </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal of dismiss flagging content -->
+    <div v-if="showDismissModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>Are you sure you want to dismiss this flag?</p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        type="button"
+                        class="btn red-btn w-25"
+                        @click="showDismissModal = false"
+                    >
+                        <span> No </span>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn green-btn w-25"
+                        @click="dismissFlag(flagId)"
+                    >
+                        <span> Yes </span>
                     </button>
                 </div>
             </div>
@@ -393,23 +426,76 @@ h2 {
 }
 
 .purple-btn:hover {
-    background-color: #7f56d9 !important;
+    background-color: #7e59cf !important;
+    color: white;
 }
 
 .red-btn {
-    background-color: #da7033;
+    background-color: #e24d4d;
     color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
+    border: 1px solid #d33622;
+    font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 16px;
-    line-height: 24px;
     display: flex;
     align-items: center;
-    max-width: fit-content;
+    justify-content: center;
 }
 
 .red-btn:hover {
-    background-color: rgb(209, 96, 15);
+    background-color: #cc3535;
+    color: white;
 }
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    height: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
+    color: white;
+}
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 20%;
+    /* Could be more or less, depending on screen size */
+}
+/* End of Modal Styling */
 </style>
