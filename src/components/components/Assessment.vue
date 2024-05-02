@@ -45,7 +45,9 @@ export default {
             waitForMarkModal: false,
             // the flag to determine whether the student update assessment
             oldAssessment: undefined,
-            updatedAssessment: false
+            updatedAssessment: false,
+            // flagging modal data
+            showFlaggingModal: false
         };
     },
     mounted: function () {
@@ -396,7 +398,12 @@ export default {
                 })
             };
             var url = '/content-flags/add';
-            fetch(url, requestOptions);
+            fetch(url, requestOptions).then(() => {
+                alert(
+                    'Thanks you for flagging this question. We will take a look soon.'
+                );
+                this.showFlaggingModal = false;
+            });
         }
     }
 };
@@ -449,7 +456,7 @@ export default {
                     <button
                         b-tooltip.hover
                         title="flagging this question for its error."
-                        @click="flagQuestion(question.id)"
+                        @click="showFlaggingModal = true"
                         type="button"
                         class="btn"
                         style="height: 50px"
@@ -610,6 +617,31 @@ export default {
                         @click="this.$router.push('/')"
                     >
                         OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal of flagging resource -->
+    <div v-if="showFlaggingModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>Are you sure you want to flagging this question ?</p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        type="button"
+                        class="btn red-btn w-25"
+                        @click="showFlaggingModal = false"
+                    >
+                        <span> No </span>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn green-btn w-25"
+                        @click="flagQuestion(question.id)"
+                    >
+                        <span> Yes </span>
                     </button>
                 </div>
             </div>
