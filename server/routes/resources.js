@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 592
+        AND id > 644
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -357,9 +357,9 @@ async function getSource(
         masteryRequirements +
         `. The link should be for an article, worksheets, game, video or other educational resource.
                            Please do not provide Youtube videos.
-        Please only select resources from the following domains:` +
+        Please strongly preference resources from the following urls:` +
         whiteListedDomains +
-        `.`;
+        `. Please provide only links to free sites, and please do not provide links aimed at parents or teachers.`;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
@@ -389,7 +389,8 @@ async function getSource(
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
-        //   console.log(responseObj);
+        console.log(typeof responseObj);
+        console.log(responseObj);
         // Check if webpages actually exist (because with GPT4 +- half links dont exist.)
         checkSources(
             responseObj,
@@ -431,6 +432,7 @@ async function checkSources(
         );
         return;
     }
+
     // Check if in blocked domains list.
     for (let i = 0; i < blockedDomains.length; i++) {
         if (responseObj.url.includes(blockedDomains[i])) {
