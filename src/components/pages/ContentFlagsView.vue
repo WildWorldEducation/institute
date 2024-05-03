@@ -2,6 +2,8 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useResourcesStore } from '../../stores/ResourcesStore.js';
 import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
+import Vue3EasyDataTable from 'vue3-easy-data-table';
+import 'vue3-easy-data-table/dist/style.css';
 
 export default {
     setup() {
@@ -23,10 +25,65 @@ export default {
             mcQuestionFlags: [],
             isContentFlagsLoaded: false,
             showDismissModal: false,
-            flagId: ''
+            flagId: '',
+            headers: [
+                { text: 'PLAYER', value: 'player' },
+                { text: 'TEAM', value: 'team' },
+                { text: 'NUMBER', value: 'number' },
+                { text: 'POSITION', value: 'position' },
+                { text: 'HEIGHT', value: 'indicator.height' },
+                {
+                    text: 'WEIGHT (lbs)',
+                    value: 'indicator.weight',
+                    sortable: true
+                },
+                { text: 'LAST ATTENDED', value: 'lastAttended', width: 200 },
+                { text: 'COUNTRY', value: 'country' }
+            ],
+
+            items: [
+                {
+                    player: 'Stephen Curry',
+                    team: 'GSW',
+                    number: 30,
+                    position: 'G',
+                    indicator: { height: '6-2', weight: 185 },
+                    lastAttended: 'Davidson',
+                    country: 'USA'
+                },
+                {
+                    player: 'Lebron James',
+                    team: 'LAL',
+                    number: 6,
+                    position: 'F',
+                    indicator: { height: '6-9', weight: 250 },
+                    lastAttended: 'St. Vincent-St. Mary HS (OH)',
+                    country: 'USA'
+                },
+                {
+                    player: 'Kevin Durant',
+                    team: 'BKN',
+                    number: 7,
+                    position: 'F',
+                    indicator: { height: '6-10', weight: 240 },
+                    lastAttended: 'Texas-Austin',
+                    country: 'USA'
+                },
+                {
+                    player: 'Giannis Antetokounmpo',
+                    team: 'MIL',
+                    number: 34,
+                    position: 'F',
+                    indicator: { height: '6-11', weight: 242 },
+                    lastAttended: 'Filathlitikos',
+                    country: 'Greece'
+                }
+            ]
         };
     },
-    components: {},
+    components: {
+        Vue3EasyDataTable
+    },
     async created() {},
     async mounted() {
         if (this.skillsStore.skillsList.length == 0) {
@@ -144,6 +201,7 @@ export default {
 
 <template>
     <div class="container">
+        <Vue3EasyDataTable :headers="headers" :items="items" alternating />
         <span v-if="isContentFlagsLoaded == false">Loading...</span>
         <span v-else-if="contentFlags.length == 0"
             >No content flagged currently</span

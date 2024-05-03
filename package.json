@@ -35,7 +35,8 @@
     "vue-advanced-cropper": "^2.8.8",
     "vue-multiselect": "^3.0.0-beta.3",
     "vue-router": "^4.1.6",
-    "vue-socials": "^2.0.3"
+    "vue-socials": "^2.0.3",
+    "vue3-easy-data-table": "^1.5.47"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
