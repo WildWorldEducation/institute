@@ -1,13 +1,10 @@
 <script>
-import router from '../../router';
-
 export default {
     data() {
         return {
             skillId: this.$route.params.skillId,
             // bind object
             question: {
-                name: '',
                 question: '',
                 correctAnswer: '',
                 incorrectAnswer1: '',
@@ -20,7 +17,6 @@ export default {
             // validate object
             validate: {
                 validated: false,
-                name: false,
                 question: false,
                 correctAnswer: false,
                 incorrectAnswer1: false,
@@ -36,11 +32,6 @@ export default {
             // Reset the validate flag before re-checking
             this.validate.validated = false;
             // Check data before fetching
-            if (this.question.name === '' || this.question.name === null) {
-                this.validate.name = true;
-                this.validate.validated = true;
-            }
-
             if (
                 this.question.question === '' ||
                 this.question.question === null
@@ -105,7 +96,6 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: this.question.name,
                     question: this.question.question,
                     correct_answer: this.question.correctAnswer,
                     incorrect_answer_1: this.question.incorrectAnswer1,
@@ -116,7 +106,7 @@ export default {
                     skill_id: this.skillId
                 })
             };
-            var url = '/questions/mc-questions/add';
+            var url = '/questions/student-mc-questions/add';
             fetch(url, requestOptions)
                 .then(() => {
                     alert('Question added');
@@ -136,33 +126,15 @@ export default {
     <div class="container mt-3 pb-3">
         <div class="row">
             <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Add Question</h2>
+                <h4 id="header-tile">
+                    Please Add Your Own Question on This Topic
+                </h4>
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
         <div class="main-content-container container-fluid mt-4">
             <div class="row p-0">
                 <div id="form-container" class="col-lg-6 p-4">
-                    <div class="mb-3">
-                        <label for="question_name" class="form-label"
-                            >Question Name</label
-                        >
-                        <input
-                            v-model="question.name"
-                            type="text"
-                            class="form-control"
-                            id="question_name"
-                        />
-                        <div
-                            v-if="
-                                validate.name &&
-                                (question.name === '' || question.name === null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter a question name !
-                        </div>
-                    </div>
                     <div class="mb-3">
                         <label for="last_name" class="form-label"
                             >Question</label
@@ -349,7 +321,7 @@ export default {
 #header-tile {
     color: #667085;
     font-family: 'Poppins' sans-serif;
-    font-size: 2.375rem;
+    /* font-size: 2.375rem; */
     font-weight: 900;
     line-height: 41px;
     letter-spacing: 0em;

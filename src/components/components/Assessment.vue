@@ -398,6 +398,7 @@ export default {
 </script>
 
 <template>
+    <router-link to="/student-mc-question">student add question</router-link>
     <!-- <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div v-if="loading == true">Loading...</div>
     <div v-if="loading == false">
