@@ -416,4 +416,42 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
     }
 });
 
+/**
+ * Student Add MC Question.
+ */
+router.post('/student-mc-questions/add', (req, res, next) => {
+    if (req.session.userName) {
+        // No need to escape single quotes for SQL to accept,
+        // as using '?'.
+        // Add data.
+        let data = {};
+        data = {
+            question: req.body.question,
+            correct_answer: req.body.correct_answer,
+            incorrect_answer_1: req.body.incorrect_answer_1,
+            incorrect_answer_2: req.body.incorrect_answer_2,
+            incorrect_answer_3: req.body.incorrect_answer_3,
+            incorrect_answer_4: req.body.incorrect_answer_4,
+            explanation: req.body.explanation,
+            skill_id: req.body.skill_id,
+            student_id: req.body.student_id
+        };
+
+        let sqlQuery = 'INSERT INTO student_mc_questions SET ?';
+        let query = conn.query(sqlQuery, data, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 module.exports = router;

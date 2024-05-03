@@ -1,5 +1,14 @@
 <script>
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+
 export default {
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+
+        return {
+            userDetailsStore
+        };
+    },
     data() {
         return {
             skillId: this.$route.params.skillId,
@@ -24,10 +33,15 @@ export default {
                 incorrectAnswer3: false,
                 incorrectAnswer4: false,
                 explanation: false
-            }
+            },
+            studentId: null
         };
     },
     methods: {
+        created() {
+            // Get current user Details
+            this.studentId = await this.userDetailsStore.getUserDetails();
+        },
         Submit() {
             // Reset the validate flag before re-checking
             this.validate.validated = false;
@@ -103,7 +117,8 @@ export default {
                     incorrect_answer_3: this.question.incorrectAnswer3,
                     incorrect_answer_4: this.question.incorrectAnswer4,
                     explanation: this.question.explanation,
-                    skill_id: this.skillId
+                    skill_id: this.skillId,
+                    student_id: this.studentId
                 })
             };
             var url = '/questions/student-mc-questions/add';
