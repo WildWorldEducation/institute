@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 722
+        AND id > 733
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
