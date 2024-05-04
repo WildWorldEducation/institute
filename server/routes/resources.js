@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 742
+        AND id > 745
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -411,21 +411,20 @@ async function getSource(
 // Check if the source link actually exists,
 // and has not been hallucinated by ChatGPT.
 const urlExists = require('url-exists');
-//const urlExist = require('url-exist');
 const urlExist = (...args) =>
     import('url-exist').then(({ default: fetch }) => fetch(...args));
 
-console.log(urlExist);
+// console.log(urlExist);
 
-async function test() {
-    const test = await urlExist('https://google.com');
-    console.log(test);
+// async function test() {
+//     const test = await urlExist('https://google.com');
+//     console.log(test);
 
-    const test2 = await urlExist('https://google.com/404ingURL');
-    console.log(test2);
-}
+//     const test2 = await urlExist('https://google.com/404ingURL');
+//     console.log(test2);
+// }
 
-test();
+// test();
 
 async function checkSources(
     responseObj,
@@ -464,39 +463,40 @@ async function checkSources(
             return;
         }
     }
+
     // Check if url exists.
-    const urlExistsPromise = (url) =>
-        new Promise((resolve, reject) =>
-            urlExists(url, (err, exists) =>
-                err ? reject(err) : resolve(exists)
-            )
+    const urlExists = await urlExist(responseObj.url);
+    // To try to prevent duplication, thereby saving ChatGPT tokens.
+    usedLinks.push(responseObj.url);
+    if (urlExists) {
+        // Add to database.
+        addSource(
+            responseObj,
+            usedLinks,
+            brokenLinkCount,
+            index,
+            numSourcesForSkillRemaining,
+            blockedDomains
         );
-    urlExistsPromise(responseObj.url).then((exists) => {
-        // To try to prevent duplication, thereby saving ChatGPT tokens.
-        usedLinks.push(responseObj.url);
-        if (exists) {
-            // Add to database.
-            addSource(
-                responseObj,
-                usedLinks,
-                brokenLinkCount,
-                index,
-                numSourcesForSkillRemaining,
-                blockedDomains
-            );
-        } else {
-            brokenLinkCount++;
-            console.log('Broken links: ' + brokenLinkCount);
-            // Get another source.
-            getSource(
-                usedLinks,
-                brokenLinkCount,
-                index,
-                numSourcesForSkillRemaining,
-                blockedDomains
-            );
-        }
-    });
+    } else {
+        brokenLinkCount++;
+        console.log('Broken links: ' + brokenLinkCount);
+        // Get another source.
+        getSource(
+            usedLinks,
+            brokenLinkCount,
+            index,
+            numSourcesForSkillRemaining,
+            blockedDomains
+        );
+    }
+    // const urlExistsPromise = (url) =>
+    //     new Promise((resolve, reject) =>
+    //         urlExists(url, (err, exists) =>
+    //             err ? reject(err) : resolve(exists)
+    //         )
+    //     );
+    //urlExistsPromise(responseObj.url).then((exists) => {});
 }
 
 // Add to DB.
