@@ -30,6 +30,7 @@
     "pdfkit": "^0.14.0",
     "pinia": "^2.0.32",
     "svg-to-pdfkit": "^0.1.8",
+    "url-exist": "^3.0.1",
     "url-exists": "^1.0.3",
     "vue": "^3.2.47",
     "vue-advanced-cropper": "^2.8.8",
