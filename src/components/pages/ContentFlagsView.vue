@@ -2,6 +2,7 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useResourcesStore } from '../../stores/ResourcesStore.js';
 import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
+import { useEssayQuestionsStore } from '../../stores/EssayQuestionsStore.js';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
@@ -10,11 +11,12 @@ export default {
         const skillsStore = useSkillsStore();
         const resourcesStore = useResourcesStore();
         const mcQuestionsStore = useMCQuestionsStore();
-
+        const essayQuestionsStore = useEssayQuestionsStore();
         return {
             skillsStore,
             resourcesStore,
-            mcQuestionsStore
+            mcQuestionsStore,
+            essayQuestionsStore
         };
     },
     data() {
@@ -29,7 +31,7 @@ export default {
             headers: [
                 { text: 'Name', value: 'name' },
                 { text: 'Type', value: 'type' },
-                { text: 'Action', value: 'action' }
+                { text: 'Action', value: 'action', width: 300 }
             ],
 
             rows: []
@@ -50,7 +52,11 @@ export default {
         }
         if (this.mcQuestionsStore.mcQuestionsList.length == 0) {
             await this.mcQuestionsStore.getMCQuestionsList();
-            console.log('question list data acquired');
+            console.log('multiple choice question list data acquired');
+        }
+        if (this.essayQuestionsStore.essayQuestionsList.length == 0) {
+            await this.essayQuestionsStore.getEssayQuestionsList();
+            console.log('essay question list data acquired');
         }
 
         // call to content flags route
@@ -179,6 +185,50 @@ export default {
                                     this.rows.push(tableRow);
                                 }
                             }
+                        } else if (
+                            this.contentFlags[i].content_type ==
+                            'essay_question'
+                        ) {
+                            for (
+                                let j = 0;
+                                j <
+                                this.essayQuestionsStore.essayQuestionsList
+                                    .length;
+                                j++
+                            ) {
+                                if (
+                                    this.contentFlags[i].content_id ==
+                                    this.essayQuestionsStore.essayQuestionsList[
+                                        j
+                                    ].id
+                                ) {
+                                    this.skillFlags.push(
+                                        this.essayQuestionsStore
+                                            .essayQuestionsList[j]
+                                    );
+                                    // Prepare Data for table
+                                    const tableRow = {
+                                        type: 'essay question',
+                                        name: this.essayQuestionsStore
+                                            .essayQuestionsList[j].question,
+                                        nameUrl:
+                                            'skills/' +
+                                            this.essayQuestionsStore
+                                                .essayQuestionsList[j]
+                                                .skill_id +
+                                            '/question-bank',
+                                        flagId: this.contentFlags[i].id,
+                                        editUrl:
+                                            'skills/edit/' +
+                                            this.essayQuestionsStore
+                                                .essayQuestionsList[j].id,
+                                        expandContent:
+                                            this.essayQuestionsStore
+                                                .essayQuestionsList[j]
+                                    };
+                                    this.rows.push(tableRow);
+                                }
+                            }
                         }
                     }
                     this.isContentFlagsLoaded = true;
@@ -229,17 +279,12 @@ export default {
                 table-class-name="customize-table"
             >
                 <template #loading>
-                    <iframe
-                        src="https://giphy.com/embed/YpqWbjNDq8y4DVu4BO"
-                        width="480"
-                        height="478"
-                        frameBorder="0"
-                        class="giphy-embed"
-                        allowFullScreen
-                    ></iframe>
+                    <img src="/images/loading.gif" alt="loading data" />
                 </template>
                 <template #item-name="{ name, nameUrl }">
-                    <RouterLink :to="`/${nameUrl}`">{{ name }}</RouterLink>
+                    <RouterLink class="flag-name" :to="`/${nameUrl}`">{{
+                        name
+                    }}</RouterLink>
                 </template>
                 <template #item-action="{ flagId, nameUrl, editUrl }">
                     <div class="d-flex mt-3">
@@ -330,6 +375,17 @@ export default {
                                 {{ expandContent.explanation }}
                             </p>
                         </div>
+                        <!-- Essay Expand content -->
+                        <div>
+                            <p>
+                                <strong>Name:</strong>
+                                {{ expandContent.name }}
+                            </p>
+                            <p>
+                                <strong>Question:</strong>
+                                {{ expandContent.question }}
+                            </p>
+                        </div>
                         <!-- Skill Expand content -->
                         <div v-if="type == 'skill'">
                             <p>
@@ -381,6 +437,10 @@ export default {
 </template>
 
 <style>
+div {
+    font-family: 'Poppins', sans-serif !important;
+}
+
 h1 {
     color: #8f7bd6;
     font-family: 'Poppins', sans-serif;
@@ -455,6 +515,17 @@ h2 {
     color: white;
 }
 
+.flag-name {
+    text-decoration: none;
+    font-family: 'Poppins';
+    color: #8f7bd6;
+}
+
+.flag-name:hover {
+    color: #7e59cf;
+    text-decoration: underline;
+}
+
 /* The Warning Modal */
 .modal {
     display: block;
@@ -491,5 +562,6 @@ h2 {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
+    --easy-table-header-font-size: 16px;
 }
 </style>
