@@ -410,21 +410,8 @@ async function getSource(
 
 // Check if the source link actually exists,
 // and has not been hallucinated by ChatGPT.
-const urlExists = require('url-exists');
 const urlExist = (...args) =>
     import('url-exist').then(({ default: fetch }) => fetch(...args));
-
-// console.log(urlExist);
-
-// async function test() {
-//     const test = await urlExist('https://google.com');
-//     console.log(test);
-
-//     const test2 = await urlExist('https://google.com/404ingURL');
-//     console.log(test2);
-// }
-
-// test();
 
 async function checkSources(
     responseObj,
@@ -490,13 +477,6 @@ async function checkSources(
             blockedDomains
         );
     }
-    // const urlExistsPromise = (url) =>
-    //     new Promise((resolve, reject) =>
-    //         urlExists(url, (err, exists) =>
-    //             err ? reject(err) : resolve(exists)
-    //         )
-    //     );
-    //urlExistsPromise(responseObj.url).then((exists) => {});
 }
 
 // Add to DB.
