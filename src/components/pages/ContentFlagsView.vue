@@ -562,6 +562,12 @@ h2 {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
+
     --easy-table-header-font-size: 16px;
+    --easy-table-header-font-color: #8f7bd6;
+    --easy-table-header-background-color: #fefefe;
+    --easy-table-header-height: 50px;
+
+    --easy-table-header-item-padding: 15px 5px;
 }
 </style>
