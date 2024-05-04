@@ -6,6 +6,7 @@ import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useAssessmentsStore } from '../../stores/AssessmentsStore';
 import EssayAnswer from './EssayAnswer.vue';
+import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
 
 export default {
     setup() {
@@ -45,7 +46,9 @@ export default {
             waitForMarkModal: false,
             // the flag to determine whether the student update assessment
             oldAssessment: undefined,
-            updatedAssessment: false
+            updatedAssessment: false,
+            // flag for the feature for students to submit a question if they pass the quiz.
+            quizPassed: false
         };
     },
     mounted: function () {
@@ -128,7 +131,8 @@ export default {
         }
     },
     components: {
-        EssayAnswer
+        EssayAnswer,
+        StudentAddMCQuestion
     },
     methods: {
         async fetchMCQuestions(skillId) {
@@ -291,6 +295,7 @@ export default {
                     // Make skill mastered for this student.
                     this.MakeMastered(this.skill);
                     this.passModal = true;
+                    this.quizPassed = true;
                 } else {
                     this.failedModal = true;
                 }
@@ -398,10 +403,9 @@ export default {
 </script>
 
 <template>
-    <router-link to="/student-mc-question">student add question</router-link>
     <!-- <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
     <div v-if="loading == true">Loading...</div>
-    <div v-if="loading == false">
+    <div v-if="loading == false && quizPassed == false">
         <!-- Show student a warning if their take this assessment before and still wait for marking -->
         <div v-if="updatedAssessment">
             <div id="myModal" class="modal">
@@ -609,6 +613,7 @@ export default {
             </div>
         </div>
     </div>
+    <StudentAddMCQuestion v-if="quizPassed == true" />
 </template>
 
 <style scoped>

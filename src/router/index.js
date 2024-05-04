@@ -104,12 +104,6 @@ const router = createRouter({
                 import('../components/pages/ListUnmarkedAssessmentsView.vue')
         },
         {
-            path: '/student-mc-question',
-            name: 'student-mc-question',
-            component: () =>
-                import('../components/pages/StudentAddMCQuestionView.vue')
-        },
-        {
             path: '/mark-assessment/:id',
             name: 'mark-assessment',
             component: () =>

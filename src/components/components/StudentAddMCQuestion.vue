@@ -40,7 +40,7 @@ export default {
     methods: {
         created() {
             // Get current user Details
-            this.studentId = await this.userDetailsStore.getUserDetails();
+            this.studentId = this.userDetailsStore.getUserDetails();
         },
         Submit() {
             // Reset the validate flag before re-checking
