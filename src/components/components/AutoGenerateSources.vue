@@ -126,12 +126,18 @@ export default {
                 <button class="btn green-btn mt-3" @click="GenerateSources">
                     Generate Sources
                 </button>
-                <p style="font-size: 14px">
-                    <em>Warning, this can cost a lot each time.</em>
+                <p style="font-size: 14px" class="mt-2">
+                    <strong>Notes:</strong>
+                    <ul>
+                        <li><em>The above feature/button is not ready for admins/non-developers to use yet.</em></li>                        
+                        <li><em>It can cost a lot each time.</em></li>
+                        <li><em>It runs for all ~3700 relevant skills.</em></li>                        
+                        <li><em>It crashes frequently.</em></li>                        
+                    </ul>
                 </p>
             </div>
         </div>
-        <h2 class="mt-3">Blacklist Domain and Delete Sources:</h2>
+        <h2 class="mt-3">Blacklist Domain</h2>
         <div class="mb-4">
             <input
                 type="text"
@@ -141,6 +147,9 @@ export default {
             <button class="btn red-btn mt-3" @click="DeleteSourcesByRootDomain">
                 Delete & Block
             </button>
+            <p style="font-size: 14px">
+                <em>This will also delete sources using these domains.</em>
+            </p>
         </div>
         <h3>Blacklisted Domains:</h3>
         <ul class="mb-5">
@@ -210,6 +219,9 @@ export default {
         <button class="btn red-btn mt-3" @click="DeleteDuplicateSources">
             Delete
         </button>
+        <p style="font-size: 14px">
+            <em>To search for and delete duplicate urls for the same skill.</em>
+        </p>
     </div>
 </template>
 
