@@ -786,7 +786,7 @@ const link = require('linkinator');
 async function complex() {
     // create a new `LinkChecker` that we'll use to run the scan.
     const checker = new link.LinkChecker();
-    
+
     // Respond to the beginning of a new page being scanned
     checker.on('pagestart', (url) => {
         console.log(`Scanning ${url}`);
