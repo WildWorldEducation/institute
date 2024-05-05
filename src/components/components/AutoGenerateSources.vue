@@ -189,6 +189,9 @@ export default {
             >
                 Add
             </button>
+            <p style="font-size: 14px">
+                <em>The AI will preference these domains.</em>
+            </p>
         </div>
         <h3 class="mt-4">Whitelisted Domains:</h3>
         <ul>
