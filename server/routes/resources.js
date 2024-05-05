@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 742
+        AND id > 777
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -410,7 +410,9 @@ async function getSource(
 
 // Check if the source link actually exists,
 // and has not been hallucinated by ChatGPT.
-const urlExists = require('url-exists');
+const urlExist = (...args) =>
+    import('url-exist').then(({ default: fetch }) => fetch(...args));
+
 async function checkSources(
     responseObj,
     usedLinks,
@@ -448,39 +450,33 @@ async function checkSources(
             return;
         }
     }
+
     // Check if url exists.
-    const urlExistsPromise = (url) =>
-        new Promise((resolve, reject) =>
-            urlExists(url, (err, exists) =>
-                err ? reject(err) : resolve(exists)
-            )
+    const urlExists = await urlExist(responseObj.url);
+    // To try to prevent duplication, thereby saving ChatGPT tokens.
+    usedLinks.push(responseObj.url);
+    if (urlExists) {
+        // Add to database.
+        addSource(
+            responseObj,
+            usedLinks,
+            brokenLinkCount,
+            index,
+            numSourcesForSkillRemaining,
+            blockedDomains
         );
-    urlExistsPromise(responseObj.url).then((exists) => {
-        // To try to prevent duplication, thereby saving ChatGPT tokens.
-        usedLinks.push(responseObj.url);
-        if (exists) {
-            // Add to database.
-            addSource(
-                responseObj,
-                usedLinks,
-                brokenLinkCount,
-                index,
-                numSourcesForSkillRemaining,
-                blockedDomains
-            );
-        } else {
-            brokenLinkCount++;
-            console.log('Broken links: ' + brokenLinkCount);
-            // Get another source.
-            getSource(
-                usedLinks,
-                brokenLinkCount,
-                index,
-                numSourcesForSkillRemaining,
-                blockedDomains
-            );
-        }
-    });
+    } else {
+        brokenLinkCount++;
+        console.log('Broken links: ' + brokenLinkCount);
+        // Get another source.
+        getSource(
+            usedLinks,
+            brokenLinkCount,
+            index,
+            numSourcesForSkillRemaining,
+            blockedDomains
+        );
+    }
 }
 
 // Add to DB.

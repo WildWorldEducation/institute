@@ -131,8 +131,8 @@ export default {
                 </p>
             </div>
         </div>
-        <h4>Delete Sources and Block Domain:</h4>
-        <div class="mb-3">
+        <h2 class="mt-3">Blacklist Domain and Delete Sources:</h2>
+        <div class="mb-4">
             <input
                 type="text"
                 v-model="blockedRootDomain"
@@ -142,13 +142,13 @@ export default {
                 Delete & Block
             </button>
         </div>
-        <h4>Blocked Domains:</h4>
-        <ul>
+        <h3>Blacklisted Domains:</h3>
+        <ul class="mb-5">
             <li v-for="domain in blockedRootDomains">
                 <span class="d-flex"
                     ><span>{{ domain.root_domain }}&nbsp;</span>
                     <button
-                        class="btn red-btn"
+                        class="btn red-btn red-mini-btn"
                         @click="UnBlockRootDomain(domain.id)"
                     >
                         <!-- X icon -->
@@ -167,7 +167,7 @@ export default {
                 ></span>
             </li>
         </ul>
-        <h4>Whitelist Domain:</h4>
+        <h2>Whitelist Domain:</h2>
         <div class="mb-3">
             <input
                 type="text"
@@ -175,19 +175,19 @@ export default {
                 class="form-control"
             />
             <button
-                class="btn red-btn mt-3"
+                class="btn green-btn mt-3"
                 @click="AddRootDomainToWhiteList()"
             >
                 Add
             </button>
         </div>
-        <h4>Whitelisted Domains:</h4>
+        <h3 class="mt-4">Whitelisted Domains:</h3>
         <ul>
             <li v-for="domain in whiteListedRootDomains">
                 <span class="d-flex"
                     ><span>{{ domain.root_domain }}&nbsp;</span>
                     <button
-                        class="btn red-btn"
+                        class="btn red-btn red-mini-btn"
                         @click="RemoveFromWhiteList(domain.id)"
                     >
                         <!-- X icon -->
@@ -206,7 +206,7 @@ export default {
                 ></span>
             </li>
         </ul>
-        <h4>Delete Duplicate Sources</h4>
+        <h2 class="mt-5">Delete Duplicate Sources</h2>
         <button class="btn red-btn mt-3" @click="DeleteDuplicateSources">
             Delete
         </button>
@@ -219,13 +219,13 @@ export default {
     color: white;
     border: 1px solid #2ca695;
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
     font-size: 1rem;
     line-height: 24px;
     display: flex;
     align-items: center;
     height: auto;
     width: fit-content;
+    font-weight: 400;
 }
 
 .green-btn:hover {
@@ -243,9 +243,14 @@ export default {
     display: flex;
     align-items: center;
     max-width: fit-content;
+    height: auto;
 }
 
 .red-btn:hover {
     background-color: rgb(209, 96, 15);
+}
+
+.red-mini-btn {
+    height: 22px;
 }
 </style>
