@@ -779,6 +779,72 @@ router.delete('/delete-duplicate-sources', (req, res, next) => {
     }
 });
 
+/**
+ * Search For and Delete Broken Links.
+ */
+
+// First get all links in all sources.
+var sourceLinks = [];
+function getSources() {
+    // Get all sources.
+    let sqlQuery = `SELECT * FROM resources ORDER BY id`;
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            let sources = results;
+            for (let i = 0; i < sources.length; i++) {
+                // extract the url.
+                var source = sources[i].content.match(`href="(.*)" target`);
+                if (source != null) {
+                    sourceLinks.push(source[1]);
+                }
+            }
+            deleteBrokenSources(sourceLinks);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+// Then check them manually.
+// Run by devs, not admins.
+// Currently makes mistakes, so need to check manually and delete manually.
+const { UrlChecker } = require('broken-link-checker');
+function deleteBrokenSources(sourceLinks) {
+    var i = 0;
+    const urlChecker = new UrlChecker(
+        {
+            acceptedSchemes: ['http', 'https'],
+            excludeLinksToSamePage: true
+        },
+        {
+            error: (error) => {
+                console.error(error);
+            },
+            end: () => {
+                if (i < sourceLinks.length) {
+                    i++;
+                    urlChecker.enqueue(sourceLinks[i]);
+                }
+            },
+            link: (result) => {
+                if (result.broken) {
+                    console.log(result);
+                }
+            }
+        }
+    );
+    urlChecker.enqueue(sourceLinks[i]);
+}
+
+router.delete('/delete-broken-sources', (req, res, next) => {
+    console.log('scanning for broken links');
+    if (req.session.userName) {
+        getSources();
+    }
+});
+
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });
