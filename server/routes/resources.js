@@ -801,37 +801,45 @@ function getSources() {
                     sourceLinks.push(source[1]);
                 }
             }
+            deleteBrokenSources(sourceLinks);
         } catch (err) {
             console.log(err);
         }
     });
 }
 
-getSources();
-
-function checkSourceLinks(sourceLinks) {
+function deleteBrokenSources(sourceLinks) {
     import('linkinator')
         .then((linkinator) => {
-            async function checkLinks() {
-                const results = await linkinator.check({
-                    path: 'http://example.com'
+            async function checkLinks(link) {
+                // create a new `LinkChecker` that we'll use to run the scan.
+                const checker = new linkinator.LinkChecker();
+
+                // After a page is scanned, check out the results!
+                checker.on('link', (result) => {
+                    console.log(result[0]);
                 });
 
-                // To see if all the links passed, you can check `passed`
-                //    console.log(`Passed: ${results.passed}`);
+                // Go ahead and start the scan! As events occur, we will see them above.
+                const result = await checker.check({
+                    path: link
+                });
+            }
 
-                // Show the list of scanned links and their results
-                console.log(results);
-                console.log(results.links[0].state);
-            }
-            for (let i = 0; i < sourceLinks.length; i++) {
-                checkLinks(sourceLinks[i]);
-            }
+            let i = 0;
+            checkLinks(sourceLinks[i]);
         })
         .catch((err) => {
             console.log(err);
         });
 }
+
+router.delete('/delete-broken-sources', (req, res, next) => {
+    console.log('scanning for broken links');
+    if (req.session.userName) {
+        getSources();
+    }
+});
 
 // router.get('*', (req, res) => {
 //     res.redirect('/');

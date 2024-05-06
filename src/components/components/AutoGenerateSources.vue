@@ -98,6 +98,15 @@ export default {
             if (result.error) {
                 console.log(result.error);
             }
+        },
+        DeleteBrokenSources() {
+            const result = fetch('/resources/delete-broken-sources', {
+                method: 'DELETE'
+            });
+
+            if (result.error) {
+                console.log(result.error);
+            }
         }
     }
 };
@@ -224,6 +233,13 @@ export default {
         </button>
         <p style="font-size: 14px">
             <em>To search for and delete duplicate urls for the same skill.</em>
+        </p>
+        <h2 class="mt-5">Scan For and Delete Sources with Broken Links</h2>
+        <button class="btn red-btn mt-3" @click="DeleteBrokenSources">
+            Scan and Delete
+        </button>
+        <p style="font-size: 14px">
+            <em>To search for and delete sources containing broken urls.</em>
         </p>
     </div>
 </template>
