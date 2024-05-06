@@ -49,28 +49,28 @@ router.get('/list', async (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                resData.push(results);
+                resData = resData.concat(results);
                 // Get data for essay_question type flag
                 let sqlEssayQuery = "SELECT cf.*, json_object('question', es.question, 'name', es.name, 'skillName', sk.name) as contentData FROM content_flags AS cf JOIN essay_questions AS es ON cf.content_id = es.id JOIN skills AS sk ON sk.id = es.skill_id WHERE cf.content_type = 'essay_question' GROUP BY cf.id "
                 conn.query(sqlEssayQuery, (err, results) => {
                     if (err) {
                         throw err;
                     }
-                    resData.push(results)
+                    resData = resData.concat(results);
                     // Get data for skill type flag
                     let sqlSkillQuery = "SELECT cf.*, json_object('name', sk.name, 'description', sk.description, 'masteryRequirements', sk.mastery_requirements, 'level', sk.level) as contentData FROM content_flags AS cf JOIN skills AS sk ON cf.content_id = sk.id WHERE cf.content_type = 'skill' GROUP BY cf.id "
                     conn.query(sqlSkillQuery, (err, results) => {
                         if (err) {
                             throw err;
                         }
-                        resData.push(results)
+                        resData = resData.concat(results);
                         // Get Data for resource type flag 
                         let sqlResourceQuery = "SELECT cf.*,  JSON_OBJECT('content', re.content ,'skill' , sk.name, 'user', u.username) as contentData FROM content_flags AS cf JOIN resources AS re ON cf.content_id = re.id JOIN skills AS sk ON sk.id = re.skill_id JOIN users AS u ON u.id = re.user_id WHERE cf.content_type = 'resource' GROUP BY cf.id "
                         conn.query(sqlResourceQuery, (err, results) => {
                             if (err) {
                                 throw err;
                             }
-                            resData.push(results)
+                            resData = resData.concat(results);
                             res.json(resData);
                         })
                     })

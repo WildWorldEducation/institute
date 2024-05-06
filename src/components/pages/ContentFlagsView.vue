@@ -42,23 +42,6 @@ export default {
     },
     async created() {},
     async mounted() {
-        if (this.skillsStore.skillsList.length == 0) {
-            await this.skillsStore.getSkillsList();
-            console.log('skill list data acquired');
-        }
-        if (this.resourcesStore.resourcesList.length == 0) {
-            await this.resourcesStore.getResourcesList();
-            console.log('resource list data acquired');
-        }
-        if (this.mcQuestionsStore.mcQuestionsList.length == 0) {
-            await this.mcQuestionsStore.getMCQuestionsList();
-            console.log('multiple choice question list data acquired');
-        }
-        if (this.essayQuestionsStore.essayQuestionsList.length == 0) {
-            await this.essayQuestionsStore.getEssayQuestionsList();
-            console.log('essay question list data acquired');
-        }
-
         // call to content flags route
         await this.getContentFlags();
     },
@@ -73,163 +56,190 @@ export default {
                 })
                 .then(() => {
                     for (let i = 0; i < this.contentFlags.length; i++) {
-                        if (this.contentFlags[i].content_type == 'skill') {
-                            for (
-                                let j = 0;
-                                j < this.skillsStore.skillsList.length;
-                                j++
-                            ) {
-                                if (
-                                    this.contentFlags[i].content_id ==
-                                    this.skillsStore.skillsList[j].id
-                                ) {
-                                    this.skillsStore.skillsList[j].flagId =
-                                        this.contentFlags[i].id;
-                                    this.skillFlags.push(
-                                        this.skillsStore.skillsList[j]
-                                    );
-                                    // Prepare Data for table
-                                    const tableRow = {
-                                        type: 'skill',
-                                        name: this.skillsStore.skillsList[j]
-                                            .name,
-                                        nameUrl:
-                                            'skills/' +
-                                            this.skillsStore.skillsList[j].id,
-                                        flagId: this.contentFlags[i].id,
-                                        editUrl:
-                                            'skills/edit/' +
-                                            this.skillsStore.skillsList[j].id,
-                                        expandContent:
-                                            this.skillsStore.skillsList[j]
-                                    };
-                                    this.rows.push(tableRow);
-                                }
-                            }
-                        } else if (
-                            this.contentFlags[i].content_type == 'resource'
-                        ) {
-                            for (
-                                let j = 0;
-                                j < this.resourcesStore.resourcesList.length;
-                                j++
-                            ) {
-                                if (
-                                    this.contentFlags[i].content_id ==
-                                    this.resourcesStore.resourcesList[j].id
-                                ) {
-                                    this.resourcesStore.resourcesList[
-                                        j
-                                    ].flagId = this.contentFlags[i].id;
-                                    this.resourcesFlags.push(
-                                        this.resourcesStore.resourcesList[j]
-                                    );
-                                    // Prepare Data for table
-                                    const tableRow = {
-                                        type: 'resource',
-                                        name: this.skillsStore.resourcesList[j]
-                                            .name,
-                                        nameUrl:
-                                            'resources/' +
-                                            this.skillsStore.resourcesList[j]
-                                                .id,
-                                        flagId: this.contentFlags[i].id,
-                                        editUrl:
-                                            'resources/edit/' +
-                                            this.skillsStore.resourcesList[j]
-                                                .id,
-                                        expandContent:
-                                            this.skillsStore.resourcesList[j]
-                                    };
-                                    this.rows.push(tableRow);
-                                }
-                            }
-                        } else if (
-                            this.contentFlags[i].content_type == 'mc_question'
-                        ) {
-                            for (
-                                let j = 0;
-                                j <
-                                this.mcQuestionsStore.mcQuestionsList.length;
-                                j++
-                            ) {
-                                if (
-                                    this.contentFlags[i].content_id ==
-                                    this.mcQuestionsStore.mcQuestionsList[j].id
-                                ) {
-                                    this.mcQuestionsStore.mcQuestionsList[
-                                        j
-                                    ].flagId = this.contentFlags[i].id;
-                                    this.mcQuestionFlags.push(
-                                        this.mcQuestionsStore.mcQuestionsList[j]
-                                    );
-                                    // Prepare Data for table
-                                    const tableRow = {
-                                        type: 'mc question',
-                                        name: this.mcQuestionsStore
-                                            .mcQuestionsList[j].question,
-                                        nameUrl:
-                                            'skills/' +
-                                            this.mcQuestionsStore
-                                                .mcQuestionsList[j].skill_id +
-                                            '/question-bank',
-                                        flagId: this.contentFlags[i].id,
-                                        editUrl:
-                                            '/mc-questions/edit/' +
-                                            this.mcQuestionsStore
-                                                .mcQuestionsList[j].id,
-                                        expandContent:
-                                            this.mcQuestionsStore
-                                                .mcQuestionsList[j]
-                                    };
-                                    this.rows.push(tableRow);
-                                }
-                            }
-                        } else if (
-                            this.contentFlags[i].content_type ==
-                            'essay_question'
-                        ) {
-                            for (
-                                let j = 0;
-                                j <
-                                this.essayQuestionsStore.essayQuestionsList
-                                    .length;
-                                j++
-                            ) {
-                                if (
-                                    this.contentFlags[i].content_id ==
-                                    this.essayQuestionsStore.essayQuestionsList[
-                                        j
-                                    ].id
-                                ) {
-                                    this.skillFlags.push(
-                                        this.essayQuestionsStore
-                                            .essayQuestionsList[j]
-                                    );
-                                    // Prepare Data for table
-                                    const tableRow = {
-                                        type: 'essay question',
-                                        name: this.essayQuestionsStore
-                                            .essayQuestionsList[j].question,
-                                        nameUrl:
-                                            'skills/' +
-                                            this.essayQuestionsStore
-                                                .essayQuestionsList[j]
-                                                .skill_id +
-                                            '/question-bank',
-                                        flagId: this.contentFlags[i].id,
-                                        editUrl:
-                                            'skills/edit/' +
-                                            this.essayQuestionsStore
-                                                .essayQuestionsList[j].id,
-                                        expandContent:
-                                            this.essayQuestionsStore
-                                                .essayQuestionsList[j]
-                                    };
-                                    this.rows.push(tableRow);
-                                }
-                            }
+                        const flag = this.contentFlags[i];
+                        // parse the content data because mysql library return it as a string
+                        const contentObj = JSON.parse(flag.contentData);
+                        switch (flag.content_type) {
+                            // Handle for mc question flag
+                            case 'mc_question':
+                                const tableRow = {
+                                    type: 'mc question',
+                                    name:
+                                        contentObj.name +
+                                        ' ' +
+                                        contentObj.question,
+                                    nameUrl:
+                                        'skills/' +
+                                        flag.content_id +
+                                        '/question-bank',
+                                    flagId: flag.id,
+                                    editUrl:
+                                        '/mc-questions/edit/' + flag.content_id,
+                                    expandContent: contentObj
+                                };
+                                this.rows.push(tableRow);
+                                break;
+
+                            default:
+                                break;
                         }
+                        // if (this.contentFlags[i].content_type == 'skill') {
+                        //     for (
+                        //         let j = 0;
+                        //         j < this.skillsStore.skillsList.length;
+                        //         j++
+                        //     ) {
+                        //         if (
+                        //             this.contentFlags[i].content_id ==
+                        //             this.skillsStore.skillsList[j].id
+                        //         ) {
+                        //             this.skillsStore.skillsList[j].flagId =
+                        //                 this.contentFlags[i].id;
+                        //             this.skillFlags.push(
+                        //                 this.skillsStore.skillsList[j]
+                        //             );
+                        //             // Prepare Data for table
+                        //             const tableRow = {
+                        //                 type: 'skill',
+                        //                 name: this.skillsStore.skillsList[j]
+                        //                     .name,
+                        //                 nameUrl:
+                        //                     'skills/' +
+                        //                     this.skillsStore.skillsList[j].id,
+                        //                 flagId: this.contentFlags[i].id,
+                        //                 editUrl:
+                        //                     'skills/edit/' +
+                        //                     this.skillsStore.skillsList[j].id,
+                        //                 expandContent:
+                        //                     this.skillsStore.skillsList[j]
+                        //             };
+                        //             this.rows.push(tableRow);
+                        //         }
+                        //     }
+                        // } else if (
+                        //     this.contentFlags[i].content_type == 'resource'
+                        // ) {
+                        //     for (
+                        //         let j = 0;
+                        //         j < this.resourcesStore.resourcesList.length;
+                        //         j++
+                        //     ) {
+                        //         if (
+                        //             this.contentFlags[i].content_id ==
+                        //             this.resourcesStore.resourcesList[j].id
+                        //         ) {
+                        //             this.resourcesStore.resourcesList[
+                        //                 j
+                        //             ].flagId = this.contentFlags[i].id;
+                        //             this.resourcesFlags.push(
+                        //                 this.resourcesStore.resourcesList[j]
+                        //             );
+                        //             // Prepare Data for table
+                        //             const tableRow = {
+                        //                 type: 'resource',
+                        //                 name: this.skillsStore.resourcesList[j]
+                        //                     .name,
+                        //                 nameUrl:
+                        //                     'resources/' +
+                        //                     this.skillsStore.resourcesList[j]
+                        //                         .id,
+                        //                 flagId: this.contentFlags[i].id,
+                        //                 editUrl:
+                        //                     'resources/edit/' +
+                        //                     this.skillsStore.resourcesList[j]
+                        //                         .id,
+                        //                 expandContent:
+                        //                     this.skillsStore.resourcesList[j]
+                        //             };
+                        //             this.rows.push(tableRow);
+                        //         }
+                        //     }
+                        // } else if (
+                        //     this.contentFlags[i].content_type == 'mc_question'
+                        // ) {
+                        //     for (
+                        //         let j = 0;
+                        //         j <
+                        //         this.mcQuestionsStore.mcQuestionsList.length;
+                        //         j++
+                        //     ) {
+                        //         if (
+                        //             this.contentFlags[i].content_id ==
+                        //             this.mcQuestionsStore.mcQuestionsList[j].id
+                        //         ) {
+                        //             this.mcQuestionsStore.mcQuestionsList[
+                        //                 j
+                        //             ].flagId = this.contentFlags[i].id;
+                        //             this.mcQuestionFlags.push(
+                        //                 this.mcQuestionsStore.mcQuestionsList[j]
+                        //             );
+                        //             // Prepare Data for table
+                        //             const tableRow = {
+                        //                 type: 'mc question',
+                        //                 name: this.mcQuestionsStore
+                        //                     .mcQuestionsList[j].question,
+                        //                 nameUrl:
+                        //                     'skills/' +
+                        //                     this.mcQuestionsStore
+                        //                         .mcQuestionsList[j].skill_id +
+                        //                     '/question-bank',
+                        //                 flagId: this.contentFlags[i].id,
+                        //                 editUrl:
+                        //                     '/mc-questions/edit/' +
+                        //                     this.mcQuestionsStore
+                        //                         .mcQuestionsList[j].id,
+                        //                 expandContent:
+                        //                     this.mcQuestionsStore
+                        //                         .mcQuestionsList[j]
+                        //             };
+                        //             this.rows.push(tableRow);
+                        //         }
+                        //     }
+                        // } else if (
+                        //     this.contentFlags[i].content_type ==
+                        //     'essay_question'
+                        // ) {
+                        //     for (
+                        //         let j = 0;
+                        //         j <
+                        //         this.essayQuestionsStore.essayQuestionsList
+                        //             .length;
+                        //         j++
+                        //     ) {
+                        //         if (
+                        //             this.contentFlags[i].content_id ==
+                        //             this.essayQuestionsStore.essayQuestionsList[
+                        //                 j
+                        //             ].id
+                        //         ) {
+                        //             this.skillFlags.push(
+                        //                 this.essayQuestionsStore
+                        //                     .essayQuestionsList[j]
+                        //             );
+                        //             // Prepare Data for table
+                        //             const tableRow = {
+                        //                 type: 'essay question',
+                        //                 name: this.essayQuestionsStore
+                        //                     .essayQuestionsList[j].question,
+                        //                 nameUrl:
+                        //                     'skills/' +
+                        //                     this.essayQuestionsStore
+                        //                         .essayQuestionsList[j]
+                        //                         .skill_id +
+                        //                     '/question-bank',
+                        //                 flagId: this.contentFlags[i].id,
+                        //                 editUrl:
+                        //                     'skills/edit/' +
+                        //                     this.essayQuestionsStore
+                        //                         .essayQuestionsList[j].id,
+                        //                 expandContent:
+                        //                     this.essayQuestionsStore
+                        //                         .essayQuestionsList[j]
+                        //             };
+                        //             this.rows.push(tableRow);
+                        //         }
+                        //     }
+                        // }
                     }
                     this.isContentFlagsLoaded = true;
                 });
