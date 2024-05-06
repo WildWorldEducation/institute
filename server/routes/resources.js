@@ -782,54 +782,56 @@ router.delete('/delete-duplicate-sources', (req, res, next) => {
 /**
  * Search For and Delete Broken Links.
  */
-const link = require('linkinator');
-async function complex() {
-    // create a new `LinkChecker` that we'll use to run the scan.
-    const checker = new link.LinkChecker();
 
-    // Respond to the beginning of a new page being scanned
-    checker.on('pagestart', (url) => {
-        console.log(`Scanning ${url}`);
+// Use this for above also.
+var sourceLinks = [];
+function getSources() {
+    // Get all sources.
+    let sqlQuery = `SELECT * FROM resources ORDER BY id`;
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            let sources = results;
+            for (let i = 0; i < sources.length; i++) {
+                // extract the url.
+                var source = sources[i].content.match(`href="(.*)" target`);
+                if (source != null) {
+                    sourceLinks.push(source[1]);
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
     });
-
-    // After a page is scanned, check out the results!
-    checker.on('link', (result) => {
-        // check the specific url that was scanned
-        console.log(`  ${result.url}`);
-
-        // How did the scan go?  Potential states are `BROKEN`, `OK`, and `SKIPPED`
-        console.log(`  ${result.state}`);
-
-        // What was the status code of the response?
-        console.log(`  ${result.status}`);
-
-        // What page linked here?
-        console.log(`  ${result.parent}`);
-    });
-
-    // Go ahead and start the scan! As events occur, we will see them above.
-    const result = await checker.check({
-        path: 'http://example.com'
-        // port: 8673,
-        // recurse: true,
-        // linksToSkip: [
-        //   'https://jbeckwith.com/some/link',
-        //   'http://example.com'
-        // ]
-    });
-
-    // Check to see if the scan passed!
-    console.log(result.passed ? 'PASSED :D' : 'FAILED :(');
-
-    // How many links did we scan?
-    console.log(`Scanned total of ${result.links.length} links!`);
-
-    // The final result will contain the list of checked links, and the pass/fail
-    const brokeLinksCount = result.links.filter((x) => x.state === 'BROKEN');
-    console.log(`Detected ${brokeLinksCount.length} broken links.`);
 }
 
-complex();
+getSources();
+
+function checkSourceLinks(sourceLinks) {
+    import('linkinator')
+        .then((linkinator) => {
+            async function checkLinks() {
+                const results = await linkinator.check({
+                    path: 'http://example.com'
+                });
+
+                // To see if all the links passed, you can check `passed`
+                //    console.log(`Passed: ${results.passed}`);
+
+                // Show the list of scanned links and their results
+                console.log(results);
+                console.log(results.links[0].state);
+            }
+            for (let i = 0; i < sourceLinks.length; i++) {
+                checkLinks(sourceLinks[i]);
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+}
 
 // router.get('*', (req, res) => {
 //     res.redirect('/');
