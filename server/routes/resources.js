@@ -783,7 +783,7 @@ router.delete('/delete-duplicate-sources', (req, res, next) => {
  * Search For and Delete Broken Links.
  */
 
-// Use this for above also.
+// First get all links in all sources.
 var sourceLinks = [];
 function getSources() {
     // Get all sources.
@@ -807,31 +807,35 @@ function getSources() {
         }
     });
 }
-
+// Then check them manually.
+// Run by devs, not admins.
+// Currently makes mistakes, so need to check manually and delete manually.
+const { UrlChecker } = require('broken-link-checker');
 function deleteBrokenSources(sourceLinks) {
-    import('linkinator')
-        .then((linkinator) => {
-            async function checkLinks(link) {
-                // create a new `LinkChecker` that we'll use to run the scan.
-                const checker = new linkinator.LinkChecker();
-
-                // After a page is scanned, check out the results!
-                checker.on('link', (result) => {
-                    console.log(result[0]);
-                });
-
-                // Go ahead and start the scan! As events occur, we will see them above.
-                const result = await checker.check({
-                    path: link
-                });
+    var i = 0;
+    const urlChecker = new UrlChecker(
+        {
+            acceptedSchemes: ['http', 'https'],
+            excludeLinksToSamePage: true
+        },
+        {
+            error: (error) => {
+                console.error(error);
+            },
+            end: () => {
+                if (i < sourceLinks.length) {
+                    i++;
+                    urlChecker.enqueue(sourceLinks[i]);
+                }
+            },
+            link: (result) => {
+                if (result.broken) {
+                    console.log(result);
+                }
             }
-
-            let i = 0;
-            checkLinks(sourceLinks[i]);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+        }
+    );
+    urlChecker.enqueue(sourceLinks[i]);
 }
 
 router.delete('/delete-broken-sources', (req, res, next) => {
