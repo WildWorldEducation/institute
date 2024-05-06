@@ -240,6 +240,7 @@ export default {
         </button>
         <p style="font-size: 14px">
             <em>To search for and delete sources containing broken urls.</em>
+            <em>To be done by devs and not admins. Need to be deleted manually. Need to check them manually first.</em>
         </p>
     </div>
 </template>
