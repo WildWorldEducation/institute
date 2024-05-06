@@ -65,7 +65,7 @@ router.get('/list', async (req, res, next) => {
                         }
                         resData = resData.concat(results);
                         // Get Data for resource type flag 
-                        let sqlResourceQuery = "SELECT cf.*,  JSON_OBJECT('content', re.content ,'skill' , sk.name, 'user', u.username) as contentData FROM content_flags AS cf JOIN resources AS re ON cf.content_id = re.id JOIN skills AS sk ON sk.id = re.skill_id JOIN users AS u ON u.id = re.user_id WHERE cf.content_type = 'resource' GROUP BY cf.id "
+                        let sqlResourceQuery = "SELECT cf.*,  JSON_OBJECT('content', re.content ,'skill' , sk.name, 'skillId', sk.id, 'user', u.username) as contentData FROM content_flags AS cf JOIN resources AS re ON cf.content_id = re.id JOIN skills AS sk ON sk.id = re.skill_id JOIN users AS u ON u.id = re.user_id WHERE cf.content_type = 'resource' GROUP BY cf.id "
                         conn.query(sqlResourceQuery, (err, results) => {
                             if (err) {
                                 throw err;

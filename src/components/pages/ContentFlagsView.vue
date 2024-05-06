@@ -62,7 +62,7 @@ export default {
                         switch (flag.content_type) {
                             // Handle for mc question flag
                             case 'mc_question':
-                                const tableRow = {
+                                const tableRowMC = {
                                     type: 'mc question',
                                     name:
                                         contentObj.name +
@@ -77,9 +77,60 @@ export default {
                                         '/mc-questions/edit/' + flag.content_id,
                                     expandContent: contentObj
                                 };
-                                this.rows.push(tableRow);
+                                this.rows.push(tableRowMC);
                                 break;
+                            // Handle for mc question flag
+                            case 'essay_question':
+                                const tableRowEssay = {
+                                    type: 'essay question',
+                                    name:
+                                        contentObj.name +
+                                        ' ' +
+                                        contentObj.question,
+                                    nameUrl:
+                                        'skills/' +
+                                        flag.content_id +
+                                        '/question-bank',
+                                    flagId: flag.id,
+                                    editUrl:
+                                        '/essay-questions/edit/' +
+                                        flag.content_id,
+                                    expandContent: contentObj
+                                };
+                                this.rows.push(tableRowEssay);
+                                break;
+                            // handle for skill flag
+                            case 'skill':
+                                const tableRowSkill = {
+                                    type: 'skill',
+                                    name: contentObj.name,
+                                    nameUrl: 'skills/' + flag.content_id,
 
+                                    flagId: flag.id,
+                                    editUrl: '/skills/edit/' + flag.content_id,
+                                    expandContent: contentObj
+                                };
+                                this.rows.push(tableRowSkill);
+                                break;
+                            // handle for resource flag
+                            case 'resource':
+                                const tableRowResource = {
+                                    type: 'resource',
+                                    name:
+                                        'Commend By ' +
+                                        contentObj.user +
+                                        ' in skill ' +
+                                        contentObj.skill +
+                                        ' forum',
+                                    nameUrl: 'skills/' + contentObj.skillId,
+
+                                    flagId: flag.id,
+                                    editUrl:
+                                        '/resources/edit/' + flag.content_id,
+                                    expandContent: contentObj
+                                };
+                                this.rows.push(tableRowResource);
+                                break;
                             default:
                                 break;
                         }
