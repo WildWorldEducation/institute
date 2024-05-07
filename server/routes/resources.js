@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 718
+        AND id > 777
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -410,7 +410,9 @@ async function getSource(
 
 // Check if the source link actually exists,
 // and has not been hallucinated by ChatGPT.
-const urlExists = require('url-exists');
+const urlExist = (...args) =>
+    import('url-exist').then(({ default: fetch }) => fetch(...args));
+
 async function checkSources(
     responseObj,
     usedLinks,
@@ -448,39 +450,33 @@ async function checkSources(
             return;
         }
     }
+
     // Check if url exists.
-    const urlExistsPromise = (url) =>
-        new Promise((resolve, reject) =>
-            urlExists(url, (err, exists) =>
-                err ? reject(err) : resolve(exists)
-            )
+    const urlExists = await urlExist(responseObj.url);
+    // To try to prevent duplication, thereby saving ChatGPT tokens.
+    usedLinks.push(responseObj.url);
+    if (urlExists) {
+        // Add to database.
+        addSource(
+            responseObj,
+            usedLinks,
+            brokenLinkCount,
+            index,
+            numSourcesForSkillRemaining,
+            blockedDomains
         );
-    urlExistsPromise(responseObj.url).then((exists) => {
-        // To try to prevent duplication, thereby saving ChatGPT tokens.
-        usedLinks.push(responseObj.url);
-        if (exists) {
-            // Add to database.
-            addSource(
-                responseObj,
-                usedLinks,
-                brokenLinkCount,
-                index,
-                numSourcesForSkillRemaining,
-                blockedDomains
-            );
-        } else {
-            brokenLinkCount++;
-            console.log('Broken links: ' + brokenLinkCount);
-            // Get another source.
-            getSource(
-                usedLinks,
-                brokenLinkCount,
-                index,
-                numSourcesForSkillRemaining,
-                blockedDomains
-            );
-        }
-    });
+    } else {
+        brokenLinkCount++;
+        console.log('Broken links: ' + brokenLinkCount);
+        // Get another source.
+        getSource(
+            usedLinks,
+            brokenLinkCount,
+            index,
+            numSourcesForSkillRemaining,
+            blockedDomains
+        );
+    }
 }
 
 // Add to DB.
@@ -780,6 +776,72 @@ function deleteDuplicateSources() {
 router.delete('/delete-duplicate-sources', (req, res, next) => {
     if (req.session.userName) {
         deleteDuplicateSources();
+    }
+});
+
+/**
+ * Search For and Delete Broken Links.
+ */
+
+// First get all links in all sources.
+var sourceLinks = [];
+function getSources() {
+    // Get all sources.
+    let sqlQuery = `SELECT * FROM resources ORDER BY id`;
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            let sources = results;
+            for (let i = 0; i < sources.length; i++) {
+                // extract the url.
+                var source = sources[i].content.match(`href="(.*)" target`);
+                if (source != null) {
+                    sourceLinks.push(source[1]);
+                }
+            }
+            deleteBrokenSources(sourceLinks);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+// Then check them manually.
+// Run by devs, not admins.
+// Currently makes mistakes, so need to check manually and delete manually.
+const { UrlChecker } = require('broken-link-checker');
+function deleteBrokenSources(sourceLinks) {
+    var i = 0;
+    const urlChecker = new UrlChecker(
+        {
+            acceptedSchemes: ['http', 'https'],
+            excludeLinksToSamePage: true
+        },
+        {
+            error: (error) => {
+                console.error(error);
+            },
+            end: () => {
+                if (i < sourceLinks.length) {
+                    i++;
+                    urlChecker.enqueue(sourceLinks[i]);
+                }
+            },
+            link: (result) => {
+                if (result.broken) {
+                    console.log(result);
+                }
+            }
+        }
+    );
+    urlChecker.enqueue(sourceLinks[i]);
+}
+
+router.delete('/delete-broken-sources', (req, res, next) => {
+    console.log('scanning for broken links');
+    if (req.session.userName) {
+        getSources();
     }
 });
 
