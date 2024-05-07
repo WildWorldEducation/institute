@@ -41,7 +41,8 @@ export default {
             userSkills: [],
             isMastered: false,
             isUnlocked: false,
-            filters: []
+            filters: [],
+            showModal: false
         };
     },
     components: {
@@ -119,7 +120,13 @@ export default {
                 })
             };
             var url = '/content-flags/add';
-            fetch(url, requestOptions);
+            fetch(url, requestOptions).then(() => {
+                alert(
+                    'Thanks you for flagging this skill. We will take a look as soon as possible '
+                );
+                // turn off the modal
+                this.showModal = false;
+            });
         }
     }
 };
@@ -230,14 +237,21 @@ export default {
                         <h2>Mastery Requirements</h2>
                     </div>
                     <div v-html="skill.mastery_requirements"></div>
+
+                    <!-- Flag the skill button -->
                     <div class="d-flex flex-row-reverse">
-                        <button @click="flagSkill" type="button" class="btn">
+                        <button
+                            @click="showModal = true"
+                            type="button"
+                            class="btn"
+                            b-tooltip.hover
+                            title="flagging this skill for its error."
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 448 512"
                                 style="height: 22px; opacity: 0.5"
                             >
-                                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                                 <path
                                     fill="#8f7bd6"
                                     d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
@@ -337,6 +351,45 @@ export default {
         </div>
         <p>&nbsp;</p>
     </div>
+    <!-- The flagging Modal -->
+    <div v-if="showModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex gap-4">
+                    <!-- Warn Triangle Icon -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        fill="grey"
+                        width="45"
+                        height="45"
+                    >
+                        <path
+                            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+                        />
+                    </svg>
+                    <p>Are you sure you want to flagging this skill ?</p>
+                </div>
+                <div class="d-flex justify-content-between gap-2">
+                    <button
+                        type="button"
+                        class="btn red-btn w-25"
+                        @click="showModal = false"
+                    >
+                        <span> No </span>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn green-btn w-25"
+                        @click="flagSkill"
+                    >
+                        <span> Yes </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -399,11 +452,42 @@ export default {
     line-height: 24px;
     display: flex;
     align-items: center;
-    height: 44px;
-    padding-left: 18px;
-    padding-right: 18px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    justify-content: center;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
+}
+
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    border: 1px solid #d33622;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.red-btn:hover {
+    background-color: #cc3535;
+    color: white;
+}
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    height: auto;
+    align-items: center;
+    justify-content: center;
 }
 
 .green-btn:hover {
@@ -413,6 +497,46 @@ export default {
 .btn-header {
     justify-content: space-between;
 }
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+#add-resource-column {
+    padding-right: 0px !important;
+    margin-right: 0px !important;
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 320px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+/* End of Warning modal styling */
 
 /* View Specific On Tablet */
 @media (min-width: 577px) and (max-width: 1023px) {

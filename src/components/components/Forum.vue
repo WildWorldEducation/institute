@@ -9,7 +9,9 @@ export default {
             votes: [],
             user: {},
             showModal: false,
-            resourceId: null
+            resourceId: null,
+            showFlaggingModal: false,
+            flagPost: ''
         };
     },
     computed: {
@@ -217,7 +219,18 @@ export default {
                 })
             };
             var url = '/content-flags/add';
-            fetch(url, requestOptions);
+
+            fetch(url, requestOptions).then(() => {
+                console.log('getting response');
+                alert(
+                    'Thanks for flagging this resource. We will take a look soon'
+                );
+                this.showFlaggingModal = false;
+            });
+        },
+        handleOpenFlagModal(postId) {
+            this.flagPost = postId;
+            this.showFlaggingModal = true;
         }
     }
 };
@@ -367,18 +380,22 @@ export default {
                                 />
                             </svg>
                         </button>
+                        <!-- Flag button -->
                         <button
+                            b-tooltip.hover
+                            title="flagging this resource for its error."
                             type="button"
                             class="btn"
-                            @click="flagSource(post.id)"
+                            @click="handleOpenFlagModal"
                         >
                             <div class="d-flex flex-row-reverse">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 448 512"
-                                    style="height: 27px; opacity: 0.5"
+                                    style="opacity: 0.5"
+                                    height="20"
+                                    width="20"
                                 >
-                                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                                     <path
                                         fill="#8f7bd6"
                                         d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
@@ -435,25 +452,64 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- Modal of flagging resource -->
+        <div v-if="showFlaggingModal">
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <p>Are you sure you want to flagging this resource?</p>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn red-btn w-25"
+                            @click="showFlaggingModal = false"
+                        >
+                            <span> No </span>
+                        </button>
+                        <button
+                            type="button"
+                            class="btn green-btn w-25"
+                            @click="flagSource(flagPost)"
+                        >
+                            <span> Yes </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    border: 1px solid #d33622;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.red-btn:hover {
+    background-color: #cc3535;
+    color: white;
+}
+
 .green-btn {
     background-color: #36c1af;
     color: white;
     border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 1rem;
-    line-height: 24px;
     display: flex;
     align-items: center;
-    height: 44px;
-    padding-left: 18px;
-    padding-right: 18px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    height: auto;
+    align-items: center;
+    justify-content: center;
 }
 
 .green-btn:hover {
@@ -566,6 +622,7 @@ h2 {
     width: 300px;
     /* Could be more or less, depending on screen size */
 }
+/* End of Warning modal styling */
 
 .post-user-row {
     display: flex;
