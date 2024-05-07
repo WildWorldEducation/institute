@@ -51,7 +51,7 @@ router.get('/list', async (req, res, next) => {
                 }
                 resData = resData.concat(results);
                 // Get data for essay_question type flag
-                let sqlEssayQuery = "SELECT cf.*, json_object('question', es.question, 'name', es.name, 'skillName', sk.name) as contentData FROM content_flags AS cf JOIN essay_questions AS es ON cf.content_id = es.id JOIN skills AS sk ON sk.id = es.skill_id WHERE cf.content_type = 'essay_question' GROUP BY cf.id "
+                let sqlEssayQuery = "SELECT cf.*, json_object('question', es.question, 'name', es.name, 'skillName', sk.name, 'skillId', sk.id) as contentData FROM content_flags AS cf JOIN essay_questions AS es ON cf.content_id = es.id JOIN skills AS sk ON sk.id = es.skill_id WHERE cf.content_type = 'essay_question' GROUP BY cf.id "
                 conn.query(sqlEssayQuery, (err, results) => {
                     if (err) {
                         throw err;

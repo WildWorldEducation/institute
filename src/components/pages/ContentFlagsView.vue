@@ -89,7 +89,7 @@ export default {
                                         contentObj.question,
                                     nameUrl:
                                         'skills/' +
-                                        flag.content_id +
+                                        contentObj.skillId +
                                         '/question-bank',
                                     flagId: flag.id,
                                     editUrl:
@@ -306,15 +306,21 @@ export default {
                             </div>
                         </div>
                         <!-- Essay Expand content -->
-                        <div v-if="type == 'essay_question'">
-                            <div>
-                                <div>Name:</div>
+                        <div v-if="type == 'essay question'">
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Belong to skill:</div>
+                                <div>
+                                    {{ expandContent.skillName }}
+                                </div>
+                            </div>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Name:</div>
                                 {{ expandContent.name }}
                             </div>
-                            <p>
-                                <strong>Question:</strong>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Question:</div>
                                 {{ expandContent.question }}
-                            </p>
+                            </div>
                         </div>
                         <!-- Skill Expand content -->
                         <div v-if="type == 'skill'">
