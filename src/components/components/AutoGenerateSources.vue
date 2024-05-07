@@ -238,10 +238,15 @@ export default {
         <button class="btn red-btn mt-3" @click="DeleteBrokenSources">
             Scan and Delete
         </button>
-        <p style="font-size: 14px">
-            <em>To search for and delete sources containing broken urls.</em>
-            <em>To be done by devs and not admins. Need to be deleted manually. Need to check them manually first.</em>
-        </p>
+        <div style="font-size: 14px" class="mt-2">
+            <strong>Notes:</strong>
+            <ul>
+                <li><em>To search for sources containing broken urls.</em></li>                        
+                <li><em>To be done by devs and not admins.</em></li>
+                <li><em>Need to be deleted manually.</em></li>                        
+                <li><em>Need to check them manually first.</em></li>                        
+            </ul>            
+        </div>
     </div>
 </template>
 
