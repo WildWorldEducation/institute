@@ -70,7 +70,7 @@ export default {
                                         contentObj.question,
                                     nameUrl:
                                         'skills/' +
-                                        flag.content_id +
+                                        contentObj.skillId +
                                         '/question-bank',
                                     flagId: flag.id,
                                     editUrl:
@@ -134,163 +134,6 @@ export default {
                             default:
                                 break;
                         }
-                        // if (this.contentFlags[i].content_type == 'skill') {
-                        //     for (
-                        //         let j = 0;
-                        //         j < this.skillsStore.skillsList.length;
-                        //         j++
-                        //     ) {
-                        //         if (
-                        //             this.contentFlags[i].content_id ==
-                        //             this.skillsStore.skillsList[j].id
-                        //         ) {
-                        //             this.skillsStore.skillsList[j].flagId =
-                        //                 this.contentFlags[i].id;
-                        //             this.skillFlags.push(
-                        //                 this.skillsStore.skillsList[j]
-                        //             );
-                        //             // Prepare Data for table
-                        //             const tableRow = {
-                        //                 type: 'skill',
-                        //                 name: this.skillsStore.skillsList[j]
-                        //                     .name,
-                        //                 nameUrl:
-                        //                     'skills/' +
-                        //                     this.skillsStore.skillsList[j].id,
-                        //                 flagId: this.contentFlags[i].id,
-                        //                 editUrl:
-                        //                     'skills/edit/' +
-                        //                     this.skillsStore.skillsList[j].id,
-                        //                 expandContent:
-                        //                     this.skillsStore.skillsList[j]
-                        //             };
-                        //             this.rows.push(tableRow);
-                        //         }
-                        //     }
-                        // } else if (
-                        //     this.contentFlags[i].content_type == 'resource'
-                        // ) {
-                        //     for (
-                        //         let j = 0;
-                        //         j < this.resourcesStore.resourcesList.length;
-                        //         j++
-                        //     ) {
-                        //         if (
-                        //             this.contentFlags[i].content_id ==
-                        //             this.resourcesStore.resourcesList[j].id
-                        //         ) {
-                        //             this.resourcesStore.resourcesList[
-                        //                 j
-                        //             ].flagId = this.contentFlags[i].id;
-                        //             this.resourcesFlags.push(
-                        //                 this.resourcesStore.resourcesList[j]
-                        //             );
-                        //             // Prepare Data for table
-                        //             const tableRow = {
-                        //                 type: 'resource',
-                        //                 name: this.skillsStore.resourcesList[j]
-                        //                     .name,
-                        //                 nameUrl:
-                        //                     'resources/' +
-                        //                     this.skillsStore.resourcesList[j]
-                        //                         .id,
-                        //                 flagId: this.contentFlags[i].id,
-                        //                 editUrl:
-                        //                     'resources/edit/' +
-                        //                     this.skillsStore.resourcesList[j]
-                        //                         .id,
-                        //                 expandContent:
-                        //                     this.skillsStore.resourcesList[j]
-                        //             };
-                        //             this.rows.push(tableRow);
-                        //         }
-                        //     }
-                        // } else if (
-                        //     this.contentFlags[i].content_type == 'mc_question'
-                        // ) {
-                        //     for (
-                        //         let j = 0;
-                        //         j <
-                        //         this.mcQuestionsStore.mcQuestionsList.length;
-                        //         j++
-                        //     ) {
-                        //         if (
-                        //             this.contentFlags[i].content_id ==
-                        //             this.mcQuestionsStore.mcQuestionsList[j].id
-                        //         ) {
-                        //             this.mcQuestionsStore.mcQuestionsList[
-                        //                 j
-                        //             ].flagId = this.contentFlags[i].id;
-                        //             this.mcQuestionFlags.push(
-                        //                 this.mcQuestionsStore.mcQuestionsList[j]
-                        //             );
-                        //             // Prepare Data for table
-                        //             const tableRow = {
-                        //                 type: 'mc question',
-                        //                 name: this.mcQuestionsStore
-                        //                     .mcQuestionsList[j].question,
-                        //                 nameUrl:
-                        //                     'skills/' +
-                        //                     this.mcQuestionsStore
-                        //                         .mcQuestionsList[j].skill_id +
-                        //                     '/question-bank',
-                        //                 flagId: this.contentFlags[i].id,
-                        //                 editUrl:
-                        //                     '/mc-questions/edit/' +
-                        //                     this.mcQuestionsStore
-                        //                         .mcQuestionsList[j].id,
-                        //                 expandContent:
-                        //                     this.mcQuestionsStore
-                        //                         .mcQuestionsList[j]
-                        //             };
-                        //             this.rows.push(tableRow);
-                        //         }
-                        //     }
-                        // } else if (
-                        //     this.contentFlags[i].content_type ==
-                        //     'essay_question'
-                        // ) {
-                        //     for (
-                        //         let j = 0;
-                        //         j <
-                        //         this.essayQuestionsStore.essayQuestionsList
-                        //             .length;
-                        //         j++
-                        //     ) {
-                        //         if (
-                        //             this.contentFlags[i].content_id ==
-                        //             this.essayQuestionsStore.essayQuestionsList[
-                        //                 j
-                        //             ].id
-                        //         ) {
-                        //             this.skillFlags.push(
-                        //                 this.essayQuestionsStore
-                        //                     .essayQuestionsList[j]
-                        //             );
-                        //             // Prepare Data for table
-                        //             const tableRow = {
-                        //                 type: 'essay question',
-                        //                 name: this.essayQuestionsStore
-                        //                     .essayQuestionsList[j].question,
-                        //                 nameUrl:
-                        //                     'skills/' +
-                        //                     this.essayQuestionsStore
-                        //                         .essayQuestionsList[j]
-                        //                         .skill_id +
-                        //                     '/question-bank',
-                        //                 flagId: this.contentFlags[i].id,
-                        //                 editUrl:
-                        //                     'skills/edit/' +
-                        //                     this.essayQuestionsStore
-                        //                         .essayQuestionsList[j].id,
-                        //                 expandContent:
-                        //                     this.essayQuestionsStore
-                        //                         .essayQuestionsList[j]
-                        //             };
-                        //             this.rows.push(tableRow);
-                        //         }
-                        //     }
-                        // }
                     }
                     this.isContentFlagsLoaded = true;
                 });
@@ -398,44 +241,76 @@ export default {
                     </div>
                 </template>
                 <template #expand="{ expandContent, type }">
-                    <div style="padding: 15px">
+                    <div id="expand-div" style="padding: 15px">
                         <!-- MC Question Expand -->
                         <div v-if="type == 'mc question'">
-                            <p>
-                                <strong>Question:</strong>
-                                {{ expandContent.question }}
-                            </p>
-                            <p>
-                                <strong>Correct Answer:</strong>
-                                {{ expandContent.correct_answer }}
-                            </p>
-                            <p>
-                                <strong>Incorrect Answer 1:</strong>
-                                {{ expandContent.incorrect_answer_1 }}
-                            </p>
-                            <p>
-                                <strong>Incorrect Answer 2:</strong>
-                                {{ expandContent.incorrect_answer_2 }}
-                            </p>
-                            <p>
-                                <strong>Incorrect Answer 3:</strong>
-                                {{ expandContent.incorrect_answer_3 }}
-                            </p>
-                            <p>
-                                <strong>Incorrect Answer 4:</strong>
-                                {{ expandContent.incorrect_answer_4 }}
-                            </p>
-                            <p>
-                                <strong>Explanation:</strong>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Belong to skill:</div>
+                                <div>
+                                    {{ expandContent.skillName }}
+                                </div>
+                            </div>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Name:</div>
+                                <div>
+                                    {{ expandContent.name }}
+                                </div>
+                            </div>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Question:</div>
+                                <div>
+                                    {{ expandContent.question }}
+                                </div>
+                            </div>
+                            <div
+                                id="expand-mc-answer"
+                                class="d-flex flex-column"
+                            >
+                                <div
+                                    class="d-flex mb-2 border-bottom border-opacity-75 pb-2"
+                                >
+                                    <div class="expand-tile">
+                                        Correct Answer:
+                                    </div>
+                                    {{ expandContent.correctAnswer }}
+                                </div>
+                                <div class="d-flex mb-2 border-bottom pb-2">
+                                    <div class="expand-tile">
+                                        Incorrect Answer 1:
+                                    </div>
+                                    {{ expandContent.incorrectAnswer1 }}
+                                </div>
+                                <div class="d-flex mb-2 border-bottom pb-2">
+                                    <div class="expand-tile">
+                                        Incorrect Answer 2:
+                                    </div>
+                                    {{ expandContent.incorrectAnswer2 }}
+                                </div>
+                                <div class="d-flex mb-2 border-bottom pb-2">
+                                    <div class="expand-tile">
+                                        Incorrect Answer 3:
+                                    </div>
+                                    {{ expandContent.incorrectAnswer3 }}
+                                </div>
+                                <div class="d-flex mb-2 border-bottom pb-2">
+                                    <div class="expand-tile">
+                                        Incorrect Answer 4:
+                                    </div>
+                                    {{ expandContent.incorrectAnswer4 }}
+                                </div>
+                            </div>
+
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Explanation:</div>
                                 {{ expandContent.explanation }}
-                            </p>
+                            </div>
                         </div>
                         <!-- Essay Expand content -->
-                        <div>
-                            <p>
-                                <strong>Name:</strong>
+                        <div v-if="type == 'essay_question'">
+                            <div>
+                                <div>Name:</div>
                                 {{ expandContent.name }}
-                            </p>
+                            </div>
                             <p>
                                 <strong>Question:</strong>
                                 {{ expandContent.question }}
@@ -582,6 +457,13 @@ h2 {
     text-decoration: underline;
 }
 
+.expand-tile {
+    font-size: 16px;
+    color: #a48be6;
+    font-weight: 550;
+    margin-right: 5px;
+}
+
 /* The Warning Modal */
 .modal {
     display: block;
@@ -625,5 +507,14 @@ h2 {
     --easy-table-header-height: 50px;
 
     --easy-table-header-item-padding: 15px 5px;
+}
+
+/* Expand components CSS */
+#expand-div div {
+    font-family: 'Poppins' sans-serif;
+}
+
+#expand-mc-answer {
+    width: fit-content;
 }
 </style>

@@ -43,7 +43,7 @@ router.get('/list', async (req, res, next) => {
         let resData = [];
         res.setHeader('Content-Type', 'application/json');
         // Get data for mc_question type Flag (extremely long raw sql query)
-        let sqlMCQuery = "SELECT cf.*,  json_object('question', mc.question, 'name', mc.name, 'inCorrectAnswer1', mc.incorrect_answer_1, 'inCorrectAnswer2', mc.incorrect_answer_2, 'incorrectAnswer3', mc.incorrect_answer_3, 'incorrectAnswer4', mc.incorrect_answer_4, 'correctAnswer', mc.correct_answer, 'explanation', mc.explanation, 'skillName', sk.name) as contentData FROM content_flags AS cf JOIN mc_questions AS mc ON cf.content_id = mc.id JOIN skills AS sk ON sk.id = mc.skill_id WHERE cf.content_type = 'mc_question' GROUP BY cf.id ";
+        let sqlMCQuery = "SELECT cf.*,  json_object('question', mc.question, 'name', mc.name, 'incorrectAnswer1', mc.incorrect_answer_1, 'incorrectAnswer2', mc.incorrect_answer_2, 'incorrectAnswer3', mc.incorrect_answer_3, 'incorrectAnswer4', mc.incorrect_answer_4, 'correctAnswer', mc.correct_answer, 'explanation', mc.explanation, 'skillName', sk.name, 'skillId', sk.id) as contentData FROM content_flags AS cf JOIN mc_questions AS mc ON cf.content_id = mc.id JOIN skills AS sk ON sk.id = mc.skill_id WHERE cf.content_type = 'mc_question' GROUP BY cf.id ";
         conn.query(sqlMCQuery, (err, results) => {
             try {
                 if (err) {
