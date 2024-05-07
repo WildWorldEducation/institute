@@ -117,7 +117,7 @@ export default {
     <RouterView />
 </template>
 
-<style scoped>
+<style>
 .navbar-brand {
     font-family: 'Inter', sans-serif;
     font-weight: 600;
