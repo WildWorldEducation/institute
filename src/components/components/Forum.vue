@@ -223,7 +223,7 @@ export default {
             fetch(url, requestOptions).then(() => {
                 console.log('getting response');
                 alert(
-                    'Thanks for flagging this resource. We will take a look soon'
+                    'Thanks for flagging this source. We will take a look soon.'
                 );
                 this.showFlaggingModal = false;
             });
@@ -383,7 +383,7 @@ export default {
                         <!-- Flag button -->
                         <button
                             b-tooltip.hover
-                            title="flagging this resource for its error."
+                            title="flag this resource for review"
                             type="button"
                             class="btn"
                             @click="handleOpenFlagModal"
@@ -432,7 +432,7 @@ export default {
             <div id="myModal" class="modal">
                 <!-- Modal content -->
                 <div class="modal-content">
-                    <p>Are you sure you want to delete the resource?</p>
+                    <p>Are you sure you want to delete the source?</p>
                     <div style="display: flex; gap: 10px">
                         <button
                             type="button"
@@ -457,7 +457,7 @@ export default {
             <div id="myModal" class="modal">
                 <!-- Modal content -->
                 <div class="modal-content">
-                    <p>Are you sure you want to flagging this resource?</p>
+                    <p>Are you sure you want to flag this source?</p>
                     <div class="d-flex justify-content-between">
                         <button
                             type="button"

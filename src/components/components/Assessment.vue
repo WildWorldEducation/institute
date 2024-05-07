@@ -455,7 +455,7 @@ export default {
                     <!-- Flag Icon -->
                     <button
                         b-tooltip.hover
-                        title="flagging this question for its error."
+                        title="flag this question for review"
                         @click="showFlaggingModal = true"
                         type="button"
                         class="btn"
@@ -627,7 +627,7 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Are you sure you want to flagging this question ?</p>
+                <p>Are you sure you want to flag this question?</p>
                 <div class="d-flex justify-content-between">
                     <button
                         type="button"
