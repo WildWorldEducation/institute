@@ -242,7 +242,7 @@ export default {
                 </template>
                 <template #expand="{ expandContent, type }">
                     <div id="expand-div" style="padding: 15px">
-                        <!-- MC Question Expand -->
+                        <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'mc question'">
                             <div class="d-flex mb-2">
                                 <div class="expand-tile">Belong to skill:</div>
@@ -305,7 +305,7 @@ export default {
                                 {{ expandContent.explanation }}
                             </div>
                         </div>
-                        <!-- Essay Expand content -->
+                        <!-- _+_+_+_+_+_+_+_  Essay Expand content _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'essay question'">
                             <div class="d-flex mb-2">
                                 <div class="expand-tile">Belong to skill:</div>
@@ -322,14 +322,21 @@ export default {
                                 {{ expandContent.question }}
                             </div>
                         </div>
-                        <!-- Skill Expand content -->
+                        <!-- _+_+_+_+_+_+_+_  Skill Expand content _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'skill'">
-                            <p>
-                                <strong>Skill: </strong>{{ expandContent.name }}
-                            </p>
-                            <p><strong>Mastery Requirements: </strong></p>
+                            <div id="skill-expand-head">
+                                <div class="d-flex mb-2">
+                                    <div class="expand-tile">Skill:</div>
+                                    {{ expandContent.name }}
+                                </div>
+                                <div class="mb-2 border-bottom pb-2">
+                                    {{ expandContent.description }}
+                                </div>
+                            </div>
+                            <div class="expand-tile">Mastery Requirements:</div>
                             <div
-                                v-html="expandContent.mastery_requirements"
+                                class="expand-skill-requirement"
+                                v-html="expandContent.masteryRequirements"
                             ></div>
                         </div>
                         <!-- Resource Expand Content -->
@@ -522,5 +529,16 @@ h2 {
 
 #expand-mc-answer {
     width: fit-content;
+}
+
+.expand-skill-requirement {
+    margin-top: 10px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    background-color: #f2edffcc;
+}
+
+#skill-expand-head {
+    width: 50%;
 }
 </style>
