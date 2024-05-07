@@ -191,7 +191,10 @@ export default {
                     }}</RouterLink>
                 </template>
                 <template #item-action="{ flagId, editUrl, type }">
-                    <div class="d-flex pt-2 pb-2">
+                    <div
+                        class="pb-2 pt-2 d-flex flex-column flex-lg-row gap-1 align-items-center"
+                    >
+                        <!-- ___+++___ The Two Button in Desktop View  ___+++___ -->
                         <router-link
                             :to="editUrl"
                             class="btn purple-btn"
@@ -218,8 +221,8 @@ export default {
                                 <path
                                     d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
                                     fill="white"
-                                /></svg></router-link
-                        >&nbsp;&nbsp;
+                                /></svg
+                        ></router-link>
                         <button
                             b-tooltip.hover
                             :title="'Dismiss This Flag'"
@@ -238,6 +241,7 @@ export default {
                                 />
                             </svg>
                         </button>
+                        <!---------------------------------------------------------->
                     </div>
                 </template>
                 <template #expand="{ expandContent, type }">
@@ -247,7 +251,16 @@ export default {
                             <div class="d-flex mb-2">
                                 <div class="expand-tile">Belong to skill:</div>
                                 <div>
-                                    {{ expandContent.skillName }}
+                                    <router-link
+                                        :to="'skills/' + expandContent.skillId"
+                                        target="_blank"
+                                        b-tooltip.hover
+                                        :style="{ color: '#8f7bd6' }"
+                                        :title="'Go To Skill '"
+                                        >{{
+                                            expandContent.skillName
+                                        }}</router-link
+                                    >
                                 </div>
                             </div>
                             <div class="d-flex mb-2">
@@ -310,7 +323,16 @@ export default {
                             <div class="d-flex mb-2">
                                 <div class="expand-tile">Belong to skill:</div>
                                 <div>
-                                    {{ expandContent.skillName }}
+                                    <router-link
+                                        :to="'skills/' + expandContent.skillId"
+                                        target="_blank"
+                                        b-tooltip.hover
+                                        :style="{ color: '#8f7bd6' }"
+                                        :title="'Go To Skill '"
+                                        >{{
+                                            expandContent.skillName
+                                        }}</router-link
+                                    >
                                 </div>
                             </div>
                             <div class="d-flex mb-2">
