@@ -117,9 +117,9 @@ export default {
                                 const tableRowResource = {
                                     type: 'resource',
                                     name:
-                                        'Commend By ' +
+                                        'Commented by user: ' +
                                         contentObj.user +
-                                        ' in skill ' +
+                                        ', in skill: ' +
                                         contentObj.skill +
                                         ' forum',
                                     nameUrl: 'skills/' + contentObj.skillId,
@@ -339,12 +339,23 @@ export default {
                                 v-html="expandContent.masteryRequirements"
                             ></div>
                         </div>
-                        <!-- Resource Expand Content -->
+                        <!-- _+_+_+_+_+_+_+_  Skill Expand content _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'resource'">
-                            <p>
-                                <strong>Source:</strong>
-                                <span v-html="expandContent.content"></span>
-                            </p>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Skill:</div>
+                                <div>{{ expandContent.skill }}</div>
+                            </div>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">User:</div>
+                                <div>{{ expandContent.user }}</div>
+                            </div>
+                            <div class="d-flex flex-column mb-2">
+                                <div class="expand-tile">Content:</div>
+                                <div
+                                    class="expand-skill-requirement"
+                                    v-html="expandContent.content"
+                                ></div>
+                            </div>
                         </div>
                     </div>
                 </template>
