@@ -31,6 +31,7 @@ export default {
             headers: [
                 { text: 'Name', value: 'name' },
                 { text: 'Type', value: 'type' },
+                { text: 'Student', value: 'student' },
                 { text: 'Action', value: 'action' }
             ],
 
@@ -75,7 +76,12 @@ export default {
                                     flagId: flag.id,
                                     editUrl:
                                         '/mc-questions/edit/' + flag.content_id,
-                                    expandContent: contentObj
+                                    expandContent: contentObj,
+                                    student: {
+                                        username: flag.username,
+                                        id: flag.studentId,
+                                        avatar: flag.avatar
+                                    }
                                 };
                                 this.rows.push(tableRowMC);
                                 break;
@@ -95,7 +101,12 @@ export default {
                                     editUrl:
                                         '/essay-questions/edit/' +
                                         flag.content_id,
-                                    expandContent: contentObj
+                                    expandContent: contentObj,
+                                    student: {
+                                        username: flag.username,
+                                        id: flag.studentId,
+                                        avatar: flag.avatar
+                                    }
                                 };
                                 this.rows.push(tableRowEssay);
                                 break;
@@ -108,7 +119,12 @@ export default {
 
                                     flagId: flag.id,
                                     editUrl: '/skills/edit/' + flag.content_id,
-                                    expandContent: contentObj
+                                    expandContent: contentObj,
+                                    student: {
+                                        username: flag.username,
+                                        id: flag.studentId,
+                                        avatar: flag.avatar
+                                    }
                                 };
                                 this.rows.push(tableRowSkill);
                                 break;
@@ -127,7 +143,12 @@ export default {
                                     flagId: flag.id,
                                     editUrl:
                                         '/resources/edit/' + flag.content_id,
-                                    expandContent: contentObj
+                                    expandContent: contentObj,
+                                    student: {
+                                        username: flag.username,
+                                        id: flag.studentId,
+                                        avatar: flag.avatar
+                                    }
                                 };
                                 this.rows.push(tableRowResource);
                                 break;
@@ -156,6 +177,10 @@ export default {
         handleOpenDismissModal(flagId) {
             this.flagId = flagId;
             this.showDismissModal = true;
+        },
+        // THIS IS JUST A WARNING NOW THE FEATURE WILL
+        handleRewardStudent(studentId) {
+            alert(`student  with id: ${studentId} will be rewarded`);
         }
     }
 };
@@ -221,8 +246,9 @@ export default {
                                 <path
                                     d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
                                     fill="white"
-                                /></svg
-                        ></router-link>
+                                />
+                            </svg>
+                        </router-link>
                         <button
                             b-tooltip.hover
                             :title="'Dismiss This Flag'"
@@ -378,6 +404,21 @@ export default {
                                     v-html="expandContent.content"
                                 ></div>
                             </div>
+                        </div>
+                    </div>
+                </template>
+                <template #item-student="{ student }">
+                    <div class="student-cell">
+                        <img
+                            :src="student.avatar"
+                            alt="student avatar"
+                            class="student-avatar"
+                        />
+                        <div
+                            class="student-name"
+                            @click="handleRewardStudent(student.id)"
+                        >
+                            {{ student.username }}
                         </div>
                     </div>
                 </template>
@@ -573,5 +614,24 @@ h2 {
 
 #skill-expand-head {
     width: 50%;
+}
+
+.student-cell {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.student-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+}
+
+.student-name {
+    text-align: center;
+    color: #a48be6;
+    text-decoration: underline;
+    cursor: pointer;
 }
 </style>
