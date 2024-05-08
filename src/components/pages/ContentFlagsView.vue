@@ -512,7 +512,7 @@ export default {
                 </template>
                 <!-- --- Expand Part --- -->
                 <template #expand="{ expandContent, type }">
-                    <div id="expand-div" style="padding: 15px">
+                    <div id="expand-div" style="padding: 5px">
                         <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'mc question'">
                             <div class="d-flex mb-2">
@@ -890,6 +890,17 @@ h2 {
         --easy-table-header-font-size: 13px;
 
         --easy-table-header-item-padding: 5px 5px;
+    }
+
+    .expand-skill-requirement {
+        margin-top: 4px;
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #f2edffcc;
+    }
+
+    .expand-tile {
+        font-size: 13px;
     }
 }
 </style>
