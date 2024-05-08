@@ -1,0 +1,233 @@
+<script>
+// Import the store.
+
+export default {
+    setup() {
+        return {};
+    },
+    data() {
+        return {
+            studentQuestions: {}
+        };
+    },
+    async created() {},
+    computed: {},
+    methods: {}
+};
+</script>
+
+<template>
+    <div id="banner">
+        <img src="/images/banners/general-banner.png" class="img-fluid" />
+    </div>
+</template>
+
+<style scoped>
+h2 {
+    color: #8f7bd6;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+}
+
+#question-bg {
+    background: #f2edffcc;
+    border-radius: 12px;
+    padding: 10px;
+    margin-left: 34px;
+}
+
+#question-bg span:hover {
+    cursor: pointer;
+}
+
+#question {
+    font-family: 'Poppins';
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 28px;
+    text-align: left;
+    color: #667085;
+}
+
+#date {
+    font-family: 'Poppins';
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 28px;
+    text-align: left;
+    color: #667085;
+}
+
+#answer {
+    font-family: 'Poppins';
+    font-size: 16px;
+    font-weight: 100;
+    line-height: 28px;
+    text-align: left;
+    color: #667085;
+    padding-left: 17px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: white;
+    border-radius: 15px;
+}
+
+#page-tile {
+    font-family: 'Poppins';
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 28px;
+    text-align: left;
+    color: #8f7bd6;
+    padding-top: 23px;
+    margin-top: 23px;
+    margin-bottom: 23px;
+    margin-left: 17px;
+}
+
+#assessment-info {
+    font-family: 'Poppins';
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 28px;
+    text-align: left;
+    color: #8f7bd6;
+    margin-left: 17px;
+    padding-top: 23px;
+    padding-bottom: 23px;
+}
+
+#score-text {
+    font-family: 'Poppins';
+    color: #8f7bd6;
+    font-weight: 800;
+}
+
+#current-score {
+    font-family: 'Poppins';
+    color: #8f7bd6;
+    font-weight: 700;
+}
+
+#total-score {
+    font-family: 'Poppins';
+    color: #8f7bd6;
+    font-weight: 800;
+}
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    height: 44px;
+    border-radius: 8px;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+}
+
+.green-btn:hover {
+    background-color: #46f7df;
+}
+
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    height: 44px;
+}
+
+.red-btn:hover {
+    background-color: #fc7d7d;
+}
+
+.purple-btn:hover {
+    background-color: #a48ef3;
+}
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    /* Could be more or less, depending on screen size */
+}
+
+.modal-message {
+    font-size: 20px;
+    font-weight: 500;
+    color: #667085;
+}
+
+/* Styling for phone */
+@media (max-width: 575px) {
+    #question-bg {
+        margin-left: 0px;
+    }
+
+    #page-tile {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    #assessment-info {
+        font-size: 18px;
+        padding-top: 5px;
+    }
+
+    #question {
+        font-size: 17px;
+    }
+
+    .red-btn {
+        font-size: 12px;
+    }
+
+    .green-btn {
+        font-size: 12px;
+    }
+}
+
+/* Styling for tablet */
+@media (min-width: 576px) and (max-width: 992px) {
+    #question-bg {
+        margin-left: 0px;
+    }
+}
+</style>

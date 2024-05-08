@@ -185,6 +185,12 @@ const router = createRouter({
             path: '/content-flags',
             name: 'content-flags',
             component: () => import('../components/pages/ContentFlagsView.vue')
+        },
+        {
+            path: '/check-student-question/:id',
+            name: 'check-student-question',
+            component: () =>
+                import('../components/pages/CheckStudentQuestionView.vue')
         }
     ]
 });

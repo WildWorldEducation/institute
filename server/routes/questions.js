@@ -417,6 +417,26 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
 });
 
 /**
+ * Student List MC Questions
+ */
+router.get('/student-mc-questions/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM student_mc_questions;';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * Student Add MC Question.
  */
 router.post('/student-mc-questions/add', (req, res, next) => {

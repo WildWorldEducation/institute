@@ -90,7 +90,6 @@ export default {
 
         // Get current user Details
         const userDetails = await this.userDetailsStore.getUserDetails();
-        console.log(userDetails.userId);
 
         // find if student have an un-mark assessment for this skill
         this.oldAssessment = assessments.find((assessment) => {

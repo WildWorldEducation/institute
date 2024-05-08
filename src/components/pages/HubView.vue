@@ -4,6 +4,7 @@ import StudentProgress from '../components/StudentProgress.vue';
 import Notifications from '../components/Notifications.vue';
 import News from '../components/News.vue';
 import MarkAssessment from '../components/MarkAssessment.vue';
+import CheckStudentQuestions from '../components/CheckStudentQuestions.vue';
 
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -24,7 +25,8 @@ export default {
         News,
         Notifications,
         StudentProgress,
-        MarkAssessment
+        MarkAssessment,
+        CheckStudentQuestions
     },
     computed: {
         name() {
@@ -67,12 +69,17 @@ export default {
                     v-if="userDetailsStore.role == 'student'"
                     :userId="userDetailsStore.userId"
                 />
-                <div v-else-if="userDetailsStore.role == 'instructor'">
-                    <MarkAssessment />
-                </div>
+
+                <MarkAssessment
+                    v-else-if="userDetailsStore.role == 'instructor'"
+                />
             </div>
-            <!-- A blank column (This way we will have easier time in the future if we want to  add something here) -->
-            <div class="column col-lg-4 col-md-6"></div>
+            <!-- Student Added Questions -->
+            <div class="column col-lg-4 col-md-6">
+                <CheckStudentQuestions
+                    v-if="userDetailsStore.role == 'instructor'"
+                />
+            </div>
             <div id="notif-col" class="column col-lg-3 col-md-6">
                 <Notifications />
             </div>
