@@ -111,12 +111,14 @@ export default {
             this.getUserSkills();
         },
         flagSkill() {
+            console.log('user Id: ' + this.userDetailsStore.userId);
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     content_type: 'skill',
-                    content_id: this.skill.id
+                    content_id: this.skill.id,
+                    student_id: this.userDetailsStore.userId
                 })
             };
             var url = '/content-flags/add';

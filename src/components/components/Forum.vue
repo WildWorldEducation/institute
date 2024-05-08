@@ -52,10 +52,7 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => (this.user = data))
-                .then(() => {
-                    //console.log(this.user)
-                });
+                .then((data) => (this.user = data));
         },
         getPosts(skillId) {
             fetch('/skills/' + skillId + '/resources')
@@ -215,7 +212,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     content_type: 'resource',
-                    content_id: resourceId
+                    content_id: resourceId,
+                    student_id: this.user.userId
                 })
             };
             var url = '/content-flags/add';
@@ -386,7 +384,7 @@ export default {
                             title="flagging this resource for its error."
                             type="button"
                             class="btn"
-                            @click="handleOpenFlagModal"
+                            @click="handleOpenFlagModal(post.id)"
                         >
                             <div class="d-flex flex-row-reverse">
                                 <svg
