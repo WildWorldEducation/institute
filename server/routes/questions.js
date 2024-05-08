@@ -420,6 +420,7 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
  * Student Add MC Question.
  */
 router.post('/student-mc-questions/add', (req, res, next) => {
+    console.log('test');
     if (req.session.userName) {
         // No need to escape single quotes for SQL to accept,
         // as using '?'.

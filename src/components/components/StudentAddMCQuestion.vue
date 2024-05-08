@@ -11,7 +11,7 @@ export default {
     },
     data() {
         return {
-            skillId: this.$route.params.skillId,
+            skillId: this.$route.params.id,
             // bind object
             question: {
                 question: '',
@@ -38,11 +38,8 @@ export default {
         };
     },
     methods: {
-        created() {
-            // Get current user Details
-            this.studentId = this.userDetailsStore.getUserDetails();
-        },
         Submit() {
+            this.studentId = this.$parent.userDetailsStore.userId;
             // Reset the validate flag before re-checking
             this.validate.validated = false;
             // Check data before fetching
@@ -53,7 +50,6 @@ export default {
                 this.validate.question = true;
                 this.validate.validated = true;
             }
-
             if (
                 this.question.correctAnswer === '' ||
                 this.question.correctAnswer === null
@@ -61,7 +57,6 @@ export default {
                 this.validate.correctAnswer = true;
                 this.validate.validated = true;
             }
-
             if (
                 this.question.incorrectAnswer1 === '' ||
                 this.question.incorrectAnswer1 === null
@@ -69,7 +64,6 @@ export default {
                 this.validate.incorrectAnswer1 = true;
                 this.validate.validated = true;
             }
-
             if (
                 this.question.incorrectAnswer2 === '' ||
                 this.question.incorrectAnswer2 === null
@@ -127,7 +121,7 @@ export default {
                     alert('Question added');
                 })
                 .then(() => {
-                    this.$router.go(-1);
+                    this.$parent.passModal = true;
                 });
         }
     }
@@ -135,21 +129,17 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img src="/images/banners/general-banner.png" class="image-fluid" />
-    </div>
     <div class="container mt-3 pb-3">
         <div class="row">
             <div class="col-10 d-flex align-items-end">
                 <h4 id="header-tile">
-                    Please Add Your Own Question on This Topic
+                    Please add your own question before you master this skill
                 </h4>
-                <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
         <div class="main-content-container container-fluid mt-4">
             <div class="row p-0">
-                <div id="form-container" class="col-lg-6 p-4">
+                <div id="form-container" class="col p-4">
                     <div class="mb-3">
                         <label for="last_name" class="form-label"
                             >Question</label
