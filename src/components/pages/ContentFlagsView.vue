@@ -41,7 +41,8 @@ export default {
             flagTypeCriteria: 'all',
             showFlagTypeFilter: false,
             studentNameCriteria: '',
-            showStudentFilter: false
+            showStudentFilter: false,
+            searchText: ''
         };
     },
     components: {
@@ -209,7 +210,6 @@ export default {
                     field: 'student',
                     criteria: this.studentNameCriteria,
                     comparison: (value, criteria) => {
-                        console.log(value);
                         return (
                             value != null &&
                             criteria != null &&
@@ -236,6 +236,25 @@ export default {
         <div class="mt-3">
             <h1>Content Flags</h1>
         </div>
+        <hr />
+        <div>
+            <div class="expand-tile">Search:</div>
+            <div class="d-flex search-bar">
+                <input type="text" v-model="searchText" />
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    width="16"
+                    height="14"
+                    class=""
+                    fill="white"
+                >
+                    <path
+                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                    />
+                </svg>
+            </div>
+        </div>
         <!-- Vue Data Table Desktop  -->
         <div class="mt-5 pb-5 d-none d-md-block">
             <Vue3EasyDataTable
@@ -247,6 +266,7 @@ export default {
                 :loading="!isContentFlagsLoaded"
                 table-class-name="customize-table"
                 :filter-options="filterOptions()"
+                :search-value="searchText"
             >
                 <!-- --- Loading Part --- -->
                 <template #loading>
@@ -297,7 +317,7 @@ export default {
                         <button
                             b-tooltip.hover
                             :title="'Dismiss This Flag'"
-                            class="btn red-btn"
+                            class="btn red-btn h-100"
                             @click="handleOpenDismissModal(flagId)"
                         >
                             <svg
@@ -482,11 +502,11 @@ export default {
                             b-tooltip.hover
                             :title="'filter this column'"
                         >
-                            <span id="type-head-tile" class="me-2">
+                            <span id="type-head-tile" class="me-1">
                                 {{ header.text }}
                             </span>
                             <svg
-                                class="filter-icon"
+                                class="filter-icon mb-1"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
                                 height="16"
@@ -542,7 +562,25 @@ export default {
                             </svg>
                         </div>
                         <div class="filter-menu" v-if="showStudentFilter">
-                            <input v-model="studentNameCriteria" />
+                            <div class="d-flex student-filter">
+                                <input
+                                    type="text"
+                                    v-model="studentNameCriteria"
+                                    placeholder="type in student name"
+                                />
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="16"
+                                    height="14"
+                                    class=""
+                                    fill="gray"
+                                >
+                                    <path
+                                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                                    />
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -835,6 +873,22 @@ h2 {
     padding-bottom: 30px;
 }
 
+.search-bar {
+    background-color: #a48be6;
+    border-radius: 5px;
+    width: fit-content;
+    padding-right: 8px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+    align-items: center;
+    gap: 5px;
+}
+
+.search-bar input {
+    outline: none;
+}
+
 .purple-btn {
     background-color: #a48be6;
     color: white;
@@ -845,7 +899,6 @@ h2 {
     line-height: 24px;
     display: flex;
     align-items: center;
-    max-width: fit-content;
 }
 
 .purple-btn:hover {
@@ -862,7 +915,6 @@ h2 {
     font-size: 12px;
     display: flex;
     align-items: center;
-
     justify-content: center;
 }
 
@@ -880,7 +932,6 @@ h2 {
     font-size: 12px;
     display: flex;
     align-items: center;
-
     align-items: center;
     justify-content: center;
 }
@@ -1012,6 +1063,19 @@ h2 {
     align-items: center;
     justify-items: center;
     position: relative;
+}
+
+.student-filter {
+    border: #a48be6 1px solid;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+}
+
+.student-filter input {
+    outline: none;
+    border: 0px;
 }
 
 /* View Specific On Phone */
