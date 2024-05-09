@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 777
+        AND id > 1273
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -349,7 +349,7 @@ async function getSource(
                    I am a ` +
         level +
         ` student.
-                       Please provide me with a JSON object containing a URL link, named "url",
+                       Please provide me with a single JSON object containing a URL link, named "url",
                        with site/page/subject name, named "name", and a description of the webpage, named
                        "description", so I can learn more about ` +
         name +

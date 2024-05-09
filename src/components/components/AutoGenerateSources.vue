@@ -132,7 +132,7 @@ export default {
                     aria-describedby="numSourcesPerSkill"
                     onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                 />
-                <button disabled class="btn green-btn mt-3" @click="GenerateSources">
+                <button  class="btn green-btn mt-3" @click="GenerateSources">
                     Generate Sources
                 </button>
                 <p style="font-size: 14px" class="mt-2">

@@ -6,6 +6,7 @@ import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useAssessmentsStore } from '../../stores/AssessmentsStore';
 import EssayAnswer from './EssayAnswer.vue';
+import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
 
 export default {
     setup() {
@@ -47,7 +48,8 @@ export default {
             oldAssessment: undefined,
             updatedAssessment: false,
             // flagging modal data
-            showFlaggingModal: false
+            showFlaggingModal: false,
+            isQuizPassed: false
         };
     },
     mounted: function () {
@@ -130,7 +132,8 @@ export default {
         }
     },
     components: {
-        EssayAnswer
+        EssayAnswer,
+        StudentAddMCQuestion
     },
     methods: {
         async fetchMCQuestions(skillId) {
@@ -292,7 +295,7 @@ export default {
                 if ((this.score / this.numMCQuestions) * 100 >= 90) {
                     // Make skill mastered for this student.
                     this.MakeMastered(this.skill);
-                    this.passModal = true;
+                    this.isQuizPassed = true;
                 } else {
                     this.failedModal = true;
                 }
@@ -381,7 +384,8 @@ export default {
         },
         // For development purposes.
         TestPass() {
-            this.MakeMastered(this.skill);
+            // this.MakeMastered(this.skill);
+            this.isQuizPassed = true;
         },
         flagQuestion(questionId) {
             // Determine the type of flag based on question type
@@ -410,9 +414,13 @@ export default {
 </script>
 
 <template>
-    <!-- <button @click="TestPass()" class="btn green-btn me-2">Test Pass</button> -->
+    <!-- <button v-if="!isQuizPassed" @click="TestPass()" class="btn green-btn me-2">
+        Test Pass
+    </button> -->
+    <!-- Loading screen -->
     <div v-if="loading == true">Loading...</div>
-    <div v-if="loading == false">
+    <!-- Assessment -->
+    <div v-if="loading == false && isQuizPassed == false">
         <!-- Show student a warning if their take this assessment before and still wait for marking -->
         <div v-if="updatedAssessment">
             <div id="myModal" class="modal">
@@ -534,7 +542,8 @@ export default {
             There is no quiz for this skill yet. Please check again soon.
         </div>
     </div>
-    <!-- Some modal to tell the student when their finish the assessment -->
+    <StudentAddMCQuestion v-else />
+    <!----- Modals ----------->
     <!-- Pass Modal -->
     <div v-if="passModal">
         <div id="myModal" class="modal">
@@ -622,7 +631,7 @@ export default {
             </div>
         </div>
     </div>
-    <!-- Modal of flagging resource -->
+    <!-- Modal for flagging question -->
     <div v-if="showFlaggingModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
