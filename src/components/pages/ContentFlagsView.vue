@@ -1,4 +1,5 @@
 <script>
+import { ref, computed } from 'vue';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useResourcesStore } from '../../stores/ResourcesStore.js';
 import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
@@ -12,6 +13,7 @@ export default {
         const resourcesStore = useResourcesStore();
         const mcQuestionsStore = useMCQuestionsStore();
         const essayQuestionsStore = useEssayQuestionsStore();
+
         return {
             skillsStore,
             resourcesStore,
@@ -30,12 +32,16 @@ export default {
             flagId: '',
             headers: [
                 { text: 'Name', value: 'name' },
+                { text: 'Student', value: 'student', width: 99 },
                 { text: 'Type', value: 'type' },
-                { text: 'Student', value: 'student' },
                 { text: 'Action', value: 'action' }
             ],
-
-            rows: []
+            rows: [],
+            // Filter option data for the table
+            flagTypeCriteria: 'all',
+            showFlagTypeFilter: false,
+            studentNameCriteria: '',
+            showStudentFilter: false
         };
     },
     components: {
@@ -181,6 +187,39 @@ export default {
         // THIS IS JUST A WARNING NOW THE FEATURE WILL
         handleRewardStudent(studentId) {
             alert(`student  with id: ${studentId} will be rewarded`);
+        },
+        // We Define The Filter option for the table here
+        filterOptions() {
+            // The Array that hold all the option
+            const filterOptionsArray = [];
+
+            // *** Type Filter Obj ***
+            // Only filter type when user choose a type
+            if (this.flagTypeCriteria !== 'all') {
+                filterOptionsArray.push({
+                    field: 'type',
+                    comparison: '=',
+                    criteria: this.flagTypeCriteria
+                });
+            }
+
+            // *** Student Filter Obj ***
+            if (this.studentNameCriteria !== '') {
+                filterOptionsArray.push({
+                    field: 'student',
+                    criteria: this.studentNameCriteria,
+                    comparison: (value, criteria) => {
+                        console.log(value);
+                        return (
+                            value != null &&
+                            criteria != null &&
+                            value.username.includes(`${criteria}`)
+                        );
+                    }
+                });
+            }
+
+            return filterOptionsArray;
         }
     }
 };
@@ -207,6 +246,7 @@ export default {
                 hide-footer
                 :loading="!isContentFlagsLoaded"
                 table-class-name="customize-table"
+                :filter-options="filterOptions()"
             >
                 <!-- --- Loading Part --- -->
                 <template #loading>
@@ -428,6 +468,81 @@ export default {
                             @click="handleRewardStudent(student.id)"
                         >
                             {{ student.username }}
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Flag Type Header Filtering -->
+                <template #header-type="header">
+                    <div class="filter-column">
+                        <div
+                            @click.stop="
+                                showFlagTypeFilter = !showFlagTypeFilter
+                            "
+                            b-tooltip.hover
+                            :title="'filter this column'"
+                        >
+                            <span id="type-head-tile" class="me-2">
+                                {{ header.text }}
+                            </span>
+                            <svg
+                                class="filter-icon"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                height="16"
+                                width="14"
+                                fill="#a48be6"
+                            >
+                                <path
+                                    d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"
+                                />
+                            </svg>
+                        </div>
+                        <div
+                            class="filter-menu filter-sport-menu"
+                            v-if="showFlagTypeFilter"
+                        >
+                            <select
+                                class="favouriteSport-selector"
+                                v-model="flagTypeCriteria"
+                                name="flagType"
+                            >
+                                <option>mc question</option>
+                                <option>essay question</option>
+                                <option>skill</option>
+                                <option>resource</option>
+                                <option>all</option>
+                            </select>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Student Header Filtering -->
+                <template #header-student="header">
+                    <div class="filter-column">
+                        <div
+                            @click.stop="showStudentFilter = !showStudentFilter"
+                            b-tooltip.hover
+                            :title="'Search for student user name'"
+                        >
+                            <span id="type-head-tile" class="me-1">
+                                {{ header.text }}
+                            </span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="16"
+                                height="14"
+                                class="mb-1 filter-icon"
+                                fill="#8f7bd6"
+                            >
+                                <path
+                                    d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="filter-menu" v-if="showStudentFilter">
+                            <input v-model="studentNameCriteria" />
                         </div>
                     </div>
                 </template>
@@ -747,7 +862,7 @@ h2 {
     font-size: 12px;
     display: flex;
     align-items: center;
-    height: auto;
+
     justify-content: center;
 }
 
@@ -765,7 +880,7 @@ h2 {
     font-size: 12px;
     display: flex;
     align-items: center;
-    height: auto;
+
     align-items: center;
     justify-content: center;
 }
@@ -875,6 +990,28 @@ h2 {
     color: #a48be6;
     text-decoration: underline;
     cursor: pointer;
+}
+
+.filter-icon {
+    cursor: pointer;
+}
+
+/* Filter Header Styling */
+.filter-menu {
+    padding: 15px 30px;
+    z-index: 20;
+    position: absolute;
+    top: 40px;
+    width: fit-content;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+}
+
+.filter-column {
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    position: relative;
 }
 
 /* View Specific On Phone */
