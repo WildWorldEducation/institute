@@ -24,7 +24,8 @@ export default {
                 question: '',
                 explanation: '',
                 skill_id: ''
-            }
+            },
+            isEditMode: false
         };
     },
     async created() {
@@ -42,7 +43,6 @@ export default {
                     this.studentMCQuestionsStore.studentMCQuestions[i];
             }
         }
-        console.log(this.question);
     },
     computed: {},
     methods: {
@@ -73,6 +73,9 @@ export default {
             fetch(url, requestOptions).then(() => {
                 this.deleteStudentQuestion();
             });
+        },
+        editMode() {
+            this.isEditMode = true;
         }
     }
 };
@@ -98,7 +101,7 @@ export default {
                                 >Question</label
                             >
                             <textarea
-                                disabled
+                                :disabled="!isEditMode"
                                 v-model="question.question"
                                 rows="1"
                                 class="form-control"
@@ -108,7 +111,7 @@ export default {
                         <div class="mb-3">
                             <label class="form-label">Correct answer</label>
                             <input
-                                disabled
+                                :disabled="!isEditMode"
                                 v-model="question.correct_answer"
                                 type="text"
                                 class="form-control"
@@ -117,7 +120,7 @@ export default {
                         <div class="mb-3">
                             <label class="form-label">Wrong answer 1</label>
                             <input
-                                disabled
+                                :disabled="!isEditMode"
                                 v-model="question.incorrect_answer_1"
                                 type="text"
                                 class="form-control"
@@ -126,7 +129,7 @@ export default {
                         <div class="mb-3">
                             <label class="form-label">Wrong answer 2</label>
                             <input
-                                disabled
+                                :disabled="!isEditMode"
                                 v-model="question.incorrect_answer_2"
                                 type="text"
                                 class="form-control"
@@ -135,7 +138,7 @@ export default {
                         <div class="mb-3">
                             <label class="form-label">Wrong answer 3</label>
                             <input
-                                disabled
+                                :disabled="!isEditMode"
                                 v-model="question.incorrect_answer_3"
                                 type="text"
                                 class="form-control"
@@ -144,7 +147,7 @@ export default {
                         <div class="mb-3">
                             <label class="form-label">Wrong answer 4</label>
                             <input
-                                disabled
+                                :disabled="!isEditMode"
                                 v-model="question.incorrect_answer_4"
                                 type="text"
                                 class="form-control"
@@ -153,7 +156,7 @@ export default {
                         <div class="mb-3">
                             <label class="form-label">Explanation</label>
                             <textarea
-                                disabled
+                                :disabled="!isEditMode"
                                 v-model="question.explanation"
                                 class="form-control"
                                 rows="3"
@@ -161,9 +164,7 @@ export default {
                         </div>
 
                         <div class="d-flex justify-content-end gap-4">
-                            <a class="btn red-btn" @click="$router.go(-1)"
-                                >Edit</a
-                            >
+                            <a class="btn red-btn" @click="editMode()">Edit</a>
                             <a
                                 class="btn red-btn"
                                 @click="deleteStudentQuestion()"
