@@ -597,6 +597,8 @@ export default {
                 hide-footer
                 :loading="!isContentFlagsLoaded"
                 table-class-name="customize-table"
+                :filter-options="filterOptions()"
+                :search-value="searchText"
             >
                 <!-- --- Loading Part --- -->
                 <template #loading>
@@ -645,7 +647,7 @@ export default {
                         <button
                             b-tooltip.hover
                             :title="'Dismiss This Flag'"
-                            class="btn red-btn"
+                            class="btn red-btn h-100"
                             @click="handleOpenDismissModal(flagId)"
                         >
                             <svg
@@ -814,6 +816,78 @@ export default {
                             @click="handleRewardStudent(student.id)"
                         >
                             {{ student.username }}
+                        </div>
+                    </div>
+                </template>
+
+                <!-- --- Flag Type Header Filtering --- -->
+                <template #header-type="header">
+                    <div class="filter-column">
+                        <div
+                            @click.stop="
+                                showFlagTypeFilter = !showFlagTypeFilter
+                            "
+                            b-tooltip.hover
+                            :title="'filter this column'"
+                        >
+                            <span id="type-head-tile" class="me-1">
+                                {{ header.text }}
+                            </span>
+                        </div>
+                        <div
+                            class="filter-menu filter-flag-phone"
+                            v-if="showFlagTypeFilter"
+                        >
+                            <select
+                                class="pb-1"
+                                v-model="flagTypeCriteria"
+                                name="flagType"
+                            >
+                                <option>mc question</option>
+                                <option>essay question</option>
+                                <option>skill</option>
+                                <option>resource</option>
+                                <option>all</option>
+                            </select>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- --- Student Header Filtering --- -->
+                <template #header-student="header">
+                    <div class="filter-column">
+                        <div
+                            @click.stop="showStudentFilter = !showStudentFilter"
+                            b-tooltip.hover
+                            :title="'Search for student user name'"
+                        >
+                            <span id="type-head-tile" class="me-1">
+                                {{ header.text }}
+                            </span>
+                        </div>
+                        <div
+                            class="filter-menu student-phone-filter-menu"
+                            v-if="showStudentFilter"
+                        >
+                            <div class="d-flex student-filter">
+                                <input
+                                    type="text"
+                                    v-model="studentNameCriteria"
+                                    placeholder="type in student name"
+                                />
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="16"
+                                    height="14"
+                                    class=""
+                                    fill="gray"
+                                >
+                                    <path
+                                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                                    />
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -1102,6 +1176,16 @@ h2 {
 
     .expand-tile {
         font-size: 13px;
+    }
+
+    .filter-flag-phone {
+        left: -60px;
+        top: 45px;
+    }
+
+    .student-phone-filter-menu {
+        left: -25px;
+        top: 45px;
     }
 }
 </style>
