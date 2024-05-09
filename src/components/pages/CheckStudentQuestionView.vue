@@ -73,11 +73,13 @@ export default {
     },
     methods: {
         deleteStudentQuestion() {
-            this.studentMCQuestionsStore.deleteStudentMCQuestion(
-                this.studentQuestionId
-            );
-            // Return to hub page.
-            router.push({ name: 'hub' });
+            if (confirm('Delete this question?')) {
+                this.studentMCQuestionsStore.deleteStudentMCQuestion(
+                    this.studentQuestionId
+                );
+                // Return to hub page.
+                router.push({ name: 'hub' });
+            }
         },
         saveToQuestionBank() {
             const requestOptions = {
