@@ -2,12 +2,19 @@
 import router from '../../router';
 // Import the store.
 import { useStudentMCQuestionsStore } from '../../stores/StudentMCQuestionsStore.js';
+import { useUsersStore } from '../../stores/UsersStore';
+import { useSkillsStore } from '../../stores/SkillsStore';
 
 export default {
     setup() {
         const studentMCQuestionsStore = useStudentMCQuestionsStore();
+        const usersStore = useUsersStore();
+        const skillsStore = useSkillsStore();
+
         return {
-            studentMCQuestionsStore
+            studentMCQuestionsStore,
+            usersStore,
+            skillsStore
         };
     },
     data() {
@@ -25,10 +32,13 @@ export default {
                 explanation: '',
                 skill_id: ''
             },
-            isEditMode: false
+            isEditMode: false,
+            studentName: null,
+            skillName: null
         };
     },
     async created() {
+        // Get the student question.
         await this.studentMCQuestionsStore.getStudentMCQuestions();
         for (
             let i = 0;
@@ -43,8 +53,24 @@ export default {
                     this.studentMCQuestionsStore.studentMCQuestions[i];
             }
         }
+
+        // Get the student's name.
+        await this.usersStore.getUsers();
+        for (let i = 0; i < this.usersStore.users.length; i++) {
+            if (this.question.student_id == this.usersStore.users[i].id) {
+                this.studentName = this.usersStore.users[i].username;
+            }
+        }
+
+        // Get the skill's name.
+        if (this.skillsStore.skillsList.length == 0)
+            await this.skillsStore.getSkillsList();
+        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+            if (this.question.skill_id == this.skillsStore.skillsList[i].id) {
+                this.skillName = this.skillsStore.skillsList[i].name;
+            }
+        }
     },
-    computed: {},
     methods: {
         deleteStudentQuestion() {
             this.studentMCQuestionsStore.deleteStudentMCQuestion(
@@ -86,11 +112,9 @@ export default {
         <img src="/images/banners/general-banner.png" class="img-fluid" />
         <div class="container mt-3 pb-3">
             <div class="row">
-                <div class="col-10 d-flex align-items-end">
-                    <h4 id="header-tile">
-                        Please add your own question before you master this
-                        skill
-                    </h4>
+                <div class="col-10">
+                    <h2 id="header-tile">Student: {{ studentName }}</h2>
+                    <h2 id="header-tile">Skill: {{ skillName }}</h2>
                 </div>
             </div>
             <div class="main-content-container container-fluid mt-4">
