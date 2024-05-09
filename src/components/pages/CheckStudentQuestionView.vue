@@ -13,7 +13,18 @@ export default {
     data() {
         return {
             studentQuestionId: this.$route.params.id,
-            studentQuestion: {}
+            question: {
+                name: '',
+                question: '',
+                correct_answer: '',
+                incorrect_answer_1: '',
+                incorrect_answer_2: '',
+                incorrect_answer_3: '',
+                incorrect_answer_4: '',
+                question: '',
+                explanation: '',
+                skill_id: ''
+            }
         };
     },
     async created() {
@@ -27,16 +38,17 @@ export default {
                 this.studentMCQuestionsStore.studentMCQuestions[i].id ==
                 this.studentQuestionId
             ) {
-                this.studentQuestion =
+                this.question =
                     this.studentMCQuestionsStore.studentMCQuestions[i];
             }
         }
+        console.log(this.question);
     },
     computed: {},
     methods: {
         deleteStudentQuestion() {
             this.studentMCQuestionsStore.deleteStudentMCQuestion(
-                this.studentQuestion.id
+                this.studentQuestionId
             );
             // Return to hub page.
             router.push({ name: 'hub' });
@@ -46,13 +58,20 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: this.studentQuestion
+                    name: 'User: ' + this.question.student_id,
+                    question: this.question.question,
+                    correct_answer: this.question.correct_answer,
+                    incorrect_answer_1: this.question.incorrect_answer_1,
+                    incorrect_answer_2: this.question.incorrect_answer_2,
+                    incorrect_answer_3: this.question.incorrect_answer_3,
+                    incorrect_answer_4: this.question.incorrect_answer_4,
+                    explanation: this.question.explanation,
+                    skill_id: this.question.skill_id
                 })
             };
             var url = '/questions/mc-questions/add';
-            fetch(url, requestOptions).then(function (response) {
-                // Return to hub page.
-                router.push({ name: 'hub' });
+            fetch(url, requestOptions).then(() => {
+                this.deleteStudentQuestion();
             });
         }
     }
@@ -80,7 +99,7 @@ export default {
                             >
                             <textarea
                                 disabled
-                                v-model="studentQuestion.question"
+                                v-model="question.question"
                                 rows="1"
                                 class="form-control"
                             >
@@ -90,7 +109,7 @@ export default {
                             <label class="form-label">Correct answer</label>
                             <input
                                 disabled
-                                v-model="studentQuestion.correct_answer"
+                                v-model="question.correct_answer"
                                 type="text"
                                 class="form-control"
                             />
@@ -99,7 +118,7 @@ export default {
                             <label class="form-label">Wrong answer 1</label>
                             <input
                                 disabled
-                                v-model="studentQuestion.incorrect_answer_1"
+                                v-model="question.incorrect_answer_1"
                                 type="text"
                                 class="form-control"
                             />
@@ -108,7 +127,7 @@ export default {
                             <label class="form-label">Wrong answer 2</label>
                             <input
                                 disabled
-                                v-model="studentQuestion.incorrect_answer_2"
+                                v-model="question.incorrect_answer_2"
                                 type="text"
                                 class="form-control"
                             />
@@ -117,7 +136,7 @@ export default {
                             <label class="form-label">Wrong answer 3</label>
                             <input
                                 disabled
-                                v-model="studentQuestion.incorrect_answer_3"
+                                v-model="question.incorrect_answer_3"
                                 type="text"
                                 class="form-control"
                             />
@@ -126,7 +145,7 @@ export default {
                             <label class="form-label">Wrong answer 4</label>
                             <input
                                 disabled
-                                v-model="studentQuestion.incorrect_answer_4"
+                                v-model="question.incorrect_answer_4"
                                 type="text"
                                 class="form-control"
                             />
@@ -135,7 +154,7 @@ export default {
                             <label class="form-label">Explanation</label>
                             <textarea
                                 disabled
-                                v-model="studentQuestion.explanation"
+                                v-model="question.explanation"
                                 class="form-control"
                                 rows="3"
                             ></textarea>
