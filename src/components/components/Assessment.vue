@@ -542,7 +542,9 @@ export default {
             There is no quiz for this skill yet. Please check again soon.
         </div>
     </div>
-    <StudentAddMCQuestion v-else />
+    <StudentAddMCQuestion
+        v-else-if="loading == false && isQuizPassed == true"
+    />
     <!----- Modals ----------->
     <!-- Pass Modal -->
     <div v-if="passModal">
