@@ -131,10 +131,12 @@ export default {
 <template>
     <div class="container mt-3 pb-3">
         <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h4 id="header-tile">
-                    Please add your own question before you master this skill
-                </h4>
+            <div class="col-10">
+                <h4 id="header-tile">Well done, you have passed!</h4>
+                <p>
+                    Please create your own question on this subject before you
+                    master it.
+                </p>
             </div>
         </div>
         <div class="main-content-container container-fluid mt-4">
