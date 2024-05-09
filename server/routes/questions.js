@@ -417,7 +417,7 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
 });
 
 /**
- * Student List MC Questions
+ * List Student MC Questions
  */
 router.get('/student-mc-questions/list', (req, res, next) => {
     if (req.session.userName) {
@@ -437,7 +437,7 @@ router.get('/student-mc-questions/list', (req, res, next) => {
 });
 
 /**
- * Student Add MC Question.
+ * Add Student MC Questions
  */
 router.post('/student-mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
@@ -474,8 +474,10 @@ router.post('/student-mc-questions/add', (req, res, next) => {
     }
 });
 
-// Delete essay question.
-router.delete('/essay/:id', (req, res, next) => {
+/**
+ * Delete Student MC Question
+ */
+router.delete('/student-mc-questions/:id', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             'DELETE FROM student_mc_questions WHERE id=' + req.params.id;

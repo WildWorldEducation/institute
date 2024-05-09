@@ -1,4 +1,5 @@
 <script>
+import router from '../../router';
 // Import the store.
 import { useStudentMCQuestionsStore } from '../../stores/StudentMCQuestionsStore.js';
 
@@ -37,6 +38,8 @@ export default {
             this.studentMCQuestionsStore.deleteStudentMCQuestion(
                 this.studentQuestion.id
             );
+            // Return to hub page.
+            router.push({ name: 'hub' });
         },
         saveToQuestionBank() {
             const requestOptions = {
@@ -48,8 +51,8 @@ export default {
             };
             var url = '/questions/mc-questions/add';
             fetch(url, requestOptions).then(function (response) {
-                // Return to tags list page.
-                router.push({ name: 'tags' });
+                // Return to hub page.
+                router.push({ name: 'hub' });
             });
         }
     }
