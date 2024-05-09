@@ -414,9 +414,9 @@ export default {
 </script>
 
 <template>
-    <button v-if="!isQuizPassed" @click="TestPass()" class="btn green-btn me-2">
+    <!-- <button v-if="!isQuizPassed" @click="TestPass()" class="btn green-btn me-2">
         Test Pass
-    </button>
+    </button> -->
     <!-- Loading screen -->
     <div v-if="loading == true">Loading...</div>
     <!-- Assessment -->
