@@ -440,7 +440,6 @@ router.get('/student-mc-questions/list', (req, res, next) => {
  * Student Add MC Question.
  */
 router.post('/student-mc-questions/add', (req, res, next) => {
-    console.log('test');
     if (req.session.userName) {
         // No need to escape single quotes for SQL to accept,
         // as using '?'.
@@ -466,6 +465,26 @@ router.post('/student-mc-questions/add', (req, res, next) => {
                 } else {
                     res.end();
                 }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+// Delete essay question.
+router.delete('/essay/:id', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery =
+            'DELETE FROM student_mc_questions WHERE id=' + req.params.id;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
             } catch (err) {
                 next(err);
             }

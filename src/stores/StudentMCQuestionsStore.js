@@ -9,19 +9,15 @@ export const useStudentMCQuestionsStore = defineStore('student-mc-questions', {
             const result = await fetch('/questions/student-mc-questions/list');
             const data = await result.json();
             this.studentMCQuestions = data;
+        },
+        async deleteStudentMCQuestion(id) {
+            const result = fetch('/questions/student-mc-questions/' + id, {
+                method: 'DELETE'
+            });
+
+            if (result.error) {
+                console.log(result.error);
+            }
         }
-        // async deleteUser(id) {
-        //     this.users = this.users.filter((u) => {
-        //         return u.id !== id;
-        //     });
-
-        //     const result = fetch('/users/' + id, {
-        //         method: 'DELETE'
-        //     });
-
-        //     if (result.error) {
-        //         console.log(result.error);
-        //     }
-        // }
     }
 });

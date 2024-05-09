@@ -1,24 +1,163 @@
 <script>
 // Import the store.
+import { useStudentMCQuestionsStore } from '../../stores/StudentMCQuestionsStore.js';
 
 export default {
     setup() {
-        return {};
+        const studentMCQuestionsStore = useStudentMCQuestionsStore();
+        return {
+            studentMCQuestionsStore
+        };
     },
     data() {
         return {
-            studentQuestions: {}
+            studentQuestionId: this.$route.params.id,
+            studentQuestion: {}
         };
     },
-    async created() {},
+    async created() {
+        await this.studentMCQuestionsStore.getStudentMCQuestions();
+        for (
+            let i = 0;
+            i < this.studentMCQuestionsStore.studentMCQuestions.length;
+            i++
+        ) {
+            if (
+                this.studentMCQuestionsStore.studentMCQuestions[i].id ==
+                this.studentQuestionId
+            ) {
+                this.studentQuestion =
+                    this.studentMCQuestionsStore.studentMCQuestions[i];
+            }
+        }
+    },
     computed: {},
-    methods: {}
+    methods: {
+        deleteStudentQuestion() {
+            this.studentMCQuestionsStore.deleteStudentMCQuestion(
+                this.studentQuestion.id
+            );
+        },
+        saveToQuestionBank() {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: this.studentQuestion
+                })
+            };
+            var url = '/questions/mc-questions/add';
+            fetch(url, requestOptions).then(function (response) {
+                // Return to tags list page.
+                router.push({ name: 'tags' });
+            });
+        }
+    }
 };
 </script>
 
 <template>
     <div id="banner">
         <img src="/images/banners/general-banner.png" class="img-fluid" />
+        <div class="container mt-3 pb-3">
+            <div class="row">
+                <div class="col-10 d-flex align-items-end">
+                    <h4 id="header-tile">
+                        Please add your own question before you master this
+                        skill
+                    </h4>
+                </div>
+            </div>
+            <div class="main-content-container container-fluid mt-4">
+                <div class="row p-0">
+                    <div id="form-container" class="col p-4">
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label"
+                                >Question</label
+                            >
+                            <textarea
+                                disabled
+                                v-model="studentQuestion.question"
+                                rows="1"
+                                class="form-control"
+                            >
+                            </textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correct answer</label>
+                            <input
+                                disabled
+                                v-model="studentQuestion.correct_answer"
+                                type="text"
+                                class="form-control"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Wrong answer 1</label>
+                            <input
+                                disabled
+                                v-model="studentQuestion.incorrect_answer_1"
+                                type="text"
+                                class="form-control"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Wrong answer 2</label>
+                            <input
+                                disabled
+                                v-model="studentQuestion.incorrect_answer_2"
+                                type="text"
+                                class="form-control"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Wrong answer 3</label>
+                            <input
+                                disabled
+                                v-model="studentQuestion.incorrect_answer_3"
+                                type="text"
+                                class="form-control"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Wrong answer 4</label>
+                            <input
+                                disabled
+                                v-model="studentQuestion.incorrect_answer_4"
+                                type="text"
+                                class="form-control"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Explanation</label>
+                            <textarea
+                                disabled
+                                v-model="studentQuestion.explanation"
+                                class="form-control"
+                                rows="3"
+                            ></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-4">
+                            <a class="btn red-btn" @click="$router.go(-1)"
+                                >Edit</a
+                            >
+                            <a
+                                class="btn red-btn"
+                                @click="deleteStudentQuestion()"
+                                >Delete</a
+                            >
+                            <button
+                                class="btn purple-btn"
+                                @click="saveToQuestionBank()"
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
