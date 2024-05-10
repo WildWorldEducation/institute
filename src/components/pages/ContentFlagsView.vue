@@ -227,6 +227,13 @@ export default {
             if (e.key === 'Enter') {
                 this.showStudentFilter = false;
             }
+        },
+        clearFilter() {
+            this.searchText = '';
+            this.flagTypeCriteria = 'all';
+            this.studentNameCriteria = '';
+            this.showFlagTypeFilter = false;
+            this.showStudentFilter = false;
         }
     }
 };
@@ -239,7 +246,7 @@ export default {
             class="img-fluid"
         />
     </div>
-    <div class="container-md">
+    <div class="container-md pb-5">
         <div class="mt-3">
             <h1>Content Flags</h1>
         </div>
@@ -567,6 +574,7 @@ export default {
                                         @click="
                                             flagTypeCriteria = 'essay question';
                                             showFlagTypeDropDown = false;
+                                            showFlagTypeFilter = false;
                                         "
                                     >
                                         essay question
@@ -576,6 +584,7 @@ export default {
                                         @click="
                                             flagTypeCriteria = 'mc question';
                                             showFlagTypeDropDown = false;
+                                            showFlagTypeFilter = false;
                                         "
                                     >
                                         mc question
@@ -585,6 +594,7 @@ export default {
                                         @click="
                                             flagTypeCriteria = 'skill';
                                             showFlagTypeDropDown = false;
+                                            showFlagTypeFilter = false;
                                         "
                                     >
                                         skill
@@ -594,6 +604,7 @@ export default {
                                         @click="
                                             flagTypeCriteria = 'resource';
                                             showFlagTypeDropDown = false;
+                                            showFlagTypeFilter = false;
                                         "
                                     >
                                         resource
@@ -603,6 +614,7 @@ export default {
                                         @click="
                                             flagTypeCriteria = 'all';
                                             showFlagTypeDropDown = false;
+                                            showFlagTypeFilter;
                                         "
                                     >
                                         all
@@ -916,17 +928,92 @@ export default {
                             class="filter-menu filter-flag-phone"
                             v-if="showFlagTypeFilter"
                         >
-                            <select
-                                class="pb-1"
-                                v-model="flagTypeCriteria"
-                                name="flagType"
-                            >
-                                <option>mc question</option>
-                                <option>essay question</option>
-                                <option>skill</option>
-                                <option>resource</option>
-                                <option>all</option>
-                            </select>
+                            <!-- Custom Dropdown -->
+                            <div class="d-flex flex-column">
+                                <div
+                                    :class="[
+                                        showFlagTypeDropDown
+                                            ? 'custom-select-button-focus'
+                                            : 'custom-select-button'
+                                    ]"
+                                    @click="
+                                        showFlagTypeDropDown =
+                                            !showFlagTypeDropDown
+                                    "
+                                >
+                                    {{ flagTypeCriteria }}
+                                    <span>
+                                        <svg
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 20 20"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                fill="#344054"
+                                            />
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div
+                                    v-if="showFlagTypeDropDown"
+                                    class="custom-dropdown-base"
+                                >
+                                    <div
+                                        class="custom-dropdown-option"
+                                        @click="
+                                            flagTypeCriteria = 'essay question';
+                                            showFlagTypeFilter = false;
+                                            showFlagTypeDropDown = false;
+                                        "
+                                    >
+                                        essay question
+                                    </div>
+                                    <div
+                                        class="custom-dropdown-option"
+                                        @click="
+                                            flagTypeCriteria = 'mc question';
+                                            showFlagTypeFilter = false;
+                                            showFlagTypeDropDown = false;
+                                        "
+                                    >
+                                        mc question
+                                    </div>
+                                    <div
+                                        class="custom-dropdown-option"
+                                        @click="
+                                            flagTypeCriteria = 'skill';
+                                            showFlagTypeFilter = false;
+                                            showFlagTypeDropDown = false;
+                                        "
+                                    >
+                                        skill
+                                    </div>
+                                    <div
+                                        class="custom-dropdown-option"
+                                        @click="
+                                            flagTypeCriteria = 'resource';
+                                            showFlagTypeFilter = false;
+                                            showFlagTypeDropDown = false;
+                                        "
+                                    >
+                                        resource
+                                    </div>
+                                    <div
+                                        class="custom-dropdown-option"
+                                        @click="
+                                            flagTypeCriteria = 'all';
+                                            showFlagTypeFilter = false;
+                                            showFlagTypeDropDown = false;
+                                        "
+                                    >
+                                        all
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End of custom dropdown -->
                         </div>
                     </div>
                 </template>
@@ -952,6 +1039,7 @@ export default {
                                     type="text"
                                     v-model="studentNameCriteria"
                                     placeholder="type in student name"
+                                    @keyup="(e) => handleStudentKeyUp(e)"
                                 />
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -970,6 +1058,23 @@ export default {
                     </div>
                 </template>
             </Vue3EasyDataTable>
+        </div>
+
+        <!-- Clear Filter Criteria -->
+        <div class="btn red-btn" @click="clearFilter">
+            <span>Clear Filter </span>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 576 512"
+                width="16"
+                height="14"
+                class="ms-1"
+                fill="white"
+            >
+                <path
+                    d="M566.6 54.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192-34.7-34.7c-4.2-4.2-10-6.6-16-6.6c-12.5 0-22.6 10.1-22.6 22.6v29.1L364.3 320h29.1c12.5 0 22.6-10.1 22.6-22.6c0-6-2.4-11.8-6.6-16l-34.7-34.7 192-192zM341.1 353.4L222.6 234.9c-42.7-3.7-85.2 11.7-115.8 42.3l-8 8C76.5 307.5 64 337.7 64 369.2c0 6.8 7.1 11.2 13.2 8.2l51.1-25.5c5-2.5 9.5 4.1 5.4 7.9L7.3 473.4C2.7 477.6 0 483.6 0 489.9C0 502.1 9.9 512 22.1 512l173.3 0c38.8 0 75.9-15.4 103.4-42.8c30.6-30.6 45.9-73.1 42.3-115.8z"
+                />
+            </svg>
         </div>
     </div>
 
@@ -1375,7 +1480,7 @@ h2 {
     }
 
     .filter-flag-phone {
-        left: -60px;
+        left: -140px;
         top: 45px;
     }
 
