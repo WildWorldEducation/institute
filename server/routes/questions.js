@@ -499,47 +499,74 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
 /**
  * Check Questions.
  */
-router.post('/check-questions', (req, res, next) => {
-    if (req.session.userName) {
-        // The user posting the source.
-        userId = req.session.userId;
-        res.setHeader('Content-Type', 'application/json');
-        // Get all MC questions.
-        let sqlQuery = `SELECT * FROM mc_questions              
-        AND id > 1290        
+// router.post('/check-questions', (req, res, next) => {
+//     if (req.session.userName) {
+//         // The user posting the source.
+//         userId = req.session.userId;
+//         res.setHeader('Content-Type', 'application/json');
+//         // Get all MC questions.
+let sqlQuery = `SELECT * FROM mc_questions                              
         ORDER BY id`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
+let query = conn.query(sqlQuery, (err, results) => {
+    try {
+        if (err) {
+            throw err;
+        }
 
-                mcQuestions = results;
-                skillsLength = skills.length;
-                // skillsLength = 5;
+        mcQuestions = results;
+        console.log(mcQuestions[0]);
+        // For going through all questions.
+        let index = 0;
 
-                // For going through all questions.
-                let index = 0;
-
-                // Get the blocked domain urls.
-                for (let i = 0; i < results.length; i++) {
-                    blockedDomains.push(results[i].root_domain);
-                }
-
-                // We go through all skills sequencially, one at a time.
-                getSource(
-                    usedLinks,
-                    brokenLinkCount,
-                    index,
-                    numSourcesForSkillRemaining,
-                    blockedDomains,
-                    whiteListedDomains
-                );
-            } catch (err) {
-                next(err);
-            }
-        });
+        // Now we ask ChatGPT to check each one.
+        //                 checkQuestion();
+    } catch (err) {
+        next(err);
     }
 });
+//     }
+// });
+
+// Get source from ChatGPT.
+// Import OpenAI package.
+const { OpenAI } = require('openai');
+// Include API key.
+// To access the .env file.
+require('dotenv').config();
+const openai = new OpenAI({
+    apiKey: process.env.CHAT_GPT_API_KEY
+});
+
+async function checkQuestion() {
+    // Create prompt for ChatGPT.
+    let prompt = ``;
+
+    // Attempting to prevent the app from crashing if anything goes wrong with the API call.
+    // ie, error handling.
+    try {
+        console.log('Checking question: ');
+
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: 'system', content: 'You are a helpful assistant.' },
+                {
+                    role: 'user',
+                    content: prompt + ` Please respond with a JSON object.`
+                }
+            ],
+            model: 'gpt-4-turbo',
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
+        // Convert string to object.
+        var responseObj = JSON.parse(escapedResponseJSON);
+        console.log(responseObj);
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+        return;
+    }
+}
 
 module.exports = router;
