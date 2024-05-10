@@ -404,7 +404,7 @@ export default {
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col post-user-row">
+                    <div class="col post-user-row d-flex">
                         <div id="user-avatar">
                             <img
                                 :src="post.userAvatar"
@@ -544,19 +544,12 @@ export default {
 }
 
 .user-avatar-img {
-    width: 54px;
-    height: 54px;
+    width: auto;
+    height: 100%;
     border-radius: 10px;
     margin-right: 0px;
     margin-left: auto;
-}
-
-.user-avatar-img {
-    width: 54px;
-    height: 54px;
-    border-radius: 10px;
-    margin-right: 0px;
-    margin-left: auto;
+    margin-top: 0px;
 }
 
 .forum-post img {
