@@ -1067,7 +1067,12 @@ export default {
 
         <!-- Clear Filter Criteria -->
         <div class="d-flex flex-row-reverse">
-            <div class="btn red-btn" @click="clearFilter">
+            <div
+                class="btn red-btn"
+                @click="clearFilter"
+                b-tooltip.hover
+                :title="'clear all table filter'"
+            >
                 <span>Clear Filter </span>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
