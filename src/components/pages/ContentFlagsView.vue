@@ -526,7 +526,7 @@ export default {
                             </svg>
                         </div>
                         <div
-                            class="filter-menu filter-sport-menu"
+                            class="filter-menu flag-type-filter"
                             v-if="showFlagTypeFilter"
                         >
                             <!-- Custom Dropdown -->
@@ -1228,6 +1228,10 @@ h2 {
 .student-filter input {
     outline: none;
     border: 0px;
+}
+
+.flag-type-filter {
+    left: -50px;
 }
 
 /* Style For The Custom Select */
