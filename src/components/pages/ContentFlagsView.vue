@@ -42,7 +42,9 @@ export default {
             showFlagTypeFilter: false,
             studentNameCriteria: '',
             showStudentFilter: false,
-            searchText: ''
+            searchText: '',
+            // Custom drop down flag and state
+            showFlagTypeDropDown: false
         };
     },
     components: {
@@ -220,6 +222,11 @@ export default {
             }
 
             return filterOptionsArray;
+        },
+        handleStudentKeyUp(e) {
+            if (e.key === 'Enter') {
+                this.showStudentFilter = false;
+            }
         }
     }
 };
@@ -522,17 +529,87 @@ export default {
                             class="filter-menu filter-sport-menu"
                             v-if="showFlagTypeFilter"
                         >
-                            <select
-                                class="favouriteSport-selector"
-                                v-model="flagTypeCriteria"
-                                name="flagType"
-                            >
-                                <option>mc question</option>
-                                <option>essay question</option>
-                                <option>skill</option>
-                                <option>resource</option>
-                                <option>all</option>
-                            </select>
+                            <!-- Custom Dropdown -->
+                            <div class="d-flex flex-column">
+                                <div
+                                    :class="[
+                                        showFlagTypeDropDown
+                                            ? 'custom-select-button-focus'
+                                            : 'custom-select-button'
+                                    ]"
+                                    @click="
+                                        showFlagTypeDropDown =
+                                            !showFlagTypeDropDown
+                                    "
+                                >
+                                    {{ flagTypeCriteria }}
+                                    <span>
+                                        <svg
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 20 20"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                fill="#344054"
+                                            />
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div
+                                    v-if="showFlagTypeDropDown"
+                                    class="custom-dropdown-base"
+                                >
+                                    <div
+                                        class="custom-dropdown-option"
+                                        @click="
+                                            flagTypeCriteria = 'essay question';
+                                            showFlagTypeDropDown = false;
+                                        "
+                                    >
+                                        essay question
+                                    </div>
+                                    <div
+                                        class="custom-dropdown-option"
+                                        @click="
+                                            flagTypeCriteria = 'mc question';
+                                            showFlagTypeDropDown = false;
+                                        "
+                                    >
+                                        mc question
+                                    </div>
+                                    <div
+                                        class="custom-dropdown-option"
+                                        @click="
+                                            flagTypeCriteria = 'skill';
+                                            showFlagTypeDropDown = false;
+                                        "
+                                    >
+                                        skill
+                                    </div>
+                                    <div
+                                        class="custom-dropdown-option"
+                                        @click="
+                                            flagTypeCriteria = 'resource';
+                                            showFlagTypeDropDown = false;
+                                        "
+                                    >
+                                        resource
+                                    </div>
+                                    <div
+                                        class="custom-dropdown-option"
+                                        @click="
+                                            flagTypeCriteria = 'all';
+                                            showFlagTypeDropDown = false;
+                                        "
+                                    >
+                                        all
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End of custom dropdown -->
                         </div>
                     </div>
                 </template>
@@ -567,6 +644,7 @@ export default {
                                     type="text"
                                     v-model="studentNameCriteria"
                                     placeholder="type in student name"
+                                    @keyup="(e) => handleStudentKeyUp(e)"
                                 />
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -1151,6 +1229,120 @@ h2 {
     outline: none;
     border: 0px;
 }
+
+/* Style For The Custom Select */
+.custom-select-button {
+    width: 200px;
+    height: auto;
+    padding: 6px 14px 6px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #f2f4f7;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button-focus {
+    width: 200px;
+    height: auto;
+    padding: 6px 14px 6px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 0px 0px 4px #bca3ff4d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button:hover {
+    cursor: pointer;
+    border: 1px solid #9c7eec;
+}
+
+.custom-select-button > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.custom-select-button-focus > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
+}
+
+/* The animation key frame */
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.custom-select-button-focus:hover {
+    cursor: pointer;
+}
+
+.custom-dropdown-base {
+    border-radius: 8px;
+    border: 1px;
+    background: linear-gradient(0deg, #ffffff, #ffffff);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 4px 6px -2px #10182808;
+    box-shadow: 0px 12px 16px -4px #10182814;
+    width: 200px;
+}
+
+.custom-dropdown-option {
+    padding: 10px 14px 10px 14px;
+    gap: 8px;
+    color: #344054;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.custom-dropdown-option:hover {
+    cursor: pointer;
+    background: #bca3ff1a;
+}
+
+/* End of CSS style for Custom Select */
 
 /* View Specific On Phone */
 @media (min-width: 0px) and (max-width: 576px) {
