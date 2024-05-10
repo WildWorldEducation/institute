@@ -496,4 +496,50 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
     }
 });
 
+/**
+ * Check Questions.
+ */
+router.post('/check-questions', (req, res, next) => {
+    if (req.session.userName) {
+        // The user posting the source.
+        userId = req.session.userId;
+        res.setHeader('Content-Type', 'application/json');
+        // Get all MC questions.
+        let sqlQuery = `SELECT * FROM mc_questions              
+        AND id > 1290        
+        ORDER BY id`;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                mcQuestions = results;
+                skillsLength = skills.length;
+                // skillsLength = 5;
+
+                // For going through all questions.
+                let index = 0;
+
+                // Get the blocked domain urls.
+                for (let i = 0; i < results.length; i++) {
+                    blockedDomains.push(results[i].root_domain);
+                }
+
+                // We go through all skills sequencially, one at a time.
+                getSource(
+                    usedLinks,
+                    brokenLinkCount,
+                    index,
+                    numSourcesForSkillRemaining,
+                    blockedDomains,
+                    whiteListedDomains
+                );
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 module.exports = router;
