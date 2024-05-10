@@ -499,6 +499,7 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
 /**
  * Check Questions.
  */
+let mcQuestions = [];
 // router.post('/check-questions', (req, res, next) => {
 //     if (req.session.userName) {
 //         // The user posting the source.
@@ -519,7 +520,7 @@ let query = conn.query(sqlQuery, (err, results) => {
         let index = 0;
 
         // Now we ask ChatGPT to check each one.
-        //                 checkQuestion();
+        //                 checkQuestion(index);
     } catch (err) {
         next(err);
     }
@@ -537,9 +538,11 @@ const openai = new OpenAI({
     apiKey: process.env.CHAT_GPT_API_KEY
 });
 
-async function checkQuestion() {
+async function checkQuestion(index) {
     // Create prompt for ChatGPT.
-    let prompt = ``;
+    let prompt =
+        `Please check if the following quiz question: ` +
+        mcQuestions[index].question;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
