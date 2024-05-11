@@ -516,8 +516,9 @@ let query = conn.query(sqlQuery, (err, results) => {
 
         mcQuestions = results;
         console.log(mcQuestions[0]);
-        // For going through all questions.
         let index = 0;
+        checkQuestion(index);
+        // For going through all questions.
 
         // Now we ask ChatGPT to check each one.
         //                 checkQuestion(index);
@@ -539,16 +540,32 @@ const openai = new OpenAI({
 });
 
 async function checkQuestion(index) {
+    console.log(mcQuestions[0]);
     // Create prompt for ChatGPT.
     let prompt =
-        `Please check if the following quiz question: ` +
-        mcQuestions[index].question;
+        `Please check if the following quiz question: "` +
+        mcQuestions[index].question +
+        `" Please review if the following answer is the correct
+        answer for this question: "` +
+        mcQuestions[index].correct_answer +
+        `". If it is, please return a variable called 'correct_answer_is_correct' as true, otherwise
+        return it as false. Please also check whether the 
+        following four answers are all incorrect answers for this question: "` +
+        mcQuestions[index].incorrect_answer_1 +
+        `"; "` +
+        mcQuestions[index].incorrect_answer_2 +
+        `"; "` +
+        mcQuestions[index].incorrect_answer_3 +
+        '"; "' +
+        mcQuestions[index].incorrect_answer_4 +
+        `". 
+        Please also check for any spelling errors. Please return`;
 
+    console.log(prompt);
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
     try {
         console.log('Checking question: ');
-
         const completion = await openai.chat.completions.create({
             messages: [
                 { role: 'system', content: 'You are a helpful assistant.' },
