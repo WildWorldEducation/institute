@@ -180,17 +180,20 @@ export default {
                 console.log(result.error);
             }
 
-            this.skillFlags = [];
-            this.resourcesFlags = [];
-            this.mcQuestionFlags = [];
+            /**
+             * Filter The rows array instead of recall the sever for update flags
+             */
+            this.rows = this.rows.filter((e) => {
+                return e.flagId !== flagId;
+            });
             this.showDismissModal = false;
-            this.getContentFlags();
         },
         handleOpenDismissModal(flagId) {
             this.flagId = flagId;
             this.showDismissModal = true;
         },
-        // THIS IS JUST A WARNING NOW THE FEATURE WILL
+        // THIS IS JUST A WARNING NOW THE FEATURE WILL BE IMPLEMENT LATER
+        // TODO: ADD REWARD FEATURE
         handleRewardStudent(studentId) {
             alert(`student  with id: ${studentId} will be rewarded`);
         },
@@ -254,6 +257,7 @@ export default {
             <h1>Content Flags</h1>
         </div>
         <hr />
+        <!-- Search Table Section -->
         <div>
             <div class="expand-tile">Search:</div>
             <div class="d-flex search-bar">
@@ -1071,7 +1075,7 @@ export default {
             </Vue3EasyDataTable>
         </div>
 
-        <!-- Clear Filter Criteria -->
+        <!-- Clear Filter Criteria Button -->
         <div class="d-flex flex-row-reverse">
             <div
                 class="btn red-btn"
@@ -1105,17 +1109,39 @@ export default {
                 <div class="d-flex justify-content-between">
                     <button
                         type="button"
-                        class="btn red-btn w-25"
+                        class="btn red-btn"
                         @click="showDismissModal = false"
                     >
-                        <span> No </span>
+                        <span class="me-2 d-none d-md-block"> No </span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="18"
+                            height="18"
+                            fill="white"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+                            />
+                        </svg>
                     </button>
                     <button
                         type="button"
-                        class="btn green-btn w-25"
+                        class="btn green-btn"
                         @click="dismissFlag(flagId)"
                     >
-                        <span> Yes </span>
+                        <span class="me-2 d-none d-md-block"> Yes </span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="18"
+                            height="18"
+                            fill="white"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+                            />
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -1190,7 +1216,6 @@ h2 {
     font-size: 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
 }
 
 .red-btn:hover {
@@ -1207,8 +1232,6 @@ h2 {
     font-size: 12px;
     display: flex;
     align-items: center;
-    align-items: center;
-    justify-content: center;
 }
 
 .green-btn:hover {
@@ -1240,7 +1263,7 @@ h2 {
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 1;
+    z-index: 30;
     /* Sit on top */
     left: 0;
     top: 0;
@@ -1262,7 +1285,7 @@ h2 {
     /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 20%;
+    width: 250px;
     /* Could be more or less, depending on screen size */
 }
 /* End of Modal Styling */
@@ -1505,6 +1528,11 @@ h2 {
     .student-phone-filter-menu {
         left: -25px;
         top: 45px;
+    }
+
+    .modal-content {
+        margin: 75% auto;
+        width: 80%;
     }
 }
 </style>
