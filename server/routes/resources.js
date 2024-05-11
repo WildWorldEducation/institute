@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
+    //  password: 'password',
     database: 'skill_tree'
 });
 
@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 592
+        AND id > 1392
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -274,6 +274,7 @@ router.post('/generate-sources', (req, res, next) => {
                 let brokenLinkCount = 0;
                 // Check new urls agains this list.
                 let blockedDomains = [];
+                let whiteListedDomains = [];
 
                 // As we are posting sources for all skills, we get all skills.
                 let sqlQuery2 = `SELECT * FROM blacklisted_sources`;
@@ -286,14 +287,32 @@ router.post('/generate-sources', (req, res, next) => {
                         for (let i = 0; i < results.length; i++) {
                             blockedDomains.push(results[i].root_domain);
                         }
-                        // We go through all skills sequencially, one at a time.
-                        getSource(
-                            usedLinks,
-                            brokenLinkCount,
-                            index,
-                            numSourcesForSkillRemaining,
-                            blockedDomains
-                        );
+                        // As we are posting sources for all skills, we get all skills.
+                        let sqlQuery3 = `SELECT * FROM whitelisted_sources`;
+                        let query3 = conn.query(sqlQuery3, (err, results) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                }
+                                // Get the whitelisted domain urls.
+                                for (let i = 0; i < results.length; i++) {
+                                    whiteListedDomains.push(
+                                        results[i].root_domain
+                                    );
+                                }
+                                // We go through all skills sequencially, one at a time.
+                                getSource(
+                                    usedLinks,
+                                    brokenLinkCount,
+                                    index,
+                                    numSourcesForSkillRemaining,
+                                    blockedDomains,
+                                    whiteListedDomains
+                                );
+                            } catch (err) {
+                                next(err);
+                            }
+                        });
                     } catch (err) {
                         next(err);
                     }
@@ -311,7 +330,8 @@ async function getSource(
     brokenLinkCount,
     index,
     numSourcesForSkillRemaining,
-    blockedDomains
+    blockedDomains,
+    whiteListedDomains
 ) {
     // Get the skill data.-----
     // Replace underscore with space.
@@ -322,15 +342,14 @@ async function getSource(
         /<[^>]*>?/gm,
         ''
     );
-    let preferredDomains =
-        'Wikipedia, Khan Academy, Art of Problem Solving, Grammarly';
+
     // Create prompt for ChatGPT.
     let prompt =
         `
                    I am a ` +
         level +
         ` student.
-                       Please provide me with a JSON object containing a URL link, named "url",
+                       Please provide me with a single JSON object containing a URL link, named "url",
                        with site/page/subject name, named "name", and a description of the webpage, named
                        "description", so I can learn more about ` +
         name +
@@ -338,9 +357,9 @@ async function getSource(
         masteryRequirements +
         `. The link should be for an article, worksheets, game, video or other educational resource.
                            Please do not provide Youtube videos.
-        Please preference sites from the following domains:` +
-        preferredDomains +
-        `.`;
+        Please strongly preference resources from the following urls:` +
+        whiteListedDomains +
+        `. Please provide only links to free sites, and please do not provide links aimed at parents or teachers.`;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
@@ -370,7 +389,8 @@ async function getSource(
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
-        //   console.log(responseObj);
+        console.log(typeof responseObj);
+        console.log(responseObj);
         // Check if webpages actually exist (because with GPT4 +- half links dont exist.)
         checkSources(
             responseObj,
@@ -390,7 +410,9 @@ async function getSource(
 
 // Check if the source link actually exists,
 // and has not been hallucinated by ChatGPT.
-const urlExists = require('url-exists');
+const urlExist = (...args) =>
+    import('url-exist').then(({ default: fetch }) => fetch(...args));
+
 async function checkSources(
     responseObj,
     usedLinks,
@@ -412,6 +434,7 @@ async function checkSources(
         );
         return;
     }
+
     // Check if in blocked domains list.
     for (let i = 0; i < blockedDomains.length; i++) {
         if (responseObj.url.includes(blockedDomains[i])) {
@@ -427,39 +450,33 @@ async function checkSources(
             return;
         }
     }
+
     // Check if url exists.
-    const urlExistsPromise = (url) =>
-        new Promise((resolve, reject) =>
-            urlExists(url, (err, exists) =>
-                err ? reject(err) : resolve(exists)
-            )
+    const urlExists = await urlExist(responseObj.url);
+    // To try to prevent duplication, thereby saving ChatGPT tokens.
+    usedLinks.push(responseObj.url);
+    if (urlExists) {
+        // Add to database.
+        addSource(
+            responseObj,
+            usedLinks,
+            brokenLinkCount,
+            index,
+            numSourcesForSkillRemaining,
+            blockedDomains
         );
-    urlExistsPromise(responseObj.url).then((exists) => {
-        // To try to prevent duplication, thereby saving ChatGPT tokens.
-        usedLinks.push(responseObj.url);
-        if (exists) {
-            // Add to database.
-            addSource(
-                responseObj,
-                usedLinks,
-                brokenLinkCount,
-                index,
-                numSourcesForSkillRemaining,
-                blockedDomains
-            );
-        } else {
-            brokenLinkCount++;
-            console.log('Broken links: ' + brokenLinkCount);
-            // Get another source.
-            getSource(
-                usedLinks,
-                brokenLinkCount,
-                index,
-                numSourcesForSkillRemaining,
-                blockedDomains
-            );
-        }
-    });
+    } else {
+        brokenLinkCount++;
+        console.log('Broken links: ' + brokenLinkCount);
+        // Get another source.
+        getSource(
+            usedLinks,
+            brokenLinkCount,
+            index,
+            numSourcesForSkillRemaining,
+            blockedDomains
+        );
+    }
 }
 
 // Add to DB.
@@ -488,6 +505,8 @@ async function addSource(
         skill_id: skillId,
         content: link
     };
+
+    console.log(responseObj.url);
 
     let sqlQuery = 'INSERT INTO resources SET ?';
     let query = conn.query(sqlQuery, data, (err, results, next) => {
@@ -536,7 +555,7 @@ async function addSource(
 // Delete all sources from a particular root domain.
 router.post('/delete-domain', (req, res, next) => {
     if (req.session.userName) {
-        let rootDomain = req.body.rootDomain;
+        let rootDomain = req.body.blockedRootDomain;
 
         let sqlQuery1 =
             `DELETE FROM resources
@@ -620,6 +639,76 @@ router.delete('/unblock-domain/:domainId', (req, res, next) => {
     }
 });
 
+// Add root domain to whitelist for sources.
+router.post('/add-domain-to-whitelist', (req, res, next) => {
+    if (req.session.userName) {
+        let rootDomain = req.body.whiteListedRootDomain;
+
+        let sqlQuery =
+            `INSERT IGNORE INTO whitelisted_sources (root_domain)
+        VALUES ('` +
+            rootDomain +
+            `')`;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * List Whitelisted Root Domains
+ *
+ * @return response()
+ */
+router.get('/list-whitelisted-domains', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM `whitelisted_sources`';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Unblock Blocked Root Domain
+ */
+router.delete('/remove-domain-from-whitelist/:domainId', (req, res, next) => {
+    console.log('test');
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            'DELETE FROM whitelisted_sources WHERE id=' + req.params.domainId;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * Delete Duplicate Sources.
  */
@@ -687,6 +776,72 @@ function deleteDuplicateSources() {
 router.delete('/delete-duplicate-sources', (req, res, next) => {
     if (req.session.userName) {
         deleteDuplicateSources();
+    }
+});
+
+/**
+ * Search For and Delete Broken Links.
+ */
+
+// First get all links in all sources.
+var sourceLinks = [];
+function getSources() {
+    // Get all sources.
+    let sqlQuery = `SELECT * FROM resources ORDER BY id`;
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            let sources = results;
+            for (let i = 0; i < sources.length; i++) {
+                // extract the url.
+                var source = sources[i].content.match(`href="(.*)" target`);
+                if (source != null) {
+                    sourceLinks.push(source[1]);
+                }
+            }
+            deleteBrokenSources(sourceLinks);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+// Then check them manually.
+// Run by devs, not admins.
+// Currently makes mistakes, so need to check manually and delete manually.
+const { UrlChecker } = require('broken-link-checker');
+function deleteBrokenSources(sourceLinks) {
+    var i = 0;
+    const urlChecker = new UrlChecker(
+        {
+            acceptedSchemes: ['http', 'https'],
+            excludeLinksToSamePage: true
+        },
+        {
+            error: (error) => {
+                console.error(error);
+            },
+            end: () => {
+                if (i < sourceLinks.length) {
+                    i++;
+                    urlChecker.enqueue(sourceLinks[i]);
+                }
+            },
+            link: (result) => {
+                if (result.broken) {
+                    console.log(result);
+                }
+            }
+        }
+    );
+    urlChecker.enqueue(sourceLinks[i]);
+}
+
+router.delete('/delete-broken-sources', (req, res, next) => {
+    console.log('scanning for broken links');
+    if (req.session.userName) {
+        getSources();
     }
 });
 
