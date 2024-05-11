@@ -293,9 +293,12 @@ export default {
 
                 <!-- --- Name Router Column --- -->
                 <template #item-name="{ name, nameUrl }">
-                    <RouterLink class="flag-name" :to="`/${nameUrl}`">{{
-                        name
-                    }}</RouterLink>
+                    <RouterLink
+                        class="flag-name"
+                        :to="`/${nameUrl}`"
+                        target="_blank"
+                        >{{ name }}</RouterLink
+                    >
                 </template>
 
                 <!-- --- Action Buttons Column --- -->
@@ -701,9 +704,12 @@ export default {
                 </template>
                 <!-- --- Flag Name Column ---  -->
                 <template #item-name="{ name, nameUrl }">
-                    <RouterLink class="flag-name" :to="`/${nameUrl}`">{{
-                        name
-                    }}</RouterLink>
+                    <RouterLink
+                        class="flag-name"
+                        :to="`/${nameUrl}`"
+                        target="_blank"
+                        >{{ name }}</RouterLink
+                    >
                 </template>
                 <!-- --- Action Buttons Column -->
                 <template #item-action="{ flagId, editUrl, type }">
@@ -1159,7 +1165,7 @@ h2 {
 }
 
 .purple-btn {
-    background-color: #a48be6;
+    background-color: #a48be6 !important;
     color: white;
     border: 1px solid #7f56d9;
     font-family: 'Inter', sans-serif;
