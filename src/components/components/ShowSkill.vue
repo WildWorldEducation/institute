@@ -42,7 +42,8 @@ export default {
             isMastered: false,
             isUnlocked: false,
             filters: [],
-            showModal: false
+            showModal: false,
+            showThankModal: false
         };
     },
     components: {
@@ -123,11 +124,9 @@ export default {
             };
             var url = '/content-flags/add';
             fetch(url, requestOptions).then(() => {
-                alert(
-                    'Thank you for flagging this skill. We will take a look as soon as possible '
-                );
-                // turn off the modal
+                // Handle showing some modal after post content flags
                 this.showModal = false;
+                this.showThankModal = true;
             });
         }
     }
@@ -148,7 +147,9 @@ export default {
                 "
                 class="row mt-3"
             >
-                <div class="d-flex btn-header flex-row-reverse center-header">
+                <!-- Buttons at top of the pages -->
+                <div class="d-flex flex-row-reverse align-items-end">
+                    <!-- Unlock Skill Button -->
                     <button
                         v-if="skill.type == 'domain'"
                         @click="MakeMastered()"
@@ -156,12 +157,34 @@ export default {
                     >
                         Click to unlock child skills
                     </button>
+                    <!-- Take Assessment Button -->
                     <router-link
                         v-else
                         class="btn purple-btn"
                         :to="skillId + '/assessment'"
                         >Take Assessment</router-link
                     >
+                    <!-- Flag the skill button -->
+                    <div class="d-flex flex-row-reverse">
+                        <div
+                            @click="showModal = true"
+                            type="button"
+                            class="me-1"
+                            b-tooltip.hover
+                            title="Report this skill to the admin if it has errors"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                class="flag-icon"
+                            >
+                                <path
+                                    fill="#8f7bd6"
+                                    d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                />
+                            </svg>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Edit skill only available for Admin -->
@@ -188,8 +211,9 @@ export default {
                     </svg>
                 </router-link>
             </div>
-            <div class="row mt-3">
-                <div class="col col-lg-2 col-md-3">
+            <div class="d-flex gap-2">
+                <!-- Skill image -->
+                <div>
                     <!-- Show a default skill avatar if skill not have image yet -->
                     <img
                         :src="
@@ -200,15 +224,15 @@ export default {
                         class="img-fluid"
                     />
                 </div>
-
-                <div class="col-lg-10 col-md-9">
-                    <div class="row">
-                        <h1>{{ skill.name }}</h1>
+                <!-- Skill name and skill description -->
+                <div class="d-flex flex-column">
+                    <div class="skill-name">
+                        {{ skill.name }}
                     </div>
                     <!-- Description only seen by admins -->
                     <div
                         v-if="userDetailsStore.role == 'admin'"
-                        class="row pe-4 ps-4 ps-md-0"
+                        class="row pe-4 ps-4 ps-md-0 skill-description"
                     >
                         <p>{{ skill.description }}</p>
                     </div>
@@ -229,28 +253,8 @@ export default {
                     <div>
                         <h2>Mastery Requirements</h2>
                     </div>
-                    <div v-html="skill.mastery_requirements"></div>
-
-                    <!-- Flag the skill button -->
-                    <div class="d-flex flex-row-reverse">
-                        <button
-                            @click="showModal = true"
-                            type="button"
-                            class="btn"
-                            b-tooltip.hover
-                            title="flag this skill for review"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                style="height: 22px; opacity: 0.5"
-                            >
-                                <path
-                                    fill="#8f7bd6"
-                                    d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
-                                />
-                            </svg>
-                        </button>
+                    <div class="mastery-requirements">
+                        <div v-html="skill.mastery_requirements"></div>
                     </div>
                 </div>
             </div>
@@ -383,11 +387,57 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Thanks You Modal After User Flagging -->
+    <div v-if="showThankModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex gap-4 text-center">
+                    <p>
+                        Thank you for flagging this skill. We will take a look
+                        as soon as possible !!
+                    </p>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button
+                        type="button"
+                        class="btn green-btn w-25"
+                        @click="showThankModal = false"
+                    >
+                        <span> OK </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
 .image-attribution-text {
     font-size: smaller;
+}
+
+.skill-name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 40px;
+    margin-top: -12px;
+    color: #a48be6;
+    font-weight: 800;
+}
+
+.skill-description {
+    font-family: 'Poppins', sans-serif;
+    color: #888;
+}
+
+.mastery-requirements {
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.692);
+    border-radius: 5px;
+    width: 98%;
 }
 
 #hr-parent {
@@ -487,10 +537,6 @@ export default {
     background-color: #3eb3a3;
 }
 
-.btn-header {
-    justify-content: space-between;
-}
-
 .btn-icon {
     height: fit-content !important;
 }
@@ -534,6 +580,10 @@ export default {
     /* Could be more or less, depending on screen size */
 }
 /* End of Warning modal styling */
+
+.flag-icon {
+    height: 20px !important;
+}
 
 /* View Specific On Tablet */
 @media (min-width: 577px) and (max-width: 1023px) {
