@@ -548,8 +548,8 @@ async function checkQuestion(index) {
         `" Please review if the following answer is the correct
         answer for this question: "` +
         mcQuestions[index].correct_answer +
-        `". If it is, please return a variable called 'correct_answer_is_correct' as true, otherwise
-        return it as false. Please also check whether the 
+        `". If it is, please return a variable called 'correct_answer_is_correct' as true, 
+        otherwise return it as false. Please also check whether the 
         following four answers are all incorrect answers for this question: "` +
         mcQuestions[index].incorrect_answer_1 +
         `"; "` +
@@ -558,8 +558,10 @@ async function checkQuestion(index) {
         mcQuestions[index].incorrect_answer_3 +
         '"; "' +
         mcQuestions[index].incorrect_answer_4 +
-        `". 
-        Please also check for any spelling errors. Please return`;
+        `". Return variables: incorrect_answer_1_is_incorrect, incorrect_answer_2_is_incorrect
+        , incorrect_answer_3_is_incorrect, incorrect_answer_4_is_incorrect as either true or false.
+        Please also check for any spelling errors. Please return a variable spelling_correct as true if it is,
+        otherwise, return this as false.`;
 
     console.log(prompt);
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
