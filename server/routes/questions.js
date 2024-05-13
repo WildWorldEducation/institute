@@ -502,65 +502,70 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
 let mcQuestions = [];
 let skills = [];
 
-// router.post('/check-questions', (req, res, next) => {
-//     if (req.session.userName) {
-//         // The user posting the source.
-//         userId = req.session.userId;
-//         res.setHeader('Content-Type', 'application/json');
-// Get all MC questions.
-let sqlQuery1 = `SELECT * FROM mc_questions    
+router.post('/check-questions', (req, res, next) => {
+    console.log('test');
+    if (req.session.userName) {
+        // The user posting the source.
+        userId = req.session.userId;
+        res.setHeader('Content-Type', 'application/json');
+        // Get all MC questions.
+        let sqlQuery1 = `SELECT * FROM mc_questions    
         WHERE id = 234096                      
         ORDER BY id`;
-let query1 = conn.query(sqlQuery1, (err, results) => {
-    try {
-        if (err) {
-            throw err;
-        }
-        mcQuestions = results;
-        // Get all skills.
-        let sqlQuery2 = `SELECT * FROM skills`;
-        let query2 = conn.query(sqlQuery2, (err, results) => {
+        let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                skills = results;
-
-                for (let i = 0; i < skills.length; i++) {
-                    for (let j = 0; j < mcQuestions.length; j++) {
-                        if (skills[i].id == mcQuestions[j].skill_id) {
-                            // Get id info.
-                            mcQuestions[j].content_id = skills[i].id;
-                            // Get grade info.
-                            if (skills[i].level == 'grade_school') {
-                                mcQuestions[j].level = 'grade school';
-                            } else if (skills[i].level == 'middle_school') {
-                                mcQuestions[j].level = 'middle school';
-                            } else if (skills[i].level == 'high_school') {
-                                mcQuestions[j].level = 'high school';
-                            } else if (skills[i].level == 'college') {
-                                mcQuestions[j].level = 'college';
-                            } else if (skills[i].level == 'phd') {
-                                mcQuestions[j].level = 'phd';
-                            }
-                            continue;
+                mcQuestions = results;
+                // Get all skills.
+                let sqlQuery2 = `SELECT * FROM skills`;
+                let query2 = conn.query(sqlQuery2, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
                         }
+                        skills = results;
+
+                        for (let i = 0; i < skills.length; i++) {
+                            for (let j = 0; j < mcQuestions.length; j++) {
+                                if (skills[i].id == mcQuestions[j].skill_id) {
+                                    // Get id info.
+                                    mcQuestions[j].content_id = skills[i].id;
+                                    // Get grade info.
+                                    if (skills[i].level == 'grade_school') {
+                                        mcQuestions[j].level = 'grade school';
+                                    } else if (
+                                        skills[i].level == 'middle_school'
+                                    ) {
+                                        mcQuestions[j].level = 'middle school';
+                                    } else if (
+                                        skills[i].level == 'high_school'
+                                    ) {
+                                        mcQuestions[j].level = 'high school';
+                                    } else if (skills[i].level == 'college') {
+                                        mcQuestions[j].level = 'college';
+                                    } else if (skills[i].level == 'phd') {
+                                        mcQuestions[j].level = 'phd';
+                                    }
+                                    continue;
+                                }
+                            }
+                        }
+                        console.log(mcQuestions[0], req.session.userId);
+                        let index = 0;
+                        // Now we ask ChatGPT to check each one.
+                        //  checkQuestion(index);
+                    } catch (err) {
+                        next(err);
                     }
-                }
-                console.log(mcQuestions[0], req.session.userId);
-                let index = 0;
-                // Now we ask ChatGPT to check each one.
-                //  checkQuestion(index);
+                });
             } catch (err) {
                 next(err);
             }
         });
-    } catch (err) {
-        next(err);
     }
 });
-//     }
-// });
 
 // Get source from ChatGPT.
 // Import OpenAI package.
