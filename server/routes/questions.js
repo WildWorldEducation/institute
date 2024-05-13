@@ -501,6 +501,7 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
  */
 let mcQuestions = [];
 let skills = [];
+
 // router.post('/check-questions', (req, res, next) => {
 //     if (req.session.userName) {
 //         // The user posting the source.
@@ -528,6 +529,9 @@ let query1 = conn.query(sqlQuery1, (err, results) => {
                 for (let i = 0; i < skills.length; i++) {
                     for (let j = 0; j < mcQuestions.length; j++) {
                         if (skills[i].id == mcQuestions[j].skill_id) {
+                            // Get id info.
+                            mcQuestions[j].content_id = skills[i].id;
+                            // Get grade info.
                             if (skills[i].level == 'grade_school') {
                                 mcQuestions[j].level = 'grade school';
                             } else if (skills[i].level == 'middle_school') {
@@ -543,7 +547,7 @@ let query1 = conn.query(sqlQuery1, (err, results) => {
                         }
                     }
                 }
-                console.log(mcQuestions[0]);
+                console.log(mcQuestions[0], req.session.userId);
                 let index = 0;
                 // Now we ask ChatGPT to check each one.
                 //  checkQuestion(index);
@@ -561,6 +565,7 @@ let query1 = conn.query(sqlQuery1, (err, results) => {
 // Get source from ChatGPT.
 // Import OpenAI package.
 const { OpenAI } = require('openai');
+const { content } = require('pdfkit/js/page');
 // Include API key.
 // To access the .env file.
 require('dotenv').config();
@@ -568,7 +573,7 @@ const openai = new OpenAI({
     apiKey: process.env.CHAT_GPT_API_KEY
 });
 
-async function checkQuestion(index) {
+async function checkQuestion(index, userId) {
     console.log(mcQuestions[0]);
     // Create prompt for ChatGPT.
     let prompt =
@@ -617,6 +622,22 @@ async function checkQuestion(index) {
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
         console.log(responseObj);
+
+        if (
+            responseObj.correct_answer_is_correct == false ||
+            all_incorrect_answers_are_incorrect == false ||
+            spelling_correct == false ||
+            grade_is_correct == false
+        ) {
+            let data = {};
+            // data = {
+            //     content_type: 'mc_question',
+            //     content_id: content_id,
+            //     student_id: userId
+            // };
+
+            let sqlQuery = 'INSERT INTO student_mc_questions SET ?';
+        }
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
         return;
