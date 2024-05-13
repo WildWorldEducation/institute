@@ -500,28 +500,57 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
  * Check Questions.
  */
 let mcQuestions = [];
+let skills = [];
 // router.post('/check-questions', (req, res, next) => {
 //     if (req.session.userName) {
 //         // The user posting the source.
 //         userId = req.session.userId;
 //         res.setHeader('Content-Type', 'application/json');
-//         // Get all MC questions.
-let sqlQuery = `SELECT * FROM mc_questions                              
+// Get all MC questions.
+let sqlQuery1 = `SELECT * FROM mc_questions    
+        WHERE id = 234096                      
         ORDER BY id`;
-let query = conn.query(sqlQuery, (err, results) => {
+let query1 = conn.query(sqlQuery1, (err, results) => {
     try {
         if (err) {
             throw err;
         }
-
         mcQuestions = results;
-        console.log(mcQuestions[0]);
-        let index = 0;
-        checkQuestion(index);
-        // For going through all questions.
+        // Get all skills.
+        let sqlQuery2 = `SELECT * FROM skills`;
+        let query2 = conn.query(sqlQuery2, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                skills = results;
 
-        // Now we ask ChatGPT to check each one.
-        //                 checkQuestion(index);
+                for (let i = 0; i < skills.length; i++) {
+                    for (let j = 0; j < mcQuestions.length; j++) {
+                        if (skills[i].id == mcQuestions[j].skill_id) {
+                            if (skills[i].level == 'grade_school') {
+                                mcQuestions[j].level = 'grade school';
+                            } else if (skills[i].level == 'middle_school') {
+                                mcQuestions[j].level = 'middle school';
+                            } else if (skills[i].level == 'high_school') {
+                                mcQuestions[j].level = 'high school';
+                            } else if (skills[i].level == 'college') {
+                                mcQuestions[j].level = 'college';
+                            } else if (skills[i].level == 'phd') {
+                                mcQuestions[j].level = 'phd';
+                            }
+                            continue;
+                        }
+                    }
+                }
+                console.log(mcQuestions[0]);
+                let index = 0;
+                // Now we ask ChatGPT to check each one.
+                //  checkQuestion(index);
+            } catch (err) {
+                next(err);
+            }
+        });
     } catch (err) {
         next(err);
     }
@@ -558,10 +587,13 @@ async function checkQuestion(index) {
         mcQuestions[index].incorrect_answer_3 +
         '"; "' +
         mcQuestions[index].incorrect_answer_4 +
-        `". Return variables: incorrect_answer_1_is_incorrect, incorrect_answer_2_is_incorrect
-        , incorrect_answer_3_is_incorrect, incorrect_answer_4_is_incorrect as either true or false.
+        `". Return the variable: 'all_incorrect_answers_are_incorrect' as true if so, otherwise, 
+        return it as false.
         Please also check for any spelling errors. Please return a variable spelling_correct as true if it is,
-        otherwise, return this as false.`;
+        otherwise, return this as false.
+        Lastly please check if the the question is appropriate for the following grade: ` +
+        mcQuestions[index].level +
+        `. Please return the variable 'grade_is_correct' as true if it is, otherwise as false.`;
 
     console.log(prompt);
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
