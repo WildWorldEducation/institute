@@ -359,90 +359,97 @@ export default {
                                     />
                                 </svg>
                             </div>
-                            <!-- The Drop Down Div Contains action relate to the resource -->
-                            <div
-                                v-if="
-                                    showActionBtns && post.id == currentClickId
-                                "
-                                class="action-btns-div"
-                            >
-                                <!-- Edit Button -->
-                                <router-link
-                                    v-if="post.user_id == user.userId"
-                                    :to="'/resources/edit/' + post.id"
-                                    class="btn"
-                                    role="button"
-                                >
-                                    <!-- Pencil icon -->
-                                    <svg
-                                        width="19"
-                                        height="20"
-                                        viewBox="0 0 19 20"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                                            fill="#857D99"
-                                        />
-                                        <path
-                                            d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                                            fill="#857D99"
-                                        />
-                                        <path
-                                            d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                                            fill="#857D99"
-                                        />
-                                    </svg>
-                                </router-link>
-                                <!-- Delete Resource Button -->
-                                <button
+                            <!-- The Drop Down Div Contains action relate to the resource (use transition for animation) -->
+                            <Transition duration="100" name="dropdown">
+                                <div
                                     v-if="
-                                        post.user_id == user.userId ||
-                                        user.role == 'admin'
+                                        showActionBtns &&
+                                        post.id == currentClickId
                                     "
-                                    type="button"
-                                    class="btn"
-                                    @click="showWarningModal(post.id)"
+                                    class="action-btns-div"
                                 >
-                                    <!-- X icon -->
-                                    <svg
-                                        width="18"
-                                        height="18"
-                                        viewBox="0 0 20 20"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
+                                    <!-- Edit Button -->
+                                    <router-link
+                                        v-if="post.user_id == user.userId"
+                                        :to="'/resources/edit/' + post.id"
+                                        class="btn dropdown-btn"
+                                        role="button"
+                                        b-tooltip.hover
+                                        title="Edit This Resource For Review"
                                     >
-                                        <path
-                                            d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
-                                            fill="#857D99"
-                                        />
-                                    </svg>
-                                </button>
-                                <!-- Flag button -->
-                                <button
-                                    b-tooltip.hover
-                                    title="flag this resource for review"
-                                    type="button"
-                                    class="btn"
-                                    @click="handleOpenFlagModal(post.id)"
-                                >
-                                    <div class="d-flex flex-row-reverse">
+                                        <!-- Pencil icon -->
                                         <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            style="opacity: 0.5"
+                                            width="19"
                                             height="20"
-                                            width="20"
+                                            viewBox="0 0 19 20"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
                                         >
                                             <path
-                                                fill="#8f7bd6"
-                                                d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                                d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
+                                                fill="#857D99"
+                                            />
+                                            <path
+                                                d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
+                                                fill="#857D99"
+                                            />
+                                            <path
+                                                d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
+                                                fill="#857D99"
                                             />
                                         </svg>
-                                    </div>
-                                </button>
-                            </div>
+                                    </router-link>
+                                    <!-- Delete Resource Button -->
+                                    <button
+                                        b-tooltip.hover
+                                        title="Delete This Resource"
+                                        v-if="
+                                            post.user_id == user.userId ||
+                                            user.role == 'admin'
+                                        "
+                                        type="button"
+                                        class="btn dropdown-btn"
+                                        @click="showWarningModal(post.id)"
+                                    >
+                                        <!-- X icon -->
+                                        <svg
+                                            width="18"
+                                            height="18"
+                                            viewBox="0 0 20 20"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
+                                                fill="#857D99"
+                                            />
+                                        </svg>
+                                    </button>
+                                    <!-- Flag button -->
+                                    <button
+                                        b-tooltip.hover
+                                        title="Flag This Resource For Review"
+                                        type="button"
+                                        class="btn dropdown-btn"
+                                        @click="handleOpenFlagModal(post.id)"
+                                    >
+                                        <div class="d-flex flex-row-reverse">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                style="opacity: 0.5"
+                                                height="20"
+                                                width="20"
+                                            >
+                                                <path
+                                                    fill="#8f7bd6"
+                                                    d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </button>
+                                </div>
+                            </Transition>
                         </div>
                     </div>
                 </div>
@@ -610,6 +617,14 @@ export default {
     margin-top: 0px;
 }
 
+.forum-post {
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px 20px;
+    width: 98%;
+    margin-left: 20px;
+}
+
 .forum-post img {
     max-width: 100%;
     height: auto;
@@ -728,6 +743,44 @@ h2 {
     position: absolute;
     top: 25px;
     left: 5px;
+    z-index: 10;
+}
+
+.dropdown-btn {
+    outline: none !important;
+    border: 0px;
+}
+
+.dropdown-btn:hover {
+    scale: 1.2;
+}
+
+/* Dropdown Animation */
+
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+.dropdown-enter-active {
+    transform-origin: top center;
+    animation: slide 0.2s;
+}
+.dropdown-leave-active {
+    transform-origin: top center;
+    animation: slide 0.2s reverse;
+}
+
+/* Delay The button transition */
+.dropdown-enter-active .btn,
+.dropdown-leave-active .btn {
+    transition-delay: 0.2s;
 }
 
 /* Mobile */
