@@ -11,7 +11,9 @@ export default {
             showModal: false,
             resourceId: null,
             showFlaggingModal: false,
-            flagPost: ''
+            flagPost: '',
+            showActionBtns: false,
+            currentClickId: ''
         };
     },
     computed: {
@@ -229,6 +231,10 @@ export default {
         handleOpenFlagModal(postId) {
             this.flagPost = postId;
             this.showFlaggingModal = true;
+        },
+        handleClickActionBtns(postId) {
+            this.showActionBtns = !this.showActionBtns;
+            this.currentClickId = postId;
         }
     }
 };
@@ -269,14 +275,16 @@ export default {
                 class="row forum-container mt-3"
                 v-for="post in orderedAndNamedPosts"
             >
+                <!-- First row of post contain likes count and relate buttons -->
                 <div class="row">
-                    <div class="d-flex flex-row justify-content-end">
-                        <button
+                    <div class="d-flex flex-row justify-content-end gap-1">
+                        <!-- Upvote Button -->
+                        <div
                             @click="
                                 voteUp(post.index, post.id, post.userUpVote)
                             "
-                            class="btn"
-                            type="button"
+                            b-tooltip.hover
+                            title="I Like This "
                         >
                             <svg
                                 width="34"
@@ -284,6 +292,7 @@ export default {
                                 viewBox="0 0 34 27"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
+                                class="vote-icon upvote-icon"
                             >
                                 <path
                                     d="M6.7047 8.4637H2.53277C2.20492 8.45845 1.87926 8.51793 1.57443 8.63872C1.2696 8.75952 0.991586 8.93926 0.756319 9.16765C0.521052 9.39604 0.333148 9.66859 0.203367 9.96971C0.0735865 10.2708 0.00447827 10.5946 0 10.9224L0 23.8771C0.00413046 24.2051 0.0730026 24.529 0.202662 24.8303C0.332321 25.1315 0.520214 25.4042 0.755552 25.6327C0.99089 25.8612 1.26904 26.0409 1.57402 26.1616C1.87901 26.2822 2.20483 26.3415 2.53277 26.3359H6.7285C7.2442 26.3324 7.7378 26.126 8.10246 25.7613C8.46712 25.3967 8.67352 24.9031 8.67699 24.3874V10.4228C8.6763 9.90523 8.47113 9.40893 8.10617 9.04198C7.7412 8.67504 7.24602 8.46719 6.7285 8.4637H6.7047Z"
@@ -294,7 +303,8 @@ export default {
                                     fill="#73DED0"
                                 />
                             </svg>
-                        </button>
+                        </div>
+                        <!-- Vote count Div -->
                         <span
                             id="vote-count"
                             :class="{
@@ -303,12 +313,13 @@ export default {
                             }"
                             >{{ post.voteCount }}</span
                         >
-                        <button
+                        <!-- Down vote button -->
+                        <div
+                            b-tooltip.hover
+                            title="I Dislike This "
                             @click="
                                 voteDown(post.index, post.id, post.userDownVote)
                             "
-                            class="btn"
-                            type="button"
                         >
                             <svg
                                 width="34"
@@ -316,6 +327,7 @@ export default {
                                 viewBox="0 0 34 27"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
+                                class="vote-icon"
                             >
                                 <path
                                     d="M26.6742 18.1613L30.8461 18.1613C31.174 18.1665 31.4996 18.1071 31.8045 17.9863C32.1093 17.8655 32.3873 17.6857 32.6226 17.4574C32.8579 17.229 33.0458 16.9564 33.1755 16.6553C33.3053 16.3542 33.3744 16.0304 33.3789 15.7026L33.3789 2.74788C33.3748 2.41992 33.3059 2.096 33.1762 1.79473C33.0466 1.49346 32.8587 1.22076 32.6234 0.9923C32.388 0.76384 32.1099 0.584116 31.8049 0.463449C31.4999 0.342781 31.1741 0.283544 30.8461 0.289142L26.6504 0.289142C26.1347 0.292604 25.6411 0.499002 25.2764 0.863666C24.9118 1.22833 24.7054 1.72193 24.7019 2.23763L24.7019 16.2022C24.7026 16.7198 24.9078 17.2161 25.2727 17.583C25.6377 17.95 26.1329 18.1578 26.6504 18.1613L26.6742 18.1613Z"
@@ -326,85 +338,117 @@ export default {
                                     fill="#FC6E68"
                                 />
                             </svg>
-                        </button>
-                        <router-link
-                            v-if="post.user_id == user.userId"
-                            :to="'/resources/edit/' + post.id"
-                            class="btn"
-                            role="button"
-                        >
-                            <!-- Pencil icon -->
-                            <svg
-                                width="19"
-                                height="20"
-                                viewBox="0 0 19 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
+                        </div>
+                        <!-- Actions Dropdown Component -->
+                        <div class="position-relative">
+                            <!-- Button to toggle the action dropdown -->
+                            <div
+                                class="toggle-actions-bnt"
+                                @click="handleClickActionBtns(post.id)"
+                                b-tooltip.hover
+                                title="More Actions On This Resource"
                             >
-                                <path
-                                    d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                                    fill="#857D99"
-                                />
-                                <path
-                                    d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                                    fill="#857D99"
-                                />
-                                <path
-                                    d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                                    fill="#857D99"
-                                />
-                            </svg>
-                        </router-link>
-                        <button
-                            v-if="
-                                post.user_id == user.userId ||
-                                user.role == 'admin'
-                            "
-                            type="button"
-                            class="btn"
-                            @click="showWarningModal(post.id)"
-                        >
-                            <!-- X icon -->
-                            <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
-                                    fill="#857D99"
-                                />
-                            </svg>
-                        </button>
-                        <!-- Flag button -->
-                        <button
-                            b-tooltip.hover
-                            title="flag this resource for review"
-                            type="button"
-                            class="btn"
-                            @click="handleOpenFlagModal(post.id)"
-                        >
-                            <div class="d-flex flex-row-reverse">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 448 512"
-                                    style="opacity: 0.5"
-                                    height="20"
-                                    width="20"
+                                    fill="grey"
+                                    class="more-icon"
                                 >
                                     <path
-                                        fill="#8f7bd6"
-                                        d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                        d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"
                                     />
                                 </svg>
                             </div>
-                        </button>
+                            <!-- The Drop Down Div Contains action relate to the resource -->
+                            <div
+                                v-if="
+                                    showActionBtns && post.id == currentClickId
+                                "
+                                class="action-btns-div"
+                            >
+                                <!-- Edit Button -->
+                                <router-link
+                                    v-if="post.user_id == user.userId"
+                                    :to="'/resources/edit/' + post.id"
+                                    class="btn"
+                                    role="button"
+                                >
+                                    <!-- Pencil icon -->
+                                    <svg
+                                        width="19"
+                                        height="20"
+                                        viewBox="0 0 19 20"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
+                                            fill="#857D99"
+                                        />
+                                        <path
+                                            d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
+                                            fill="#857D99"
+                                        />
+                                        <path
+                                            d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
+                                            fill="#857D99"
+                                        />
+                                    </svg>
+                                </router-link>
+                                <!-- Delete Resource Button -->
+                                <button
+                                    v-if="
+                                        post.user_id == user.userId ||
+                                        user.role == 'admin'
+                                    "
+                                    type="button"
+                                    class="btn"
+                                    @click="showWarningModal(post.id)"
+                                >
+                                    <!-- X icon -->
+                                    <svg
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 20 20"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
+                                            fill="#857D99"
+                                        />
+                                    </svg>
+                                </button>
+                                <!-- Flag button -->
+                                <button
+                                    b-tooltip.hover
+                                    title="flag this resource for review"
+                                    type="button"
+                                    class="btn"
+                                    @click="handleOpenFlagModal(post.id)"
+                                >
+                                    <div class="d-flex flex-row-reverse">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            style="opacity: 0.5"
+                                            height="20"
+                                            width="20"
+                                        >
+                                            <path
+                                                fill="#8f7bd6"
+                                                d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                            />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <!-- Second row contain name and avatar -->
                 <div class="row">
-                    <div class="col post-user-row d-flex">
+                    <div class="col post-user-row">
                         <div id="user-avatar">
                             <img
                                 :src="post.userAvatar"
@@ -530,6 +574,15 @@ export default {
 #vote-count {
     font-size: 1.563rem;
     font-weight: 700;
+    margin-top: -7px;
+}
+
+.vote-icon {
+    height: 34px !important;
+}
+
+.upvote-icon {
+    margin-top: -8px;
 }
 
 #user-name-text {
@@ -540,7 +593,12 @@ export default {
 }
 
 .user-name-div {
-    margin-left: 12px;
+    margin-left: 5px;
+}
+
+#user-avatar {
+    height: 60px;
+    width: fit-content;
 }
 
 .user-avatar-img {
@@ -574,6 +632,10 @@ h2 {
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
     font-size: 1.75rem;
+}
+
+.plus-icon {
+    height: 20px !important;
 }
 
 /* The Warning Modal */
@@ -632,6 +694,40 @@ h2 {
     margin-bottom: 0px;
     font-size: 1.75rem;
     margin-left: 0px;
+}
+
+/* Style For dropdown div */
+.toggle-actions-bnt {
+    cursor: pointer;
+    background-color: #fefefe;
+    border-radius: 50px;
+    width: 30px;
+    height: 30px;
+    padding-top: 4px;
+    padding-left: 4px;
+    margin-top: -5px;
+    margin-left: 5px;
+}
+
+.toggle-actions-bnt:hover {
+    outline: 1px solid gray;
+    background-color: white;
+}
+
+.more-icon {
+    height: 100%;
+    width: auto;
+}
+
+.action-btns-div {
+    background-color: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    position: absolute;
+    top: 25px;
+    left: 5px;
 }
 
 /* Mobile */
