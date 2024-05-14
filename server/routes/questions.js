@@ -503,7 +503,6 @@ let mcQuestions = [];
 let skills = [];
 
 router.get('/check-questions', (req, res, next) => {
-    console.log('test');
     if (req.session.userName) {
         // The user posting the source.
         userId = req.session.userId;
@@ -530,8 +529,6 @@ router.get('/check-questions', (req, res, next) => {
                         for (let i = 0; i < skills.length; i++) {
                             for (let j = 0; j < mcQuestions.length; j++) {
                                 if (skills[i].id == mcQuestions[j].skill_id) {
-                                    // Get id info.
-                                    mcQuestions[j].content_id = skills[i].id;
                                     // Get grade info.
                                     if (skills[i].level == 'grade_school') {
                                         mcQuestions[j].level = 'grade school';
@@ -552,10 +549,10 @@ router.get('/check-questions', (req, res, next) => {
                                 }
                             }
                         }
-                        console.log(mcQuestions[0], req.session.userId);
+                        //console.log(mcQuestions[0], req.session.userId);
                         let index = 0;
                         // Now we ask ChatGPT to check each one.
-                        checkQuestion(index);
+                        checkQuestion(index, userId);
                     } catch (err) {
                         next(err);
                     }
@@ -578,7 +575,6 @@ const openai = new OpenAI({
 });
 
 async function checkQuestion(index, userId) {
-    console.log(mcQuestions[0]);
     // Create prompt for ChatGPT.
     let prompt =
         `Please check if the following quiz question: "` +
@@ -604,7 +600,6 @@ async function checkQuestion(index, userId) {
         mcQuestions[index].level +
         `. Please return the variable 'grade_is_correct' as true if it is, otherwise as false.`;
 
-    console.log(prompt);
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
     try {
@@ -627,6 +622,8 @@ async function checkQuestion(index, userId) {
         var responseObj = JSON.parse(escapedResponseJSON);
         console.log(responseObj);
 
+        // Check ChatGPT response.
+        // If it spots a problem, flag the question.
         if (
             responseObj.correct_answer_is_correct == false ||
             all_incorrect_answers_are_incorrect == false ||
@@ -636,22 +633,25 @@ async function checkQuestion(index, userId) {
             let data = {};
             data = {
                 content_type: 'mc_question',
-                content_id: content_id,
+                content_id: mcQuestions[index].id,
                 student_id: userId
             };
 
-            let sqlQuery = 'INSERT INTO student_mc_questions SET ?';
-            let query1 = conn.query(sqlQuery1, (err, results) => {
+            let sqlQuery = 'INSERT INTO content_flags SET ?';
+            let query = conn.query(sqlQuery, data, (err) => {
                 try {
                     if (err) {
                         throw err;
                     }
                     console.log('complete');
                 } catch (err) {
-                    next(err);
+                    console.log('error: ' + err);
                 }
             });
         }
+
+        // increase the index.
+        index++;
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
         return;
