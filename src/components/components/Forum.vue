@@ -231,6 +231,7 @@ export default {
         handleOpenFlagModal(postId) {
             this.flagPost = postId;
             this.showFlaggingModal = true;
+            this.showActionBtns = false;
         },
         handleClickActionBtns(postId) {
             this.showActionBtns = !this.showActionBtns;
@@ -832,6 +833,10 @@ h2 {
 @media (min-width: 481px) and (max-width: 1024px) {
     .center-header {
         justify-content: center;
+    }
+
+    .first-post-row {
+        margin-left: 20px;
     }
 }
 </style>
