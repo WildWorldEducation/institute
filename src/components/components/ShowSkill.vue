@@ -139,6 +139,7 @@ export default {
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
         >
+            <!-- Buttons For Student -->
             <div
                 v-if="
                     isUnlocked &&
@@ -147,7 +148,6 @@ export default {
                 "
                 class="row mt-3"
             >
-                <!-- Buttons at top of the pages -->
                 <div class="d-flex flex-row-reverse align-items-end">
                     <!-- Unlock Skill Button -->
                     <button
@@ -190,9 +190,10 @@ export default {
                     </svg>
                 </router-link>
             </div>
-            <div class="d-flex gap-2">
+            <!-- Skill Info Component -->
+            <div class="d-flex flex-column gap-2">
                 <!-- Skill image -->
-                <div>
+                <div id="skill-image">
                     <!-- Show a default skill avatar if skill not have image yet -->
                     <img
                         :src="
@@ -228,10 +229,8 @@ export default {
                     </div>
                 </div>
                 <!-- Mastery Requirements -->
-                <div class="row mt-3">
-                    <div>
-                        <h2>Mastery Requirements</h2>
-                    </div>
+                <div class="mt-3 d-flex flex-column">
+                    <div class="h1-tile">Mastery Requirements</div>
                     <div class="mastery-requirements">
                         <div v-html="skill.mastery_requirements"></div>
                     </div>
@@ -272,7 +271,7 @@ export default {
                 </div>
                 <!-- Filters -->
                 <div class="row mt-3">
-                    <h2>Filter</h2>
+                    <div class="h1-tile">Filter</div>
                     <label
                         v-for="tag in tagsStore.tagsList"
                         class="control control-checkbox"
@@ -303,8 +302,8 @@ export default {
                     </div>
                 </div>
                 <div class="row mt-3">
-                    <h2>Assessment</h2>
-                    <div class="col">
+                    <div class="h1-tile">Assessment</div>
+                    <div class="col ms-1">
                         <router-link
                             v-if="skill.type != 'super'"
                             class="btn purple-btn mt-3 me-3"
@@ -430,6 +429,13 @@ export default {
 .skill-description {
     font-family: 'Poppins', sans-serif;
     color: #888;
+}
+
+.h1-tile {
+    color: #a48be6;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 5px;
 }
 
 .mastery-requirements {
@@ -621,6 +627,34 @@ export default {
         padding-top: 20px;
         padding-left: 0px;
         padding-right: 0px;
+    }
+
+    #skill-image {
+        width: 75%;
+        height: auto;
+        margin: auto;
+    }
+
+    .mastery-requirements {
+        width: 90%;
+        margin-left: 20px;
+    }
+
+    .skill-name {
+        margin-top: 5px;
+        font-size: 25px;
+        text-align: center;
+    }
+
+    .skill-description {
+        font-size: 16px;
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .h1-tile {
+        font-size: 20px;
+        margin-left: 4px;
     }
 }
 

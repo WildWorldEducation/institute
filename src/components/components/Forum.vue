@@ -744,6 +744,7 @@ h2 {
     top: 25px;
     left: 5px;
     z-index: 10;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .dropdown-btn {
