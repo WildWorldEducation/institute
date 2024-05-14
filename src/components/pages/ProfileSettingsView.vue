@@ -22,6 +22,12 @@ export default {
         Settings,
         BulkQuestionsUpload,
         AutoGenerateSources
+    },
+    methods: {
+        CheckMCQuestions() {
+            console.log('test');
+            fetch('/questions/check-questions');
+        }
     }
 };
 </script>
@@ -47,6 +53,17 @@ export default {
     </section>
     <!-- Ability to bulk upload multiple choice questions --->
     <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
+    <!-- AI Check MC Questions --->
+    <section
+        class="container mt-1 px-3 px-lg-0 mb-5"
+        v-if="userDetailsStore.role == 'admin'"
+    >
+        <hr />
+        <h1>Check MC Questions</h1>
+        <button class="btn green-btn mt-3" @click="CheckMCQuestions()">
+            Check now
+        </button>
+    </section>
     <!-- Ability to autogenerate sources for all skills. At the moment, has to be done by programmer --->
     <AutoGenerateSources v-if="userDetailsStore.role == 'admin'" />
 </template>

@@ -401,8 +401,6 @@ async function getSource(
             blockedDomains
         );
     } catch (err) {
-        // Variable to stop the loop through the skills.
-        breakLoop = true;
         console.log('Error with ChatGPT API call: ' + err);
         return;
     }
