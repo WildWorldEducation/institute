@@ -613,7 +613,7 @@ async function checkQuestion(index, userId) {
                     content: prompt + ` Please respond with a JSON object.`
                 }
             ],
-            model: 'gpt-4-turbo',
+            model: 'gpt-3.5-turbo',
             response_format: { type: 'json_object' }
         });
         let responseJSON = completion.choices[0].message.content;
@@ -653,7 +653,7 @@ async function checkQuestion(index, userId) {
                         mcQuestions[index].id +
                         `;`;
 
-                    let query2 = conn.query(sqlQuery2, data, (err) => {
+                    let query2 = conn.query(sqlQuery2, (err) => {
                         try {
                             if (err) {
                                 throw err;
@@ -687,7 +687,7 @@ async function checkQuestion(index, userId) {
                 mcQuestions[index].id +
                 `;`;
 
-            let query2 = conn.query(sqlQuery2, data, (err) => {
+            let query2 = conn.query(sqlQuery2, (err) => {
                 try {
                     if (err) {
                         throw err;
