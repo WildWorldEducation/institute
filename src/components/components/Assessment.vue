@@ -398,7 +398,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     content_type: questionType,
-                    content_id: questionId
+                    content_id: questionId,
+                    student_id: this.userDetailsStore.userId
                 })
             };
             var url = '/content-flags/add';

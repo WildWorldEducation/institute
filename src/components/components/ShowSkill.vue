@@ -42,7 +42,8 @@ export default {
             isMastered: false,
             isUnlocked: false,
             filters: [],
-            showModal: false
+            showModal: false,
+            showThankModal: false
         };
     },
     components: {
@@ -111,21 +112,21 @@ export default {
             this.getUserSkills();
         },
         flagSkill() {
+            console.log('user Id: ' + this.userDetailsStore.userId);
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     content_type: 'skill',
-                    content_id: this.skill.id
+                    content_id: this.skill.id,
+                    student_id: this.userDetailsStore.userId
                 })
             };
             var url = '/content-flags/add';
             fetch(url, requestOptions).then(() => {
-                alert(
-                    'Thank you for flagging this skill. We will take a look as soon as possible '
-                );
-                // turn off the modal
+                // Handle showing some modal after post content flags
                 this.showModal = false;
+                this.showThankModal = true;
             });
         }
     }
@@ -138,6 +139,7 @@ export default {
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
         >
+            <!-- Buttons For Student -->
             <div
                 v-if="
                     isUnlocked &&
@@ -146,7 +148,8 @@ export default {
                 "
                 class="row mt-3"
             >
-                <div class="d-flex btn-header flex-row-reverse center-header">
+                <div class="d-flex flex-row-reverse align-items-end">
+                    <!-- Unlock Skill Button -->
                     <button
                         v-if="skill.type == 'domain'"
                         @click="MakeMastered()"
@@ -154,6 +157,7 @@ export default {
                     >
                         Click to unlock child skills
                     </button>
+                    <!-- Take Assessment Button -->
                     <router-link
                         v-else
                         class="btn purple-btn"
@@ -165,38 +169,31 @@ export default {
             <!-- Edit skill only available for Admin -->
             <div
                 v-if="userDetailsStore.role == 'admin'"
-                class="d-flex flex-row-reverse center-header px-2"
+                class="d-flex flex-row-reverse center-header pt-2"
             >
                 <router-link
                     :to="'/skills/edit/' + skillId"
                     class="btn green-btn"
-                    role="button"
-                    >Edit&nbsp;&nbsp;
-                    <!-- Plus sign -->
+                    ><span>Edit</span>
+                    <!-- Pencil icon -->
                     <svg
-                        width="19"
-                        height="20"
-                        viewBox="0 0 19 20"
-                        fill="none"
                         xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="18"
+                        height="20"
+                        fill="white"
+                        class="mb-1 ms-1 btn-icon"
                     >
                         <path
-                            d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                            fill="#FFFFFF"
-                        />
-                        <path
-                            d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                            fill="#FFFFFF"
-                        />
-                        <path
-                            d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                            fill="#FFFFFF"
+                            d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
                         />
                     </svg>
                 </router-link>
             </div>
-            <div class="row mt-3">
-                <div class="col col-lg-2 col-md-3">
+            <!-- Skill Info Component -->
+            <div class="d-flex flex-column gap-2">
+                <!-- Skill image -->
+                <div id="skill-image">
                     <!-- Show a default skill avatar if skill not have image yet -->
                     <img
                         :src="
@@ -207,15 +204,15 @@ export default {
                         class="img-fluid"
                     />
                 </div>
-
-                <div class="col-lg-10 col-md-9">
-                    <div class="row">
-                        <h1>{{ skill.name }}</h1>
+                <!-- Skill name and skill description -->
+                <div class="d-flex flex-column">
+                    <div class="skill-name">
+                        {{ skill.name }}
                     </div>
                     <!-- Description only seen by admins -->
                     <div
                         v-if="userDetailsStore.role == 'admin'"
-                        class="row pe-4 ps-4 ps-md-0"
+                        class="row pe-4 ps-4 ps-md-0 skill-description"
                     >
                         <p>{{ skill.description }}</p>
                     </div>
@@ -232,32 +229,33 @@ export default {
                     </div>
                 </div>
                 <!-- Mastery Requirements -->
-                <div class="row mt-3">
-                    <div>
-                        <h2>Mastery Requirements</h2>
+                <div class="mt-3 d-flex flex-column">
+                    <div class="h1-tile">Mastery Requirements</div>
+                    <div class="mastery-requirements">
+                        <div v-html="skill.mastery_requirements"></div>
                     </div>
-                    <div v-html="skill.mastery_requirements"></div>
-
+                </div>
+                <div class="row mt-3 me-1">
                     <!-- Flag the skill button -->
                     <div class="d-flex flex-row-reverse">
-                        <button
+                        <div
                             @click="showModal = true"
                             type="button"
-                            class="btn"
+                            class="me-1"
                             b-tooltip.hover
-                            title="flag this skill for review"
+                            title="Report this skill to the admin if it has errors"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 448 512"
-                                style="height: 22px; opacity: 0.5"
+                                class="flag-icon"
                             >
                                 <path
                                     fill="#8f7bd6"
                                     d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
                                 />
                             </svg>
-                        </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -273,7 +271,7 @@ export default {
                 </div>
                 <!-- Filters -->
                 <div class="row mt-3">
-                    <h2>Filter</h2>
+                    <div class="h1-tile">Filter</div>
                     <label
                         v-for="tag in tagsStore.tagsList"
                         class="control control-checkbox"
@@ -304,8 +302,8 @@ export default {
                     </div>
                 </div>
                 <div class="row mt-3">
-                    <h2>Assessment</h2>
-                    <div class="col">
+                    <div class="h1-tile">Assessment</div>
+                    <div class="col ms-1">
                         <router-link
                             v-if="skill.type != 'super'"
                             class="btn purple-btn mt-3 me-3"
@@ -390,11 +388,64 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Thanks You Modal After User Flagging -->
+    <div v-if="showThankModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex gap-4 text-center">
+                    <p>
+                        Thank you for flagging this skill. We will take a look
+                        as soon as possible !!
+                    </p>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button
+                        type="button"
+                        class="btn green-btn w-25"
+                        @click="showThankModal = false"
+                    >
+                        <span> OK </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
 .image-attribution-text {
     font-size: smaller;
+}
+
+.skill-name {
+    font-family: 'Poppins', sans-serif;
+    font-size: 40px;
+    margin-top: -12px;
+    color: #a48be6;
+    font-weight: 800;
+}
+
+.skill-description {
+    font-family: 'Poppins', sans-serif;
+    color: #888;
+}
+
+.h1-tile {
+    color: #a48be6;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.mastery-requirements {
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.692);
+    border-radius: 5px;
+    width: 98%;
 }
 
 #hr-parent {
@@ -449,7 +500,7 @@ export default {
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 1rem;
-    line-height: 24px;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -494,8 +545,8 @@ export default {
     background-color: #3eb3a3;
 }
 
-.btn-header {
-    justify-content: space-between;
+.btn-icon {
+    height: fit-content !important;
 }
 
 /* The Warning Modal */
@@ -538,6 +589,10 @@ export default {
 }
 /* End of Warning modal styling */
 
+.flag-icon {
+    height: 20px !important;
+}
+
 /* View Specific On Tablet */
 @media (min-width: 577px) and (max-width: 1023px) {
     #skill-info-container {
@@ -572,6 +627,34 @@ export default {
         padding-top: 20px;
         padding-left: 0px;
         padding-right: 0px;
+    }
+
+    #skill-image {
+        width: 75%;
+        height: auto;
+        margin: auto;
+    }
+
+    .mastery-requirements {
+        width: 90%;
+        margin-left: 20px;
+    }
+
+    .skill-name {
+        margin-top: 5px;
+        font-size: 25px;
+        text-align: center;
+    }
+
+    .skill-description {
+        font-size: 16px;
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .h1-tile {
+        font-size: 20px;
+        margin-left: 4px;
     }
 }
 

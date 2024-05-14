@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    password: 'password',
+    //  password: 'password',
     database: 'skill_tree'
 });
 
@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 1321
+        AND id > 1392
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
