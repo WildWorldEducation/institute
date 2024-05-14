@@ -838,5 +838,9 @@ h2 {
     .first-post-row {
         margin-left: 20px;
     }
+
+    .forum-post {
+        width: 96%;
+    }
 }
 </style>
