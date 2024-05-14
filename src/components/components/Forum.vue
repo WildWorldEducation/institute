@@ -601,6 +601,10 @@ export default {
     padding-bottom: 30px;
 }
 
+.first-post-row {
+    margin-left: 19px;
+}
+
 #vote-count {
     font-size: 1.563rem;
     font-weight: 700;
