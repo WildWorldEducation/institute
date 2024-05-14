@@ -60,9 +60,15 @@ export default {
     >
         <hr />
         <h1>Check MC Questions</h1>
-        <button class="btn green-btn mt-3" @click="CheckMCQuestions()">
+        <button class="btn green-btn mt-3" @click="CheckMCQuestions()" disabled>
             Check now
         </button>
+        <p style="font-size: 14px" class="mt-2">
+            <em>
+                Note that this will check ALL unchecked multiple-choice
+                questions, and can be expensive.</em
+            >
+        </p>
     </section>
     <!-- Ability to autogenerate sources for all skills. At the moment, has to be done by programmer --->
     <AutoGenerateSources v-if="userDetailsStore.role == 'admin'" />

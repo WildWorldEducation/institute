@@ -509,8 +509,7 @@ router.get('/check-questions', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Get all MC questions.
         let sqlQuery1 = `SELECT * FROM mc_questions   
-        WHERE id >= 234096
-        AND is_checked = 0
+        WHERE is_checked = 0        
         ORDER BY id`;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
