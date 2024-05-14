@@ -502,7 +502,7 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
 let mcQuestions = [];
 let skills = [];
 
-router.post('/check-questions', (req, res, next) => {
+router.get('/check-questions', (req, res, next) => {
     console.log('test');
     if (req.session.userName) {
         // The user posting the source.
@@ -555,7 +555,7 @@ router.post('/check-questions', (req, res, next) => {
                         console.log(mcQuestions[0], req.session.userId);
                         let index = 0;
                         // Now we ask ChatGPT to check each one.
-                        //  checkQuestion(index);
+                        checkQuestion(index);
                     } catch (err) {
                         next(err);
                     }
@@ -570,7 +570,6 @@ router.post('/check-questions', (req, res, next) => {
 // Get source from ChatGPT.
 // Import OpenAI package.
 const { OpenAI } = require('openai');
-const { content } = require('pdfkit/js/page');
 // Include API key.
 // To access the .env file.
 require('dotenv').config();
@@ -635,13 +634,23 @@ async function checkQuestion(index, userId) {
             grade_is_correct == false
         ) {
             let data = {};
-            // data = {
-            //     content_type: 'mc_question',
-            //     content_id: content_id,
-            //     student_id: userId
-            // };
+            data = {
+                content_type: 'mc_question',
+                content_id: content_id,
+                student_id: userId
+            };
 
             let sqlQuery = 'INSERT INTO student_mc_questions SET ?';
+            let query1 = conn.query(sqlQuery1, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log('complete');
+                } catch (err) {
+                    next(err);
+                }
+            });
         }
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);

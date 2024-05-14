@@ -25,6 +25,7 @@ export default {
     },
     methods: {
         CheckMCQuestions() {
+            console.log('test');
             fetch('/questions/check-questions');
         }
     }
@@ -59,7 +60,7 @@ export default {
     >
         <hr />
         <h1>Check MC Questions</h1>
-        <button class="btn green-btn mt-3" @click="CheckMCQuestions">
+        <button class="btn green-btn mt-3" @click="CheckMCQuestions()">
             Check now
         </button>
     </section>
