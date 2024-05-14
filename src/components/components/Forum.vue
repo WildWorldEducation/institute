@@ -276,7 +276,7 @@ export default {
                 v-for="post in orderedAndNamedPosts"
             >
                 <!-- First row of post contain likes count and relate buttons -->
-                <div class="row">
+                <div class="row first-post-row">
                     <div class="d-flex flex-row justify-content-end gap-1">
                         <!-- Upvote Button -->
                         <div
@@ -792,6 +792,39 @@ h2 {
 
     #user-avatar {
         padding: 4px;
+    }
+
+    .forum-post {
+        width: 94%;
+    }
+
+    #vote-count {
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    .vote-icon {
+        height: 18px !important;
+        margin-top: -15px;
+    }
+
+    .upvote-icon {
+        margin-top: -20px;
+    }
+
+    .toggle-actions-bnt {
+        width: 22px;
+        height: 22px;
+        padding-top: 0px;
+        padding-left: 2px;
+    }
+
+    .first-post-row {
+        margin-left: 15px;
+    }
+
+    .action-btns-div {
+        left: -10px;
     }
 }
 
