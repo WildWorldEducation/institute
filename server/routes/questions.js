@@ -508,8 +508,8 @@ router.get('/check-questions', (req, res, next) => {
         userId = req.session.userId;
         res.setHeader('Content-Type', 'application/json');
         // Get all MC questions.
-        let sqlQuery1 = `SELECT * FROM mc_questions    
-        WHERE id = 234096                      
+        let sqlQuery1 = `SELECT * FROM mc_questions   
+        WHERE id = 234096
         ORDER BY id`;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
@@ -626,9 +626,9 @@ async function checkQuestion(index, userId) {
         // If it spots a problem, flag the question.
         if (
             responseObj.correct_answer_is_correct == false ||
-            all_incorrect_answers_are_incorrect == false ||
-            spelling_correct == false ||
-            grade_is_correct == false
+            responseObj.all_incorrect_answers_are_incorrect == false ||
+            responseObj.spelling_correct == false ||
+            responseObj.grade_is_correct == false
         ) {
             let data = {};
             data = {
@@ -637,21 +637,45 @@ async function checkQuestion(index, userId) {
                 student_id: userId
             };
 
-            let sqlQuery = 'INSERT INTO content_flags SET ?';
-            let query = conn.query(sqlQuery, data, (err) => {
+            let sqlQuery1 = 'INSERT INTO content_flags SET ?';
+            let query1 = conn.query(sqlQuery1, data, (err) => {
                 try {
                     if (err) {
                         throw err;
                     }
-                    console.log('complete');
+                    // Mark this question as checked.
+                    let sqlQuery2 =
+                        `
+                    UPDATE mc_questions
+                    SET is_checked = 1
+                    WHERE id = ` +
+                        mcQuestions[index].id +
+                        `;`;
+
+                    let query2 = conn.query(sqlQuery2, data, (err) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            console.log('complete');
+                        } catch (err) {
+                            console.log('error: ' + err);
+                        }
+                    });
+                    // Check the next question.
+                    //index++;
+                    //checkQuestion(index, userId);
                 } catch (err) {
                     console.log('error: ' + err);
                 }
             });
         }
-
-        // increase the index.
-        index++;
+        // If ChatGPT does not spot a problem.
+        else {
+            // Check the next question.
+            index++;
+            //checkQuestion(index, userId);
+        }
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
         return;
