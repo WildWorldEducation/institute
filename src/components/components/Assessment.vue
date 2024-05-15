@@ -926,26 +926,6 @@ export default {
 .red-btn:hover {
     background-color: rgb(209, 96, 15);
 }
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-.green-btn > svg {
-    margin-left: 15px;
-}
-
-.green-btn:hover {
-    background-color: #2ca695;
-}
 
 .purple-btn {
     background-color: #a48be6;
