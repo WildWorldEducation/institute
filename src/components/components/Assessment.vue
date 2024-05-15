@@ -50,7 +50,9 @@ export default {
             // flagging modal data
             showFlaggingModal: false,
             isQuizPassed: false,
-            showThankModal: false
+            showThankModal: false,
+            // assign the initial index to infinity because index is number type
+            answerHoveredIndex: Infinity
         };
     },
     mounted: function () {
@@ -450,12 +452,14 @@ export default {
         >
             <!-- To wait for questions to be loaded, before the DOM renders. -->
             <div class="row">
-                <div class="col d-flex my-2 gap-2 justify-content-between">
+                <div
+                    class="col d-flex my-2 gap-2 justify-content-between flex-column flex-md-row"
+                >
                     <div class="d-flex align-items-lg-center">
                         <div id="question-number-div">
                             {{ this.questionNumber + 1 }}
                         </div>
-                        &nbsp;
+
                         <div id="question-content">
                             {{ question.question }}
                         </div>
@@ -489,9 +493,15 @@ export default {
                         class="form-check my-3"
                     >
                         <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-4">{{
-                                answerOption.option
-                            }}</span>
+                            <div
+                                :class="
+                                    answerHoveredIndex == answerOption.index
+                                        ? 'my-auto mx-2 me-4 answer-option checkbox-hovered'
+                                        : 'my-auto mx-2 me-4 answer-option'
+                                "
+                            >
+                                {{ answerOption.option }}
+                            </div>
                             <input
                                 type="radio"
                                 name="nodeType"
@@ -500,7 +510,13 @@ export default {
                                     questions[this.questionNumber].userAnswer
                                 "
                             />
-                            <div class="control_indicator"></div>
+                            <div
+                                class="control_indicator"
+                                @mouseover="
+                                    answerHoveredIndex = answerOption.index
+                                "
+                                @mouseleave="answerHoveredIndex = Infinity"
+                            ></div>
                         </label>
                     </div>
                 </div>
@@ -749,12 +765,13 @@ export default {
     border: 1px solid#8f7bd6;
     box-shadow: 0px 1px 2px 0px #1018280d;
     background-color: #8f7bd6;
-    font-family: 'Poppins' sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 20px;
     font-weight: 900;
     line-height: 28px;
     letter-spacing: 0em;
     text-align: left;
+    height: fit-content;
 }
 
 #question-content {
@@ -765,6 +782,7 @@ export default {
     letter-spacing: 0em;
     text-align: left;
     color: #667085;
+    margin-left: 15px;
 }
 
 .form-control:focus {
@@ -777,6 +795,18 @@ export default {
     height: 16px !important;
 }
 
+.answer-option {
+    color: #667085;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+/* Dynamic class for the check box is hovered */
+.checkbox-hovered {
+    text-decoration: underline;
+    color: #7f56d9;
+}
+
 /**-------------------------------------  */
 /* A lot of CSS to styling two check box */
 .control {
@@ -787,6 +817,10 @@ export default {
     margin-bottom: 5px;
     padding-top: 3px;
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 5px;
 }
 
 .control > span {
@@ -802,7 +836,6 @@ export default {
 }
 .control_indicator {
     position: absolute;
-    top: 2px;
     left: 0;
     height: 29.09px;
     width: 29.09px;
@@ -983,6 +1016,11 @@ export default {
     .modal-content {
         margin-top: 80%;
         width: 95%;
+    }
+
+    .flagging-icon {
+        margin-right: 0px;
+        margin-left: auto;
     }
 }
 </style>
