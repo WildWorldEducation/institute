@@ -77,7 +77,10 @@ export default {
             <!-- Student Added Questions -->
             <div class="column col-lg-4 col-md-6">
                 <CheckStudentQuestions
-                    v-if="userDetailsStore.role == 'instructor'"
+                    v-if="
+                        userDetailsStore.role == 'instructor' ||
+                        userDetailsStore.role == 'admin'
+                    "
                 />
             </div>
             <div id="notif-col" class="column col-lg-3 col-md-6">

@@ -14,7 +14,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    // password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -495,5 +495,218 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+/**
+ * Check Questions.
+ */
+let mcQuestions = [];
+let skills = [];
+
+router.get('/check-questions', (req, res, next) => {
+    if (req.session.userName) {
+        // The user posting the source.
+        userId = req.session.userId;
+        res.setHeader('Content-Type', 'application/json');
+        // Get all MC questions.
+        let sqlQuery1 = `SELECT * FROM mc_questions   
+        WHERE is_checked = 0        
+        ORDER BY id`;
+        let query1 = conn.query(sqlQuery1, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                mcQuestions = results;
+                // Get all skills.
+                let sqlQuery2 = `SELECT * FROM skills`;
+                let query2 = conn.query(sqlQuery2, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+                        skills = results;
+
+                        for (let i = 0; i < skills.length; i++) {
+                            for (let j = 0; j < mcQuestions.length; j++) {
+                                if (skills[i].id == mcQuestions[j].skill_id) {
+                                    // Get grade info.
+                                    if (skills[i].level == 'grade_school') {
+                                        mcQuestions[j].level = 'grade school';
+                                    } else if (
+                                        skills[i].level == 'middle_school'
+                                    ) {
+                                        mcQuestions[j].level = 'middle school';
+                                    } else if (
+                                        skills[i].level == 'high_school'
+                                    ) {
+                                        mcQuestions[j].level = 'high school';
+                                    } else if (skills[i].level == 'college') {
+                                        mcQuestions[j].level = 'college';
+                                    } else if (skills[i].level == 'phd') {
+                                        mcQuestions[j].level = 'phd';
+                                    }
+                                    continue;
+                                }
+                            }
+                        }
+                        //console.log(mcQuestions[0], req.session.userId);
+                        let index = 0;
+                        // Now we ask ChatGPT to check each one.
+                        checkQuestion(index, userId);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// Get source from ChatGPT.
+// Import OpenAI package.
+const { OpenAI } = require('openai');
+// Include API key.
+// To access the .env file.
+require('dotenv').config();
+const openai = new OpenAI({
+    apiKey: process.env.CHAT_GPT_API_KEY
+});
+
+async function checkQuestion(index, userId) {
+    // Create prompt for ChatGPT.
+    let prompt =
+        `Please check if the following quiz question: "` +
+        mcQuestions[index].question +
+        `" Please review if the following answer is the correct
+        answer for this question: "` +
+        mcQuestions[index].correct_answer +
+        `". If it is, please return a variable called 'correct_answer_is_correct' as true, 
+        otherwise return it as false. Please also check whether the 
+        following four answers are all incorrect answers for this question: "` +
+        mcQuestions[index].incorrect_answer_1 +
+        `"; "` +
+        mcQuestions[index].incorrect_answer_2 +
+        `"; "` +
+        mcQuestions[index].incorrect_answer_3 +
+        '"; "' +
+        mcQuestions[index].incorrect_answer_4 +
+        `". Return the variable: 'all_incorrect_answers_are_incorrect' as true if so, otherwise, 
+        return it as false.
+        Please also check for any spelling errors. Please return a variable spelling_correct as true if it is,
+        otherwise, return this as false.
+        Lastly please check if the the question is appropriate for the following grade: ` +
+        mcQuestions[index].level +
+        `. Please return the variable 'grade_is_correct' as true if it is, otherwise as false.`;
+
+    // Attempting to prevent the app from crashing if anything goes wrong with the API call.
+    // ie, error handling.
+    try {
+        console.log('Checking question: ');
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: 'system', content: 'You are a helpful assistant.' },
+                {
+                    role: 'user',
+                    content: prompt + ` Please respond with a JSON object.`
+                }
+            ],
+            model: 'gpt-3.5-turbo',
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
+        // Convert string to object.
+        var responseObj = JSON.parse(escapedResponseJSON);
+        console.log(responseObj);
+
+        // Check ChatGPT response.
+        // If it spots a problem, flag the question.
+        if (
+            responseObj.correct_answer_is_correct == false ||
+            responseObj.all_incorrect_answers_are_incorrect == false ||
+            responseObj.spelling_correct == false ||
+            responseObj.grade_is_correct == false
+        ) {
+            let data = {};
+            data = {
+                content_type: 'mc_question',
+                content_id: mcQuestions[index].id,
+                student_id: userId
+            };
+
+            let sqlQuery1 = 'INSERT INTO content_flags SET ?';
+            let query1 = conn.query(sqlQuery1, data, (err) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    // Mark this question as checked.
+                    let sqlQuery2 =
+                        `
+                    UPDATE mc_questions
+                    SET is_checked = 1
+                    WHERE id = ` +
+                        mcQuestions[index].id +
+                        `;`;
+
+                    let query2 = conn.query(sqlQuery2, (err) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            console.log(
+                                'MC question ' +
+                                    mcQuestions[index].id +
+                                    ' complete'
+                            );
+                            // Check the next question.
+                            index++;
+                            if (index < mcQuestions.length)
+                                checkQuestion(index, userId);
+                        } catch (err) {
+                            console.log('error: ' + err);
+                        }
+                    });
+                } catch (err) {
+                    console.log('error: ' + err);
+                }
+            });
+        }
+        // If ChatGPT does not spot a problem.
+        else {
+            // Mark this question as checked.
+            let sqlQuery2 =
+                `
+        UPDATE mc_questions
+        SET is_checked = 1
+        WHERE id = ` +
+                mcQuestions[index].id +
+                `;`;
+
+            let query2 = conn.query(sqlQuery2, (err) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log(
+                        'MC question ' + mcQuestions[index].id + ' complete'
+                    );
+                    // Check the next question.
+                    index++;
+                    if (index < mcQuestions.length)
+                        checkQuestion(index, userId);
+                } catch (err) {
+                    console.log('error: ' + err);
+                }
+            });
+        }
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+        return;
+    }
+}
 
 module.exports = router;
