@@ -719,7 +719,6 @@ function deleteDuplicateSources() {
             if (err) {
                 throw err;
             }
-
             let sources = results;
             let duplicateSources = [];
             for (let i = 0; i < sources.length; i++) {
@@ -739,6 +738,8 @@ function deleteDuplicateSources() {
                                 if (sources[i].id != sources[j].id) {
                                     if (source1Url == source2Url) {
                                         duplicateSources.push(sources[j].id);
+                                        // Remove sources from the list, so that only one set of duplicates are deleted.
+                                        sources.splice(i, 1);
                                     }
                                 }
                             }
@@ -746,8 +747,8 @@ function deleteDuplicateSources() {
                     }
                 }
             }
-
-            console.log('Duplicate source IDs found: ' + duplicateSources);
+            if (duplicateSources.length > 0)
+                console.log('Duplicate source IDs found: ' + duplicateSources);
             // Delete them.
             if (duplicateSources.length > 0) {
                 let sqlQuery2 =
@@ -760,7 +761,8 @@ function deleteDuplicateSources() {
                             throw err;
                         }
                         console.log(
-                            'Duplicate sources: ' + duplicateSources.length
+                            'Duplicate sources deleted: ' +
+                                duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);
