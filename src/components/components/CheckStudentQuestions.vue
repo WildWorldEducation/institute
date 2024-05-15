@@ -24,6 +24,9 @@ export default {
         };
     },
     async created() {
+        // Question list needs to be created for both admins (all questions), and instructors
+        // (only their students' questions).
+
         // Create the questions array ---------------------------------
         // Get unchecked questions.
         await this.studentMCQuestionsStore.getStudentMCQuestions();
