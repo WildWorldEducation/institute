@@ -49,7 +49,10 @@ export default {
             updatedAssessment: false,
             // flagging modal data
             showFlaggingModal: false,
-            isQuizPassed: false
+            isQuizPassed: false,
+            showThankModal: false,
+            // assign the initial index to infinity because index is number type
+            answerHoveredIndex: Infinity
         };
     },
     mounted: function () {
@@ -404,9 +407,7 @@ export default {
             };
             var url = '/content-flags/add';
             fetch(url, requestOptions).then(() => {
-                alert(
-                    'Thanks you for flagging this question. We will take a look soon.'
-                );
+                this.showThankModal = true;
                 this.showFlaggingModal = false;
             });
         }
@@ -451,36 +452,37 @@ export default {
         >
             <!-- To wait for questions to be loaded, before the DOM renders. -->
             <div class="row">
-                <div class="col d-flex my-2 gap-2 justify-content-between">
+                <div
+                    class="col d-flex my-2 gap-2 justify-content-between flex-column flex-md-row"
+                >
                     <div class="d-flex align-items-lg-center">
                         <div id="question-number-div">
                             {{ this.questionNumber + 1 }}
                         </div>
-                        &nbsp;
+
                         <div id="question-content">
                             {{ question.question }}
                         </div>
                     </div>
                     <!-- Flag Icon -->
-                    <button
+                    <div
                         b-tooltip.hover
                         title="flag this question for review"
                         @click="showFlaggingModal = true"
-                        type="button"
-                        class="btn"
+                        class="flagging-icon"
                         style="height: 50px"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 448 512"
-                            style="height: 27px; opacity: 0.5"
+                            style="height: 22px; opacity: 0.5"
                         >
                             <path
                                 fill="#8f7bd6"
                                 d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
                             />
                         </svg>
-                    </button>
+                    </div>
                 </div>
 
                 <!-- Multiple Choice Question -->
@@ -491,9 +493,15 @@ export default {
                         class="form-check my-3"
                     >
                         <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-4">{{
-                                answerOption.option
-                            }}</span>
+                            <div
+                                :class="
+                                    answerHoveredIndex == answerOption.index
+                                        ? 'my-auto mx-2 me-4 answer-option checkbox-hovered'
+                                        : 'my-auto mx-2 me-4 answer-option'
+                                "
+                            >
+                                {{ answerOption.option }}
+                            </div>
                             <input
                                 type="radio"
                                 name="nodeType"
@@ -502,7 +510,13 @@ export default {
                                     questions[this.questionNumber].userAnswer
                                 "
                             />
-                            <div class="control_indicator"></div>
+                            <div
+                                class="control_indicator"
+                                @mouseover="
+                                    answerHoveredIndex = answerOption.index
+                                "
+                                @mouseleave="answerHoveredIndex = Infinity"
+                            ></div>
                         </label>
                     </div>
                 </div>
@@ -598,7 +612,7 @@ export default {
                         />
                     </svg>
                     <div class="my-auto ms-2">
-                        You Failed This Time, Try Again Later !
+                        You failed this time, try again later !
                     </div>
                 </div>
                 <div class="d-flex flex-row-reverse">
@@ -619,8 +633,8 @@ export default {
             <!-- Modal content -->
             <div class="modal-content">
                 <div>
-                    There is at least one question that needs to be marked
-                    manually. Please check whether you passed later.
+                    There is at least one question that needs to be marked by
+                    your instructor. Please check whether you passed later.
                 </div>
                 <div class="d-flex flex-row-reverse">
                     <button
@@ -634,26 +648,87 @@ export default {
             </div>
         </div>
     </div>
-    <!-- Modal for flagging question -->
+    <!-- The flagging Modal -->
     <div v-if="showFlaggingModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
-            <div class="modal-content">
-                <p>Are you sure you want to flag this question?</p>
-                <div class="d-flex justify-content-between">
+            <div class="modal-content-flag">
+                <div class="d-flex gap-4">
+                    <!-- Warn Triangle Icon -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        fill="grey"
+                        width="45"
+                        height="45"
+                    >
+                        <path
+                            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+                        />
+                    </svg>
+                    <p>Are you sure you want to flag this question ?</p>
+                </div>
+                <div class="d-flex justify-content-between gap-2">
                     <button
                         type="button"
-                        class="btn red-btn w-25"
+                        class="btn red-btn w-md-25"
                         @click="showFlaggingModal = false"
                     >
-                        <span> No </span>
+                        <span class="d-none d-md-block"> No </span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="18"
+                            height="18"
+                            fill="white"
+                            class="d-md-none modal-icon"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+                            />
+                        </svg>
                     </button>
                     <button
                         type="button"
-                        class="btn green-btn w-25"
+                        class="btn green-btn w-md-25"
                         @click="flagQuestion(question.id)"
                     >
-                        <span> Yes </span>
+                        <span class="d-none d-md-block"> Yes </span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="18"
+                            height="18"
+                            fill="white"
+                            class="d-md-none modal-icon"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Thanks You Modal After User Flagging -->
+    <div v-if="showThankModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content-flag">
+                <div class="d-flex gap-4 text-center">
+                    <p>
+                        Thank you for flagging this question. We will take a
+                        look as soon as possible !!
+                    </p>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button
+                        type="button"
+                        class="btn green-btn w-25"
+                        @click="showThankModal = false"
+                    >
+                        <span> OK </span>
                     </button>
                 </div>
             </div>
@@ -672,7 +747,6 @@ export default {
     line-height: 24px;
     display: flex;
     align-items: center;
-    max-width: fit-content;
 }
 
 #question-container {
@@ -691,12 +765,13 @@ export default {
     border: 1px solid#8f7bd6;
     box-shadow: 0px 1px 2px 0px #1018280d;
     background-color: #8f7bd6;
-    font-family: 'Poppins' sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 20px;
     font-weight: 900;
     line-height: 28px;
     letter-spacing: 0em;
     text-align: left;
+    height: fit-content;
 }
 
 #question-content {
@@ -707,11 +782,29 @@ export default {
     letter-spacing: 0em;
     text-align: left;
     color: #667085;
+    margin-left: 15px;
 }
 
 .form-control:focus {
     border-color: white;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+}
+
+.modal-icon {
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.answer-option {
+    color: #667085;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+/* Dynamic class for the check box is hovered */
+.checkbox-hovered {
+    text-decoration: underline;
+    color: #7f56d9;
 }
 
 /**-------------------------------------  */
@@ -724,6 +817,10 @@ export default {
     margin-bottom: 5px;
     padding-top: 3px;
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 5px;
 }
 
 .control > span {
@@ -739,7 +836,6 @@ export default {
 }
 .control_indicator {
     position: absolute;
-    top: 2px;
     left: 0;
     height: 29.09px;
     width: 29.09px;
@@ -830,26 +926,6 @@ export default {
 .red-btn:hover {
     background-color: rgb(209, 96, 15);
 }
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-.green-btn > svg {
-    margin-left: 15px;
-}
-
-.green-btn:hover {
-    background-color: #2ca695;
-}
 
 .purple-btn {
     background-color: #a48be6;
@@ -862,6 +938,11 @@ export default {
     display: flex;
     align-items: center;
     max-width: fit-content;
+}
+
+.flagging-icon:hover {
+    scale: 1.2;
+    cursor: pointer;
 }
 
 /* ------------------------------------------------------------- */
@@ -894,10 +975,32 @@ export default {
     /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 40%;
+    width: 600px;
+    /* Could be more or less, depending on screen size */
+}
+
+.modal-content-flag {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
     /* Could be more or less, depending on screen size */
 }
 /* End of Modal Styling */
 
 /******************************/
+/* Mobile */
+@media (max-width: 480px) {
+    .modal-content {
+        margin-top: 80%;
+        width: 95%;
+    }
+
+    .flagging-icon {
+        margin-right: 0px;
+        margin-left: auto;
+    }
+}
 </style>

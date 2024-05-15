@@ -67,23 +67,27 @@ export default {
     </div>
     <div class="container mt-3">
         <div class="d-flex justify-content-between">
-            <div class="d-flex">
+            <div class="d-flex flex-column flex-md-row">
                 <!-- Display a default skill icon if the current skill doesn`t have one -->
                 <img v-if="this.skill.image" :src="this.skill.image" />
                 <img
+                    id="skill-icon"
                     v-else
                     src="/images/skill-avatar/recurso.png"
                     alt="default skill icon"
                 />
-                <h1 class="ms-3 d-flex justify-content-end">
+                <div
+                    id="assessment-skill-name"
+                    class="ms-3 d-flex justify-content-end"
+                >
                     {{ this.skill.name }} Quiz
-                </h1>
+                </div>
             </div>
         </div>
 
         <div class="mt-4 mb-4">
             <hr
-                class="border border-2 opacity-100 w-75"
+                class="border border-2 opacity-100 w-md-75 w-100"
                 id="assessment-horizontal-line"
             />
         </div>
@@ -95,5 +99,28 @@ export default {
 #assessment-horizontal-line {
     border-color: #aea3ce !important;
     border: solid;
+}
+
+#assessment-skill-name {
+    color: #a48be6;
+    font-size: xx-large;
+    font-weight: 800;
+    text-align: left;
+}
+
+/*Style for Mobile Devices */
+@media (max-width: 480px) {
+    #skill-icon {
+        width: 60%;
+        height: auto;
+        margin: 0% auto;
+    }
+
+    #assessment-skill-name {
+        font-size: x-large;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 10px;
+    }
 }
 </style>

@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //  password: 'password',
+    password: 'password',
     database: 'skill_tree'
 });
 
@@ -711,6 +711,7 @@ router.delete('/remove-domain-from-whitelist/:domainId', (req, res, next) => {
  * Delete Duplicate Sources.
  */
 function deleteDuplicateSources() {
+    console.log('Searching for and deleting duplicate sources.');
     // Get all sources.
     let sqlQuery1 = `SELECT * FROM resources ORDER BY id`;
     let query1 = conn.query(sqlQuery1, (err, results) => {
@@ -725,18 +726,18 @@ function deleteDuplicateSources() {
                 // extract the url.
                 var source1 = sources[i].content.match(`href="(.*)" target`);
                 if (source1 != null) {
-                    var source1Content = source1[1];
+                    var source1Url = source1[1];
                     for (let j = 0; j < sources.length; j++) {
                         // extract the url.
                         var source2 =
                             sources[j].content.match(`href="(.*)" target`);
                         if (source2 != null) {
-                            var source2Content = source2[1];
+                            var source2Url = source2[1];
                             // Only compare for the same skill.
                             if (sources[i].skill_id == sources[j].skill_id) {
                                 // Make sure not the same source.
                                 if (sources[i].id != sources[j].id) {
-                                    if (source1Content == source2Content) {
+                                    if (source1Url == source2Url) {
                                         duplicateSources.push(sources[j].id);
                                     }
                                 }
@@ -745,6 +746,8 @@ function deleteDuplicateSources() {
                     }
                 }
             }
+
+            console.log('Duplicate source IDs found: ' + duplicateSources);
             // Delete them.
             if (duplicateSources.length > 0) {
                 let sqlQuery2 =
