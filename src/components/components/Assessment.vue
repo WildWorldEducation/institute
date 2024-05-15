@@ -598,7 +598,7 @@ export default {
                         />
                     </svg>
                     <div class="my-auto ms-2">
-                        You Failed This Time, Try Again Later !
+                        You failed this time, try again later !
                     </div>
                 </div>
                 <div class="d-flex flex-row-reverse">
@@ -619,8 +619,8 @@ export default {
             <!-- Modal content -->
             <div class="modal-content">
                 <div>
-                    There is at least one question that needs to be marked
-                    manually. Please check whether you passed later.
+                    There is at least one question that needs to be marked by
+                    your instructor. Please check whether you passed later.
                 </div>
                 <div class="d-flex flex-row-reverse">
                     <button
