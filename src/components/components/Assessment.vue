@@ -49,7 +49,8 @@ export default {
             updatedAssessment: false,
             // flagging modal data
             showFlaggingModal: false,
-            isQuizPassed: false
+            isQuizPassed: false,
+            showThankModal: false
         };
     },
     mounted: function () {
@@ -404,9 +405,7 @@ export default {
             };
             var url = '/content-flags/add';
             fetch(url, requestOptions).then(() => {
-                alert(
-                    'Thanks you for flagging this question. We will take a look soon.'
-                );
+                this.showThankModal = true;
                 this.showFlaggingModal = false;
             });
         }
@@ -462,25 +461,24 @@ export default {
                         </div>
                     </div>
                     <!-- Flag Icon -->
-                    <button
+                    <div
                         b-tooltip.hover
                         title="flag this question for review"
                         @click="showFlaggingModal = true"
-                        type="button"
-                        class="btn"
+                        class="flagging-icon"
                         style="height: 50px"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 448 512"
-                            style="height: 27px; opacity: 0.5"
+                            style="height: 22px; opacity: 0.5"
                         >
                             <path
                                 fill="#8f7bd6"
                                 d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
                             />
                         </svg>
-                    </button>
+                    </div>
                 </div>
 
                 <!-- Multiple Choice Question -->
@@ -634,26 +632,87 @@ export default {
             </div>
         </div>
     </div>
-    <!-- Modal for flagging question -->
+    <!-- The flagging Modal -->
     <div v-if="showFlaggingModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
-            <div class="modal-content">
-                <p>Are you sure you want to flag this question?</p>
-                <div class="d-flex justify-content-between">
+            <div class="modal-content-flag">
+                <div class="d-flex gap-4">
+                    <!-- Warn Triangle Icon -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        fill="grey"
+                        width="45"
+                        height="45"
+                    >
+                        <path
+                            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+                        />
+                    </svg>
+                    <p>Are you sure you want to flag this question ?</p>
+                </div>
+                <div class="d-flex justify-content-between gap-2">
                     <button
                         type="button"
-                        class="btn red-btn w-25"
+                        class="btn red-btn w-md-25"
                         @click="showFlaggingModal = false"
                     >
-                        <span> No </span>
+                        <span class="d-none d-md-block"> No </span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="18"
+                            height="18"
+                            fill="white"
+                            class="d-md-none modal-icon"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+                            />
+                        </svg>
                     </button>
                     <button
                         type="button"
-                        class="btn green-btn w-25"
+                        class="btn green-btn w-md-25"
                         @click="flagQuestion(question.id)"
                     >
-                        <span> Yes </span>
+                        <span class="d-none d-md-block"> Yes </span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="18"
+                            height="18"
+                            fill="white"
+                            class="d-md-none modal-icon"
+                        >
+                            <path
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Thanks You Modal After User Flagging -->
+    <div v-if="showThankModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content-flag">
+                <div class="d-flex gap-4 text-center">
+                    <p>
+                        Thank you for flagging this question. We will take a
+                        look as soon as possible !!
+                    </p>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button
+                        type="button"
+                        class="btn green-btn w-25"
+                        @click="showThankModal = false"
+                    >
+                        <span> OK </span>
                     </button>
                 </div>
             </div>
@@ -672,7 +731,6 @@ export default {
     line-height: 24px;
     display: flex;
     align-items: center;
-    max-width: fit-content;
 }
 
 #question-container {
@@ -712,6 +770,11 @@ export default {
 .form-control:focus {
     border-color: white;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+}
+
+.modal-icon {
+    width: 16px !important;
+    height: 16px !important;
 }
 
 /**-------------------------------------  */
@@ -864,6 +927,11 @@ export default {
     max-width: fit-content;
 }
 
+.flagging-icon:hover {
+    scale: 1.2;
+    cursor: pointer;
+}
+
 /* ------------------------------------------------------------- */
 
 /* The Warning Modal */
@@ -894,10 +962,27 @@ export default {
     /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 40%;
+    width: 600px;
+    /* Could be more or less, depending on screen size */
+}
+
+.modal-content-flag {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
     /* Could be more or less, depending on screen size */
 }
 /* End of Modal Styling */
 
 /******************************/
+/* Mobile */
+@media (max-width: 480px) {
+    .modal-content {
+        margin-top: 80%;
+        width: 95%;
+    }
+}
 </style>

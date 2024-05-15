@@ -75,9 +75,12 @@ export default {
                     src="/images/skill-avatar/recurso.png"
                     alt="default skill icon"
                 />
-                <h1 class="ms-3 d-flex justify-content-end">
+                <div
+                    id="assessment-skill-name"
+                    class="ms-3 d-flex justify-content-end"
+                >
                     {{ this.skill.name }} Quiz
-                </h1>
+                </div>
             </div>
         </div>
 
@@ -95,5 +98,11 @@ export default {
 #assessment-horizontal-line {
     border-color: #aea3ce !important;
     border: solid;
+}
+
+#assessment-skill-name {
+    color: #a48be6;
+    font-size: xx-large;
+    font-weight: 800;
 }
 </style>

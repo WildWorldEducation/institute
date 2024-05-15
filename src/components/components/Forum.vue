@@ -233,8 +233,16 @@ export default {
             this.showActionBtns = false;
         },
         handleClickActionBtns(postId) {
-            this.showActionBtns = !this.showActionBtns;
+            // Handle the case where user click the btn again to close the div
+            if (this.showActionBtns == true && postId == this.currentClickId) {
+                this.showActionBtns = false;
+                this.currentClickId = '';
+                return;
+            }
+            // There are case where a action div is already open so we have to toggle it off first
+            this.showActionBtns = false;
             this.currentClickId = postId;
+            this.showActionBtns = true;
         }
     }
 };
@@ -571,7 +579,7 @@ export default {
                 <div class="modal-content">
                     <div class="d-flex gap-4 text-center">
                         <p>
-                            Thank you for flagging this skill. We will take a
+                            Thank you for flagging this resource. We will take a
                             look as soon as possible !!
                         </p>
                     </div>
