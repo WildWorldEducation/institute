@@ -995,7 +995,12 @@ export default {
 @media (max-width: 480px) {
     .modal-content {
         margin-top: 80%;
-        width: 95%;
+        width: 90%;
+    }
+
+    .modal-content-flag {
+        margin-top: 85%;
+        width: 90%;
     }
 
     .flagging-icon {

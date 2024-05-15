@@ -148,7 +148,9 @@ export default {
                 "
                 class="row mt-3"
             >
-                <div class="d-flex flex-row-reverse align-items-end">
+                <div
+                    class="d-flex flex-row-reverse align-items-end mb-2 mb-md-0"
+                >
                     <!-- Unlock Skill Button -->
                     <button
                         v-if="skill.type == 'domain'"
