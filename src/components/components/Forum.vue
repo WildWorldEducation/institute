@@ -526,15 +526,15 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- Thanks You Modal After User Flagging -->
+        <!-- Thank You Modal After User Flagging -->
         <div v-if="showThankModal">
             <div id="myModal" class="modal">
                 <!-- Modal content -->
                 <div class="modal-content">
                     <div class="d-flex gap-4 text-center">
                         <p>
-                            Thank you for flagging this skill. We will take a
-                            look as soon as possible !!
+                            Thank you for flagging this source. We will take a
+                            look as soon as possible!
                         </p>
                     </div>
                     <div class="d-flex justify-content-center">
