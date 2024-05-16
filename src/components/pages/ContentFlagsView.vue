@@ -32,7 +32,7 @@ export default {
             flagId: '',
             headers: [
                 { text: 'Name', value: 'name' },
-                { text: 'Student', value: 'student', width: 99 },
+                { text: 'User', value: 'user', width: 99 },
                 { text: 'Type', value: 'type' },
                 { text: 'Action', value: 'action' }
             ],
@@ -41,8 +41,8 @@ export default {
             // Filter option data for the table
             flagTypeCriteria: 'all',
             showFlagTypeFilter: false,
-            studentNameCriteria: '',
-            showStudentFilter: false,
+            userNameCriteria: '',
+            showUserFilter: false,
             searchText: '',
             // Custom drop down flag and state
             showFlagTypeDropDown: false
@@ -87,9 +87,9 @@ export default {
                                     editUrl:
                                         '/mc-questions/edit/' + flag.content_id,
                                     expandContent: contentObj,
-                                    student: {
+                                    user: {
                                         username: flag.username,
-                                        id: flag.studentId,
+                                        id: flag.userId,
                                         avatar: flag.avatar
                                     }
                                 };
@@ -112,9 +112,9 @@ export default {
                                         '/essay-questions/edit/' +
                                         flag.content_id,
                                     expandContent: contentObj,
-                                    student: {
+                                    user: {
                                         username: flag.username,
-                                        id: flag.studentId,
+                                        id: flag.userId,
                                         avatar: flag.avatar
                                     }
                                 };
@@ -130,9 +130,9 @@ export default {
                                     flagId: flag.id,
                                     editUrl: '/skills/edit/' + flag.content_id,
                                     expandContent: contentObj,
-                                    student: {
+                                    user: {
                                         username: flag.username,
-                                        id: flag.studentId,
+                                        id: flag.userId,
                                         avatar: flag.avatar
                                     }
                                 };
@@ -154,9 +154,9 @@ export default {
                                     editUrl:
                                         '/resources/edit/' + flag.content_id,
                                     expandContent: contentObj,
-                                    student: {
+                                    user: {
                                         username: flag.username,
-                                        id: flag.studentId,
+                                        id: flag.userId,
                                         avatar: flag.avatar
                                     }
                                 };
@@ -213,10 +213,10 @@ export default {
             }
 
             // *** Student Filter Obj ***
-            if (this.studentNameCriteria !== '') {
+            if (this.userNameCriteria !== '') {
                 filterOptionsArray.push({
-                    field: 'student',
-                    criteria: this.studentNameCriteria,
+                    field: 'user',
+                    criteria: this.userNameCriteria,
                     comparison: (value, criteria) => {
                         return (
                             value != null &&
@@ -229,9 +229,9 @@ export default {
 
             return filterOptionsArray;
         },
-        handleStudentKeyUp(e) {
+        handleUserKeyUp(e) {
             if (e.key === 'Enter') {
-                this.showStudentFilter = false;
+                this.showUserFilter = false;
             }
         },
         clearFilter() {
@@ -446,7 +446,7 @@ export default {
                                         target="_blank"
                                         b-tooltip.hover
                                         :style="{ color: '#8f7bd6' }"
-                                        :title="'Go To Skill '"
+                                        :title="'Go To Skill'"
                                         >{{
                                             expandContent.skillName
                                         }}</router-link
@@ -500,19 +500,19 @@ export default {
                     </div>
                 </template>
 
-                <!-- --- Student Column --- -->
-                <template #item-student="{ student }">
-                    <div class="student-cell">
+                <!-- --- User Column --- -->
+                <template #item-user="{ user }">
+                    <div class="user-cell">
                         <img
-                            :src="student.avatar"
-                            alt="student avatar"
-                            class="student-avatar"
+                            :src="user.avatar"
+                            alt="user avatar"
+                            class="user-avatar"
                         />
                         <div
-                            class="student-name"
-                            @click="handleRewardStudent(student.id)"
+                            class="user-name"
+                            @click="handleRewardStudent(user.id)"
                         >
-                            {{ student.username }}
+                            {{ user.username }}
                         </div>
                     </div>
                 </template>
@@ -637,11 +637,11 @@ export default {
                     </div>
                 </template>
 
-                <!-- Student Header Filtering -->
-                <template #header-student="header">
-                    <div class="filter-column">
+                <!-- User Header Name Searcher -->
+                <template #header-user="header">
+                    <div class="filter-column user-header">
                         <div
-                            @click.stop="showStudentFilter = !showStudentFilter"
+                            @click.stop="showUserFilter = !showUserFilter"
                             b-tooltip.hover
                             :title="'Search for student user name'"
                         >
@@ -661,13 +661,13 @@ export default {
                                 />
                             </svg>
                         </div>
-                        <div class="filter-menu" v-if="showStudentFilter">
+                        <div class="filter-menu" v-if="showUserFilter">
                             <div class="d-flex student-filter">
                                 <input
                                     type="text"
-                                    v-model="studentNameCriteria"
-                                    placeholder="type in student name"
-                                    @keyup="(e) => handleStudentKeyUp(e)"
+                                    v-model="userNameCriteria"
+                                    placeholder="type in user name"
+                                    @keyup="(e) => handleUserKeyUp(e)"
                                 />
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -1322,23 +1322,25 @@ h2 {
     width: 50%;
 }
 
-.student-cell {
+.user-cell {
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 10px 0px;
+    width: fit-content;
 }
 
-.student-avatar {
+.user-avatar {
     width: 50px;
     height: 50px;
     border-radius: 5px;
 }
 
-.student-name {
+.user-name {
     text-align: center;
     color: #a48be6;
     text-decoration: underline;
     cursor: pointer;
+    width: 100%;
 }
 
 .filter-icon {

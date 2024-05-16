@@ -216,7 +216,7 @@ export default {
                 body: JSON.stringify({
                     content_type: 'resource',
                     content_id: resourceId,
-                    student_id: this.user.userId
+                    user_id: this.user.userId
                 })
             };
             var url = '/content-flags/add';

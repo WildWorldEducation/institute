@@ -119,7 +119,7 @@ export default {
                 body: JSON.stringify({
                     content_type: 'skill',
                     content_id: this.skill.id,
-                    student_id: this.userDetailsStore.userId
+                    user_id: this.userDetailsStore.userId
                 })
             };
             var url = '/content-flags/add';

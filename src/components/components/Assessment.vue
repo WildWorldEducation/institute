@@ -402,7 +402,7 @@ export default {
                 body: JSON.stringify({
                     content_type: questionType,
                     content_id: questionId,
-                    student_id: this.userDetailsStore.userId
+                    user_id: this.userDetailsStore.userId
                 })
             };
             var url = '/content-flags/add';
