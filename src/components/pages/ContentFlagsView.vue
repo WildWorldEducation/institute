@@ -194,8 +194,8 @@ export default {
         },
         // THIS IS JUST A WARNING NOW THE FEATURE WILL BE IMPLEMENT LATER
         // TODO: ADD REWARD FEATURE
-        handleRewardStudent(studentId) {
-            alert(`student  with id: ${studentId} will be rewarded`);
+        handleRewardUser(userId) {
+            alert(`user  with id: ${userId} will be rewarded`);
         },
         // We Define The Filter option for the table here
         filterOptions() {
@@ -212,7 +212,7 @@ export default {
                 });
             }
 
-            // *** Student Filter Obj ***
+            // *** User Filter Obj ***
             if (this.userNameCriteria !== '') {
                 filterOptionsArray.push({
                     field: 'user',
@@ -237,9 +237,9 @@ export default {
         clearFilter() {
             this.searchText = '';
             this.flagTypeCriteria = 'all';
-            this.studentNameCriteria = '';
+            this.userNameCriteria = '';
             this.showFlagTypeFilter = false;
-            this.showStudentFilter = false;
+            this.showUserFilter = false;
         }
     }
 };
@@ -511,6 +511,8 @@ export default {
                         <div
                             class="user-name"
                             @click="handleRewardStudent(user.id)"
+                            b-on-hover
+                            :title="`reward user '${user.username}' for flagging`"
                         >
                             {{ user.username }}
                         </div>
@@ -637,13 +639,13 @@ export default {
                     </div>
                 </template>
 
-                <!-- User Header Name Searcher -->
+                <!-- User Header (Name Searcher) -->
                 <template #header-user="header">
                     <div class="filter-column user-header">
                         <div
                             @click.stop="showUserFilter = !showUserFilter"
                             b-tooltip.hover
-                            :title="'Search for student user name'"
+                            :title="'Search for user name'"
                         >
                             <span id="type-head-tile" class="me-1">
                                 {{ header.text }}
@@ -662,7 +664,7 @@ export default {
                             </svg>
                         </div>
                         <div class="filter-menu" v-if="showUserFilter">
-                            <div class="d-flex student-filter">
+                            <div class="d-flex user-filter">
                                 <input
                                     type="text"
                                     v-model="userNameCriteria"
@@ -908,19 +910,19 @@ export default {
                         </div>
                     </div>
                 </template>
-                <!-- --- Student Column --- -->
-                <template #item-student="{ student }">
-                    <div class="student-cell">
+                <!-- --- User Column --- -->
+                <template #item-user="{ user }">
+                    <div class="user-cell">
                         <img
-                            :src="student.avatar"
-                            alt="student avatar"
-                            class="student-avatar"
+                            :src="user.avatar"
+                            alt="user avatar"
+                            class="user-avatar"
                         />
                         <div
-                            class="student-name"
-                            @click="handleRewardStudent(student.id)"
+                            class="user-name"
+                            @click="handleRewardStudent(user.id)"
                         >
-                            {{ student.username }}
+                            {{ user.username }}
                         </div>
                     </div>
                 </template>
@@ -1033,28 +1035,28 @@ export default {
                     </div>
                 </template>
 
-                <!-- --- Student Header Filtering --- -->
-                <template #header-student="header">
+                <!-- --- User Header Filtering --- -->
+                <template #header-user="header">
                     <div class="filter-column">
                         <div
-                            @click.stop="showStudentFilter = !showStudentFilter"
+                            @click.stop="showUserFilter = !showUserFilter"
                             b-tooltip.hover
-                            :title="'Search for student user name'"
+                            :title="'Search for user name'"
                         >
                             <span id="type-head-tile" class="me-1">
                                 {{ header.text }}
                             </span>
                         </div>
                         <div
-                            class="filter-menu student-phone-filter-menu"
-                            v-if="showStudentFilter"
+                            class="filter-menu user-phone-filter-menu"
+                            v-if="showUserFilter"
                         >
-                            <div class="d-flex student-filter">
+                            <div class="d-flex user-filter">
                                 <input
                                     type="text"
-                                    v-model="studentNameCriteria"
-                                    placeholder="type in student name"
-                                    @keyup="(e) => handleStudentKeyUp(e)"
+                                    v-model="userNameCriteria"
+                                    placeholder="type in user name"
+                                    @keyup="(e) => handleUserKeyUp(e)"
                                 />
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -1365,7 +1367,7 @@ h2 {
     position: relative;
 }
 
-.student-filter {
+.user-filter {
     border: #a48be6 1px solid;
     border-radius: 5px;
     display: flex;
@@ -1373,7 +1375,7 @@ h2 {
     padding: 2px;
 }
 
-.student-filter input {
+.user-filter input {
     outline: none;
     border: 0px;
 }
@@ -1498,7 +1500,7 @@ h2 {
 
 /* View Specific On Phone */
 @media (min-width: 0px) and (max-width: 576px) {
-    .student-avatar {
+    .user-avatar {
         display: none;
     }
 
@@ -1527,7 +1529,7 @@ h2 {
         top: 45px;
     }
 
-    .student-phone-filter-menu {
+    .user-phone-filter-menu {
         left: -25px;
         top: 45px;
     }
