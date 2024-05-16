@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 1392
+        AND id > 1788
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -380,8 +380,8 @@ async function getSource(
                         usedLinks
                 }
             ],
-            //model: 'gpt-3.5-turbo-0125',
-            model: 'gpt-4-turbo',
+            model: 'gpt-4o',
+            //model: 'gpt-4-turbo',
             response_format: { type: 'json_object' }
         });
         let responseJSON = completion.choices[0].message.content;
