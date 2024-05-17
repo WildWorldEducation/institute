@@ -527,7 +527,7 @@ export default {
                         />
                         <div
                             class="user-name"
-                            @click="handleRewardStudent(user.id)"
+                            @click="handleRewardUser(user.id)"
                             b-on-hover
                             :title="`reward user '${user.username}' for flagging`"
                         >
@@ -1021,6 +1021,10 @@ export default {
                         >
                             {{ user.username }}
                         </div>
+
+                        <div class="user-role">
+                            {{ user.role }}
+                        </div>
                     </div>
                 </template>
 
@@ -1148,6 +1152,7 @@ export default {
                             class="filter-menu user-phone-filter-menu"
                             v-if="showUserFilter"
                         >
+                            <!-- User Name Searcher -->
                             <div class="d-flex user-filter">
                                 <input
                                     type="text"
@@ -1167,6 +1172,82 @@ export default {
                                         d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
                                     />
                                 </svg>
+                            </div>
+                            <!-- Role dropdown filter -->
+                            <div class="mt-2 d-flex flex-column">
+                                <div id="role-filter-label">User Role:</div>
+                                <!-- Custom Dropdown -->
+                                <div class="d-flex flex-column">
+                                    <div
+                                        :class="[
+                                            showUserRoleDropDown
+                                                ? 'custom-select-button-focus'
+                                                : 'custom-select-button'
+                                        ]"
+                                        @click="
+                                            showUserRoleDropDown =
+                                                !showUserRoleDropDown
+                                        "
+                                    >
+                                        {{ userRoleCriteria }}
+                                        <span>
+                                            <svg
+                                                width="20"
+                                                height="20"
+                                                viewBox="0 0 20 20"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                    fill="#344054"
+                                                />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div
+                                        v-if="showUserRoleDropDown"
+                                        class="custom-dropdown-base"
+                                    >
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                userRoleCriteria = 'all';
+                                                showUserRoleDropDown = false;
+                                            "
+                                        >
+                                            All
+                                        </div>
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                userRoleCriteria = 'student';
+                                                showUserRoleDropDown = false;
+                                            "
+                                        >
+                                            Student
+                                        </div>
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                userRoleCriteria = 'instructor';
+                                                showUserRoleDropDown = false;
+                                            "
+                                        >
+                                            Instructor
+                                        </div>
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                userRoleCriteria = 'admin';
+                                                showUserRoleDropDown = false;
+                                            "
+                                        >
+                                            Admin
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End of custom dropdown -->
                             </div>
                         </div>
                     </div>
@@ -1641,6 +1722,10 @@ h2 {
     .user-phone-filter-menu {
         left: -25px;
         top: 45px;
+    }
+
+    .user-role {
+        font-size: 10px;
     }
 
     .modal-content {
