@@ -306,6 +306,8 @@ export default {
                         </div>
                         <!-- Vote count Div -->
                         <span
+                            b-on-hover
+                            title="number of vote this resource receive"
                             id="vote-count"
                             :class="{
                                 'text-danger': post.voteCount < 0,
@@ -633,10 +635,12 @@ export default {
     font-size: 1.563rem;
     font-weight: 700;
     margin-top: -7px;
+    cursor: help;
 }
 
 .vote-icon {
     height: 34px !important;
+    cursor: pointer;
 }
 
 .upvote-icon {
@@ -838,6 +842,8 @@ h2 {
 .dropdown-leave-active .btn {
     transition-delay: 0.2s;
 }
+
+/* ** End Of Dropdown Animation ** */
 
 /* Mobile */
 @media (max-width: 480px) {
