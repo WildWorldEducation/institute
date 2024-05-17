@@ -17,7 +17,7 @@ const conn = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
+    // password: 'password',
     database: 'skill_tree'
 });
 
@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 1392
+        AND id > 1887
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -356,7 +356,7 @@ async function getSource(
         `, as described by this text: ` +
         masteryRequirements +
         `. The link should be for an article, worksheets, game, video or other educational resource.
-                           Please do not provide Youtube videos.
+                           Please do not provide YouTube videos.
         Please strongly preference resources from the following urls:` +
         whiteListedDomains +
         `. Please provide only links to free sites, and please do not provide links aimed at parents or teachers.`;
@@ -380,7 +380,7 @@ async function getSource(
                         usedLinks
                 }
             ],
-            //model: 'gpt-3.5-turbo-0125',
+            //model: 'gpt-4o',
             model: 'gpt-4-turbo',
             response_format: { type: 'json_object' }
         });
@@ -719,7 +719,6 @@ function deleteDuplicateSources() {
             if (err) {
                 throw err;
             }
-
             let sources = results;
             let duplicateSources = [];
             for (let i = 0; i < sources.length; i++) {
@@ -739,6 +738,8 @@ function deleteDuplicateSources() {
                                 if (sources[i].id != sources[j].id) {
                                     if (source1Url == source2Url) {
                                         duplicateSources.push(sources[j].id);
+                                        // Remove sources from the list, so that only one set of duplicates are deleted.
+                                        sources.splice(i, 1);
                                     }
                                 }
                             }
@@ -746,8 +747,8 @@ function deleteDuplicateSources() {
                     }
                 }
             }
-
-            console.log('Duplicate source IDs found: ' + duplicateSources);
+            if (duplicateSources.length > 0)
+                console.log('Duplicate source IDs found: ' + duplicateSources);
             // Delete them.
             if (duplicateSources.length > 0) {
                 let sqlQuery2 =
@@ -760,7 +761,8 @@ function deleteDuplicateSources() {
                             throw err;
                         }
                         console.log(
-                            'Duplicate sources: ' + duplicateSources.length
+                            'Duplicate sources deleted: ' +
+                            duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);

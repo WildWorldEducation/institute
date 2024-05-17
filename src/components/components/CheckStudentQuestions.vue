@@ -3,6 +3,7 @@ import { useStudentMCQuestionsStore } from '../../stores/StudentMCQuestionsStore
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUsersStore } from '../../stores/UsersStore';
 import { useSkillsStore } from '../../stores/SkillsStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 export default {
     setup() {
@@ -10,12 +11,14 @@ export default {
         const instructorStudentsStore = useInstructorStudentsStore();
         const usersStore = useUsersStore();
         const skillsStore = useSkillsStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
             studentMCQuestionsStore,
             instructorStudentsStore,
             usersStore,
-            skillsStore
+            skillsStore,
+            userDetailsStore
         };
     },
     data() {
@@ -31,59 +34,24 @@ export default {
         // Get unchecked questions.
         await this.studentMCQuestionsStore.getStudentMCQuestions();
 
-        // Get the instructor student list, if not yet loaded.
-        if (this.instructorStudentsStore.instructorStudentsList.length == 0) {
-            await this.instructorStudentsStore.getInstructorStudentsList();
-        }
-
-        let studentIds = [];
-        // Just get the students that this instructors teaches.
-        for (
-            let i = 0;
-            i < this.instructorStudentsStore.instructorStudentsList.length;
-            i++
-        ) {
-            if (
-                this.$parent.userDetailsStore.userId ==
-                this.instructorStudentsStore.instructorStudentsList[i]
-                    .instructor_id
-            ) {
-                studentIds.push(
-                    this.instructorStudentsStore.instructorStudentsList[i]
-                        .student_id
-                );
-            }
-        }
-        // Get the questions made by these students.
-        for (
-            let i = 0;
-            i < this.studentMCQuestionsStore.studentMCQuestions.length;
-            i++
-        ) {
-            for (let j = 0; j < studentIds.length; j++) {
-                if (
-                    this.studentMCQuestionsStore.studentMCQuestions[i]
-                        .student_id == studentIds[j]
-                ) {
-                    this.questions.push(
-                        this.studentMCQuestionsStore.studentMCQuestions[i]
-                    );
-                }
-            }
-        }
-
         // Get users.
         if (this.usersStore.users.length == 0) {
             await this.usersStore.getUsers();
         }
         // Add the student name.
-        for (let i = 0; i < this.questions.length; i++) {
+        for (
+            let i = 0;
+            i < this.studentMCQuestionsStore.studentMCQuestions.length;
+            i++
+        ) {
             for (let j = 0; j < this.usersStore.users.length; j++) {
                 if (
-                    this.questions[i].student_id == this.usersStore.users[j].id
+                    this.studentMCQuestionsStore.studentMCQuestions[i]
+                        .student_id == this.usersStore.users[j].id
                 ) {
-                    this.questions[i].studentName =
-                        this.usersStore.users[j].username;
+                    this.studentMCQuestionsStore.studentMCQuestions[
+                        i
+                    ].studentName = this.usersStore.users[j].username;
                 }
             }
         }
@@ -93,16 +61,69 @@ export default {
             await this.skillsStore.getSkillsList();
         }
         // Add the skill name.
-        for (let i = 0; i < this.questions.length; i++) {
+        for (
+            let i = 0;
+            i < this.studentMCQuestionsStore.studentMCQuestions.length;
+            i++
+        ) {
             for (let j = 0; j < this.skillsStore.skillsList.length; j++) {
                 if (
-                    this.questions[i].skill_id ==
-                    this.skillsStore.skillsList[j].id
+                    this.studentMCQuestionsStore.studentMCQuestions[i]
+                        .skill_id == this.skillsStore.skillsList[j].id
                 ) {
-                    this.questions[i].skillName =
-                        this.skillsStore.skillsList[j].name;
+                    this.studentMCQuestionsStore.studentMCQuestions[
+                        i
+                    ].skillName = this.skillsStore.skillsList[j].name;
                 }
             }
+        }
+
+        // For instructors only.
+        if (this.userDetailsStore.role == 'instructor') {
+            // Get the instructor student list, if not yet loaded.
+            if (
+                this.instructorStudentsStore.instructorStudentsList.length == 0
+            ) {
+                await this.instructorStudentsStore.getInstructorStudentsList();
+            }
+
+            let studentIds = [];
+            // Just get the students that this instructors teaches.
+            for (
+                let i = 0;
+                i < this.instructorStudentsStore.instructorStudentsList.length;
+                i++
+            ) {
+                if (
+                    this.$parent.userDetailsStore.userId ==
+                    this.instructorStudentsStore.instructorStudentsList[i]
+                        .instructor_id
+                ) {
+                    studentIds.push(
+                        this.instructorStudentsStore.instructorStudentsList[i]
+                            .student_id
+                    );
+                }
+            }
+            // Get the questions made by these students.
+            for (
+                let i = 0;
+                i < this.studentMCQuestionsStore.studentMCQuestions.length;
+                i++
+            ) {
+                for (let j = 0; j < studentIds.length; j++) {
+                    if (
+                        this.studentMCQuestionsStore.studentMCQuestions[i]
+                            .student_id == studentIds[j]
+                    ) {
+                        this.questions.push(
+                            this.studentMCQuestionsStore.studentMCQuestions[i]
+                        );
+                    }
+                }
+            }
+        } else {
+            this.questions = this.studentMCQuestionsStore.studentMCQuestions;
         }
     },
     computed: {},
