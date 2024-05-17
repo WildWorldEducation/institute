@@ -182,6 +182,22 @@ export default {
                         answerOptions = answerOptions.sort(
                             (a, b) => 0.5 - Math.random()
                         );
+                        // Make sure that is one option is "All of the above",
+                        // It is at the bottom.
+                        for (let i = 0; i < answerOptions.length; i++) {
+                            // Ignore case.
+                            if (
+                                answerOptions[i].option.toUpperCase() ==
+                                'all of the above'.toUpperCase()
+                            ) {
+                                function arrayMove(arr, fromIndex, toIndex) {
+                                    var element = arr[fromIndex];
+                                    arr.splice(fromIndex, 1);
+                                    arr.splice(toIndex, 0, element);
+                                }
+                                arrayMove(answerOptions, i, 4);
+                            }
+                        }
                         this.mcQuestions[i].answerOptions = answerOptions;
                     }
                 })

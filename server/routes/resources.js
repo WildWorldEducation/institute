@@ -356,7 +356,7 @@ async function getSource(
         `, as described by this text: ` +
         masteryRequirements +
         `. The link should be for an article, worksheets, game, video or other educational resource.
-                           Please do not provide Youtube videos.
+                           Please do not provide YouTube videos.
         Please strongly preference resources from the following urls:` +
         whiteListedDomains +
         `. Please provide only links to free sites, and please do not provide links aimed at parents or teachers.`;
