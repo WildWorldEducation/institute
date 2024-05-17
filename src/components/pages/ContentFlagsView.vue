@@ -44,8 +44,10 @@ export default {
             userNameCriteria: '',
             showUserFilter: false,
             searchText: '',
+            userRoleCriteria: 'all',
             // Custom drop down flag and state
-            showFlagTypeDropDown: false
+            showFlagTypeDropDown: false,
+            showUserRoleDropDown: false
         };
     },
     components: {
@@ -90,7 +92,8 @@ export default {
                                     user: {
                                         username: flag.username,
                                         id: flag.userId,
-                                        avatar: flag.avatar
+                                        avatar: flag.avatar,
+                                        role: flag.userRole
                                     }
                                 };
                                 this.rows.push(tableRowMC);
@@ -115,7 +118,8 @@ export default {
                                     user: {
                                         username: flag.username,
                                         id: flag.userId,
-                                        avatar: flag.avatar
+                                        avatar: flag.avatar,
+                                        role: flag.userRole
                                     }
                                 };
                                 this.rows.push(tableRowEssay);
@@ -133,7 +137,8 @@ export default {
                                     user: {
                                         username: flag.username,
                                         id: flag.userId,
-                                        avatar: flag.avatar
+                                        avatar: flag.avatar,
+                                        role: flag.userRole
                                     }
                                 };
                                 this.rows.push(tableRowSkill);
@@ -157,7 +162,8 @@ export default {
                                     user: {
                                         username: flag.username,
                                         id: flag.userId,
-                                        avatar: flag.avatar
+                                        avatar: flag.avatar,
+                                        role: flag.userRole
                                     }
                                 };
                                 this.rows.push(tableRowResource);
@@ -167,7 +173,6 @@ export default {
                         }
                     }
                     this.rowsLength = this.rows.length;
-                    console.log(this.rowsLength);
                     this.isContentFlagsLoaded = true;
                 });
         },
@@ -202,13 +207,25 @@ export default {
             // The Array that hold all the option
             const filterOptionsArray = [];
 
-            // *** Type Filter Obj ***
+            // *** Flag Type Filter Obj ***
             // Only filter type when user choose a type
             if (this.flagTypeCriteria !== 'all') {
                 filterOptionsArray.push({
                     field: 'type',
                     comparison: '=',
                     criteria: this.flagTypeCriteria
+                });
+            }
+
+            // *** User Role Filter Obj ***
+
+            if (this.userRoleCriteria !== 'all') {
+                filterOptionsArray.push({
+                    field: 'user',
+                    criteria: this.userRoleCriteria,
+                    comparison: (value, criteria) => {
+                        return value.role == criteria;
+                    }
                 });
             }
 
@@ -516,6 +533,9 @@ export default {
                         >
                             {{ user.username }}
                         </div>
+                        <div class="user-role">
+                            {{ user.role }}
+                        </div>
                     </div>
                 </template>
 
@@ -639,7 +659,7 @@ export default {
                     </div>
                 </template>
 
-                <!-- User Header (Name Searcher) -->
+                <!-- User Header (Name Searcher and Role filter) -->
                 <template #header-user="header">
                     <div class="filter-column user-header">
                         <div
@@ -664,6 +684,7 @@ export default {
                             </svg>
                         </div>
                         <div class="filter-menu" v-if="showUserFilter">
+                            <!-- User name search filter -->
                             <div class="d-flex user-filter">
                                 <input
                                     type="text"
@@ -683,6 +704,82 @@ export default {
                                         d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
                                     />
                                 </svg>
+                            </div>
+                            <!-- Role dropdown filter -->
+                            <div class="mt-2 d-flex flex-column">
+                                <div id="role-filter-label">User Role:</div>
+                                <!-- Custom Dropdown -->
+                                <div class="d-flex flex-column">
+                                    <div
+                                        :class="[
+                                            showUserRoleDropDown
+                                                ? 'custom-select-button-focus'
+                                                : 'custom-select-button'
+                                        ]"
+                                        @click="
+                                            showUserRoleDropDown =
+                                                !showUserRoleDropDown
+                                        "
+                                    >
+                                        {{ userRoleCriteria }}
+                                        <span>
+                                            <svg
+                                                width="20"
+                                                height="20"
+                                                viewBox="0 0 20 20"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                    fill="#344054"
+                                                />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div
+                                        v-if="showUserRoleDropDown"
+                                        class="custom-dropdown-base"
+                                    >
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                userRoleCriteria = 'all';
+                                                showUserRoleDropDown = false;
+                                            "
+                                        >
+                                            All
+                                        </div>
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                userRoleCriteria = 'student';
+                                                showUserRoleDropDown = false;
+                                            "
+                                        >
+                                            Student
+                                        </div>
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                userRoleCriteria = 'instructor';
+                                                showUserRoleDropDown = false;
+                                            "
+                                        >
+                                            Instructor
+                                        </div>
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                userRoleCriteria = 'admin';
+                                                showUserRoleDropDown = false;
+                                            "
+                                        >
+                                            Admin
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End of custom dropdown -->
                             </div>
                         </div>
                     </div>
@@ -1345,6 +1442,11 @@ h2 {
     width: 100%;
 }
 
+.user-role {
+    color: #888;
+    font-size: 15px;
+}
+
 .filter-icon {
     cursor: pointer;
 }
@@ -1446,6 +1548,13 @@ h2 {
     font-size: 0.75rem;
     color: red;
     font-weight: 300;
+}
+
+#role-filter-label {
+    color: #888;
+    font-size: 16px;
+    font-weight: 400;
+    margin-top: 15px;
 }
 
 /* The animation key frame */
