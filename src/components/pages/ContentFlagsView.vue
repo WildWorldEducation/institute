@@ -255,6 +255,7 @@ export default {
             this.searchText = '';
             this.flagTypeCriteria = 'all';
             this.userNameCriteria = '';
+            this.userRoleCriteria = 'all';
             this.showFlagTypeFilter = false;
             this.showUserFilter = false;
         }
@@ -1160,7 +1161,7 @@ export default {
 
                 <!-- --- User Header Filtering --- -->
                 <template #header-user="header">
-                    <div class="filter-column">
+                    <div class="filter-column user-header">
                         <div
                             @click.stop="showUserFilter = !showUserFilter"
                             b-tooltip.hover
@@ -1578,17 +1579,24 @@ h2 {
     width: 50%;
 }
 
+.user-header {
+    padding-left: 10px;
+}
+
 .user-cell {
     display: flex;
     flex-direction: column;
     padding: 10px 0px;
-    width: fit-content;
+    width: 60px;
+    margin-left: 0px;
 }
 
 .user-avatar {
     width: 50px;
     height: 50px;
     border-radius: 5px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .user-name {
@@ -1602,6 +1610,7 @@ h2 {
 .user-role {
     color: #888;
     font-size: 15px;
+    text-align: center;
 }
 
 .filter-icon {

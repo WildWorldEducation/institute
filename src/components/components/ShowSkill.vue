@@ -673,8 +673,8 @@ export default {
     }
 
     .modal-content {
-        width: 95%;
-        margin-top: 85%;
+        margin-top: 100%;
+        width: 90%;
     }
 
     .skill-description {
@@ -699,11 +699,6 @@ export default {
     .modal-content {
         margin-top: 60%;
         width: 70%;
-    }
-
-    .modal-content-flag {
-        margin-top: 55%;
-        width: 50%;
     }
 
     #skill-info-container {

@@ -362,7 +362,7 @@ export default {
                                 </svg>
                             </div>
                             <!-- The Drop Down Div Contains action relate to the resource (use transition for animation) -->
-                            <Transition duration="100" name="dropdown">
+                            <Transition name="dropdown">
                                 <div
                                     v-if="
                                         showActionBtns &&
@@ -890,6 +890,16 @@ h2 {
 
     .modal-btn {
         width: fit-content;
+    }
+
+    .modal-content {
+        margin-top: 100%;
+        width: 90%;
+    }
+
+    .modal-content-flag {
+        margin-top: 100%;
+        width: 95%;
     }
 }
 
