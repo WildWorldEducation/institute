@@ -217,6 +217,16 @@ h2 {
     font-weight: 900;
 }
 
+#banner {
+    width: 100%;
+    height: fit-content;
+}
+
+.image-fluid {
+    width: 100%;
+    height: auto;
+}
+
 #question-bg {
     background: #f2edffcc;
     border-radius: 12px;

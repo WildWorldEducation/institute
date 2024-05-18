@@ -71,6 +71,9 @@ export default {
 </script>
 
 <template>
+    <div id="banner">
+        <img src="/images/banners/general-banner.png" class="image-fluid" />
+    </div>
     <div class="container mt-3">
         <h1>Add Learning Resource</h1>
         <div class="row">
@@ -82,4 +85,14 @@ export default {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+#banner {
+    width: 100%;
+    height: fit-content;
+}
+
+.image-fluid {
+    width: 100%;
+    height: auto;
+}
+</style>

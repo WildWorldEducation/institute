@@ -129,6 +129,16 @@ export default {
 </template>
 
 <style scoped>
+#banner {
+    width: 100%;
+    height: fit-content;
+}
+
+.image-fluid {
+    width: 100%;
+    height: auto;
+}
+
 .red-btn {
     background-color: #e24d4d;
     color: white;

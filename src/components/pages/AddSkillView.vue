@@ -9,4 +9,14 @@ import AddSkill from '../components/AddSkill.vue';
     <AddSkill />
 </template>
 
-<style></style>
+<style>
+#banner {
+    width: 100%;
+    height: fit-content;
+}
+
+.image-fluid {
+    width: 100%;
+    height: auto;
+}
+</style>

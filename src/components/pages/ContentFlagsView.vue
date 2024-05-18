@@ -1174,6 +1174,16 @@ h2 {
     padding-bottom: 30px;
 }
 
+#banner {
+    width: 100%;
+    height: fit-content;
+}
+
+.image-fluid {
+    width: 100%;
+    height: auto;
+}
+
 .search-bar {
     background-color: #a48be6;
     border-radius: 5px;

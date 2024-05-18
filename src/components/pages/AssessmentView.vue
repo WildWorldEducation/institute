@@ -108,6 +108,16 @@ export default {
     text-align: left;
 }
 
+#banner {
+    width: 100%;
+    height: fit-content;
+}
+
+.image-fluid {
+    width: 100%;
+    height: auto;
+}
+
 /*Style for Mobile Devices */
 @media (max-width: 480px) {
     #skill-icon {
