@@ -48,4 +48,14 @@ import AddEssayQuestion from '../components/AddEssayQuestion.vue';
     background-color: #cc3535;
     color: white;
 }
+
+#banner {
+    width: 100%;
+    height: fit-content;
+}
+
+.image-fluid {
+    width: 100%;
+    height: auto;
+}
 </style>
