@@ -842,44 +842,45 @@ export default {
             ></textarea>
         </div>
 
-        <!-- Delete Button -->
-        <div class="d-flex flex-column">
-            <div id="danger-label-div">
-                <div
-                    v-if="deleteButtonHover"
-                    id="danger-label"
-                    :class="{ shake: deleteButtonHover }"
-                >
-                    Danger !!!
-                </div>
-            </div>
-            <div>
-                <button
-                    class="btn red-btn"
-                    @mouseover="deleteButtonHover = true"
-                    @mouseleave="deleteButtonHover = false"
-                    @click="showModal = true"
-                >
-                    Delete Skill &nbsp;&nbsp;
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 448 512"
-                        width="20"
-                        height="20"
-                        fill="white"
-                    >
-                        <path
-                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
-                        />
-                    </svg>
-                </button>
-            </div>
-        </div>
-
         <!-- Submit and cancel button -->
         <div class="row">
-            <div class="col">
-                <div class="d-flex justify-content-end gap-4">
+            <div class="d-flex justify-content-between">
+                <!-- Delete Button -->
+                <div class="d-flex flex-column">
+                    <div id="danger-label-div">
+                        <div
+                            v-if="deleteButtonHover"
+                            id="danger-label"
+                            :class="{ shake: deleteButtonHover }"
+                        >
+                            Danger !!!
+                        </div>
+                    </div>
+                    <div>
+                        <button
+                            class="btn red-btn"
+                            @mouseover="deleteButtonHover = true"
+                            @mouseleave="deleteButtonHover = false"
+                            @click="showModal = true"
+                        >
+                            Delete Skill &nbsp;&nbsp;
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="20"
+                                height="20"
+                                fill="white"
+                            >
+                                <path
+                                    d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cancel and Submit Action Buttons -->
+                <div class="d-flex justify-content-end gap-4 align-items-end">
                     <router-link class="btn red-btn" to="/skills">
                         Cancel
                     </router-link>
@@ -894,17 +895,7 @@ export default {
     <div v-if="showModal" id="myModal" class="modal">
         <!-- Modal content -->
         <div class="modal-content d-flex flex-column">
-            <div class="mb-4">
-                Delete {{ skill.name }}
-                <span>
-                    <img
-                        :src="skill.icon_image"
-                        alt="skill image"
-                        width="50"
-                        height="50"
-                    />
-                </span>
-            </div>
+            <div class="mb-4">Delete {{ skill.name }}</div>
             <!-- Warning section  -->
             <div
                 v-if="!step1Confirm"
@@ -1023,6 +1014,7 @@ export default {
     line-height: 24px;
     display: flex;
     align-items: center;
+    height: fit-content;
 }
 
 .purple-btn:hover {
@@ -1039,6 +1031,7 @@ export default {
     line-height: 24px;
     display: flex;
     align-items: center;
+    height: fit-content;
 }
 
 .red-btn:hover {
