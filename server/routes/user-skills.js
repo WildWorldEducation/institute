@@ -463,6 +463,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                         }
                         let unnestedList = results;
 
+                        // Recursive function.
                         makeMastered(req.params.userId, skill);
 
                         function makeMastered(userId, skill) {
