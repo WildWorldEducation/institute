@@ -864,7 +864,7 @@ export default {
                             @click="showModal = true"
                         >
                             Delete
-                            <span class="d-none d-md-block"> Skill </span>
+                            <span class="d-none d-md-block">&nbsp;skill </span>
 
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -926,7 +926,7 @@ export default {
     <div v-if="showModal" id="myModal" class="modal">
         <!-- Modal content -->
         <div class="modal-content d-flex flex-column">
-            <div class="mb-4">Delete {{ skill.name }}</div>
+            <div class="mb-4">Delete "{{ skill.name }}"</div>
             <!-- Warning section  -->
             <div
                 v-if="!step1Confirm"
@@ -947,8 +947,8 @@ export default {
                     </svg>
                 </div>
                 <div>
-                    This action may remove this skill data and it relate content
-                    <span class="strong-warning">forever</span>!!
+                    This action will delete this skill and all its nested
+                    skills, and is not reversible.
                 </div>
             </div>
             <!-- Type Name Confirm -->
@@ -982,7 +982,7 @@ export default {
                     ]"
                     @click="DeleteSkill(skill.id)"
                 >
-                    Delete Skill
+                    Delete skill
                 </button>
             </div>
         </div>
