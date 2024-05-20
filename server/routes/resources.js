@@ -250,7 +250,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 1917
+        AND id > 1963
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -762,7 +762,7 @@ function deleteDuplicateSources() {
                         }
                         console.log(
                             'Duplicate sources deleted: ' +
-                            duplicateSources.length
+                                duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);
