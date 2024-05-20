@@ -206,9 +206,7 @@ export default {
                 </div>
                 <!-- Skill name and skill description -->
                 <div class="d-flex flex-column">
-                    <div class="skill-name">
-                        {{ skill.name }}
-                    </div>
+                    <div class="skill-name">{{ skill.name }}</div>
                     <!-- Description only seen by admins -->
                     <div
                         v-if="userDetailsStore.role == 'admin'"
@@ -227,6 +225,21 @@ export default {
                             class="border border-2 opacity-100"
                         />
                     </div>
+                </div>
+                <!-- Level -->
+                <div class="mt-3 d-flex flex-column">
+                    <div class="h1-tile">Level</div>
+                    <span v-if="skill.level == 'grade_school'"
+                        >Grade School</span
+                    >
+                    <span v-else-if="skill.level == 'middle_school'"
+                        >Middle School</span
+                    >
+                    <span v-else-if="skill.level == 'high_school'"
+                        >High School</span
+                    >
+                    <span v-else-if="skill.level == 'college'">College</span>
+                    <span v-else-if="skill.level == 'phd'">PHD</span>
                 </div>
                 <!-- Mastery Requirements -->
                 <div class="mt-3 d-flex flex-column">
