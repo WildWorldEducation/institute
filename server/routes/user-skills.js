@@ -540,7 +540,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                                 ) {
                                                     if (
                                                         skills[j].parent ==
-                                                            childSkills[i].id &&
+                                                        childSkills[i].id &&
                                                         skills[j].type == 'sub'
                                                     ) {
                                                         subSkills.push(
@@ -578,7 +578,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 skills[i].parent ==
-                                                    skill.parent &&
+                                                skill.parent &&
                                                 skills[i].id != skill.id
                                             ) {
                                                 if (skills[i].type == 'sub') {

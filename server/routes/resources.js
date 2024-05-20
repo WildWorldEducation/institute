@@ -762,7 +762,7 @@ function deleteDuplicateSources() {
                         }
                         console.log(
                             'Duplicate sources deleted: ' +
-                                duplicateSources.length
+                            duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);
