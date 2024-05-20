@@ -24,19 +24,17 @@ export default {
             document.getElementById('banner').clientHeight -
             document.getElementById('page-tile').clientHeight;
 
-        // return difference height base on window height ( manual responsive )
-
+        // return difference height base on window width ( manual responsive )
+        /** == Phone Screen == **/
         if (window.innerWidth < 481) {
             summernoteHeight = summernoteHeight - 310;
         } else if (window.innerWidth >= 481 && window.innerWidth < 1024) {
+            /** == Tablet Screen == **/
             summernoteHeight = summernoteHeight - 300;
-            console.log('tablet');
         } else {
-            console.log('pc');
+            /** == PC Screen == **/
             summernoteHeight = summernoteHeight - 450;
         }
-
-        console.log(summernoteHeight);
 
         //  summernote config
         $('#summernote').summernote({
