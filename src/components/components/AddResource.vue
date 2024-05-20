@@ -18,11 +18,31 @@ export default {
         };
     },
     mounted: function () {
+        // calculate summer note height base on window height
+        let summernoteHeight =
+            window.innerHeight -
+            document.getElementById('banner').clientHeight -
+            document.getElementById('page-tile').clientHeight;
+
+        // return difference height base on window height ( manual responsive )
+
+        if (window.innerWidth < 481) {
+            summernoteHeight = summernoteHeight - 310;
+        } else if (window.innerWidth >= 481 && window.innerWidth < 1024) {
+            summernoteHeight = summernoteHeight - 300;
+            console.log('tablet');
+        } else {
+            console.log('pc');
+            summernoteHeight = summernoteHeight - 450;
+        }
+
+        console.log(summernoteHeight);
+
         //  summernote config
         $('#summernote').summernote({
             placeholder: '',
+            height: summernoteHeight,
             tabsize: 2,
-            height: 120,
             toolbar: [
                 ['style', ['style']],
                 ['font', ['bold', 'underline', 'clear']],
@@ -75,12 +95,18 @@ export default {
         <img src="/images/banners/general-banner.png" class="image-fluid" />
     </div>
     <div class="container mt-3">
-        <h1>Add Learning Resource</h1>
-        <div class="row">
-            <div class="mb-3">
+        <div class="page-tile" id="page-tile">Add Learning Resource</div>
+        <div class="d-flex flex-column">
+            <div class="mb-3 mt-3 text-area-div">
                 <textarea id="summernote" name="editordata"></textarea>
             </div>
-            <button class="btn btn-dark" @click="Submit()">Submit</button>
+            <div
+                b-on-hover
+                title="add this resource to it associated skill"
+                class="d-flex flex-row-reverse"
+            >
+                <button class="btn green-btn" @click="Submit()">Submit</button>
+            </div>
         </div>
     </div>
 </template>
@@ -92,7 +118,31 @@ export default {
 }
 
 .image-fluid {
-    width: 100%;
+    width: 100% !important;
     height: auto;
+}
+
+.page-tile {
+    color: #a48be6;
+    font-size: 35px;
+    font-weight: 600;
+}
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    height: auto;
+    width: fit-content;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
 }
 </style>
