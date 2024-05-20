@@ -659,8 +659,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                    mcQuestions[index].id +
-                                    ' complete'
+                                mcQuestions[index].id +
+                                ' complete'
                             );
                             // Check the next question.
                             index++;

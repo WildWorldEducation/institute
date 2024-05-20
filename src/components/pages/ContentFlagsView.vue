@@ -32,7 +32,7 @@ export default {
             flagId: '',
             headers: [
                 { text: 'Name', value: 'name' },
-                { text: 'Student', value: 'student', width: 99 },
+                { text: 'User', value: 'user', width: 99 },
                 { text: 'Type', value: 'type' },
                 { text: 'Action', value: 'action' }
             ],
@@ -41,11 +41,13 @@ export default {
             // Filter option data for the table
             flagTypeCriteria: 'all',
             showFlagTypeFilter: false,
-            studentNameCriteria: '',
-            showStudentFilter: false,
+            userNameCriteria: '',
+            showUserFilter: false,
             searchText: '',
+            userRoleCriteria: 'all',
             // Custom drop down flag and state
-            showFlagTypeDropDown: false
+            showFlagTypeDropDown: false,
+            showUserRoleDropDown: false
         };
     },
     components: {
@@ -87,10 +89,11 @@ export default {
                                     editUrl:
                                         '/mc-questions/edit/' + flag.content_id,
                                     expandContent: contentObj,
-                                    student: {
+                                    user: {
                                         username: flag.username,
-                                        id: flag.studentId,
-                                        avatar: flag.avatar
+                                        id: flag.userId,
+                                        avatar: flag.avatar,
+                                        role: flag.userRole
                                     }
                                 };
                                 this.rows.push(tableRowMC);
@@ -112,10 +115,11 @@ export default {
                                         '/essay-questions/edit/' +
                                         flag.content_id,
                                     expandContent: contentObj,
-                                    student: {
+                                    user: {
                                         username: flag.username,
-                                        id: flag.studentId,
-                                        avatar: flag.avatar
+                                        id: flag.userId,
+                                        avatar: flag.avatar,
+                                        role: flag.userRole
                                     }
                                 };
                                 this.rows.push(tableRowEssay);
@@ -130,10 +134,11 @@ export default {
                                     flagId: flag.id,
                                     editUrl: '/skills/edit/' + flag.content_id,
                                     expandContent: contentObj,
-                                    student: {
+                                    user: {
                                         username: flag.username,
-                                        id: flag.studentId,
-                                        avatar: flag.avatar
+                                        id: flag.userId,
+                                        avatar: flag.avatar,
+                                        role: flag.userRole
                                     }
                                 };
                                 this.rows.push(tableRowSkill);
@@ -154,10 +159,11 @@ export default {
                                     editUrl:
                                         '/resources/edit/' + flag.content_id,
                                     expandContent: contentObj,
-                                    student: {
+                                    user: {
                                         username: flag.username,
-                                        id: flag.studentId,
-                                        avatar: flag.avatar
+                                        id: flag.userId,
+                                        avatar: flag.avatar,
+                                        role: flag.userRole
                                     }
                                 };
                                 this.rows.push(tableRowResource);
@@ -167,7 +173,6 @@ export default {
                         }
                     }
                     this.rowsLength = this.rows.length;
-                    console.log(this.rowsLength);
                     this.isContentFlagsLoaded = true;
                 });
         },
@@ -194,15 +199,15 @@ export default {
         },
         // THIS IS JUST A WARNING NOW THE FEATURE WILL BE IMPLEMENT LATER
         // TODO: ADD REWARD FEATURE
-        handleRewardStudent(studentId) {
-            alert(`student  with id: ${studentId} will be rewarded`);
+        handleRewardUser(userId) {
+            alert(`user  with id: ${userId} will be rewarded`);
         },
         // We Define The Filter option for the table here
         filterOptions() {
             // The Array that hold all the option
             const filterOptionsArray = [];
 
-            // *** Type Filter Obj ***
+            // *** Flag Type Filter Obj ***
             // Only filter type when user choose a type
             if (this.flagTypeCriteria !== 'all') {
                 filterOptionsArray.push({
@@ -212,11 +217,23 @@ export default {
                 });
             }
 
-            // *** Student Filter Obj ***
-            if (this.studentNameCriteria !== '') {
+            // *** User Role Filter Obj ***
+
+            if (this.userRoleCriteria !== 'all') {
                 filterOptionsArray.push({
-                    field: 'student',
-                    criteria: this.studentNameCriteria,
+                    field: 'user',
+                    criteria: this.userRoleCriteria,
+                    comparison: (value, criteria) => {
+                        return value.role == criteria;
+                    }
+                });
+            }
+
+            // *** User Filter Obj ***
+            if (this.userNameCriteria !== '') {
+                filterOptionsArray.push({
+                    field: 'user',
+                    criteria: this.userNameCriteria,
                     comparison: (value, criteria) => {
                         return (
                             value != null &&
@@ -229,17 +246,18 @@ export default {
 
             return filterOptionsArray;
         },
-        handleStudentKeyUp(e) {
+        handleUserKeyUp(e) {
             if (e.key === 'Enter') {
-                this.showStudentFilter = false;
+                this.showUserFilter = false;
             }
         },
         clearFilter() {
             this.searchText = '';
             this.flagTypeCriteria = 'all';
-            this.studentNameCriteria = '';
+            this.userNameCriteria = '';
+            this.userRoleCriteria = 'all';
             this.showFlagTypeFilter = false;
-            this.showStudentFilter = false;
+            this.showUserFilter = false;
         }
     }
 };
@@ -446,7 +464,7 @@ export default {
                                         target="_blank"
                                         b-tooltip.hover
                                         :style="{ color: '#8f7bd6' }"
-                                        :title="'Go To Skill '"
+                                        :title="'Go To Skill'"
                                         >{{
                                             expandContent.skillName
                                         }}</router-link
@@ -500,19 +518,19 @@ export default {
                     </div>
                 </template>
 
-                <!-- --- Student Column --- -->
-                <template #item-student="{ student }">
-                    <div class="student-cell">
+                <!-- --- User Column --- -->
+                <template #item-user="{ user }">
+                    <div class="user-cell">
                         <img
-                            :src="student.avatar"
-                            alt="student avatar"
-                            class="student-avatar"
+                            :src="user.avatar"
+                            alt="user avatar"
+                            class="user-avatar"
                         />
-                        <div
-                            class="student-name"
-                            @click="handleRewardStudent(student.id)"
-                        >
-                            {{ student.username }}
+                        <div class="user-name">
+                            {{ user.username }}
+                        </div>
+                        <div class="user-role">
+                            {{ user.role }}
                         </div>
                     </div>
                 </template>
@@ -543,107 +561,114 @@ export default {
                                 />
                             </svg>
                         </div>
-                        <div
-                            class="filter-menu flag-type-filter"
-                            v-if="showFlagTypeFilter"
-                        >
-                            <!-- Custom Dropdown -->
-                            <div class="d-flex flex-column">
-                                <div
-                                    :class="[
-                                        showFlagTypeDropDown
-                                            ? 'custom-select-button-focus'
-                                            : 'custom-select-button'
-                                    ]"
-                                    @click="
-                                        showFlagTypeDropDown =
-                                            !showFlagTypeDropDown
-                                    "
-                                >
-                                    {{ flagTypeCriteria }}
-                                    <span>
-                                        <svg
-                                            width="20"
-                                            height="20"
-                                            viewBox="0 0 20 20"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
+                        <Transition name="dropdown">
+                            <div
+                                class="filter-menu flag-type-filter"
+                                v-if="showFlagTypeFilter"
+                            >
+                                <!-- Custom Dropdown -->
+                                <div class="d-flex flex-column">
+                                    <div
+                                        :class="[
+                                            showFlagTypeDropDown
+                                                ? 'custom-select-button-focus'
+                                                : 'custom-select-button'
+                                        ]"
+                                        @click="
+                                            showFlagTypeDropDown =
+                                                !showFlagTypeDropDown
+                                        "
+                                    >
+                                        {{ flagTypeCriteria }}
+                                        <span>
+                                            <svg
+                                                width="20"
+                                                height="20"
+                                                viewBox="0 0 20 20"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                    fill="#344054"
+                                                />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <Transition name="dropdownFilter">
+                                        <div
+                                            v-if="showFlagTypeDropDown"
+                                            class="custom-dropdown-base"
                                         >
-                                            <path
-                                                d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
-                                                fill="#344054"
-                                            />
-                                        </svg>
-                                    </span>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
+                                                        'essay question';
+                                                    showFlagTypeDropDown = false;
+                                                    showFlagTypeFilter = false;
+                                                "
+                                            >
+                                                essay question
+                                            </div>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
+                                                        'mc question';
+                                                    showFlagTypeDropDown = false;
+                                                    showFlagTypeFilter = false;
+                                                "
+                                            >
+                                                mc question
+                                            </div>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria = 'skill';
+                                                    showFlagTypeDropDown = false;
+                                                    showFlagTypeFilter = false;
+                                                "
+                                            >
+                                                skill
+                                            </div>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
+                                                        'resource';
+                                                    showFlagTypeDropDown = false;
+                                                    showFlagTypeFilter = false;
+                                                "
+                                            >
+                                                resource
+                                            </div>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria = 'all';
+                                                    showFlagTypeDropDown = false;
+                                                    showFlagTypeFilter;
+                                                "
+                                            >
+                                                all
+                                            </div>
+                                        </div>
+                                    </Transition>
                                 </div>
-                                <div
-                                    v-if="showFlagTypeDropDown"
-                                    class="custom-dropdown-base"
-                                >
-                                    <div
-                                        class="custom-dropdown-option"
-                                        @click="
-                                            flagTypeCriteria = 'essay question';
-                                            showFlagTypeDropDown = false;
-                                            showFlagTypeFilter = false;
-                                        "
-                                    >
-                                        essay question
-                                    </div>
-                                    <div
-                                        class="custom-dropdown-option"
-                                        @click="
-                                            flagTypeCriteria = 'mc question';
-                                            showFlagTypeDropDown = false;
-                                            showFlagTypeFilter = false;
-                                        "
-                                    >
-                                        mc question
-                                    </div>
-                                    <div
-                                        class="custom-dropdown-option"
-                                        @click="
-                                            flagTypeCriteria = 'skill';
-                                            showFlagTypeDropDown = false;
-                                            showFlagTypeFilter = false;
-                                        "
-                                    >
-                                        skill
-                                    </div>
-                                    <div
-                                        class="custom-dropdown-option"
-                                        @click="
-                                            flagTypeCriteria = 'resource';
-                                            showFlagTypeDropDown = false;
-                                            showFlagTypeFilter = false;
-                                        "
-                                    >
-                                        resource
-                                    </div>
-                                    <div
-                                        class="custom-dropdown-option"
-                                        @click="
-                                            flagTypeCriteria = 'all';
-                                            showFlagTypeDropDown = false;
-                                            showFlagTypeFilter;
-                                        "
-                                    >
-                                        all
-                                    </div>
-                                </div>
+                                <!-- End of custom dropdown -->
                             </div>
-                            <!-- End of custom dropdown -->
-                        </div>
+                        </Transition>
                     </div>
                 </template>
 
-                <!-- Student Header Filtering -->
-                <template #header-student="header">
-                    <div class="filter-column">
+                <!-- User Header (Name Searcher and Role filter) -->
+                <template #header-user="header">
+                    <div class="filter-column user-header">
                         <div
-                            @click.stop="showStudentFilter = !showStudentFilter"
+                            @click.stop="showUserFilter = !showUserFilter"
                             b-tooltip.hover
-                            :title="'Search for student user name'"
+                            :title="'Search for user name'"
                         >
                             <span id="type-head-tile" class="me-1">
                                 {{ header.text }}
@@ -661,28 +686,113 @@ export default {
                                 />
                             </svg>
                         </div>
-                        <div class="filter-menu" v-if="showStudentFilter">
-                            <div class="d-flex student-filter">
-                                <input
-                                    type="text"
-                                    v-model="studentNameCriteria"
-                                    placeholder="type in student name"
-                                    @keyup="(e) => handleStudentKeyUp(e)"
-                                />
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    width="16"
-                                    height="14"
-                                    class=""
-                                    fill="gray"
-                                >
-                                    <path
-                                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                        <Transition name="dropdown">
+                            <div class="filter-menu" v-if="showUserFilter">
+                                <!-- User name search filter -->
+                                <div class="d-flex user-filter">
+                                    <input
+                                        type="text"
+                                        v-model="userNameCriteria"
+                                        placeholder="type in user name"
+                                        @keyup="(e) => handleUserKeyUp(e)"
                                     />
-                                </svg>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 512 512"
+                                        width="16"
+                                        height="14"
+                                        class=""
+                                        fill="gray"
+                                    >
+                                        <path
+                                            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                                        />
+                                    </svg>
+                                </div>
+                                <!-- Role dropdown filter -->
+                                <div class="mt-2 d-flex flex-column">
+                                    <div id="role-filter-label">User Role:</div>
+                                    <!-- Custom Dropdown -->
+                                    <div class="d-flex flex-column">
+                                        <div
+                                            :class="[
+                                                showUserRoleDropDown
+                                                    ? 'custom-select-button-focus'
+                                                    : 'custom-select-button'
+                                            ]"
+                                            @click="
+                                                showUserRoleDropDown =
+                                                    !showUserRoleDropDown
+                                            "
+                                        >
+                                            {{ userRoleCriteria }}
+                                            <span>
+                                                <svg
+                                                    width="20"
+                                                    height="20"
+                                                    viewBox="0 0 20 20"
+                                                    fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                        fill="#344054"
+                                                    />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <Transition name="dropdownFilter">
+                                            <div
+                                                v-if="showUserRoleDropDown"
+                                                class="custom-dropdown-base"
+                                            >
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        userRoleCriteria =
+                                                            'all';
+                                                        showUserRoleDropDown = false;
+                                                    "
+                                                >
+                                                    All
+                                                </div>
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        userRoleCriteria =
+                                                            'student';
+                                                        showUserRoleDropDown = false;
+                                                    "
+                                                >
+                                                    Student
+                                                </div>
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        userRoleCriteria =
+                                                            'instructor';
+                                                        showUserRoleDropDown = false;
+                                                    "
+                                                >
+                                                    Instructor
+                                                </div>
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        userRoleCriteria =
+                                                            'admin';
+                                                        showUserRoleDropDown = false;
+                                                    "
+                                                >
+                                                    Admin
+                                                </div>
+                                            </div>
+                                        </Transition>
+                                    </div>
+                                    <!-- End of custom dropdown -->
+                                </div>
                             </div>
-                        </div>
+                        </Transition>
                     </div>
                 </template>
             </Vue3EasyDataTable>
@@ -908,19 +1018,20 @@ export default {
                         </div>
                     </div>
                 </template>
-                <!-- --- Student Column --- -->
-                <template #item-student="{ student }">
-                    <div class="student-cell">
+                <!-- --- User Column --- -->
+                <template #item-user="{ user }">
+                    <div class="user-cell">
                         <img
-                            :src="student.avatar"
-                            alt="student avatar"
-                            class="student-avatar"
+                            :src="user.avatar"
+                            alt="user avatar"
+                            class="user-avatar"
                         />
-                        <div
-                            class="student-name"
-                            @click="handleRewardStudent(student.id)"
-                        >
-                            {{ student.username }}
+                        <div class="user-name">
+                            {{ user.username }}
+                        </div>
+
+                        <div class="user-role">
+                            {{ user.role }}
                         </div>
                     </div>
                 </template>
@@ -939,137 +1050,229 @@ export default {
                                 {{ header.text }}
                             </span>
                         </div>
-                        <div
-                            class="filter-menu filter-flag-phone"
-                            v-if="showFlagTypeFilter"
-                        >
-                            <!-- Custom Dropdown -->
-                            <div class="d-flex flex-column">
-                                <div
-                                    :class="[
-                                        showFlagTypeDropDown
-                                            ? 'custom-select-button-focus'
-                                            : 'custom-select-button'
-                                    ]"
-                                    @click="
-                                        showFlagTypeDropDown =
-                                            !showFlagTypeDropDown
-                                    "
-                                >
-                                    {{ flagTypeCriteria }}
-                                    <span>
-                                        <svg
-                                            width="20"
-                                            height="20"
-                                            viewBox="0 0 20 20"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
+                        <Transition name="dropdown">
+                            <div
+                                class="filter-menu filter-flag-phone"
+                                v-if="showFlagTypeFilter"
+                            >
+                                <!-- Custom Dropdown -->
+                                <div class="d-flex flex-column">
+                                    <div
+                                        :class="[
+                                            showFlagTypeDropDown
+                                                ? 'custom-select-button-focus'
+                                                : 'custom-select-button'
+                                        ]"
+                                        @click="
+                                            showFlagTypeDropDown =
+                                                !showFlagTypeDropDown
+                                        "
+                                    >
+                                        {{ flagTypeCriteria }}
+                                        <span>
+                                            <svg
+                                                width="20"
+                                                height="20"
+                                                viewBox="0 0 20 20"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                    fill="#344054"
+                                                />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <Transition name="dropdownFilter">
+                                        <div
+                                            v-if="showFlagTypeDropDown"
+                                            class="custom-dropdown-base"
                                         >
-                                            <path
-                                                d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
-                                                fill="#344054"
-                                            />
-                                        </svg>
-                                    </span>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
+                                                        'essay question';
+                                                    showFlagTypeFilter = false;
+                                                    showFlagTypeDropDown = false;
+                                                "
+                                            >
+                                                essay question
+                                            </div>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
+                                                        'mc question';
+                                                    showFlagTypeFilter = false;
+                                                    showFlagTypeDropDown = false;
+                                                "
+                                            >
+                                                mc question
+                                            </div>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria = 'skill';
+                                                    showFlagTypeFilter = false;
+                                                    showFlagTypeDropDown = false;
+                                                "
+                                            >
+                                                skill
+                                            </div>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
+                                                        'resource';
+                                                    showFlagTypeFilter = false;
+                                                    showFlagTypeDropDown = false;
+                                                "
+                                            >
+                                                resource
+                                            </div>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria = 'all';
+                                                    showFlagTypeFilter = false;
+                                                    showFlagTypeDropDown = false;
+                                                "
+                                            >
+                                                all
+                                            </div>
+                                        </div>
+                                    </Transition>
                                 </div>
-                                <div
-                                    v-if="showFlagTypeDropDown"
-                                    class="custom-dropdown-base"
-                                >
-                                    <div
-                                        class="custom-dropdown-option"
-                                        @click="
-                                            flagTypeCriteria = 'essay question';
-                                            showFlagTypeFilter = false;
-                                            showFlagTypeDropDown = false;
-                                        "
-                                    >
-                                        essay question
-                                    </div>
-                                    <div
-                                        class="custom-dropdown-option"
-                                        @click="
-                                            flagTypeCriteria = 'mc question';
-                                            showFlagTypeFilter = false;
-                                            showFlagTypeDropDown = false;
-                                        "
-                                    >
-                                        mc question
-                                    </div>
-                                    <div
-                                        class="custom-dropdown-option"
-                                        @click="
-                                            flagTypeCriteria = 'skill';
-                                            showFlagTypeFilter = false;
-                                            showFlagTypeDropDown = false;
-                                        "
-                                    >
-                                        skill
-                                    </div>
-                                    <div
-                                        class="custom-dropdown-option"
-                                        @click="
-                                            flagTypeCriteria = 'resource';
-                                            showFlagTypeFilter = false;
-                                            showFlagTypeDropDown = false;
-                                        "
-                                    >
-                                        resource
-                                    </div>
-                                    <div
-                                        class="custom-dropdown-option"
-                                        @click="
-                                            flagTypeCriteria = 'all';
-                                            showFlagTypeFilter = false;
-                                            showFlagTypeDropDown = false;
-                                        "
-                                    >
-                                        all
-                                    </div>
-                                </div>
+                                <!-- End of custom dropdown -->
                             </div>
-                            <!-- End of custom dropdown -->
-                        </div>
+                        </Transition>
                     </div>
                 </template>
 
-                <!-- --- Student Header Filtering --- -->
-                <template #header-student="header">
-                    <div class="filter-column">
+                <!-- --- User Header Filtering --- -->
+                <template #header-user="header">
+                    <div class="filter-column user-header">
                         <div
-                            @click.stop="showStudentFilter = !showStudentFilter"
+                            @click.stop="showUserFilter = !showUserFilter"
                             b-tooltip.hover
-                            :title="'Search for student user name'"
+                            :title="'Search for user name'"
                         >
                             <span id="type-head-tile" class="me-1">
                                 {{ header.text }}
                             </span>
                         </div>
-                        <div
-                            class="filter-menu student-phone-filter-menu"
-                            v-if="showStudentFilter"
-                        >
-                            <div class="d-flex student-filter">
-                                <input
-                                    type="text"
-                                    v-model="studentNameCriteria"
-                                    placeholder="type in student name"
-                                    @keyup="(e) => handleStudentKeyUp(e)"
-                                />
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    width="16"
-                                    height="14"
-                                    class=""
-                                    fill="gray"
-                                >
-                                    <path
-                                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                        <Transition name="dropdown">
+                            <div
+                                class="filter-menu user-phone-filter-menu"
+                                v-if="showUserFilter"
+                            >
+                                <!-- User Name Searcher -->
+                                <div class="d-flex user-filter">
+                                    <input
+                                        type="text"
+                                        v-model="userNameCriteria"
+                                        placeholder="type in user name"
+                                        @keyup="(e) => handleUserKeyUp(e)"
                                     />
-                                </svg>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 512 512"
+                                        width="16"
+                                        height="14"
+                                        class=""
+                                        fill="gray"
+                                    >
+                                        <path
+                                            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                                        />
+                                    </svg>
+                                </div>
+                                <!-- Role dropdown filter -->
+                                <div class="mt-2 d-flex flex-column">
+                                    <div id="role-filter-label">User Role:</div>
+                                    <!-- Custom Dropdown -->
+                                    <div class="d-flex flex-column">
+                                        <div
+                                            :class="[
+                                                showUserRoleDropDown
+                                                    ? 'custom-select-button-focus'
+                                                    : 'custom-select-button'
+                                            ]"
+                                            @click="
+                                                showUserRoleDropDown =
+                                                    !showUserRoleDropDown
+                                            "
+                                        >
+                                            {{ userRoleCriteria }}
+                                            <span>
+                                                <svg
+                                                    width="20"
+                                                    height="20"
+                                                    viewBox="0 0 20 20"
+                                                    fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                        fill="#344054"
+                                                    />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <Transition name="dropdownFilter">
+                                            <div
+                                                v-if="showUserRoleDropDown"
+                                                class="custom-dropdown-base"
+                                            >
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        userRoleCriteria =
+                                                            'all';
+                                                        showUserRoleDropDown = false;
+                                                    "
+                                                >
+                                                    All
+                                                </div>
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        userRoleCriteria =
+                                                            'student';
+                                                        showUserRoleDropDown = false;
+                                                    "
+                                                >
+                                                    Student
+                                                </div>
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        userRoleCriteria =
+                                                            'instructor';
+                                                        showUserRoleDropDown = false;
+                                                    "
+                                                >
+                                                    Instructor
+                                                </div>
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        userRoleCriteria =
+                                                            'admin';
+                                                        showUserRoleDropDown = false;
+                                                    "
+                                                >
+                                                    Admin
+                                                </div>
+                                            </div>
+                                        </Transition>
+                                    </div>
+                                    <!-- End of custom dropdown -->
+                                </div>
                             </div>
-                        </div>
+                        </Transition>
                     </div>
                 </template>
             </Vue3EasyDataTable>
@@ -1300,6 +1503,52 @@ h2 {
 }
 /* End of Modal Styling */
 
+/* Dropdown Animation */
+
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+.dropdown-enter-active {
+    transform-origin: top center;
+    animation: slide 0.2s;
+}
+.dropdown-leave-active {
+    transform-origin: top center;
+    animation: slide 0.2s reverse;
+}
+
+/* Delay The button transition */
+.dropdown-enter-active .btn,
+.dropdown-leave-active .btn {
+    transition-delay: 0.2s;
+}
+
+/* -- Another transition for filter-dropdown -- */
+.dropdownFilter-enter-active {
+    transform-origin: top center;
+    animation: slide 0.4s;
+}
+.dropdownFilter-leave-active {
+    transform-origin: top center;
+    animation: slide 0.4s reverse;
+}
+
+/* Delay The button transition */
+.dropdownFilter-enter-active .btn,
+.dropdownFilter-leave-active .btn {
+    transition-delay: 0.5s;
+}
+
+/* ** End Of Dropdown Animation ** */
+
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
@@ -1332,23 +1581,38 @@ h2 {
     width: 50%;
 }
 
-.student-cell {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
+.user-header {
+    padding-left: 10px;
 }
 
-.student-avatar {
+.user-cell {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0px;
+    width: 60px;
+    margin-left: 0px;
+}
+
+.user-avatar {
     width: 50px;
     height: 50px;
     border-radius: 5px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.student-name {
+.user-name {
     text-align: center;
     color: #a48be6;
-    text-decoration: underline;
-    cursor: pointer;
+    /* text-decoration: underline; */
+    /* cursor: pointer; */
+    width: 100%;
+}
+
+.user-role {
+    color: #888;
+    font-size: 15px;
+    text-align: center;
 }
 
 .filter-icon {
@@ -1373,7 +1637,7 @@ h2 {
     position: relative;
 }
 
-.student-filter {
+.user-filter {
     border: #a48be6 1px solid;
     border-radius: 5px;
     display: flex;
@@ -1381,7 +1645,7 @@ h2 {
     padding: 2px;
 }
 
-.student-filter input {
+.user-filter input {
     outline: none;
     border: 0px;
 }
@@ -1454,6 +1718,13 @@ h2 {
     font-weight: 300;
 }
 
+#role-filter-label {
+    color: #888;
+    font-size: 16px;
+    font-weight: 400;
+    margin-top: 15px;
+}
+
 /* The animation key frame */
 @keyframes rotation {
     from {
@@ -1506,7 +1777,7 @@ h2 {
 
 /* View Specific On Phone */
 @media (min-width: 0px) and (max-width: 576px) {
-    .student-avatar {
+    .user-avatar {
         display: none;
     }
 
@@ -1535,9 +1806,13 @@ h2 {
         top: 45px;
     }
 
-    .student-phone-filter-menu {
+    .user-phone-filter-menu {
         left: -25px;
         top: 45px;
+    }
+
+    .user-role {
+        font-size: 10px;
     }
 
     .modal-content {
