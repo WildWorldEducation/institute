@@ -526,12 +526,7 @@ export default {
                             alt="user avatar"
                             class="user-avatar"
                         />
-                        <div
-                            class="user-name"
-                            @click="handleRewardUser(user.id)"
-                            b-on-hover
-                            :title="`reward user '${user.username}' for flagging`"
-                        >
+                        <div class="user-name">
                             {{ user.username }}
                         </div>
                         <div class="user-role">
@@ -1031,10 +1026,7 @@ export default {
                             alt="user avatar"
                             class="user-avatar"
                         />
-                        <div
-                            class="user-name"
-                            @click="handleRewardStudent(user.id)"
-                        >
+                        <div class="user-name">
                             {{ user.username }}
                         </div>
 
@@ -1612,8 +1604,8 @@ h2 {
 .user-name {
     text-align: center;
     color: #a48be6;
-    text-decoration: underline;
-    cursor: pointer;
+    /* text-decoration: underline; */
+    /* cursor: pointer; */
     width: 100%;
 }
 
