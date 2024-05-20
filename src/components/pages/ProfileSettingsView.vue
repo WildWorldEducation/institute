@@ -64,10 +64,13 @@ export default {
             Check now
         </button>
         <p style="font-size: 14px" class="mt-2">
-            <em>
+            <ul>
+            <li><em>To be done by devs and not admins.</em></li>
+            <li><em>
                 Note that this will check ALL unchecked multiple-choice
                 questions, and can be expensive.</em
-            >
+            ></li>
+            </ul>
         </p>
     </section>
     <!-- Ability to autogenerate sources for all skills. At the moment, has to be done by programmer --->

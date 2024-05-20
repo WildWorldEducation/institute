@@ -138,7 +138,7 @@ export default {
                 <p style="font-size: 14px" class="mt-2">
                     <strong>Notes:</strong>
                     <ul>
-                        <li><em>The above feature/button is not ready for admins/non-developers to use yet.</em></li>                        
+                        <li><em>To be done by devs and not admins.</em></li>
                         <li><em>It can cost a lot each time.</em></li>
                         <li><em>It runs for all ~3700 relevant skills.</em></li>                        
                         <li><em>It crashes frequently.</em></li>                        
@@ -232,7 +232,10 @@ export default {
             Delete
         </button>
         <p style="font-size: 14px">
-            <em>To search for and delete duplicate urls for the same skill.</em>
+            <ul>
+                <li><em>To be done by devs and not admins.</em></li>
+                <li><em>To search for and delete duplicate urls for the same skill.</em></li>
+            </ul>            
         </p>
         <h2 class="mt-5">Scan For and Delete Sources with Broken Links</h2>
         <button class="btn red-btn mt-3" @click="DeleteBrokenSources">
@@ -241,8 +244,8 @@ export default {
         <div style="font-size: 14px" class="mt-2">
             <strong>Notes:</strong>
             <ul>
-                <li><em>To search for sources containing broken urls.</em></li>                        
                 <li><em>To be done by devs and not admins.</em></li>
+                <li><em>To search for sources containing broken urls.</em></li>                        
                 <li><em>Need to be deleted manually.</em></li>                        
                 <li><em>Need to check them manually first.</em></li>                        
             </ul>            
