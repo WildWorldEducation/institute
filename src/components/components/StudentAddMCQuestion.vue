@@ -121,6 +121,8 @@ export default {
                     alert('Question added');
                 })
                 .then(() => {
+                    // Make skill mastered for this student.
+                    this.$parent.MakeMastered(this.$parent.skill);
                     this.$parent.passModal = true;
                 });
         }

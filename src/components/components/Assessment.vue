@@ -311,9 +311,7 @@ export default {
             // If there are no essay questions we, mark the test now. If there are essay question , requiring manual marking
             if (this.numEssayQuestions === 0) {
                 // Pass mark of 90%.
-                if ((this.score / this.numMCQuestions) * 100 >= 90) {
-                    // Make skill mastered for this student.
-                    this.MakeMastered(this.skill);
+                if ((this.score / this.numMCQuestions) * 100 >= 90) {                   
                     this.isQuizPassed = true;
                 } else {
                     this.failedModal = true;
@@ -730,7 +728,7 @@ export default {
             </div>
         </div>
     </div>
-    <!-- Thanks You Modal After User Flagging -->
+    <!-- Thank You Modal After User Flags Question -->
     <div v-if="showThankModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
