@@ -108,10 +108,10 @@ export default {
                     skills; click through to the skills within it to master each
                     one!
                 </p>
-                <p>
+                <!-- <p>
                     To master this subject, you need to master all the skills
                     within it.
-                </p>
+                </p> -->
             </div>
         </div>
         <!-- Image: character with a sign. -->
