@@ -55,6 +55,20 @@ export default {
                 }
             }
         }
+        // Dealing with students that have been deleted.
+        for (
+            let i = 0;
+            i < this.studentMCQuestionsStore.studentMCQuestions.length;
+            i++
+        ) {
+            if (
+                typeof this.studentMCQuestionsStore.studentMCQuestions[i]
+                    .studentName == 'undefined'
+            ) {
+                this.studentMCQuestionsStore.studentMCQuestions[i].studentName =
+                    'Deleted student';
+            }
+        }
 
         // Get skills.
         if (this.skillsStore.skillsList.length == 0) {
