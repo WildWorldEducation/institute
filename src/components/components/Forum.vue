@@ -508,7 +508,10 @@ export default {
             <div id="myModal" class="modal">
                 <!-- Modal content -->
                 <div class="modal-content">
-                    <p>Are you sure you want to flag this source?</p>
+                    <p>
+                        Would you like to flag this as unhelpful or incorrect
+                        for admin review
+                    </p>
                     <div
                         class="d-flex justify-content-lg-between justify-content-md-end justify-content-between gap-2"
                     >
