@@ -99,7 +99,11 @@ export default {
             };
             var url = '/questions/mc-questions/add';
             fetch(url, requestOptions).then(() => {
-                this.deleteStudentQuestion();
+                this.studentMCQuestionsStore.deleteStudentMCQuestion(
+                    this.studentQuestionId
+                );
+                // Return to hub page.
+                router.push({ name: 'hub' });
             });
         },
         editMode() {
