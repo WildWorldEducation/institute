@@ -118,19 +118,22 @@ export default {
             }
         });
 
-        //Zoom and pan with mouse.
+        // Zoom and pan with mouse
+        // We have to construct the d3 zoom function and assign the zoom event,
+
         this.d3Zoom = d3
             .zoom()
             .scaleExtent([0.1, 5])
             .on('zoom', ({ transform }) => {
                 this.drawTree(transform);
-                // update slider percent
+                // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
                 this.$refs.sliderControl.changeGradientBG();
             });
 
+        // Bind the above object to canvas so it can zoom the tree
         d3.select(this.context.canvas).call(this.d3Zoom);
 
-        // Set initial zoom.
+        // Set initial zoom value.
         this.resetPos();
     },
     methods: {
@@ -321,17 +324,26 @@ export default {
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
                 ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                // get the color associate with skill level
+                const skillColor = node.data.level
+                    ? this.hexColor(node.data.level)
+                    : '#000';
+
                 // If mastered, make a solid shape.
                 if (node.data.is_mastered == 1) {
-                    ctx1.fillStyle = '#000';
+                    ctx1.fillStyle = skillColor;
                     ctx1.fill();
+                    const outlineColor = this.hexBorderColor(node.data.level);
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = outlineColor;
+                    ctx1.stroke();
                 }
                 // If not, just an outline.
                 else {
                     ctx1.lineWidth = 2;
                     ctx1.fillStyle = '#FFF';
                     ctx1.fill();
-                    ctx1.strokeStyle = '#000';
+                    ctx1.strokeStyle = skillColor;
                     ctx1.stroke();
                 }
             }
@@ -347,15 +359,16 @@ export default {
                 ctx1.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
                 // closing the path automatically creates the top right edge.
                 ctx1.closePath();
+
                 // If mastered, make a solid shape.
                 if (node.data.is_mastered == 1) {
                     ctx1.fillStyle = '#000';
                     ctx1.fill();
                 }
-                // If unlocked, light grey.
+                // If unlocked, red.
                 else if (node.data.is_accessible == 1) {
                     ctx1.lineWidth = 2;
-                    ctx1.fillStyle = '#D3D3D3';
+                    ctx1.fillStyle = 'red';
                     ctx1.fill();
                     ctx1.strokeStyle = '#000';
                     ctx1.stroke();
@@ -365,7 +378,7 @@ export default {
                     ctx1.lineWidth = 2;
                     ctx1.fillStyle = '#FFF';
                     ctx1.fill();
-                    ctx1.strokeStyle = '#000';
+                    ctx1.strokeStyle = 'red';
                     ctx1.stroke();
                 }
             }
@@ -675,6 +688,40 @@ export default {
                     .translate(this.panX, this.panY)
                     .scale(this.scale)
             );
+        },
+        // Return the hex code for each skill base on it education grade ( eg: primary school, high school ...)
+        hexColor(skillLevel) {
+            switch (skillLevel) {
+                case 'college':
+                    return '#ab94e3';
+                case 'grade_school':
+                    return '#36bbaa';
+                case 'high_school':
+                    return '#3983dd';
+                case 'middle_school':
+                    return '#97c8f7';
+                case 'phd':
+                    return '#a48be5';
+                default:
+                    break;
+            }
+        },
+        // We using a darker color for node border when it is mastered
+        hexBorderColor(skillLevel) {
+            switch (skillLevel) {
+                case 'college':
+                    return '#8271ab';
+                case 'grade_school':
+                    return '#2a9184';
+                case 'high_school':
+                    return '#2d67ad';
+                case 'middle_school':
+                    return '#769dc2';
+                case 'phd':
+                    return '#826eb5';
+                default:
+                    break;
+            }
         }
     }
 };
