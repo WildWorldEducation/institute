@@ -94,16 +94,6 @@ export default {
         // Get current user Details
         const userDetails = await this.userDetailsStore.getUserDetails();
 
-        // find if student have an un-mark assessment for this skill
-        this.oldAssessment = assessments.find((assessment) => {
-            return assessment.student_id === userDetails.userId;
-        });
-
-        if (this.oldAssessment !== undefined) {
-            // turn the flag for updated on
-            this.updatedAssessment = true;
-        }
-
         // Check skill type.
         let skillType;
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
@@ -112,6 +102,20 @@ export default {
                 this.skill = this.skillsStore.skillsList[i];
             }
         }
+
+        // find if student have an un-mark assessment before for this skill
+        this.oldAssessment = assessments.find((assessment) => {
+            return (
+                assessment.student_id === userDetails.userId &&
+                assessment.skill_id === this.skill.id
+            );
+        });
+
+        if (this.oldAssessment !== undefined) {
+            // turn the flag for updated on
+            this.updatedAssessment = true;
+        }
+
         // Get user skills, in case this is a sub skill. We have to check its siblings.
         // Need to get the questions for the quiz, before the DOM renders.
         if (skillType != 'super') {
