@@ -13,25 +13,13 @@ router.use(bodyParser.json());
 Database Connection
 --------------------------------------------
 --------------------------------------------*/
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
-    database: 'skill_tree'
-});
+const conn = require("../config/db")
 
 /*------------------------------------------
 --------------------------------------------
 Shows Mysql Connect
 --------------------------------------------
 --------------------------------------------*/
-conn.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('MariaDB connected...');
-});
 
 // Load all essay type questions.
 /**

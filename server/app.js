@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 
 var app = express();
@@ -89,13 +90,7 @@ app.locals.title = 'Skill Tree';
 Database Connection
 --------------------------------------------
 --------------------------------------------*/
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
-    database: 'skill_tree'
-});
+const conn = require("./config/db")
 
 if (process.env.NODE_ENV === 'production') {
     app.use('/', express.static(distPath));
@@ -108,12 +103,7 @@ if (process.env.NODE_ENV === 'production') {
 Shows Mysql Connect
 --------------------------------------------
 --------------------------------------------*/
-conn.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('MariaDB connected...');
-});
+
 
 // Routes -----------------------------
 
