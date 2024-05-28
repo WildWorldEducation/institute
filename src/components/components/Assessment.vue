@@ -7,6 +7,7 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useAssessmentsStore } from '../../stores/AssessmentsStore';
 import EssayAnswer from './EssayAnswer.vue';
 import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
+import AssessmentResult from './AssessmentResult.vue';
 
 export default {
     setup() {
@@ -40,9 +41,6 @@ export default {
             numEssayQuestions: 0,
             totalNumOfQuestions: 0,
             isAllQuestionsAnswered: false,
-            // flag for which modal to show
-            passModal: false,
-            failedModal: false,
             waitForMarkModal: false,
             // the flag to determine whether the student update assessment
             oldAssessment: undefined,
@@ -52,7 +50,12 @@ export default {
             isQuizPassed: false,
             showThankModal: false,
             // assign the initial index to infinity because index is number type
-            answerHoveredIndex: Infinity
+            answerHoveredIndex: Infinity,
+            // _____ result relate variable _____
+            showResult: false,
+            assessmentStatus: '',
+            haveEssayQuestion: false,
+            finishTime: null
         };
     },
     mounted: function () {
@@ -140,7 +143,8 @@ export default {
     },
     components: {
         EssayAnswer,
-        StudentAddMCQuestion
+        StudentAddMCQuestion,
+        AssessmentResult
     },
     methods: {
         async fetchMCQuestions(skillId) {
@@ -292,6 +296,9 @@ export default {
             }
         },
         Submit() {
+            // get the time when user submit the assessment result for result page
+            this.finishTime = new Date();
+
             // if the last answer is also an essay question we handle it just like with the next and previous
             if (this.question.questionType == 'essay') {
                 // Get the summernote answer code
@@ -317,8 +324,14 @@ export default {
                 // Pass mark of 90%.
                 if ((this.score / this.numMCQuestions) * 100 >= 90) {
                     this.isQuizPassed = true;
+                    // show result page and hide assessment part
+                    this.assessmentStatus = 'pass';
+                    this.showResult = true;
                 } else {
-                    this.failedModal = true;
+                    // show result page and hide assessment part
+                    this.isQuizPassed = true;
+                    this.assessmentStatus = 'fails';
+                    this.showResult = true;
                 }
             } else {
                 // Deal with the essay questions.
@@ -344,8 +357,13 @@ export default {
                     this.userDetailsStore.userId +
                     '/' +
                     this.skillId;
+                /**
+                 * we have the function below so we can access this key word in the promise
+                 */
                 const turnOnModal = () => {
-                    this.waitForMarkModal = true;
+                    this.isQuizPassed = true;
+                    this.showResult = true;
+                    this.assessmentStatus = 'have essay question';
                 };
 
                 fetch(url, requestOptions)
@@ -578,97 +596,13 @@ export default {
             </div>
         </div>
     </div>
-    <StudentAddMCQuestion
+
+    <!-- <StudentAddMCQuestion
         v-else-if="loading == false && isQuizPassed == true"
-    />
-    <!----- Modals ----------->
-    <!-- Pass Modal -->
-    <div v-if="passModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <div class="d-flex align-content-center">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="50"
-                        height="50"
-                        fill="green"
-                    >
-                        <path
-                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
-                        />
-                    </svg>
-                    <div class="my-auto ms-2">
-                        Well done! You have now mastered this skill.
-                    </div>
-                </div>
-                <div class="d-flex flex-row-reverse">
-                    <button
-                        type="button"
-                        class="btn green-btn"
-                        @click="this.$router.push('/skills/' + this.skillId)"
-                    >
-                        Great!
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Failed Modal-->
-    <div v-if="failedModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <div class="d-flex align-content-center">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        fill="red"
-                        width="50"
-                        height="50"
-                    >
-                        <path
-                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
-                        />
-                    </svg>
-                    <div class="my-auto ms-2">
-                        You failed this time, try again later !
-                    </div>
-                </div>
-                <div class="d-flex flex-row-reverse">
-                    <button
-                        type="button"
-                        class="btn red-btn"
-                        @click="this.$router.push('/skills/' + this.skillId)"
-                    >
-                        OK
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Wait for mark modal -->
-    <div v-if="waitForMarkModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <div>
-                    There is at least one question that needs to be marked by
-                    your instructor. Please check whether you passed later.
-                </div>
-                <div class="d-flex flex-row-reverse">
-                    <button
-                        type="button"
-                        class="btn green-btn"
-                        @click="this.$router.push('/')"
-                    >
-                        OK
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    /> -->
+    <!------- Assessment Result Page ------>
+    <AssessmentResult v-if="showResult" />
+    <!--------------- Modals -------------->
     <!-- The flagging Modal -->
     <div v-if="showFlaggingModal">
         <div id="myModal" class="modal">
