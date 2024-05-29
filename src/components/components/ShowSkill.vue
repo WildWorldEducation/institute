@@ -170,7 +170,10 @@ export default {
             </div>
             <!-- Edit skill only available for Admin -->
             <div
-                v-if="userDetailsStore.role == 'admin'"
+                v-if="
+                    userDetailsStore.role == 'admin' ||
+                    userDetailsStore.role == 'editor'
+                "
                 class="d-flex flex-row-reverse center-header pt-2"
             >
                 <router-link

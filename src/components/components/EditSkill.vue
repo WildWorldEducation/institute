@@ -3,9 +3,12 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useTagsStore } from '../../stores/TagsStore';
 import { useSkillTagsStore } from '../../stores/SkillTagsStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+
 import { useRouter } from 'vue-router';
 export default {
     setup() {
+        const userDetailsStore = useUserDetailsStore();
         const skillsStore = useSkillsStore();
         const tagsStore = useTagsStore();
         if (tagsStore.tagsList.length == 0) tagsStore.getTagsList();
@@ -15,7 +18,8 @@ export default {
             skillsStore,
             tagsStore,
             skillTagsStore,
-            router
+            router,
+            userDetailsStore
         };
     },
     data() {
@@ -478,7 +482,7 @@ export default {
             </div>
         </div>
         <!-- Skill Filter Checker -->
-        <div class="row">
+        <div v-if="userDetailsStore.role == 'admin'" class="row">
             <div class="col col-md-8 col-lg-5 mt-2">
                 <div v-if="skill.type != 'sub'">
                     <label class="form-label">Filters</label>
@@ -820,7 +824,7 @@ export default {
         </div>
 
         <!-- Description -->
-        <div class="row">
+        <div v-if="userDetailsStore.role == 'admin'" class="row">
             <div class="col">
                 <div class="mb-3">
                     <label for="description" class="form-label"
@@ -854,7 +858,7 @@ export default {
         </div>
 
         <!-- Order dropdown-->
-        <div class="row">
+        <div v-if="userDetailsStore.role == 'admin'" class="row">
             <div class="col col-md-8 col-lg-5 mt-2">
                 <!-- Custom Dropdown -->
                 <label class="form-label"
@@ -906,7 +910,10 @@ export default {
         <div class="row">
             <div class="d-flex justify-content-between">
                 <!-- Delete Button -->
-                <div class="d-flex flex-column">
+                <div
+                    v-if="userDetailsStore.role == 'admin'"
+                    class="d-flex flex-column"
+                >
                     <div id="danger-label-div">
                         <div
                             v-if="deleteButtonHover"
