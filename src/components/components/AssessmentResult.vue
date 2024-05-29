@@ -79,7 +79,7 @@ export default {
                         fill="green"
                         height="14"
                         width="14"
-                        class="status-icon"
+                        class="mb-1"
                         v-if="assessmentResult === 'pass'"
                     >
                         <path
@@ -108,8 +108,36 @@ export default {
         </div>
         <!-- Question list include right answer and explain -->
         <div class="mc-question-result" v-for="question of mcQuestions">
-            <div>
+            <div class="question">
                 {{ question.question }}
+            </div>
+            <div class="d-flex flex-column">
+                <div
+                    v-for="(answerOption, index) in question.answerOptions"
+                    class="form-check my-3"
+                >
+                    <label class="control control-checkbox">
+                        <div
+                            :class="
+                                answerHoveredIndex == answerOption.index
+                                    ? 'my-auto mx-2 me-4 answer-option checkbox-hovered'
+                                    : 'my-auto mx-2 me-4 answer-option'
+                            "
+                        >
+                            {{ answerOption.option }}
+                        </div>
+                        <input
+                            type="radio"
+                            name="nodeType"
+                            :value="answerOption.index"
+                        />
+                        <div
+                            class="control_indicator"
+                            @mouseover="answerHoveredIndex = answerOption.index"
+                            @mouseleave="answerHoveredIndex = Infinity"
+                        ></div>
+                    </label>
+                </div>
             </div>
         </div>
     </div>
@@ -173,4 +201,106 @@ export default {
     font-weight: 600;
     font-size: 16px;
 }
+
+/**-------------------------------------  */
+/* A lot of CSS to styling check box */
+.control {
+    font-family: 'Poppins' sans-serif;
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 5px;
+    padding-top: 3px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.control > span {
+    font-weight: 500;
+    font-size: 0.938rem;
+    color: #667085;
+    text-align: center;
+}
+.control input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+.control_indicator {
+    position: absolute;
+    left: 0;
+    height: 29.09px;
+    width: 29.09px;
+    background: #f9f5ff;
+    border: 2px solid #9c7eec;
+    border-radius: 60px;
+}
+.control:hover input ~ .control_indicator,
+.control input:focus ~ .control_indicator {
+    background: #e7ddf6;
+}
+
+.plus-svg:hover {
+    cursor: pointer;
+}
+.control input:checked ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control:hover input:not([disabled]):checked ~ .control_indicator,
+.control input:checked:focus ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control input:disabled ~ .control_indicator {
+    background: #e6e6e6;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.control_indicator:after {
+    box-sizing: unset;
+    content: '';
+    position: absolute;
+    display: none;
+}
+.control input:checked ~ .control_indicator:after {
+    display: block;
+}
+.control-checkbox .control_indicator:after {
+    left: 4px;
+    top: 5px;
+    width: 13.58px;
+    height: 9.33px;
+    border: solid #9c7eec;
+    border-width: 0px 0px 2.9px 2.9px;
+    transform: rotate(-45deg);
+}
+.control-checkbox input:disabled ~ .control_indicator:after {
+    border-color: #7b7b7b;
+}
+.control-checkbox .control_indicator::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-left: -1.3rem;
+    margin-top: -1.3rem;
+    background: #9c7eec;
+    border-radius: 3rem;
+    opacity: 0.6;
+    z-index: 99999;
+    transform: scale(0);
+}
+
+.control-checkbox input + .control_indicator::before {
+    animation: s-ripple 250ms ease-out;
+}
+.control-checkbox input:checked + .control_indicator::before {
+    animation-name: s-ripple-dup;
+}
+/* End of check box styling */
 </style>

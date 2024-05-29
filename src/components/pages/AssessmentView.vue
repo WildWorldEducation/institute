@@ -113,8 +113,8 @@ export default {
     height: fit-content;
 }
 
-.image-fluid {
-    width: 100%;
+.img-fluid {
+    width: 100% !important;
     height: auto;
 }
 

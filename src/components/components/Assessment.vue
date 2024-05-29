@@ -770,7 +770,7 @@ export default {
 }
 
 /**-------------------------------------  */
-/* A lot of CSS to styling two check box */
+/* A lot of CSS to styling check box */
 .control {
     font-family: 'Poppins' sans-serif;
     display: block;
