@@ -35,8 +35,8 @@ export default {
             );
             return orderedStudentSkills;
         },
-        // For instructors.
-        orderedInstructorSkills() {
+        // For instructors and editors.
+        orderedInstructorAndEditorSkills() {
             let orderedInstructorSkills =
                 this.skillsStore.filteredNestedSkillsList.sort(
                     ({ order: a }, { order: b }) => a - b
@@ -55,8 +55,11 @@ export default {
         // Admins.
         if (this.userDetailsStore.role == 'admin')
             await this.skillsStore.getNestedSkillsList();
-        // Instructors.
-        else if (this.userDetailsStore.role == 'instructor')
+        // Instructors and Editors.
+        else if (
+            this.userDetailsStore.role == 'instructor' ||
+            this.userDetailsStore.role == 'editor'
+        )
             await this.skillsStore.getFilteredNestedSkillsList();
         // Students.
         else if (this.userDetailsStore.role == 'student') {
@@ -99,10 +102,13 @@ export default {
             >
             </SkillsListChildStudent>
         </div>
-        <!-- Instructors -->
+        <!-- Instructors and Editors -->
         <div
-            v-else-if="this.userDetailsStore.role == 'instructor'"
-            v-for="skill in orderedInstructorSkills"
+            v-else-if="
+                this.userDetailsStore.role == 'instructor' ||
+                this.userDetailsStore.role == 'editor'
+            "
+            v-for="skill in orderedInstructorAndEditorSkills"
         >
             <SkillsListChildNonStudent
                 :id="skill.id"
