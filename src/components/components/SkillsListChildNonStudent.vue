@@ -185,7 +185,7 @@ export default {
             </button>
             <RouterLink
                 :to="'/skills/edit/' + id"
-                v-if="role == 'admin'"
+                v-if="role == 'admin' || role == 'editor'"
                 class="btn me-2 ci-btn"
             >
                 <!-- Pencil icon -->
