@@ -330,7 +330,7 @@ export default {
                 } else {
                     // show result page and hide assessment part
                     this.isQuizPassed = true;
-                    this.assessmentStatus = 'fails';
+                    this.assessmentStatus = 'failed';
                     this.showResult = true;
                 }
             } else {
