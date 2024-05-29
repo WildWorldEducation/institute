@@ -108,10 +108,19 @@ export default {
         </div>
         <!-- Question list include right answer and explain -->
         <div class="mc-question-result" v-for="question of mcQuestions">
+            <!-- The label indicate user answer right or wrong -->
+            <div
+                :class="
+                    question.userAnswer === 1 ? 'correct-label' : 'wrong-label'
+                "
+            >
+                {{ question.userAnswer === 1 ? 'Correct !!' : 'InCorrect !!' }}
+            </div>
             <div class="question">
                 {{ question.question }}
             </div>
             <div class="d-flex flex-column">
+                <!-- Question options -->
                 <div
                     v-for="(answerOption, index) in question.answerOptions"
                     class="form-check my-3"
@@ -130,6 +139,9 @@ export default {
                             type="radio"
                             name="nodeType"
                             :value="answerOption.index"
+                            :checked="
+                                answerOption.option == question.correct_answer
+                            "
                         />
                         <div
                             class="control_indicator"
@@ -137,6 +149,10 @@ export default {
                             @mouseleave="answerHoveredIndex = Infinity"
                         ></div>
                     </label>
+                </div>
+                <!-- Explain part -->
+                <div>
+                    {{ question.explanation }}
                 </div>
             </div>
         </div>
@@ -157,7 +173,7 @@ export default {
 
 .assessment-info {
     padding: 15px 20px;
-    background-color: rgba(255, 255, 255, 0.692);
+    background-color: #f0f1f3;
     border-radius: 5px;
     border: #8f7bd6 1px solid;
     margin: 10px 0px;
@@ -200,6 +216,35 @@ export default {
     color: red;
     font-weight: 600;
     font-size: 16px;
+}
+
+.correct-label {
+    padding: 10px 15px;
+    top: 0px;
+    left: 0px;
+    background-color: green;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    width: fit-content;
+    position: absolute;
+    top: 5px;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+}
+
+.wrong-label {
+    padding: 10px 15px;
+    top: 5px;
+    left: 0px;
+    background-color: red;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    width: fit-content;
+    position: absolute;
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
 }
 
 /**-------------------------------------  */
@@ -303,4 +348,14 @@ export default {
     animation-name: s-ripple-dup;
 }
 /* End of check box styling */
+
+.mc-question-result {
+    padding: 15px 25px;
+    margin: 10px 0px;
+    background-color: #f0f1f3;
+    border: #7b7b7b solid 1px;
+    border-radius: 5px;
+    position: relative;
+    padding-top: 55px;
+}
 </style>
