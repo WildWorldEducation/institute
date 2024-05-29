@@ -90,7 +90,7 @@ export default {
             step1Confirm: false,
             skillNameConfirm: '',
             step2Confirm: false,
-            orderArray: Array.from(Array(20).keys())
+            orderArray: Array.from({ length: 20 }, (_, i) => i + 1)
         };
     },
     async mounted() {
@@ -309,7 +309,8 @@ export default {
                     banner_image: this.skill.banner_image,
                     mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
-                    level: this.skill.level
+                    level: this.skill.level,
+                    order: this.skill.order
                 })
             };
 
@@ -893,7 +894,7 @@ export default {
                             class="custom-dropdown-option"
                             @click="handleChooseSkillOrder(order)"
                         >
-                            {{ order + 1 }}
+                            {{ order }}
                         </div>
                     </div>
                 </div>

@@ -320,7 +320,9 @@ router.put('/:id/edit', (req, res, next) => {
             req.body.type +
             `', level = '` +
             req.body.level +
-            `' WHERE id = ` +
+            `', skills.order = ` +
+            req.body.order +
+            ` WHERE id = ` +
             req.params.id;
 
         let query = conn.query(sqlQuery, (err, results) => {
