@@ -25,6 +25,31 @@ export default {
             userSkills: []
         };
     },
+    computed: {
+        // Order the skills.
+        // For students.
+        orderedStudentSkills() {
+            let orderedStudentSkills = this.userSkills.sort(
+                ({ order: a }, { order: b }) => a - b
+            );
+            return orderedStudentSkills;
+        },
+        // For instructors.
+        orderedInstructorSkills() {
+            let orderedInstructorSkills =
+                this.skillsStore.filteredNestedSkillsList.sort(
+                    ({ order: a }, { order: b }) => a - b
+                );
+            return orderedInstructorSkills;
+        },
+        // For admins.
+        orderedAdminSkills() {
+            let orderedAdminSkills = this.skillsStore.nestedSkillsList.sort(
+                ({ order: a }, { order: b }) => a - b
+            );
+            return orderedAdminSkills;
+        }
+    },
     async created() {
         // Admins.
         if (this.userDetailsStore.role == 'admin')
@@ -58,7 +83,7 @@ export default {
         <!-- Students -->
         <div
             v-if="this.userDetailsStore.role == 'student'"
-            v-for="skill in userSkills"
+            v-for="skill in orderedStudentSkills"
         >
             <SkillsListChildStudent
                 :id="skill.id"
@@ -73,10 +98,10 @@ export default {
             >
             </SkillsListChildStudent>
         </div>
-        <!-- Admins -->
+        <!-- Instructors -->
         <div
             v-else-if="this.userDetailsStore.role == 'instructor'"
-            v-for="skill in skillsStore.filteredNestedSkillsList"
+            v-for="skill in orderedInstructorSkills"
         >
             <SkillsListChildNonStudent
                 :id="skill.id"
@@ -90,7 +115,7 @@ export default {
             </SkillsListChildNonStudent>
         </div>
         <!-- Admins -->
-        <div v-else v-for="skill in skillsStore.nestedSkillsList">
+        <div v-else v-for="skill in orderedAdminSkills">
             <SkillsListChildNonStudent
                 :id="skill.id"
                 :children="skill.children"
