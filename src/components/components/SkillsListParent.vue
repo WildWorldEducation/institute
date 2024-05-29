@@ -26,7 +26,8 @@ export default {
         };
     },
     computed: {
-        // Order the skills.
+        // Order the skills, based on the "order" field in the DB.
+        // If no difference between these, will default to ordering by "id" field.
         // For students.
         orderedStudentSkills() {
             let orderedStudentSkills = this.userSkills.sort(
