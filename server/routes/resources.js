@@ -1,37 +1,23 @@
+/*------------------------------------------
+--------------------------------------------
+Middleware
+--------------------------------------------
+--------------------------------------------*/
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const bodyParser = require('body-parser');
-
 // For images I think.
 router.use(express.json({ limit: '25mb' }));
 router.use(express.urlencoded({ limit: '25mb', extended: true }));
 router.use(bodyParser.json());
+// DB
+const conn = require('../config/db');
 
 /*------------------------------------------
 --------------------------------------------
-Database Connection
+Routes
 --------------------------------------------
 --------------------------------------------*/
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
-    database: 'skill_tree'
-});
-
-/*------------------------------------------
---------------------------------------------
-Shows Mysql Connect
---------------------------------------------
---------------------------------------------*/
-conn.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('MariaDB connected...');
-});
 
 /**
  * List Sources

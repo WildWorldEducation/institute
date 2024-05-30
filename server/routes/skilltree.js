@@ -1,3 +1,8 @@
+/*------------------------------------------
+--------------------------------------------
+Middleware
+--------------------------------------------
+--------------------------------------------*/
 const express = require('express');
 // Router.
 const router = express.Router();
@@ -6,6 +11,12 @@ const router = express.Router();
 var fs = require('fs');
 var PDFDocument = require('pdfkit');
 var SVGtoPDF = require('svg-to-pdfkit');
+
+/*------------------------------------------
+--------------------------------------------
+Routes
+--------------------------------------------
+--------------------------------------------*/
 
 // Print to PDF.
 /*** ExpressJs code for webserver ***/

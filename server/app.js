@@ -1,23 +1,23 @@
+/*------------------------------------------
+--------------------------------------------
+Middleware
+--------------------------------------------
+--------------------------------------------*/
+require('dotenv').config();
 var express = require('express');
-
 var app = express();
-
-// Middleware
-const mysql = require('mysql');
 const bodyParser = require('body-parser');
-
 const path = require('path');
 const fs = require('fs').promises;
 const publicPath = path.join(path.resolve(), 'public');
 const distPath = path.join(path.resolve(), 'dist');
-
+// Database Connection
+const conn = require('./config/db');
 // Allow things to work.
 var cors = require('cors');
 app.use(cors());
-
 // Login with Google.
 var jwt = require('jsonwebtoken');
-
 // Limit effects max image size that can be uploaded.
 app.use(bodyParser.json({ limit: '100mb' }));
 app.use(
@@ -31,15 +31,12 @@ app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
-
 const sessions = require('express-session');
 // parsing the incoming data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 // For Vue Router.
 var history = require('connect-history-api-fallback');
-
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(
     sessions({
@@ -50,7 +47,11 @@ app.use(
     })
 );
 
-// Route files.
+/*------------------------------------------
+--------------------------------------------
+Routes
+--------------------------------------------
+--------------------------------------------*/
 const userRouter = require('./routes/users');
 app.use('/users', userRouter);
 const skillRouter = require('./routes/skills');
@@ -84,38 +85,11 @@ app.use('/content-flags', contentFlagsRouter);
 
 app.locals.title = 'Skill Tree';
 
-/*------------------------------------------
---------------------------------------------
-Database Connection
---------------------------------------------
---------------------------------------------*/
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
-    database: 'skill_tree'
-});
-
 if (process.env.NODE_ENV === 'production') {
     app.use('/', express.static(distPath));
 } else {
     app.use('/', express.static(publicPath));
 }
-
-/*------------------------------------------
---------------------------------------------
-Shows Mysql Connect
---------------------------------------------
---------------------------------------------*/
-conn.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('MariaDB connected...');
-});
-
-// Routes -----------------------------
 
 // Log in with Google.
 var googleUserDetails;
