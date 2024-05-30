@@ -1,35 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const mysql = require('mysql');
-const bodyParser = require('body-parser');
-
-router.use(bodyParser.json());
-
 /*------------------------------------------
 --------------------------------------------
 Database Connection
 --------------------------------------------
 --------------------------------------------*/
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'C0ll1ns1n5t1tut32022',
-    password: 'password',
-    database: 'skill_tree'
-});
+const express = require('express');
+const router = express.Router();
+const bodyParser = require('body-parser');
+router.use(bodyParser.json());
+// DB
+const conn = require('../config/db');
 
 /*------------------------------------------
 --------------------------------------------
-Shows Mysql Connect
+Routes
 --------------------------------------------
 --------------------------------------------*/
-conn.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('MariaDB connected...');
-});
-
 // Sum of votes per skill.
 router.get('/:id', (req, res, next) => {
     if (req.session.userName) {
