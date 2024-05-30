@@ -272,209 +272,220 @@ export default {
         </div>
         <div id="posts-big-container">
             <div
-                class="row forum-container mt-3"
+                class="row forum-container mt-4"
                 v-for="post in orderedAndNamedPosts"
             >
-                <!-- First row of post contain likes count and relate buttons -->
-                <div class="row first-post-row">
-                    <div class="d-flex flex-row justify-content-end gap-1">
-                        <!-- Upvote Button -->
-                        <div
-                            @click="
-                                voteUp(post.index, post.id, post.userUpVote)
-                            "
-                            b-tooltip.hover
-                            title="I Like This "
-                        >
-                            <svg
-                                width="34"
-                                height="27"
-                                viewBox="0 0 34 27"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="vote-icon upvote-icon"
-                            >
-                                <path
-                                    d="M6.7047 8.4637H2.53277C2.20492 8.45845 1.87926 8.51793 1.57443 8.63872C1.2696 8.75952 0.991586 8.93926 0.756319 9.16765C0.521052 9.39604 0.333148 9.66859 0.203367 9.96971C0.0735865 10.2708 0.00447827 10.5946 0 10.9224L0 23.8771C0.00413046 24.2051 0.0730026 24.529 0.202662 24.8303C0.332321 25.1315 0.520214 25.4042 0.755552 25.6327C0.99089 25.8612 1.26904 26.0409 1.57402 26.1616C1.87901 26.2822 2.20483 26.3415 2.53277 26.3359H6.7285C7.2442 26.3324 7.7378 26.126 8.10246 25.7613C8.46712 25.3967 8.67352 24.9031 8.67699 24.3874V10.4228C8.6763 9.90523 8.47113 9.40893 8.10617 9.04198C7.7412 8.67504 7.24602 8.46719 6.7285 8.4637H6.7047Z"
-                                    fill="#73DED0"
+        
+                
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <!-- Second row contain name and avatar -->
+                    <div class="">
+                        <div class="col post-user-row">
+                            <div id="user-avatar">
+                                <img
+                                    :src="post.userAvatar"
+                                    class="user-avatar-img"
+                                    alt="user avatar"
                                 />
-                                <path
-                                    d="M30.9566 7.96678H22.1818L22.6551 2.45972C22.6905 2.05887 22.6162 1.65593 22.4402 1.29406C22.2641 0.932193 21.993 0.625033 21.6557 0.405482C21.1721 0.0908513 20.5948 -0.047297 20.0211 0.0143545C19.4475 0.0760059 18.9127 0.333681 18.5069 0.74389L11.5643 7.97736C10.9772 8.57753 10.6463 9.38239 10.6416 10.222V24.7629C10.6446 24.9661 10.7044 25.1644 10.8142 25.3354C10.9239 25.5064 11.0794 25.6433 11.2629 25.7305C12.4565 26.3203 13.7703 26.6261 15.1017 26.6242H30.3671C30.89 26.6414 31.3994 26.456 31.789 26.1068C32.1787 25.7576 32.4184 25.2714 32.4583 24.7497L33.0479 9.98401C33.0902 8.88154 32.1411 7.96678 30.9566 7.96678Z"
-                                    fill="#73DED0"
-                                />
-                            </svg>
+                            </div>
+                            <div class="user-name-div">
+                                <span id="user-name-text">
+                                    {{ post.studentName }}
+                                </span>
+                            </div>
                         </div>
-                        <!-- Vote count Div -->
-                        <span
-                            b-on-hover
-                            title="number of vote this resource receive"
-                            id="vote-count"
-                            :class="{
-                                'text-danger': post.voteCount < 0,
-                                'text-primary': post.voteCount > 0
-                            }"
-                            >{{ post.voteCount }}</span
-                        >
-                        <!-- Down vote button -->
-                        <div
-                            b-tooltip.hover
-                            title="I Dislike This "
-                            @click="
-                                voteDown(post.index, post.id, post.userDownVote)
-                            "
-                        >
-                            <svg
-                                width="34"
-                                height="27"
-                                viewBox="0 0 34 27"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="vote-icon"
-                            >
-                                <path
-                                    d="M26.6742 18.1613L30.8461 18.1613C31.174 18.1665 31.4996 18.1071 31.8045 17.9863C32.1093 17.8655 32.3873 17.6857 32.6226 17.4574C32.8579 17.229 33.0458 16.9564 33.1755 16.6553C33.3053 16.3542 33.3744 16.0304 33.3789 15.7026L33.3789 2.74788C33.3748 2.41992 33.3059 2.096 33.1762 1.79473C33.0466 1.49346 32.8587 1.22076 32.6234 0.9923C32.388 0.76384 32.1099 0.584116 31.8049 0.463449C31.4999 0.342781 31.1741 0.283544 30.8461 0.289142L26.6504 0.289142C26.1347 0.292604 25.6411 0.499002 25.2764 0.863666C24.9118 1.22833 24.7054 1.72193 24.7019 2.23763L24.7019 16.2022C24.7026 16.7198 24.9078 17.2161 25.2727 17.583C25.6377 17.95 26.1329 18.1578 26.6504 18.1613L26.6742 18.1613Z"
-                                    fill="#FC6E68"
-                                />
-                                <path
-                                    d="M2.42226 18.6582L11.1971 18.6582L10.7238 24.1653C10.6884 24.5661 10.7627 24.9691 10.9387 25.3309C11.1148 25.6928 11.3859 26 11.7232 26.2195C12.2068 26.5341 12.7842 26.6723 13.3578 26.6106C13.9314 26.549 14.4663 26.2913 14.872 25.8811L21.8146 18.6476C22.4017 18.0475 22.7326 17.2426 22.7373 16.403L22.7373 1.86209C22.7343 1.6589 22.6745 1.4606 22.5648 1.2896C22.455 1.1186 22.2995 0.981731 22.116 0.894453C20.9224 0.304703 19.6086 -0.00113133 18.2772 0.000842658L3.01183 0.000841324C2.48889 -0.0163535 1.9795 0.168989 1.58988 0.518219C1.20026 0.867447 0.960491 1.3536 0.920578 1.8753L0.331006 16.641C0.288705 17.7435 1.23783 18.6582 2.42226 18.6582Z"
-                                    fill="#FC6E68"
-                                />
-                            </svg>
-                        </div>
-                        <!-- Actions Dropdown Component -->
-                        <div class="position-relative">
-                            <!-- Button to toggle the action dropdown -->
+                        
+                    </div>
+                    <!-- First row of post contain likes count and relate buttons -->
+                    
+                </div>
+                <div class="col-12">
+                    <div class="">
+                        <div class="forum-post" v-html="post.content"></div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-end mt-3">
+                    
+                    <!-- First row of post contain likes count and relate buttons -->
+                    <div class=" first-post-row">
+                        <div class="d-flex flex-row justify-content-end gap-1">
+                            <!-- Upvote Button -->
                             <div
-                                class="toggle-actions-bnt"
-                                @click="handleClickActionBtns(post.id)"
+                                @click="
+                                    voteUp(post.index, post.id, post.userUpVote)
+                                "
                                 b-tooltip.hover
-                                title="More Actions On This Resource"
+                                title="I Like This "
                             >
                                 <svg
+                                    width="34"
+                                    height="27"
+                                    viewBox="0 0 34 27"
+                                    fill="none"
                                     xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                    fill="grey"
-                                    class="more-icon"
+                                    class="vote-icon upvote-icon"
                                 >
                                     <path
-                                        d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"
+                                        d="M6.7047 8.4637H2.53277C2.20492 8.45845 1.87926 8.51793 1.57443 8.63872C1.2696 8.75952 0.991586 8.93926 0.756319 9.16765C0.521052 9.39604 0.333148 9.66859 0.203367 9.96971C0.0735865 10.2708 0.00447827 10.5946 0 10.9224L0 23.8771C0.00413046 24.2051 0.0730026 24.529 0.202662 24.8303C0.332321 25.1315 0.520214 25.4042 0.755552 25.6327C0.99089 25.8612 1.26904 26.0409 1.57402 26.1616C1.87901 26.2822 2.20483 26.3415 2.53277 26.3359H6.7285C7.2442 26.3324 7.7378 26.126 8.10246 25.7613C8.46712 25.3967 8.67352 24.9031 8.67699 24.3874V10.4228C8.6763 9.90523 8.47113 9.40893 8.10617 9.04198C7.7412 8.67504 7.24602 8.46719 6.7285 8.4637H6.7047Z"
+                                        fill="#73DED0"
+                                    />
+                                    <path
+                                        d="M30.9566 7.96678H22.1818L22.6551 2.45972C22.6905 2.05887 22.6162 1.65593 22.4402 1.29406C22.2641 0.932193 21.993 0.625033 21.6557 0.405482C21.1721 0.0908513 20.5948 -0.047297 20.0211 0.0143545C19.4475 0.0760059 18.9127 0.333681 18.5069 0.74389L11.5643 7.97736C10.9772 8.57753 10.6463 9.38239 10.6416 10.222V24.7629C10.6446 24.9661 10.7044 25.1644 10.8142 25.3354C10.9239 25.5064 11.0794 25.6433 11.2629 25.7305C12.4565 26.3203 13.7703 26.6261 15.1017 26.6242H30.3671C30.89 26.6414 31.3994 26.456 31.789 26.1068C32.1787 25.7576 32.4184 25.2714 32.4583 24.7497L33.0479 9.98401C33.0902 8.88154 32.1411 7.96678 30.9566 7.96678Z"
+                                        fill="#73DED0"
                                     />
                                 </svg>
                             </div>
-                            <!-- The Drop Down Div Contains action relate to the resource (use transition for animation) -->
-                            <Transition name="dropdown">
-                                <div
-                                    v-if="
-                                        showActionBtns &&
-                                        post.id == currentClickId
-                                    "
-                                    class="action-btns-div"
+                            <!-- Vote count Div -->
+                            <span
+                                b-on-hover
+                                title="number of vote this resource receive"
+                                id="vote-count"
+                                :class="{
+                                    'text-danger': post.voteCount < 0,
+                                    'text-primary': post.voteCount > 0
+                                }"
+                                >{{ post.voteCount }}</span
+                            >
+                            <!-- Down vote button -->
+                            <div
+                                b-tooltip.hover
+                                title="I Dislike This "
+                                @click="
+                                    voteDown(post.index, post.id, post.userDownVote)
+                                "
+                            >
+                                <svg
+                                    width="34"
+                                    height="27"
+                                    viewBox="0 0 34 27"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="vote-icon"
                                 >
-                                    <!-- Edit Button -->
-                                    <router-link
-                                        v-if="post.user_id == user.userId"
-                                        :to="'/resources/edit/' + post.id"
-                                        class="btn dropdown-btn"
-                                        role="button"
-                                        b-tooltip.hover
-                                        title="Edit This Resource For Review"
+                                    <path
+                                        d="M26.6742 18.1613L30.8461 18.1613C31.174 18.1665 31.4996 18.1071 31.8045 17.9863C32.1093 17.8655 32.3873 17.6857 32.6226 17.4574C32.8579 17.229 33.0458 16.9564 33.1755 16.6553C33.3053 16.3542 33.3744 16.0304 33.3789 15.7026L33.3789 2.74788C33.3748 2.41992 33.3059 2.096 33.1762 1.79473C33.0466 1.49346 32.8587 1.22076 32.6234 0.9923C32.388 0.76384 32.1099 0.584116 31.8049 0.463449C31.4999 0.342781 31.1741 0.283544 30.8461 0.289142L26.6504 0.289142C26.1347 0.292604 25.6411 0.499002 25.2764 0.863666C24.9118 1.22833 24.7054 1.72193 24.7019 2.23763L24.7019 16.2022C24.7026 16.7198 24.9078 17.2161 25.2727 17.583C25.6377 17.95 26.1329 18.1578 26.6504 18.1613L26.6742 18.1613Z"
+                                        fill="#FC6E68"
+                                    />
+                                    <path
+                                        d="M2.42226 18.6582L11.1971 18.6582L10.7238 24.1653C10.6884 24.5661 10.7627 24.9691 10.9387 25.3309C11.1148 25.6928 11.3859 26 11.7232 26.2195C12.2068 26.5341 12.7842 26.6723 13.3578 26.6106C13.9314 26.549 14.4663 26.2913 14.872 25.8811L21.8146 18.6476C22.4017 18.0475 22.7326 17.2426 22.7373 16.403L22.7373 1.86209C22.7343 1.6589 22.6745 1.4606 22.5648 1.2896C22.455 1.1186 22.2995 0.981731 22.116 0.894453C20.9224 0.304703 19.6086 -0.00113133 18.2772 0.000842658L3.01183 0.000841324C2.48889 -0.0163535 1.9795 0.168989 1.58988 0.518219C1.20026 0.867447 0.960491 1.3536 0.920578 1.8753L0.331006 16.641C0.288705 17.7435 1.23783 18.6582 2.42226 18.6582Z"
+                                        fill="#FC6E68"
+                                    />
+                                </svg>
+                            </div>
+                            <!-- Actions Dropdown Component -->
+                            <div class="position-relative">
+                                <!-- Button to toggle the action dropdown -->
+                                <div
+                                    class="toggle-actions-bnt"
+                                    @click="handleClickActionBtns(post.id)"
+                                    b-tooltip.hover
+                                    title="More Actions On This Resource"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 448 512"
+                                        fill="grey"
+                                        class="more-icon"
                                     >
-                                        <!-- Pencil icon -->
-                                        <svg
-                                            width="19"
-                                            height="20"
-                                            viewBox="0 0 19 20"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                                                fill="#857D99"
-                                            />
-                                            <path
-                                                d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                                                fill="#857D99"
-                                            />
-                                            <path
-                                                d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                                                fill="#857D99"
-                                            />
-                                        </svg>
-                                    </router-link>
-                                    <!-- Delete Resource Button -->
-                                    <button
-                                        b-tooltip.hover
-                                        title="Delete This Resource"
+                                        <path
+                                            d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"
+                                        />
+                                    </svg>
+                                </div>
+                                <!-- The Drop Down Div Contains action relate to the resource (use transition for animation) -->
+                                <Transition name="dropdown">
+                                    <div
                                         v-if="
-                                            post.user_id == user.userId ||
-                                            user.role == 'admin'
+                                            showActionBtns &&
+                                            post.id == currentClickId
                                         "
-                                        type="button"
-                                        class="btn dropdown-btn"
-                                        @click="showWarningModal(post.id)"
+                                        class="action-btns-div"
                                     >
-                                        <!-- X icon -->
-                                        <svg
-                                            width="18"
-                                            height="18"
-                                            viewBox="0 0 20 20"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
+                                        <!-- Edit Button -->
+                                        <router-link
+                                            v-if="post.user_id == user.userId"
+                                            :to="'/resources/edit/' + post.id"
+                                            class="btn dropdown-btn"
+                                            role="button"
+                                            b-tooltip.hover
+                                            title="Edit This Resource For Review"
                                         >
-                                            <path
-                                                d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
-                                                fill="#857D99"
-                                            />
-                                        </svg>
-                                    </button>
-                                    <!-- Flag button -->
-                                    <button
-                                        b-tooltip.hover
-                                        title="Flag This Resource For Review"
-                                        type="button"
-                                        class="btn dropdown-btn"
-                                        @click="handleOpenFlagModal(post.id)"
-                                    >
-                                        <div class="d-flex flex-row-reverse">
+                                            <!-- Pencil icon -->
                                             <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 448 512"
-                                                style="opacity: 0.5"
+                                                width="19"
                                                 height="20"
-                                                width="20"
+                                                viewBox="0 0 19 20"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
                                             >
                                                 <path
-                                                    fill="#8f7bd6"
-                                                    d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                                    d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
+                                                    fill="#857D99"
+                                                />
+                                                <path
+                                                    d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
+                                                    fill="#857D99"
+                                                />
+                                                <path
+                                                    d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
+                                                    fill="#857D99"
                                                 />
                                             </svg>
-                                        </div>
-                                    </button>
-                                </div>
-                            </Transition>
+                                        </router-link>
+                                        <!-- Delete Resource Button -->
+                                        <button
+                                            b-tooltip.hover
+                                            title="Delete This Resource"
+                                            v-if="
+                                                post.user_id == user.userId ||
+                                                user.role == 'admin'
+                                            "
+                                            type="button"
+                                            class="btn dropdown-btn"
+                                            @click="showWarningModal(post.id)"
+                                        >
+                                            <!-- X icon -->
+                                            <svg
+                                                width="18"
+                                                height="18"
+                                                viewBox="0 0 20 20"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    d="M0.312625 14.5205L4.83312 9.99999L0.312625 5.49218C0.111396 5.29025 -0.00159545 5.0168 -0.00159545 4.73172C-0.00159545 4.44665 0.111396 4.17319 0.312625 3.97126L3.96282 0.312625C4.16474 0.111396 4.4382 -0.00159545 4.72327 -0.00159545C5.00835 -0.00159545 5.2818 0.111396 5.48373 0.312625L9.99999 4.83312L14.5205 0.312625C14.6204 0.21056 14.7397 0.12947 14.8714 0.0741101C15.003 0.0187502 15.1444 -0.00976563 15.2873 -0.00976562C15.4301 -0.00976563 15.5715 0.0187502 15.7032 0.0741101C15.8349 0.12947 15.9541 0.21056 16.0541 0.312625L19.6874 3.96282C19.8886 4.16474 20.0016 4.4382 20.0016 4.72327C20.0016 5.00835 19.8886 5.2818 19.6874 5.48373L15.1669 9.99999L19.6874 14.5205C19.8883 14.7217 20.0012 14.9944 20.0012 15.2788C20.0012 15.5632 19.8883 15.836 19.6874 16.0372L16.0541 19.6874C15.8529 19.8883 15.5801 20.0012 15.2957 20.0012C15.0113 20.0012 14.7386 19.8883 14.5374 19.6874L9.99999 15.1669L5.49218 19.6874C5.29025 19.8886 5.0168 20.0016 4.73172 20.0016C4.44665 20.0016 4.17319 19.8886 3.97126 19.6874L0.312625 16.0541C0.21056 15.9541 0.12947 15.8349 0.0741101 15.7032C0.0187502 15.5715 -0.00976563 15.4301 -0.00976562 15.2873C-0.00976563 15.1444 0.0187502 15.003 0.0741101 14.8714C0.12947 14.7397 0.21056 14.6204 0.312625 14.5205Z"
+                                                    fill="#857D99"
+                                                />
+                                            </svg>
+                                        </button>
+                                        <!-- Flag button -->
+                                        <button
+                                            b-tooltip.hover
+                                            title="Flag This Resource For Review"
+                                            type="button"
+                                            class="btn dropdown-btn"
+                                            @click="handleOpenFlagModal(post.id)"
+                                        >
+                                            <div class="d-flex flex-row-reverse">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 448 512"
+                                                    style="opacity: 0.5"
+                                                    height="20"
+                                                    width="20"
+                                                >
+                                                    <path
+                                                        fill="#8f7bd6"
+                                                        d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                                    />
+                                                </svg>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </Transition>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- Second row contain name and avatar -->
-                <div class="row">
-                    <div class="col post-user-row">
-                        <div id="user-avatar">
-                            <img
-                                :src="post.userAvatar"
-                                class="user-avatar-img"
-                                alt="user avatar"
-                            />
-                        </div>
-                        <div class="user-name-div">
-                            <span id="user-name-text">
-                                {{ post.studentName }}:
-                            </span>
-                        </div>
-                    </div>
-                    <hr />
-                </div>
-                <div class="forum-post row">
-                    <div v-html="post.content"></div>
                 </div>
             </div>
         </div>
@@ -629,9 +640,8 @@ export default {
 .forum-container {
     background-color: #f2edff;
     border-radius: 12px;
-    padding: 5px;
-    padding-top: 25px;
-    padding-bottom: 30px;
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
 
 #vote-count {
@@ -652,8 +662,8 @@ export default {
 
 #user-name-text {
     font-family: 'Poppins', sans-serif;
-    font-size: 1.25rem;
-    font-weight: 560;
+    font-size: 1rem;
+    font-weight: lighter;
     color: #778094;
 }
 
@@ -662,26 +672,26 @@ export default {
 }
 
 #user-avatar {
-    height: 60px;
-    width: fit-content;
+    height: 45px;
+    width: 45px;
 }
 
 .user-avatar-img {
-    width: auto;
+    width: 100%;
     height: 100%;
-    border-radius: 10px;
+    border-radius: 50%;
     margin-right: 0px;
     margin-left: auto;
     margin-top: 0px;
+    object-fit: cover;
 }
 
 .forum-post {
-    background-color: white;
+    background-color: #ffffff;
     border-radius: 5px;
     padding: 10px 20px;
-    width: 98%;
-    margin-left: 20px;
 }
+
 
 .forum-post img {
     max-width: 100%;
