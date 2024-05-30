@@ -5,8 +5,8 @@ export default {
     },
     data() {
         return {
-            showChildren: null,
-            showSubskills: null,
+            showChildren: false,
+            showSubskills: true,
             showModal: false,
             childrenNotSubskills: [],
             subSkills: []
