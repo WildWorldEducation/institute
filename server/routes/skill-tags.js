@@ -1,23 +1,19 @@
-const express = require('express');
-
-// Router.
-const router = express.Router();
-
-// Middleware.
-const mysql = require('mysql');
-const bodyParser = require('body-parser');
-router.use(bodyParser.json());
-
 /*------------------------------------------
 --------------------------------------------
-Database Connection
+Middleware
 --------------------------------------------
 --------------------------------------------*/
-const conn = require("../config/db")
+const express = require('express');
+// Router.
+const router = express.Router();
+const bodyParser = require('body-parser');
+router.use(bodyParser.json());
+// DB
+const conn = require('../config/db');
 
 /*------------------------------------------
 --------------------------------------------
-Shows Mysql Connect
+Routes
 --------------------------------------------
 --------------------------------------------*/
 

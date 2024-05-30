@@ -1,23 +1,21 @@
+/*------------------------------------------
+--------------------------------------------
+Middleware
+--------------------------------------------
+--------------------------------------------*/
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const bodyParser = require('body-parser');
-
 // For images I think.
 router.use(express.json({ limit: '25mb' }));
 router.use(express.urlencoded({ limit: '25mb', extended: true }));
 router.use(bodyParser.json());
+// DB
+const conn = require('../config/db');
 
 /*------------------------------------------
 --------------------------------------------
-Database Connection
---------------------------------------------
---------------------------------------------*/
-const conn = require("../config/db")
-
-/*------------------------------------------
---------------------------------------------
-Shows Mysql Connect
+Routes
 --------------------------------------------
 --------------------------------------------*/
 
