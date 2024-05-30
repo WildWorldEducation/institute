@@ -461,4 +461,14 @@ export default {
     position: relative;
     padding-top: 55px;
 }
+
+/* =============== ||| ================ */
+
+/*Style for Mobile Devices */
+@media (max-width: 480px) {
+    .mc-question-result {
+        padding: 5px 15px;
+        padding-top: 55px;
+    }
+}
 </style>
