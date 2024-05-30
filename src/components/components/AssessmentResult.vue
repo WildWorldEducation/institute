@@ -48,7 +48,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
+    <div class="container mt-3 pb-3">
         <div class="page-tile">Assessment Result</div>
         <!-- Assessment Info -->
         <div class="assessment-info">
@@ -188,8 +188,11 @@ export default {
                     </label>
                 </div>
                 <!-- Explain part -->
-                <div>
-                    {{ question.explanation }}
+                <div class="explain-answer">
+                    <div class="explain-label">Explain:</div>
+                    <div class="explain-text">
+                        {{ question.explanation }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -258,7 +261,7 @@ export default {
 .correct-label {
     padding: 10px 15px;
     top: 0px;
-    left: 0px;
+    left: -10px;
     background-color: green;
     color: white;
     font-size: 16px;
@@ -273,7 +276,7 @@ export default {
 .wrong-label {
     padding: 10px 15px;
     top: 5px;
-    left: 0px;
+    left: -10px;
     background-color: red;
     color: white;
     font-size: 16px;
@@ -289,6 +292,8 @@ export default {
     font-size: 18px;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
+    padding-bottom: 10px;
+    border-bottom: #6670857e 1px solid;
 }
 
 .incorrect-answer {
@@ -312,10 +317,32 @@ export default {
     font-size: 14px;
     font-weight: 500;
 }
+
+.explain-answer {
+    display: flex;
+    flex-direction: column;
+    border-top: #667085 1px solid;
+    padding-top: 10px;
+    margin-top: 5px;
+}
+
+.explain-label {
+    font-size: 16px;
+    color: #4c4b50;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+}
+
+.explain-text {
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    min-height: 100px;
+}
 /**-------------------------------------  */
 /* A lot of CSS to styling check box */
 .control {
-    font-family: 'Poppins' sans-serif;
+    font-family: 'Poppins', sans-serif;
     display: block;
     position: relative;
     padding-left: 30px;
@@ -325,7 +352,6 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: 5px;
 }
 
 .control > span {
