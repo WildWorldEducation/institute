@@ -3,9 +3,12 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useTagsStore } from '../../stores/TagsStore';
 import { useSkillTagsStore } from '../../stores/SkillTagsStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+
 import { useRouter } from 'vue-router';
 export default {
     setup() {
+        const userDetailsStore = useUserDetailsStore();
         const skillsStore = useSkillsStore();
         const tagsStore = useTagsStore();
         if (tagsStore.tagsList.length == 0) tagsStore.getTagsList();
@@ -15,7 +18,8 @@ export default {
             skillsStore,
             tagsStore,
             skillTagsStore,
-            router
+            router,
+            userDetailsStore
         };
     },
     data() {
@@ -32,7 +36,8 @@ export default {
                 mastery_requirements: '',
                 tags: [],
                 type: null,
-                level: null
+                level: null,
+                order: null
             },
             filterChecked: false,
             iconImage: '',
@@ -61,7 +66,8 @@ export default {
                 }
             ],
             // Input relate variable
-            showDropDown: false,
+            showLevelDropDown: false,
+            showOrderDropDown: false,
             showLevel: '',
             parentInput: {
                 inputText: '',
@@ -87,7 +93,8 @@ export default {
             showModal: false,
             step1Confirm: false,
             skillNameConfirm: '',
-            step2Confirm: false
+            step2Confirm: false,
+            orderArray: Array.from({ length: 20 }, (_, i) => i + 1)
         };
     },
     async mounted() {
@@ -306,7 +313,8 @@ export default {
                     banner_image: this.skill.banner_image,
                     mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
-                    level: this.skill.level
+                    level: this.skill.level,
+                    order: this.skill.order
                 })
             };
 
@@ -321,9 +329,13 @@ export default {
                 });
         },
         handleChooseSkillLevel(level) {
-            this.showDropDown = false;
+            this.showLevelDropDown = false;
             this.showLevel = level.name;
             this.skill.level = level.id;
+        },
+        handleChooseSkillOrder(order) {
+            this.showOrderDropDown = false;
+            this.skill.order = order;
         },
         // 2 Method that handle parent dropdown
         getReferenceSkill() {
@@ -389,7 +401,7 @@ export default {
 
 <template>
     <div class="container mt-4 pb-5 px-3 px-md-0">
-        <!-- Page Tile -->
+        <!-- Page Title -->
         <div class="row mt-5">
             <div
                 class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
@@ -430,11 +442,11 @@ export default {
                     <div class="d-flex flex-column position-relative">
                         <div
                             :class="[
-                                showDropDown
+                                showLevelDropDown
                                     ? 'custom-select-button-focus '
                                     : 'custom-select-button '
                             ]"
-                            @click="showDropDown = !showDropDown"
+                            @click="showLevelDropDown = !showLevelDropDown"
                         >
                             {{ showLevel }}
                             <span>
@@ -452,7 +464,10 @@ export default {
                                 </svg>
                             </span>
                         </div>
-                        <div v-if="showDropDown" class="custom-dropdown-base">
+                        <div
+                            v-if="showLevelDropDown"
+                            class="custom-dropdown-base"
+                        >
                             <div
                                 v-for="level in levels"
                                 class="custom-dropdown-option"
@@ -467,7 +482,7 @@ export default {
             </div>
         </div>
         <!-- Skill Filter Checker -->
-        <div class="row">
+        <div v-if="userDetailsStore.role == 'admin'" class="row">
             <div class="col col-md-8 col-lg-5 mt-2">
                 <div v-if="skill.type != 'sub'">
                     <label class="form-label">Filters</label>
@@ -809,7 +824,7 @@ export default {
         </div>
 
         <!-- Description -->
-        <div class="row">
+        <div v-if="userDetailsStore.role == 'admin'" class="row">
             <div class="col">
                 <div class="mb-3">
                     <label for="description" class="form-label"
@@ -842,11 +857,63 @@ export default {
             ></textarea>
         </div>
 
+        <!-- Order dropdown-->
+        <div v-if="userDetailsStore.role == 'admin'" class="row">
+            <div class="col col-md-8 col-lg-5 mt-2">
+                <!-- Custom Dropdown -->
+                <label class="form-label"
+                    >Order
+                    <span style="font-weight: 400"
+                        >(optional: 0 is default)</span
+                    ></label
+                >
+                <div class="d-flex flex-column position-relative">
+                    <div
+                        :class="[
+                            showOrderDropDown
+                                ? 'custom-select-button-focus '
+                                : 'custom-select-button '
+                        ]"
+                        @click="showOrderDropDown = !showOrderDropDown"
+                    >
+                        {{ skill.order }}
+                        <span>
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 20 20"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                    fill="#344054"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                    <div v-if="showOrderDropDown" class="custom-dropdown-base">
+                        <div
+                            v-for="order in orderArray"
+                            class="custom-dropdown-option"
+                            @click="handleChooseSkillOrder(order)"
+                        >
+                            {{ order }}
+                        </div>
+                    </div>
+                </div>
+                <!-- End of custom dropdown -->
+            </div>
+        </div>
+
         <!-- Submit and cancel button -->
         <div class="row">
             <div class="d-flex justify-content-between">
                 <!-- Delete Button -->
-                <div class="d-flex flex-column">
+                <div
+                    v-if="userDetailsStore.role == 'admin'"
+                    class="d-flex flex-column"
+                >
                     <div id="danger-label-div">
                         <div
                             v-if="deleteButtonHover"

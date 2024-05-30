@@ -1,23 +1,21 @@
+/*------------------------------------------
+--------------------------------------------
+Middleware
+--------------------------------------------
+--------------------------------------------*/
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const bodyParser = require('body-parser');
-
 // For images I think.
 router.use(express.json({ limit: '25mb' }));
 router.use(express.urlencoded({ limit: '25mb', extended: true }));
 router.use(bodyParser.json());
+// DB
+const conn = require('../config/db');
 
 /*------------------------------------------
 --------------------------------------------
-Database Connection
---------------------------------------------
---------------------------------------------*/
-const conn = require("../config/db")
-
-/*------------------------------------------
---------------------------------------------
-Shows Mysql Connect
+Routes
 --------------------------------------------
 --------------------------------------------*/
 
@@ -238,7 +236,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 2331
+        AND id > 2474
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {

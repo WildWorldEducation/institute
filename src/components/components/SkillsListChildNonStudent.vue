@@ -185,7 +185,7 @@ export default {
             </button>
             <RouterLink
                 :to="'/skills/edit/' + id"
-                v-if="role == 'admin'"
+                v-if="role == 'admin' || role == 'editor'"
                 class="btn me-2 ci-btn"
             >
                 <!-- Pencil icon -->
@@ -248,7 +248,10 @@ export default {
     <!-- Sub skills -->
     <!-- Instructor Role -->
     <SkillsListChildNonStudent
-        v-if="showSubskills && role == 'instructor'"
+        v-if="
+            (showSubskills && role == 'instructor') ||
+            (showSubskills && role == 'editor')
+        "
         v-for="subSkill in subSkills"
         :id="subSkill.id"
         :children="subSkill.children"
@@ -293,7 +296,10 @@ export default {
     <!-- if parent is filtered, show children as filtered also -->
     <!-- Instructor Role -->
     <SkillsListChildNonStudent
-        v-if="showChildren && role == 'instructor'"
+        v-if="
+            (showChildren && role == 'instructor') ||
+            (showChildren && role == 'editor')
+        "
         v-for="child in childrenNotSubskills"
         :id="child.id"
         :children="child.children"

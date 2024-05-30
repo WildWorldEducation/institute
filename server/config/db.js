@@ -1,6 +1,11 @@
 require('dotenv').config();
-const mysql = require('mysql');
 
+/*------------------------------------------
+--------------------------------------------
+Database Connection
+--------------------------------------------
+--------------------------------------------*/
+const mysql = require('mysql');
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 3306,
@@ -9,6 +14,11 @@ const connection = mysql.createConnection({
     database: process.env.DB_DATABASE
 });
 
+/*------------------------------------------
+--------------------------------------------
+Shows Mysql Connect
+--------------------------------------------
+--------------------------------------------*/
 connection.connect((err) => {
     if (err) {
         console.error('Error connecting to MariaDB:', err.stack);

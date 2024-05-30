@@ -533,6 +533,15 @@ export default {
                                 <div
                                     class="custom-dropdown-option"
                                     @click="
+                                        user.role = 'editor';
+                                        showRoleDropDown = false;
+                                    "
+                                >
+                                    editor
+                                </div>
+                                <div
+                                    class="custom-dropdown-option"
+                                    @click="
                                         user.role = 'admin';
                                         showRoleDropDown = false;
                                     "
