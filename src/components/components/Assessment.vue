@@ -31,6 +31,8 @@ export default {
             skillId: this.$route.params.id,
             skill: {},
             mcQuestions: [],
+            // list of mc question and user answer of that question
+            mcQuestionsAnswer: [],
             essayQuestions: [],
             questions: [],
             question: {},

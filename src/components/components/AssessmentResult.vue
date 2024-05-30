@@ -13,7 +13,8 @@ export default {
             // number of mc question is total score, default value to 1 to avoid divine with 0
             totalScore: 1,
             scorePercent: 0,
-            mcQuestions: []
+            mcQuestions: [],
+            correctIndex: []
         };
     },
     mounted() {
@@ -38,6 +39,8 @@ export default {
         this.mcQuestions = this.$parent.questions.filter(
             (question) => question.questionType === 'mc'
         );
+
+        this.correctIndex = [1];
         console.log(this.mcQuestions);
     },
     methods: {}
@@ -114,7 +117,7 @@ export default {
                     question.userAnswer === 1 ? 'correct-label' : 'wrong-label'
                 "
             >
-                {{ question.userAnswer === 1 ? 'Correct !!' : 'InCorrect !!' }}
+                {{ question.userAnswer === 1 ? 'Correct !!' : 'Incorrect !!' }}
             </div>
             <div class="question">
                 {{ question.question }}
@@ -126,28 +129,62 @@ export default {
                     class="form-check my-3"
                 >
                     <label class="control control-checkbox">
+                        <!-- We have three different style for each type of answer -->
                         <div
-                            :class="
-                                answerHoveredIndex == answerOption.index
-                                    ? 'my-auto mx-2 me-4 answer-option checkbox-hovered'
-                                    : 'my-auto mx-2 me-4 answer-option'
-                            "
+                            :class="[
+                                'my-auto mx-2 me-4 answer-option ',
+                                answerOption.index == 1
+                                    ? ' correct-answer'
+                                    : question.userAnswer == answerOption.index
+                                    ? 'user-answer'
+                                    : ' incorrect-answer'
+                            ]"
                         >
                             {{ answerOption.option }}
+                            <!-- show this extra text if it the correct answer and user answer is wrong -->
+                            <span
+                                v-if="
+                                    answerOption.index == 1 &&
+                                    question.userAnswer !== 1
+                                "
+                                class="correct-indicate"
+                            >
+                                (correct answer)</span
+                            >
+                            <!-- show user answer text if it user answer -->
+                            <span
+                                v-if="
+                                    answerOption.index !== 1 &&
+                                    question.userAnswer == answerOption.index
+                                "
+                                class="user-answer-indicate"
+                            >
+                                (your answer)</span
+                            >
+                            <!-- congrats if student answer is correct -->
+                            <span
+                                v-if="
+                                    answerOption.index == 1 &&
+                                    question.userAnswer == 1
+                                "
+                                class="correct-indicate"
+                            >
+                                (you are correct !)</span
+                            >
                         </div>
                         <input
                             type="radio"
                             name="nodeType"
                             :value="answerOption.index"
-                            :checked="
-                                answerOption.option == question.correct_answer
-                            "
+                            :disabled="answerOption.index != 1"
                         />
-                        <div
-                            class="control_indicator"
-                            @mouseover="answerHoveredIndex = answerOption.index"
-                            @mouseleave="answerHoveredIndex = Infinity"
-                        ></div>
+                        <div class="control_indicator">
+                            <!-- Check if this is the correct answer -->
+                            <div
+                                v-if="answerOption.index == 1"
+                                class="checked"
+                            ></div>
+                        </div>
                     </label>
                 </div>
                 <!-- Explain part -->
@@ -226,7 +263,7 @@ export default {
     color: white;
     font-size: 16px;
     font-weight: 600;
-    width: fit-content;
+    width: 145px;
     position: absolute;
     top: 5px;
     border-top-right-radius: 50px;
@@ -241,12 +278,40 @@ export default {
     color: white;
     font-size: 16px;
     font-weight: 600;
-    width: fit-content;
+    width: 145px;
     position: absolute;
     border-top-right-radius: 50px;
     border-bottom-right-radius: 50px;
 }
 
+.question {
+    margin-top: 10px;
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.incorrect-answer {
+    font-size: 10px;
+    color: #7b7b7b;
+}
+
+.user-answer {
+    font-size: 14px;
+    color: #574444;
+}
+
+.correct-indicate {
+    color: green;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.user-answer-indicate {
+    color: red;
+    font-size: 14px;
+    font-weight: 500;
+}
 /**-------------------------------------  */
 /* A lot of CSS to styling check box */
 .control {
@@ -321,6 +386,18 @@ export default {
     border-width: 0px 0px 2.9px 2.9px;
     transform: rotate(-45deg);
 }
+
+.checked {
+    left: 5px;
+    top: 6px;
+    width: 13.58px;
+    height: 9.33px;
+    border: solid #9c7eec;
+    border-width: 0px 0px 2.9px 2.9px;
+    transform: rotate(-45deg);
+    position: absolute;
+}
+
 .control-checkbox input:disabled ~ .control_indicator:after {
     border-color: #7b7b7b;
 }
