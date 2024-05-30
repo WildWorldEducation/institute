@@ -5,8 +5,8 @@ export default {
     },
     data() {
         return {
-            showChildren: null,
-            showSubskills: null,
+            showChildren: false,
+            showSubskills: true,
             showModal: false,
             childrenNotSubskills: [],
             subSkills: []
@@ -69,10 +69,10 @@ export default {
             this.showChildren = false;
         }
 
-        if (localStorage.getItem(this.id + 'sub') == 'true') {
-            this.showSubskills = true;
-        } else {
+        if (localStorage.getItem(this.id + 'sub') == 'false') {
             this.showSubskills = false;
+        } else {
+            this.showSubskills = true;
         }
 
         /*
