@@ -332,7 +332,7 @@ export default {
                 } else {
                     // show result page and hide assessment part
                     this.isQuizPassed = true;
-                    this.assessmentStatus = 'failed';
+                    this.assessmentStatus = 'fails';
                     this.showResult = true;
                 }
             } else {
@@ -365,7 +365,7 @@ export default {
                 const turnOnModal = () => {
                     this.isQuizPassed = true;
                     this.showResult = true;
-                    this.assessmentStatus = 'have essay question';
+                    this.assessmentStatus = 'wait for essay answers to be mark';
                 };
 
                 fetch(url, requestOptions)
@@ -423,7 +423,7 @@ export default {
                 }
             }
         },
-        // For development purposes.
+        // For development purposes. We will disable master feature
         TestPass() {
             // this.MakeMastered(this.skill);
             this.isQuizPassed = true;
@@ -902,6 +902,10 @@ export default {
     display: flex;
     align-items: center;
     max-width: fit-content;
+}
+
+.purple-btn:hover {
+    background-color: #7c6aad;
 }
 
 .flagging-icon:hover {

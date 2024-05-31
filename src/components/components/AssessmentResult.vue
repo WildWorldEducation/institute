@@ -14,11 +14,30 @@ export default {
             totalScore: 1,
             scorePercent: 0,
             mcQuestions: [],
-            correctIndex: []
+            essayQuestions: 0,
+            correctIndex: [],
+            // modal show state data
+            passModal: false,
+            failsModal: false,
+            waitForMarkModal: false
         };
     },
     mounted() {
         this.assessmentResult = this.$parent.assessmentStatus;
+        // Show modal based on  assessment status
+        switch (this.assessmentResult) {
+            case 'pass':
+                this.passModal = true;
+                break;
+            case 'fails':
+                this.failsModal = true;
+                break;
+            case 'wait for essay answer to be mark':
+                this.waitForMarkModal = true;
+                break;
+            default:
+                break;
+        }
 
         // convert the date time string to readable format
         // pass undefined in first argument to make the function working with all language
@@ -33,15 +52,23 @@ export default {
 
         this.score = this.$parent.score;
         this.totalScore = this.$parent.numMCQuestions;
-        this.scorePercent = Math.floor((this.score / this.totalScore) * 100);
+        // not calculate if we divide by 0
+        if (this.totalScore !== 0) {
+            this.scorePercent = Math.floor(
+                (this.score / this.totalScore) * 100
+            );
+        }
 
         // only get mc question
         this.mcQuestions = this.$parent.questions.filter(
             (question) => question.questionType === 'mc'
         );
+        // get essay questions without looping the question array
+        this.essayQuestions =
+            this.$parent.questions.length - this.mcQuestions.length;
+        console.log(this.essayQuestions);
 
         this.correctIndex = [1];
-        console.log(this.mcQuestions);
     },
     methods: {}
 };
@@ -107,6 +134,10 @@ export default {
                 <span class="info-value">{{ score }} out {{ totalScore }}</span>
                 ( {{ scorePercent }}%)
                 <span>*</span>
+            </div>
+            <div class="essay-warning" v-if="essayQuestions != 0">
+                There are {{ essayQuestions }} answers that needed to be mark by
+                your instructor
             </div>
         </div>
         <!-- Question list include right answer and explain -->
@@ -197,6 +228,96 @@ export default {
             </div>
         </div>
     </div>
+    <!-- ------------------------------------------------------ -->
+    <!-- __________________ Modal Components __________________ -->
+    <!-- Show modal to tell student if their are pass or fails first -->
+    <div v-if="passModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex align-content-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="50"
+                        height="50"
+                        fill="green"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                        />
+                    </svg>
+                    <div class="my-auto ms-2">
+                        Well done! You have now mastered this skill.
+                    </div>
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn green-btn"
+                        @click="passModal = false"
+                    >
+                        Great!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fails Modal-->
+    <div v-if="failsModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex align-content-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        fill="red"
+                        width="50"
+                        height="50"
+                    >
+                        <path
+                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                        />
+                    </svg>
+                    <div class="my-auto ms-2">
+                        You failed this time, try again later !
+                    </div>
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn red-btn"
+                        @click="failsModal = false"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Wait for mark modal -->
+    <div v-if="waitForMarkModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div>
+                    There is at least one question that needs to be marked by
+                    your instructor. Please check whether you passed later.
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn green-btn"
+                        @click="waitForMarkModal = false"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ________________ End Of Modal Components ________________ -->
 </template>
 
 <style scoped>
@@ -210,6 +331,60 @@ export default {
     font-weight: 900;
     font-size: 1.75rem;
 }
+
+/* Button Styling */
+.red-btn {
+    background-color: #ee1710;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.red-btn:hover {
+    background-color: #c5140e;
+}
+
+.purple-btn {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.purple-btn:hover {
+    background-color: #7c6aad;
+}
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
+    color: white;
+}
+
+/* +++ --- +++ */
 
 .assessment-info {
     padding: 15px 20px;
@@ -239,6 +414,13 @@ export default {
 #finish-time {
     font-size: 12px;
     color: rgb(65, 61, 61);
+}
+
+.essay-warning {
+    color: rgb(197, 197, 24);
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 550;
 }
 
 .status-icon {
@@ -450,7 +632,7 @@ export default {
 .control-checkbox input:checked + .control_indicator::before {
     animation-name: s-ripple-dup;
 }
-/* End of check box styling */
+/* _______ End of check box styling _______ */
 
 .mc-question-result {
     padding: 15px 25px;
@@ -461,6 +643,49 @@ export default {
     position: relative;
     padding-top: 55px;
 }
+
+/* _______ The Modal styling _______ */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 600px;
+    /* Could be more or less, depending on screen size */
+}
+
+.modal-content-flag {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    /* Could be more or less, depending on screen size */
+}
+/* End of Modal Styling */
 
 /* =============== ||| ================ */
 
