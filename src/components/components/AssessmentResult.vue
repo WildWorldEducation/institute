@@ -32,7 +32,8 @@ export default {
             case 'fails':
                 this.failsModal = true;
                 break;
-            case 'wait for essay answer to be mark':
+            case 'wait for essay answers to be mark':
+                console.log(this.assessmentResult);
                 this.waitForMarkModal = true;
                 break;
             default:

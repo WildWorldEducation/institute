@@ -888,7 +888,7 @@ export default {
 }
 
 .red-btn:hover {
-    background-color: rgb(209, 96, 15);
+    background-color: rgb(201, 18, 18);
 }
 
 .purple-btn {
