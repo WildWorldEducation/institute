@@ -1,34 +1,20 @@
+/*------------------------------------------
+--------------------------------------------
+Middleware
+--------------------------------------------
+--------------------------------------------*/
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const bodyParser = require('body-parser');
-
 router.use(bodyParser.json());
+// DB
+const conn = require('../config/db');
 
 /*------------------------------------------
 --------------------------------------------
-Database Connection
+Routes
 --------------------------------------------
 --------------------------------------------*/
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
-    database: 'skill_tree'
-});
-
-/*------------------------------------------
---------------------------------------------
-Shows Mysql Connect
---------------------------------------------
---------------------------------------------*/
-conn.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('MariaDB connected...');
-});
 
 /**
  * Create New Item
@@ -141,7 +127,7 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name, parent, type, level, is_filtered
+    SELECT skill_tree.skills.id, name, parent, type, level, is_filtered, skills.order
     FROM skill_tree.skills`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -186,7 +172,7 @@ router.get('/filtered-nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name, parent, type, level
+    SELECT skill_tree.skills.id, name, parent, type, level, skills.order
     FROM skill_tree.skills
     WHERE is_filtered = 'available';`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -320,7 +306,9 @@ router.put('/:id/edit', (req, res, next) => {
             req.body.type +
             `', level = '` +
             req.body.level +
-            `' WHERE id = ` +
+            `', skills.order = ` +
+            req.body.order +
+            ` WHERE id = ` +
             req.params.id;
 
         let query = conn.query(sqlQuery, (err, results) => {

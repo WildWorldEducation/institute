@@ -25,12 +25,41 @@ export default {
             userSkills: []
         };
     },
+    computed: {
+        // Order the skills, based on the "order" field in the DB.
+        // If no difference between these, will default to ordering by "id" field.
+        // For students.
+        orderedStudentSkills() {
+            let orderedStudentSkills = this.userSkills.sort(
+                ({ order: a }, { order: b }) => a - b
+            );
+            return orderedStudentSkills;
+        },
+        // For instructors and editors.
+        orderedInstructorAndEditorSkills() {
+            let orderedInstructorSkills =
+                this.skillsStore.filteredNestedSkillsList.sort(
+                    ({ order: a }, { order: b }) => a - b
+                );
+            return orderedInstructorSkills;
+        },
+        // For admins.
+        orderedAdminSkills() {
+            let orderedAdminSkills = this.skillsStore.nestedSkillsList.sort(
+                ({ order: a }, { order: b }) => a - b
+            );
+            return orderedAdminSkills;
+        }
+    },
     async created() {
         // Admins.
         if (this.userDetailsStore.role == 'admin')
             await this.skillsStore.getNestedSkillsList();
-        // Instructors.
-        else if (this.userDetailsStore.role == 'instructor')
+        // Instructors and Editors.
+        else if (
+            this.userDetailsStore.role == 'instructor' ||
+            this.userDetailsStore.role == 'editor'
+        )
             await this.skillsStore.getFilteredNestedSkillsList();
         // Students.
         else if (this.userDetailsStore.role == 'student') {
@@ -58,7 +87,7 @@ export default {
         <!-- Students -->
         <div
             v-if="this.userDetailsStore.role == 'student'"
-            v-for="skill in userSkills"
+            v-for="skill in orderedStudentSkills"
         >
             <SkillsListChildStudent
                 :id="skill.id"
@@ -73,10 +102,13 @@ export default {
             >
             </SkillsListChildStudent>
         </div>
-        <!-- Admins -->
+        <!-- Instructors and Editors -->
         <div
-            v-else-if="this.userDetailsStore.role == 'instructor'"
-            v-for="skill in skillsStore.filteredNestedSkillsList"
+            v-else-if="
+                this.userDetailsStore.role == 'instructor' ||
+                this.userDetailsStore.role == 'editor'
+            "
+            v-for="skill in orderedInstructorAndEditorSkills"
         >
             <SkillsListChildNonStudent
                 :id="skill.id"
@@ -90,7 +122,7 @@ export default {
             </SkillsListChildNonStudent>
         </div>
         <!-- Admins -->
-        <div v-else v-for="skill in skillsStore.nestedSkillsList">
+        <div v-else v-for="skill in orderedAdminSkills">
             <SkillsListChildNonStudent
                 :id="skill.id"
                 :children="skill.children"

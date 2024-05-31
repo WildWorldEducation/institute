@@ -50,6 +50,8 @@ export default {
             scale: 1,
             panX: 0,
             panY: 0,
+            // D3 zoom class
+            d3Zoom: null,
             // Printing
             data: {}
         };
@@ -76,12 +78,15 @@ export default {
         this.getAlgorithm();
 
         // Zoom and pan.
-        d3.select(this.context.canvas).call(
-            d3
-                .zoom()
-                .scaleExtent([0.05, 8])
-                .on('zoom', ({ transform }) => this.zoomed(transform))
-        );
+        // store the d3 zoom object so it can be use for programmatic zoom later on
+        this.d3Zoom = d3
+            .zoom()
+            .scaleExtent([0.05, 8])
+            .on('zoom', ({ transform }) => this.zoomed(transform));
+        d3.select(this.context.canvas).call(this.d3Zoom);
+
+        // Zoom and move the tree to it initial position
+        this.defaultPosition();
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', (e) => {
@@ -745,6 +750,16 @@ export default {
 
             // Append the SVG element.
             document.querySelector('#SVGskilltree').append(svg.node());
+        },
+        // zoom and move the tree to it initial position
+        defaultPosition() {
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(300)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity.translate(0, 0).scale(0.08)
+                );
         }
     }
 };

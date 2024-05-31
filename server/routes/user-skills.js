@@ -1,34 +1,20 @@
+/*------------------------------------------
+--------------------------------------------
+Middleware
+--------------------------------------------
+--------------------------------------------*/
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const bodyParser = require('body-parser');
-
 router.use(bodyParser.json());
+// DB
+const conn = require('../config/db');
 
 /*------------------------------------------
 --------------------------------------------
-Database Connection
+Routes
 --------------------------------------------
 --------------------------------------------*/
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'C0ll1ns1n5t1tut32022',
-    //password: 'password',
-    database: 'skill_tree'
-});
-
-/*------------------------------------------
---------------------------------------------
-Shows Mysql Connect
---------------------------------------------
---------------------------------------------*/
-conn.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('MariaDB connected...');
-});
 
 /* Nested list */
 // Individual user and user-skills.
@@ -39,7 +25,7 @@ router.get('/:id', (req, res, next) => {
 
         let sqlQuery =
             `
-    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level, mastery_requirements
+    SELECT skill_tree.skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level, mastery_requirements, skills.order
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
@@ -48,7 +34,7 @@ router.get('/:id', (req, res, next) => {
             ` AND is_filtered = 'available'
 
     UNION
-    SELECT skill_tree.skills.id, name, parent, "", "", description, type, level, mastery_requirements
+    SELECT skill_tree.skills.id, name, parent, "", "", description, type, level, mastery_requirements, skills.order
     FROM skill_tree.skills
     WHERE skill_tree.skills.id NOT IN 
 
