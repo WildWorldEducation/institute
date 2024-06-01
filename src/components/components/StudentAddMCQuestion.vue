@@ -131,17 +131,8 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 pb-3">
-        <div class="row">
-            <div class="col-10">
-                <h4 id="header-tile">Well done, you have passed!</h4>
-                <p>
-                    Please create your own question on this subject before you
-                    master it.
-                </p>
-            </div>
-        </div>
-        <div class="main-content-container container-fluid mt-4">
+    <div class="mt-2 pb-3 w-100">
+        <div class="main-content-container container-fluid">
             <div class="row p-0">
                 <div id="form-container" class="col p-4">
                     <div class="mb-3">
@@ -303,6 +294,7 @@ export default {
 
 .red-btn:hover {
     background-color: #cc3535;
+    color: white;
 }
 
 .purple-btn {
@@ -346,8 +338,10 @@ export default {
 }
 
 #form-container {
-    background-color: #e4ecf4;
-    border-radius: 12px;
+    background-color: #f0f1f3;
+
+    border-radius: 5px;
+    border: #8f7bd6 1px solid;
 }
 
 .form-label {

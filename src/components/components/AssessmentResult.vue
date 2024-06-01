@@ -1,8 +1,12 @@
 <script>
 // Import
+import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
 
 export default {
     setup() {},
+    components: {
+        StudentAddMCQuestion
+    },
     data() {
         return {
             assessmentResult: '',
@@ -33,7 +37,6 @@ export default {
                 this.failsModal = true;
                 break;
             case 'wait for essay answers to be mark':
-                console.log(this.assessmentResult);
                 this.waitForMarkModal = true;
                 break;
             default:
@@ -78,68 +81,82 @@ export default {
 <template>
     <div class="container mt-3 pb-3">
         <div class="page-tile">Assessment Result</div>
-        <!-- Assessment Info -->
-        <div class="assessment-info">
-            <div>
-                <span class="info-label">Result:</span>
-                <span
-                    :class="
-                        assessmentResult == 'pass'
-                            ? 'student-pass'
-                            : 'student-fail'
-                    "
-                    >{{ assessmentResult }}
-                    <!-- failed icon -->
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 64 512"
-                        fill="red"
-                        height="14"
-                        width="14"
-                        class="status-icon"
-                        v-if="assessmentResult === 'failed'"
+        <!-- Congratulation text when user is pass -->
+        <div v-if="assessmentResult === 'pass'" class="d-flex flex-column">
+            <div id="congrats-tile">Well done, you have passed!</div>
+            <p>
+                Please create your own question on this subject before you
+                master it.
+            </p>
+        </div>
+        <div class="d-flex gap-3">
+            <!-- Assessment Info -->
+            <div class="assessment-info">
+                <div>
+                    <span class="info-label">Result:</span>
+                    <span
+                        :class="
+                            assessmentResult == 'pass'
+                                ? 'student-pass'
+                                : 'student-fail'
+                        "
+                        >{{ assessmentResult }}
+                        <!-- failed icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 64 512"
+                            fill="red"
+                            height="14"
+                            width="14"
+                            class="status-icon"
+                            v-if="assessmentResult === 'failed'"
+                        >
+                            <path
+                                d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64V320c0 17.7 14.3 32 32 32s32-14.3 32-32V64zM32 480a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"
+                            />
+                        </svg>
+                        <!-- pass icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 448 512"
+                            fill="green"
+                            height="14"
+                            width="14"
+                            class="mb-1"
+                            v-if="assessmentResult === 'pass'"
+                        >
+                            <path
+                                d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"
+                            />
+                        </svg>
+                    </span>
+                </div>
+                <div>
+                    <span class="info-label">Finish Date: </span>
+                    <span class="info-value">
+                        {{ finishDate }}
+                        <span id="finish-time"> at {{ finishTime }}</span>
+                    </span>
+                </div>
+                <div
+                    class="hover-cursor"
+                    b-on-hover
+                    title="you need to score above 80% to pass the assessment"
+                >
+                    <span class="info-label">Score: </span>
+                    <span class="info-value"
+                        >{{ score }} out {{ totalScore }}</span
                     >
-                        <path
-                            d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64V320c0 17.7 14.3 32 32 32s32-14.3 32-32V64zM32 480a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"
-                        />
-                    </svg>
-                    <!-- pass icon -->
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 448 512"
-                        fill="green"
-                        height="14"
-                        width="14"
-                        class="mb-1"
-                        v-if="assessmentResult === 'pass'"
-                    >
-                        <path
-                            d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"
-                        />
-                    </svg>
-                </span>
+                    ( {{ scorePercent }}%)
+                    <span>*</span>
+                </div>
+                <div class="essay-warning" v-if="essayQuestions != 0">
+                    There are {{ essayQuestions }} answers that needed to be
+                    mark by your instructor
+                </div>
             </div>
-            <div>
-                <span class="info-label">Finish Date: </span>
-                <span class="info-value">
-                    {{ finishDate }}
-                    <span id="finish-time"> at {{ finishTime }}</span>
-                </span>
-            </div>
-            <div
-                class="hover-cursor"
-                b-on-hover
-                title="you need to score above 80% to pass the assessment"
-            >
-                <span class="info-label">Score: </span>
-                <span class="info-value">{{ score }} out {{ totalScore }}</span>
-                ( {{ scorePercent }}%)
-                <span>*</span>
-            </div>
-            <div class="essay-warning" v-if="essayQuestions != 0">
-                There are {{ essayQuestions }} answers that needed to be mark by
-                your instructor
-            </div>
+            <!-- Student can add a question if their are pass -->
+            <StudentAddMCQuestion v-if="assessmentResult === 'pass'" />
         </div>
         <!-- Question list include right answer and explain -->
         <div class="mc-question-result" v-for="question of mcQuestions">
@@ -385,6 +402,12 @@ export default {
     color: white;
 }
 
+#congrats-tile {
+    font-size: 15px;
+    color: rgb(4, 192, 4);
+    font-weight: 500;
+}
+
 /* +++ --- +++ */
 
 .assessment-info {
@@ -394,6 +417,7 @@ export default {
     border: #8f7bd6 1px solid;
     margin: 10px 0px;
     width: fit-content;
+    height: fit-content;
     display: flex;
     flex-direction: column;
     gap: 8px;
