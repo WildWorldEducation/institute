@@ -275,9 +275,9 @@ export default {
                 class="row forum-container mt-4"
                 v-for="post in orderedAndNamedPosts"
             >
-        
-                
-                <div class="d-flex align-items-center justify-content-between mb-2">
+                <div
+                    class="d-flex align-items-center justify-content-between mb-2"
+                >
                     <!-- Second row contain name and avatar -->
                     <div class="">
                         <div class="col post-user-row">
@@ -294,10 +294,8 @@ export default {
                                 </span>
                             </div>
                         </div>
-                        
                     </div>
                     <!-- First row of post contain likes count and relate buttons -->
-                    
                 </div>
                 <div class="col-12">
                     <div class="">
@@ -305,9 +303,8 @@ export default {
                     </div>
                 </div>
                 <div class="d-flex align-items-center justify-content-end mt-3">
-                    
                     <!-- First row of post contain likes count and relate buttons -->
-                    <div class=" first-post-row">
+                    <div class="first-post-row">
                         <div class="d-flex flex-row justify-content-end gap-1">
                             <!-- Upvote Button -->
                             <div
@@ -351,7 +348,11 @@ export default {
                                 b-tooltip.hover
                                 title="I Dislike This "
                                 @click="
-                                    voteDown(post.index, post.id, post.userDownVote)
+                                    voteDown(
+                                        post.index,
+                                        post.id,
+                                        post.userDownVote
+                                    )
                                 "
                             >
                                 <svg
@@ -464,9 +465,13 @@ export default {
                                             title="Flag This Resource For Review"
                                             type="button"
                                             class="btn dropdown-btn"
-                                            @click="handleOpenFlagModal(post.id)"
+                                            @click="
+                                                handleOpenFlagModal(post.id)
+                                            "
                                         >
-                                            <div class="d-flex flex-row-reverse">
+                                            <div
+                                                class="d-flex flex-row-reverse"
+                                            >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 448 512"
@@ -691,7 +696,6 @@ export default {
     border-radius: 5px;
     padding: 10px 20px;
 }
-
 
 .forum-post img {
     max-width: 100%;
