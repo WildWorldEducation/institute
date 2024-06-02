@@ -247,7 +247,6 @@ router.post('/generate-sources', (req, res, next) => {
 
                 skills = results;
                 skillsLength = skills.length;
-                // skillsLength = 5;
 
                 // User input number of sources per skill required.
                 numSourcesRequired = req.body.numSources;
@@ -345,7 +344,10 @@ async function getSource(
                            Please do not provide YouTube videos.
         Please strongly preference resources from the following urls:` +
         whiteListedDomains +
-        `. Please provide only links to free sites, and please do not provide links aimed at parents or teachers.`;
+        `. Please provide only links to free sites, and please do not provide links aimed at parents or teachers.
+        Please avoid links from the following sites: ` +
+        blockedDomains +
+        `.`;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
