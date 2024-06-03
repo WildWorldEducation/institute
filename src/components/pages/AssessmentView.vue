@@ -66,7 +66,7 @@ export default {
         /> -->
     </div>
     <div class="container mt-3">
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-md-between justify-content-center">
             <div class="d-flex flex-column flex-md-row">
                 <!-- Display a default skill icon if the current skill doesn`t have one -->
                 <img v-if="this.skill.image" :src="this.skill.image" />
@@ -113,8 +113,8 @@ export default {
     height: fit-content;
 }
 
-.image-fluid {
-    width: 100%;
+.img-fluid {
+    width: 100% !important;
     height: auto;
 }
 
