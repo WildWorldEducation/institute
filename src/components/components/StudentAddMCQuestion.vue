@@ -34,12 +34,18 @@ export default {
                 incorrectAnswer4: false,
                 explanation: false
             },
-            studentId: null
+            studentId: null,
+            // Flag for re-animate shake animation
+            reshake: false,
+            questionAddedModal: false,
+            questionSubmitted: false,
+            submittedMess: false
         };
     },
+    async mounted() {},
     methods: {
         Submit() {
-            this.studentId = this.$parent.userDetailsStore.userId;
+            this.studentId = this.userDetailsStore.userId;
             // Reset the validate flag before re-checking
             this.validate.validated = false;
             // Check data before fetching
@@ -97,6 +103,8 @@ export default {
             }
 
             if (this.validate.validated) {
+                // reshake the warning line
+                this.reshake = true;
                 return; // stop the submit operation if there something violated validate condition
             }
 
@@ -116,25 +124,47 @@ export default {
                 })
             };
             var url = '/questions/student-mc-questions/add';
-            fetch(url, requestOptions)
-                .then(() => {
-                    alert('Question added');
-                })
-                .then(() => {
-                    // Make skill mastered for this student.
-                    this.$parent.MakeMastered(this.$parent.skill);
-                    this.$parent.passModal = true;
-                });
+            fetch(url, requestOptions).then(() => {
+                // Make skill mastered for this student.
+                this.$parent.MakeMastered(this.$parent.skill);
+                this.questionAddedModal = true;
+                this.questionSubmitted = true;
+            });
+        },
+        // show the already submit message for a short period of time
+        showSubmittedMess() {
+            this.submittedMess = true;
+            setTimeout(() => {
+                this.submittedMess = false;
+            }, 2000);
         }
     }
 };
 </script>
 
 <template>
-    <div class="mt-2 pb-3 w-100">
+    <div class="student-add-result pb-3 w-100">
         <div class="main-content-container container-fluid">
             <div class="row p-0">
                 <div id="form-container" class="col p-4">
+                    <!-- Congratulation text when user is pass but not submit a question yet -->
+                    <div v-if="!questionSubmitted" class="d-flex flex-column">
+                        <div id="congrats-tile">
+                            Well done, you have passed!
+                        </div>
+                        <p>
+                            Please create your own question on this subject
+                            before you master it.
+                        </p>
+                    </div>
+                    <div
+                        v-if="questionSubmitted"
+                        class="d-flex flex-column shake"
+                    >
+                        <div id="congrats-tile">
+                            Congratulation you have mastered this skill
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label for="last_name" class="form-label"
                             >Question</label
@@ -151,7 +181,8 @@ export default {
                                 (question.question === '' ||
                                     question.question === null)
                             "
-                            class="form-validate"
+                            :class="['form-validate', { shake: reshake }]"
+                            @animationend="reshake = false"
                         >
                             please enter a question content !
                         </div>
@@ -169,7 +200,8 @@ export default {
                                 (question.correctAnswer === '' ||
                                     question.correctAnswer === null)
                             "
-                            class="form-validate"
+                            :class="['form-validate', { shake: reshake }]"
+                            @animationend="reshake = false"
                         >
                             please enter a correct answer !
                         </div>
@@ -187,7 +219,8 @@ export default {
                                 (question.incorrectAnswer1 === '' ||
                                     question.incorrectAnswer1 === null)
                             "
-                            class="form-validate"
+                            :class="['form-validate', { shake: reshake }]"
+                            @animationend="reshake = false"
                         >
                             please enter incorrect answer 1 !
                         </div>
@@ -205,7 +238,8 @@ export default {
                                 (question.incorrectAnswer2 === '' ||
                                     question.incorrectAnswer2 === null)
                             "
-                            class="form-validate"
+                            :class="['form-validate', { shake: reshake }]"
+                            @animationend="reshake = false"
                         >
                             please enter incorrect answer 2 !
                         </div>
@@ -223,7 +257,8 @@ export default {
                                 (question.incorrectAnswer3 === '' ||
                                     question.incorrectAnswer3 === null)
                             "
-                            class="form-validate"
+                            :class="['form-validate', { shake: reshake }]"
+                            @animationend="reshake = false"
                         >
                             please enter incorrect answer 3 !
                         </div>
@@ -241,7 +276,8 @@ export default {
                                 (question.incorrectAnswer4 === '' ||
                                     question.incorrectAnswer4 === null)
                             "
-                            class="form-validate"
+                            :class="['form-validate  ', { shake: reshake }]"
+                            @animationend="reshake = false"
                         >
                             please enter incorrect answer 4 !
                         </div>
@@ -259,20 +295,61 @@ export default {
                                 (question.explanation === '' ||
                                     question.explanation === null)
                             "
-                            class="form-validate"
+                            :class="['form-validate ', { shake: reshake }]"
+                            @animationend="reshake = false"
                         >
                             please enter a explanation !
                         </div>
                     </div>
-
                     <div class="d-flex justify-content-end gap-4">
-                        <a class="btn red-btn" @click="$router.go(-1)"
-                            >Cancel</a
+                        <!-- Show a warning if user already submitted else submit as normal -->
+                        <button
+                            class="btn purple-btn"
+                            @click="
+                                !questionSubmitted
+                                    ? Submit()
+                                    : showSubmittedMess()
+                            "
                         >
-                        <button class="btn purple-btn" @click="Submit()">
                             Submit
                         </button>
                     </div>
+                    <div v-if="submittedMess" class="form-validate shake">
+                        You already submitted a question !!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Show modal when user successfully add a question -->
+    <div v-if="questionAddedModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex align-content-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="50"
+                        height="50"
+                        fill="green"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                        />
+                    </svg>
+                    <div class="my-auto ms-2">
+                        Your question have been submitted
+                    </div>
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <button
+                        type="button"
+                        class="btn green-btn"
+                        @click="questionAddedModal = false"
+                    >
+                        ok
+                    </button>
                 </div>
             </div>
         </div>
@@ -280,6 +357,10 @@ export default {
 </template>
 
 <style>
+.student-add-result {
+    margin-top: 10px;
+}
+
 .red-btn {
     background-color: #e24d4d;
     color: white;
@@ -363,5 +444,40 @@ export default {
 .form-control:focus {
     border-color: white;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+}
+
+#congrats-tile {
+    font-size: 15px;
+    color: rgb(4, 192, 4);
+    font-weight: 500;
+}
+
+/* Shake animation for waring line */
+.shake {
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake {
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
 }
 </style>

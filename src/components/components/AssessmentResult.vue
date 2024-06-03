@@ -70,7 +70,6 @@ export default {
         // get essay questions without looping the question array
         this.essayQuestions =
             this.$parent.questions.length - this.mcQuestions.length;
-        console.log(this.essayQuestions);
 
         this.correctIndex = [1];
     },
@@ -81,14 +80,7 @@ export default {
 <template>
     <div class="container mt-3 pb-3">
         <div class="page-tile">Assessment Result</div>
-        <!-- Congratulation text when user is pass -->
-        <div v-if="assessmentResult === 'pass'" class="d-flex flex-column">
-            <div id="congrats-tile">Well done, you have passed!</div>
-            <p>
-                Please create your own question on this subject before you
-                master it.
-            </p>
-        </div>
+
         <div class="d-flex gap-3">
             <!-- Assessment Info -->
             <div class="assessment-info">
@@ -338,7 +330,7 @@ export default {
     <!-- ________________ End Of Modal Components ________________ -->
 </template>
 
-<style scoped>
+<style>
 .hover-cursor:hover {
     cursor: pointer;
 }
@@ -400,12 +392,6 @@ export default {
 .green-btn:hover {
     background-color: #3eb3a3;
     color: white;
-}
-
-#congrats-tile {
-    font-size: 15px;
-    color: rgb(4, 192, 4);
-    font-weight: 500;
 }
 
 /* +++ --- +++ */
