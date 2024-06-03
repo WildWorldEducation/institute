@@ -1,7 +1,6 @@
 <script>
 // Import the store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useAssessmentsStore } from '../../stores/AssessmentsStore';
@@ -12,14 +11,12 @@ import AssessmentResult from './AssessmentResult.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
-        const userSkillsStore = useUserSkillsStore();
         const settingsStore = useSettingsStore();
         const skillsStore = useSkillsStore();
         const assessmentsStore = useAssessmentsStore();
 
         return {
             userDetailsStore,
-            userSkillsStore,
             settingsStore,
             skillsStore,
             assessmentsStore
@@ -407,12 +404,6 @@ export default {
                     });
             }
         },
-        async MakeMastered(skill) {
-            await this.userSkillsStore.MakeMastered(
-                this.userDetailsStore.userId,
-                skill
-            );
-        },
         UserAnswer() {
             for (let i = 0; i < this.questions.length; i++) {
                 if (this.questions[i].userAnswer == null) {
@@ -599,11 +590,8 @@ export default {
         </div>
     </div>
 
-    <!-- <StudentAddMCQuestion
-        v-else-if="loading == false && isQuizPassed == true"
-    /> -->
     <!------- Assessment Result Page ------>
-    <AssessmentResult v-if="showResult" />
+    <AssessmentResult :skill="skill" v-if="showResult" />
     <!--------------- Modals -------------->
     <!-- The flagging Modal -->
     <div v-if="showFlaggingModal">

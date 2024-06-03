@@ -1,12 +1,15 @@
 <script>
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const userSkillsStore = useUserSkillsStore();
 
         return {
-            userDetailsStore
+            userDetailsStore,
+            userSkillsStore
         };
     },
     data() {
@@ -126,7 +129,8 @@ export default {
             var url = '/questions/student-mc-questions/add';
             fetch(url, requestOptions).then(() => {
                 // Make skill mastered for this student.
-                this.$parent.MakeMastered(this.$parent.skill);
+                // This fires the method on the parent (AssessmentResult), which is chained to fire the method on its parent.
+                this.MakeMastered(this.$parent.skill);
                 this.questionAddedModal = true;
                 this.questionSubmitted = true;
             });
@@ -137,6 +141,12 @@ export default {
             setTimeout(() => {
                 this.submittedMess = false;
             }, 2000);
+        },
+        async MakeMastered(skill) {
+            await this.userSkillsStore.MakeMastered(
+                this.userDetailsStore.userId,
+                skill
+            );
         }
     }
 };

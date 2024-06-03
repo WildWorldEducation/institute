@@ -26,6 +26,7 @@ export default {
             waitForMarkModal: false
         };
     },
+    props: ['skill'],
     mounted() {
         this.assessmentResult = this.$parent.assessmentStatus;
         // Show modal based on  assessment status
@@ -73,7 +74,8 @@ export default {
 
         this.correctIndex = [1];
     },
-    methods: {}
+    methods: {     
+    }
 };
 </script>
 
@@ -147,7 +149,7 @@ export default {
                     mark by your instructor
                 </div>
             </div>
-            <!-- Student can add a question if their are pass -->
+            <!-- Student can add a question if they pass -->
             <StudentAddMCQuestion v-if="assessmentResult === 'pass'" />
         </div>
         <!-- Question list include right answer and explain -->
@@ -228,7 +230,7 @@ export default {
                         </div>
                     </label>
                 </div>
-                <!-- Explain part -->
+                <!-- Question explanation -->
                 <div class="explain-answer">
                     <div class="explain-label">Explain:</div>
                     <div class="explain-text">
@@ -240,7 +242,7 @@ export default {
     </div>
     <!-- ------------------------------------------------------ -->
     <!-- __________________ Modal Components __________________ -->
-    <!-- Show modal to tell student if their are pass or fails first -->
+    <!-- Show modal to tell student if they passed or failed first -->
     <div v-if="passModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
@@ -257,9 +259,7 @@ export default {
                             d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
                         />
                     </svg>
-                    <div class="my-auto ms-2">
-                        Well done! You have now mastered this skill.
-                    </div>
+                    <div class="my-auto ms-2">Well done! You passed.</div>
                 </div>
                 <div class="d-flex flex-row-reverse">
                     <button
@@ -273,7 +273,7 @@ export default {
             </div>
         </div>
     </div>
-    <!-- Fails Modal-->
+    <!-- Fail Modal-->
     <div v-if="failsModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
@@ -291,7 +291,7 @@ export default {
                         />
                     </svg>
                     <div class="my-auto ms-2">
-                        You failed this time, try again later !
+                        You failed this time, try again later!
                     </div>
                 </div>
                 <div class="d-flex flex-row-reverse">
