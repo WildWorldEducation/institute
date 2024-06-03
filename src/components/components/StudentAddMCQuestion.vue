@@ -1,15 +1,19 @@
 <script>
+import router from '../../router';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const userSkillsStore = useUserSkillsStore();
+        const skillTreeStore = useSkillTreeStore();
 
         return {
             userDetailsStore,
-            userSkillsStore
+            userSkillsStore,
+            skillTreeStore
         };
     },
     data() {
@@ -147,6 +151,10 @@ export default {
                 this.userDetailsStore.userId,
                 skill
             );
+            // Reload the skills list for the student.
+            await this.skillTreeStore.getUserSkills();
+            // Redirect to the skills list.
+            router.push({ name: 'skills' });
         }
     }
 };
