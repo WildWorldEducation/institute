@@ -146,7 +146,7 @@ export default {
 
 <template>
     <div id="banner">
-        <img src="/images/banners/students-banner.png" class="img-fluid" />
+        <img src="/images/banners/students-banner.png" class="w-100 img-fluid" />
     </div>
     <div
         v-if="userDetailsStore.role == 'admin'"
@@ -190,6 +190,9 @@ export default {
                         :userId="user.id"
                         :userRole="user.role"
                     />
+                    <div v-else>
+                        <h1 class="text-muted py-5">You have no students</h1>
+                    </div>
                 </div>
             </div>
             <!-- User detail view specific for phone -->
