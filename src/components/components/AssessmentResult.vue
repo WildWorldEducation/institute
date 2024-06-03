@@ -81,7 +81,7 @@ export default {
     <div class="container mt-3 pb-3">
         <div class="page-tile">Assessment Result</div>
 
-        <div class="d-flex gap-3">
+        <div class="d-flex flex-md-row flex-column gap-3">
             <!-- Assessment Info -->
             <div class="assessment-info">
                 <div>
