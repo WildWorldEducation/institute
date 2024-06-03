@@ -347,40 +347,6 @@ export default {
                     ctx1.stroke();
                 }
             }
-            // If is a domain, make node a diamond.
-            else {
-                // ctx1.beginPath();
-                // ctx1.moveTo(node.y, node.x - 10);
-                // // top left edge.
-                // ctx1.lineTo(node.y - 20 / 2, node.x - 10 + 20 / 2);
-                // // bottom left edge.
-                // ctx1.lineTo(node.y, node.x - 10 + 20);
-                // // bottom right edge.
-                // ctx1.lineTo(node.y + 20 / 2, node.x - 10 + 20 / 2);
-                // // closing the path automatically creates the top right edge.
-                // ctx1.closePath();
-                // // If mastered, make a solid shape.
-                // if (node.data.is_mastered == 1) {
-                //     ctx1.fillStyle = '#000';
-                //     ctx1.fill();
-                // }
-                // // If unlocked, red.
-                // else if (node.data.is_accessible == 1) {
-                //     ctx1.lineWidth = 2;
-                //     ctx1.fillStyle = 'red';
-                //     ctx1.fill();
-                //     ctx1.strokeStyle = '#000';
-                //     ctx1.stroke();
-                // }
-                // // If not, just an outline.
-                // else {
-                //     ctx1.lineWidth = 2;
-                //     ctx1.fillStyle = '#FFF';
-                //     ctx1.fill();
-                //     ctx1.strokeStyle = 'red';
-                //     ctx1.stroke();
-                // }
-            }
 
             // Text.
             if (this.scale > 0.6) {
