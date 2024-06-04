@@ -348,17 +348,22 @@ export default {
 
                 // Flip if on left side of chart.
                 if (pos[0] < 0) {
-                    ctx1.textAlign = 'end';
+                    ctx1.textAlign =
+                        node.data.level !== 'domain' ? 'end' : 'start';
+
                     ctx1.rotate(Math.PI);
                 } else {
-                    ctx1.textAlign = 'start';
+                    ctx1.textAlign =
+                        node.data.level !== 'domain' ? 'start' : 'end';
                 }
 
                 ctx1.strokeStyle = '#1e293b';
                 ctx1.lineWidth = 4;
 
                 ctx1.strokeText(node.data.skill_name, moveX, moveY);
-                ctx1.fillStyle = '#FFF';
+                // domain label will have lighter tone color
+                ctx1.fillStyle =
+                    node.data.level !== 'domain' ? '#FFF' : '#afb9c9';
                 ctx1.fillText(node.data.skill_name, moveX, moveY);
                 ctx1.restore();
             }
