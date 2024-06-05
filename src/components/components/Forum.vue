@@ -404,7 +404,7 @@ export default {
                                     >
                                         <!-- Edit Button -->
                                         <router-link
-                                            v-if="post.user_id == user.userId"
+                                            v-if="post.user_id == user.userId || user.role == 'admin' || user.role == 'editor'"
                                             :to="'/resources/edit/' + post.id"
                                             class="btn dropdown-btn"
                                             role="button"
