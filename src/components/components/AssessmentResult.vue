@@ -74,8 +74,7 @@ export default {
 
         this.correctIndex = [1];
     },
-    methods: {     
-    }
+    methods: {}
 };
 </script>
 
@@ -135,7 +134,7 @@ export default {
                 <div
                     class="hover-cursor"
                     b-on-hover
-                    title="you need to score above 80% to pass the assessment"
+                    title="you need to score above 90% to pass the assessment"
                 >
                     <span class="info-label">Score: </span>
                     <span class="info-value"
