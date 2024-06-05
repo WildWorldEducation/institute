@@ -9,6 +9,7 @@ import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 // Nested component.
 import Forum from './Forum.vue';
+import router from '../../router';
 
 export default {
     setup() {
@@ -43,7 +44,8 @@ export default {
             isUnlocked: false,
             filters: [],
             showModal: false,
-            showThankModal: false
+            showThankModal: false,
+            child: {}
         };
     },
     components: {
@@ -53,6 +55,7 @@ export default {
     async created() {
         await this.getSkill();
         await this.getUserSkills();
+        this.getNearestChild();
     },
     methods: {
         getSkill() {
@@ -69,6 +72,18 @@ export default {
                     if (icon.length > 0) {
                         icon[0].style.height = '50px';
                     }
+                });
+        },
+        getNearestChild() {
+            fetch('/skills/child/' + this.skillId)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    if (!data.name) {
+                        alert('no child');
+                    }
+                    this.child = data;
                 });
         },
         async getSkillFilters() {
@@ -129,6 +144,18 @@ export default {
                 this.showThankModal = true;
             });
         }
+    },
+    /**
+     * Because in Vue when only the params change the component instance will NOT be load
+     * so we have to watch for the $route and re fetch data our self
+     */
+    watch: {
+        $route(to, from) {
+            // react to route changes...
+            this.skillId = to.params.id;
+            this.getSkill();
+            this.getUserSkills();
+        }
     }
 };
 </script>
@@ -167,6 +194,16 @@ export default {
                         >Take Assessment</router-link
                     >
                 </div>
+            </div>
+            <!-- If this skill is not unlock yet, and user is student -->
+            <div class="d-flex flex-row-reverse">
+                <router-link
+                    :to="'/skills/' + skill.parent"
+                    v-if="userDetailsStore.role == 'student' && !isUnlocked"
+                    class="btn purple-btn text-capitalize"
+                >
+                    go to nearest unlock skill
+                </router-link>
             </div>
             <!-- Edit skill only available for Admin -->
             <div

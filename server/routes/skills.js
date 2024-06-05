@@ -273,6 +273,64 @@ router.get('/show/:id', (req, res, next) => {
     }
 });
 
+// Find the first child skill of a skill
+router.get('/child/:id', (req, res, next) => {
+    var skill;
+    var tags;
+
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        // Get skill.
+        let sqlQuery =
+            `
+                        SELECT *
+                            FROM skill_tree.skills
+            WHERE skill_tree.skills.parent = ` +
+            req.params.id +
+            `; `;
+
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                if (results.length > 0) {
+                    skill = results[0];
+
+                    // Get skill tags.
+                    let sqlQuery2 =
+                        `
+                        SELECT *
+                            FROM skill_tree.skill_tags
+                WHERE skill_tree.skill_tags.skill_id = ` +
+                        req.params.id +
+                        `; `;
+
+                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            tags = results;
+                            skill.tags = tags;
+
+                            res.json(skill);
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                } else {
+                    res.json({})
+                }
+                // only get the first child 
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+})
+
 /**
  * Edit Item
  *
