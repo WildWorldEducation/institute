@@ -380,7 +380,7 @@ export default {
                                     class="toggle-actions-bnt"
                                     @click="handleClickActionBtns(post.id)"
                                     b-tooltip.hover
-                                    title="More Actions On This Resource"
+                                    title="More Actions For This Source"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -404,12 +404,12 @@ export default {
                                     >
                                         <!-- Edit Button -->
                                         <router-link
-                                            v-if="post.user_id == user.userId"
+                                            v-if="post.user_id == user.userId || user.role == 'admin' || user.role == 'editor'"
                                             :to="'/resources/edit/' + post.id"
                                             class="btn dropdown-btn"
                                             role="button"
                                             b-tooltip.hover
-                                            title="Edit This Resource For Review"
+                                            title="Edit This Source"
                                         >
                                             <!-- Pencil icon -->
                                             <svg
@@ -436,7 +436,7 @@ export default {
                                         <!-- Delete Resource Button -->
                                         <button
                                             b-tooltip.hover
-                                            title="Delete This Resource"
+                                            title="Delete This Source"
                                             v-if="
                                                 post.user_id == user.userId ||
                                                 user.role == 'admin'
@@ -462,7 +462,7 @@ export default {
                                         <!-- Flag button -->
                                         <button
                                             b-tooltip.hover
-                                            title="Flag This Resource For Review"
+                                            title="Flag This Source For Review"
                                             type="button"
                                             class="btn dropdown-btn"
                                             @click="

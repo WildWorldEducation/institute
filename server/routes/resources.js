@@ -165,7 +165,7 @@ router.put('/edit/:id', (req, res, next) => {
                     throw err;
                 } else {
                     postUserId = results[0].user_id;
-                    if (postUserId == req.session.userId) {
+                    if (postUserId == req.session.userId || req.session.role == 'admin' || req.session.role == 'editor') {
                         // Edit the post.
                         let sqlQuery2 =
                             "UPDATE resources SET content='" +
