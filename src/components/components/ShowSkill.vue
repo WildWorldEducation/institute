@@ -45,7 +45,9 @@ export default {
             filters: [],
             showModal: false,
             showThankModal: false,
-            child: {}
+            child: {},
+            parent: this.$route.params.id,
+            masteredSkills: []
         };
     },
     components: {
@@ -56,23 +58,20 @@ export default {
         await this.getSkill();
         await this.getUserSkills();
         this.getNearestChild();
+
+        this.findNearestParent(this.skill, false);
     },
     methods: {
-        getSkill() {
-            fetch('/skills/show/' + this.skillId)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => (this.skill = data))
-                .then(() => {
-                    // Load skill filters
-                    this.getSkillFilters();
+        async getSkill() {
+            const res = await fetch('/skills/show/' + this.skillId);
+            this.skill = await res.json();
+            //Load skill filters
+            this.getSkillFilters();
 
-                    const icon = document.getElementsByTagName('svg');
-                    if (icon.length > 0) {
-                        icon[0].style.height = '50px';
-                    }
-                });
+            const icon = document.getElementsByTagName('svg');
+            if (icon.length > 0) {
+                icon[0].style.height = '50px';
+            }
         },
         getNearestChild() {
             fetch('/skills/child/' + this.skillId)
@@ -102,22 +101,21 @@ export default {
                 }
             }
         },
-        getUserSkills() {
-            fetch('/user-skills/unnested-list/' + this.userDetailsStore.userId)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => (this.userSkills = data))
-                .then(() => {
-                    for (let i = 0; i < this.userSkills.length; i++) {
-                        if (this.userSkills[i].id == this.skillId) {
-                            if (this.userSkills[i].is_mastered == 1)
-                                this.isMastered = true;
-                            if (this.userSkills[i].is_accessible == 1)
-                                this.isUnlocked = true;
-                        }
+        async getUserSkills() {
+            const res = await fetch(
+                '/user-skills/unnested-list/' + this.userDetailsStore.userId
+            );
+            const data = await res.json();
+            for (let i = 0; i < this.userSkills.length; i++) {
+                if (this.userSkills[i].id == this.skillId) {
+                    if (this.userSkills[i].is_mastered == 1) {
+                        this.isMastered = true;
+                        this.masteredSkills.push(this.userSkills[i].id);
                     }
-                });
+                    if (this.userSkills[i].is_accessible == 1)
+                        this.isUnlocked = true;
+                }
+            }
         },
         async MakeMastered() {
             await this.userSkillsStore.MakeMastered(
@@ -143,6 +141,33 @@ export default {
                 this.showModal = false;
                 this.showThankModal = true;
             });
+        },
+        /**
+         * Find the closest parent of this skill node that is not mastered and can take assessment
+         * For now I using recursive to traverse the tree nodes. This might be costly and need to test more when the skills number expand
+         */
+        findNearestParent(node, mastered) {
+            // stop condition is the skill is a root skill or it furthest not mastered yet
+            if (node.parent === 0 || mastered === true) {
+                return;
+            }
+            this.parent = node.id;
+            console.log(node);
+            const isMastered = false;
+            const inMasteredList = this.masteredSkills.find(
+                (index) => index == node.id
+            );
+            if (inMasteredList) {
+                isMastered = true;
+            }
+
+            fetch('/skills/show/' + node.parent)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    return this.findNearestParent(data, isMastered);
+                });
         }
     },
     /**
@@ -155,6 +180,7 @@ export default {
             this.skillId = to.params.id;
             this.getSkill();
             this.getUserSkills();
+            this.getNearestChild();
         }
     }
 };
@@ -195,16 +221,25 @@ export default {
                     >
                 </div>
             </div>
-            <!-- If this skill is not unlock yet, and user is student -->
             <div class="d-flex flex-row-reverse">
+                <!-- If this skill is not unlock yet, and user is student show link to it parent -->
                 <router-link
-                    :to="'/skills/' + skill.parent"
+                    :to="'/skills/' + parent"
                     v-if="userDetailsStore.role == 'student' && !isUnlocked"
                     class="btn purple-btn text-capitalize"
                 >
                     go to nearest unlock skill
                 </router-link>
+                <!-- If student have master this skill show link to it child that is not unlock -->
+                <router-link
+                    :to="'/skills/' + skill.child"
+                    v-if="userDetailsStore.role == 'student' && isMastered"
+                    class="btn purple-btn text-capitalize"
+                >
+                    go to nearest unlock skill
+                </router-link>
             </div>
+
             <!-- Edit skill only available for Admin -->
             <div
                 v-if="
