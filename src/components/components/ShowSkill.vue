@@ -45,11 +45,10 @@ export default {
             filters: [],
             showModal: false,
             showThankModal: false,
-            child: {},
-            parent: this.$route.params.id,
+            ancestor: this.$route.params.id,
             // accessible List that will use to find nearest un-lockable node
             accessibleSkills: [],
-            showParentLink: false
+            showAncestorLink: false
         };
     },
     components: {
@@ -59,7 +58,7 @@ export default {
     async created() {
         await this.getSkill();
         await this.getUserSkills();
-        this.nearestAccessibleParent(this.skill);
+        this.nearestAccessibleAncestor(this.skill);
     },
     methods: {
         async getSkill() {
@@ -92,7 +91,8 @@ export default {
         },
         async getUserSkills() {
             const res = await fetch(
-                '/user-skills/unnested-list/' + this.userDetailsStore.userId
+                '/user-skills/filtered-unnested-list/' +
+                    this.userDetailsStore.userId
             );
             const data = await res.json();
             this.userSkills = data;
@@ -104,9 +104,11 @@ export default {
                     if (this.userSkills[i].is_accessible == 1)
                         this.isUnlocked = true;
                 }
-                // also get the accessible skill list of this user for the find nearest accessible parent method
+                // also get the accessible skill list of this user for the find nearest accessible ancestor method
                 if (this.userSkills[i].is_accessible == 1) {
-                    this.accessibleSkills.push(this.userSkills[i].id);
+                    if (this.userSkills[i].type != 'domain') {
+                        this.accessibleSkills.push(this.userSkills[i].id);
+                    }
                 }
             }
         },
@@ -135,21 +137,19 @@ export default {
             });
         },
         /**
-         * Find the closest parent of this skill node that is not mastered and can take assessment
-         * For now I using recursive to traverse the tree nodes. This might be costly and need to test more when the skills number expand
+         * Find the closest ancestor of this skill node that is not mastered, but is unlocked
+         * For now I am using recursive method to traverse the tree nodes. This might be costly and need to test more when the skills number expand
          */
-        nearestAccessibleParent(node) {
-            let isAccessible = false;
+        nearestAccessibleAncestor(node) {
             const inAccessibleList = this.accessibleSkills.find(
                 (index) => index == node.id
             );
 
-            // stop when the first parent node that student have accessible right (the skill let they can take an assessment)
+            // stop when the first ancestor node that is unlocked for the student
             if (inAccessibleList) {
-                isAccessible = true;
-                this.parent = node.id;
+                this.ancestor = node.id;
                 // show the button to go to the skill when the link is ready
-                this.showParentLink = true;
+                this.showAncestorLink = true;
                 return;
             }
 
@@ -159,7 +159,7 @@ export default {
                 })
                 .then((data) => {
                     // recursively call the function with parent node data
-                    return this.nearestAccessibleParent(data);
+                    return this.nearestAccessibleAncestor(data);
                 });
         }
     },
@@ -189,18 +189,10 @@ export default {
                 <div
                     class="d-flex flex-row-reverse align-items-end mb-2 mb-md-0"
                 >
-                    <!-- Unlock child Skill Button -->
-                    <button
-                        v-if="skill.type == 'domain' && isUnlocked"
-                        @click="MakeMastered()"
-                        class="btn purple-btn"
-                    >
-                        Click to unlock child skills
-                    </button>
-                    <!-- If this skill is not unlock yet, and user is student show link to it parent -->
+                    <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
-                        :to="'/skills/' + parent"
-                        v-if="!isUnlocked && !isMastered && showParentLink"
+                        :to="'/skills/' + ancestor"
+                        v-if="!isUnlocked && !isMastered && showAncestorLink"
                         class="btn purple-btn text-capitalize"
                     >
                         go to nearest unlockable skill
