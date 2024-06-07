@@ -58,7 +58,7 @@ export default {
     async created() {
         await this.getSkill();
         await this.getUserSkills();
-        this.nearestAccessibleAncestor(this.skill);
+        if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
     },
     methods: {
         async getSkill() {
