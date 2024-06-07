@@ -278,7 +278,7 @@ router.get('/filtered-unnested-list/:id', (req, res, next) => {
 
         let sqlQuery =
             `
-    SELECT skill_tree.skills.id, name, is_accessible, is_mastered, type
+    SELECT skill_tree.skills.id, name, is_accessible, is_mastered, type, parent
     FROM skill_tree.skills
     LEFT OUTER JOIN skill_tree.user_skills
     ON skill_tree.skills.id = skill_tree.user_skills.skill_id
@@ -287,7 +287,7 @@ router.get('/filtered-unnested-list/:id', (req, res, next) => {
             ` AND is_filtered = 'available'
 
     UNION
-    SELECT skill_tree.skills.id, name, "", "", type
+    SELECT skill_tree.skills.id, name, "", "", type, parent
     FROM skill_tree.skills
     WHERE skill_tree.skills.id NOT IN 
 

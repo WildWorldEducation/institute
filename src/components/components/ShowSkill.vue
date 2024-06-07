@@ -107,7 +107,7 @@ export default {
                 // also get the accessible skill list of this user for the find nearest accessible ancestor method
                 if (this.userSkills[i].is_accessible == 1) {
                     if (this.userSkills[i].type != 'domain') {
-                        this.accessibleSkills.push(this.userSkills[i].id);
+                        this.accessibleSkills.push(this.userSkills[i]);
                     }
                 }
             }
@@ -148,6 +148,25 @@ export default {
             // stop when the first ancestor node that is unlocked for the student
             if (inAccessibleList) {
                 this.ancestor = node.id;
+                // show the button to go to the skill when the link is ready
+                this.showAncestorLink = true;
+                return;
+            }
+
+            // if node is a super skill, check its subskills.
+            let subskills = [];
+            if (node.type == 'super') {
+                for (let i = 0; i < this.accessibleSkills.length; i++) {
+                    if (
+                        this.accessibleSkills[i].type == 'sub' &&
+                        this.accessibleSkills[i].parent == node.id
+                    ) {
+                        subskills.push(this.accessibleSkills[i]);
+                    }
+                }
+            }
+            if (subskills.length > 0) {
+                this.ancestor = subskills[0].id;
                 // show the button to go to the skill when the link is ready
                 this.showAncestorLink = true;
                 return;
