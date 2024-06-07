@@ -118,7 +118,6 @@ export default {
             this.getUserSkills();
         },
         flagSkill() {
-            console.log('user Id: ' + this.userDetailsStore.userId);
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
