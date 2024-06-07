@@ -58,8 +58,7 @@ export default {
     async created() {
         await this.getSkill();
         await this.getUserSkills();
-        console.log(this.accessibleSkills);
-        this.findRoot(this.skill, false);
+        this.nearestAccessibleParent(this.skill);
     },
     methods: {
         async getSkill() {
@@ -104,7 +103,7 @@ export default {
                     if (this.userSkills[i].is_accessible == 1)
                         this.isUnlocked = true;
                 }
-                // also get the mastered skill list of this user
+                // also get the accessible skill list of this user for the find nearest accessible parent method
                 if (this.userSkills[i].is_accessible == 1) {
                     this.accessibleSkills.push(this.userSkills[i].id);
                 }
@@ -139,7 +138,7 @@ export default {
          * Find the closest parent of this skill node that is not mastered and can take assessment
          * For now I using recursive to traverse the tree nodes. This might be costly and need to test more when the skills number expand
          */
-        findRoot(node) {
+        nearestAccessibleParent(node) {
             let isAccessible = false;
             const inAccessibleList = this.accessibleSkills.find(
                 (index) => index == node.id
@@ -158,7 +157,7 @@ export default {
                 })
                 .then((data) => {
                     // recursive call the function with parent node data
-                    return this.findRoot(data);
+                    return this.nearestAccessibleParent(data);
                 });
         }
     },
@@ -184,25 +183,26 @@ export default {
             :class="{ domain: skill.type == 'domain' }"
         >
             <!-- Buttons For Student -->
-            <div
-                v-if="
-                    isUnlocked &&
-                    !isMastered &&
-                    userDetailsStore.role == 'student'
-                "
-                class="row mt-3"
-            >
+            <div v-if="userDetailsStore.role == 'student'" class="row mt-3">
                 <div
                     class="d-flex flex-row-reverse align-items-end mb-2 mb-md-0"
                 >
                     <!-- Unlock Skill Button -->
                     <button
-                        v-if="skill.type == 'domain'"
+                        v-if="skill.type == 'domain' && isUnlocked"
                         @click="MakeMastered()"
                         class="btn purple-btn"
                     >
                         Click to unlock child skills
                     </button>
+                    <!-- If this skill is not unlock yet, and user is student show link to it parent -->
+                    <router-link
+                        :to="'/skills/' + parent"
+                        v-else-if="!isUnlocked && !isMastered"
+                        class="btn purple-btn text-capitalize"
+                    >
+                        go to nearest unlockable skill
+                    </router-link>
 
                     <!-- Take Assessment Button -->
                     <router-link
@@ -213,16 +213,7 @@ export default {
                     >
                 </div>
             </div>
-            <div class="d-flex flex-row-reverse">
-                <!-- If this skill is not unlock yet, and user is student show link to it parent -->
-                <router-link
-                    :to="'/skills/' + parent"
-                    v-if="userDetailsStore.role == 'student' && !isUnlocked"
-                    class="btn purple-btn text-capitalize"
-                >
-                    go to nearest unlockable skill
-                </router-link>
-            </div>
+            <div class="d-flex flex-row-reverse"></div>
 
             <!-- Edit skill only available for Admin -->
             <div
