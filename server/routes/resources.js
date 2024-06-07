@@ -165,7 +165,11 @@ router.put('/edit/:id', (req, res, next) => {
                     throw err;
                 } else {
                     postUserId = results[0].user_id;
-                    if (postUserId == req.session.userId || req.session.role == 'admin' || req.session.role == 'editor') {
+                    if (
+                        postUserId == req.session.userId ||
+                        req.session.role == 'admin' ||
+                        req.session.role == 'editor'
+                    ) {
                         // Edit the post.
                         let sqlQuery2 =
                             "UPDATE resources SET content='" +
@@ -236,7 +240,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 2554
+        AND id > 2726
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -345,7 +349,7 @@ async function getSource(
         Please strongly preference resources from the following urls:` +
         whiteListedDomains +
         `. Please provide only links to free sites, and please do not provide links aimed at parents or teachers.
-        Please avoid links from the following sites: ` +
+        Do not consider links from the following sites: ` +
         blockedDomains +
         `.`;
 

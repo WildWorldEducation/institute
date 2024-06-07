@@ -9,6 +9,7 @@ import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 // Nested component.
 import Forum from './Forum.vue';
+import router from '../../router';
 
 export default {
     setup() {
@@ -43,7 +44,11 @@ export default {
             isUnlocked: false,
             filters: [],
             showModal: false,
-            showThankModal: false
+            showThankModal: false,
+            ancestor: this.$route.params.id,
+            // accessible List that will use to find nearest un-lockable node
+            accessibleSkills: [],
+            showAncestorLink: false
         };
     },
     components: {
@@ -53,24 +58,21 @@ export default {
     async created() {
         await this.getSkill();
         await this.getUserSkills();
+        this.nearestAccessibleAncestor(this.skill);
     },
     methods: {
-        getSkill() {
-            fetch('/skills/show/' + this.skillId)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => (this.skill = data))
-                .then(() => {
-                    // Load skill filters
-                    this.getSkillFilters();
+        async getSkill() {
+            const res = await fetch('/skills/show/' + this.skillId);
+            this.skill = await res.json();
+            //Load skill filters
+            this.getSkillFilters();
 
-                    const icon = document.getElementsByTagName('svg');
-                    if (icon.length > 0) {
-                        icon[0].style.height = '50px';
-                    }
-                });
+            const icon = document.getElementsByTagName('svg');
+            if (icon.length > 0) {
+                icon[0].style.height = '50px';
+            }
         },
+
         async getSkillFilters() {
             // Run the GET request.
             if (this.skillTagsStore.skillTagsList.length == 0)
@@ -87,22 +89,28 @@ export default {
                 }
             }
         },
-        getUserSkills() {
-            fetch('/user-skills/unnested-list/' + this.userDetailsStore.userId)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => (this.userSkills = data))
-                .then(() => {
-                    for (let i = 0; i < this.userSkills.length; i++) {
-                        if (this.userSkills[i].id == this.skillId) {
-                            if (this.userSkills[i].is_mastered == 1)
-                                this.isMastered = true;
-                            if (this.userSkills[i].is_accessible == 1)
-                                this.isUnlocked = true;
-                        }
+        async getUserSkills() {
+            const res = await fetch(
+                '/user-skills/filtered-unnested-list/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await res.json();
+            this.userSkills = data;
+            for (let i = 0; i < this.userSkills.length; i++) {
+                if (this.userSkills[i].id == this.skillId) {
+                    if (this.userSkills[i].is_mastered == 1) {
+                        this.isMastered = true;
                     }
-                });
+                    if (this.userSkills[i].is_accessible == 1)
+                        this.isUnlocked = true;
+                }
+                // also get the accessible skill list of this user for the find nearest accessible ancestor method
+                if (this.userSkills[i].is_accessible == 1) {
+                    if (this.userSkills[i].type != 'domain') {
+                        this.accessibleSkills.push(this.userSkills[i].id);
+                    }
+                }
+            }
         },
         async MakeMastered() {
             await this.userSkillsStore.MakeMastered(
@@ -112,7 +120,6 @@ export default {
             this.getUserSkills();
         },
         flagSkill() {
-            console.log('user Id: ' + this.userDetailsStore.userId);
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -128,6 +135,44 @@ export default {
                 this.showModal = false;
                 this.showThankModal = true;
             });
+        },
+        /**
+         * Find the closest ancestor of this skill node that is not mastered, but is unlocked
+         * For now I am using recursive method to traverse the tree nodes. This might be costly and need to test more when the skills number expand
+         */
+        nearestAccessibleAncestor(node) {
+            const inAccessibleList = this.accessibleSkills.find(
+                (index) => index == node.id
+            );
+
+            // stop when the first ancestor node that is unlocked for the student
+            if (inAccessibleList) {
+                this.ancestor = node.id;
+                // show the button to go to the skill when the link is ready
+                this.showAncestorLink = true;
+                return;
+            }
+
+            fetch('/skills/show/' + node.parent)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    // recursively call the function with parent node data
+                    return this.nearestAccessibleAncestor(data);
+                });
+        }
+    },
+    /**
+     * Because in Vue when only the params change the component instance will NOT be load
+     * so we have to watch for the $route and re fetch data our self
+     */
+    watch: {
+        async $route(to, from) {
+            // react to route changes...
+            this.skillId = to.params.id;
+            await this.getSkill();
+            await this.getUserSkills();
         }
     }
 };
@@ -140,28 +185,21 @@ export default {
             :class="{ domain: skill.type == 'domain' }"
         >
             <!-- Buttons For Student -->
-            <div
-                v-if="
-                    isUnlocked &&
-                    !isMastered &&
-                    userDetailsStore.role == 'student'
-                "
-                class="row mt-3"
-            >
+            <div v-if="userDetailsStore.role == 'student'" class="row mt-3">
                 <div
                     class="d-flex flex-row-reverse align-items-end mb-2 mb-md-0"
                 >
-                    <!-- Unlock Skill Button -->
-                    <button
-                        v-if="skill.type == 'domain'"
-                        @click="MakeMastered()"
-                        class="btn purple-btn"
+                    <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
+                    <router-link
+                        :to="'/skills/' + ancestor"
+                        v-if="!isUnlocked && !isMastered && showAncestorLink"
+                        class="btn purple-btn text-capitalize"
                     >
-                        Click to unlock child skills
-                    </button>
+                        go to nearest unlockable skill
+                    </router-link>
                     <!-- Take Assessment Button -->
                     <router-link
-                        v-else
+                        v-if="isUnlocked && !isMastered"
                         class="btn purple-btn"
                         :to="skillId + '/assessment'"
                         >Take Assessment</router-link

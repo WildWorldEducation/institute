@@ -221,8 +221,7 @@ router.get('/filtered-nested-list', (req, res, next) => {
 
 // Individual skills.
 router.get('/show/:id', (req, res, next) => {
-    var skill;
-    var tags;
+    let skill;
 
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');

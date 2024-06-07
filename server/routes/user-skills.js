@@ -270,6 +270,50 @@ router.get('/unnested-list/:id', (req, res, next) => {
     }
 });
 
+/* Filtered Unnested list */
+router.get('/filtered-unnested-list/:id', (req, res, next) => {
+    // Check if logged in.
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery =
+            `
+    SELECT skill_tree.skills.id, name, is_accessible, is_mastered, type
+    FROM skill_tree.skills
+    LEFT OUTER JOIN skill_tree.user_skills
+    ON skill_tree.skills.id = skill_tree.user_skills.skill_id
+    WHERE skill_tree.user_skills.user_id = ` +
+            req.params.id +
+            ` AND is_filtered = 'available'
+
+    UNION
+    SELECT skill_tree.skills.id, name, "", "", type
+    FROM skill_tree.skills
+    WHERE skill_tree.skills.id NOT IN 
+
+    (SELECT skill_tree.skills.id
+    FROM skill_tree.skills
+    LEFT OUTER JOIN skill_tree.user_skills
+    ON skill_tree.skills.id = skill_tree.user_skills.skill_id
+    WHERE skill_tree.user_skills.user_id =` +
+            req.params.id +
+            `) AND is_filtered = 'available'
+    ORDER BY id;`;
+
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * Edit item
  *
