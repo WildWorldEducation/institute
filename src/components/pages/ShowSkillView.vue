@@ -39,30 +39,49 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <!--TODO: Assign banner dynamically -->
-        <img v-bind:src="bannerImage" class="img-fluid" />
-        <!-- Show a static img if skill have no banner image -->
-        <img
-            v-if="!bannerImage"
-            src="/images/banners/institute-collins-2.png"
-            class="img-fluid"
-        />
-    </div>
-    <div class="container">
-        <div v-if="userDetailsStore.role == 'student'" id="btn-row">
-            <!-- TODO: ADD FUNCTION TO BTN -->
-            <button id="assessment-btn" class="top-btn d-none d-md-block">
-                Take Assessment
-            </button>
-            <button class="top-btn">Schedule Assessment</button>
+    <div class="position-relative d-flex">
+        <div class="container show-skill-ctnr">
+            <div v-if="userDetailsStore.role == 'student'" id="btn-row">
+                <!-- TODO: ADD FUNCTION TO BTN -->
+                <button id="assessment-btn" class="top-btn d-none d-md-block">
+                    Take Assessment
+                </button>
+                <button class="top-btn">Schedule Assessment</button>
+            </div>
+            <ShowSkill />
+        </div>
+        <div id="banner">
+            <!--TODO: Assign banner dynamically -->
+            <img v-bind:src="bannerImage" class="img-fluid" />
+            <!-- Show a static img if skill have no banner image -->
+            <img
+                v-if="!bannerImage"
+                src="/images/banners/institute-collins-2.png"
+                class="img-fluid"
+            />
         </div>
     </div>
-    <ShowSkill />
 </template>
 
-<style>
-/* some over ride bootstrap css */
+<style scoped>
+/* some override bootstrap css */
+.show-skill-ctnr {
+    z-index: 10 !important;
+    width: 100%;
+    margin-top: 40px;
+}
+
+#banner {
+    z-index: -10 !important;
+    top: 0px;
+    position: absolute !important;
+    width: 100%;
+}
+
+.img-fluid {
+    width: 100% !important;
+}
+
 .top-btn {
     width: 190px;
     height: auto;

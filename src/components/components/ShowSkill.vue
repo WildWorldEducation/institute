@@ -568,7 +568,7 @@ export default {
 }
 
 #skill-info-container {
-    background-color: #f2edffcc;
+    background-color: #f2edff;
     border-radius: 12px;
     padding-top: 20px;
     padding-left: 48px;
