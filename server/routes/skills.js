@@ -243,29 +243,7 @@ router.get('/show/:id', (req, res, next) => {
                 }
 
                 skill = results[0];
-
-                // Get skill tags.
-                let sqlQuery2 =
-                    `
-                        SELECT *
-                            FROM skill_tree.skill_tags
-                WHERE skill_tree.skill_tags.skill_id = ` +
-                    req.params.id +
-                    `; `;
-
-                let query2 = conn.query(sqlQuery2, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
-                        }
-                        tags = results;
-                        skill.tags = tags;
-
-                        res.json(skill);
-                    } catch (err) {
-                        next(err);
-                    }
-                });
+                res.json(skill);
             } catch (err) {
                 next(err);
             }
