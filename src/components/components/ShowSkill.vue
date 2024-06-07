@@ -48,7 +48,8 @@ export default {
             child: {},
             parent: this.$route.params.id,
             // accessible List that will use to find nearest un-lockable node
-            accessibleSkills: []
+            accessibleSkills: [],
+            showParentLink: false
         };
     },
     components: {
@@ -148,6 +149,8 @@ export default {
                 isAccessible = true;
                 // stop when the first parent node that student have accessible right (they can take an assessment)
                 this.parent = node.id;
+                // show the button to go to the skill
+                this.showParentLink = true;
                 return;
             }
 
@@ -198,7 +201,7 @@ export default {
                     <!-- If this skill is not unlock yet, and user is student show link to it parent -->
                     <router-link
                         :to="'/skills/' + parent"
-                        v-else-if="!isUnlocked && !isMastered"
+                        v-if="!isUnlocked && !isMastered && showParentLink"
                         class="btn purple-btn text-capitalize"
                     >
                         go to nearest unlockable skill
@@ -206,7 +209,7 @@ export default {
 
                     <!-- Take Assessment Button -->
                     <router-link
-                        v-else
+                        v-if="isUnlocked && !isMastered"
                         class="btn purple-btn"
                         :to="skillId + '/assessment'"
                         >Take Assessment</router-link
