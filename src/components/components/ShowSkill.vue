@@ -144,11 +144,11 @@ export default {
                 (index) => index == node.id
             );
 
+            // stop when the first parent node that student have accessible right (the skill let they can take an assessment)
             if (inAccessibleList) {
                 isAccessible = true;
-                // stop when the first parent node that student have accessible right (they can take an assessment)
                 this.parent = node.id;
-                // show the button to go to the skill
+                // show the button to go to the skill when the link is ready
                 this.showParentLink = true;
                 return;
             }
@@ -158,7 +158,7 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    // recursive call the function with parent node data
+                    // recursively call the function with parent node data
                     return this.nearestAccessibleParent(data);
                 });
         }
@@ -189,7 +189,7 @@ export default {
                 <div
                     class="d-flex flex-row-reverse align-items-end mb-2 mb-md-0"
                 >
-                    <!-- Unlock Skill Button -->
+                    <!-- Unlock child Skill Button -->
                     <button
                         v-if="skill.type == 'domain' && isUnlocked"
                         @click="MakeMastered()"
@@ -205,7 +205,6 @@ export default {
                     >
                         go to nearest unlockable skill
                     </router-link>
-
                     <!-- Take Assessment Button -->
                     <router-link
                         v-if="isUnlocked && !isMastered"
@@ -215,8 +214,6 @@ export default {
                     >
                 </div>
             </div>
-            <div class="d-flex flex-row-reverse"></div>
-
             <!-- Edit skill only available for Admin -->
             <div
                 v-if="
