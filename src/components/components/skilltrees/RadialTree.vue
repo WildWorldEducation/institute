@@ -307,19 +307,19 @@ export default {
             if (node.depth == 1) size = 20;
             else size = 10;
             // Visible context.
-            ctx1.beginPath();
-            ctx1.moveTo(pos[0], pos[1]);
-            ctx1.arc(pos[0], pos[1], size, 0, 2 * Math.PI);
-            ctx1.fillStyle = color;
-            ctx1.fill();
+            // Only draw node that not domain type
+            if (node.data.type !== 'domain') {
+                ctx1.beginPath();
+                ctx1.moveTo(pos[0], pos[1]);
+                ctx1.arc(pos[0], pos[1], size, 0, 2 * Math.PI);
+                ctx1.fillStyle = color;
+                ctx1.fill();
+            }
 
             function angle(cx, cy, ex, ey) {
                 var dy = ey - cy;
                 var dx = ex - cx;
                 var theta = Math.atan2(dy, dx);
-                if (ex < 0) {
-                    //theta = theta + 270;
-                }
 
                 return theta;
             }
@@ -333,19 +333,38 @@ export default {
                 ctx1.save();
                 ctx1.translate(pos[0], pos[1]);
                 ctx1.rotate(angle);
+
+                let moveX = 0;
+                let moveY = 0;
+                // handle special case where label is on the very top and bottom quarter of the circle
+                // we move the label along side the Y axis instead of X
+                if ((2 * Math.PI) / 3 > Math.abs(angle) >= Math.PI / 3) {
+                    moveY = pos[0] > 0 ? 15 : -15;
+                    moveX = 0;
+                } else {
+                    moveX = pos[0] > 0 ? 15 : -15;
+                    moveY = 0;
+                }
+
                 // Flip if on left side of chart.
                 if (pos[0] < 0) {
-                    ctx1.textAlign = 'end';
+                    ctx1.textAlign =
+                        node.data.level !== 'domain' ? 'end' : 'start';
+
                     ctx1.rotate(Math.PI);
                 } else {
-                    ctx1.textAlign = 'start';
+                    ctx1.textAlign =
+                        node.data.level !== 'domain' ? 'start' : 'end';
                 }
 
                 ctx1.strokeStyle = '#1e293b';
                 ctx1.lineWidth = 4;
-                ctx1.strokeText(node.data.skill_name, 0, 0);
-                ctx1.fillStyle = '#FFF';
-                ctx1.fillText(node.data.skill_name, 0, 0);
+
+                ctx1.strokeText(node.data.skill_name, moveX, moveY);
+                // domain label will have lighter tone color
+                ctx1.fillStyle =
+                    node.data.level !== 'domain' ? '#FFF' : '#afb9c9';
+                ctx1.fillText(node.data.skill_name, moveX, moveY);
                 ctx1.restore();
             }
 
