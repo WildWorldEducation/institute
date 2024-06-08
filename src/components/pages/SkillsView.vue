@@ -57,6 +57,11 @@ export default {
     justify-content: space-between;
 }
 
+.img-fluid {
+    width: 100% !important;
+    height: auto;
+}
+
 .purple-btn {
     background-color: #a48be6;
     color: white;

@@ -61,7 +61,7 @@ export default {
     <ShowSkill />
 </template>
 
-<style>
+<style scoped>
 /* some over ride bootstrap css */
 .top-btn {
     width: 190px;

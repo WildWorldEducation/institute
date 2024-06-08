@@ -128,6 +128,11 @@ export default {
 </template>
 
 <style>
+#banner {
+    width: 100% !important;
+    height: auto;
+}
+
 .red-btn {
     background-color: #e24d4d;
     color: white;
