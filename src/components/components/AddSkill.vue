@@ -475,7 +475,7 @@ export default {
                     </div>
                     <div class="form-check col-6 col-md-5 my-2">
                         <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-4">Pass-through</span>
+                            <span class="my-auto mx-2 me-4">Category</span>
                             <input
                                 type="radio"
                                 name="nodeType"
