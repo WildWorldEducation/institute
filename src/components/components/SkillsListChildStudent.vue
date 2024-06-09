@@ -228,7 +228,7 @@ export default {
             <div ref="name" style="text-align: left">{{ name }}</div>
             <div
                 v-if="type == 'super'"
-                class="text-start pt-1 mastered-skills-count"
+                class="d-none d-sm-block text-start pt-1 mastered-skills-count"
             >
                 {{ countMastered }} out of {{ subSkills.length }} subskills
                 mastered
