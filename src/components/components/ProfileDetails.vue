@@ -174,6 +174,11 @@ export default {
                         readonly
                     />
                 </div>
+                <!-- Student Instructor container -->
+                <div class="mb-3">
+                    <label class="form-label">Student instructor username</label>
+                    <div>{{ userDetailsStore.instructorUsername }}</div>
+                </div>
             </div>
         </div>
     </div>
