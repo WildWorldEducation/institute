@@ -57,6 +57,19 @@ export default {
                     }px)`
                 };
             }
+        },
+        countMastered() {
+            let masteredCount = 0;
+
+            // Iterate through each object in the array
+            for (let obj of this.subSkills) {
+                // Check if the object has the attribute "is_mastered" set to true
+                if (obj.is_mastered == true) {
+                    // Increment the counter if the object is mastered
+                    masteredCount++;
+                }
+            }
+            return masteredCount;
         }
     },
     async created() {
@@ -211,7 +224,17 @@ export default {
             />
         </div>
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
-        <span ref="name" style="text-align: left">{{ name }}</span>
+        <div>
+            <div ref="name" style="text-align: left">{{ name }}</div>
+            <div
+                v-if="type == 'super'"
+                class="text-start pt-1 mastered-skills-count"
+            >
+                {{ countMastered }} out of {{ subSkills.length }} subskills
+                mastered
+            </div>
+        </div>
+
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
             <button
@@ -374,6 +397,9 @@ export default {
     flex-direction: row;
 }
 
+.mastered-skills-count {
+    font-size: 14px;
+}
 .two-row-domain-name {
     font-size: 17px;
 }
