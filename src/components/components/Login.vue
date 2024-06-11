@@ -139,7 +139,8 @@ export default {
                     data-width="330"
                 ></div>
                 <div class="mt-4 signup text-center">
-                    Don’t have an account? <a href="#" class="links">Sign up</a>
+                    Don’t have an account?
+                    <a href="/choose-account-type" class="links">Sign up</a>
                 </div>
             </div>
         </div>
