@@ -7,6 +7,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 // Nested components.
 import SkillsListChildStudent from './SkillsListChildStudent.vue';
 import SkillsListChildNonStudent from './SkillsListChildNonStudent.vue';
+import SkillsListChildInstructorMode from './SkillsListChildInstructorMode.vue';
 
 export default {
     setup() {
@@ -22,7 +23,11 @@ export default {
     },
     data() {
         return {
-            userSkills: []
+            userSkills: [],
+            // For instructors to view student's skill trees
+            studentId: this.$route.params.studentId,
+            instructorMode: false,
+            studentUserSkills: []
         };
     },
     computed: {
@@ -52,21 +57,33 @@ export default {
         }
     },
     async created() {
-        // Admins.
-        if (this.userDetailsStore.role == 'admin')
-            await this.skillsStore.getNestedSkillsList();
-        // Instructors and Editors.
-        else if (
-            this.userDetailsStore.role == 'instructor' ||
-            this.userDetailsStore.role == 'editor'
-        )
-            await this.skillsStore.getFilteredNestedSkillsList();
-        // Students.
-        else if (this.userDetailsStore.role == 'student') {
-            if (this.skillTreeStore.userSkills.length == 0) {
-                await this.skillTreeStore.getUserSkills();
+        // Check if regualr or instructor mode.
+        if (typeof this.studentId == 'string') {
+            this.instructorMode = true;
+        }
+        if (this.instructorMode == false) {
+            // Admins.
+            if (this.userDetailsStore.role == 'admin')
+                await this.skillsStore.getNestedSkillsList();
+            // Instructors and Editors.
+            else if (
+                this.userDetailsStore.role == 'instructor' ||
+                this.userDetailsStore.role == 'editor'
+            )
+                await this.skillsStore.getFilteredNestedSkillsList();
+            // Students.
+            else if (this.userDetailsStore.role == 'student') {
+                if (this.skillTreeStore.userSkills.length == 0) {
+                    await this.skillTreeStore.getUserSkills();
+                }
+                this.userSkills = this.skillTreeStore.userSkills;
             }
-            this.userSkills = this.skillTreeStore.userSkills;
+        }
+        // For instructors to view student's skill trees
+        else {
+            await this.skillTreeStore.getStudentSkills(this.studentId);
+            this.studentUserSkills = this.skillTreeStore.studentSkills;
+            console.log(this.studentUserSkills);
         }
     },
     methods: {
@@ -77,7 +94,8 @@ export default {
     },
     components: {
         SkillsListChildStudent,
-        SkillsListChildNonStudent
+        SkillsListChildNonStudent,
+        SkillsListChildInstructorMode
     }
 };
 </script>
@@ -135,6 +153,21 @@ export default {
                 :DeleteSkill="DeleteSkill"
             >
             </SkillsListChildNonStudent>
+        </div>
+        <!-- Instructor View -->
+        <div v-if="this.instructorMode" v-for="skill in studentUserSkills">
+            <SkillsListChildInstructorMode
+                :id="skill.id"
+                :children="skill.children"
+                :depth="1"
+                :name="skill.skill_name"
+                :isUnlocked="skill.is_accessible"
+                :isMastered="skill.is_mastered"
+                :type="skill.type"
+                :level="skill.level"
+                :role="userDetailsStore.role"
+            >
+            </SkillsListChildInstructorMode>
         </div>
     </div>
 </template>
