@@ -179,13 +179,13 @@ router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery =
-            `
-        SELECT *
+        let sqlQuery = `
+        SELECT *, (SELECT DISTINCT users.username 
+            FROM instructor_students 
+            INNER JOIN users ON users.id = instructor_students.instructor_id 
+            WHERE instructor_students.student_id = ${req.params.id}) AS instructor_username
         FROM skill_tree.users
-        WHERE skill_tree.users.id = ` +
-            req.params.id +
-            `;`;
+        WHERE skill_tree.users.id = ${req.params.id} ;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
