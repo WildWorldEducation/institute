@@ -178,7 +178,7 @@ router.get('/list', (req, res, next) => {
 router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-
+        // Select user and their instructor (if they have one).
         let sqlQuery = `
         SELECT *, (SELECT DISTINCT users.username 
             FROM instructor_students 
