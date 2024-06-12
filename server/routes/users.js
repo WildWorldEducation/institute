@@ -178,12 +178,13 @@ router.get('/list', (req, res, next) => {
 router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-
+        // Select user and their instructor (if they have one).
         let sqlQuery = `
-        SELECT *, (SELECT DISTINCT users.username 
+        SELECT *, (SELECT users.username 
             FROM instructor_students 
             INNER JOIN users ON users.id = instructor_students.instructor_id 
-            WHERE instructor_students.student_id = ${req.params.id}) AS instructor_username
+            WHERE instructor_students.student_id = ${req.params.id}
+            LIMIT 1) AS instructor_username
         FROM skill_tree.users
         WHERE skill_tree.users.id = ${req.params.id} ;`;
 

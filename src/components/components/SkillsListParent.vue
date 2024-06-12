@@ -3,26 +3,35 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useUsersStore } from '../../stores/UsersStore';
 
 // Nested components.
 import SkillsListChildStudent from './SkillsListChildStudent.vue';
 import SkillsListChildNonStudent from './SkillsListChildNonStudent.vue';
+import SkillsListChildInstructorMode from './SkillsListChildInstructorMode.vue';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
+        const usersStore = useUsersStore();
 
         return {
             skillsStore,
             userDetailsStore,
-            skillTreeStore
+            skillTreeStore,
+            usersStore
         };
     },
     data() {
         return {
-            userSkills: []
+            userSkills: [],
+            // For instructors to view student's skill trees
+            studentId: this.$route.params.studentId,
+            studentName: null,
+            instructorMode: false,
+            studentUserSkills: []
         };
     },
     computed: {
@@ -52,21 +61,41 @@ export default {
         }
     },
     async created() {
-        // Admins.
-        if (this.userDetailsStore.role == 'admin')
-            await this.skillsStore.getNestedSkillsList();
-        // Instructors and Editors.
-        else if (
-            this.userDetailsStore.role == 'instructor' ||
-            this.userDetailsStore.role == 'editor'
-        )
-            await this.skillsStore.getFilteredNestedSkillsList();
-        // Students.
-        else if (this.userDetailsStore.role == 'student') {
-            if (this.skillTreeStore.userSkills.length == 0) {
-                await this.skillTreeStore.getUserSkills();
+        // Check if regualr or instructor mode.
+        if (typeof this.studentId == 'string') {
+            this.instructorMode = true;
+        }
+        if (this.instructorMode == false) {
+            // Admins.
+            if (this.userDetailsStore.role == 'admin')
+                await this.skillsStore.getNestedSkillsList();
+            // Instructors and Editors.
+            else if (
+                this.userDetailsStore.role == 'instructor' ||
+                this.userDetailsStore.role == 'editor'
+            )
+                await this.skillsStore.getFilteredNestedSkillsList();
+            // Students.
+            else if (this.userDetailsStore.role == 'student') {
+                if (this.skillTreeStore.userSkills.length == 0) {
+                    await this.skillTreeStore.getUserSkills();
+                }
+                this.userSkills = this.skillTreeStore.userSkills;
             }
-            this.userSkills = this.skillTreeStore.userSkills;
+        }
+        // For instructors to view student's skill trees
+        else {
+            if (this.usersStore.users.length == 0)
+                await this.usersStore.getUsers();
+
+            for (let i = 0; i < this.usersStore.users.length; i++) {
+                if (this.usersStore.users[i].id == this.studentId) {
+                    this.studentName = this.usersStore.users[i].username;
+                }
+            }
+
+            await this.skillTreeStore.getStudentSkills(this.studentId);
+            this.studentUserSkills = this.skillTreeStore.studentSkills;
         }
     },
     methods: {
@@ -77,12 +106,14 @@ export default {
     },
     components: {
         SkillsListChildStudent,
-        SkillsListChildNonStudent
+        SkillsListChildNonStudent,
+        SkillsListChildInstructorMode
     }
 };
 </script>
 
 <template>
+    <h1 v-if="instructorMode">{{ studentName }}</h1>
     <div class="container mt-3" style="overflow: auto">
         <!-- Students -->
         <div
@@ -135,6 +166,21 @@ export default {
                 :DeleteSkill="DeleteSkill"
             >
             </SkillsListChildNonStudent>
+        </div>
+        <!-- Instructor View -->
+        <div v-if="this.instructorMode" v-for="skill in studentUserSkills">
+            <SkillsListChildInstructorMode
+                :id="skill.id"
+                :children="skill.children"
+                :depth="1"
+                :name="skill.skill_name"
+                :isUnlocked="skill.is_accessible"
+                :isMastered="skill.is_mastered"
+                :type="skill.type"
+                :level="skill.level"
+                :role="userDetailsStore.role"
+            >
+            </SkillsListChildInstructorMode>
         </div>
     </div>
 </template>
