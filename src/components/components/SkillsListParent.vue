@@ -101,6 +101,7 @@ export default {
 </script>
 
 <template>
+    <h1 v-if="instructorMode">Student name</h1>
     <div class="container mt-3" style="overflow: auto">
         <!-- Students -->
         <div

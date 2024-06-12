@@ -238,14 +238,6 @@ export default {
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
             <button
-                v-if="type != 'domain'"
-                type="button"
-                @click.stop=""
-                class="btn me-2 ci-btn"
-            >
-                tick
-            </button>
-            <button
                 v-if="type == 'super'"
                 type="button"
                 @click.stop="toggleSubSkills"
