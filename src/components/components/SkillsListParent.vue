@@ -89,7 +89,6 @@ export default {
                 await this.usersStore.getUsers();
 
             for (let i = 0; i < this.usersStore.users.length; i++) {
-                console.log(this.usersStore.users[i]);
                 if (this.usersStore.users[i].id == this.studentId) {
                     this.studentName = this.usersStore.users[i].username;
                 }
@@ -97,7 +96,6 @@ export default {
 
             await this.skillTreeStore.getStudentSkills(this.studentId);
             this.studentUserSkills = this.skillTreeStore.studentSkills;
-            console.log(this.studentUserSkills);
         }
     },
     methods: {
