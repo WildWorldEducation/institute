@@ -3,6 +3,7 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useUsersStore } from '../../stores/UsersStore';
 
 // Nested components.
 import SkillsListChildStudent from './SkillsListChildStudent.vue';
@@ -14,11 +15,13 @@ export default {
         const skillsStore = useSkillsStore();
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
+        const usersStore = useUsersStore();
 
         return {
             skillsStore,
             userDetailsStore,
-            skillTreeStore
+            skillTreeStore,
+            usersStore
         };
     },
     data() {
@@ -26,6 +29,7 @@ export default {
             userSkills: [],
             // For instructors to view student's skill trees
             studentId: this.$route.params.studentId,
+            studentName: null,
             instructorMode: false,
             studentUserSkills: []
         };
@@ -81,6 +85,16 @@ export default {
         }
         // For instructors to view student's skill trees
         else {
+            if (this.usersStore.users.length == 0)
+                await this.usersStore.getUsers();
+
+            for (let i = 0; i < this.usersStore.users.length; i++) {
+                console.log(this.usersStore.users[i]);
+                if (this.usersStore.users[i].id == this.studentId) {
+                    this.studentName = this.usersStore.users[i].username;
+                }
+            }
+
             await this.skillTreeStore.getStudentSkills(this.studentId);
             this.studentUserSkills = this.skillTreeStore.studentSkills;
             console.log(this.studentUserSkills);
@@ -101,7 +115,7 @@ export default {
 </script>
 
 <template>
-    <h1 v-if="instructorMode">Student name</h1>
+    <h1 v-if="instructorMode">{{ studentName }}</h1>
     <div class="container mt-3" style="overflow: auto">
         <!-- Students -->
         <div
