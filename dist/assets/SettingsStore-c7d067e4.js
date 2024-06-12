@@ -1,1 +1,0 @@
-import{J as s}from"./main-e5508237.js";const e=s("settings",{state:()=>({skillDegradationDays:null,quizMaxQuestions:null}),actions:{async getSettings(){const t=await(await fetch("/settings")).json();this.skillDegradationDays=t[0].skill_degradation_days,this.quizMaxQuestions=t[0].quiz_max_questions}}});export{e as u};
