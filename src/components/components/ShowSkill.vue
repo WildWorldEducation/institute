@@ -142,7 +142,7 @@ export default {
          */
         nearestAccessibleAncestor(node) {
             const inAccessibleList = this.accessibleSkills.find(
-                (index) => index == node.id
+                (as) => as.id == node.id
             );
 
             // stop when the first ancestor node that is unlocked for the student
