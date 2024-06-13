@@ -1,36 +1,53 @@
 <script>
-// Import
-import router from '../../router';
+// Import the stores.
+import { useUsersStore } from '../../stores/UsersStore';
 
 export default {
-    data() {
+    setup() {
+        const usersStore = useUsersStore();
+
         return {
-            username: null,
-            firstName: null,
-            lastName: null,
-            email: null,
-            password: null
+            usersStore
         };
     },
+    data() {
+        return {
+            newStudent: {
+                username: null,
+                firstName: null,
+                lastName: null,
+                email: null,
+                password: null,
+                chosenInstructorId: null
+            }
+        };
+    },
+    async created() {
+        await this.usersStore.getInstructors();
+        this.instructors = this.usersStore.instructors;
+    },
     mounted() {},
-    computed: {},
     methods: {
         Submit() {
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: this.username,
-                    password: this.password
-                })
-            };
-            var url = '';
-
-            fetch(url, requestOptions)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (data) {});
+            console.log(this.newStudent);
+            // const requestOptions = {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         username: this.newStudent.username,
+            //         first_name: this.newStudent.username,
+            //         last_name: this.newStudent.username,
+            //         email: this.newStudent.username,
+            //         password: this.newStudent.password,
+            //         instructor: this.newStudent.username
+            //     })
+            // };
+            // var url = '';
+            // fetch(url, requestOptions)
+            //     .then(function (response) {
+            //         return response.json();
+            //     })
+            //     .then(function (data) {});
         }
     }
 };
@@ -43,10 +60,9 @@ export default {
 
             <div class="mt-3">
                 <div class="mb-3 text-start">
-                    <!-- <img class="me-1" src="images/icons/user-solid.svg" alt="" width="16" height="16"> -->
                     <!-- <label class="form-label">Username</label> -->
                     <input
-                        v-model="username"
+                        v-model="newStudent.username"
                         type="text"
                         placeholder="Username"
                         class="form-control"
@@ -54,10 +70,9 @@ export default {
                     />
                 </div>
                 <div class="mb-3 text-start">
-                    <!-- <img class="me-1" src="images/icons/user-solid.svg" alt="" width="16" height="16"> -->
                     <!-- <label class="form-label">First name</label> -->
                     <input
-                        v-model="firstName"
+                        v-model="newStudent.firstName"
                         type="text"
                         placeholder="First name"
                         class="form-control"
@@ -65,10 +80,9 @@ export default {
                     />
                 </div>
                 <div class="mb-3 text-start">
-                    <!-- <img class="me-1" src="images/icons/user-solid.svg" alt="" width="16" height="16"> -->
                     <!-- <label class="form-label">Last name</label> -->
                     <input
-                        v-model="lastName"
+                        v-model="newStudent.lastName"
                         type="text"
                         placeholder="Last name"
                         class="form-control"
@@ -77,18 +91,24 @@ export default {
                 </div>
                 <div class="mb-3 text-start">
                     <label class="form-label">Instructor</label>
-                    <select name="cars" id="cars">
-                        <option value="volvo">Volvo</option>
-                        <option value="saab">Saab</option>
-                        <option value="mercedes">Mercedes</option>
-                        <option value="audi">Audi</option>
+                    <select v-model="newStudent.chosenInstructorId">
+                        <option
+                            v-for="instructor in this.usersStore.instructors"
+                            :value="instructor.id"
+                        >
+                            {{ instructor.username }}
+                        </option>
                     </select>
-                    Create new instructor account
+                    <p class="signup">
+                        <a href="#" class="links"
+                            >Add a new instructor instead</a
+                        >
+                    </p>
                 </div>
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">Email</label> -->
                     <input
-                        v-model="email"
+                        v-model="newStudent.email"
                         type="email"
                         placeholder="Email"
                         class="form-control"
@@ -96,10 +116,9 @@ export default {
                     />
                 </div>
                 <div class="mb-3 text-start">
-                    <!-- <img class="me-1" src="images/icons/lock-solid.svg" alt="" width="16" height="16"> -->
                     <!-- <label class="form-label">Password</label> -->
                     <input
-                        v-model="password"
+                        v-model="newStudent.password"
                         type="password"
                         placeholder="Password"
                         class="form-control"

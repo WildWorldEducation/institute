@@ -1,5 +1,5 @@
 <script>
-// Import the users store.
+// Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { Cropper, Preview } from 'vue-advanced-cropper';
