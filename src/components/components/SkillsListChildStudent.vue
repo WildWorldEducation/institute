@@ -150,11 +150,8 @@ export default {
                     localStorage.setItem(element.id + 'children', state);
                 }
 
-                // Uncoment lines below //
-
-                // if(element.type == "sub"){
-                //     localStorage.setItem(element.id + 'sub', state);
-                // }else{
+                // Uncoment this "if" structure //
+                // if(element.type != "sub"){
                 //     localStorage.setItem(element.id + 'children', state);
                 // }
 
