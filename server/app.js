@@ -176,7 +176,7 @@ app.post('/login-attempt', (req, res, next) => {
                 req.session.userName = req.body.username;
                 req.session.firstName = results[0].first_name;
                 req.session.lastName = results[0].last_name;
-                req.session.skillTreeTheme = results[0].skilltree_theme;
+                //req.session.skillTreeTheme = results[0].skilltree_theme;
                 req.session.role = results[0].role;
                 res.json({ account: 'authorized', role: req.session.role });
             } else {

@@ -48,15 +48,13 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    if (data.account == 'username already taken') {
+                    if (data.account == 'authorized') {
+                        alert('Account created.');
+                        router.push({ name: 'skills' });
+                    } else if (data.account == 'username already taken') {
                         alert(data.account);
                     } else if (data.account == 'email already taken') {
                         alert(data.account);
-                    } else {
-                        alert(
-                            'Account created/n. Use your username and password to login.'
-                        );
-                        router.push({ name: 'login' });
                     }
                 });
         }
@@ -67,7 +65,7 @@ export default {
 <template>
     <div class="signup-page">
         <div class="form-signin">
-            <h1 class="h3 mb-3 font-weight-normal">Sign up</h1>
+            <h1 class="h3 mb-3 font-weight-normal">Student Sign up</h1>
 
             <div class="mt-3">
                 <div class="mb-3 text-start">
