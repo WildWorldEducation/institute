@@ -29,25 +29,32 @@ export default {
     mounted() {},
     methods: {
         Submit() {
-            console.log(this.newStudent);
-            // const requestOptions = {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({
-            //         username: this.newStudent.username,
-            //         first_name: this.newStudent.username,
-            //         last_name: this.newStudent.username,
-            //         email: this.newStudent.username,
-            //         password: this.newStudent.password,
-            //         instructor: this.newStudent.username
-            //     })
-            // };
-            // var url = '';
-            // fetch(url, requestOptions)
-            //     .then(function (response) {
-            //         return response.json();
-            //     })
-            //     .then(function (data) {});
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: this.newStudent.username,
+                    first_name: this.newStudent.firstName,
+                    last_name: this.newStudent.lastName,
+                    email: this.newStudent.email,
+                    password: this.newStudent.password,
+                    instructor: this.newStudent.chosenInstructorId
+                })
+            };
+            var url = '/users/new-student/add';
+            fetch(url, requestOptions)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.account == 'username already taken') {
+                        alert(data.account);
+                    } else if (data.account == 'email already taken') {
+                        alert(data.account);
+                    } else {
+                        alert('account created');
+                    }
+                });
         }
     }
 };
