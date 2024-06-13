@@ -140,7 +140,7 @@ export default {
                 ></div>
                 <div class="mt-4 signup text-center">
                     Don’t have an account?
-                    <a href="/choose-account-type" class="links">Sign up</a>
+                    <a href="/student-signup" class="links">Sign up</a>
                 </div>
             </div>
         </div>
@@ -149,7 +149,7 @@ export default {
 
 <style>
 .login-page {
-    height: calc(100% + 66px);
+    height: 100%;
     padding: 10px;
     background-repeat: no-repeat;
     width: 100%;
