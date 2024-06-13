@@ -96,19 +96,18 @@ export default {
         }
 
         /*
-         * Give longer domain names smaller font, otherwise they look bad.
+         * Give longer node names smaller font, otherwise they look bad.
          * Do this by checking how many lines they span (by checking height.)
          */
-        if (this.type == 'domain') {
-            if (this.$refs.name.offsetHeight > 120)
-                this.$refs.name.classList.add('five-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 90)
-                this.$refs.name.classList.add('four-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 60)
-                this.$refs.name.classList.add('three-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 30)
-                this.$refs.name.classList.add('two-row-domain-name');
-        }
+        if (this.$refs.name.offsetHeight > 120)
+            this.$refs.name.classList.add('five-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 90)
+            this.$refs.name.classList.add('four-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 60)
+            this.$refs.name.classList.add('three-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 30)
+            this.$refs.name.classList.add('two-row-domain-name');
+        
     },
     methods: {
         mainButtonPress() {
@@ -163,7 +162,7 @@ export default {
             'phd-level': level == 'phd',
             'has-children': children.length > 0
         }"
-        class="skill-button d-flex justify-content-between"
+        class="skill-button d-flex justify-content-between align-items-center"
         @click.stop="mainButtonPress()"
     >
         <!-- Emoticons -->
@@ -275,7 +274,7 @@ export default {
             <button
                 v-if="childrenNotSubskills.length != 0"
                 @click.stop="toggleChildren"
-                class="btn me-2 ci-btn"
+                class="btn ci-btn"
             >
                 <!-- Collapse icon -->
                 <svg
@@ -354,7 +353,7 @@ export default {
     width: 545px;
     height: 84px;
     color: #53389e;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 500;
     background-color: #f2edff;
 }
@@ -405,15 +404,11 @@ export default {
 }
 
 .three-row-domain-name {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .four-row-domain-name {
     font-size: 13px;
-}
-
-.four-row-domain-name {
-    font-size: 12px;
 }
 .grade-school-level {
     border-color: #40b9a9;
@@ -464,10 +459,23 @@ export default {
 }
 
 @media (max-width: 480px) {
+    /* Fix style for mobile */
     .skill-button {
         width: 293px;
         height: 70px;
+        font-size: 15px;
+    }
+
+    .two-row-domain-name {
         font-size: 13px;
+    }
+
+    .three-row-domain-name {
+        font-size: 11px;
+    }
+
+    .four-row-domain-name {
+        font-size: 9px;
     }
 
     .domains {
