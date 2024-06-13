@@ -131,15 +131,14 @@ export default {
                 }
 
                 // Uncoment this "if" structure //
-                // if(element.type != "sub"){
+                // if(element.type == "domain" || element.type == "super"){
                 //     localStorage.setItem(element.id + 'children', state);
                 // }
 
                 this.recursivelySetState(element.children, state)
             });
         },
-        toggleExpandAll(event){
-            event.stopPropagation();
+        toggleExpandAll(){
             this.recursivelySetState(this.children, !this.showChildren)
             localStorage.setItem(this.id + 'children', !this.showChildren);
             this.showChildren = !this.showChildren
@@ -264,7 +263,7 @@ export default {
                     />
                 </svg>
             </button>
-            <button class="btn me-2 ci-btn" v-if="level == 'domain'" @click="toggleExpandAll">
+            <button class="btn me-2 ci-btn" v-if="level == 'domain'" @click.stop="toggleExpandAll">
                 <!-- collapse icon from svgrepo.com -->
                 <svg v-if="showChildren" width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <rect width="16" height="16" id="icon-bound" fill="none" />
