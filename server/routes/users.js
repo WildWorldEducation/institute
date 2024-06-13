@@ -112,7 +112,9 @@ router.post('/new-student/add', (req, res, next) => {
                                                                     'authorized',
                                                                 role: req
                                                                     .session
-                                                                    .role
+                                                                    .role,
+                                                                id: results[0]
+                                                                    .id
                                                             });
                                                         } catch (err) {
                                                             next(err);

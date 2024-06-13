@@ -2,25 +2,35 @@
 import router from '../../router';
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
+import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const userSkillsStore = useUserSkillsStore();
+        const skillsStore = useSkillsStore();
 
         return {
-            usersStore
+            usersStore,
+            userSkillsStore,
+            skillsStore
         };
     },
     data() {
         return {
             newStudent: {
+                id: null,
                 username: null,
                 firstName: null,
                 lastName: null,
                 email: null,
                 password: null,
                 chosenInstructorId: null
-            }
+            },
+            // To make the first level skills mastered for a new user.
+            firstLevelSkills: [],
+            childrenOfFirstLevelSkillsIds: []
         };
     },
     async created() {
@@ -50,13 +60,53 @@ export default {
                 .then((data) => {
                     if (data.account == 'authorized') {
                         alert('Account created.');
-                        router.push({ name: 'skills' });
+                        // Get the new user's id number from the DB.
+                        this.newStudent.id = data.id;
                     } else if (data.account == 'username already taken') {
                         alert(data.account);
                     } else if (data.account == 'email already taken') {
                         alert(data.account);
                     }
+                }) // Make all relevant skills and domains available or mastered.
+                .then(() => {
+                    this.getSkills();
                 });
+        },
+        async getSkills() {
+            // Load all skills.
+            if (this.skillsStore.skillsList.length < 1)
+                await this.skillsStore.getSkillsList();
+
+            // Find the first level skills - we will make these mastered.
+            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                if (this.skillsStore.skillsList[i].parent == 0) {
+                    // Add them to the local array.
+                    this.firstLevelSkills.push(this.skillsStore.skillsList[i]);
+                }
+            }
+            // Find the child skills of the first level skills - we will make these available/unlocked.
+            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                for (let j = 0; j < this.firstLevelSkills.length; j++) {
+                    if (
+                        this.skillsStore.skillsList[i].parent ==
+                        this.firstLevelSkills[j].id
+                    ) {
+                        this.childrenOfFirstLevelSkillsIds.push(
+                            this.skillsStore.skillsList[i].id
+                        );
+                    }
+                }
+            }
+            this.unlockInitialSkills();
+        },
+        unlockInitialSkills() {
+            for (let i = 0; i < this.firstLevelSkills.length; i++) {
+                this.userSkillsStore.MakeMastered(
+                    this.newStudent.id,
+                    this.firstLevelSkills[i]
+                );
+            }
+            router.push({ name: 'skills' });
         }
     }
 };
