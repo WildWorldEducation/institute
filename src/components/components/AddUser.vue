@@ -29,7 +29,6 @@ export default {
             image: '',
             // To make the first level skills mastered for a new user.
             firstLevelSkills: [],
-            childrenOfFirstLevelSkillsIds: [],
             // The newly created ID number fo the user, from the DB.
             newUserId: null,
             isValidated: false,
@@ -78,19 +77,6 @@ export default {
             if (this.skillsStore.skillsList[i].parent == 0) {
                 // Add them to the local array.
                 this.firstLevelSkills.push(this.skillsStore.skillsList[i]);
-            }
-        }
-        // Find the child skills of the first level skills - we will make these available/unlocked.
-        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            for (let j = 0; j < this.firstLevelSkills.length; j++) {
-                if (
-                    this.skillsStore.skillsList[i].parent ==
-                    this.firstLevelSkills[j].id
-                ) {
-                    this.childrenOfFirstLevelSkillsIds.push(
-                        this.skillsStore.skillsList[i].id
-                    );
-                }
             }
         }
     },
