@@ -141,6 +141,22 @@ export default {
         },
         HideMobileButtonsModal() {
             this.showModal = false;
+        },
+        recursivelySetState(items, state){
+            items.forEach(element => {
+                if(element.type == "domain"){
+                    localStorage.setItem(element.id + 'children', state);
+                }
+                if(Array.isArray(element.children)){
+                    this.recursivelySetState(element.children, state)
+                }
+            });
+        },
+        toggleExpandAll(event){
+            event.stopPropagation();
+            this.recursivelySetState(this.children, !this.showChildren)
+            localStorage.setItem(this.id + 'children', !this.showChildren);
+            this.showChildren = !this.showChildren
         }
     }
 };
@@ -252,7 +268,7 @@ export default {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
-                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
                         d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
                     />
@@ -266,7 +282,7 @@ export default {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
-                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
                         d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
                     />
@@ -285,7 +301,7 @@ export default {
                     width="18"
                     height="18"
                 >
-                    <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
                         d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"
                         fill="#9C7EEC"
@@ -298,11 +314,23 @@ export default {
                     width="18"
                     height="18"
                 >
-                    <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
                         d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
                         fill="#9C7EEC"
                     />
+                </svg>
+            </button>
+            <button class="btn me-2 ci-btn" v-if="level == 'domain'" @click="toggleExpandAll">
+                <!-- collapse icon from svgrepo.com -->
+                <svg v-if="showChildren" width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <rect width="16" height="16" id="icon-bound" fill="none" />
+                    <path fill="#9C7EEC" d="M4.414,15.414L8,11.828L11.586,15.414L13,14L8,9L3,14L4.414,15.414ZM11.586,0.586L8,4.172L4.414,0.586L3,2L8,7L13,2L11.586,0.586Z" style="fill-rule:nonzero;"/>
+                </svg>
+                <!-- Expand icon from svgrepo.com -->
+                <svg v-else width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <rect width="16" height="16" id="icon-bound" fill="none" />
+                    <path fill="#9C7EEC" d="M8,11.5L4.706,8.878l-1.416,1.416L8,14l4.706-3.706l-1.416-1.416L8,11.5z M8,4.5l3.294,2.622l1.416-1.416L8,2L3.294,5.706 l1.416,1.416L8,4.5z" />
                 </svg>
             </button>
         </div>
