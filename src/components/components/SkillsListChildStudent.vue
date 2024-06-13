@@ -144,12 +144,21 @@ export default {
         },
         recursivelySetState(items, state){
             items.forEach(element => {
-                if(element.type == "domain"){
+
+                // Comment this "if" structure //
+                if(element.type == 'domain'){
                     localStorage.setItem(element.id + 'children', state);
                 }
-                if(Array.isArray(element.children)){
-                    this.recursivelySetState(element.children, state)
-                }
+
+                // Uncoment lines below //
+
+                // if(element.type == "sub"){
+                //     localStorage.setItem(element.id + 'sub', state);
+                // }else{
+                //     localStorage.setItem(element.id + 'children', state);
+                // }
+
+                this.recursivelySetState(element.children, state)
             });
         },
         toggleExpandAll(event){
