@@ -1,4 +1,5 @@
 <script>
+import router from '../../router';
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
 
@@ -52,7 +53,10 @@ export default {
                     } else if (data.account == 'email already taken') {
                         alert(data.account);
                     } else {
-                        alert('account created');
+                        alert(
+                            'Account created/n. Use your username and password to login.'
+                        );
+                        router.push({ name: 'login' });
                     }
                 });
         }
