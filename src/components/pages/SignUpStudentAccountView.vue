@@ -99,9 +99,9 @@ export default {
             }
             this.unlockInitialSkills();
         },
-        unlockInitialSkills() {
+        async unlockInitialSkills() {
             for (let i = 0; i < this.firstLevelSkills.length; i++) {
-                this.userSkillsStore.MakeMastered(
+                await this.userSkillsStore.MakeMastered(
                     this.newStudent.id,
                     this.firstLevelSkills[i]
                 );
