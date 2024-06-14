@@ -1,8 +1,9 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
-export const useUsersStore = defineStore("users", {
+export const useUsersStore = defineStore('users', {
     state: () => ({
         users: [],
+        instructors: []
     }),
     actions: {
         async getUsers() {
@@ -10,18 +11,22 @@ export const useUsersStore = defineStore("users", {
             const data = await result.json();
             this.users = data;
         },
+        async getInstructors() {
+            const result = await fetch('/users/instructors/list');
+            const data = await result.json();
+            this.instructors = data;
+        },
         async deleteUser(id) {
-            this.users = this.users.filter(u => {
-                return u.id !== id
-            })
+            this.users = this.users.filter((u) => {
+                return u.id !== id;
+            });
 
-            const result = fetch('/users/' + id,
-                {
-                    method: 'DELETE',
-                });
+            const result = fetch('/users/' + id, {
+                method: 'DELETE'
+            });
 
             if (result.error) {
-                console.log(result.error)
+                console.log(result.error);
             }
         }
     }

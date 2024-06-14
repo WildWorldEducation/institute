@@ -18,7 +18,7 @@ export const useUserSkillsStore = defineStore('userSkills', {
                 })
             };
             let url = '/user-skills/make-mastered/' + userId;
-            fetch(url, requestOptions);
+            await fetch(url, requestOptions);
         },
         async MakeAccessible(userId, skillId) {
             var url = '/user-skills/accessible/' + userId + '/' + skillId;
