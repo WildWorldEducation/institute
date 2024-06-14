@@ -123,7 +123,7 @@ export default {
                         "
                         class="form-validate"
                     >
-                        please enter a user name !
+                        please enter a username!
                     </div>
                 </div>
                 <div class="mb-3 text-start">
@@ -143,7 +143,7 @@ export default {
                         "
                         class="form-validate"
                     >
-                        please enter a first name !
+                        please your first name!
                     </div>
                 </div>
                 <div class="mb-3 text-start">
@@ -163,7 +163,7 @@ export default {
                         "
                         class="form-validate"
                     >
-                        please enter a last name !
+                        please enter your last name!
                     </div>
                 </div>
                 <div class="mb-3 text-start">
@@ -183,10 +183,10 @@ export default {
                         "
                         class="form-validate"
                     >
-                        please enter an email !
+                        please enter an email address!
                     </div>
                     <div v-if="validate.emailFormat" class="form-validate">
-                        please enter a valid email !
+                        please enter a valid email address!
                     </div>
                 </div>
                 <div class="mb-3 text-start">
@@ -206,7 +206,7 @@ export default {
                         "
                         class="form-validate"
                     >
-                        please enter a password !
+                        please enter a password!
                     </div>
                 </div>
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
