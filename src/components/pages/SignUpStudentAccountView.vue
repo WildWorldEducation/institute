@@ -12,12 +12,62 @@ export default {
                 lastName: null,
                 email: null,
                 password: null
+            },
+            // Validate Object flag
+            validate: {
+                firstName: false,
+                lastName: false,
+                username: false,
+                email: false,
+                emailFormat: false,
+                password: false
             }
         };
     },
     async created() {},
     mounted() {},
     methods: {
+        ValidateForm() {
+            if (
+                this.newStudent.username == '' ||
+                this.newStudent.username == null
+            ) {
+                this.validate.username = true;
+            } else if (
+                this.newStudent.firstName == '' ||
+                this.newStudent.firstName == null
+            ) {
+                this.validate.firstName = true;
+            } else if (
+                this.newStudent.lastName == '' ||
+                this.newStudent.lastName == null
+            ) {
+                this.validate.lastName = true;
+            } else if (
+                this.newStudent.email == '' ||
+                this.newStudent.email == null
+            ) {
+                this.validate.email = true;
+            } else if (
+                this.newStudent.password == '' ||
+                this.newStudent.password == null
+            ) {
+                this.validate.password = true;
+            } else {
+                this.Submit();
+            }
+        },
+        ValidateEmail() {
+            if (
+                /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+                    this.newStudent.email
+                )
+            ) {
+                this.validate.emailFormat = false;
+            } else {
+                this.validate.emailFormat = true;
+            }
+        },
         Submit() {
             const requestOptions = {
                 method: 'POST',
@@ -65,6 +115,16 @@ export default {
                         class="form-control"
                         required
                     />
+                    <div
+                        v-if="
+                            validate.username &&
+                            (newStudent.username == '' ||
+                                newStudent.username == null)
+                        "
+                        class="form-validate"
+                    >
+                        please enter a user name !
+                    </div>
                 </div>
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">First name</label> -->
@@ -75,6 +135,16 @@ export default {
                         class="form-control"
                         required
                     />
+                    <div
+                        v-if="
+                            validate.firstName &&
+                            (newStudent.firstName == '' ||
+                                newStudent.firstName == null)
+                        "
+                        class="form-validate"
+                    >
+                        please enter a first name !
+                    </div>
                 </div>
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">Last name</label> -->
@@ -85,6 +155,16 @@ export default {
                         class="form-control"
                         required
                     />
+                    <div
+                        v-if="
+                            validate.lastName &&
+                            (newStudent.lastName == '' ||
+                                newStudent.lastName == null)
+                        "
+                        class="form-validate"
+                    >
+                        please enter a last name !
+                    </div>
                 </div>
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">Email</label> -->
@@ -93,8 +173,21 @@ export default {
                         type="email"
                         placeholder="Email"
                         class="form-control"
+                        @blur="ValidateEmail"
                         required
                     />
+                    <div
+                        v-if="
+                            validate.email &&
+                            (newStudent.email == '' || newStudent.email == null)
+                        "
+                        class="form-validate"
+                    >
+                        please enter an email !
+                    </div>
+                    <div v-if="validate.emailFormat" class="form-validate">
+                        please enter a valid email !
+                    </div>
                 </div>
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">Password</label> -->
@@ -105,8 +198,18 @@ export default {
                         class="form-control"
                         required
                     />
+                    <div
+                        v-if="
+                            validate.password &&
+                            (newStudent.password == '' ||
+                                newStudent.password == null)
+                        "
+                        class="form-validate"
+                    >
+                        please enter a password !
+                    </div>
                 </div>
-                <button class="btn btn-dark mb-2" @click="Submit()">
+                <button class="btn btn-dark mb-2" @click="ValidateForm()">
                     Sign up
                 </button>
                 <div class="mt-3 signup text-center">
@@ -194,5 +297,11 @@ export default {
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
 }
 </style>
