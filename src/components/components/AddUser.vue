@@ -29,7 +29,6 @@ export default {
             image: '',
             // To make the first level skills mastered for a new user.
             firstLevelSkills: [],
-            childrenOfFirstLevelSkillsIds: [],
             // The newly created ID number fo the user, from the DB.
             newUserId: null,
             isValidated: false,
@@ -78,19 +77,6 @@ export default {
             if (this.skillsStore.skillsList[i].parent == 0) {
                 // Add them to the local array.
                 this.firstLevelSkills.push(this.skillsStore.skillsList[i]);
-            }
-        }
-        // Find the child skills of the first level skills - we will make these available/unlocked.
-        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            for (let j = 0; j < this.firstLevelSkills.length; j++) {
-                if (
-                    this.skillsStore.skillsList[i].parent ==
-                    this.firstLevelSkills[j].id
-                ) {
-                    this.childrenOfFirstLevelSkillsIds.push(
-                        this.skillsStore.skillsList[i].id
-                    );
-                }
             }
         }
     },
@@ -420,7 +406,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a first name !
+                            please enter a first name!
                         </div>
                     </div>
                     <div class="mb-3">
@@ -439,7 +425,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a last name !
+                            please enter a last name!
                         </div>
                     </div>
                     <div class="mb-3">
@@ -456,7 +442,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a user name !
+                            please enter a username!
                         </div>
                     </div>
                     <div class="mb-3">
@@ -474,10 +460,10 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter an email !
+                            please enter an email address!
                         </div>
                         <div v-if="validate.emailFormat" class="form-validate">
-                            please enter a valid email !
+                            please enter a valid email address!
                         </div>
                     </div>
                     <div class="mb-3">
@@ -613,7 +599,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a password !
+                            please enter a password!
                         </div>
                     </div>
                     <div class="d-flex justify-content-end gap-4">

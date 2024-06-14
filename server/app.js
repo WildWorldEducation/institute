@@ -91,6 +91,10 @@ if (process.env.NODE_ENV === 'production') {
     app.use('/', express.static(publicPath));
 }
 
+/*
+ * Login
+ */
+
 // Log in with Google.
 var googleUserDetails;
 app.post('/google-login-attempt', (req, res) => {
@@ -172,7 +176,7 @@ app.post('/login-attempt', (req, res, next) => {
                 req.session.userName = req.body.username;
                 req.session.firstName = results[0].first_name;
                 req.session.lastName = results[0].last_name;
-                req.session.skillTreeTheme = results[0].skilltree_theme;
+                //req.session.skillTreeTheme = results[0].skilltree_theme;
                 req.session.role = results[0].role;
                 res.json({ account: 'authorized', role: req.session.role });
             } else {
@@ -211,7 +215,9 @@ app.post('/logout', (req, res) => {
     res.end();
 });
 
-// User session -----------------------
+/*
+ * User session
+ */
 // Send the session variable.
 app.get('/get-session-details', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
@@ -224,7 +230,9 @@ app.get('/get-session-details', (req, res) => {
     res.json(req.session);
 });
 
-// App settings --------------------------------------
+/*
+ * App settings
+ */
 // To get the app settings.
 app.get('/settings', (req, res, next) => {
     if (req.session.userName) {

@@ -34,6 +34,19 @@ const router = createRouter({
             component: () => import('../components/pages/LoginView.vue')
         },
         {
+            path: '/student-signup',
+            name: 'student-signup',
+            component: () =>
+                import('../components/pages/SignUpStudentAccountView.vue')
+        },
+        {
+            path: '/editor-signup',
+            name: 'editor-signup',
+            component: () =>
+                import('../components/pages/SignUpEditorAccountView.vue')
+        },
+
+        {
             path: '/skills',
             name: 'skills',
             component: SkillsView
@@ -220,7 +233,9 @@ router.beforeEach(async (to) => {
         hasInitialLoadCompleted == false &&
         sessionDetailsStore.isLoggedIn == false &&
         // Avoid an infinite redirect
-        to.name !== 'login'
+        to.name !== 'login' &&
+        to.name !== 'student-signup' &&
+        to.name !== 'editor-signup'
     ) {
         // redirect the user to the login page
         return { name: 'login' };
