@@ -166,7 +166,7 @@ export default {
         @click.stop="mainButtonPress()"
     >
         <!-- Emoticons -->
-        <div v-if="level != 'domain'">
+        <div v-if="level != 'domain'" class="align-self-end">
             <!-- Choose one of 5 emoticon colours based on skill level -->
             <!-- check if mastered or unlocked -->
             <!-- and, if locked, apply grayscale. -->
@@ -345,7 +345,7 @@ export default {
 <style scoped>
 /* The skill buttons */
 .skill-button {
-    padding: 10px;
+    padding: 0px 10px;
     margin-bottom: 10px;
     border-style: solid;
     border-width: 2px;
