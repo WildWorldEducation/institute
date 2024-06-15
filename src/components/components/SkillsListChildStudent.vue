@@ -145,15 +145,15 @@ export default {
         recursivelySetState(items, state){
             items.forEach(element => {
 
-                // Comment this "if" structure //
-                if(element.type == 'domain'){
-                    localStorage.setItem(element.id + 'children', state);
-                }
-
                 // Uncoment this "if" structure //
-                // if(element.type == "domain" || element.type == "super"){
+                // if(element.type == 'domain'){
                 //     localStorage.setItem(element.id + 'children', state);
                 // }
+
+                // Comment this "if" structure //
+                if(element.type == "domain" || element.type == "super"){
+                    localStorage.setItem(element.id + 'children', state);
+                }
 
                 this.recursivelySetState(element.children, state)
             });
