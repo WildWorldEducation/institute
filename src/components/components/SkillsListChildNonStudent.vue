@@ -122,26 +122,24 @@ export default {
         HideMobileButtonsModal() {
             this.showModal = false;
         },
-        recursivelySetState(items, state){
-            items.forEach(element => {
-
-                // Uncoment this "if" structure //
-                // if(element.type == 'domain'){
-                //     localStorage.setItem(element.id + 'children', state);
-                // }
-
-                // Comment this "if" structure //
-                if(element.type == "domain" || element.type == "super"){
+        recursivelySetState(items, state) {
+            items.forEach((element) => {
+                if (
+                    element.type == 'domain' ||
+                    element.type == 'super' ||
+                    element.type == 'regular'
+                ) {
                     localStorage.setItem(element.id + 'children', state);
                 }
 
-                this.recursivelySetState(element.children, state)
+                this.recursivelySetState(element.children, state);
             });
         },
-        toggleExpandAll(){
-            this.recursivelySetState(this.children, !this.showChildren)
+        // Expand/Collapse All Domain Descendants.
+        toggleExpandAll() {
+            this.recursivelySetState(this.children, !this.showChildren);
             localStorage.setItem(this.id + 'children', !this.showChildren);
-            this.showChildren = !this.showChildren
+            this.showChildren = !this.showChildren;
         }
     }
 };
@@ -263,16 +261,44 @@ export default {
                     />
                 </svg>
             </button>
-            <button class="btn me-2 ci-btn" v-if="level == 'domain'" @click.stop="toggleExpandAll">
+            <!-- Expand/collapse all domain descendants button-->
+            <button
+                class="btn me-2 ci-btn"
+                v-if="level == 'domain'"
+                @click.stop="toggleExpandAll"
+            >
                 <!-- collapse icon from svgrepo.com -->
-                <svg v-if="showChildren" width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <svg
+                    v-if="showChildren"
+                    width="16px"
+                    height="16px"
+                    viewBox="0 0 16 16"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                >
                     <rect width="16" height="16" id="icon-bound" fill="none" />
-                    <path fill="#9C7EEC" d="M4.414,15.414L8,11.828L11.586,15.414L13,14L8,9L3,14L4.414,15.414ZM11.586,0.586L8,4.172L4.414,0.586L3,2L8,7L13,2L11.586,0.586Z" style="fill-rule:nonzero;"/>
+                    <path
+                        fill="#9C7EEC"
+                        d="M4.414,15.414L8,11.828L11.586,15.414L13,14L8,9L3,14L4.414,15.414ZM11.586,0.586L8,4.172L4.414,0.586L3,2L8,7L13,2L11.586,0.586Z"
+                        style="fill-rule: nonzero"
+                    />
                 </svg>
                 <!-- Expand icon from svgrepo.com -->
-                <svg v-else width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <svg
+                    v-else
+                    width="16px"
+                    height="16px"
+                    viewBox="0 0 16 16"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                >
                     <rect width="16" height="16" id="icon-bound" fill="none" />
-                    <path fill="#9C7EEC" d="M8,11.5L4.706,8.878l-1.416,1.416L8,14l4.706-3.706l-1.416-1.416L8,11.5z M8,4.5l3.294,2.622l1.416-1.416L8,2L3.294,5.706 l1.416,1.416L8,4.5z" />
+                    <path
+                        fill="#9C7EEC"
+                        d="M8,11.5L4.706,8.878l-1.416,1.416L8,14l4.706-3.706l-1.416-1.416L8,11.5z M8,4.5l3.294,2.622l1.416-1.416L8,2L3.294,5.706 l1.416,1.416L8,4.5z"
+                    />
                 </svg>
             </button>
         </div>
