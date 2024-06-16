@@ -238,7 +238,6 @@ export default {
             <img
                 v-else
                 src="/images/skill-emoticons/middle-school-unlocked.png"
-                class="locked-skill-styling"
             />
         </div>
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
@@ -498,15 +497,9 @@ export default {
 }
 
 /* Locked, unlocked and mastered styling */
-.locked-skill-styling {
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
-}
 
 .locked {
-    border-color: #c8d7da;
-    background-color: #f3f2f5;
-    color: #c8d7da;
+    filter: grayscale(100%);
 }
 
 .locked svg path {
