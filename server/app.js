@@ -141,6 +141,44 @@ app.get('/google-login-result', (req, res) => {
     googleLoginResult = '';
 });
 
+// Sign up with Google.
+app.post('/google-signup-attempt', (req, res) => {
+    googleUserDetails = jwt.decode(req.body.credential);
+    console.log(googleUserDetails);
+    // res.redirect('/google-signup-attempt');
+});
+
+var googleLoginResult;
+app.get('/google-signup-attempt', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    // Get user id based on Google email, if it exists.
+    let sqlQuery =
+        "SELECT * FROM skill_tree.users WHERE email = '" +
+        googleUserDetails.email +
+        "';";
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            // Check if user exists.
+            if (typeof results[0] !== 'undefined') {
+                // Log user in.
+                req.session.isLoggedIn = true;
+                req.session.userId = results[0].id;
+                req.session.userName = results[0].username;
+                req.session.role = results[0].role;
+                res.redirect('/');
+            } else {
+                googleLoginResult = 'no account';
+                res.redirect('/');
+            }
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 // Login and out. -----------------------------------
 // DELETE - redundant with below ("session-details")
 // To show whether the user is logged in or not in the nav bar,

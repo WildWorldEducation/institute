@@ -25,7 +25,15 @@ export default {
         };
     },
     async created() {},
-    mounted() {},
+    mounted() {
+        // Load Google login button.
+        let script = document.createElement('script');
+        script.setAttribute('src', 'https://accounts.google.com/gsi/client');
+        script.setAttribute('defer', '');
+        document.head.appendChild(script);
+
+        // this.GetGoogleLoginResult();
+    },
     methods: {
         ValidateForm() {
             if (
@@ -221,6 +229,24 @@ export default {
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
                     Sign up
                 </button>
+                <div
+                    id="g_id_onload"
+                    data-client_id="309231279221-r46j4e6utpo00t2292rlpgmeifu3foob.apps.googleusercontent.com"
+                    data-context="signup"
+                    data-ux_mode="popup"
+                    data-login_uri="/google-signup-attempt"
+                    data-auto_prompt="false"
+                ></div>
+
+                <div
+                    class="g_id_signin"
+                    data-type="standard"
+                    data-shape="rectangular"
+                    data-theme="outline"
+                    data-text="signup_with"
+                    data-size="large"
+                    data-logo_alignment="left"
+                ></div>
                 <div class="mt-3 signup text-center">
                     Have an account?
                     <a href="/login" class="links">Login</a>
