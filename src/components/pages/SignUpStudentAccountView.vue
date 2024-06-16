@@ -231,9 +231,9 @@ export default {
                 </button>
                 <div
                     id="g_id_onload"
-                    data-client_id="309231279221-r46j4e6utpo00t2292rlpgmeifu3foob.apps.googleusercontent.com"
+                    data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
                     data-context="signup"
-                    data-ux_mode="popup"
+                    data-ux_mode="redirect"
                     data-login_uri="/google-signup-attempt"
                     data-auto_prompt="false"
                 ></div>
