@@ -233,8 +233,8 @@ export default {
                     id="g_id_onload"
                     data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
                     data-context="signup"
-                    data-ux_mode="redirect"
-                    data-login_uri="/google-signup-attempt"
+                    data-ux_mode="popup"
+                    data-login_uri="http://localhost:3000/google-signup-attempt"
                     data-auto_prompt="false"
                 ></div>
 
@@ -246,6 +246,7 @@ export default {
                     data-text="signup_with"
                     data-size="large"
                     data-logo_alignment="left"
+                    data-width="330"
                 ></div>
                 <div class="mt-3 signup text-center">
                     Have an account?
