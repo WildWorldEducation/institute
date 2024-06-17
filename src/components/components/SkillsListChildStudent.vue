@@ -107,7 +107,6 @@ export default {
             this.$refs.name.classList.add('three-row-domain-name');
         else if (this.$refs.name.offsetHeight > 30)
             this.$refs.name.classList.add('two-row-domain-name');
-        
     },
     methods: {
         mainButtonPress() {
@@ -238,7 +237,6 @@ export default {
             <img
                 v-else
                 src="/images/skill-emoticons/middle-school-unlocked.png"
-                class="locked-skill-styling"
             />
         </div>
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
@@ -498,15 +496,11 @@ export default {
 }
 
 /* Locked, unlocked and mastered styling */
-.locked-skill-styling {
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
-}
 
 .locked {
+    filter: grayscale(100%);
     border-color: #c8d7da;
-    background-color: #f3f2f5;
-    color: #c8d7da;
+    color: rgba(83, 56, 158, 0.8);
 }
 
 .locked svg path {
