@@ -500,7 +500,7 @@ export default {
 .locked {
     filter: grayscale(100%);
     border-color: #c8d7da;
-    color: rgba(83, 56, 158, 0.8);
+    color: rgba(83, 56, 158, 0.6);
 }
 
 .locked svg path {
