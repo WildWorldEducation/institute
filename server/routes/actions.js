@@ -78,26 +78,26 @@ router.get('/:userId/flag', (req, res, next) => {
          * this will likely become a call back hell if there are a lot type of flag
          */
         let resResults = [];
-        let sqlQuery1 = `SELECT ua.*, cf.content_type AS flag_type, json_object('name', sk.name, 'description', sk.description, 'skill_id', sk.id) AS content_obj  
-                         FROM user_actions AS ua JOIN content_flags AS cf ON ua.content_id = cf.id JOIN skills AS sk ON sk.id = cf.content_id  
-                         WHERE ua.user_id = ${req.params.userId} AND ua.content_type = 'flag' AND cf.content_type = 'skill'`;
+        let sqlQuery1 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'description', skills.description, 'skill_id', skills.id) AS content_obj  
+                         FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN skills ON skills.id = content_flags.content_id  
+                         WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'flag' AND content_flags.content_type = 'skill'`;
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
                 resResults = resResults.concat(results);
-                let sqlQuery2 = `SELECT ua.*, cf.content_type AS flag_type, json_object('name', sk.name, 'description', sk.description, 'resource_id', rs.id) AS content_obj  
-                                 FROM user_actions AS ua JOIN content_flags AS cf ON ua.content_id = cf.id JOIN resources AS rs ON rs.id = cf.content_id JOIN skills AS sk ON sk.id = rs.skill_id  
-                                 WHERE ua.user_id = ${req.params.userId} AND ua.content_type = 'flag' AND cf.content_type = 'resource'`;
+                let sqlQuery2 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'description', skills.description, 'resource_id', resources.id) AS content_obj  
+                                 FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN resources ON resources.id = content_flags.content_id JOIN skills ON skills.id = resources.skill_id  
+                                 WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'flag' AND content_flags.content_type = 'resource'`;
                 conn.query(sqlQuery2, (err, results) => {
                     if (err) {
                         throw err;
                     }
                     resResults = resResults.concat(results);
-                    let sqlQuery3 = `SELECT ua.*, cf.content_type AS flag_type, json_object('name', sk.name, 'skill_id', sk.id, 'question', mc.question,'question_id', mc.id) AS content_obj  
-                                     FROM user_actions AS ua JOIN content_flags AS cf ON ua.content_id = cf.id JOIN mc_questions AS mc ON mc.id = cf.content_id JOIN skills AS sk ON sk.id = mc.skill_id  
-                                     WHERE ua.user_id = ${req.params.userId} AND ua.content_type = 'flag' AND cf.content_type = 'mc_question'`;
+                    let sqlQuery3 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id, 'question', mc_questions.question,'question_id', mc_questions.id) AS content_obj  
+                                     FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN mc_questions ON mc_questions.id = content_flags.content_id JOIN skills ON skills.id = mc_questions.skill_id  
+                                     WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'flag' AND content_flags.content_type = 'mc_question'`;
                     conn.query(sqlQuery3, (err, results) => {
                         if (err) {
                             throw err;
@@ -123,9 +123,9 @@ router.get('/:userId/flag', (req, res, next) => {
 router.get('/:userId/resource', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT ua.*, JSON_OBJECT('skill_name', sk.name, 'skill_id', sk.id) AS content_obj 
-                        FROM user_actions AS ua JOIN resources AS rs ON rs.id = ua.content_id JOIN skills AS sk ON sk.id = rs.skill_id   
-                        WHERE ua.user_id = ${req.params.userId} AND ua.content_type = 'resource'`;
+        let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id) AS content_obj 
+                        FROM user_actions JOIN resources ON resources.id = user_actions.content_id JOIN skills ON skills.id = resources.skill_id   
+                        WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'resource'`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
