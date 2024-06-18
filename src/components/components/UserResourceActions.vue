@@ -71,5 +71,6 @@ export default {
             </div>
         </div>
     </div>
+    <div v-else class="shake">The user has no action on resource</div>
 </template>
 <style></style>

@@ -70,5 +70,8 @@ export default {
             </div>
         </div>
     </div>
+    <div v-else class="shake">
+        The user has no action on multiple-choice questions
+    </div>
 </template>
 <style></style>
