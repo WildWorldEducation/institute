@@ -29,7 +29,7 @@ export default {
     async created() {},
     async mounted() {
         // call to content flags route
-        await this.getContentFlags();
+        await this.getContentFlagLogs();
         // prepare content flag response data in to show_able data
         this.contentFlags.forEach((contentFlag) => {
             // parse the content data because mysql library return it as a string
@@ -71,7 +71,7 @@ export default {
     },
     methods: {
         // TODO: use store instead.
-        async getContentFlags() {
+        async getContentFlagLogs() {
             const res = await fetch(`/actions/${this.userId}/flag`);
             this.contentFlags = await res.json();
         },

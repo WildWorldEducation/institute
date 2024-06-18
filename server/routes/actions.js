@@ -42,7 +42,7 @@ router.post('/', (req, res, next) => {
 });
 
 /**
- * List Actions of a specific user
+ * List Actions for a specific user
  *
  * @return response()
  */
@@ -95,7 +95,7 @@ router.get('/:userId/flag', (req, res, next) => {
                         throw err;
                     }
                     resResults = resResults.concat(results);
-                    let sqlQuery3 = `SELECT ua.*, cf.content_type AS flag_type, json_object('name', sk.name, 'description', sk.description, 'skill_id', sk.id, 'question', mc.question,'question_id', mc.id) AS content_obj  
+                    let sqlQuery3 = `SELECT ua.*, cf.content_type AS flag_type, json_object('name', sk.name, 'skill_id', sk.id, 'question', mc.question,'question_id', mc.id) AS content_obj  
                                      FROM user_actions AS ua JOIN content_flags AS cf ON ua.content_id = cf.id JOIN mc_questions AS mc ON mc.id = cf.content_id JOIN skills AS sk ON sk.id = mc.skill_id  
                                      WHERE ua.user_id = ${req.params.userId} AND ua.content_type = 'flag' AND cf.content_type = 'mc_question'`;
                     conn.query(sqlQuery3, (err, results) => {

@@ -12,7 +12,7 @@ export default {
 
     async created() {
         // call to content flags route
-        await this.getResources();
+        await this.getResourceLogs();
         this.resourcesData.forEach((resource) => {
             const contentObj = JSON.parse(resource.content_obj);
             const parseDate = new Date(resource.create_date);
@@ -35,7 +35,7 @@ export default {
         });
     },
     methods: {
-        async getResources() {
+        async getResourceLogs() {
             const res = await fetch(`/actions/${this.userId}/resource`);
             this.resourcesData = await res.json();
         },
