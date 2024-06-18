@@ -17,9 +17,8 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 
-
 /**
- * Add Actions of a specific user
+ * Add Actions for a specific user
  *
  * @return response()
  */
@@ -43,7 +42,7 @@ router.post('/', (req, res, next) => {
 });
 
 /**
- * Get List Actions of a specific user
+ * List Actions of a specific user
  *
  * @return response()
  */
@@ -67,7 +66,7 @@ router.get('/:userId', (req, res, next) => {
 });
 
 /**
- * Get List Actions with type content_flag of a specific user
+ * List Actions with type content_flag of a specific user
  *
  * @return response()
  */
@@ -93,7 +92,7 @@ router.get('/:userId/flag', (req, res, next) => {
                                  WHERE ua.user_id = ${req.params.userId} AND ua.content_type = 'flag' AND cf.content_type = 'resource'`;
                 conn.query(sqlQuery2, (err, results) => {
                     if (err) {
-                        throw (err)
+                        throw err;
                     }
                     resResults = resResults.concat(results);
                     let sqlQuery3 = `SELECT ua.*, cf.content_type AS flag_type, json_object('name', sk.name, 'description', sk.description, 'skill_id', sk.id, 'question', mc.question,'question_id', mc.id) AS content_obj  
@@ -101,13 +100,12 @@ router.get('/:userId/flag', (req, res, next) => {
                                      WHERE ua.user_id = ${req.params.userId} AND ua.content_type = 'flag' AND cf.content_type = 'mc_question'`;
                     conn.query(sqlQuery3, (err, results) => {
                         if (err) {
-                            throw (err)
+                            throw err;
                         }
                         resResults = resResults.concat(results);
                         res.json(resResults);
-                    })
-                })
-
+                    });
+                });
             } catch (err) {
                 next(err);
             }
@@ -117,9 +115,8 @@ router.get('/:userId/flag', (req, res, next) => {
     }
 });
 
-
 /**
- * Get List Actions with type resource of a specific user
+ * List Actions with type resource of a specific user
  *
  * @return response()
  */
@@ -144,9 +141,8 @@ router.get('/:userId/resource', (req, res, next) => {
     }
 });
 
-
 /**
- * Get List Actions with type mc_question of a specific user
+ * List Actions with type mc_question of a specific user
  *
  * @return response()
  */
@@ -170,81 +166,6 @@ router.get('/:userId/mc_question', (req, res, next) => {
         res.redirect('/login');
     }
 });
-
-/**
- * Delete List Actions relate to flag of a specific user
- *
- * @return response()
- */
-router.delete('/:userId/flag', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `DELETE FROM user_actions WHERE user_id = ${req.params.userId} AND content_type='flag'`;
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.json({ mess: 'success' });
-            } catch (err) {
-                next(err);
-            }
-        });
-    } else {
-        res.redirect('/login');
-    }
-});
-
-/**
- * Delete List Actions relate to resource of a specific user
- *
- * @return response()
- */
-router.delete('/:userId/resource', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `DELETE FROM user_actions WHERE user_id = ${req.params.userId} AND content_type='resource'`;
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.json({ mess: 'success' });
-            } catch (err) {
-                next(err);
-            }
-        });
-    } else {
-        res.redirect('/login');
-    }
-});
-
-/**
- * Delete List Actions relate to resource of a specific user
- *
- * @return response()
- */
-router.delete('/:userId/mc-question', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `DELETE FROM user_actions WHERE user_id = ${req.params.userId} AND content_type='mc_question)'`;
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.json({ mess: 'success' });
-            } catch (err) {
-                next(err);
-            }
-        });
-    } else {
-        res.redirect('/login');
-    }
-});
-
-
-
 
 // Export the router for app to use.
 module.exports = router;
