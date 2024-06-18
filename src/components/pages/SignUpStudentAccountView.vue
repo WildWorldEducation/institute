@@ -21,7 +21,8 @@ export default {
                 email: false,
                 emailFormat: false,
                 password: false
-            }
+            },
+            isProduction: import.meta.env.PROD
         };
     },
     async created() {},
@@ -230,6 +231,16 @@ export default {
                     Sign up
                 </button>
                 <div
+                    v-if="isProduction == true"
+                    id="g_id_onload"
+                    data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
+                    data-context="signup"
+                    data-ux_mode="popup"
+                    data-login_uri="https://parrhesia.io/google-signup-attempt"
+                    data-auto_prompt="false"
+                ></div>
+                <div
+                    v-else
                     id="g_id_onload"
                     data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
                     data-context="signup"
