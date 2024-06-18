@@ -1,0 +1,355 @@
+<script>
+// Import the stores.
+import { useUsersStore } from '../../stores/UsersStore';
+
+// Components
+import UserFlagActions from '../components/UserFlagActions.vue';
+import UserResourceActions from '../components/UserResourceActions.vue';
+import UserMcQuestionActions from '../components/UserMcQuestionActions.vue';
+
+export default {
+    setup() {
+        const usersStore = useUsersStore();
+        return {
+            usersStore
+        };
+    },
+    data() {
+        return {
+            user: {
+                id: this.$route.params.id,
+                firstName: null,
+                lastName: null,
+                username: null,
+                role: null,
+                avatar: null
+            },
+            showFlags: false,
+            showSources: false,
+            showQuestions: false,
+            showSkills: false,
+            mcQuestions: [],
+            resources: [],
+            flags: [],
+            skillEdits: [],
+            // We use prop as an event toggle for calling delete function
+            // in child component by watching the props
+            deleteFlag: false,
+            deleteResource: false,
+            deleteMcQuestion: false
+        };
+    },
+    components: {
+        UserFlagActions,
+        UserResourceActions,
+        UserMcQuestionActions
+    },
+    async created() {
+        // Get the user's details.
+        await this.getUserDetails();
+    },
+    methods: {
+        async getUserDetails() {
+            // Populate the user details.
+            if (this.usersStore.users.length < 1)
+                await this.usersStore.getUsers();
+            for (let i = 0; i < this.usersStore.users.length; i++) {
+                if (this.usersStore.users[i].id == this.user.id) {
+                    this.user.firstName = this.usersStore.users[i].first_name;
+                    this.user.lastName = this.usersStore.users[i].last_name;
+                    this.user.username = this.usersStore.users[i].username;
+                    this.user.role = this.usersStore.users[i].role;
+                    this.user.avatar = this.usersStore.users[i].avatar;
+                }
+            }
+        }
+    }
+};
+</script>
+
+<template>
+    <div class="container">
+        <div class="mt-4 mb-4">
+            <h1>User Activity Report</h1>
+        </div>
+        <!-- User Details -->
+        <div class="row">
+            <div class="d-flex flex-column flex-md-row gap-3">
+                <img id="activity-report-user-avatar" :src="user.avatar" />
+                <div class="d-flex flex-column">
+                    <div id="user-name">{{ user.username }}</div>
+                    <div id="role">{{ user.role }}</div>
+                </div>
+            </div>
+        </div>
+        <!------- Logging sections ------->
+        <div>
+            <!-- Flags -->
+            <div class="d-flex flex-column">
+                <div class="d-flex flex-row justify-content-between">
+                    <div
+                        class="log-type"
+                        @click="showFlags = !showFlags"
+                        b-on-hover
+                        :title="showFlags ? 'collapse' : 'expand'"
+                    >
+                        <span> Flags </span>
+                        <!-- Arrow Icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 320 512"
+                            width="22"
+                            height="22"
+                            fill="#667085"
+                            :class="[
+                                showFlags
+                                    ? 'arrow-point-down mb-2'
+                                    : 'arrow-point-up mb-2'
+                            ]"
+                        >
+                            <path
+                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <transition name="dropdown">
+                    <div v-if="showFlags">
+                        <UserFlagActions
+                            ref="contentFlagsPerUser"
+                            :userId="user.id"
+                            :deleteFlag="deleteFlag"
+                            @close-flag-div="showFlags = false"
+                        />
+                    </div>
+                </transition>
+            </div>
+            <hr class="mt-5 mb-3" />
+            <!-- Sources -->
+            <div class="d-flex flex-column">
+                <div class="d-flex flex-row justify-content-between">
+                    <div
+                        class="log-type"
+                        @click="showSources = !showSources"
+                        b-on-hover
+                        :title="showSources ? 'collapse' : 'expand'"
+                    >
+                        <span> Resources </span>
+                        <!-- Arrow Icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 320 512"
+                            width="22"
+                            height="22"
+                            fill="#667085"
+                            :class="[
+                                showSources
+                                    ? 'arrow-point-down mb-2'
+                                    : 'arrow-point-up mb-'
+                            ]"
+                        >
+                            <path
+                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <transition name="dropdown">
+                    <div v-if="showSources">
+                        <UserResourceActions
+                            :userId="user.id"
+                            :deleteResource="deleteResource"
+                            @close-resource-div="showSources = false"
+                        />
+                    </div>
+                </transition>
+            </div>
+            <hr class="mt-5 mb-3" />
+
+            <!-- Questions -->
+            <div class="d-flex flex-column">
+                <div class="d-flex flex-row justify-content-between">
+                    <div
+                        class="log-type"
+                        @click="showQuestions = !showQuestions"
+                        b-on-hover
+                        :title="showQuestions ? 'collapse' : 'expand'"
+                    >
+                        <span> MC Questions </span>
+                        <!-- Arrow Icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 320 512"
+                            width="22"
+                            height="22"
+                            fill="#667085"
+                            :class="[
+                                showQuestions
+                                    ? 'arrow-point-down mb-2'
+                                    : 'arrow-point-up mb-'
+                            ]"
+                        >
+                            <path
+                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <Transition name="dropdown">
+                    <div v-if="showQuestions">
+                        <UserMcQuestionActions
+                            :userId="user.id"
+                            :deleteMcQuestion="deleteMcQuestion"
+                            @close-mc-question-div="showQuestions = false"
+                        />
+                    </div>
+                </Transition>
+            </div>
+            <hr class="mt-5 mb-3" />
+        </div>
+
+        <!-- Skills -->
+        <!-- <div class="row">
+            <button type="button" @click="showSkills = !showSkills">
+                <h2>Skills</h2>
+            </button>
+            <div :class="{ 'd-none': !showSkills }">
+                <ul>
+                    <li v-for="skillEdit in skillEdits">
+                        <span v-if="skillEdit.type == 'edit'">Edited </span>
+                        <span v-else-if="skillEdit.type == 'delete'"
+                            >Deleted
+                        </span>
+                        <span v-else-if="skillEdit.type == 'create'"
+                            >Created
+                        </span>
+                        <RouterLink
+                            :to="'/skills/' + skillEdit.skill_id"
+                            target="_blank"
+                        >
+                            {{ skillEdit.skill_name }}
+                        </RouterLink>
+                        , {{ skillEdit.date }}
+                    </li>
+                </ul>
+            </div>
+        </div> -->
+    </div>
+</template>
+
+<style>
+/* User details section */
+#activity-report-user-avatar {
+    width: 135px;
+    height: 135px;
+    border-radius: 12px;
+}
+
+#user-name {
+    font-size: 20px;
+    font-weight: 660;
+    font-family: 'Poppins', sans-serif;
+    color: #667085;
+}
+
+#role {
+    color: #667085;
+    margin-left: 2px;
+}
+
+.log-type {
+    color: #667085;
+    font-size: 18px;
+    font-weight: 550;
+    margin-top: 20px;
+    width: fit-content;
+}
+
+.log-type:hover {
+    cursor: pointer;
+}
+
+/* +-+-+ Rotate Arrow Animation +-+-+  */
+.arrow-point-down {
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.arrow-point-up {
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+/* +-+-+ Rotate Arrow Animation +-+-+  */
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+.dropdown-enter-active {
+    transform-origin: top center;
+    animation: slide 0.5s;
+}
+.dropdown-leave-active {
+    transform-origin: top center;
+    animation: slide 0.5s reverse;
+}
+
+/* Style for component that shared among children */
+.main-container {
+    background-color: #e4ecf4;
+    border-radius: 5px;
+    padding: 15px 20px;
+}
+
+.skill-link {
+    text-decoration: none;
+    color: #667085;
+    font-weight: 500;
+}
+
+.question-link {
+    margin-left: 5px;
+    margin-right: 5px;
+    font-weight: 400;
+    text-decoration: none;
+    color: #667085;
+}
+
+/* Color code for actions */
+.create-action {
+    color: green;
+}
+
+.update-action {
+    color: blue;
+}
+
+.delete-action {
+    color: red;
+}
+</style>
