@@ -54,9 +54,9 @@ export default {
 </script>
 
 <template>
-    <div class="container-md main-container">
+    <div v-if="rows.length" class="container-md main-container">
         <!-- Vue Data Table Desktop  -->
-        <div v-if="rows.length" class="d-flex flex-column">
+        <div class="d-flex flex-column">
             <div v-for="resource in rows">
                 {{ resource.time }} ({{ resource.date }}) -
                 <span :class="actionColor(resource.action)">

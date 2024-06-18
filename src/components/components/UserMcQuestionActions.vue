@@ -53,7 +53,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-md main-container">
+    <div v-if="rows.length > 0" class="container-md main-container">
         <!-- Vue Data Table Desktop  -->
         <div class="d-flex flex-column">
             <div v-for="question in rows">

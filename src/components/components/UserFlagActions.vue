@@ -90,9 +90,9 @@ export default {
 </script>
 
 <template>
-    <div class="container-md main-container">
+    <div v-if="rows.length" class="container-md main-container">
         <!-- Vue Data Table Desktop  -->
-        <div v-if="rows.length" class="d-flex flex-column gap-3">
+        <div class="d-flex flex-column gap-3">
             <div class="d-flex" v-for="contentFlag in rows">
                 <div class="d-flex w-fit me-1">{{ contentFlag.date }} -</div>
                 <!-- flag type skill -->
