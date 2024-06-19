@@ -36,7 +36,7 @@ export default {
     },
     methods: {
         async getResourceLogs() {
-            const res = await fetch(`/actions/${this.userId}/resource`);
+            const res = await fetch(`/user-actions/${this.userId}/resource`);
             this.resourcesData = await res.json();
         },
         actionColor(action) {

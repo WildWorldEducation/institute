@@ -72,7 +72,7 @@ export default {
     methods: {
         // TODO: use store instead.
         async getContentFlagLogs() {
-            const res = await fetch(`/actions/${this.userId}/flag`);
+            const res = await fetch(`/user-actions/${this.userId}/flag`);
             this.contentFlags = await res.json();
         },
         actionColor(action) {
