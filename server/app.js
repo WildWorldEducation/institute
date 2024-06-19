@@ -144,14 +144,15 @@ app.get('/google-login-result', (req, res) => {
 // Sign up with Google.
 app.post('/google-signup-attempt', (req, res) => {
     googleUserDetails = jwt.decode(req.body.credential);
-    console.log(googleUserDetails);
-    // res.redirect('/google-signup-attempt');
+    //console.log(googleUserDetails);
+    res.redirect('/google-signup-attempt');
 });
 
 var googleLoginResult;
 app.get('/google-signup-attempt', (req, res) => {
+    console.log(googleUserDetails);
     res.setHeader('Content-Type', 'application/json');
-    // Get user id based on Google email, if it exists.
+    // Check if user already exists.
     let sqlQuery =
         "SELECT * FROM skill_tree.users WHERE email = '" +
         googleUserDetails.email +
@@ -170,8 +171,16 @@ app.get('/google-signup-attempt', (req, res) => {
                 req.session.role = results[0].role;
                 res.redirect('/');
             } else {
-                googleLoginResult = 'no account';
-                res.redirect('/');
+                // create account.
+                let data = {
+                    first_name: googleUserDetails.given_name,
+                    last_name: googleUserDetails.family_name,
+                    username: googleUserDetails.name,
+                    email: googleUserDetails.email,
+                    role: 'student'
+                };
+
+                
             }
         } catch (err) {
             next(err);
