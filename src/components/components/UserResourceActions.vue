@@ -65,6 +65,7 @@ export default {
                 resource for skill:
                 <router-link
                     class="skill-link"
+                    target="_blank"
                     :to="`/skills/${resource.skillId}`"
                     >{{ resource.skillName }}</router-link
                 >

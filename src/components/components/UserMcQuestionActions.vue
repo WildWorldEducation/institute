@@ -64,6 +64,7 @@ export default {
                 mc_question for skill:
                 <router-link
                     class="skill-link"
+                    target="_blank"
                     :to="`/skills/${question.skillId}`"
                     >{{ question.skillName }}</router-link
                 >

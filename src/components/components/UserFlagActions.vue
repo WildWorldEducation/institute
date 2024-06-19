@@ -106,6 +106,7 @@ export default {
                     &nbsp;flag on skill:&nbsp;
                     <router-link
                         class="skill-link"
+                        target="_blank"
                         :to="`/skills/${contentFlag.skillId}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
@@ -121,6 +122,7 @@ export default {
                     &nbsp;flag on resource of skill:&nbsp;
                     <router-link
                         class="skill-link"
+                        target="_blank"
                         :to="`/skills/${contentFlag.skillId}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
@@ -136,12 +138,14 @@ export default {
                     &nbsp;flag on mc_question:
                     <router-link
                         class="question-link"
+                        target="_blank"
                         :to="`/skills/${contentFlag.skillId}/question-bank`"
                         >{{ contentFlag.questionName }}</router-link
                     >
                     on skill:&nbsp;
                     <router-link
                         class="skill-link"
+                        target="_blank"
                         :to="`/skills/${contentFlag.skillId}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
