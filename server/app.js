@@ -144,7 +144,6 @@ app.get('/google-login-result', (req, res) => {
 // Sign up with Google.
 app.post('/google-signup-attempt', (req, res) => {
     googleUserDetails = jwt.decode(req.body.credential);
-    //console.log(googleUserDetails);
     res.redirect('/google-signup-attempt');
 });
 
@@ -153,11 +152,11 @@ app.get('/google-signup-attempt', (req, res) => {
     console.log(googleUserDetails);
     res.setHeader('Content-Type', 'application/json');
     // Check if user already exists.
-    let sqlQuery =
+    let sqlQuery1 =
         "SELECT * FROM skill_tree.users WHERE email = '" +
         googleUserDetails.email +
         "';";
-    let query = conn.query(sqlQuery, (err, results) => {
+    let query1 = conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
                 throw err;
@@ -170,8 +169,10 @@ app.get('/google-signup-attempt', (req, res) => {
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
                 res.redirect('/');
-            } else {
-                // create account.
+            }
+            // If not.
+            else {
+                // Create account.
                 let data = {
                     first_name: googleUserDetails.given_name,
                     last_name: googleUserDetails.family_name,
@@ -180,7 +181,30 @@ app.get('/google-signup-attempt', (req, res) => {
                     role: 'student'
                 };
 
-                
+                let sqlQuery2 = 'INSERT INTO users SET ?';
+                let query2 = conn.query(sqlQuery2, data, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        } else {
+                            let newStudentId = results.insertId;
+                            // Create session to log the user in.
+                            req.session.userId = newStudentId;
+                            req.session.userName = data.username;
+                            req.session.firstName = data.first_name;
+                            req.session.lastName = data.last_name;
+                            req.session.role = data.role;
+
+                            // Unlock skills here
+                            unlockInitialSkills(newStudentId);
+
+                            googleLoginResult = 'created';
+                            res.redirect('/');
+                        }
+                    } catch (err) {
+                        next(err);
+                    }
+                });
             }
         } catch (err) {
             next(err);
