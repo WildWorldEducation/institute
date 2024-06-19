@@ -57,7 +57,7 @@ export default {
                     break;
                 case 'resource':
                     pushObj.type = 'resource';
-                    pushObj.resourceId = contentObj.resource_id;
+                    pushObj.skillId = contentObj.skill_id;
                     break;
                 case 'skill':
                     pushObj.type = 'skill';

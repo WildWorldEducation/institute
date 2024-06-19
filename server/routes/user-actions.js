@@ -88,7 +88,7 @@ router.get('/:userId/flag', (req, res, next) => {
                     throw err;
                 }
                 resResults = resResults.concat(results);
-                let sqlQuery2 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'resource_id', resources.id) AS content_obj  
+                let sqlQuery2 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id) AS content_obj  
 FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN resources ON resources.id = content_flags.content_id JOIN skills ON skills.id = resources.skill_id  
 WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'resource'`;
                 conn.query(sqlQuery2, (err, results) => {
