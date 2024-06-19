@@ -134,6 +134,16 @@ export default {
                 >
                     Skill list
                 </router-link>
+                <div class="d-flex justify-content-center mt-2">
+                    <router-link
+                        v-if="userDetailsStore.role == 'admin'"
+                        target="_blank"
+                        :to="'/users/activity-report/' + this.$parent.user.id"
+                        class="btn purple-btn"
+                    >
+                        Activity Report
+                    </router-link>
+                </div>
             </div>
             <div id="user-form-info" class="col-12 col-md-6">
                 <div class="mb-3">

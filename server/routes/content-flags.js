@@ -28,7 +28,9 @@ router.get('/list', async (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Get data for mc_question type Flag (extremely long raw sql query)
         let sqlMCQuery =
-            "SELECT cf.*, ut.id as userId, ut.username, ut.avatar, ut.role as userRole,  json_object('question', mc.question, 'name', mc.name, 'incorrectAnswer1', mc.incorrect_answer_1, 'incorrectAnswer2', mc.incorrect_answer_2, 'incorrectAnswer3', mc.incorrect_answer_3, 'incorrectAnswer4', mc.incorrect_answer_4, 'correctAnswer', mc.correct_answer, 'explanation', mc.explanation, 'skillName', sk.name, 'skillId', sk.id) as contentData FROM ( content_flags AS cf JOIN mc_questions AS mc ON cf.content_id = mc.id JOIN skills AS sk ON sk.id = mc.skill_id ) JOIN users as ut ON cf.user_id = ut.id WHERE cf.content_type = 'mc_question' GROUP BY cf.id ";
+            `SELECT content_flags.*, users.id as userId, users.username, users.avatar, users.role as userRole,  json_object('question', mc_questions.question, 'name', mc_questions.name, 'incorrectAnswer1', mc_questions.incorrect_answer_1, 'incorrectAnswer2', mc_questions.incorrect_answer_2, 'incorrectAnswer3', mc_questions.incorrect_answer_3, 'incorrectAnswer4', mc_questions.incorrect_answer_4, 'correctAnswer', mc_questions.correct_answer, 'explanation', mc_questions.explanation, 'skillName', skills.name, 'skillId', skills.id) as contentData 
+             FROM ( content_flags AS content_flags JOIN mc_questions ON content_flags.content_id = mc_questions.id JOIN skills ON skills.id = mc_questions.skill_id ) JOIN users ON content_flags.user_id = users.id 
+             WHERE content_flags.content_type = 'mc_question' GROUP BY content_flags.id `;
         conn.query(sqlMCQuery, (err, results) => {
             try {
                 if (err) {
@@ -37,7 +39,9 @@ router.get('/list', async (req, res, next) => {
                 resData = resData.concat(results);
                 // Get data for essay_question type flag
                 let sqlEssayQuery =
-                    "SELECT cf.*, ut.id as userId, ut.username, ut.avatar, ut.role as userRole, json_object('question', es.question, 'name', es.name, 'skillName', sk.name, 'skillId', sk.id) as contentData FROM (content_flags AS cf JOIN essay_questions AS es ON cf.content_id = es.id JOIN skills AS sk ON sk.id = es.skill_id) JOIN users as ut ON ut.id = cf.user_id WHERE cf.content_type = 'essay_question' GROUP BY cf.id ";
+                    `SELECT content_flags.*, users.id as userId, users.username, users.avatar, users.role as userRole, json_object('question', essay_questions.question, 'name', essay_questions.name, 'skillName', skills.name, 'skillId', skills.id) as contentData 
+                    FROM (content_flags JOIN essay_questions ON content_flags.content_id = essay_questions.id JOIN skills ON skills.id = essay_questions.skill_id) JOIN users ON users.id = content_flags.user_id 
+                    WHERE content_flags.content_type = 'essay_question' GROUP BY content_flags.id `;
                 conn.query(sqlEssayQuery, (err, results) => {
                     if (err) {
                         throw err;
@@ -45,7 +49,9 @@ router.get('/list', async (req, res, next) => {
                     resData = resData.concat(results);
                     // Get data for skill type flag
                     let sqlSkillQuery =
-                        "SELECT cf.*, ut.id as userId, ut.username, ut.avatar, ut.role as userRole, json_object('name', sk.name, 'description', sk.description, 'masteryRequirements', sk.mastery_requirements, 'level', sk.level) as contentData FROM (content_flags AS cf JOIN skills AS sk ON cf.content_id = sk.id) JOIN users as ut ON ut.id = cf.user_id WHERE cf.content_type = 'skill' GROUP BY cf.id ";
+                        `SELECT content_flags.*, users.id as userId, users.username, users.avatar, users.role as userRole, json_object('name', skills.name, 'description', skills.description, 'masteryRequirements', skills.mastery_requirements, 'level', skills.level) as contentData 
+                        FROM (content_flags JOIN skills ON content_flags.content_id = skills.id) JOIN users ON users.id = content_flags.user_id 
+                        WHERE content_flags.content_type = 'skill' GROUP BY content_flags.id `;
                     conn.query(sqlSkillQuery, (err, results) => {
                         if (err) {
                             throw err;
@@ -53,7 +59,9 @@ router.get('/list', async (req, res, next) => {
                         resData = resData.concat(results);
                         // Get Data for resource type flag
                         let sqlResourceQuery =
-                            "SELECT cf.*, ut.id as userId, ut.username, ut.avatar, ut.role as userRole, json_object('content', re.content ,'skill' , sk.name, 'skillId', sk.id, 'user', u.username) as contentData FROM (content_flags AS cf JOIN resources AS re ON cf.content_id = re.id JOIN skills AS sk ON sk.id = re.skill_id JOIN users AS u ON u.id = re.user_id) JOIN users as ut ON cf.user_id = ut.id WHERE cf.content_type = 'resource' GROUP BY cf.id ";
+                            `SELECT content_flags.*, flagging_user.id as userId, flagging_user.username, flagging_user.avatar, flagging_user.role as userRole, json_object('content', resources.content ,'skill' , sk.name, 'skillId', sk.id, 'user', users.username) as contentData 
+                            FROM (content_flags JOIN resources ON content_flags.content_id = resources.id JOIN skills AS sk ON sk.id = resources.skill_id JOIN users ON users.id = resources.user_id) JOIN users as flagging_user ON content_flags.user_id = flagging_user.id 
+                            WHERE content_flags.content_type = 'resource' GROUP BY content_flags.id `;
                         conn.query(sqlResourceQuery, (err, results) => {
                             if (err) {
                                 throw err;

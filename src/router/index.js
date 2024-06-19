@@ -179,6 +179,12 @@ const router = createRouter({
                 import('../components/pages/EditSkillMasteryView.vue')
         },
         {
+            path: '/users/activity-report/:id',
+            name: 'user-activity-report',
+            component: () =>
+                import('../components/pages/UserActivityReportPageView.vue')
+        },
+        {
             path: '/profile-settings',
             name: 'profile-settings',
             component: () =>
