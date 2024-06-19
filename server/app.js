@@ -148,6 +148,7 @@ app.post('/google-signup-attempt', (req, res) => {
 });
 
 var googleLoginResult;
+const { unlockInitialSkills } = require('./utilities/unlock-initial-skills');
 app.get('/google-signup-attempt', (req, res, next) => {
     console.log(googleUserDetails);
     res.setHeader('Content-Type', 'application/json');
