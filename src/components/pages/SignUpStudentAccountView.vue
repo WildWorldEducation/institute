@@ -113,7 +113,7 @@ export default {
                 .then((data) => {
                     if (data.account == 'created')
                         alert(
-                            'Please access your profiel and create a password.'
+                            'Please access your profile and create a password.'
                         );
                 });
         }
