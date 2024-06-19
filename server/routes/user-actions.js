@@ -78,9 +78,10 @@ router.get('/:userId/flag', (req, res, next) => {
          * this will likely become a call back hell if there are a lot type of flag
          */
         let resResults = [];
-        let sqlQuery1 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'description', skills.description, 'skill_id', skills.id) AS content_obj  
-                         FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN skills ON skills.id = content_flags.content_id  
-                         WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'flag' AND content_flags.content_type = 'skill'`;
+        let sqlQuery1 = `
+            SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id) AS content_obj  
+            FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN skills ON skills.id = content_flags.content_id  
+            WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'skill'`;
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
