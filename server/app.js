@@ -148,7 +148,7 @@ app.post('/google-signup-attempt', (req, res) => {
 });
 
 var googleLoginResult;
-app.get('/google-signup-attempt', (req, res) => {
+app.get('/google-signup-attempt', (req, res, next) => {
     console.log(googleUserDetails);
     res.setHeader('Content-Type', 'application/json');
     // Check if user already exists.
