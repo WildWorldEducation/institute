@@ -89,12 +89,27 @@ router.post('/add', (req, res, next) => {
             user_id: req.body.user_id
         };
         let sqlQuery = 'INSERT IGNORE INTO content_flags SET ?';
-        let query = conn.query(sqlQuery, data, (err, results) => {
+        conn.query(sqlQuery, data, (err, result) => {
             try {
                 if (err) {
                     throw err;
                 } else {
-                    res.end();
+                    // Add create Flag Action
+                    let actionData = {
+                        action: 'create',
+                        content_id: result.insertId,
+                        user_id: data.user_id,
+                        content_type: 'content_flag',
+                    };
+                    let userActionQuery = 'INSERT IGNORE INTO user_actions SET ?';
+                    conn.query(userActionQuery, actionData, (err, result) => {
+                        if (err) {
+                            throw err;
+                        }
+                        else {
+                            res.end();
+                        }
+                    })
                 }
             } catch (err) {
                 next(err);
