@@ -104,7 +104,7 @@ export default {
                             :class="[
                                 showFlags
                                     ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up mb-2'
+                                    : 'arrow-point-up '
                             ]"
                         >
                             <path
@@ -145,7 +145,7 @@ export default {
                             :class="[
                                 showSources
                                     ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up mb-'
+                                    : 'arrow-point-up '
                             ]"
                         >
                             <path
@@ -186,7 +186,7 @@ export default {
                             :class="[
                                 showQuestions
                                     ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up mb-'
+                                    : 'arrow-point-up'
                             ]"
                         >
                             <path
