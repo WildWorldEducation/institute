@@ -89,16 +89,16 @@ router.get('/:userId/flag', (req, res, next) => {
                 }
                 resResults = resResults.concat(results);
                 let sqlQuery2 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id) AS content_obj  
-FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN resources ON resources.id = content_flags.content_id JOIN skills ON skills.id = resources.skill_id  
-WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'resource'`;
+                    FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN resources ON resources.id = content_flags.content_id JOIN skills ON skills.id = resources.skill_id  
+                    WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'resource'`;
                 conn.query(sqlQuery2, (err, results) => {
                     if (err) {
                         throw err;
                     }
                     resResults = resResults.concat(results);
                     let sqlQuery3 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id, 'question', mc_questions.question,'question_id', mc_questions.id) AS content_obj  
-                                     FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN mc_questions ON mc_questions.id = content_flags.content_id JOIN skills ON skills.id = mc_questions.skill_id  
-                                     WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'flag' AND content_flags.content_type = 'mc_question'`;
+                        FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN mc_questions ON mc_questions.id = content_flags.content_id JOIN skills ON skills.id = mc_questions.skill_id  
+                        WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'mc_question'`;
                     conn.query(sqlQuery3, (err, results) => {
                         if (err) {
                             throw err;
