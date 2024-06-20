@@ -192,6 +192,22 @@ router.put('/edit/:id', (req, res, next) => {
                             req.params.id;
                         let query2 = conn.query(sqlQuery2, (err, results) => {
                             if (err) throw err;
+                            else {
+                                // add update action into user_actions table
+                                const actionData = {
+                                    content_id: req.params.id,
+                                    content_type: 'resource',
+                                    action: 'update',
+                                    user_id: postUserId
+                                }
+                                const actionQuery = 'INSERT INTO user_actions SET ?';
+                                conn.query(actionQuery, actionData, (err) => {
+                                    if (err) {
+                                        throw err
+                                    }
+                                })
+
+                            }
                             res.end();
                         });
                     }
