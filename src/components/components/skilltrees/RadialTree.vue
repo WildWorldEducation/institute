@@ -53,7 +53,9 @@ export default {
             // D3 zoom class
             d3Zoom: null,
             // Printing
-            data: {}
+            data: {},
+            // For the loading animation.
+            isLoading: true
         };
     },
     components: {
@@ -128,6 +130,9 @@ export default {
                 this.showInfoPanel();
             }
         });
+
+        // For the loading animation.
+        this.isLoading = false;
     },
     methods: {
         getAlgorithm() {
@@ -788,8 +793,12 @@ export default {
     <button id="print-btn" class="btn btn-info" @click="printPDF()">
         Print
     </button>
+    <!-- Loading animation -->
+    <div v-if="isLoading == true" class="center-screen">
+        <span class="loader"></span>
+    </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
-    <div id="wrapper">
+    <div v-show="isLoading == false" id="wrapper">
         <SkillPanel :skill="skill" />
         <canvas id="canvas" width="1500" height="1500"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
@@ -800,6 +809,41 @@ export default {
 </template>
 
 <style scoped>
+/* Loading animation */
+.center-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #a48be5;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
+
 #wrapper {
     width: 100%;
     height: 100%;
