@@ -60,7 +60,7 @@ export default {
     >
         <hr />
         <h1>Check MC Questions</h1>
-        <button class="btn green-btn mt-3" @click="CheckMCQuestions()" >
+        <button class="btn green-btn mt-3" @click="CheckMCQuestions()" disabled>
             Check now
         </button>
         <p style="font-size: 14px" class="mt-2">
