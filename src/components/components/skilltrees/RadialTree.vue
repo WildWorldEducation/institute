@@ -794,7 +794,7 @@ export default {
         Print
     </button>
     <!-- Loading animation -->
-    <div v-if="isLoading == true" class="center-screen">
+    <div v-if="isLoading == true" class="loading-animation d-flex justify-content-center align-items-center py-4">
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
@@ -809,20 +809,6 @@ export default {
 </template>
 
 <style scoped>
-/* Loading animation */
-.center-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    min-height: 100%;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-}
-
 .loader {
     width: 48px;
     height: 48px;
@@ -915,6 +901,18 @@ input[type='button'] {
 @media (max-width: 800px) {
     .flex-container {
         flex-direction: column;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    /* Loading animation */
+    .loading-animation {
+        min-height: 100%;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
     }
 }
 </style>
