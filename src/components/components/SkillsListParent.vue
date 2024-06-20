@@ -31,7 +31,9 @@ export default {
             studentId: this.$route.params.studentId,
             studentName: null,
             instructorMode: false,
-            studentUserSkills: []
+            studentUserSkills: [],
+            // For the loading animation.
+            isLoading: true
         };
     },
     computed: {
@@ -97,6 +99,9 @@ export default {
             await this.skillTreeStore.getStudentSkills(this.studentId);
             this.studentUserSkills = this.skillTreeStore.studentSkills;
         }
+
+        // For the loading animation.
+        this.isLoading = false;
     },
     methods: {
         async DeleteSkill(id) {
@@ -114,7 +119,11 @@ export default {
 
 <template>
     <h1 v-if="instructorMode">{{ studentName }}</h1>
-    <div class="container mt-3" style="overflow: auto">
+    <!-- Loading animation -->
+    <div v-if="isLoading == true" class="center-screen">
+        <span class="loader"></span>
+    </div>
+    <div v-else class="container mt-3" style="overflow: auto">
         <!-- Students -->
         <div
             v-if="this.userDetailsStore.role == 'student'"
@@ -185,4 +194,38 @@ export default {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* Loading animation */
+.center-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #a48be5;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+</style>
