@@ -32,8 +32,6 @@ export default {
         script.setAttribute('src', 'https://accounts.google.com/gsi/client');
         script.setAttribute('defer', '');
         document.head.appendChild(script);
-
-        this.GetGoogleLoginResult();
     },
     methods: {
         ValidateForm() {
@@ -103,18 +101,6 @@ export default {
                     } else if (data.account == 'email already taken') {
                         alert(data.account);
                     }
-                });
-        },
-        GetGoogleLoginResult() {
-            fetch('/google-login-result')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => {
-                    if (data.account == 'created')
-                        alert(
-                            'Please access your profile and create a password.'
-                        );
                 });
         }
     }

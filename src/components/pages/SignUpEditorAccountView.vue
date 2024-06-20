@@ -36,8 +36,6 @@ export default {
         script.setAttribute('src', 'https://accounts.google.com/gsi/client');
         script.setAttribute('defer', '');
         document.head.appendChild(script);
-
-        this.GetGoogleLoginResult();
     },
     methods: {
         ValidateForm() {

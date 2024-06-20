@@ -149,7 +149,6 @@ app.post('/google-student-signup-attempt', (req, res) => {
     res.redirect('/google-student-signup-attempt');
 });
 
-var googleLoginResult;
 const { unlockInitialSkills } = require('./utilities/unlock-initial-skills');
 app.get('/google-student-signup-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
@@ -205,7 +204,6 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                             // Unlock skills here
                             unlockInitialSkills(newStudentId);
 
-                            googleLoginResult = 'created';
                             res.redirect('/');
                         }
                     } catch (err) {
