@@ -57,7 +57,7 @@ router.post('/add/:skillId', (req, res, next) => {
 
         // Check that source is not in the list of blocked domains.
         let sqlQuery1 = `SELECT * FROM blacklisted_sources`;
-        let query1 = conn.query(sqlQuery1, data, (err, results) => {
+        conn.query(sqlQuery1, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -77,12 +77,26 @@ router.post('/add/:skillId', (req, res, next) => {
 
                     // Add the source.
                     let sqlQuery2 = 'INSERT INTO resources SET ?';
-                    let query2 = conn.query(sqlQuery2, data, (err, results) => {
+                    conn.query(sqlQuery2, data, (err, result) => {
                         try {
                             if (err) {
                                 throw err;
                             } else {
-                                res.json('');
+                                // add create resource action to user-actions table
+                                const actionData = {
+                                    content_type: 'resource',
+                                    content_id: result.insertId,
+                                    action: 'create',
+                                    user_id: data.user_id,
+                                }
+                                const actionQuery = 'INSERT INTO user_actions SET ?';
+                                conn.query(actionQuery, actionData, (err) => {
+                                    if (err) {
+                                        throw err;
+                                    } else {
+                                        res.json('');
+                                    }
+                                })
                             }
                         } catch (err) {
                             next(err);
@@ -754,7 +768,7 @@ function deleteDuplicateSources() {
                         }
                         console.log(
                             'Duplicate sources deleted: ' +
-                                duplicateSources.length
+                            duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);
