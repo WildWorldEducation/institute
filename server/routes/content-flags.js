@@ -94,7 +94,7 @@ router.post('/add', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    // Add create Flag Action
+                    // Add create Flag Action to user-actions table
                     let actionData = {
                         action: 'create',
                         content_id: result.insertId,

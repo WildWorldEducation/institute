@@ -444,12 +444,26 @@ router.post('/student-mc-questions/add', (req, res, next) => {
         };
 
         let sqlQuery = 'INSERT INTO student_mc_questions SET ?';
-        let query = conn.query(sqlQuery, data, (err, results) => {
+        let query = conn.query(sqlQuery, data, (err, result) => {
             try {
                 if (err) {
                     throw err;
                 } else {
-                    res.end();
+                    // add create actions into user-actions table
+                    const actionData = {
+                        content_id: result.insertId,
+                        user_id: data.student_id,
+                        action: 'create',
+                        content_type: 'student_mc_question'
+                    }
+                    const actionQuery = 'INSERT INTO user_actions SET ?';
+                    conn.query(actionQuery, actionData, (err) => {
+                        if (err) {
+                            throw err;
+                        } else {
+                            res.end();
+                        }
+                    })
                 }
             } catch (err) {
                 next(err);
@@ -645,8 +659,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                    mcQuestions[index].id +
-                                    ' complete'
+                                mcQuestions[index].id +
+                                ' complete'
                             );
                             // Check the next question.
                             index++;
