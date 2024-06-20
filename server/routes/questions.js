@@ -455,7 +455,7 @@ router.post('/student-mc-questions/add', (req, res, next) => {
                         user_id: data.student_id,
                         action: 'create',
                         content_type: 'student_mc_question'
-                    }
+                    };
                     const actionQuery = 'INSERT INTO user_actions SET ?';
                     conn.query(actionQuery, actionData, (err) => {
                         if (err) {
@@ -463,7 +463,7 @@ router.post('/student-mc-questions/add', (req, res, next) => {
                         } else {
                             res.end();
                         }
-                    })
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -509,8 +509,8 @@ router.get('/check-questions', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Get all MC questions.
         let sqlQuery1 = `SELECT * FROM mc_questions   
-        WHERE is_checked = 0        
-        ORDER BY id`;
+        WHERE is_checked = 0 AND skill_id < 51       
+        ORDER BY skill_id`;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -634,7 +634,7 @@ async function checkQuestion(index, userId) {
             data = {
                 content_type: 'mc_question',
                 content_id: mcQuestions[index].id,
-                student_id: userId
+                user_id: userId
             };
 
             let sqlQuery1 = 'INSERT INTO content_flags SET ?';
@@ -659,8 +659,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                mcQuestions[index].id +
-                                ' complete'
+                                    mcQuestions[index].id +
+                                    ' complete'
                             );
                             // Check the next question.
                             index++;
