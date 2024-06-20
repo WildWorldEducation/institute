@@ -170,10 +170,10 @@ router.put('/edit/:id', (req, res, next) => {
             req.body.editordata = req.body.editordata.replace(/'/g, "\\'");
 
         //Extra backend security check that the user is allowed to edit the post.
-        var postUserId;
-        let sqlQuery1 =
+        let postUserId;
+        const sqlQuery1 =
             'SELECT user_id FROM resources WHERE id=' + req.params.id;
-        let query1 = conn.query(sqlQuery1, (err, results) => {
+        conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -190,7 +190,7 @@ router.put('/edit/:id', (req, res, next) => {
                             req.body.editordata +
                             "' WHERE id=" +
                             req.params.id;
-                        let query2 = conn.query(sqlQuery2, (err, results) => {
+                        conn.query(sqlQuery2, (err) => {
                             if (err) throw err;
                             else {
                                 // add update action into user_actions table
@@ -206,7 +206,6 @@ router.put('/edit/:id', (req, res, next) => {
                                         throw err
                                     }
                                 })
-
                             }
                             res.end();
                         });
