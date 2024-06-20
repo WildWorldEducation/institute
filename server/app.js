@@ -83,7 +83,7 @@ app.use('/skilltree', skillTreeRouter);
 const contentFlagsRouter = require('./routes/content-flags');
 app.use('/content-flags', contentFlagsRouter);
 const userActions = require('./routes/user-actions');
-app.use('/user-actions', userActions)
+app.use('/user-actions', userActions);
 
 app.locals.title = 'Skill Tree';
 
@@ -182,7 +182,7 @@ app.get('/google-signup-attempt', (req, res, next) => {
                 let data = {
                     first_name: googleUserDetails.given_name,
                     last_name: googleUserDetails.family_name,
-                    username: googleUserDetails.name,
+                    username: googleUserDetails.email,
                     email: googleUserDetails.email,
                     role: 'student',
                     avatar: defaultAvatar
