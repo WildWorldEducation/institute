@@ -52,6 +52,11 @@ const router = createRouter({
             component: SkillsView
         },
         {
+            path: '/student/:studentId/skills',
+            name: 'student-skills',
+            component: SkillsView
+        },
+        {
             path: '/skills/:id',
             name: 'show-skill',
             component: () => import('../components/pages/ShowSkillView.vue')
@@ -172,6 +177,12 @@ const router = createRouter({
             name: 'edit-user-skills',
             component: () =>
                 import('../components/pages/EditSkillMasteryView.vue')
+        },
+        {
+            path: '/users/activity-report/:id',
+            name: 'user-activity-report',
+            component: () =>
+                import('../components/pages/UserActivityReportPageView.vue')
         },
         {
             path: '/profile-settings',

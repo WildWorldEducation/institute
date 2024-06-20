@@ -165,13 +165,23 @@ export default {
                         readonly
                     />
                 </div>
-                <div class="mb-3">
+                <div v-if="userDetailsStore.role != 'student'" class="mb-3">
                     <label class="form-label">Role</label>
                     <input
                         v-model="userDetailsStore.role"
                         type="text"
                         class="form-control"
                         readonly
+                    />
+                </div>
+                <!-- Student Instructor container -->
+                <div v-else class="mb-3">
+                    <label class="form-label">Instructor</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        readonly
+                        v-model="userDetailsStore.instructorUsername"
                     />
                 </div>
             </div>

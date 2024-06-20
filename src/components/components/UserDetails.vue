@@ -82,7 +82,9 @@ export default {
                                 fill="white"
                             />
                         </svg> </router-link
-                    >&nbsp;&nbsp;
+                    ><span v-if="userDetailsStore.role == 'admin'"
+                        >&nbsp;&nbsp;</span
+                    >
                     <button
                         v-if="userDetailsStore.role == 'admin'"
                         class="btn red-btn"
@@ -125,6 +127,23 @@ export default {
                         />
                     </svg>
                 </router-link>
+                <router-link
+                    v-if="userRole == 'student'"
+                    :to="'/student/' + this.$parent.user.id + '/skills'"
+                    class="btn green-btn mx-auto mt-3"
+                >
+                    Skill list
+                </router-link>
+                <div class="d-flex justify-content-center mt-2">
+                    <router-link
+                        v-if="userDetailsStore.role == 'admin'"
+                        target="_blank"
+                        :to="'/users/activity-report/' + this.$parent.user.id"
+                        class="btn purple-btn"
+                    >
+                        Activity Report
+                    </router-link>
+                </div>
             </div>
             <div id="user-form-info" class="col-12 col-md-6">
                 <div class="mb-3">

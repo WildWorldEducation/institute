@@ -2,20 +2,17 @@
 // Import the users store.
 import { useUsersStore } from '../../stores/UsersStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 
 export default {
     setup() {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
-        const instructorStudentsStore = useInstructorStudentsStore();
 
         // Run the GET request.
         if (usersStore.users.length < 1) usersStore.getUsers();
         return {
             usersStore,
-            userDetailsStore,
-            instructorStudentsStore
+            userDetailsStore
         };
     },
     data() {

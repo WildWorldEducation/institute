@@ -555,14 +555,15 @@ router.get('/instructors/list', (req, res, next) => {
 router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-
-        let sqlQuery =
-            `
-        SELECT *
+        // Select user and their instructor (if they have one).
+        let sqlQuery = `
+        SELECT *, (SELECT users.username 
+            FROM instructor_students 
+            INNER JOIN users ON users.id = instructor_students.instructor_id 
+            WHERE instructor_students.student_id = ${req.params.id}
+            LIMIT 1) AS instructor_username
         FROM skill_tree.users
-        WHERE skill_tree.users.id = ` +
-            req.params.id +
-            `;`;
+        WHERE skill_tree.users.id = ${req.params.id} ;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {

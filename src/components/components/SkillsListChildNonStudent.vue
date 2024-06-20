@@ -79,16 +79,14 @@ export default {
          * Give longer domain names smaller font, otherwise they look bad.
          * Do this by checking how many lines they span (by checking height.)
          */
-        if (this.type == 'domain') {
-            if (this.$refs.name.offsetHeight > 120)
-                this.$refs.name.classList.add('five-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 90)
-                this.$refs.name.classList.add('four-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 60)
-                this.$refs.name.classList.add('three-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 30)
-                this.$refs.name.classList.add('two-row-domain-name');
-        }
+        if (this.$refs.name.offsetHeight > 120)
+            this.$refs.name.classList.add('five-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 90)
+            this.$refs.name.classList.add('four-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 60)
+            this.$refs.name.classList.add('three-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 30)
+            this.$refs.name.classList.add('two-row-domain-name');
     },
     methods: {
         mainButtonPress() {
@@ -121,6 +119,25 @@ export default {
         },
         HideMobileButtonsModal() {
             this.showModal = false;
+        },
+        recursivelySetState(items, state) {
+            items.forEach((element) => {
+                if (
+                    element.type == 'domain' ||
+                    element.type == 'super' ||
+                    element.type == 'regular'
+                ) {
+                    localStorage.setItem(element.id + 'children', state);
+                }
+
+                this.recursivelySetState(element.children, state);
+            });
+        },
+        // Expand/Collapse All Domain Descendants.
+        toggleExpandAll() {
+            this.recursivelySetState(this.children, !this.showChildren);
+            localStorage.setItem(this.id + 'children', !this.showChildren);
+            this.showChildren = !this.showChildren;
         }
     }
 };
@@ -141,7 +158,7 @@ export default {
             'phd-level': level == 'phd',
             'has-children': childrenNotSubskills.length > 0
         }"
-        class="skill-button d-flex justify-content-between"
+        class="skill-button d-flex justify-content-between align-items-center"
         @click="mainButtonPress()"
     >
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
@@ -163,7 +180,7 @@ export default {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
-                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
                         d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
                     />
@@ -177,7 +194,7 @@ export default {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
-                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
                         d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
                     />
@@ -210,7 +227,40 @@ export default {
                     />
                 </svg>
             </RouterLink>
-
+            <!-- Expand/collapse all domain descendants button-->
+            <button
+                class="btn me-2 ci-btn"
+                v-if="level == 'domain'"
+                @click.stop="toggleExpandAll"
+            >
+                <svg
+                    v-if="showChildren"
+                    height="18"
+                    width="18"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        fill="#9C7EEC"
+                        d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"
+                    />
+                </svg>
+                <svg
+                    v-else
+                    height="18"
+                    width="18"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
+                    -->
+                    <path
+                        fill="#9C7EEC"
+                        d="M246.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 402.7 361.4 265.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-160 160zm160-352l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 210.7 361.4 73.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z"
+                    />
+                </svg>
+            </button>
             <button
                 v-if="childrenNotSubskills.length != 0"
                 @click.stop="toggleChildren"
@@ -219,26 +269,29 @@ export default {
                 <!-- Collapse icon -->
                 <svg
                     v-if="!showChildren"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 320 512"
-                    width="18"
                     height="18"
+                    width="18"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
                 >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
-                        d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"
                         fill="#9C7EEC"
+                        d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
                     />
                 </svg>
                 <svg
                     v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="18"
                     height="18"
+                    width="18"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
                 >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
+                    -->
                     <path
-                        d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
                         fill="#9C7EEC"
+                        d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"
                     />
                 </svg>
             </button>
@@ -400,7 +453,7 @@ export default {
 }
 
 .three-row-domain-name {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .four-row-domain-name {
@@ -467,9 +520,21 @@ export default {
     .skill-button {
         width: 293px;
         height: 70px;
-        font-size: 13px;
+        font-size: 14px;
     }
 
+    .two-row-domain-name {
+        font-size: 12px;
+    }
+
+    .three-row-domain-name {
+        font-size: 10px;
+    }
+
+    .four-row-domain-name {
+        font-size: 8px;
+    }
+    
     .domains {
         height: 55px;
     }
