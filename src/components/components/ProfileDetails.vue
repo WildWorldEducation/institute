@@ -181,7 +181,7 @@ export default {
                         type="text"
                         class="form-control"
                         readonly
-                        v-model="userDetailsStore.instructorUsername"
+                        :value="`${userDetailsStore.instructor.username || ''}`"
                     />
                 </div>
             </div>
