@@ -79,16 +79,14 @@ export default {
          * Give longer domain names smaller font, otherwise they look bad.
          * Do this by checking how many lines they span (by checking height.)
          */
-        if (this.type == 'domain') {
-            if (this.$refs.name.offsetHeight > 120)
-                this.$refs.name.classList.add('five-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 90)
-                this.$refs.name.classList.add('four-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 60)
-                this.$refs.name.classList.add('three-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 30)
-                this.$refs.name.classList.add('two-row-domain-name');
-        }
+        if (this.$refs.name.offsetHeight > 120)
+            this.$refs.name.classList.add('five-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 90)
+            this.$refs.name.classList.add('four-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 60)
+            this.$refs.name.classList.add('three-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 30)
+            this.$refs.name.classList.add('two-row-domain-name');
     },
     methods: {
         mainButtonPress() {
@@ -160,7 +158,7 @@ export default {
             'phd-level': level == 'phd',
             'has-children': childrenNotSubskills.length > 0
         }"
-        class="skill-button d-flex justify-content-between"
+        class="skill-button d-flex justify-content-between align-items-center"
         @click="mainButtonPress()"
     >
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
@@ -455,7 +453,7 @@ export default {
 }
 
 .three-row-domain-name {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .four-row-domain-name {
@@ -522,9 +520,21 @@ export default {
     .skill-button {
         width: 293px;
         height: 70px;
-        font-size: 13px;
+        font-size: 14px;
     }
 
+    .two-row-domain-name {
+        font-size: 12px;
+    }
+
+    .three-row-domain-name {
+        font-size: 10px;
+    }
+
+    .four-row-domain-name {
+        font-size: 8px;
+    }
+    
     .domains {
         height: 55px;
     }
