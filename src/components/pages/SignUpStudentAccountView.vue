@@ -248,7 +248,7 @@ export default {
                     data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
                     data-context="signup"
                     data-ux_mode="popup"
-                    data-login_uri="https://parrhesia.io/google-signup-attempt"
+                    data-login_uri="https://parrhesia.io/google-student-signup-attempt"
                     data-auto_prompt="false"
                 ></div>
                 <div
@@ -257,7 +257,7 @@ export default {
                     data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
                     data-context="signup"
                     data-ux_mode="popup"
-                    data-login_uri="http://localhost:3000/google-signup-attempt"
+                    data-login_uri="http://localhost:3000/google-student-signup-attempt"
                     data-auto_prompt="false"
                 ></div>
 
