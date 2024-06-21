@@ -162,6 +162,7 @@ router.get('/:userId/resource', (req, res, next) => {
  * @return response()
  */
 router.get('/:userId/mc_question', (req, res, next) => {
+    let resResults = [];
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id) AS content_obj 
@@ -171,8 +172,21 @@ router.get('/:userId/mc_question', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    resResults = resResults.concat(results)
+                    // we have to get the delete action separately because it cant join with other table with a non exists id
+                    let deleteActionQuery = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
+                                             FROM user_actions 
+                                             WHERE user_actions.action = 'delete' AND user_actions.content_type = 'student_mc_question' AND user_id=${req.params.userId}`
+                    conn.query(deleteActionQuery, (err, results) => {
+                        if (err) {
+                            throw err;
+                        } else {
+                            resResults = resResults.concat(results)
+                            res.json(resResults);
+                        }
+                    })
                 }
-                res.json(results);
             } catch (err) {
                 next(err);
             }

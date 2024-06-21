@@ -160,7 +160,9 @@ router.put('/mc/:id/edit', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+
                 res.end();
+
             } catch (err) {
                 next(err);
             }
@@ -485,8 +487,23 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // Add delete student-mc-questions action in to user_actions
+                    const actionsData = {
+                        action: 'delete',
+                        content_id: req.params.id,
+                        user_id: req.session.userId,
+                        content_type: 'student_mc_question'
+                    }
+                    const actionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(actionQuery, actionsData, (err) => {
+                        if (err) {
+                            throw err;
+                        } else {
+                            res.end();
+                        }
+                    })
                 }
-                res.end();
             } catch (err) {
                 next(err);
             }
