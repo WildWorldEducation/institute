@@ -426,21 +426,37 @@ router.get('/show/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Select user and their instructor (if they have one).
         let sqlQuery = `
-        SELECT *, (SELECT users.username 
-            FROM instructor_students 
-            INNER JOIN users ON users.id = instructor_students.instructor_id 
-            WHERE instructor_students.student_id = ${req.params.id}
-            LIMIT 1) AS instructor_username
-        FROM skill_tree.users
-        WHERE skill_tree.users.id = ${req.params.id} ;`;
+        SELECT 
+            users.*,
+            instructor.username AS instructor_username,
+            instructor.id AS instructor_id,
+            instructor.first_name AS instructor_first_name,
+            instructor.last_name AS instructor_last_name
+        FROM 
+            skill_tree.users
+        LEFT JOIN 
+            instructor_students ON skill_tree.users.id = instructor_students.student_id
+        LEFT JOIN 
+            skill_tree.users AS instructor ON instructor.id = instructor_students.instructor_id
+        WHERE 
+            skill_tree.users.id = ${req.params.id}
+        LIMIT 1`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-
-                res.json(results[0]);
+                let data = { 
+                    ...results[0],
+                    instructor: {
+                        id: results[0].instructor_id,
+                        first_name: results[0].instructor_first_name,
+                        last_name: results[0].instructor_last_name,
+                        username: results[0].instructor_username
+                    }
+                }
+                res.json(data);
             } catch (err) {
                 next(err);
             }
@@ -587,17 +603,28 @@ router.put('/:id/edit/instructor', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             `
-        INSERT INTO skill_tree.instructor_students (instructor_id, student_id) 
-        VALUES(` +
-            req.body.instructor_id +
-            `, ` +
-            req.params.id +
-            `) 
-        ON DUPLICATE KEY UPDATE instructor_id=` +
-            req.body.instructor_id +
-            `;`;
+            DELETE FROM skill_tree.instructor_students
+            WHERE student_id = ${req.params.id};
+        `;
 
         let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+
+        sqlQuery =
+            `
+            INSERT INTO skill_tree.instructor_students (instructor_id, student_id) 
+            VALUES (${req.body.instructor_id}, ${req.params.id});
+        `;
+
+        let insertQuery = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
