@@ -142,6 +142,23 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                                 if (err) {
                                     throw err;
                                 }
+                                else {
+                                    // add delete action into user_actions table
+                                    const actionData = {
+                                        action: 'delete',
+                                        content_id: req.params.resourceId,
+                                        content_type: 'resource',
+                                        user_id: postUserId
+                                    }
+
+                                    const createAction = 'INSERT INTO user_actions SET ?';
+                                    conn.query(createAction, actionData, (err) => {
+                                        if (err)
+                                            throw err
+                                        else
+                                            res.end()
+                                    })
+                                }
                             } catch (err) {
                                 next(err);
                             }

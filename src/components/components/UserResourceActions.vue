@@ -30,7 +30,8 @@ export default {
                 skillId: contentObj.skill_id,
                 action: resource.action,
                 date: createDate,
-                time: createTime
+                time: createTime,
+                id: resource.id
             });
         });
     },
@@ -38,6 +39,7 @@ export default {
         async getResourceLogs() {
             const res = await fetch(`/user-actions/${this.userId}/resource`);
             this.resourcesData = await res.json();
+            console.log(this.resourcesData);
         },
         actionColor(action) {
             switch (action) {
@@ -62,7 +64,10 @@ export default {
                 <span :class="actionColor(resource.action)">
                     {{ resource.action }}
                 </span>
-                resource for skill:
+                <span v-if="resource.action === 'delete'">
+                    a resource with id {{ resource.id }}
+                </span>
+                <span v-else> resource for skill: </span>
                 <router-link
                     class="skill-link"
                     target="_blank"
