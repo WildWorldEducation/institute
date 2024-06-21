@@ -22,6 +22,7 @@ export default {
                 emailFormat: false,
                 password: false
             },
+            // For Google sign up absolute API url.
             isProduction: import.meta.env.PROD
         };
     },
