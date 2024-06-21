@@ -29,7 +29,8 @@ export default {
                 skillId: contentObj.skill_id,
                 action: question.action,
                 date: createDate,
-                time: createTime
+                time: createTime,
+                id: question.id
             });
         });
     },
@@ -57,11 +58,14 @@ export default {
         <!-- Vue Data Table Desktop  -->
         <div class="d-flex flex-column">
             <div v-for="question in rows">
-                {{ question.time }} ({{ question.date }}) -
+                {{ question.time }} ({{ question.date }})
                 <span :class="actionColor(question.action)">
-                    {{ question.action }}
+                    - {{ question.action }}
                 </span>
-                mc_question for skill:
+                <span v-if="question.action === 'delete'">
+                    student mc_question with id {{ question.id }}
+                </span>
+                <span v-else> student mc_question for skill: </span>
                 <router-link
                     class="skill-link"
                     target="_blank"
