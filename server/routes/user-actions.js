@@ -126,8 +126,8 @@ router.get('/:userId/resource', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         const sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id) AS content_obj 
-                        FROM user_actions JOIN resources ON resources.id = user_actions.content_id JOIN skills ON skills.id = resources.skill_id   
-                        WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'resource'`;
+                          FROM user_actions JOIN resources ON resources.id = user_actions.content_id JOIN skills ON skills.id = resources.skill_id   
+                          WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'resource'`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -145,6 +145,12 @@ router.get('/:userId/resource', (req, res, next) => {
                         throw err;
                     }
                     resResults = resResults.concat(results);
+                    // re-Sort by date because we made two query and mess up the order of the results array  
+                    resResults.sort(function (x, y) {
+                        const date1 = new Date(x.create_date);
+                        const date2 = new Date(y.create_date);
+                        return date1 - date2;
+                    })
                     res.json(resResults);
                 })
             } catch (err) {
@@ -182,7 +188,13 @@ router.get('/:userId/mc_question', (req, res, next) => {
                         if (err) {
                             throw err;
                         } else {
-                            resResults = resResults.concat(results)
+                            resResults = resResults.concat(results);
+                            // re-Sort by date because we made two query and mess up the order of the results array  
+                            resResults.sort(function (x, y) {
+                                const date1 = new Date(x.create_date);
+                                const date2 = new Date(y.create_date);
+                                return date1 - date2;
+                            })
                             res.json(resResults);
                         }
                     })
