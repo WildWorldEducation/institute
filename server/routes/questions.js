@@ -637,7 +637,7 @@ async function checkQuestion(index, userId) {
                 user_id: userId
             };
 
-            let sqlQuery1 = 'INSERT INTO content_flags SET ?';
+            let sqlQuery1 = 'INSERT IGNORE INTO content_flags SET ?';
             let query1 = conn.query(sqlQuery1, data, (err) => {
                 try {
                     if (err) {
