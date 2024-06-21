@@ -2,6 +2,7 @@
 import router from '../../router';
 // Import the stores.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { useUsersStore } from '../../stores/UsersStore';
 import { Cropper, Preview } from 'vue-advanced-cropper';
 import 'vue-advanced-cropper/dist/style.css';
 import 'vue-advanced-cropper/dist/theme.compact.css';
@@ -9,9 +10,12 @@ import 'vue-advanced-cropper/dist/theme.compact.css';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const userStore = useUsersStore();
+        userStore.getInstructors();
         const showObj = { ...userDetailsStore, avatar: '1' };
         return {
-            userDetailsStore
+            userDetailsStore,
+            userStore
         };
     },
     data() {
@@ -24,6 +28,7 @@ export default {
             image: this.userDetailsStore.avatar,
             firstName: this.userDetailsStore.firstName,
             lastName: this.userDetailsStore.lastName,
+            instructorID: this.userDetailsStore.instructor.id || '',
             validate: {
                 firstName: false,
                 lastName: false,
@@ -88,15 +93,34 @@ export default {
                     username: this.userName,
                     email: this.email,
                     avatar: this.avatar,
-                    password: this.password
+                    password: this.password,
+                    instructorID :this.instructorID
                 })
             };
 
             var url = '/users/profile/' + this.id + '/edit';
             fetch(url, requestOptions).then(() => {
-                // refresh user list so the users page will show the update data
-                this.userDetailsStore.getUserDetails();
-                this.$router.push('/profile-settings');
+                    if (this.userDetailsStore.role == 'student' && this.instructorID != '') {
+                        const requestOptions = {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                instructor_id: this.instructorID
+                            })
+                        };
+                        var url = '/users/' + this.userDetailsStore.userId + '/edit/instructor';
+                        fetch(url, requestOptions).then(() => {
+                            // refresh user list so the users page will show the update data
+                            this.userDetailsStore.getUserDetails();
+                            this.$router.push('/profile-settings');
+                        });
+                    }else{
+                        // refresh user list so the users page will show the update data
+                        this.userDetailsStore.getUserDetails();
+                        this.$router.push('/profile-settings');
+                    }
+                
+                
             });
         },
 
@@ -453,6 +477,15 @@ export default {
                     >
                         please enter a password !
                     </div>
+                </div>
+                <div  v-if="userDetailsStore.role == 'student'" class="mb-3">
+                    <label class="form-label">Instructor</label>
+                    <select v-model="instructorID" class="form-control">
+                        <option value="" disabled selected> - Select instructor -</option>
+                        <option v-for="instructor in userStore.instructors" :value="instructor.id">
+                            {{ instructor.username }}
+                        </option>
+                    </select>
                 </div>
                 <div class="d-flex justify-content-between mb-3 mt-5">
                     <router-link class="btn red-btn" to="/profile-settings">
