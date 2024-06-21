@@ -320,8 +320,8 @@ export default {
 
             // If there are no essay questions we, mark the test now. If there are essay question , requiring manual marking
             if (this.numEssayQuestions === 0) {
-                // Pass mark of 90%.
-                if ((this.score / this.numMCQuestions) * 100 >= 90) {
+                // Pass mark of 80%.
+                if ((this.score / this.numMCQuestions) * 100 >= 80) {
                     this.isQuizPassed = true;
                     // show result page and hide assessment part
                     this.assessmentStatus = 'pass';
