@@ -146,6 +146,9 @@ export default {
                 this.submittedMess = false;
             }, 2000);
         },
+        skipSubmition(){
+            this.MakeMastered(this.$parent.skill);
+        },
         async MakeMastered(skill) {
             await this.userSkillsStore.MakeMastered(
                 this.userDetailsStore.userId,
@@ -321,6 +324,12 @@ export default {
                     </div>
                     <div class="d-flex justify-content-end gap-4">
                         <!-- Show a warning if user already submitted else submit as normal -->
+                        <button
+                            class="btn btn-light"
+                            @click="skipSubmition"
+                        >
+                            Skip
+                        </button>
                         <button
                             class="btn purple-btn"
                             @click="
