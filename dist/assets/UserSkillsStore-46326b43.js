@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:dist/assets/UserSkillsStore-46326b43.js
-import{K as a}from"./main-55db17c8.js";const l=a("userSkills",{state:()=>({unnestedList:[]}),actions:{async getUnnestedList(s){const e=await fetch("/user-skills/unnested-list/"+s);this.unnestedList=await e.json()},async MakeMastered(s,e){const t={method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({skill:e})};let i="/user-skills/make-mastered/"+s;await fetch(i,t)},async MakeAccessible(s,e){var t="/user-skills/accessible/"+s+"/"+e;fetch(t),await this.getUnnestedList(s)}}});export{l as u};
-========
-import{K as a}from"./main-cfda230a.js";const l=a("userSkills",{state:()=>({unnestedList:[]}),actions:{async getUnnestedList(s){const e=await fetch("/user-skills/unnested-list/"+s);this.unnestedList=await e.json()},async MakeMastered(s,e){const t={method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({skill:e})};let i="/user-skills/make-mastered/"+s;await fetch(i,t)},async MakeAccessible(s,e){var t="/user-skills/accessible/"+s+"/"+e;fetch(t),await this.getUnnestedList(s)}}});export{l as u};
->>>>>>>> dev:dist/assets/UserSkillsStore-168a4b57.js
