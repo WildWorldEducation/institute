@@ -65,7 +65,7 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    this.contentFlags = data;                    
+                    this.contentFlags = data;
                 })
                 .then(() => {
                     for (let i = 0; i < this.contentFlags.length; i++) {
@@ -92,7 +92,6 @@ export default {
                                     user: {
                                         username: flag.username,
                                         id: flag.userId,
-                                        //     avatar: flag.avatar,
                                         role: flag.userRole
                                     }
                                 };
@@ -118,7 +117,6 @@ export default {
                                     user: {
                                         username: flag.username,
                                         id: flag.userId,
-                                        //   avatar: flag.avatar,
                                         role: flag.userRole
                                     }
                                 };
@@ -137,7 +135,6 @@ export default {
                                     user: {
                                         username: flag.username,
                                         id: flag.userId,
-                                        //   avatar: flag.avatar,
                                         role: flag.userRole
                                     }
                                 };
@@ -162,7 +159,6 @@ export default {
                                     user: {
                                         username: flag.username,
                                         id: flag.userId,
-                                        //   avatar: flag.avatar,
                                         role: flag.userRole
                                     }
                                 };
@@ -521,11 +517,6 @@ export default {
                 <!-- --- User Column --- -->
                 <template #item-user="{ user }">
                     <div class="user-cell">
-                        <!-- <img
-                            :src="user.avatar"
-                            alt="user avatar"
-                            class="user-avatar"
-                        /> -->
                         <div class="user-name">
                             {{ user.username }}
                         </div>
@@ -1021,11 +1012,6 @@ export default {
                 <!-- --- User Column --- -->
                 <template #item-user="{ user }">
                     <div class="user-cell">
-                        <!-- <img
-                            :src="user.avatar"
-                            alt="user avatar"
-                            class="user-avatar"
-                        /> -->
                         <div class="user-name">
                             {{ user.username }}
                         </div>
@@ -1593,14 +1579,6 @@ h2 {
     margin-left: 0px;
 }
 
-/* .user-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 5px;
-    margin-left: auto;
-    margin-right: auto;
-} */
-
 .user-name {
     text-align: center;
     color: #a48be6;
@@ -1777,10 +1755,6 @@ h2 {
 
 /* View Specific On Phone */
 @media (min-width: 0px) and (max-width: 576px) {
-    /* .user-avatar {
-        display: none;
-    } */
-
     /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
     .customize-table {
         --easy-table-body-row-font-size: 13px;
