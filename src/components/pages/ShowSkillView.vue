@@ -41,13 +41,6 @@ export default {
 <template>
     <div class="position-relative d-flex">
         <div class="container show-skill-ctnr">
-            <div v-if="userDetailsStore.role == 'student'" id="btn-row">
-                <!-- TODO: ADD FUNCTION TO BTN -->
-                <button id="assessment-btn" class="top-btn d-none d-md-block">
-                    Take Assessment
-                </button>
-                <button class="top-btn">Schedule Assessment</button>
-            </div>
             <ShowSkill />
         </div>
         <div id="banner">
