@@ -159,7 +159,8 @@ export default {
                 for (let i = 0; i < this.accessibleSkills.length; i++) {
                     if (
                         this.accessibleSkills[i].type == 'sub' &&
-                        this.accessibleSkills[i].parent == node.id
+                        this.accessibleSkills[i].parent == node.id &&
+                        this.accessibleSkills[i].is_mastered != 1
                     ) {
                         subskills.push(this.accessibleSkills[i]);
                     }
@@ -204,7 +205,10 @@ export default {
             :class="{ domain: skill.type == 'domain' }"
         >
             <!-- Buttons For Student -->
-            <div v-if="userDetailsStore.role == 'student'" class="xs:flex xs:justify-content-center">
+            <div
+                v-if="userDetailsStore.role == 'student'"
+                class="xs:flex xs:justify-content-center"
+            >
                 <div
                     class="d-flex justify-content-center justify-content-sm-end align-items-start mb-2 mb-md-0"
                 >
