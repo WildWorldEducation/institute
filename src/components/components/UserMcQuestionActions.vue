@@ -13,6 +13,9 @@ export default {
         // call to content flags route
         await this.getMcQuestionsLog();
         this.questionsData.forEach((question) => {
+            if (question.action === 'update') {
+                console.log(question);
+            }
             const contentObj = JSON.parse(question.content_obj);
             const parseDate = new Date(question.create_date);
             const createDate = parseDate.toLocaleString('en-gb', {
@@ -30,7 +33,9 @@ export default {
                 action: question.action,
                 date: createDate,
                 time: createTime,
-                id: question.id
+                id: question.id,
+                studentName: contentObj.student_name,
+                studentId: contentObj.student_id
             });
         });
     },
@@ -65,7 +70,19 @@ export default {
                 <span v-if="question.action === 'delete'">
                     student mc_question with id {{ question.id }}
                 </span>
-                <span v-else> student mc_question for skill: </span>
+                <span v-else-if="question.action === 'create'">
+                    student mc_question for skill:
+                </span>
+                <span v-else>
+                    mc question of student
+                    <router-link
+                        class="user-link"
+                        target="_blank"
+                        :to="`/users`"
+                        >{{ question.studentName }}</router-link
+                    >
+                    on skill:
+                </span>
                 <router-link
                     class="skill-link"
                     target="_blank"

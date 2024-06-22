@@ -340,6 +340,12 @@ export default {
     color: #667085;
 }
 
+.user-link {
+    font-weight: 400;
+    text-decoration: none;
+    color: #6c93ee;
+}
+
 /* Color code for actions */
 .create-action {
     color: green;
