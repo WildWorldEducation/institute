@@ -404,6 +404,8 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
     }
 });
 
+// ---------------------------------------------------------------------------------------------------
+
 /**
  * List Student MC Questions
  */
@@ -512,6 +514,79 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+/**
+ * Edit Student MC Questions By Admin or Instructor
+ */
+router.put('/student-mc-questions/:id', (req, res, next) => {
+    if (req.session.userName) {
+        // No need to escape single quotes for SQL to accept,
+        // as using '?'.
+        //Extra backend security check that the user is allowed to edit the post.
+        let postUserId;
+
+        const checkUserQuery =
+            'SELECT * FROM users WHERE id=' + req.session.userId;
+        conn.query(checkUserQuery, (err, results) => {
+            try {
+                if (err)
+                    throw err
+                else {
+                    postUserId = results[0].id;
+                    if (
+                        postUserId == req.session.userId ||
+                        req.session.role == 'admin' ||
+                        req.session.role == 'editor'
+                    ) {
+                        // edit the mc question
+                        const data = {
+                            question: req.body.question,
+                            correct_answer: req.body.correct_answer,
+                            incorrect_answer_1: req.body.incorrect_answer_1,
+                            incorrect_answer_2: req.body.incorrect_answer_2,
+                            incorrect_answer_3: req.body.incorrect_answer_3,
+                            incorrect_answer_4: req.body.incorrect_answer_4,
+                            explanation: req.body.explanation,
+                            skill_id: req.body.skill_id,
+                            student_id: req.body.student_id
+                        }
+                        const editQuestionQuery = `UPDATE student_mc_questions SET ? WHERE id = ${req.params.id}`;
+                        conn.query(editQuestionQuery, data, (err, result) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                // add create actions into user-actions table
+                                const actionData = {
+                                    content_id: req.params.id,
+                                    user_id: postUserId,
+                                    action: 'update',
+                                    content_type: 'student_mc_question'
+                                }
+                                const actionQuery = 'INSERT INTO user_actions SET ?';
+                                conn.query(actionQuery, actionData, (err) => {
+                                    if (err) {
+                                        throw err;
+                                    } else {
+                                        res.end();
+                                    }
+                                })
+                            }
+
+                        });
+                    }
+                }
+            }
+            catch (err) {
+                next(err)
+            }
+        })
+
+    } else {
+        res.redirect('/login');
+    }
+});
+
+
 
 /**
  * Check Questions.
