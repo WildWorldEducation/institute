@@ -146,7 +146,8 @@ export default {
                 this.submittedMess = false;
             }, 2000);
         },
-        skipSubmition(){
+        skipAddingQuestion() {
+            this.questionSubmitted = true;
             this.MakeMastered(this.$parent.skill);
         },
         async MakeMastered(skill) {
@@ -326,7 +327,7 @@ export default {
                         <!-- Show a warning if user already submitted else submit as normal -->
                         <button
                             class="btn btn-light"
-                            @click="skipSubmition"
+                            @click="skipAddingQuestion"
                         >
                             Skip
                         </button>
