@@ -54,7 +54,8 @@ export default {
             showResult: false,
             assessmentStatus: '',
             haveEssayQuestion: false,
-            finishTime: null
+            finishTime: null,
+            needToSelectInstructor: false
         };
     },
     mounted: function () {
@@ -218,6 +219,9 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
+                    if(data.length > 0 && !this.userDetailsStore.instructor.id){
+                        this.needToSelectInstructor = true
+                    }
                     // Add the new questions to the existing questions.
                     this.essayQuestions = this.essayQuestions.concat(data);
                 })
@@ -451,7 +455,7 @@ export default {
     <!-- Loading screen -->
     <div v-if="loading == true">Loading...</div>
     <!-- Assessment -->
-    <div v-if="loading == false && isQuizPassed == false">
+    <div v-if="loading == false && isQuizPassed == false && !needToSelectInstructor">
         <!-- Show student a warning if their take this assessment before and still wait for marking -->
         <div v-if="updatedAssessment">
             <div id="myModal" class="modal">
@@ -679,6 +683,32 @@ export default {
                         <span> OK </span>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div v-if="needToSelectInstructor" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="">
+                <p class="text-center">
+                    Please choose an instructor before taking these quizzes.
+                </p>
+            </div>
+            <div class="d-flex flex-column-reverse flex-md-row justify-content-center gap-2">
+                    <RouterLink
+                        :to="`/skills/${skillId}`"
+                        type="button"
+                        class="btn green-btn w-100 w-md-50"
+                    >
+                        <span>Back</span>
+                    </RouterLink>
+                    <RouterLink
+                    to="/profile/edit"
+                        type="button"
+                        class="btn green-btn w-100 w-md-50"
+                    >
+                        <span>Select Instructor</span>
+                    </RouterLink>
             </div>
         </div>
     </div>
