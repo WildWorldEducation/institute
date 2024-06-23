@@ -577,7 +577,7 @@ const openai = new OpenAI({
 async function checkQuestion(index, userId) {
     // Create prompt for ChatGPT.
     let prompt =
-        `Please check if the following quiz question: "` +
+        `Please check the following for the quiz question: "` +
         mcQuestions[index].question +
         `" Please review if the following answer is the correct
         answer for this question: "` +
@@ -596,7 +596,7 @@ async function checkQuestion(index, userId) {
         return it as false.
         Please also check for any spelling errors. Please return a variable spelling_correct as true if it is,
         otherwise, return this as false.
-        Lastly please check if the the question is appropriate for the following grade: ` +
+        Lastly please check if the question is appropriate for the following grade: ` +
         mcQuestions[index].level +
         `. Please return the variable 'grade_is_correct' as true if it is, otherwise as false.`;
 
