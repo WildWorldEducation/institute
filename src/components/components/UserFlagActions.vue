@@ -32,6 +32,8 @@ export default {
         await this.getContentFlagLogs();
         // prepare content flag response data in to show_able data
         this.contentFlags.forEach((contentFlag) => {
+            console.log('flag');
+            console.log(contentFlag);
             // parse the content data because mysql library return it as a string
             const contentObj = JSON.parse(contentFlag.content_obj);
             const parseDate = new Date(contentFlag.create_date);
@@ -47,7 +49,8 @@ export default {
                 date: createTime + ` (${createDate})`,
                 action: contentFlag.action,
                 questionName: contentObj.question,
-                skillName: contentObj.name
+                skillName: contentObj.name,
+                id: contentFlag.id
             };
             switch (contentFlag.flag_type) {
                 case 'mc_question':
@@ -64,6 +67,7 @@ export default {
                     pushObj.skillId = contentObj.skill_id;
                     break;
                 default:
+                    pushObj.type = 'delete';
                     break;
             }
             this.rows.push(pushObj);
@@ -103,7 +107,11 @@ export default {
                     <span :class="actionColor(contentFlag.action)">
                         {{ contentFlag.action }}
                     </span>
-                    &nbsp;flag on skill:&nbsp;
+                    &nbsp;
+                    <!-- Handle Delete Actions -->
+                    <span v-if="contentFlag.action == 'delete'">
+                        flag with id: {{ contentFlag.id }} </span
+                    >flag on skill:&nbsp;
                     <router-link
                         class="skill-link"
                         target="_blank"
@@ -150,7 +158,16 @@ export default {
                         >{{ contentFlag.skillName }}</router-link
                     >
                 </div>
-                <!-- Delete Actions  -->
+                <!-- Handle delete type flag action -->
+                <div
+                    class="d-flex flex-wrap ml-1"
+                    v-if="contentFlag.type === 'delete'"
+                >
+                    <span :class="actionColor(contentFlag.action) + ' me-1'">
+                        {{ contentFlag.action }}
+                    </span>
+                    flag with id {{ contentFlag.id }}
+                </div>
             </div>
         </div>
     </div>
