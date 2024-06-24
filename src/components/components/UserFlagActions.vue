@@ -32,8 +32,6 @@ export default {
         await this.getContentFlagLogs();
         // prepare content flag response data in to show_able data
         this.contentFlags.forEach((contentFlag) => {
-            console.log('flag');
-            console.log(contentFlag);
             // parse the content data because mysql library return it as a string
             const contentObj = JSON.parse(contentFlag.content_obj);
             const parseDate = new Date(contentFlag.create_date);
