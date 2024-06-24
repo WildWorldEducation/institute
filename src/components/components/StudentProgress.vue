@@ -40,7 +40,7 @@ export default {
     <!-- <h1 class="text-center text-md-start d-lg-none">My Progress</h1>
   <h2 class="text-center text-md-start d-lg-none">2023 - Active</h2> -->
     <div class="table-responsive"></div>
-    <div id="tile">Available Skill</div>
+    <div id="tile">Available Skills</div>
     <div id="skill-list">
         <div v-for="availableSkill in availableSkills">
             <router-link
