@@ -1,7 +1,15 @@
 <script>
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+
 export default {
     props: ['isMultipleChoice', 'isEssay'],
-    setup() {},
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+
+        return {
+            userDetailsStore
+        };
+    },
     data() {
         return {
             skillId: this.$route.params.id,
@@ -106,7 +114,7 @@ export default {
                                 </svg>
                             </router-link>
                         </td>
-                        <td>
+                        <td v-if="userDetailsStore.role == 'admin'">
                             <button
                                 type="button"
                                 @click="
@@ -164,7 +172,7 @@ export default {
                                 </svg>
                             </router-link>
                         </td>
-                        <td>
+                        <td v-if="userDetailsStore.role == 'admin'">
                             <button
                                 type="button"
                                 @click="

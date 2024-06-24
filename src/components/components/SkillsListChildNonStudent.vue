@@ -1,4 +1,6 @@
 <script>
+import router from '../../router';
+
 export default {
     setup() {
         return {};
@@ -79,22 +81,23 @@ export default {
          * Give longer domain names smaller font, otherwise they look bad.
          * Do this by checking how many lines they span (by checking height.)
          */
-        if (this.type == 'domain') {
-            if (this.$refs.name.offsetHeight > 120)
-                this.$refs.name.classList.add('five-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 90)
-                this.$refs.name.classList.add('four-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 60)
-                this.$refs.name.classList.add('three-row-domain-name');
-            else if (this.$refs.name.offsetHeight > 30)
-                this.$refs.name.classList.add('two-row-domain-name');
-        }
+        if (this.$refs.name.offsetHeight > 120)
+            this.$refs.name.classList.add('five-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 90)
+            this.$refs.name.classList.add('four-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 60)
+            this.$refs.name.classList.add('three-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 30)
+            this.$refs.name.classList.add('two-row-domain-name');
     },
     methods: {
         mainButtonPress() {
             if (this.type != 'domain') {
                 window.open('/skills/' + this.id, '_blank');
             } else this.toggleChildren();
+        },
+        openEdit(id){
+            this.$router.push(`/skills/edit/${id}`);
         },
         // Save the state of the skills list to browser storage.
         toggleChildren() {
@@ -160,7 +163,7 @@ export default {
             'phd-level': level == 'phd',
             'has-children': childrenNotSubskills.length > 0
         }"
-        class="skill-button d-flex justify-content-between"
+        class="skill-button d-flex justify-content-between align-items-center"
         @click="mainButtonPress()"
     >
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
@@ -202,8 +205,8 @@ export default {
                     />
                 </svg>
             </button>
-            <RouterLink
-                :to="'/skills/edit/' + id"
+            <button
+                @click.stop="openEdit(id)"
                 v-if="role == 'admin' || role == 'editor'"
                 class="btn me-2 ci-btn"
             >
@@ -228,7 +231,7 @@ export default {
                         fill="#9C7EEC"
                     />
                 </svg>
-            </RouterLink>
+            </button>
             <!-- Expand/collapse all domain descendants button-->
             <button
                 class="btn me-2 ci-btn"
@@ -455,7 +458,7 @@ export default {
 }
 
 .three-row-domain-name {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .four-row-domain-name {
@@ -522,9 +525,21 @@ export default {
     .skill-button {
         width: 293px;
         height: 70px;
-        font-size: 13px;
+        font-size: 14px;
     }
 
+    .two-row-domain-name {
+        font-size: 12px;
+    }
+
+    .three-row-domain-name {
+        font-size: 10px;
+    }
+
+    .four-row-domain-name {
+        font-size: 8px;
+    }
+    
     .domains {
         height: 55px;
     }

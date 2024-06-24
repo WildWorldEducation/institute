@@ -7,7 +7,6 @@ export default {
             questionId: this.$route.params.id,
             question: {},
             // validate object
-            // validate object
             validate: {
                 validated: false,
                 name: false,
@@ -118,6 +117,7 @@ export default {
 
             var url = '/questions/mc/' + this.questionId + '/edit';
             fetch(url, requestOptions).then(() => {
+                alert('Question edited successfully.');
                 this.$router.back();
             });
         }

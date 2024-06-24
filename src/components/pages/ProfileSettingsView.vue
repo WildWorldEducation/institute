@@ -41,9 +41,10 @@ export default {
     <!-- App Settings --->
     <Settings v-if="userDetailsStore.role == 'admin'" />
     <!-- Link to Content Flags page --->
+     <!-- temporarily allowing non-admin to access content flags -->
     <section
-        class="container mt-1 px-3 px-lg-0 mb-5"
-        v-if="userDetailsStore.role == 'admin'"
+        class="container mt-1 px-3 px-lg-0 mb-5"        
+        v-if="userDetailsStore.role == 'admin' || userDetailsStore.email == 'imenedyason@gmail.com'" 
     >
         <hr />
         <h1>Content Flags</h1>
@@ -60,7 +61,7 @@ export default {
     >
         <hr />
         <h1>Check MC Questions</h1>
-        <button class="btn green-btn mt-3" @click="CheckMCQuestions()" disabled>
+        <button class="btn green-btn mt-3" @click="CheckMCQuestions()">
             Check now
         </button>
         <p style="font-size: 14px" class="mt-2">

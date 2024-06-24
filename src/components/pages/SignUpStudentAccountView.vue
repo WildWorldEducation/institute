@@ -21,7 +21,9 @@ export default {
                 email: false,
                 emailFormat: false,
                 password: false
-            }
+            },
+            // For Google sign up absolute API url.
+            isProduction: import.meta.env.PROD
         };
     },
     async created() {},
@@ -31,8 +33,6 @@ export default {
         script.setAttribute('src', 'https://accounts.google.com/gsi/client');
         script.setAttribute('defer', '');
         document.head.appendChild(script);
-
-        // this.GetGoogleLoginResult();
     },
     methods: {
         ValidateForm() {
@@ -230,11 +230,21 @@ export default {
                     Sign up
                 </button>
                 <div
+                    v-if="isProduction == true"
                     id="g_id_onload"
                     data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
                     data-context="signup"
-                    data-ux_mode="redirect"
-                    data-login_uri="/google-signup-attempt"
+                    data-ux_mode="popup"
+                    data-login_uri="https://parrhesia.io/google-student-signup-attempt"
+                    data-auto_prompt="false"
+                ></div>
+                <div
+                    v-else
+                    id="g_id_onload"
+                    data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
+                    data-context="signup"
+                    data-ux_mode="popup"
+                    data-login_uri="http://localhost:3000/google-student-signup-attempt"
                     data-auto_prompt="false"
                 ></div>
 
@@ -246,6 +256,7 @@ export default {
                     data-text="signup_with"
                     data-size="large"
                     data-logo_alignment="left"
+                    data-width="330"
                 ></div>
                 <div class="mt-3 signup text-center">
                     Have an account?

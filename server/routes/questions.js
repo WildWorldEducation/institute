@@ -459,7 +459,7 @@ router.post('/student-mc-questions/add', (req, res, next) => {
                         user_id: data.student_id,
                         action: 'create',
                         content_type: 'student_mc_question'
-                    }
+                    };
                     const actionQuery = 'INSERT INTO user_actions SET ?';
                     conn.query(actionQuery, actionData, (err) => {
                         if (err) {
@@ -467,7 +467,7 @@ router.post('/student-mc-questions/add', (req, res, next) => {
                         } else {
                             res.end();
                         }
-                    })
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -601,8 +601,8 @@ router.get('/check-questions', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Get all MC questions.
         let sqlQuery1 = `SELECT * FROM mc_questions   
-        WHERE is_checked = 0        
-        ORDER BY id`;
+        WHERE is_checked = 0 AND skill_id < 51       
+        ORDER BY skill_id`;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -669,7 +669,7 @@ const openai = new OpenAI({
 async function checkQuestion(index, userId) {
     // Create prompt for ChatGPT.
     let prompt =
-        `Please check if the following quiz question: "` +
+        `Please check the following for the quiz question: "` +
         mcQuestions[index].question +
         `" Please review if the following answer is the correct
         answer for this question: "` +
@@ -688,7 +688,7 @@ async function checkQuestion(index, userId) {
         return it as false.
         Please also check for any spelling errors. Please return a variable spelling_correct as true if it is,
         otherwise, return this as false.
-        Lastly please check if the the question is appropriate for the following grade: ` +
+        Lastly please check if the question is appropriate for the following grade: ` +
         mcQuestions[index].level +
         `. Please return the variable 'grade_is_correct' as true if it is, otherwise as false.`;
 
@@ -726,10 +726,10 @@ async function checkQuestion(index, userId) {
             data = {
                 content_type: 'mc_question',
                 content_id: mcQuestions[index].id,
-                student_id: userId
+                user_id: userId
             };
 
-            let sqlQuery1 = 'INSERT INTO content_flags SET ?';
+            let sqlQuery1 = 'INSERT IGNORE INTO content_flags SET ?';
             let query1 = conn.query(sqlQuery1, data, (err) => {
                 try {
                     if (err) {
@@ -751,8 +751,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                mcQuestions[index].id +
-                                ' complete'
+                                    mcQuestions[index].id +
+                                    ' complete'
                             );
                             // Check the next question.
                             index++;

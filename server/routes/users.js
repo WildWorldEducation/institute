@@ -19,6 +19,7 @@ Routes
 /*
  * Student Self Sign Up
  */
+const { unlockInitialSkills } = require('../utilities/unlock-initial-skills');
 router.post('/new-student/add', (req, res, next) => {
     // Escape username, as it is used in the SELECT query.
     if (req.body.username != null)
@@ -119,138 +120,6 @@ router.post('/new-student/add', (req, res, next) => {
         }
     });
 });
-
-function unlockInitialSkills(userId) {
-    // Get a list of all skills.
-    let sqlQuery1 = 'SELECT * FROM skills;';
-    let query1 = conn.query(sqlQuery1, (err, results) => {
-        try {
-            if (err) {
-                throw err;
-            }
-            let skills = results;
-            let firstLevelSkills = [];
-            for (let i = 0; i < skills.length; i++) {
-                if (skills[i].parent == 0) {
-                    firstLevelSkills.push(skills[i]);
-                }
-            }
-            // console.log(firstLevelSkills);
-            for (let i = 0; i < firstLevelSkills.length; i++) {
-                // Recursive function.
-                makeMastered(userId, firstLevelSkills[i]);
-            }
-            function makeMastered(userId, skill) {
-                let value;
-                if (skill.type == 'domain') {
-                    value = 0;
-                } else {
-                    value = 1;
-                }
-
-                let sqlQuery =
-                    `
-                                INSERT INTO skill_tree.user_skills (user_id, skill_id, is_mastered, is_accessible) 
-                                VALUES(` +
-                    userId +
-                    `, ` +
-                    skill.id +
-                    `, ` +
-                    value +
-                    `, 1) 
-                                ON DUPLICATE KEY UPDATE is_mastered=` +
-                    value +
-                    `, is_accessible=1;
-                                `;
-                //
-                let query = conn.query(sqlQuery, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
-                        }
-                        // Check if is a sub skill.
-                        if (skill.type != 'sub') {
-                            // Get all the child skills.
-                            const childSkills = [];
-                            for (let i = 0; i < skills.length; i++) {
-                                if (skills[i].parent == skill.id) {
-                                    childSkills.push(skills[i]);
-                                }
-                            }
-
-                            let subSkills = [];
-                            // Make them accessible/unlocked if regular type skills.
-                            for (let i = 0; i < childSkills.length; i++) {
-                                if (childSkills[i].type == 'regular') {
-                                    makeAccessible(userId, childSkills[i].id);
-                                } else if (childSkills[i].type == 'domain') {
-                                    makeMastered(userId, childSkills[i]);
-                                }
-                                // If super type skills, make their subskills accessible.
-                                else if (childSkills[i].type == 'super') {
-                                    for (let j = 0; j < skills.length; j++) {
-                                        if (
-                                            skills[j].parent ==
-                                                childSkills[i].id &&
-                                            skills[j].type == 'sub'
-                                        ) {
-                                            subSkills.push(skills[j].id);
-                                        }
-                                    }
-                                }
-                            }
-                            for (let i = 0; i < subSkills.length; i++) {
-                                makeAccessible(userId, subSkills[i]);
-                            }
-                        }
-                        // If this skill is a sub skill.
-                        else {
-                            // Get its sibling skills.
-                            let siblingSkills = [];
-                            for (let i = 0; i < skills.length; i++) {
-                                if (
-                                    skills[i].parent == skill.parent &&
-                                    skills[i].id != skill.id
-                                ) {
-                                    if (skills[i].type == 'sub') {
-                                        siblingSkills.push(skills[i]);
-                                    }
-                                }
-                            }
-                        }
-                    } catch (err) {
-                        next(err);
-                    }
-                });
-            }
-
-            function makeAccessible(userId, skillId) {
-                // Make this skill accessible.
-                let sqlQuery3 =
-                    `
-        INSERT INTO skill_tree.user_skills (user_id, skill_id, is_accessible) 
-        VALUES(` +
-                    userId +
-                    `, ` +
-                    skillId +
-                    `, 1) 
-        ON DUPLICATE KEY UPDATE is_accessible=1;
-        `;
-                let query3 = conn.query(sqlQuery3, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
-                        }
-                    } catch (err) {
-                        next(err);
-                    }
-                });
-            }
-        } catch (err) {
-            console.log('error:' + err);
-        }
-    });
-}
 
 /*
  * Editor Self Sign Up
@@ -557,21 +426,37 @@ router.get('/show/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Select user and their instructor (if they have one).
         let sqlQuery = `
-        SELECT *, (SELECT users.username 
-            FROM instructor_students 
-            INNER JOIN users ON users.id = instructor_students.instructor_id 
-            WHERE instructor_students.student_id = ${req.params.id}
-            LIMIT 1) AS instructor_username
-        FROM skill_tree.users
-        WHERE skill_tree.users.id = ${req.params.id} ;`;
+        SELECT 
+            users.*,
+            instructor.username AS instructor_username,
+            instructor.id AS instructor_id,
+            instructor.first_name AS instructor_first_name,
+            instructor.last_name AS instructor_last_name
+        FROM 
+            skill_tree.users
+        LEFT JOIN 
+            instructor_students ON skill_tree.users.id = instructor_students.student_id
+        LEFT JOIN 
+            skill_tree.users AS instructor ON instructor.id = instructor_students.instructor_id
+        WHERE 
+            skill_tree.users.id = ${req.params.id}
+        LIMIT 1`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-
-                res.json(results[0]);
+                let data = { 
+                    ...results[0],
+                    instructor: {
+                        id: results[0].instructor_id,
+                        first_name: results[0].instructor_first_name,
+                        last_name: results[0].instructor_last_name,
+                        username: results[0].instructor_username
+                    }
+                }
+                res.json(data);
             } catch (err) {
                 next(err);
             }
@@ -718,17 +603,28 @@ router.put('/:id/edit/instructor', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             `
-        INSERT INTO skill_tree.instructor_students (instructor_id, student_id) 
-        VALUES(` +
-            req.body.instructor_id +
-            `, ` +
-            req.params.id +
-            `) 
-        ON DUPLICATE KEY UPDATE instructor_id=` +
-            req.body.instructor_id +
-            `;`;
+            DELETE FROM skill_tree.instructor_students
+            WHERE student_id = ${req.params.id};
+        `;
 
         let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+
+        sqlQuery =
+            `
+            INSERT INTO skill_tree.instructor_students (instructor_id, student_id) 
+            VALUES (${req.body.instructor_id}, ${req.params.id});
+        `;
+
+        let insertQuery = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -788,27 +684,6 @@ router.put('/profile/:id/edit', (req, res, next) => {
         res.redirect('/login');
     }
 });
-
-// // Edit user's skill tree theme
-// router.put('/:id/skilltree-theme', (req, res, next) => {
-//     if (req.session.userName) {
-//         let sqlQuery =
-//             "UPDATE users SET skilltree_theme='" +
-//             req.body.theme +
-//             "' WHERE id=" +
-//             req.params.id;
-//         let query = conn.query(sqlQuery, (err, results) => {
-//             try {
-//                 if (err) {
-//                     throw err;
-//                 }
-//                 res.end();
-//             } catch (err) {
-//                 next(err);
-//             }
-//         });
-//     }
-// });
 
 // To see the user profile, and edit the app settings (if user is an admin).
 router.get('/:id/profile-settings', (req, res) => {

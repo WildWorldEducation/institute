@@ -15,6 +15,7 @@ export const useUserDetailsStore = defineStore("userDetails", {
             email: null,
             skillTreeTheme: null,
             userId: null,
+            instructor: null,
             instructorUsername: null
         }
     },
@@ -38,6 +39,7 @@ export const useUserDetailsStore = defineStore("userDetails", {
                 this.skillTreeTheme = data.skilltree_theme;
                 this.password = data.password;
                 this.email = data.email;
+                this.instructor = data.instructor;
                 this.instructorUsername = data.instructor_username;
 
                 return this.$state;

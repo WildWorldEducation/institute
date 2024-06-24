@@ -159,7 +159,8 @@ export default {
                 for (let i = 0; i < this.accessibleSkills.length; i++) {
                     if (
                         this.accessibleSkills[i].type == 'sub' &&
-                        this.accessibleSkills[i].parent == node.id
+                        this.accessibleSkills[i].parent == node.id &&
+                        this.accessibleSkills[i].is_mastered != 1
                     ) {
                         subskills.push(this.accessibleSkills[i]);
                     }
@@ -204,9 +205,12 @@ export default {
             :class="{ domain: skill.type == 'domain' }"
         >
             <!-- Buttons For Student -->
-            <div v-if="userDetailsStore.role == 'student'" class="row mt-3">
+            <div
+                v-if="userDetailsStore.role == 'student'"
+                class="xs:flex xs:justify-content-center"
+            >
                 <div
-                    class="d-flex flex-row-reverse align-items-end mb-2 mb-md-0"
+                    class="d-flex justify-content-center justify-content-sm-end align-items-start mb-2 mb-md-0"
                 >
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
@@ -365,7 +369,9 @@ export default {
             <!-- A line divide -->
             <div
                 v-if="
-                    userDetailsStore.role == 'admin' && skill.type != 'domain'
+                    (userDetailsStore.role == 'admin' ||
+                        userDetailsStore.role == 'editor') &&
+                    skill.type != 'domain'
                 "
             >
                 <div class="row">
@@ -575,9 +581,7 @@ export default {
 #skill-info-container {
     background-color: #f2edff;
     border-radius: 12px;
-    padding-top: 20px;
-    padding-left: 48px;
-    padding-bottom: 10px;
+    padding: 30px;
 }
 
 .domain {
@@ -730,9 +734,7 @@ export default {
     #skill-info-container {
         background-color: #f2edffcc;
         border-radius: 12px;
-        padding-top: 20px;
-        padding-left: 0px;
-        padding-right: 0px;
+        padding: 20px;
     }
 
     #skill-image {
@@ -783,8 +785,7 @@ export default {
     }
 
     #skill-info-container {
-        padding-left: 15px;
-        padding-right: 15px;
+        padding: 15px;
     }
 
     .modal-btn {
