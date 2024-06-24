@@ -127,13 +127,29 @@ router.post('/add', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = 'DELETE FROM content_flags WHERE id=' + req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        const sqlQuery = 'DELETE FROM content_flags WHERE id=' + req.params.id;
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                res.end();
+                else {
+                    // add delete action into user_actions
+                    const actionData = {
+                        action: 'delete',
+                        content_type: 'content_flag',
+                        content_id: req.params.id,
+                        user_id: req.session.userId,
+                    }
+                    const deleteActionQuery = 'INSERT INTO user_actions SET ?';
+                    conn.query(deleteActionQuery, actionData, (err) => {
+                        if (err)
+                            throw err;
+                        else
+                            res.end();
+                    })
+
+                }
             } catch (err) {
                 next(err);
             }

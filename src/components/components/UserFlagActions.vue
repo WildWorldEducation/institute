@@ -150,6 +150,7 @@ export default {
                         >{{ contentFlag.skillName }}</router-link
                     >
                 </div>
+                <!-- Delete Actions  -->
             </div>
         </div>
     </div>
