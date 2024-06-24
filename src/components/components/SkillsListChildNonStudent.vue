@@ -1,4 +1,6 @@
 <script>
+import router from '../../router';
+
 export default {
     setup() {
         return {};
@@ -93,6 +95,9 @@ export default {
             if (this.type != 'domain') {
                 window.open('/skills/' + this.id, '_blank');
             } else this.toggleChildren();
+        },
+        openEdit(id){
+            this.$router.push(`/skills/edit/${id}`);
         },
         // Save the state of the skills list to browser storage.
         toggleChildren() {
@@ -200,8 +205,8 @@ export default {
                     />
                 </svg>
             </button>
-            <RouterLink
-                :to="'/skills/edit/' + id"
+            <button
+                @click.stop="openEdit(id)"
                 v-if="role == 'admin' || role == 'editor'"
                 class="btn me-2 ci-btn"
             >
@@ -226,7 +231,7 @@ export default {
                         fill="#9C7EEC"
                     />
                 </svg>
-            </RouterLink>
+            </button>
             <!-- Expand/collapse all domain descendants button-->
             <button
                 class="btn me-2 ci-btn"
