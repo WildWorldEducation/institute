@@ -70,11 +70,23 @@ export default {
                 .then(() => {
                     for (let i = 0; i < this.contentFlags.length; i++) {
                         const flag = this.contentFlags[i];
+
                         // parse the content data because mysql library return it as a string
                         const contentObj = JSON.parse(flag.contentData);
                         switch (flag.content_type) {
                             // Handle for mc question flag
                             case 'mc_question':
+                                // Nicer level names.
+                                if (contentObj.level == 'grade_school') {
+                                    contentObj.level = 'grade school';
+                                } else if (
+                                    contentObj.level == 'middle_school'
+                                ) {
+                                    contentObj.level = 'middle school';
+                                } else if (contentObj.level == 'high_school') {
+                                    contentObj.level = 'high school';
+                                }
+
                                 const tableRowMC = {
                                     type: 'mc question',
                                     name:
@@ -381,7 +393,7 @@ export default {
                         <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'mc question'">
                             <div class="d-flex mb-2">
-                                <div class="expand-tile">Belong to skill:</div>
+                                <div class="expand-tile">Belongs to skill:</div>
                                 <div>
                                     <router-link
                                         :to="'skills/' + expandContent.skillId"
@@ -449,6 +461,11 @@ export default {
                                 <div class="expand-tile">Explanation:</div>
                                 {{ expandContent.explanation }}
                             </div>
+
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Level:</div>
+                                {{ expandContent.level }}
+                            </div>
                         </div>
                         <!-- _+_+_+_+_+_+_+_  Essay Expand content _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'essay question'">
@@ -474,6 +491,10 @@ export default {
                             <div class="d-flex mb-2">
                                 <div class="expand-tile">Question:</div>
                                 {{ expandContent.question }}
+                            </div>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Level:</div>
+                                {{ expandContent.level }}
                             </div>
                         </div>
                         <!-- _+_+_+_+_+_+_+_  Skill Expand content _+_+_+_+_+_+_+_  -->
@@ -877,7 +898,7 @@ export default {
                         <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'mc question'">
                             <div class="d-flex mb-2">
-                                <div class="expand-tile">Belong to skill:</div>
+                                <div class="expand-tile">Belongs to skill:</div>
                                 <div>
                                     <router-link
                                         :to="'skills/' + expandContent.skillId"
@@ -945,6 +966,10 @@ export default {
                                 <div class="expand-tile">Explanation:</div>
                                 {{ expandContent.explanation }}
                             </div>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Level:</div>
+                                {{ expandContent.level }}
+                            </div>
                         </div>
                         <!-- _+_+_+_+_+_+_+_  Essay Expand content _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'essay question'">
@@ -970,6 +995,10 @@ export default {
                             <div class="d-flex mb-2">
                                 <div class="expand-tile">Question:</div>
                                 {{ expandContent.question }}
+                            </div>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Level:</div>
+                                {{ expandContent.level }}
                             </div>
                         </div>
                         <!-- _+_+_+_+_+_+_+_  Skill Expand content _+_+_+_+_+_+_+_  -->
