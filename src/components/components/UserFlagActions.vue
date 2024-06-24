@@ -96,14 +96,14 @@ export default {
         <!-- Vue Data Table Desktop  -->
         <div class="d-flex flex-column gap-3">
             <div class="d-flex" v-for="contentFlag in rows">
-                <div class="d-flex w-fit me-1">{{ contentFlag.date }} -</div>
+                <div class="d-flex w-fit me-1">{{ contentFlag.date }}</div>
                 <!-- flag type skill -->
                 <div
                     class="d-flex flex-wrap ml-1"
                     v-if="contentFlag.type === 'skill'"
                 >
                     <span :class="actionColor(contentFlag.action)">
-                        {{ contentFlag.action }}
+                        - {{ contentFlag.action }}
                     </span>
                     &nbsp;
                     <!-- Handle Delete Actions -->
@@ -123,7 +123,7 @@ export default {
                     v-if="contentFlag.type === 'resource'"
                 >
                     <span :class="actionColor(contentFlag.action)">
-                        {{ contentFlag.action }}
+                        - {{ contentFlag.action }}
                     </span>
                     &nbsp;flag on resource of skill:&nbsp;
                     <router-link
@@ -139,7 +139,7 @@ export default {
                     v-if="contentFlag.type === 'mc_question'"
                 >
                     <span :class="actionColor(contentFlag.action)">
-                        {{ contentFlag.action }}
+                        - {{ contentFlag.action }}
                     </span>
                     &nbsp;flag on mc_question:
                     <router-link
@@ -162,7 +162,7 @@ export default {
                     v-if="contentFlag.type === 'delete'"
                 >
                     <span :class="actionColor(contentFlag.action) + ' me-1'">
-                        {{ contentFlag.action }}
+                        - {{ contentFlag.action }}
                     </span>
                     flag with id {{ contentFlag.id }}
                 </div>
