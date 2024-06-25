@@ -354,7 +354,22 @@ router.delete('/:id', (req, res, next) => {
                         if (err) {
                             throw err;
                         }
-                        res.end();
+                        else {
+                            // add delete skill actions into user_actions table
+                            const actionData = {
+                                action: 'delete',
+                                content_id: req.params.id,
+                                user_id: req.session.userId,
+                                content_type: 'skill'
+                            };
+                            const addActionQuery = 'INSERT INTO user_actions SET ?';
+                            conn.query(addActionQuery, actionData, (err) => {
+                                if (err)
+                                    throw err;
+                                else
+                                    res.end();
+                            })
+                        }
                     } catch (err) {
                         next(err);
                     }
