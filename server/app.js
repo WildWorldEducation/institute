@@ -169,7 +169,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 req.session.userId = results[0].id;
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
-                res.redirect('/');
+                res.redirect('/skills');
             }
             // If not.
             else {
@@ -204,7 +204,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                             // Unlock skills here
                             unlockInitialSkills(newStudentId);
 
-                            res.redirect('/');
+                            res.redirect('/skills');
                         }
                     } catch (err) {
                         next(err);
