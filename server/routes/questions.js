@@ -551,27 +551,12 @@ router.put('/student-mc-questions/:id', (req, res, next) => {
                             student_id: req.body.student_id
                         }
                         const editQuestionQuery = `UPDATE student_mc_questions SET ? WHERE id = ${req.params.id}`;
-                        conn.query(editQuestionQuery, data, (err, result) => {
+                        conn.query(editQuestionQuery, data, (err) => {
                             if (err) {
                                 throw err;
                             } else {
-                                // add create actions into user-actions table
-                                const actionData = {
-                                    content_id: req.params.id,
-                                    user_id: postUserId,
-                                    action: 'update',
-                                    content_type: 'student_mc_question'
-                                }
-                                const actionQuery = 'INSERT INTO user_actions SET ?';
-                                conn.query(actionQuery, actionData, (err) => {
-                                    if (err) {
-                                        throw err;
-                                    } else {
-                                        res.end();
-                                    }
-                                })
+                                res.end()
                             }
-
                         });
                     }
                 }
@@ -751,8 +736,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                    mcQuestions[index].id +
-                                    ' complete'
+                                mcQuestions[index].id +
+                                ' complete'
                             );
                             // Check the next question.
                             index++;

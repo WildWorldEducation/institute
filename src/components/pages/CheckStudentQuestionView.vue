@@ -105,32 +105,6 @@ export default {
                 // Return to hub page.
                 router.push({ name: 'hub' });
             });
-        },
-        editMode() {
-            this.isEditMode = true;
-        },
-        applyEdit() {
-            console.log(this.question);
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    student_id: this.question.student_id,
-                    question: this.question.question,
-                    correct_answer: this.question.correct_answer,
-                    incorrect_answer_1: this.question.incorrect_answer_1,
-                    incorrect_answer_2: this.question.incorrect_answer_2,
-                    incorrect_answer_3: this.question.incorrect_answer_3,
-                    incorrect_answer_4: this.question.incorrect_answer_4,
-                    explanation: this.question.explanation,
-                    skill_id: this.question.skill_id
-                })
-            };
-            const url = `/questions/student-mc-questions/${this.question.id}`;
-            fetch(url, requestOptions).then(() => {
-                alert('successfully edit student mc-question');
-                this.isEditMode = false;
-            });
         }
     }
 };
@@ -217,26 +191,16 @@ export default {
                         </div>
 
                         <div class="d-flex justify-content-end gap-4">
-                            <a class="btn red-btn" @click="editMode()">Edit</a>
                             <a
-                                v-if="!isEditMode"
                                 class="btn red-btn"
                                 @click="deleteStudentQuestion()"
                                 >Delete</a
                             >
                             <button
-                                v-if="!isEditMode"
                                 class="btn purple-btn"
                                 @click="saveToQuestionBank()"
                             >
                                 Save
-                            </button>
-                            <button
-                                v-if="isEditMode"
-                                class="btn purple-btn"
-                                @click="applyEdit()"
-                            >
-                                Apply
                             </button>
                         </div>
                     </div>
