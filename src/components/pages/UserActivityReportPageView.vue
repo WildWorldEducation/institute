@@ -175,7 +175,10 @@ export default {
                         b-on-hover
                         :title="showQuestions ? 'collapse' : 'expand'"
                     >
-                        <span> MC Questions </span>
+                        <span>
+                            Student MC Questions (before being accepted by
+                            instructors)</span
+                        >
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
