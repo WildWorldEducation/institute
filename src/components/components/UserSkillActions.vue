@@ -1,0 +1,81 @@
+<script>
+export default {
+    props: ['userId', 'deleteResource'],
+
+    data() {
+        return {
+            skillsData: [],
+            rows: []
+        };
+    },
+    components: {},
+
+    async created() {
+        // call to content flags route
+        await this.getSkillLogs();
+        this.skillsData.forEach((resource) => {
+            const contentObj = JSON.parse(resource.content_obj);
+            const parseDate = new Date(resource.create_date);
+            const createDate = parseDate.toLocaleString('en-gb', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'UTC'
+            });
+            const createTime = parseDate.toLocaleTimeString();
+            this.rows.push({
+                skillName: contentObj.skill_name,
+                resourceId: resource.content_id,
+                skillId: contentObj.skill_id,
+                action: resource.action,
+                date: createDate,
+                time: createTime,
+                id: resource.id
+            });
+        });
+    },
+    methods: {
+        async getSkillLogs() {
+            const res = await fetch(`/user-actions/${this.userId}/skill`);
+            this.skillsData = await res.json();
+        },
+        actionColor(action) {
+            switch (action) {
+                case 'create':
+                    return 'create-action';
+                case 'update':
+                    return 'update-action';
+                default:
+                    return 'delete-action';
+            }
+        }
+    }
+};
+</script>
+
+<template>
+    <div v-if="rows.length" class="container-md main-container">
+        <!-- Vue Data Table Desktop  -->
+        <div class="d-flex flex-column">
+            <div v-for="skill in rows">
+                {{ skill.time }} ({{ skill.date }}) -
+                <span :class="actionColor(skill.action)">
+                    {{ skill.action }}
+                </span>
+                <span v-if="skill.action === 'delete'">
+                    a skill with id {{ skill.id }}
+                </span>
+                <span v-else> skill: </span>
+                <router-link
+                    class="skill-link"
+                    target="_blank"
+                    :to="`/skills/${skill.skillId}`"
+                    >{{ skill.skillName }}</router-link
+                >
+            </div>
+        </div>
+    </div>
+    <div v-else class="shake">The user has no action on skill</div>
+</template>
+<style></style>

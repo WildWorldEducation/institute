@@ -6,6 +6,7 @@ import { useUsersStore } from '../../stores/UsersStore';
 import UserFlagActions from '../components/UserFlagActions.vue';
 import UserResourceActions from '../components/UserResourceActions.vue';
 import UserMcQuestionActions from '../components/UserMcQuestionActions.vue';
+import UserSkillActions from '../components/UserSkillActions.vue';
 
 export default {
     setup() {
@@ -31,18 +32,14 @@ export default {
             mcQuestions: [],
             resources: [],
             flags: [],
-            skillEdits: [],
-            // We use prop as an event toggle for calling delete function
-            // in child component by watching the props
-            deleteFlag: false,
-            deleteResource: false,
-            deleteMcQuestion: false
+            skillEdits: []
         };
     },
     components: {
         UserFlagActions,
         UserResourceActions,
-        UserMcQuestionActions
+        UserMcQuestionActions,
+        UserSkillActions
     },
     async created() {
         // Get the user's details.
@@ -125,7 +122,49 @@ export default {
                 </transition>
             </div>
             <hr class="mt-5 mb-3" />
-            <!-- Sources -->
+
+            <!-- Student Mc Questions -->
+            <div class="d-flex flex-column">
+                <div class="d-flex flex-row justify-content-between">
+                    <div
+                        class="log-type"
+                        @click="showQuestions = !showQuestions"
+                        b-on-hover
+                        :title="showQuestions ? 'collapse' : 'expand'"
+                    >
+                        <span> MC Questions </span>
+                        <!-- Arrow Icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 320 512"
+                            width="22"
+                            height="22"
+                            fill="#667085"
+                            :class="[
+                                showQuestions
+                                    ? 'arrow-point-down mb-2'
+                                    : 'arrow-point-up'
+                            ]"
+                        >
+                            <path
+                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <Transition name="dropdown">
+                    <div v-if="showQuestions">
+                        <UserMcQuestionActions
+                            :userId="user.id"
+                            :deleteMcQuestion="deleteMcQuestion"
+                            @close-mc-question-div="showQuestions = false"
+                        />
+                    </div>
+                </Transition>
+            </div>
+            <hr class="mt-5 mb-3" />
+
+            <!-- Resources -->
             <div class="d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
                     <div
@@ -166,16 +205,16 @@ export default {
             </div>
             <hr class="mt-5 mb-3" />
 
-            <!-- Questions -->
+            <!-- Skills  -->
             <div class="d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
                     <div
                         class="log-type"
-                        @click="showQuestions = !showQuestions"
+                        @click="showSkills = !showSkills"
                         b-on-hover
-                        :title="showQuestions ? 'collapse' : 'expand'"
+                        :title="showSkills ? 'collapse' : 'expand'"
                     >
-                        <span> MC Questions </span>
+                        <span> Skills </span>
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -184,9 +223,9 @@ export default {
                             height="22"
                             fill="#667085"
                             :class="[
-                                showQuestions
+                                showSkills
                                     ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up'
+                                    : 'arrow-point-up '
                             ]"
                         >
                             <path
@@ -195,15 +234,14 @@ export default {
                         </svg>
                     </div>
                 </div>
-                <Transition name="dropdown">
-                    <div v-if="showQuestions">
-                        <UserMcQuestionActions
+                <transition name="dropdown">
+                    <div v-if="showSkills">
+                        <UserSkillActions
                             :userId="user.id"
-                            :deleteMcQuestion="deleteMcQuestion"
-                            @close-mc-question-div="showQuestions = false"
+                            @close-resource-div="showSkills = false"
                         />
                     </div>
-                </Transition>
+                </transition>
             </div>
             <hr class="mt-5 mb-3" />
         </div>

@@ -232,5 +232,52 @@ router.get('/:userId/mc_question', (req, res, next) => {
     }
 });
 
+/**
+ * List Actions with type skill of a specific user
+ *
+ * @return response()
+ */
+router.get('/:userId/skill', (req, res, next) => {
+    let resResults = [];
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id) AS content_obj 
+                        FROM user_actions JOIN skills ON user_actions.content_id = skills.id 
+                        WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'skill'`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    resResults = resResults.concat(results)
+                    // we have to get the delete action separately because it cant join with other table with a non exists id
+                    let deleteActionQuery = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
+                                             FROM user_actions 
+                                             WHERE user_actions.action = 'delete' AND user_actions.content_type = 'skill' AND user_id=${req.params.userId}`
+                    conn.query(deleteActionQuery, (err, results) => {
+                        if (err) {
+                            throw err;
+                        } else {
+                            resResults = resResults.concat(results);
+                            // re-Sort by date because we made two query and mess up the order of the results array  
+                            resResults.sort(function (x, y) {
+                                const date1 = new Date(x.create_date);
+                                const date2 = new Date(y.create_date);
+                                return date1 - date2;
+                            })
+                            res.json(resResults);
+                        }
+                    })
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+
 // Export the router for app to use.
 module.exports = router;
