@@ -307,8 +307,23 @@ router.put('/:id/edit', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // add edit (update) action into user_actions table
+                    const actionData = {
+                        action: 'update',
+                        content_id: req.params.id,
+                        user_id: req.session.userId,
+                        content_type: 'skill'
+                    };
+
+                    const addActionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err)
+                            throw err;
+                        else
+                            res.redirect('back');
+                    })
                 }
-                res.redirect('back');
             } catch (err) {
                 next(err);
             }
