@@ -39,8 +39,7 @@ export default {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric',
-                timeZone: 'UTC'
+                day: 'numeric'
             });
             const createTime = parseDate.toLocaleTimeString();
             const pushObj = {
