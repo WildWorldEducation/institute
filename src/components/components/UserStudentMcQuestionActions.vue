@@ -40,7 +40,9 @@ export default {
     },
     methods: {
         async getMcQuestionsLog() {
-            const res = await fetch(`/user-actions/${this.userId}/mc_question`);
+            const res = await fetch(
+                `/user-actions/${this.userId}/student_mc_question`
+            );
             this.questionsData = await res.json();
         },
         actionColor(action) {

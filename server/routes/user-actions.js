@@ -191,7 +191,7 @@ router.get('/:userId/resource', (req, res, next) => {
  *
  * @return response()
  */
-router.get('/:userId/mc_question', (req, res, next) => {
+router.get('/:userId/student_mc_question', (req, res, next) => {
     let resResults = [];
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
