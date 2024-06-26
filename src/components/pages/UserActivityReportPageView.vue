@@ -7,6 +7,7 @@ import UserFlagActions from '../components/UserFlagActions.vue';
 import UserResourceActions from '../components/UserResourceActions.vue';
 import UserMcQuestionActions from '../components/UserMcQuestionActions.vue';
 import UserSkillActions from '../components/UserSkillActions.vue';
+import UserStudentMcQuestionActions from '../components/UserStudentMcQuestionActions.vue';
 
 export default {
     setup() {
@@ -39,6 +40,7 @@ export default {
         UserFlagActions,
         UserResourceActions,
         UserMcQuestionActions,
+        UserStudentMcQuestionActions,
         UserSkillActions
     },
     async created() {
@@ -154,7 +156,7 @@ export default {
                 </div>
                 <Transition name="dropdown">
                     <div v-if="showQuestions">
-                        <UserMcQuestionActions
+                        <UserStudentMcQuestionActions
                             :userId="user.id"
                             :deleteMcQuestion="deleteMcQuestion"
                             @close-mc-question-div="showQuestions = false"
