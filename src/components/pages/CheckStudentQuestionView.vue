@@ -105,6 +105,9 @@ export default {
                 // Return to hub page.
                 router.push({ name: 'hub' });
             });
+        },
+        editMode() {
+            this.isEditMode = true;
         }
     }
 };
@@ -191,6 +194,7 @@ export default {
                         </div>
 
                         <div class="d-flex justify-content-end gap-4">
+                            <a class="btn red-btn" @click="editMode()">Edit</a>
                             <a
                                 class="btn red-btn"
                                 @click="deleteStudentQuestion()"
