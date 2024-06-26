@@ -87,16 +87,17 @@ router.post('/add/:skillId', (req, res, next) => {
                                     content_type: 'resource',
                                     content_id: result.insertId,
                                     action: 'create',
-                                    user_id: data.user_id,
-                                }
-                                const actionQuery = 'INSERT INTO user_actions SET ?';
+                                    user_id: data.user_id
+                                };
+                                const actionQuery =
+                                    'INSERT INTO user_actions SET ?';
                                 conn.query(actionQuery, actionData, (err) => {
                                     if (err) {
                                         throw err;
                                     } else {
                                         res.json('');
                                     }
-                                })
+                                });
                             }
                         } catch (err) {
                             next(err);
@@ -768,7 +769,7 @@ function deleteDuplicateSources() {
                         }
                         console.log(
                             'Duplicate sources deleted: ' +
-                            duplicateSources.length
+                                duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);
