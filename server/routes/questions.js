@@ -29,8 +29,22 @@ router.delete('/mc/:id', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // Add delete action into user_actions table
+                    const actionData = {
+                        action: 'delete',
+                        content_id: req.params.id,
+                        content_type: 'mc_question',
+                        user_id: req.session.userId
+                    };
+                    const addActionQuery = 'INSERT INTO user_actions SET ?';
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err)
+                            throw err;
+                        else
+                            res.end();
+                    })
                 }
-                res.end();
             } catch (err) {
                 next(err);
             }
@@ -155,7 +169,7 @@ router.put('/mc/:id/edit', (req, res, next) => {
             explanation +
             `' WHERE id = ` +
             req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
