@@ -143,6 +143,23 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                                 if (err) {
                                     throw err;
                                 }
+                                else {
+                                    // add delete action into user_actions table
+                                    const actionData = {
+                                        action: 'delete',
+                                        content_id: req.params.resourceId,
+                                        content_type: 'resource',
+                                        user_id: postUserId
+                                    }
+
+                                    const createAction = 'INSERT INTO user_actions SET ?';
+                                    conn.query(createAction, actionData, (err) => {
+                                        if (err)
+                                            throw err
+                                        else
+                                            res.end()
+                                    })
+                                }
                             } catch (err) {
                                 next(err);
                             }
@@ -171,10 +188,10 @@ router.put('/edit/:id', (req, res, next) => {
             req.body.editordata = req.body.editordata.replace(/'/g, "\\'");
 
         //Extra backend security check that the user is allowed to edit the post.
-        var postUserId;
-        let sqlQuery1 =
+        let postUserId;
+        const sqlQuery1 =
             'SELECT user_id FROM resources WHERE id=' + req.params.id;
-        let query1 = conn.query(sqlQuery1, (err, results) => {
+        conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -191,8 +208,23 @@ router.put('/edit/:id', (req, res, next) => {
                             req.body.editordata +
                             "' WHERE id=" +
                             req.params.id;
-                        let query2 = conn.query(sqlQuery2, (err, results) => {
+                        conn.query(sqlQuery2, (err) => {
                             if (err) throw err;
+                            else {
+                                // add update action into user_actions table
+                                const actionData = {
+                                    content_id: req.params.id,
+                                    content_type: 'resource',
+                                    action: 'update',
+                                    user_id: postUserId
+                                }
+                                const actionQuery = 'INSERT INTO user_actions SET ?';
+                                conn.query(actionQuery, actionData, (err) => {
+                                    if (err) {
+                                        throw err
+                                    }
+                                })
+                            }
                             res.end();
                         });
                     }
@@ -255,7 +287,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 3066
+        AND id > 3230
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {

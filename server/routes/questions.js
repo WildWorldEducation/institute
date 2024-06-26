@@ -160,6 +160,7 @@ router.put('/mc/:id/edit', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+
                 res.end();
             } catch (err) {
                 next(err);
@@ -282,7 +283,7 @@ router.get('/mc/list', (req, res, next) => {
 });
 
 /**
- * Create New MC Question Manually (not from CSV.)
+ * Create a single New MC Question Manually (not from CSV.)
  *
  * @return response()
  */
@@ -305,12 +306,24 @@ router.post('/mc-questions/add', (req, res, next) => {
         };
 
         let sqlQuery = 'INSERT INTO mc_questions SET ?';
-        let query = conn.query(sqlQuery, data, (err, results) => {
+        conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 } else {
-                    res.end();
+                    // add create mc_question action into user_actions
+                    const actionData = {
+                        content_type: 'mc_question',
+                        content_id: results.insertId,
+                        action: 'create',
+                        user_id: req.session.userId
+                    };
+
+                    const addActionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -402,6 +415,8 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
     }
 });
 
+// ---------------------------------------------------------------------------------------------------
+
 /**
  * List Student MC Questions
  */
@@ -485,8 +500,23 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // Add delete student-mc-questions action in to user_actions
+                    const actionsData = {
+                        action: 'delete',
+                        content_id: req.params.id,
+                        user_id: req.session.userId,
+                        content_type: 'student_mc_question'
+                    };
+                    const actionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(actionQuery, actionsData, (err) => {
+                        if (err) {
+                            throw err;
+                        } else {
+                            res.end();
+                        }
+                    });
                 }
-                res.end();
             } catch (err) {
                 next(err);
             }
