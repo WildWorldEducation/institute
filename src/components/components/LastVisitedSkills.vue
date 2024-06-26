@@ -17,7 +17,7 @@ export default {
 };
 </script>
 
-<template v-if="visitedSkills.length > 0">
+<template>
     <div class="table-responsive"></div>
     <div id="tile">Last visited Skills</div>
     <div id="skill-list">
