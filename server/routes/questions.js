@@ -160,9 +160,22 @@ router.put('/mc/:id/edit', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-
-                res.end();
-
+                else {
+                    // add update question action into user_actions table
+                    const actionData = {
+                        action: 'update',
+                        content_type: 'mc_question',
+                        content_id: req.params.id,
+                        user_id: req.session.userId
+                    }
+                    const addActionQuery = `INSERT INTO user_actions SET ?`
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err)
+                            throw err;
+                        else
+                            res.end();
+                    })
+                }
             } catch (err) {
                 next(err);
             }
@@ -196,7 +209,8 @@ router.put('/essay/:id/edit', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                res.end();
+                else
+                    res.end();
             } catch (err) {
                 next(err);
             }

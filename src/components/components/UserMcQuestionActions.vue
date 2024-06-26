@@ -72,16 +72,7 @@ export default {
                 <span v-else-if="question.action === 'create'">
                     mc_question for skill:
                 </span>
-                <span v-else>
-                    mc question of student
-                    <router-link
-                        class="user-link"
-                        target="_blank"
-                        :to="`/users`"
-                        >{{ question.studentName }}</router-link
-                    >
-                    on skill:
-                </span>
+                <span v-else> mc question of skill: </span>
                 <router-link
                     class="skill-link"
                     target="_blank"
