@@ -2,13 +2,17 @@
 export default {
     data() {
         return {
-            visitedSkills: []
+            visitedSkills: [],
+            noSkills: true
         };
     },
     props: ['userId'],
     async created() {
         const result = await fetch('/skills/last-visited/');
         this.visitedSkills = await result.json();
+        if(this.visitedSkills.length > 0){
+            this.noSkills = false
+        }
     },
 };
 </script>
@@ -26,6 +30,7 @@ export default {
                 {{ skill.name }}
             </router-link>
         </div>
+        <div v-if="noSkills" id="no-skill-cell"></div>
     </div>
 </template>
 
