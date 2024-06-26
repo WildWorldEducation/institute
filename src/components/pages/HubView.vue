@@ -1,6 +1,7 @@
 <script>
 // import components.
 import StudentProgress from '../components/StudentProgress.vue';
+import LastVisitedSkills from '../components/LastVisitedSkills.vue';
 import Notifications from '../components/Notifications.vue';
 import News from '../components/News.vue';
 import MarkAssessment from '../components/MarkAssessment.vue';
@@ -26,7 +27,8 @@ export default {
         Notifications,
         StudentProgress,
         MarkAssessment,
-        CheckStudentQuestions
+        CheckStudentQuestions,
+        LastVisitedSkills
     },
     computed: {
         name() {
@@ -63,16 +65,31 @@ export default {
             </div>
             <div
                 id="middle-profile-column"
-                class="column col-lg-4 col-md-6 mb-5 mb-md-0"
+                class="column col-lg-8 col-md-6 mb-5 mb-md-0"
             >
-                <StudentProgress
-                    v-if="userDetailsStore.role == 'student'"
-                    :userId="userDetailsStore.userId"
-                />
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <StudentProgress
+                            v-if="userDetailsStore.role == 'student'"
+                            :userId="userDetailsStore.userId"
+                        />
 
-                <MarkAssessment
-                    v-else-if="userDetailsStore.role == 'instructor'"
-                />
+                        <MarkAssessment
+                            v-else-if="userDetailsStore.role == 'instructor'"
+                        />
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <LastVisitedSkills
+                            v-if="userDetailsStore.role == 'student'"
+                            :userId="userDetailsStore.userId"
+                        />
+                    </div>
+                </div>
+                
+
+                
+
+                
             </div>
             <!-- Student Added Questions -->
             <div class="column col-lg-4 col-md-6">

@@ -240,7 +240,20 @@ router.get('/show/:id', (req, res, next) => {
 
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
+        //Register visit datetime. 
+        let visitSqlQuery = `
+            INSERT INTO user_visited_skills (user_id, skill_id, visited_at)
+            VALUES (${req.session.userId}, ${req.params.id}, NOW())
+            ON DUPLICATE KEY UPDATE visited_at = NOW();
+        `;
 
+        if(req.session.role === "student"){
+            let visitQuery = conn.query(visitSqlQuery, (err,results) => {
+                if (err) {
+                    throw err;
+                }
+            })
+        }
         // Get skill.
         let sqlQuery =
             `
@@ -264,7 +277,31 @@ router.get('/show/:id', (req, res, next) => {
         });
     }
 });
+router.get('/last-visited', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        //Get last visited. 
+        let sqlQuery = `
+            SELECT skills.id, name
+            FROM user_visited_skills
+            INNER JOIN skills ON skills.id = user_visited_skills.skill_id
+            WHERE user_id = ${req.session.userId}
+            ORDER BY visited_at DESC
+            LIMIT 5;
+        `;
 
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
 /**
  * Edit Item
  *
