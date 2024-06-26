@@ -40,7 +40,9 @@ export default {
     },
     methods: {
         async getMcQuestionsLog() {
-            const res = await fetch(`/user-actions/${this.userId}/mc_question`);
+            const res = await fetch(
+                `/user-actions/${this.userId}/student_mc_question`
+            );
             this.questionsData = await res.json();
         },
         actionColor(action) {
@@ -67,10 +69,10 @@ export default {
                     - {{ question.action }}
                 </span>
                 <span v-if="question.action === 'delete'">
-                    mc_question with id {{ question.id }}
+                    student mc_question with id {{ question.id }}
                 </span>
                 <span v-else-if="question.action === 'create'">
-                    mc_question for skill:
+                    student mc_question for skill:
                 </span>
                 <span v-else>
                     mc question of student

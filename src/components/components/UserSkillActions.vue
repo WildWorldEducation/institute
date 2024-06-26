@@ -4,7 +4,7 @@ export default {
 
     data() {
         return {
-            resourcesData: [],
+            skillsData: [],
             rows: []
         };
     },
@@ -12,8 +12,8 @@ export default {
 
     async created() {
         // call to content flags route
-        await this.getResourceLogs();
-        this.resourcesData.forEach((resource) => {
+        await this.getSkillLogs();
+        this.skillsData.forEach((resource) => {
             const contentObj = JSON.parse(resource.content_obj);
             const parseDate = new Date(resource.create_date);
             const createDate = parseDate.toLocaleString('en-gb', {
@@ -35,10 +35,9 @@ export default {
         });
     },
     methods: {
-        async getResourceLogs() {
-            const res = await fetch(`/user-actions/${this.userId}/resource`);
-            this.resourcesData = await res.json();
-            console.log(this.resourcesData);
+        async getSkillLogs() {
+            const res = await fetch(`/user-actions/${this.userId}/skill`);
+            this.skillsData = await res.json();
         },
         actionColor(action) {
             switch (action) {
@@ -58,24 +57,24 @@ export default {
     <div v-if="rows.length" class="container-md main-container">
         <!-- Vue Data Table Desktop  -->
         <div class="d-flex flex-column">
-            <div v-for="resource in rows">
-                {{ resource.time }} ({{ resource.date }}) -
-                <span :class="actionColor(resource.action)">
-                    {{ resource.action }}
+            <div v-for="skill in rows">
+                {{ skill.time }} ({{ skill.date }}) -
+                <span :class="actionColor(skill.action)">
+                    {{ skill.action }}
                 </span>
-                <span v-if="resource.action === 'delete'">
-                    a resource with id {{ resource.id }}
+                <span v-if="skill.action === 'delete'">
+                    a skill with id {{ skill.id }}
                 </span>
-                <span v-else> resource for skill: </span>
+                <span v-else> skill: </span>
                 <router-link
                     class="skill-link"
                     target="_blank"
-                    :to="`/skills/${resource.skillId}`"
-                    >{{ resource.skillName }}</router-link
+                    :to="`/skills/${skill.skillId}`"
+                    >{{ skill.skillName }}</router-link
                 >
             </div>
         </div>
     </div>
-    <div v-else class="shake">The user has no action on resource</div>
+    <div v-else class="shake">The user has no action on skill</div>
 </template>
 <style></style>

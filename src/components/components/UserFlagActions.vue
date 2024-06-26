@@ -39,15 +39,15 @@ export default {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric',
-                timeZone: 'UTC'
+                day: 'numeric'
             });
             const createTime = parseDate.toLocaleTimeString();
             const pushObj = {
                 date: createTime + ` (${createDate})`,
                 action: contentFlag.action,
                 questionName: contentObj.question,
-                skillName: contentObj.name
+                skillName: contentObj.name,
+                id: contentFlag.id
             };
             switch (contentFlag.flag_type) {
                 case 'mc_question':
@@ -64,6 +64,7 @@ export default {
                     pushObj.skillId = contentObj.skill_id;
                     break;
                 default:
+                    pushObj.type = 'delete';
                     break;
             }
             this.rows.push(pushObj);
@@ -94,16 +95,20 @@ export default {
         <!-- Vue Data Table Desktop  -->
         <div class="d-flex flex-column gap-3">
             <div class="d-flex" v-for="contentFlag in rows">
-                <div class="d-flex w-fit me-1">{{ contentFlag.date }} -</div>
+                <div class="d-flex w-fit me-1">{{ contentFlag.date }}</div>
                 <!-- flag type skill -->
                 <div
                     class="d-flex flex-wrap ml-1"
                     v-if="contentFlag.type === 'skill'"
                 >
                     <span :class="actionColor(contentFlag.action)">
-                        {{ contentFlag.action }}
+                        - {{ contentFlag.action }}
                     </span>
-                    &nbsp;flag on skill:&nbsp;
+                    &nbsp;
+                    <!-- Handle Delete Actions -->
+                    <span v-if="contentFlag.action == 'delete'">
+                        flag with id: {{ contentFlag.id }} </span
+                    >flag on skill:&nbsp;
                     <router-link
                         class="skill-link"
                         target="_blank"
@@ -117,7 +122,7 @@ export default {
                     v-if="contentFlag.type === 'resource'"
                 >
                     <span :class="actionColor(contentFlag.action)">
-                        {{ contentFlag.action }}
+                        - {{ contentFlag.action }}
                     </span>
                     &nbsp;flag on resource of skill:&nbsp;
                     <router-link
@@ -133,7 +138,7 @@ export default {
                     v-if="contentFlag.type === 'mc_question'"
                 >
                     <span :class="actionColor(contentFlag.action)">
-                        {{ contentFlag.action }}
+                        - {{ contentFlag.action }}
                     </span>
                     &nbsp;flag on mc_question:
                     <router-link
@@ -149,6 +154,16 @@ export default {
                         :to="`/skills/${contentFlag.skillId}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
+                </div>
+                <!-- Handle delete type flag action -->
+                <div
+                    class="d-flex flex-wrap ml-1"
+                    v-if="contentFlag.type === 'delete'"
+                >
+                    <span :class="actionColor(contentFlag.action) + ' me-1'">
+                        - {{ contentFlag.action }}
+                    </span>
+                    flag with id {{ contentFlag.id }}
                 </div>
             </div>
         </div>

@@ -10,6 +10,7 @@ router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
 
+
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -21,7 +22,7 @@ Routes
  *
  * @return response()
  */
-router.post('/add', (req, res, next) => {
+router.post('/add', async (req, res, next) => {
     if (req.session.userName) {
         // No need to escape single quotes for SQL to accept,
         // as using '?'.
@@ -48,41 +49,55 @@ router.post('/add', (req, res, next) => {
                     // Get its id.
                     let sqlQuery2 = `SELECT LAST_INSERT_ID();`;
                     let query = conn.query(sqlQuery2, data, (err, results) => {
+                        const skillId = Object.values(results[0])[0];
                         try {
                             if (err) {
                                 throw err;
                             } else {
-                                const skillId = Object.values(results[0])[0];
-
-                                // Insert any new filters for the skill.
-                                for (
-                                    let i = 0;
-                                    i < req.body.filters.length;
-                                    i++
-                                ) {
-                                    let sqlQuery3 =
-                                        `
+                                // add create skill action into user_actions
+                                const actionData = {
+                                    action: 'create',
+                                    content_id: skillId,
+                                    user_id: req.session.userId,
+                                    content_type: 'skill'
+                                }
+                                const actionQuery = 'INSERT INTO user_actions SET ?'
+                                conn.query(actionQuery, actionData, (err) => {
+                                    if (err)
+                                        throw err;
+                                    else {
+                                        // Insert any new filters for the skill.
+                                        for (
+                                            let i = 0;
+                                            i < req.body.filters.length;
+                                            i++
+                                        ) {
+                                            let sqlQuery3 =
+                                                `
                                 INSERT INTO skill_tree.skill_tags (skill_id, tag_id)
                                 VALUES(` +
-                                        skillId +
-                                        `, ` +
-                                        req.body.filters[i] +
-                                        `);`;
-
-                                    let query = conn.query(
-                                        sqlQuery3,
-                                        (err, results) => {
-                                            try {
-                                                if (err) {
-                                                    throw err;
+                                                skillId +
+                                                `, ` +
+                                                req.body.filters[i] +
+                                                `);`;
+                                            let query = conn.query(
+                                                sqlQuery3,
+                                                (err, results) => {
+                                                    try {
+                                                        if (err) {
+                                                            throw err;
+                                                        }
+                                                        else {
+                                                            res.end();
+                                                        }
+                                                    } catch (err) {
+                                                        next(err);
+                                                    }
                                                 }
-                                                res.end();
-                                            } catch (err) {
-                                                next(err);
-                                            }
+                                            );
                                         }
-                                    );
-                                }
+                                    }
+                                })
                             }
                         } catch (err) {
                             next(err);
@@ -292,8 +307,23 @@ router.put('/:id/edit', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // add edit (update) action into user_actions table
+                    const actionData = {
+                        action: 'update',
+                        content_id: req.params.id,
+                        user_id: req.session.userId,
+                        content_type: 'skill'
+                    };
+
+                    const addActionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err)
+                            throw err;
+                        else
+                            res.redirect('back');
+                    })
                 }
-                res.redirect('back');
             } catch (err) {
                 next(err);
             }
@@ -324,7 +354,22 @@ router.delete('/:id', (req, res, next) => {
                         if (err) {
                             throw err;
                         }
-                        res.end();
+                        else {
+                            // add delete skill actions into user_actions table
+                            const actionData = {
+                                action: 'delete',
+                                content_id: req.params.id,
+                                user_id: req.session.userId,
+                                content_type: 'skill'
+                            };
+                            const addActionQuery = 'INSERT INTO user_actions SET ?';
+                            conn.query(addActionQuery, actionData, (err) => {
+                                if (err)
+                                    throw err;
+                                else
+                                    res.end();
+                            })
+                        }
                     } catch (err) {
                         next(err);
                     }
