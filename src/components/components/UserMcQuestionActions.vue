@@ -67,10 +67,10 @@ export default {
                     - {{ question.action }}
                 </span>
                 <span v-if="question.action === 'delete'">
-                    student mc_question with id {{ question.id }}
+                    mc_question with id {{ question.id }}
                 </span>
                 <span v-else-if="question.action === 'create'">
-                    student mc_question for skill:
+                    mc_question for skill:
                 </span>
                 <span v-else>
                     mc question of student
