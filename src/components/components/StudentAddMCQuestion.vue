@@ -132,9 +132,8 @@ export default {
             };
             var url = '/questions/student-mc-questions/add';
             fetch(url, requestOptions).then(() => {
-                // Make skill mastered for this student.
                 // This fires the method on the parent (AssessmentResult), which is chained to fire the method on its parent.
-                this.MakeMastered(this.$parent.skill);
+                router.push({ name: 'skills' });
                 this.questionAddedModal = true;
                 this.questionSubmitted = true;
             });
@@ -147,17 +146,6 @@ export default {
             }, 2000);
         },
         skipAddingQuestion() {
-            this.questionSubmitted = true;
-            this.MakeMastered(this.$parent.skill);
-        },
-        async MakeMastered(skill) {
-            await this.userSkillsStore.MakeMastered(
-                this.userDetailsStore.userId,
-                skill
-            );
-            // Reload the skills list for the student.
-            await this.skillTreeStore.getUserSkills();
-            // Redirect to the skills list.
             router.push({ name: 'skills' });
         }
     }
@@ -175,8 +163,7 @@ export default {
                             Well done, you have passed!
                         </div>
                         <p>
-                            Please create your own question on this subject
-                            before you master it.
+                            Please create your own question on this subject.
                         </p>
                     </div>
                     <div
@@ -184,7 +171,7 @@ export default {
                         class="d-flex flex-column shake"
                     >
                         <div id="congrats-tile">
-                            Congratulation you have mastered this skill
+                            Thank you for submitting your question.
                         </div>
                     </div>
                     <div class="mb-3">

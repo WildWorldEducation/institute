@@ -7,6 +7,8 @@ import { useAssessmentsStore } from '../../stores/AssessmentsStore';
 import EssayAnswer from './EssayAnswer.vue';
 import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
 import AssessmentResult from './AssessmentResult.vue';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 
 export default {
     setup() {
@@ -14,12 +16,16 @@ export default {
         const settingsStore = useSettingsStore();
         const skillsStore = useSkillsStore();
         const assessmentsStore = useAssessmentsStore();
+        const userSkillsStore = useUserSkillsStore();
+        const skillTreeStore = useSkillTreeStore();
 
         return {
             userDetailsStore,
             settingsStore,
             skillsStore,
-            assessmentsStore
+            assessmentsStore,
+            userSkillsStore,
+            skillTreeStore
         };
     },
     data() {
@@ -326,6 +332,7 @@ export default {
             if (this.numEssayQuestions === 0) {
                 // Pass mark of 80%.
                 if ((this.score / this.numMCQuestions) * 100 >= 80) {
+                    this.MakeMastered(this.skill);
                     this.isQuizPassed = true;
                     // show result page and hide assessment part
                     this.assessmentStatus = 'pass';
@@ -443,6 +450,14 @@ export default {
                 this.showThankModal = true;
                 this.showFlaggingModal = false;
             });
+        },
+        async MakeMastered(skill) {
+            await this.userSkillsStore.MakeMastered(
+                this.userDetailsStore.userId,
+                skill
+            );
+            // Reload the skills list for the student.
+            await this.skillTreeStore.getUserSkills();
         }
     }
 };
