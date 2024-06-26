@@ -87,16 +87,17 @@ router.post('/add/:skillId', (req, res, next) => {
                                     content_type: 'resource',
                                     content_id: result.insertId,
                                     action: 'create',
-                                    user_id: data.user_id,
-                                }
-                                const actionQuery = 'INSERT INTO user_actions SET ?';
+                                    user_id: data.user_id
+                                };
+                                const actionQuery =
+                                    'INSERT INTO user_actions SET ?';
                                 conn.query(actionQuery, actionData, (err) => {
                                     if (err) {
                                         throw err;
                                     } else {
                                         res.json('');
                                     }
-                                })
+                                });
                             }
                         } catch (err) {
                             next(err);
@@ -254,7 +255,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 3230
+        AND id > 3239
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -768,7 +769,7 @@ function deleteDuplicateSources() {
                         }
                         console.log(
                             'Duplicate sources deleted: ' +
-                            duplicateSources.length
+                                duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);
