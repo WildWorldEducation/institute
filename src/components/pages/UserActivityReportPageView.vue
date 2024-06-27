@@ -6,6 +6,7 @@ import { useUsersStore } from '../../stores/UsersStore';
 import UserFlagActions from '../components/UserFlagActions.vue';
 import UserResourceActions from '../components/UserResourceActions.vue';
 import UserMcQuestionActions from '../components/UserMcQuestionActions.vue';
+import UserQuestionActions from '../components/UserQuestionActions.vue';
 import UserSkillActions from '../components/UserSkillActions.vue';
 import UserStudentMcQuestionActions from '../components/UserStudentMcQuestionActions.vue';
 
@@ -40,7 +41,7 @@ export default {
     components: {
         UserFlagActions,
         UserResourceActions,
-        UserMcQuestionActions,
+        UserQuestionActions,
         UserStudentMcQuestionActions,
         UserSkillActions
     },
@@ -126,7 +127,7 @@ export default {
             </div>
             <hr class="mt-5 mb-3" />
 
-            <!-- Mc Questions -->
+            <!-- Questions -->
             <div class="d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
                     <div
@@ -135,7 +136,7 @@ export default {
                         b-on-hover
                         :title="showMcQuestions ? 'collapse' : 'expand'"
                     >
-                        <span>MC Questions </span>
+                        <span>Questions </span>
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -157,7 +158,7 @@ export default {
                 </div>
                 <Transition name="dropdown">
                     <div v-if="showMcQuestions">
-                        <UserMcQuestionActions
+                        <UserQuestionActions
                             :userId="user.id"
                             :deleteMcQuestion="deleteMcQuestion"
                             @close-mc-question-div="showMcQuestions = false"

@@ -388,7 +388,21 @@ router.post('/essay-questions/add', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    res.end();
+                    // add create action into user_actions table
+                    const actionData = {
+                        action: 'create',
+                        content_id: results.insertId,
+                        content_type: 'essay_question',
+                        user_id: req.session.userId
+                    }
+                    const addActionQuery = `INSERT INTO user_actions SET?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err)
+                            throw err;
+                        else
+                            res.end();
+
+                    })
                 }
             } catch (err) {
                 next(err);
