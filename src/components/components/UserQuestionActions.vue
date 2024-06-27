@@ -34,13 +34,14 @@ export default {
                 time: createTime,
                 id: question.id,
                 studentName: contentObj.student_name,
-                studentId: contentObj.student_id
+                studentId: contentObj.student_id,
+                type: question.content_type
             });
         });
     },
     methods: {
         async getMcQuestionsLog() {
-            const res = await fetch(`/user-actions/${this.userId}/mc_question`);
+            const res = await fetch(`/user-actions/${this.userId}/question`);
             this.questionsData = await res.json();
         },
         actionColor(action) {
@@ -66,13 +67,39 @@ export default {
                 <span :class="actionColor(question.action)">
                     - {{ question.action }}
                 </span>
-                <span v-if="question.action === 'delete'">
-                    mc_question with id {{ question.id }}
+                <span
+                    v-if="
+                        question.action === 'delete' &&
+                        question.type === 'mc_question'
+                    "
+                >
+                    mc question with id: {{ question.id }}
                 </span>
-                <span v-else-if="question.action === 'create'">
-                    mc_question for skill:
+                <span
+                    v-if="
+                        question.action !== 'delete' &&
+                        question.type === 'mc_question'
+                    "
+                >
+                    mc_question in skill:
                 </span>
-                <span v-else> mc question of skill: </span>
+                <span
+                    v-if="
+                        question.action === 'delete' &&
+                        question.type === 'essay_question'
+                    "
+                >
+                    essay question with id: {{ question.id }}
+                </span>
+                <span
+                    v-if="
+                        question.action !== 'delete' &&
+                        question.type === 'essay_question'
+                    "
+                >
+                    essay question in skill:
+                </span>
+
                 <router-link
                     class="skill-link"
                     target="_blank"
