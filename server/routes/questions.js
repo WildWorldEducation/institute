@@ -62,8 +62,22 @@ router.delete('/essay/:id', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // add delete action into user_tables
+                    const actionData = {
+                        action: 'delete',
+                        content_id: req.params.id,
+                        content_type: 'essay_question',
+                        user_id: req.session.userId
+                    }
+                    const addActionQuery = 'INSERT INTO user_actions SET ?';
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err)
+                            throw err;
+                        else
+                            res.end();
+                    })
                 }
-                res.end();
             } catch (err) {
                 next(err);
             }
@@ -426,6 +440,8 @@ router.post('/essay-questions/add', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+
 
 /**
  * Bulk add MC questions from file.
