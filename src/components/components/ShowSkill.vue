@@ -62,8 +62,10 @@ export default {
     },
     methods: {
         async getSkill() {
+            // Load the skill data
             const res = await fetch('/skills/show/' + this.skillId);
             this.skill = await res.json();
+
             //Load skill filters
             this.getSkillFilters();
 
@@ -71,8 +73,14 @@ export default {
             if (icon.length > 0) {
                 icon[0].style.height = '50px';
             }
-        },
 
+            // Record that the user visited this skill.
+            if (this.userDetailsStore.role == 'student')
+                this.recordSkillVisit(this.skillId);
+        },
+        recordSkillVisit(skillId) {
+            fetch('/skills/record-visit/' + skillId);
+        },
         async getSkillFilters() {
             // Run the GET request.
             if (this.skillTagsStore.skillTagsList.length == 0)

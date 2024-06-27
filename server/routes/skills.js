@@ -10,7 +10,6 @@ router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
 
-
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -60,11 +59,11 @@ router.post('/add', async (req, res, next) => {
                                     content_id: skillId,
                                     user_id: req.session.userId,
                                     content_type: 'skill'
-                                }
-                                const actionQuery = 'INSERT INTO user_actions SET ?'
+                                };
+                                const actionQuery =
+                                    'INSERT INTO user_actions SET ?';
                                 conn.query(actionQuery, actionData, (err) => {
-                                    if (err)
-                                        throw err;
+                                    if (err) throw err;
                                     else {
                                         // Insert any new filters for the skill.
                                         for (
@@ -86,8 +85,7 @@ router.post('/add', async (req, res, next) => {
                                                     try {
                                                         if (err) {
                                                             throw err;
-                                                        }
-                                                        else {
+                                                        } else {
                                                             res.end();
                                                         }
                                                     } catch (err) {
@@ -97,7 +95,7 @@ router.post('/add', async (req, res, next) => {
                                             );
                                         }
                                     }
-                                })
+                                });
                             }
                         } catch (err) {
                             next(err);
@@ -237,10 +235,8 @@ router.get('/filtered-nested-list', (req, res, next) => {
 // Individual skills.
 router.get('/show/:id', (req, res, next) => {
     let skill;
-
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-
         // Get skill.
         let sqlQuery =
             `
@@ -258,6 +254,54 @@ router.get('/show/:id', (req, res, next) => {
 
                 skill = results[0];
                 res.json(skill);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+router.get('/record-visit/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        //Register visit datetime.
+        let visitSqlQuery = `
+ INSERT INTO user_visited_skills (user_id, skill_id, visited_at)
+ VALUES (${req.session.userId}, ${req.params.id}, NOW())
+ ON DUPLICATE KEY UPDATE visited_at = NOW();
+`;
+        let visitQuery = conn.query(visitSqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+router.get('/last-visited', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        //Get last visited.
+        let sqlQuery = `
+            SELECT skills.id, name
+            FROM user_visited_skills
+            INNER JOIN skills ON skills.id = user_visited_skills.skill_id
+            WHERE user_id = ${req.session.userId}
+            ORDER BY visited_at DESC
+            LIMIT 5;
+        `;
+
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
             } catch (err) {
                 next(err);
             }
@@ -318,11 +362,9 @@ router.put('/:id/edit', (req, res, next) => {
 
                     const addActionQuery = `INSERT INTO user_actions SET ?`;
                     conn.query(addActionQuery, actionData, (err) => {
-                        if (err)
-                            throw err;
-                        else
-                            res.redirect('back');
-                    })
+                        if (err) throw err;
+                        else res.redirect('back');
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -353,8 +395,7 @@ router.delete('/:id', (req, res, next) => {
                     try {
                         if (err) {
                             throw err;
-                        }
-                        else {
+                        } else {
                             // add delete skill actions into user_actions table
                             const actionData = {
                                 action: 'delete',
@@ -362,13 +403,12 @@ router.delete('/:id', (req, res, next) => {
                                 user_id: req.session.userId,
                                 content_type: 'skill'
                             };
-                            const addActionQuery = 'INSERT INTO user_actions SET ?';
+                            const addActionQuery =
+                                'INSERT INTO user_actions SET ?';
                             conn.query(addActionQuery, actionData, (err) => {
-                                if (err)
-                                    throw err;
-                                else
-                                    res.end();
-                            })
+                                if (err) throw err;
+                                else res.end();
+                            });
                         }
                     } catch (err) {
                         next(err);
