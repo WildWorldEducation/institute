@@ -1,6 +1,7 @@
 <script>
 // import components.
 import StudentProgress from '../components/StudentProgress.vue';
+import LastVisitedSkills from '../components/LastVisitedSkills.vue';
 import Notifications from '../components/Notifications.vue';
 import News from '../components/News.vue';
 import MarkAssessment from '../components/MarkAssessment.vue';
@@ -26,7 +27,8 @@ export default {
         Notifications,
         StudentProgress,
         MarkAssessment,
-        CheckStudentQuestions
+        CheckStudentQuestions,
+        LastVisitedSkills
     },
     computed: {
         name() {
@@ -52,7 +54,7 @@ export default {
         <div class="row content-row">
             <div
                 id="profile-image-column"
-                class="column col-lg-4 col-md-6 mx-0"
+                class="column col-lg-4 col-md-4 mx-0"
             >
                 <!-- Avatar image -->
                 <img
@@ -63,24 +65,39 @@ export default {
             </div>
             <div
                 id="middle-profile-column"
-                class="column col-lg-4 col-md-6 mb-5 mb-md-0"
+                class="column col-md-8 mb-5 mb-md-0"
             >
-                <StudentProgress
-                    v-if="userDetailsStore.role == 'student'"
-                    :userId="userDetailsStore.userId"
-                />
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <StudentProgress
+                            v-if="userDetailsStore.role == 'student'"
+                            :userId="userDetailsStore.userId"
+                        />
 
-                <MarkAssessment
-                    v-else-if="userDetailsStore.role == 'instructor'"
-                />
+                        <MarkAssessment
+                            v-else-if="userDetailsStore.role == 'instructor'"
+                        />
+                    </div>
+                    <div class="col-12 col-md-6 mt-4 mt-md-0">
+                        <LastVisitedSkills
+                            v-if="userDetailsStore.role == 'student'"
+                            :userId="userDetailsStore.userId"
+                        />
+                    </div>
+                </div>
+                
+
+                
+
+                
             </div>
             <!-- Student Added Questions -->
-            <div class="column col-lg-4 col-md-6">
-                <CheckStudentQuestions
-                    v-if="
+            <div class="column col-lg-4 col-md-6" v-if="
                         userDetailsStore.role == 'instructor' ||
                         userDetailsStore.role == 'admin'
-                    "
+                    ">
+                <CheckStudentQuestions
+                    
                 />
             </div>
             <div id="notif-col" class="column col-lg-3 col-md-6">
@@ -145,11 +162,10 @@ h1 {
 */
 
 #profile-image-column {
-    padding-right: 41px;
+    
 }
 
 #middle-profile-column {
-    padding-left: 42px;
     padding-right: 42px;
 }
 
@@ -203,17 +219,14 @@ h1 {
 
     #notif-col {
         margin-top: 37px;
-        padding-left: 72px;
         padding-right: 0px;
     }
 
     #profile-image-column {
-        padding-right: 120px;
         padding-left: 0px;
     }
 
     #middle-profile-column {
-        padding-left: 72px;
         padding-right: 0px;
         margin-right: 0px;
     }
