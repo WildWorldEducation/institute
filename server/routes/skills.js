@@ -277,6 +277,9 @@ router.get('/show/:id', (req, res, next) => {
         });
     }
 });
+
+
+
 router.get('/last-visited', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -302,6 +305,8 @@ router.get('/last-visited', (req, res, next) => {
         });
     }
 });
+
+
 /**
  * Edit Item
  *
