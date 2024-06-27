@@ -116,11 +116,10 @@ router.get('/essay/show/:id', (req, res) => {
 });
 
 /**
- * Update Item
  *
  * @return response()
  */
-// MC questions
+// Edit MC questions
 router.put('/mc/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         let name;
@@ -199,7 +198,7 @@ router.put('/mc/:id/edit', (req, res, next) => {
     }
 });
 
-// Essay questions
+// Edit Essay questions
 router.put('/essay/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         let name;
@@ -223,8 +222,23 @@ router.put('/essay/:id/edit', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                else
-                    res.end();
+                else {
+                    // add edit essay question into user_actions
+                    const actionData = {
+                        action: 'update',
+                        content_type: 'essay_question',
+                        content_id: req.params.id,
+                        user_id: req.session.userId
+                    }
+
+                    const addActionQuery = `INSERT INTO user_actions SET ?`
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err)
+                            throw err;
+                        else
+                            res.end();
+                    })
+                }
             } catch (err) {
                 next(err);
             }
