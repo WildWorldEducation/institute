@@ -1,5 +1,6 @@
 <script>
 import router from '../../router';
+import { RouterLink } from 'vue-router';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
@@ -133,9 +134,9 @@ export default {
             var url = '/questions/student-mc-questions/add';
             fetch(url, requestOptions).then(() => {
                 // This fires the method on the parent (AssessmentResult), which is chained to fire the method on its parent.
-                router.push({ name: 'skills' });
                 this.questionAddedModal = true;
                 this.questionSubmitted = true;
+                window.scrollTo(0,0);
             });
         },
         // show the already submit message for a short period of time
@@ -146,7 +147,8 @@ export default {
             }, 2000);
         },
         skipAddingQuestion() {
-            router.push({ name: 'skills' });
+            this.questionSubmitted = true;
+            window.scrollTo(0,0);
         }
     }
 };
@@ -156,7 +158,10 @@ export default {
     <div class="student-add-result pb-3 w-100">
         <div class="main-content-container container-fluid">
             <div class="row p-0">
-                <div id="form-container" class="col p-4">
+                <RouterLink v-if="questionSubmitted" class="btn btn-light purple-btn" to="/skills">
+                    Back to skills
+                </RouterLink>
+                <div v-if="!questionSubmitted" id="form-container" class="col p-4">
                     <!-- Congratulation text when user is pass but not submit a question yet -->
                     <div v-if="!questionSubmitted" class="d-flex flex-column">
                         <div id="congrats-tile">
@@ -365,6 +370,9 @@ export default {
                     >
                         ok
                     </button>
+                    <RouterLink v-if="questionSubmitted" class="btn btn-light purple-btn mx-2" to="/skills">
+                        Back to skills
+                    </RouterLink>
                 </div>
             </div>
         </div>
