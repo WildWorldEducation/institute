@@ -446,6 +446,10 @@ export default {
     color: red;
 }
 
+.bulk-create-action {
+    color: #5b7dcc;
+}
+
 /* Shake animation for waring line */
 .shake {
     animation: shake 0.62s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;

@@ -11,6 +11,7 @@ router.use(bodyParser.json());
 const conn = require('../config/db');
 
 
+
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -482,7 +483,21 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
                     if (err) {
                         throw err;
                     } else {
-                        res.end();
+                        // add bulk-create mc_question to user_actions
+                        const actionData = {
+                            action: 'bulk-create',
+                            content_type: 'mc_question',
+                            content_id: results.insertId,
+                            user_id: req.session.userId
+                        };
+                        const addActionQuery = `INSERT INTO user_actions SET ?`
+                        conn.query(addActionQuery, actionData, (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
+                        })
                     }
                 } catch (err) {
                     next(err);

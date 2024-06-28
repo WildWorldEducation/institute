@@ -394,7 +394,7 @@ router.post('/mc-questions/add', (req, res, next) => {
 });
 
 /**
- * Create New Essay Question Manually (not from CSV.)
+ * Create a single New Essay Question Manually (not from CSV.)
  *
  * @return response()
  */
@@ -450,6 +450,7 @@ router.post('/essay-questions/add', (req, res, next) => {
  */
 router.post('/mc-questions/bulk-add', (req, res, next) => {
     if (req.session.userName) {
+        console.log(req.body)
         // For each question.
         // No need to escape single quotes for SQL to accept,
         // as using '?'.
@@ -473,12 +474,26 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
                 skill_id: req.body.questionArray[i].skillId
             };
             let sqlQuery = `INSERT INTO mc_questions SET ?`;
-            let query = conn.query(sqlQuery, data, (err, results) => {
+            conn.query(sqlQuery, data, (err, results) => {
                 try {
                     if (err) {
                         throw err;
                     } else {
-                        res.end();
+                        // add bulk-create action in user_actions table
+                        const actionData = {
+                            action: 'bulk-create',
+                            content_id: results.insertId,
+                            content_type: 'mc_question',
+                            userId: req.session.userId
+                        }
+                        const actionQuery = `INSERT INTO user_actions SET ?`;
+                        conn.query(actionQuery, actionData, (err, results) => {
+                            console.log(results);
+                            if (err)
+                                throw err;
+                            else
+                                res.end();
+                        })
                     }
                 } catch (err) {
                     next(err);

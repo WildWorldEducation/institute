@@ -50,6 +50,8 @@ export default {
                     return 'create-action';
                 case 'update':
                     return 'update-action';
+                case 'bulk-create':
+                    return 'bulk-create-action';
                 default:
                     return 'delete-action';
             }
