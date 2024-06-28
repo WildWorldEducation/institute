@@ -450,7 +450,6 @@ router.post('/essay-questions/add', (req, res, next) => {
  */
 router.post('/mc-questions/bulk-add', (req, res, next) => {
     if (req.session.userName) {
-        console.log(req.body)
         // For each question.
         // No need to escape single quotes for SQL to accept,
         // as using '?'.
@@ -487,8 +486,7 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
                             userId: req.session.userId
                         }
                         const actionQuery = `INSERT INTO user_actions SET ?`;
-                        conn.query(actionQuery, actionData, (err, results) => {
-                            console.log(results);
+                        conn.query(actionQuery, actionData, (err) => {
                             if (err)
                                 throw err;
                             else
