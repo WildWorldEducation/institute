@@ -1,5 +1,6 @@
 <script>
 import router from '../../router';
+import { RouterLink } from 'vue-router';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
@@ -132,11 +133,10 @@ export default {
             };
             var url = '/questions/student-mc-questions/add';
             fetch(url, requestOptions).then(() => {
-                // Make skill mastered for this student.
                 // This fires the method on the parent (AssessmentResult), which is chained to fire the method on its parent.
-                this.MakeMastered(this.$parent.skill);
                 this.questionAddedModal = true;
                 this.questionSubmitted = true;
+                window.scrollTo(0,0);
             });
         },
         // show the already submit message for a short period of time
@@ -148,17 +148,7 @@ export default {
         },
         skipAddingQuestion() {
             this.questionSubmitted = true;
-            this.MakeMastered(this.$parent.skill);
-        },
-        async MakeMastered(skill) {
-            await this.userSkillsStore.MakeMastered(
-                this.userDetailsStore.userId,
-                skill
-            );
-            // Reload the skills list for the student.
-            await this.skillTreeStore.getUserSkills();
-            // Redirect to the skills list.
-            router.push({ name: 'skills' });
+            window.scrollTo(0,0);
         }
     }
 };
@@ -168,15 +158,17 @@ export default {
     <div class="student-add-result pb-3 w-100">
         <div class="main-content-container container-fluid">
             <div class="row p-0">
-                <div id="form-container" class="col p-4">
+                <RouterLink v-if="questionSubmitted" class="btn btn-light purple-btn" to="/skills">
+                    Back to skills
+                </RouterLink>
+                <div v-if="!questionSubmitted" id="form-container" class="col p-4">
                     <!-- Congratulation text when user is pass but not submit a question yet -->
                     <div v-if="!questionSubmitted" class="d-flex flex-column">
                         <div id="congrats-tile">
                             Well done, you have passed!
                         </div>
                         <p>
-                            Please create your own question on this subject
-                            before you master it.
+                            Please create your own question on this subject.
                         </p>
                     </div>
                     <div
@@ -184,7 +176,7 @@ export default {
                         class="d-flex flex-column shake"
                     >
                         <div id="congrats-tile">
-                            Congratulation you have mastered this skill
+                            Thank you for submitting your question.
                         </div>
                     </div>
                     <div class="mb-3">
@@ -378,6 +370,9 @@ export default {
                     >
                         ok
                     </button>
+                    <RouterLink v-if="questionSubmitted" class="btn btn-light purple-btn mx-2" to="/skills">
+                        Back to skills
+                    </RouterLink>
                 </div>
             </div>
         </div>

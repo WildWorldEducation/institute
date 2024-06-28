@@ -87,16 +87,17 @@ router.post('/add/:skillId', (req, res, next) => {
                                     content_type: 'resource',
                                     content_id: result.insertId,
                                     action: 'create',
-                                    user_id: data.user_id,
-                                }
-                                const actionQuery = 'INSERT INTO user_actions SET ?';
+                                    user_id: data.user_id
+                                };
+                                const actionQuery =
+                                    'INSERT INTO user_actions SET ?';
                                 conn.query(actionQuery, actionData, (err) => {
                                     if (err) {
                                         throw err;
                                     } else {
                                         res.json('');
                                     }
-                                })
+                                });
                             }
                         } catch (err) {
                             next(err);
@@ -141,23 +142,25 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                             try {
                                 if (err) {
                                     throw err;
-                                }
-                                else {
+                                } else {
                                     // add delete action into user_actions table
                                     const actionData = {
                                         action: 'delete',
                                         content_id: req.params.resourceId,
                                         content_type: 'resource',
                                         user_id: postUserId
-                                    }
+                                    };
 
-                                    const createAction = 'INSERT INTO user_actions SET ?';
-                                    conn.query(createAction, actionData, (err) => {
-                                        if (err)
-                                            throw err
-                                        else
-                                            res.end()
-                                    })
+                                    const createAction =
+                                        'INSERT INTO user_actions SET ?';
+                                    conn.query(
+                                        createAction,
+                                        actionData,
+                                        (err) => {
+                                            if (err) throw err;
+                                            else res.end();
+                                        }
+                                    );
                                 }
                             } catch (err) {
                                 next(err);
@@ -216,13 +219,14 @@ router.put('/edit/:id', (req, res, next) => {
                                     content_type: 'resource',
                                     action: 'update',
                                     user_id: postUserId
-                                }
-                                const actionQuery = 'INSERT INTO user_actions SET ?';
+                                };
+                                const actionQuery =
+                                    'INSERT INTO user_actions SET ?';
                                 conn.query(actionQuery, actionData, (err) => {
                                     if (err) {
-                                        throw err
+                                        throw err;
                                     }
-                                })
+                                });
                             }
                             res.end();
                         });
@@ -286,7 +290,7 @@ router.post('/generate-sources', (req, res, next) => {
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'              
-        AND id > 3230
+        AND id > 3332
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -800,7 +804,7 @@ function deleteDuplicateSources() {
                         }
                         console.log(
                             'Duplicate sources deleted: ' +
-                            duplicateSources.length
+                                duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);

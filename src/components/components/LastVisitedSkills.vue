@@ -2,53 +2,32 @@
 export default {
     data() {
         return {
-            userSkills: [],
+            visitedSkills: [],
             noSkills: true
         };
     },
     props: ['userId'],
     async created() {
-        const result = await fetch('/user-skills/unnested-list/' + this.userId);
-        this.userSkills = await result.json();
-    },
-    computed: {
-        availableSkills() {
-            const availableSkills = [];
-            for (let i = 0; i < this.userSkills.length; i++) {
-                if (
-                    (this.userSkills[i].is_accessible == 1) &
-                    (this.userSkills[i].is_mastered != 1) &
-                    (this.userSkills[i].type != 'domain')
-                ) {
-                    availableSkills.push({
-                        name: this.userSkills[i].name,
-                        id: this.userSkills[i].id
-                    });
-                }
-            }
-            if (availableSkills.length > 0) {
-                this.noSkills = false;
-            }
-            return availableSkills;
+        const result = await fetch('/skills/last-visited/');
+        this.visitedSkills = await result.json();
+        if(this.visitedSkills.length > 0){
+            this.noSkills = false
         }
     },
-    methods: {}
 };
 </script>
 
 <template>
-    <!-- <h1 class="text-center text-md-start d-lg-none">My Progress</h1>
-  <h2 class="text-center text-md-start d-lg-none">2023 - Active</h2> -->
     <div class="table-responsive"></div>
-    <div id="tile">Available Skills</div>
+    <div id="tile">Last visited Skills</div>
     <div id="skill-list">
-        <div v-for="availableSkill in availableSkills">
+        <div v-for="skill in visitedSkills">
             <router-link
                 class="skill-link"
-                :to="`/skills/${availableSkill.id}`"
+                :to="`/skills/${skill.id}`"
                 target="_blank"
             >
-                {{ availableSkill.name }}
+                {{ skill.name }}
             </router-link>
         </div>
         <div v-if="noSkills" id="no-skill-cell"></div>
