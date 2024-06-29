@@ -29,8 +29,20 @@ router.delete('/mc/:id', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // Add delete action into user_actions table
+                    const actionData = {
+                        action: 'delete',
+                        content_id: req.params.id,
+                        content_type: 'mc_question',
+                        user_id: req.session.userId
+                    };
+                    const addActionQuery = 'INSERT INTO user_actions SET ?';
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
-                res.end();
             } catch (err) {
                 next(err);
             }
@@ -48,8 +60,20 @@ router.delete('/essay/:id', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // add delete action into user_tables
+                    const actionData = {
+                        action: 'delete',
+                        content_id: req.params.id,
+                        content_type: 'essay_question',
+                        user_id: req.session.userId
+                    };
+                    const addActionQuery = 'INSERT INTO user_actions SET ?';
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
-                res.end();
             } catch (err) {
                 next(err);
             }
@@ -102,11 +126,10 @@ router.get('/essay/show/:id', (req, res) => {
 });
 
 /**
- * Update Item
  *
  * @return response()
  */
-// MC questions
+// Edit MC questions
 router.put('/mc/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         let name;
@@ -155,13 +178,24 @@ router.put('/mc/:id/edit', (req, res, next) => {
             explanation +
             `' WHERE id = ` +
             req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // add update question action into user_actions table
+                    const actionData = {
+                        action: 'update',
+                        content_type: 'mc_question',
+                        content_id: req.params.id,
+                        user_id: req.session.userId
+                    };
+                    const addActionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
-
-                res.end();
             } catch (err) {
                 next(err);
             }
@@ -171,7 +205,7 @@ router.put('/mc/:id/edit', (req, res, next) => {
     }
 });
 
-// Essay questions
+// Edit Essay questions
 router.put('/essay/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         let name;
@@ -194,8 +228,21 @@ router.put('/essay/:id/edit', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // add edit essay question into user_actions
+                    const actionData = {
+                        action: 'update',
+                        content_type: 'essay_question',
+                        content_id: req.params.id,
+                        user_id: req.session.userId
+                    };
+
+                    const addActionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
-                res.end();
             } catch (err) {
                 next(err);
             }
@@ -335,7 +382,7 @@ router.post('/mc-questions/add', (req, res, next) => {
 });
 
 /**
- * Create New Essay Question Manually (not from CSV.)
+ * Create a single New Essay Question Manually (not from CSV.)
  *
  * @return response()
  */
@@ -357,7 +404,18 @@ router.post('/essay-questions/add', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    res.end();
+                    // add create action into user_actions table
+                    const actionData = {
+                        action: 'create',
+                        content_id: results.insertId,
+                        content_type: 'essay_question',
+                        user_id: req.session.userId
+                    };
+                    const addActionQuery = `INSERT INTO user_actions SET?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -398,12 +456,23 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
                 skill_id: req.body.questionArray[i].skillId
             };
             let sqlQuery = `INSERT INTO mc_questions SET ?`;
-            let query = conn.query(sqlQuery, data, (err, results) => {
+            conn.query(sqlQuery, data, (err, results) => {
                 try {
                     if (err) {
                         throw err;
                     } else {
-                        res.end();
+                        // add bulk-create action in user_actions table
+                        const actionData = {
+                            action: 'bulk-create',
+                            content_id: results.insertId,
+                            content_type: 'mc_question',
+                            user_id: req.session.userId
+                        };
+                        const actionQuery = `INSERT INTO user_actions SET ?`;
+                        conn.query(actionQuery, actionData, (err) => {
+                            if (err) throw err;
+                            else res.end();
+                        });
                     }
                 } catch (err) {
                     next(err);
