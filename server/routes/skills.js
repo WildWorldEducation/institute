@@ -241,20 +241,14 @@ router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         // Get skill.
-        let sqlQuery =
-            `
-                        SELECT *
-                            FROM skill_tree.skills
-            WHERE skill_tree.skills.id = ` +
-            req.params.id +
-            `; `;
-
+        const sqlQuery = `SELECT *
+                          FROM skill_tree.skills
+                          WHERE skill_tree.skills.id = ${req.params.id} AND skill_tree.visibility = 1`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-
                 skill = results[0];
                 res.json(skill);
             } catch (err) {
