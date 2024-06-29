@@ -12,10 +12,15 @@ export default {
         };
     },
     data() {
-        return {};
+        return {
+            isInstructorMode: false
+        };
     },
     components: {
         SkillsListParent
+    },
+    created(){
+        this.isInstructorMode = (typeof this.$route.params.studentId == 'string')
     }
 };
 </script>
@@ -27,7 +32,7 @@ export default {
             class="img-fluid"
         />
     </div>
-    <div v-if="userDetailsStore.role == 'admin'" class="topnav" id="skill-nav">
+    <div v-if="userDetailsStore.role == 'admin' && !isInstructorMode" class="topnav" id="skill-nav">
         <router-link class="btn purple-btn" to="/skills/add"
             >Add&nbsp;
             <!-- Plus sign -->
