@@ -319,25 +319,7 @@ router.get('/:userId/skill', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    resResults = resResults.concat(results)
-                    // we have to get the delete action separately because it cant join with other table with a non exists id
-                    let deleteActionQuery = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
-                                             FROM user_actions 
-                                             WHERE user_actions.action = 'delete' AND user_actions.content_type = 'skill' AND user_id=${req.params.userId}`
-                    conn.query(deleteActionQuery, (err, results) => {
-                        if (err) {
-                            throw err;
-                        } else {
-                            resResults = resResults.concat(results);
-                            // re-Sort by date because we made two query and mess up the order of the results array  
-                            resResults.sort(function (x, y) {
-                                const date1 = new Date(x.create_date);
-                                const date2 = new Date(y.create_date);
-                                return date1 - date2;
-                            })
-                            res.json(resResults);
-                        }
-                    })
+                    res.json(results);
                 }
             } catch (err) {
                 next(err);

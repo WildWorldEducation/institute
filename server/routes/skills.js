@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
+const { Cookie } = require('express-session');
 
 
 
@@ -123,7 +124,7 @@ router.post('/add', async (req, res, next) => {
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM skills';
+        let sqlQuery = 'SELECT * FROM skills WHERE skills.visibility = 1';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -143,7 +144,7 @@ router.get('/nested-list', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
     SELECT skill_tree.skills.id, name, parent, type, level, is_filtered, skills.order
-    FROM skill_tree.skills`;
+    FROM skill_tree.skills WHERE skill_tree.skills.visibility = 1`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -189,7 +190,7 @@ router.get('/filtered-nested-list', (req, res, next) => {
         let sqlQuery = `
     SELECT skill_tree.skills.id, name, parent, type, level, skills.order
     FROM skill_tree.skills
-    WHERE is_filtered = 'available';`;
+    WHERE is_filtered = 'available' AND visibility = 1;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -384,43 +385,71 @@ router.put('/:id/edit', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery1 = 'DELETE FROM skills WHERE id=' + req.params.id;
-        let query = conn.query(sqlQuery1, (err, results) => {
+        // FOR NOW THIS ROUTE WILL ONLY TURN OFF THE VISIBILITY FLAG FOR SKILLS
+        const deleteQuery = `UPDATE skills SET visibility = 0 WHERE skills.id=${req.params.id}`
+        conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    // add delete skill actions into user_actions table
+                    const actionData = {
+                        action: 'delete',
+                        content_id: req.params.id,
+                        user_id: req.session.userId,
+                        content_type: 'skill'
+                    };
+                    const addActionQuery =
+                        'INSERT INTO user_actions SET ?';
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
-                // Delete all skill filters.
-                let sqlQuery2 =
-                    'DELETE FROM skill_tags WHERE skill_id=' + req.params.id;
-                let query = conn.query(sqlQuery2, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
-                        } else {
-                            // add delete skill actions into user_actions table
-                            const actionData = {
-                                action: 'delete',
-                                content_id: req.params.id,
-                                user_id: req.session.userId,
-                                content_type: 'skill'
-                            };
-                            const addActionQuery =
-                                'INSERT INTO user_actions SET ?';
-                            conn.query(addActionQuery, actionData, (err) => {
-                                if (err) throw err;
-                                else res.end();
-                            });
-                        }
-                    } catch (err) {
-                        next(err);
-                    }
-                });
-                res.end();
             } catch (err) {
                 next(err);
             }
         });
+
+        //  ---- //
+        /***** OLD DELETE SKILL CODE *****/
+        // let sqlQuery1 = 'DELETE FROM skills WHERE id=' + req.params.id;
+        // let query = conn.query(sqlQuery1, (err, results) => {
+        //     try {
+        //         if (err) {
+        //             throw err;
+        //         }
+        //         // Delete all skill filters.
+        //         let sqlQuery2 =
+        //             'DELETE FROM skill_tags WHERE skill_id=' + req.params.id;
+        //         let query = conn.query(sqlQuery2, (err, results) => {
+        //             try {
+        //                 if (err) {
+        //                     throw err;
+        //                 } else {
+        //                     // add delete skill actions into user_actions table
+        //                     const actionData = {
+        //                         action: 'delete',
+        //                         content_id: req.params.id,
+        //                         user_id: req.session.userId,
+        //                         content_type: 'skill'
+        //                     };
+        //                     const addActionQuery =
+        //                         'INSERT INTO user_actions SET ?';
+        //                     conn.query(addActionQuery, actionData, (err) => {
+        //                         if (err) throw err;
+        //                         else res.end();
+        //                     });
+        //                 }
+        //             } catch (err) {
+        //                 next(err);
+        //             }
+        //         });
+        //         res.end();
+        //     } catch (err) {
+        //         next(err);
+        //     }
+        // });
     } else {
         res.redirect('/login');
     }
