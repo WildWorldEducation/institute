@@ -10,6 +10,7 @@ import AddEssayQuestion from '../components/AddEssayQuestion.vue';
             class="image-fluid"
         />
     </div>
+
     <div class="container-fluid">
         <AddMCQuestion />
 

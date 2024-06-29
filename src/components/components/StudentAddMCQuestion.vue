@@ -136,7 +136,7 @@ export default {
                 // This fires the method on the parent (AssessmentResult), which is chained to fire the method on its parent.
                 this.questionAddedModal = true;
                 this.questionSubmitted = true;
-                window.scrollTo(0,0);
+                window.scrollTo(0, 0);
             });
         },
         // show the already submit message for a short period of time
@@ -148,7 +148,7 @@ export default {
         },
         skipAddingQuestion() {
             this.questionSubmitted = true;
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
         }
     }
 };
@@ -158,17 +158,26 @@ export default {
     <div class="student-add-result pb-3 w-100">
         <div class="main-content-container container-fluid">
             <div class="row p-0">
-                <RouterLink v-if="questionSubmitted" class="btn btn-light purple-btn" to="/skills">
+                <RouterLink
+                    v-if="questionSubmitted"
+                    class="btn btn-light purple-btn"
+                    to="/skills"
+                >
                     Back to skills
                 </RouterLink>
-                <div v-if="!questionSubmitted" id="form-container" class="col p-4">
+                <div
+                    v-if="!questionSubmitted"
+                    id="form-container"
+                    class="col p-4"
+                >
                     <!-- Congratulation text when user is pass but not submit a question yet -->
                     <div v-if="!questionSubmitted" class="d-flex flex-column">
                         <div id="congrats-tile">
                             Well done, you have passed!
                         </div>
                         <p>
-                            Please create your own question on this subject.
+                            Would you like to add your own question on this
+                            subject?
                         </p>
                     </div>
                     <div
@@ -370,7 +379,11 @@ export default {
                     >
                         ok
                     </button>
-                    <RouterLink v-if="questionSubmitted" class="btn btn-light purple-btn mx-2" to="/skills">
+                    <RouterLink
+                        v-if="questionSubmitted"
+                        class="btn btn-light purple-btn mx-2"
+                        to="/skills"
+                    >
                         Back to skills
                     </RouterLink>
                 </div>
