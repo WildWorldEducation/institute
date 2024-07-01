@@ -217,7 +217,7 @@ const router = createRouter({
                 import('../components/pages/CheckStudentQuestionView.vue')
         },
         {
-            path: '/tutor/add',
+            path: '/tutor/add/:skillId',
             name: 'add-tutor',
             component: () => import('../components/pages/AddTutorView.vue')
         }

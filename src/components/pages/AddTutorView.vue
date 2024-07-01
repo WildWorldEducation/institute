@@ -1,4 +1,45 @@
-<script setup></script>
+<script>
+// Import the store.
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+
+export default {
+    data() {
+        return {
+            skillId: this.$route.params.skillId,
+            contactDetails: null
+        };
+    },
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            userDetailsStore
+        };
+    },
+    mounted: function () {},
+    methods: {
+        Submit() {
+            var url = '/resources/add/' + this.skillId;
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: this.userDetailsStore.userId,
+                    editordata: this.contactDetails
+                })
+            };
+            fetch(url, requestOptions)
+                .then(function (response) {
+                    //return response.json();
+                })
+                .then((data) => {})
+                .then(() => {
+                    //this.$router.push('/skills/' + this.skillId);
+                });
+        }
+    }
+};
+</script>
 
 <template>
     <div class="container mt-3 pb-3">

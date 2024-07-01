@@ -269,7 +269,7 @@ export default {
                     </svg>
                 </router-link>
                 <router-link
-                    to="/tutor/add"
+                    :to="'/tutor/add/' + skillId"
                     class="btn purple-btn"
                     role="button"
                     >Offer to tutor&nbsp;&nbsp;<svg
