@@ -22,7 +22,7 @@ router.get('/:id', (req, res, next) => {
 
         let sqlQuery =
             `
-    SELECT * FROM skill_tree.user_votes
+    SELECT * FROM user_votes
     WHERE resource_id =` + req.params.id;
 
         let query = conn.query(sqlQuery, (err, results) => {
@@ -47,7 +47,7 @@ router.put('/:userId/:resourceId/edit/up', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             `
-        INSERT INTO skill_tree.user_votes (user_id, resource_id, vote) 
+        INSERT INTO user_votes (user_id, resource_id, vote) 
         VALUES(` +
             req.params.userId +
             `, ` +
@@ -73,7 +73,7 @@ router.put('/:userId/:resourceId/edit/down', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             `
-        INSERT INTO skill_tree.user_votes (user_id, resource_id, vote) 
+        INSERT INTO user_votes (user_id, resource_id, vote) 
         VALUES(` +
             req.params.userId +
             `, ` +
@@ -100,7 +100,7 @@ router.put('/:userId/:resourceId/edit/cancel', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             `
-        INSERT INTO skill_tree.user_votes (user_id, resource_id, vote) 
+        INSERT INTO user_votes (user_id, resource_id, vote) 
         VALUES(` +
             req.params.userId +
             `, ` +

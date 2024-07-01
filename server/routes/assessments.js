@@ -52,7 +52,7 @@ router.post('/:studentId/:skillId', (req, res, next) => {
         var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
         let sqlQuery =
             `
-        INSERT INTO skill_tree.unmarked_assessments (student_id, skill_id, total_score, current_score, num_unmarked_questions_remaining, date) 
+        INSERT INTO unmarked_assessments (student_id, skill_id, total_score, current_score, num_unmarked_questions_remaining, date) 
         VALUES(` +
             req.params.studentId +
             `, ` +
@@ -78,11 +78,11 @@ router.post('/:studentId/:skillId', (req, res, next) => {
                 } else {
                     // If both the username and password are not correct, check if the account exists.
                     let sqlQuery2 =
-                        `SELECT id FROM skill_tree.unmarked_assessments
-                     WHERE skill_tree.unmarked_assessments.student_id = ` +
+                        `SELECT id FROM unmarked_assessments
+                     WHERE unmarked_assessments.student_id = ` +
                         req.params.studentId +
                         `
-                        AND skill_tree.unmarked_assessments.skill_id = ` +
+                        AND unmarked_assessments.skill_id = ` +
                         req.params.skillId +
                         `;`;
 
@@ -189,7 +189,7 @@ router.put('/:studentId/:skillId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
         let sqlQuery = `
-        UPDATE skill_tree.unmarked_assessments 
+        UPDATE unmarked_assessments 
         SET total_score = ${req.body.totalScore}, current_score = ${req.body.currentScore}, num_unmarked_questions_remaining = ${req.body.numUnmarkedQuestions}, date = '${date}'
         WHERE student_id = '${req.params.studentId}' AND skill_id = '${req.params.skillId}'
         `;
@@ -201,11 +201,11 @@ router.put('/:studentId/:skillId', (req, res, next) => {
                 } else {
                     // If both the username and password are not correct, check if the account exists.
                     let sqlQuery2 =
-                        `SELECT id FROM skill_tree.unmarked_assessments
-                     WHERE skill_tree.unmarked_assessments.student_id = ` +
+                        `SELECT id FROM unmarked_assessments
+                     WHERE unmarked_assessments.student_id = ` +
                         req.params.studentId +
                         `
-                        AND skill_tree.unmarked_assessments.skill_id = ` +
+                        AND unmarked_assessments.skill_id = ` +
                         req.params.skillId +
                         `;`;
 

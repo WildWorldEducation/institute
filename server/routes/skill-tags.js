@@ -49,7 +49,7 @@ router.post('/add/:skillId', (req, res, next) => {
         for (let i = 0; i < req.body.filters.length; i++) {
             let sqlQuery1 =
                 `
-        INSERT INTO skill_tree.skill_tags (skill_id, tag_id)
+        INSERT INTO skill_tags (skill_id, tag_id)
         VALUES(` +
                 req.params.skillId +
                 `, ` +
@@ -66,7 +66,7 @@ router.post('/add/:skillId', (req, res, next) => {
                     let sqlQuery2 =
                         `
             SELECT is_active
-            FROM skill_tree.tags
+            FROM tags
             WHERE id = ` +
                         req.body.filters[i] +
                         `;`;
@@ -83,7 +83,7 @@ router.post('/add/:skillId', (req, res, next) => {
                                 // 'is_filtered' field to the skills table to improve processing speed.
                                 let sqlQuery3 =
                                     `
-            UPDATE skill_tree.skills 
+            UPDATE skills 
             SET is_filtered = 'filtered'
             WHERE id = ` +
                                     req.params.skillId +
@@ -129,7 +129,7 @@ router.post('/add/:skillId', (req, res, next) => {
 //     if (req.session.userName) {
 //         let sqlQuery =
 //             `
-//         DELETE FROM skill_tree.skill_tags
+//         DELETE FROM skill_tags
 //         WHERE skill_id =` +
 //             req.params.id1 +
 //             ` AND tag_id =` +
@@ -160,7 +160,7 @@ router.delete('/remove/:skillId', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             `
-        DELETE FROM skill_tree.skill_tags 
+        DELETE FROM skill_tags 
         WHERE skill_id =` +
             req.params.skillId +
             `;`;
@@ -173,7 +173,7 @@ router.delete('/remove/:skillId', (req, res, next) => {
 
                 let sqlQuery2 =
                     `
-    UPDATE skill_tree.skills 
+    UPDATE skills 
     SET is_filtered = 'available'
     WHERE id = ` +
                     req.params.skillId +
