@@ -152,10 +152,6 @@ h1 {
    So we have do it manual here
 */
 
-#profile-image-column {
-    
-}
-
 #middle-profile-column {
     padding-right: 42px;
 }
