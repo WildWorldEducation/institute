@@ -109,9 +109,7 @@ app.get('/google-login-attempt', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     // Get user id based on Google email, if it exists.
     let sqlQuery =
-        "SELECT * FROM skill_tree.users WHERE email = '" +
-        googleUserDetails.email +
-        "';";
+        "SELECT * FROM users WHERE email = '" + googleUserDetails.email + "';";
     let query = conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -154,9 +152,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Check if user already exists.
     let sqlQuery1 =
-        "SELECT * FROM skill_tree.users WHERE email = '" +
-        googleUserDetails.email +
-        "';";
+        "SELECT * FROM users WHERE email = '" + googleUserDetails.email + "';";
     let query1 = conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
@@ -226,9 +222,7 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Check if user already exists.
     let sqlQuery1 =
-        "SELECT * FROM skill_tree.users WHERE email = '" +
-        googleUserDetails.email +
-        "';";
+        "SELECT * FROM users WHERE email = '" + googleUserDetails.email + "';";
     let query1 = conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
@@ -305,9 +299,9 @@ app.post('/login-attempt', (req, res, next) => {
 
     // Execute SQL query that'll select the account from the database based on the specified username and password.
     let sqlQuery1 =
-        "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" +
+        "SELECT * FROM users WHERE users.username = '" +
         req.body.username +
-        "' AND skill_tree.users.password = '" +
+        "' AND users.password = '" +
         req.body.password +
         "';";
     let query1 = conn.query(sqlQuery1, (err, results) => {
@@ -327,7 +321,7 @@ app.post('/login-attempt', (req, res, next) => {
             } else {
                 // If both the username and password are not correct, check if the account exists.
                 let sqlQuery2 =
-                    "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" +
+                    "SELECT * FROM users WHERE users.username = '" +
                     req.body.username +
                     "';";
                 let query2 = conn.query(sqlQuery2, (err, results) => {
@@ -384,7 +378,7 @@ app.get('/settings', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
         SELECT *
-        FROM skill_tree.settings;`;
+        FROM settings;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

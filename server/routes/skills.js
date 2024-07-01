@@ -10,8 +10,6 @@ router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
 
-
-
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -75,7 +73,7 @@ router.post('/add', async (req, res, next) => {
                                         ) {
                                             let sqlQuery3 =
                                                 `
-                                INSERT INTO skill_tree.skill_tags (skill_id, tag_id)
+                                INSERT INTO skill_tags (skill_id, tag_id)
                                 VALUES(` +
                                                 skillId +
                                                 `, ` +
@@ -142,8 +140,8 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name, parent, type, level, is_filtered, skills.order
-    FROM skill_tree.skills`;
+    SELECT skills.id, name, parent, type, level, is_filtered, skills.order
+    FROM skills`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -187,8 +185,8 @@ router.get('/filtered-nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name, parent, type, level, skills.order
-    FROM skill_tree.skills
+    SELECT skills.id, name, parent, type, level, skills.order
+    FROM skills
     WHERE is_filtered = 'available';`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -243,8 +241,8 @@ router.get('/show/:id', (req, res, next) => {
         let sqlQuery =
             `
                         SELECT *
-                            FROM skill_tree.skills
-            WHERE skill_tree.skills.id = ` +
+                            FROM skills
+            WHERE skills.id = ` +
             req.params.id +
             `; `;
 
@@ -531,14 +529,14 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
                             content_id: results.insertId,
                             user_id: req.session.userId
                         };
-                        const addActionQuery = `INSERT INTO user_actions SET ?`
+                        const addActionQuery = `INSERT INTO user_actions SET ?`;
                         conn.query(addActionQuery, actionData, (err) => {
                             if (err) {
                                 throw err;
                             } else {
                                 res.end();
                             }
-                        })
+                        });
                     }
                 } catch (err) {
                     next(err);
@@ -579,15 +577,13 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
                             action: 'bulk-create',
                             content_id: results.insertId,
                             content_type: 'essay_question',
-                            user_id: req.session.userId,
-                        }
-                        const addActionQuery = `INSERT INTO user_actions SET ?`
+                            user_id: req.session.userId
+                        };
+                        const addActionQuery = `INSERT INTO user_actions SET ?`;
                         conn.query(addActionQuery, actionData, (err) => {
-                            if (err)
-                                throw err;
-                            else
-                                res.end();
-                        })
+                            if (err) throw err;
+                            else res.end();
+                        });
                     }
                 } catch (err) {
                     next(err);
