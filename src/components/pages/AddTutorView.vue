@@ -1,41 +1,29 @@
 <script>
 // Import the store.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 export default {
     data() {
         return {
             skillId: this.$route.params.skillId,
-            contactDetails: null
+            description: null
         };
     },
-    setup() {
-        const userDetailsStore = useUserDetailsStore();
-        return {
-            userDetailsStore
-        };
-    },
+    setup() {},
     mounted: function () {},
     methods: {
         Submit() {
-            var url = '/resources/add/' + this.skillId;
+            var url = '/tutors/add/' + this.skillId;
 
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    userId: this.userDetailsStore.userId,
-                    editordata: this.contactDetails
+                    description: this.description
                 })
             };
-            fetch(url, requestOptions)
-                .then(function (response) {
-                    //return response.json();
-                })
-                .then((data) => {})
-                .then(() => {
-                    //this.$router.push('/skills/' + this.skillId);
-                });
+            fetch(url, requestOptions).then(() => {
+                //this.$router.push('/skills/' + this.skillId);
+            });
         }
     }
 };
@@ -56,19 +44,13 @@ export default {
                             >Describe your tutoring style and experience with
                             the subject</label
                         >
-                        <textarea type="text" class="form-control" />
+                        <textarea
+                            v-model="description"
+                            type="text"
+                            class="form-control"
+                        />
                         <div v-if="1 == 2" class="form-validate">
                             please complete this section!
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="first_name" class="form-label"
-                            >Contact details (email address, phone number
-                            etc)</label
-                        >
-                        <input type="text" class="form-control" />
-                        <div v-if="1 == 2" class="form-validate">
-                            please enter your contact details!
                         </div>
                     </div>
 
@@ -76,7 +58,7 @@ export default {
                         <router-link class="btn red-btn" to="/users">
                             Cancel
                         </router-link>
-                        <button class="btn purple-btn" @click="ValidateForm()">
+                        <button class="btn purple-btn" @click="Submit()">
                             Submit
                         </button>
                     </div>
