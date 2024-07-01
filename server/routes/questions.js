@@ -24,8 +24,10 @@ Router
 // Delete multiple choice question.
 router.delete('/mc/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = 'DELETE FROM mc_questions WHERE id=' + req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        /** -- Old Delete Query -- **/
+        // let sqlQuery = 'DELETE FROM mc_questions WHERE id=' + req.params.id;
+        const deleteQuery = `UPDATE mc_questions SET visibility = 0 WHERE id=${req.params.id}`
+        conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
                     throw err;
@@ -43,7 +45,7 @@ router.delete('/mc/:id', (req, res, next) => {
                             throw err;
                         else
                             res.end();
-                    })
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -325,8 +327,8 @@ router.get('/essay/list', (req, res, next) => {
 router.get('/mc/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM mc_questions;';
-        let query = conn.query(sqlQuery, (err, results) => {
+        let sqlQuery = 'SELECT * FROM mc_questions ;';
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
