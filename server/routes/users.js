@@ -212,6 +212,13 @@ router.post('/new-editor/add', (req, res, next) => {
                                                                 results[0].last_name;
                                                             req.session.role =
                                                                 results[0].role;
+
+                                                            // Unlock skills here
+                                                            unlockInitialSkills(
+                                                                req.session
+                                                                    .userId
+                                                            );
+
                                                             res.json({
                                                                 account:
                                                                     'authorized',

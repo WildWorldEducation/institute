@@ -267,6 +267,9 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
                             req.session.lastName = data.last_name;
                             req.session.role = data.role;
 
+                            // Unlock skills here
+                            unlockInitialSkills(newUserId);
+
                             res.redirect('/');
                         }
                     } catch (err) {
