@@ -268,6 +268,23 @@ export default {
                         />
                     </svg>
                 </router-link>
+                <router-link
+                    to="/tutor/add"
+                    class="btn purple-btn"
+                    role="button"
+                    >Offer to tutor&nbsp;&nbsp;<svg
+                        width="24"
+                        height="20"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 640 512"
+                    >
+                        <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                        <path
+                            fill="white"
+                            d="M192 96a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm-8 384V352h16V480c0 17.7 14.3 32 32 32s32-14.3 32-32V192h56 64 16c17.7 0 32-14.3 32-32s-14.3-32-32-32H384V64H576V256H384V224H320v48c0 26.5 21.5 48 48 48H592c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H368c-26.5 0-48 21.5-48 48v80H243.1 177.1c-33.7 0-64.9 17.7-82.3 46.6l-58.3 97c-9.1 15.1-4.2 34.8 10.9 43.9s34.8 4.2 43.9-10.9L120 256.9V480c0 17.7 14.3 32 32 32s32-14.3 32-32z"
+                        />
+                    </svg>
+                </router-link>
             </div>
         </div>
         <div id="posts-big-container">
@@ -404,7 +421,11 @@ export default {
                                     >
                                         <!-- Edit Button -->
                                         <router-link
-                                            v-if="post.user_id == user.userId || user.role == 'admin' || user.role == 'editor'"
+                                            v-if="
+                                                post.user_id == user.userId ||
+                                                user.role == 'admin' ||
+                                                user.role == 'editor'
+                                            "
                                             :to="'/resources/edit/' + post.id"
                                             class="btn dropdown-btn"
                                             role="button"
