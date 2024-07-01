@@ -230,43 +230,32 @@ router.get('/:userId/question', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    resResults = resResults.concat(results)
-                    // we have to get the delete action separately because it cant join with other table with a non exists id
-                    const deleteActionQuery = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
-                                               FROM user_actions 
-                                               WHERE user_actions.action = 'delete' AND user_actions.content_type = 'mc_question' AND user_id=${req.params.userId}`
-                    conn.query(deleteActionQuery, (err, results) => {
+                    resResults = resResults.concat(results);
+                    // WE also get the essay question actions here
+                    const essayQuestionQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username ) AS content_obj 
+                                                        FROM user_actions JOIN essay_questions ON essay_questions.id = user_actions.content_id JOIN skills ON skills.id = essay_questions.skill_id  JOIN users ON users.id = user_actions.user_id 
+                                                        WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'essay_question'`;
+                    conn.query(essayQuestionQuery, (err, results) => {
                         if (err) {
                             throw err;
                         } else {
                             resResults = resResults.concat(results);
-                            // WE also get the essay question actions here
-                            const essayQuestionQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username ) AS content_obj 
-                                                        FROM user_actions JOIN essay_questions ON essay_questions.id = user_actions.content_id JOIN skills ON skills.id = essay_questions.skill_id  JOIN users ON users.id = user_actions.user_id 
-                                                        WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'essay_question'`;
-                            conn.query(essayQuestionQuery, (err, results) => {
-                                if (err) {
-                                    throw err;
-                                } else {
-                                    resResults = resResults.concat(results);
-                                    // we have to get delete essay question action separately
-                                    const deleteEssayQuery = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
+                            // we have to get delete essay question action separately
+                            const deleteEssayQuery = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
                                                               FROM user_actions 
                                                               WHERE user_actions.action = 'delete' AND user_actions.content_type = 'essay_question' AND user_id = ${req.params.userId}`;
-                                    conn.query(deleteEssayQuery, (err, results) => {
-                                        if (err)
-                                            throw err;
-                                        else {
-                                            resResults = resResults.concat(results);
-                                            // re-Sort by date because we made two query and mess up the order of the results array  
-                                            resResults.sort(function (x, y) {
-                                                const date1 = new Date(x.create_date);
-                                                const date2 = new Date(y.create_date);
-                                                return date1 - date2;
-                                            })
-                                            res.json(resResults);
-                                        }
+                            conn.query(deleteEssayQuery, (err, results) => {
+                                if (err)
+                                    throw err;
+                                else {
+                                    resResults = resResults.concat(results);
+                                    // re-Sort by date because we made two query and mess up the order of the results array  
+                                    resResults.sort(function (x, y) {
+                                        const date1 = new Date(x.create_date);
+                                        const date2 = new Date(y.create_date);
+                                        return date1 - date2;
                                     })
+                                    res.json(resResults);
                                 }
                             })
                         }

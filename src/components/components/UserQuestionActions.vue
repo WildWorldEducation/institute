@@ -12,10 +12,8 @@ export default {
     async created() {
         // call to content flags route
         await this.getMcQuestionsLog();
+        console.log(this.questionsData);
         this.questionsData.forEach((question) => {
-            if (question.action === 'update') {
-                console.log(question);
-            }
             const contentObj = JSON.parse(question.content_obj);
             const parseDate = new Date(question.create_date);
             const createDate = parseDate.toLocaleString('en-gb', {
@@ -69,20 +67,7 @@ export default {
                 <span :class="actionColor(question.action)">
                     - {{ question.action }}
                 </span>
-                <span
-                    v-if="
-                        question.action === 'delete' &&
-                        question.type === 'mc_question'
-                    "
-                >
-                    mc question with id: {{ question.id }}
-                </span>
-                <span
-                    v-if="
-                        question.action !== 'delete' &&
-                        question.type === 'mc_question'
-                    "
-                >
+                <span v-if="question.type === 'mc_question'">
                     mc_question in skill:
                 </span>
                 <span
@@ -101,7 +86,6 @@ export default {
                 >
                     essay question in skill:
                 </span>
-
                 <router-link
                     class="skill-link"
                     target="_blank"
