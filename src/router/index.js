@@ -215,6 +215,11 @@ const router = createRouter({
             name: 'check-student-question',
             component: () =>
                 import('../components/pages/CheckStudentQuestionView.vue')
+        },
+        {
+            path: '/tutor/add',
+            name: 'add-tutor',
+            component: () => import('../components/pages/AddTutorView.vue')
         }
     ]
 });
