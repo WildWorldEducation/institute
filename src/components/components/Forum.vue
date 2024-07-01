@@ -14,7 +14,8 @@ export default {
             flagPost: '',
             showActionBtns: false,
             currentClickId: '',
-            showThankModal: false
+            showThankModal: false,
+            tutors: []
         };
     },
     computed: {
@@ -29,6 +30,8 @@ export default {
                             this.users[k].last_name;
                         // I think we should get the user avatar too
                         this.posts[j].userAvatar = this.users[k].avatar;
+                        if (this.posts[j].type == 'tutor')
+                            this.posts[j].email = this.users[k].email;
                     }
                 }
             }
@@ -48,6 +51,7 @@ export default {
         this.getUserId();
         this.getUsers();
         this.getPosts(this.skillId);
+        this.getTutors(this.skillId);
     },
     methods: {
         getUserId() {
@@ -235,6 +239,20 @@ export default {
         handleClickActionBtns(postId) {
             this.showActionBtns = !this.showActionBtns;
             this.currentClickId = postId;
+        },
+        getTutors(skillId) {
+            fetch('/tutors/' + skillId + '/list')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    data.map((obj) => ({ ...obj, type: 'tutor' }));
+                    data.forEach(function (element) {
+                        element.type = 'tutor';
+                    });
+                    console.log(data);
+                    this.posts.push(...data);
+                });
         }
     }
 };
@@ -289,7 +307,8 @@ export default {
         </div>
         <div id="posts-big-container">
             <div
-                class="row forum-container mt-4"
+                class="row mt-4 forum-container"
+                :class="[post.type == 'tutor' ? 'tutor' : 'source']"
                 v-for="post in orderedAndNamedPosts"
             >
                 <div
@@ -316,7 +335,15 @@ export default {
                 </div>
                 <div class="col-12">
                     <div class="">
-                        <div class="forum-post" v-html="post.content"></div>
+                        <div
+                            v-if="post.type != 'tutor'"
+                            class="forum-post"
+                            v-html="post.content"
+                        ></div>
+                        <div v-else class="forum-post">
+                            <p>{{ post.description }}</p>
+                            <p>{{ post.email }}</p>
+                        </div>
                     </div>
                 </div>
                 <div class="d-flex align-items-center justify-content-end mt-3">
@@ -664,10 +691,17 @@ export default {
 }
 
 .forum-container {
-    background-color: #f2edff;
     border-radius: 12px;
     padding-top: 12px;
     padding-bottom: 12px;
+}
+
+.tutor {
+    background-color: #f6a192;
+}
+
+.source {
+    background-color: #f2edff;
 }
 
 #vote-count {

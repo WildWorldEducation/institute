@@ -17,6 +17,26 @@ Routes
 --------------------------------------------*/
 
 /**
+ * List Tutors by Skill
+ */
+router.get('/:skillId/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM tutors';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * Create New Tutor
  *
  * @return response()
