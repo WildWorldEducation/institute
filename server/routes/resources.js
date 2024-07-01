@@ -422,8 +422,8 @@ async function getSource(
                         usedLinks
                 }
             ],
-            model: 'gpt-4o',
-            // model: 'gpt-4-turbo',
+            //model: 'gpt-4o',
+            model: 'gpt-4-turbo',
             response_format: { type: 'json_object' }
         });
         let responseJSON = completion.choices[0].message.content;
