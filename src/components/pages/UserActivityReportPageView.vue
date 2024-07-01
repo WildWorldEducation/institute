@@ -128,7 +128,8 @@ export default {
             <hr class="mt-5 mb-3" />
 
             <!-- Questions -->
-            <div class="d-flex flex-column">
+            <!-- Only show Questions log if user is admin  -->
+            <div v-if="user.role === 'admin'" class="d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
                     <div
                         class="log-type"
@@ -166,7 +167,7 @@ export default {
                     </div>
                 </Transition>
             </div>
-            <hr class="mt-5 mb-3" />
+            <hr v-if="user.role === 'admin'" class="mt-5 mb-3" />
 
             <!-- Student Mc Questions -->
             <div class="d-flex flex-column">

@@ -243,7 +243,7 @@ router.get('/show/:id', (req, res, next) => {
         // Get skill.
         const sqlQuery = `SELECT *
                           FROM skill_tree.skills
-                          WHERE skill_tree.skills.id = ${req.params.id} AND skill_tree.visibility = 1`;
+                          WHERE skill_tree.skills.id = ${req.params.id} AND skill_tree.skills.visibility = 1`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -379,6 +379,8 @@ router.put('/:id/edit', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
+        console.log('Session Data: ');
+        console.log(req.session)
         // FOR NOW THIS ROUTE WILL ONLY TURN OFF THE VISIBILITY FLAG FOR SKILLS
         const deleteQuery = `UPDATE skills SET visibility = 0 WHERE skills.id=${req.params.id}`
         conn.query(deleteQuery, (err) => {
@@ -455,7 +457,7 @@ router.get('/:id/resources', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
-            'SELECT * FROM resources WHERE skill_id=' + req.params.id;
+            `SELECT * FROM resources WHERE skill_id= ${req.params.id} AND visibility = 1`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

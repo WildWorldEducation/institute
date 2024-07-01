@@ -25,7 +25,7 @@ Routes
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM resources';
+        let sqlQuery = 'SELECT * FROM resources WHERE resources.visibility = 1';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -124,7 +124,7 @@ router.delete('/delete/:resourceId', (req, res, next) => {
         var postUserId;
         let sqlQuery1 =
             'SELECT user_id FROM resources WHERE id=' + req.params.resourceId;
-        let query1 = conn.query(sqlQuery1, (err, results) => {
+        conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -135,10 +135,15 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                         req.session.role == 'admin'
                     ) {
                         // Delete the post.
-                        let sqlQuery2 =
-                            'DELETE FROM resources WHERE id=' +
-                            req.params.resourceId;
-                        let query2 = conn.query(sqlQuery2, (err, results) => {
+                        /** OLD DELETE QUERY **/
+                        // let sqlQuery2 =
+                        //     'DELETE FROM resources WHERE id=' +
+                        //     req.params.resourceId;
+
+                        // new query using visibility flag
+                        const deleteResourceQuery = `UPDATE resources SET visibility = 0 WHERE resources.id = ${req.params.resourceId}`
+
+                        conn.query(deleteResourceQuery, (err) => {
                             try {
                                 if (err) {
                                     throw err;
@@ -148,7 +153,7 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                                         action: 'delete',
                                         content_id: req.params.resourceId,
                                         content_type: 'resource',
-                                        user_id: postUserId
+                                        user_id: req.session.userId
                                     };
 
                                     const createAction =
@@ -249,7 +254,7 @@ router.put('/edit/:id', (req, res, next) => {
 router.get('/show/:id', (req, res) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM resources WHERE id=' + req.params.id;
+        let sqlQuery = `SELECT * FROM resources WHERE id=${req.params.id} AND visibility = 1`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -804,7 +809,7 @@ function deleteDuplicateSources() {
                         }
                         console.log(
                             'Duplicate sources deleted: ' +
-                                duplicateSources.length
+                            duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);
