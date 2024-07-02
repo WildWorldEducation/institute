@@ -68,23 +68,11 @@ export default {
                     - {{ question.action }}
                 </span>
                 <span v-if="question.type === 'mc_question'">
-                    mc_question in skill:
+                    mc_question in question bank of skill:
                 </span>
-                <span
-                    v-if="
-                        question.action === 'delete' &&
-                        question.type === 'essay_question'
-                    "
-                >
-                    essay question with id: {{ question.id }}
-                </span>
-                <span
-                    v-if="
-                        question.action !== 'delete' &&
-                        question.type === 'essay_question'
-                    "
-                >
-                    essay question in skill:
+
+                <span v-if="question.type === 'essay_question'">
+                    essay question in question bank of skill:
                 </span>
                 <router-link
                     class="skill-link"

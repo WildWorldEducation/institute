@@ -499,7 +499,7 @@ router.get('/:id/essay-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
-            'SELECT * FROM essay_questions WHERE skill_id = ' + req.params.id;
+            `SELECT * FROM essay_questions WHERE skill_id = ${req.params.id} AND visibility =1`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

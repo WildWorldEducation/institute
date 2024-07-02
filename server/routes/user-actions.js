@@ -241,23 +241,15 @@ router.get('/:userId/question', (req, res, next) => {
                         } else {
                             resResults = resResults.concat(results);
                             // we have to get delete essay question action separately
-                            const deleteEssayQuery = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
-                                                              FROM user_actions 
-                                                              WHERE user_actions.action = 'delete' AND user_actions.content_type = 'essay_question' AND user_id = ${req.params.userId}`;
-                            conn.query(deleteEssayQuery, (err, results) => {
-                                if (err)
-                                    throw err;
-                                else {
-                                    resResults = resResults.concat(results);
-                                    // re-Sort by date because we made two query and mess up the order of the results array  
-                                    resResults.sort(function (x, y) {
-                                        const date1 = new Date(x.create_date);
-                                        const date2 = new Date(y.create_date);
-                                        return date1 - date2;
-                                    })
-                                    res.json(resResults);
-                                }
+
+                            resResults = resResults.concat(results);
+                            // re-Sort by date because we made two query and mess up the order of the results array  
+                            resResults.sort(function (x, y) {
+                                const date1 = new Date(x.create_date);
+                                const date2 = new Date(y.create_date);
+                                return date1 - date2;
                             })
+                            res.json(resResults);
                         }
                     })
                 }

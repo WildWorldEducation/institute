@@ -59,8 +59,12 @@ router.delete('/mc/:id', (req, res, next) => {
 // Delete essay question.
 router.delete('/essay/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = 'DELETE FROM essay_questions WHERE id=' + req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        /** OLD DELETE QUERY **/
+        // let sqlQuery = 'DELETE FROM essay_questions WHERE id=' + req.params.id;
+
+        // Delete Query using visibility flag
+        const deleteQuestion = `UPDATE essay_questions SET visibility = 0 WHERE id=${req.params.id}`
+        conn.query(deleteQuestion, (err) => {
             try {
                 if (err) {
                     throw err;
