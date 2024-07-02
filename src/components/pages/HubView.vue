@@ -60,7 +60,7 @@ export default {
                 <img
                     id="profile-img"
                     :src="userDetailsStore.avatar"
-                    class="img-fluid"
+                    class="img-fluid rounded"
                 />
             </div>
             <div
@@ -83,8 +83,11 @@ export default {
                             :userId="userDetailsStore.userId"
                         />
                         <!-- Student Added Questions -->
-                        <CheckStudentQuestions 
-                            v-else-if="userDetailsStore.role == 'instructor' || userDetailsStore.role == 'admin'" 
+                        <CheckStudentQuestions
+                            v-else-if="
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'admin'
+                            "
                         />
                     </div>
                 </div>
@@ -117,7 +120,7 @@ export default {
 }
 
 .content-row {
-    padding-bottom: 51px;
+    /* padding-bottom: 51px; */
 }
 
 #banner {
@@ -201,7 +204,7 @@ h1 {
 @media (min-width: 577px) and (max-width: 1023px) {
     .content-row {
         padding-bottom: 0px;
-        margin-bottom: 39px;
+        /* margin-bottom: 39px; */
     }
 
     #notif-col {
