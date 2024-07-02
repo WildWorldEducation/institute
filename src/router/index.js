@@ -168,6 +168,11 @@ const router = createRouter({
             component: () => import('../components/pages/AddUserView.vue')
         },
         {
+            path: '/users/add-student',
+            name: 'add-student',
+            component: () => import('../components/pages/AddStudentView.vue')
+        },
+        {
             path: '/users/edit/:id',
             name: 'edit-user',
             component: () => import('../components/pages/EditUserView.vue')
