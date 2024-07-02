@@ -73,7 +73,6 @@ export default {
                             v-if="userDetailsStore.role == 'student'"
                             :userId="userDetailsStore.userId"
                         />
-
                         <MarkAssessment
                             v-else-if="userDetailsStore.role == 'instructor'"
                         />
@@ -83,23 +82,15 @@ export default {
                             v-if="userDetailsStore.role == 'student'"
                             :userId="userDetailsStore.userId"
                         />
+                        <!-- Student Added Questions -->
+                        <CheckStudentQuestions 
+                            v-else-if="userDetailsStore.role == 'instructor' || userDetailsStore.role == 'admin'" 
+                        />
                     </div>
                 </div>
-                
-
-                
-
-                
             </div>
-            <!-- Student Added Questions -->
-            <div class="column col-lg-4 col-md-6" v-if="
-                        userDetailsStore.role == 'instructor' ||
-                        userDetailsStore.role == 'admin'
-                    ">
-                <CheckStudentQuestions
-                    
-                />
-            </div>
+        </div>
+        <div class="row">
             <div id="notif-col" class="column col-lg-3 col-md-6">
                 <Notifications />
             </div>
@@ -110,7 +101,7 @@ export default {
                 <img src="/images/post-login.png" class="img-fluid" />
             </div>
         </div>
-        <div id="news-row" class="row">
+        <div id="news-row" class="row pt-4">
             <News />
         </div>
     </div>
@@ -160,10 +151,6 @@ h1 {
 /* Because Boostrap doesn`t support the gap between column
    So we have do it manual here
 */
-
-#profile-image-column {
-    
-}
 
 #middle-profile-column {
     padding-right: 42px;
@@ -246,7 +233,6 @@ h1 {
     }
 
     #news-row > div {
-        margin-top: auto;
         margin-bottom: 10px;
     }
 }
