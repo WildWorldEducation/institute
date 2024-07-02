@@ -19,7 +19,7 @@ export default {
         };
     },
     computed: {
-        orderedAndNamedPosts() {
+        orderedAndNamedPosts() {          
             // Getting the student's name.
             for (let j = 0; j < this.posts.length; j++) {
                 for (let k = 0; k < this.users.length; k++) {

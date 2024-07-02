@@ -595,6 +595,87 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
     }
 });
 
+// Nested List - for "Admin Role"
+function getSkills() {
+    let sqlQuery = `
+    SELECT skills.id, name, parent, type, level, is_filtered, skills.order
+    FROM skills`;
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            // Create the 'children' array.
+            for (var i = 0; i < results.length; i++) {
+                results[i].children = [];
+            }
+
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].parent != null && results[i].parent != 0) {
+                    var parentId = results[i].parent;
+                    // go through all rows again, add children
+                    for (let j = 0; j < results.length; j++) {
+                        if (results[j].id == parentId) {
+                            results[j].children.push(results[i]);
+                        }
+                    }
+                }
+            }
+
+            let nestedSkills = [];
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].parent == null || results[i].parent == 0) {
+                    nestedSkills.push(results[i]);
+                }
+            }
+            console.log('start');
+            for (let i = 0; i < nestedSkills.length; i++) {
+                WriteDepth(nestedSkills, 1);
+            }
+        } catch (err) {
+            next(err);
+        }
+    });
+}
+
+// Create depth field on skills, for purpose of scaling difficulty.
+function WriteDepth(parentChildren, depth) {
+    depth++;
+    console.log(depth);
+    sqlQuery =
+        `UPDATE skills SET depth = '` + depth + ` WHERE id = ` + req.params.id;
+
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            } else {
+            }
+        } catch (err) {
+            next(err);
+        }
+    });
+    var i = parentChildren.length;
+    while (i--) {
+        // If yes, check if its descendants are also mastered.
+
+        if (typeof parentChildren[i] !== 'undefined') {
+            /*
+             * Run the above function again recursively.
+             */
+            if (
+                parentChildren[i].children &&
+                Array.isArray(parentChildren[i].children) &&
+                parentChildren[i].children.length > 0
+            )
+                WriteDepth(parentChildren[i].children, depth);
+        }
+    }
+}
+
+getSkills();
+
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });
