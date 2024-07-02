@@ -190,8 +190,8 @@ router.post('/new-editor/add', (req, res, next) => {
                                                 let sqlQuery4 =
                                                     `
                                             SELECT id
-                                            FROM skill_tree.users
-                                            WHERE skill_tree.users.email = '` +
+                                            FROM users
+                                            WHERE users.email = '` +
                                                     req.body.email +
                                                     `';`;
                                                 let query = conn.query(
@@ -212,6 +212,13 @@ router.post('/new-editor/add', (req, res, next) => {
                                                                 results[0].last_name;
                                                             req.session.role =
                                                                 results[0].role;
+
+                                                            // Unlock skills here
+                                                            unlockInitialSkills(
+                                                                req.session
+                                                                    .userId
+                                                            );
+
                                                             res.json({
                                                                 account:
                                                                     'authorized',
@@ -315,8 +322,8 @@ router.post('/add', (req, res, next) => {
                                                     let sqlQuery4 =
                                                         `
                                                 SELECT id
-                                                FROM skill_tree.users
-                                                WHERE skill_tree.users.email = '` +
+                                                FROM users
+                                                WHERE users.email = '` +
                                                         req.body.email +
                                                         `';`;
                                                     let query = conn.query(
@@ -433,11 +440,11 @@ router.get('/show/:id', (req, res, next) => {
             instructor.first_name AS instructor_first_name,
             instructor.last_name AS instructor_last_name
         FROM 
-            skill_tree.users
+            users
         LEFT JOIN 
-            instructor_students ON skill_tree.users.id = instructor_students.student_id
+            instructor_students ON users.id = instructor_students.student_id
         LEFT JOIN 
-            skill_tree.users AS instructor ON instructor.id = instructor_students.instructor_id
+            users AS instructor ON instructor.id = instructor_students.instructor_id
         WHERE 
             skill_tree.users.id = ${req.params.id} AND users.visibility = 1
         LIMIT 1`;
@@ -455,7 +462,7 @@ router.get('/show/:id', (req, res, next) => {
                         last_name: results[0].instructor_last_name,
                         username: results[0].instructor_username
                     }
-                }
+                };
                 res.json(data);
             } catch (err) {
                 next(err);
@@ -627,9 +634,8 @@ router.put('/:id/edit', (req, res, next) => {
 
 router.put('/:id/edit/instructor', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
-            DELETE FROM skill_tree.instructor_students
+        let sqlQuery = `
+            DELETE FROM instructor_students
             WHERE student_id = ${req.params.id};
         `;
 
@@ -644,9 +650,8 @@ router.put('/:id/edit/instructor', (req, res, next) => {
             }
         });
 
-        sqlQuery =
-            `
-            INSERT INTO skill_tree.instructor_students (instructor_id, student_id) 
+        sqlQuery = `
+            INSERT INTO instructor_students (instructor_id, student_id) 
             VALUES (${req.body.instructor_id}, ${req.params.id});
         `;
 

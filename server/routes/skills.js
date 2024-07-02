@@ -11,8 +11,6 @@ router.use(bodyParser.json());
 const conn = require('../config/db');
 const { Cookie } = require('express-session');
 
-
-
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -76,7 +74,7 @@ router.post('/add', async (req, res, next) => {
                                         ) {
                                             let sqlQuery3 =
                                                 `
-                                INSERT INTO skill_tree.skill_tags (skill_id, tag_id)
+                                INSERT INTO skill_tags (skill_id, tag_id)
                                 VALUES(` +
                                                 skillId +
                                                 `, ` +
@@ -556,14 +554,14 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
                             content_id: results.insertId,
                             user_id: req.session.userId
                         };
-                        const addActionQuery = `INSERT INTO user_actions SET ?`
+                        const addActionQuery = `INSERT INTO user_actions SET ?`;
                         conn.query(addActionQuery, actionData, (err) => {
                             if (err) {
                                 throw err;
                             } else {
                                 res.end();
                             }
-                        })
+                        });
                     }
                 } catch (err) {
                     next(err);
@@ -604,15 +602,13 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
                             action: 'bulk-create',
                             content_id: results.insertId,
                             content_type: 'essay_question',
-                            user_id: req.session.userId,
-                        }
-                        const addActionQuery = `INSERT INTO user_actions SET ?`
+                            user_id: req.session.userId
+                        };
+                        const addActionQuery = `INSERT INTO user_actions SET ?`;
                         conn.query(addActionQuery, actionData, (err) => {
-                            if (err)
-                                throw err;
-                            else
-                                res.end();
-                        })
+                            if (err) throw err;
+                            else res.end();
+                        });
                     }
                 } catch (err) {
                     next(err);

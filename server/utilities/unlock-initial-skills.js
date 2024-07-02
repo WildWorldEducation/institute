@@ -31,7 +31,7 @@ function unlockInitialSkills(userId) {
 
                 let sqlQuery =
                     `
-                                INSERT INTO skill_tree.user_skills (user_id, skill_id, is_mastered, is_accessible) 
+                                INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
                                 VALUES(` +
                     userId +
                     `, ` +
@@ -109,7 +109,7 @@ function unlockInitialSkills(userId) {
                 // Make this skill accessible.
                 let sqlQuery3 =
                     `
-        INSERT INTO skill_tree.user_skills (user_id, skill_id, is_accessible) 
+        INSERT INTO user_skills (user_id, skill_id, is_accessible) 
         VALUES(` +
                     userId +
                     `, ` +

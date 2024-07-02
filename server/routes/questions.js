@@ -75,14 +75,12 @@ router.delete('/essay/:id', (req, res, next) => {
                         content_id: req.params.id,
                         content_type: 'essay_question',
                         user_id: req.session.userId
-                    }
+                    };
                     const addActionQuery = 'INSERT INTO user_actions SET ?';
                     conn.query(addActionQuery, actionData, (err) => {
-                        if (err)
-                            throw err;
-                        else
-                            res.end();
-                    })
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -192,22 +190,19 @@ router.put('/mc/:id/edit', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     // add update question action into user_actions table
                     const actionData = {
                         action: 'update',
                         content_type: 'mc_question',
                         content_id: req.params.id,
                         user_id: req.session.userId
-                    }
-                    const addActionQuery = `INSERT INTO user_actions SET ?`
+                    };
+                    const addActionQuery = `INSERT INTO user_actions SET ?`;
                     conn.query(addActionQuery, actionData, (err) => {
-                        if (err)
-                            throw err;
-                        else
-                            res.end();
-                    })
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -241,23 +236,20 @@ router.put('/essay/:id/edit', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     // add edit essay question into user_actions
                     const actionData = {
                         action: 'update',
                         content_type: 'essay_question',
                         content_id: req.params.id,
                         user_id: req.session.userId
-                    }
+                    };
 
-                    const addActionQuery = `INSERT INTO user_actions SET ?`
+                    const addActionQuery = `INSERT INTO user_actions SET ?`;
                     conn.query(addActionQuery, actionData, (err) => {
-                        if (err)
-                            throw err;
-                        else
-                            res.end();
-                    })
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -426,15 +418,12 @@ router.post('/essay-questions/add', (req, res, next) => {
                         content_id: results.insertId,
                         content_type: 'essay_question',
                         user_id: req.session.userId
-                    }
+                    };
                     const addActionQuery = `INSERT INTO user_actions SET?`;
                     conn.query(addActionQuery, actionData, (err) => {
-                        if (err)
-                            throw err;
-                        else
-                            res.end();
-
-                    })
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -444,8 +433,6 @@ router.post('/essay-questions/add', (req, res, next) => {
         res.redirect('/login');
     }
 });
-
-
 
 /**
  * Bulk add MC questions from file.
@@ -487,15 +474,13 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
                             action: 'bulk-create',
                             content_id: results.insertId,
                             content_type: 'mc_question',
-                            userId: req.session.userId
-                        }
+                            user_id: req.session.userId
+                        };
                         const actionQuery = `INSERT INTO user_actions SET ?`;
                         conn.query(actionQuery, actionData, (err) => {
-                            if (err)
-                                throw err;
-                            else
-                                res.end();
-                        })
+                            if (err) throw err;
+                            else res.end();
+                        });
                     }
                 } catch (err) {
                     next(err);
