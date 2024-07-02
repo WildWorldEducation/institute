@@ -60,7 +60,7 @@ export default {
                 <img
                     id="profile-img"
                     :src="userDetailsStore.avatar"
-                    class="img-fluid"
+                    class="img-fluid rounded"
                 />
             </div>
             <div
@@ -83,8 +83,11 @@ export default {
                             :userId="userDetailsStore.userId"
                         />
                         <!-- Student Added Questions -->
-                        <CheckStudentQuestions 
-                            v-else-if="userDetailsStore.role == 'instructor' || userDetailsStore.role == 'admin'" 
+                        <CheckStudentQuestions
+                            v-else-if="
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'admin'
+                            "
                         />
                     </div>
                 </div>
