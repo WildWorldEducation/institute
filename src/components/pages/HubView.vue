@@ -120,7 +120,7 @@ export default {
 }
 
 .content-row {
-    padding-bottom: 51px;
+    /* padding-bottom: 51px; */
 }
 
 #banner {
@@ -204,7 +204,7 @@ h1 {
 @media (min-width: 577px) and (max-width: 1023px) {
     .content-row {
         padding-bottom: 0px;
-        margin-bottom: 39px;
+        /* margin-bottom: 39px; */
     }
 
     #notif-col {
