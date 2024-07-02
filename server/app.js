@@ -304,15 +304,22 @@ app.post('/login-attempt', (req, res, next) => {
         req.body.password = req.body.password.replace(/'/g, "\\'");
 
     // Execute SQL query that'll select the account from the database based on the specified username and password.
-    let sqlQuery1 =
-        "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" +
-        req.body.username +
-        "' AND skill_tree.users.password = '" +
-        req.body.password +
-        "';";
+    // let sqlQuery1 =
+    //     "SELECT * FROM skill_tree.users WHERE skill_tree.users.username = '" +
+    //     req.body.username +
+    //     "' AND skill_tree.users.password = '" +
+    //     req.body.password +
+    //     "';";
+
+    const sqlQuery1 = `SELECT * 
+                       FROM skill_tree.users 
+                       WHERE skill_tree.users.username = '${req.body.username}' 
+                             AND skill_tree.users.password = '${req.body.password}' 
+                             AND skill_tree.users.visibility = 1;`
     let query1 = conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
+                console.log(err)
                 throw err;
             }
             // Create session object.

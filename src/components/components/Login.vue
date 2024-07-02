@@ -37,6 +37,7 @@ export default {
                     return response.json();
                 })
                 .then(function (data) {
+                    console.log(data);
                     if (data.account == 'authorized') {
                         if (data.role == 'student')
                             router.push({ name: 'skills' });

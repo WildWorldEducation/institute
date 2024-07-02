@@ -387,7 +387,7 @@ router.post('/add/instructor', (req, res, next) => {
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM users';
+        let sqlQuery = 'SELECT * FROM users WHERE visibility = 1';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -439,7 +439,7 @@ router.get('/show/:id', (req, res, next) => {
         LEFT JOIN 
             skill_tree.users AS instructor ON instructor.id = instructor_students.instructor_id
         WHERE 
-            skill_tree.users.id = ${req.params.id}
+            skill_tree.users.id = ${req.params.id} AND users.visibility = 1
         LIMIT 1`;
 
         let query = conn.query(sqlQuery, (err, results) => {
@@ -447,7 +447,7 @@ router.get('/show/:id', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                let data = { 
+                let data = {
                     ...results[0],
                     instructor: {
                         id: results[0].instructor_id,
@@ -488,49 +488,73 @@ router.get('/showId/:username', (req, res, next) => {
 });
 
 /**
- * Delete Item
+ * Delete Item OLD TRUNCATED
+ *
+ * @return response()
+ */
+// router.delete('/:id', (req, res, next) => {
+//     if (req.session.userName) {
+//         let sqlQuery1 = 'DELETE FROM users WHERE id=' + req.params.id;
+
+//         let query = conn.query(sqlQuery1, (err, results) => {
+//             try {
+//                 if (err) {
+//                     throw err;
+//                 }
+//                 // After deleting the user, delete all their user-skills (mastery and availability)
+//                 let sqlQuery2 =
+//                     'DELETE FROM user_skills WHERE user_id=' + req.params.id;
+//                 let query = conn.query(sqlQuery2, (err, results) => {
+//                     try {
+//                         if (err) {
+//                             throw err;
+//                         }
+
+//                         // After deleting the user, delete all their instructor-student records.
+//                         let sqlQuery3 =
+//                             'DELETE FROM instructor_students WHERE student_id = ' +
+//                             req.params.id +
+//                             ' OR instructor_id = ' +
+//                             req.params.id +
+//                             ';';
+//                         let query = conn.query(sqlQuery3, (err, results) => {
+//                             try {
+//                                 if (err) {
+//                                     throw err;
+//                                 }
+//                                 res.end();
+//                             } catch (err) {
+//                                 next(err);
+//                             }
+//                         });
+//                     } catch (err) {
+//                         next(err);
+//                     }
+//                 });
+//             } catch (err) {
+//                 next(err);
+//             }
+//         });
+//     } else {
+//         res.redirect('/login');
+//     }
+// });
+
+/**
+ * Delete Item NEW using binary flag
  *
  * @return response()
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery1 = 'DELETE FROM users WHERE id=' + req.params.id;
-
-        let query = conn.query(sqlQuery1, (err, results) => {
+        const deleteQuery = `UPDATE users SET visibility = 0 WHERE id = ${req.params.id}`
+        conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
                     throw err;
+                } else {
+                    res.end()
                 }
-                // After deleting the user, delete all their user-skills (mastery and availability)
-                let sqlQuery2 =
-                    'DELETE FROM user_skills WHERE user_id=' + req.params.id;
-                let query = conn.query(sqlQuery2, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
-                        }
-
-                        // After deleting the user, delete all their instructor-student records.
-                        let sqlQuery3 =
-                            'DELETE FROM instructor_students WHERE student_id = ' +
-                            req.params.id +
-                            ' OR instructor_id = ' +
-                            req.params.id +
-                            ';';
-                        let query = conn.query(sqlQuery3, (err, results) => {
-                            try {
-                                if (err) {
-                                    throw err;
-                                }
-                                res.end();
-                            } catch (err) {
-                                next(err);
-                            }
-                        });
-                    } catch (err) {
-                        next(err);
-                    }
-                });
             } catch (err) {
                 next(err);
             }
@@ -539,6 +563,8 @@ router.delete('/:id', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+
 
 /**
  * Update User

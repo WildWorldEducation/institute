@@ -308,7 +308,7 @@ router.get('/:skillId/essay', (req, res, next) => {
     }
 });
 
-// TODO: find out where this is used, if at all. (We now use this to get flagged essay question)
+// TODO: find out where this is used, if at all. (We now use this to get flagged essay question AND use in mark assessment Component)
 // Load all essay type questions.
 router.get('/essay/list', (req, res, next) => {
     if (req.session.userName) {
