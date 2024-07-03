@@ -187,8 +187,6 @@ export default {
         deletePost(resourceId) {
             // Close the modal.
             this.showModal = false;
-            console.log('ha ha ');
-            console.log(sessionStorage);
             // Delete record from DB.
             fetch('/resources/delete/' + resourceId, { method: 'DELETE' });
 
