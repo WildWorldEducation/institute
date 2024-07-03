@@ -25,7 +25,7 @@ Routes
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM resources WHERE resources.visibility = 1';
+        let sqlQuery = 'SELECT * FROM resources WHERE resources.is_deleted = 0';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -135,13 +135,8 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                         req.session.role == 'admin'
                     ) {
                         // Delete the post.
-                        /** OLD DELETE QUERY **/
-                        // let sqlQuery2 =
-                        //     'DELETE FROM resources WHERE id=' +
-                        //     req.params.resourceId;
-
                         // new query using visibility flag
-                        const deleteResourceQuery = `UPDATE resources SET visibility = 0 WHERE resources.id = ${req.params.resourceId}`
+                        const deleteResourceQuery = `UPDATE resources SET is_deleted = 1 WHERE resources.id = ${req.params.resourceId}`;
 
                         conn.query(deleteResourceQuery, (err) => {
                             try {
@@ -254,7 +249,7 @@ router.put('/edit/:id', (req, res, next) => {
 router.get('/show/:id', (req, res) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * FROM resources WHERE id=${req.params.id} AND visibility = 1`;
+        let sqlQuery = `SELECT * FROM resources WHERE id=${req.params.id} AND is_deleted = 0`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -294,7 +289,8 @@ router.post('/generate-sources', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // As we are posting sources for all skills, we get all skills.
         let sqlQuery = `SELECT * FROM skills 
-        WHERE type <> 'domain'              
+        WHERE type <> 'domain'  
+        AND is_deleted = 0            
         AND id > 3448
         
         ORDER BY id`;
@@ -598,6 +594,7 @@ async function addSource(
 }
 
 // Delete all sources from a particular root domain.
+// Note these should be totally deleted, as they dont need to be able to be undeleted.
 router.post('/delete-domain', (req, res, next) => {
     if (req.session.userName) {
         let rootDomain = req.body.blockedRootDomain;
@@ -798,6 +795,7 @@ function deleteDuplicateSources() {
                 console.log('Duplicate source IDs found: ' + duplicateSources);
             // Delete them.
             if (duplicateSources.length > 0) {
+                // Note: these should be totally deleted. Dont need to ever be undeleted.
                 let sqlQuery2 =
                     `DELETE from resources WHERE id IN (` +
                     duplicateSources +
@@ -809,7 +807,7 @@ function deleteDuplicateSources() {
                         }
                         console.log(
                             'Duplicate sources deleted: ' +
-                            duplicateSources.length
+                                duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);
@@ -837,7 +835,9 @@ router.delete('/delete-duplicate-sources', (req, res, next) => {
 var sourceLinks = [];
 function getSources() {
     // Get all sources.
-    let sqlQuery = `SELECT * FROM resources ORDER BY id`;
+    let sqlQuery = `SELECT * FROM resources 
+    WHERE is_deleted = 0 
+    ORDER BY id`;
     let query = conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {

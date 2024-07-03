@@ -24,9 +24,7 @@ Router
 // Delete multiple choice question.
 router.delete('/mc/:id', (req, res, next) => {
     if (req.session.userName) {
-        /** -- Old Delete Query -- **/
-        // let sqlQuery = 'DELETE FROM mc_questions WHERE id=' + req.params.id;
-        const deleteQuery = `UPDATE mc_questions SET visibility = 0 WHERE id=${req.params.id}`
+        const deleteQuery = `UPDATE mc_questions SET is_deleted = 1 WHERE id=${req.params.id}`;
         conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
@@ -41,10 +39,8 @@ router.delete('/mc/:id', (req, res, next) => {
                     };
                     const addActionQuery = 'INSERT INTO user_actions SET ?';
                     conn.query(addActionQuery, actionData, (err) => {
-                        if (err)
-                            throw err;
-                        else
-                            res.end();
+                        if (err) throw err;
+                        else res.end();
                     });
                 }
             } catch (err) {
@@ -59,11 +55,8 @@ router.delete('/mc/:id', (req, res, next) => {
 // Delete essay question.
 router.delete('/essay/:id', (req, res, next) => {
     if (req.session.userName) {
-        /** OLD DELETE QUERY **/
-        // let sqlQuery = 'DELETE FROM essay_questions WHERE id=' + req.params.id;
-
         // Delete Query using visibility flag
-        const deleteQuestion = `UPDATE essay_questions SET visibility = 0 WHERE id=${req.params.id}`
+        const deleteQuestion = `UPDATE essay_questions SET is_deleted = 1 WHERE id=${req.params.id}`;
         conn.query(deleteQuestion, (err) => {
             try {
                 if (err) {
@@ -260,13 +253,15 @@ router.put('/essay/:id/edit', (req, res, next) => {
     }
 });
 
-// Dynamically create assessments.
+// Dynamically create assessments / question banks.
 // Load multiple choice type questions.
 router.get('/:skillId/multiple-choice', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            'SELECT * FROM mc_questions WHERE skill_id = ' + req.params.skillId;
+        let sqlQuery = `SELECT * 
+            FROM mc_questions 
+            WHERE skill_id = ${req.params.skillId}
+            AND is_deleted = 0;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -284,9 +279,10 @@ router.get('/:skillId/multiple-choice', (req, res, next) => {
 router.get('/:skillId/essay', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            'SELECT * FROM essay_questions WHERE skill_id = ' +
-            req.params.skillId;
+        let sqlQuery = `SELECT * 
+            FROM essay_questions 
+            WHERE skill_id = ${req.params.skillId}
+            AND is_deleted = 0;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -300,12 +296,12 @@ router.get('/:skillId/essay', (req, res, next) => {
     }
 });
 
-// TODO: find out where this is used, if at all. (We now use this to get flagged essay question AND use in mark assessment Component)
+// Used to get flagged essay question AND in mark assessment Component
 // Load all essay type questions.
 router.get('/essay/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM essay_questions;';
+        let sqlQuery = 'SELECT * FROM essay_questions WHERE is_deleted = 0;';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -323,7 +319,7 @@ router.get('/essay/list', (req, res, next) => {
 router.get('/mc/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM mc_questions ;';
+        let sqlQuery = 'SELECT * FROM mc_questions WHERE is_deleted = 0;';
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -616,7 +612,9 @@ router.get('/check-questions', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Get all MC questions.
         let sqlQuery1 = `SELECT * FROM mc_questions   
-        WHERE is_checked = 0 AND skill_id < 51       
+        WHERE is_checked = 0
+        AND is_deleted = 0
+        AND skill_id < 51       
         ORDER BY skill_id`;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
@@ -766,8 +764,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                mcQuestions[index].id +
-                                ' complete'
+                                    mcQuestions[index].id +
+                                    ' complete'
                             );
                             // Check the next question.
                             index++;
