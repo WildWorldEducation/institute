@@ -394,7 +394,7 @@ router.post('/add/instructor', (req, res, next) => {
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM users WHERE visibility = 1';
+        let sqlQuery = 'SELECT * FROM users WHERE is_deleted = 0';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -414,7 +414,8 @@ router.get('/list', (req, res, next) => {
 router.get('/instructors/list', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `SELECT * FROM users
-        WHERE role = 'instructor'`;
+        WHERE role = 'instructor'
+        AND is_deleted = 0;`;
     let query = conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -446,7 +447,7 @@ router.get('/show/:id', (req, res, next) => {
         LEFT JOIN 
             users AS instructor ON instructor.id = instructor_students.instructor_id
         WHERE 
-            skill_tree.users.id = ${req.params.id} AND users.visibility = 1
+            skill_tree.users.id = ${req.params.id} AND users.is_deleted = 0
         LIMIT 1`;
 
         let query = conn.query(sqlQuery, (err, results) => {
@@ -548,19 +549,19 @@ router.get('/showId/:username', (req, res, next) => {
 // });
 
 /**
- * Delete Item NEW using binary flag
+ * Delete User NEW using binary flag
  *
  * @return response()
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        const deleteQuery = `UPDATE users SET visibility = 0 WHERE id = ${req.params.id}`
+        const deleteQuery = `UPDATE users SET is_deleted = 1 WHERE id = ${req.params.id}`;
         conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
                     throw err;
                 } else {
-                    res.end()
+                    res.end();
                 }
             } catch (err) {
                 next(err);
@@ -570,8 +571,6 @@ router.delete('/:id', (req, res, next) => {
         res.redirect('/login');
     }
 });
-
-
 
 /**
  * Update User
