@@ -496,59 +496,6 @@ router.get('/showId/:username', (req, res, next) => {
 });
 
 /**
- * Delete Item OLD TRUNCATED
- *
- * @return response()
- */
-// router.delete('/:id', (req, res, next) => {
-//     if (req.session.userName) {
-//         let sqlQuery1 = 'DELETE FROM users WHERE id=' + req.params.id;
-
-//         let query = conn.query(sqlQuery1, (err, results) => {
-//             try {
-//                 if (err) {
-//                     throw err;
-//                 }
-//                 // After deleting the user, delete all their user-skills (mastery and availability)
-//                 let sqlQuery2 =
-//                     'DELETE FROM user_skills WHERE user_id=' + req.params.id;
-//                 let query = conn.query(sqlQuery2, (err, results) => {
-//                     try {
-//                         if (err) {
-//                             throw err;
-//                         }
-
-//                         // After deleting the user, delete all their instructor-student records.
-//                         let sqlQuery3 =
-//                             'DELETE FROM instructor_students WHERE student_id = ' +
-//                             req.params.id +
-//                             ' OR instructor_id = ' +
-//                             req.params.id +
-//                             ';';
-//                         let query = conn.query(sqlQuery3, (err, results) => {
-//                             try {
-//                                 if (err) {
-//                                     throw err;
-//                                 }
-//                                 res.end();
-//                             } catch (err) {
-//                                 next(err);
-//                             }
-//                         });
-//                     } catch (err) {
-//                         next(err);
-//                     }
-//                 });
-//             } catch (err) {
-//                 next(err);
-//             }
-//         });
-//     } else {
-//         res.redirect('/login');
-//     }
-// });
-
-/**
  * Delete User NEW using binary flag
  *
  * @return response()
