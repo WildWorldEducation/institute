@@ -12,7 +12,6 @@ export default {
     async created() {
         // call to content flags route
         await this.getMcQuestionsLog();
-        console.log(this.questionsData);
         this.questionsData.forEach((question) => {
             const contentObj = JSON.parse(question.content_obj);
             const parseDate = new Date(question.create_date);

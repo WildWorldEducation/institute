@@ -60,6 +60,7 @@ export default {
             }
         },
         async deleteEssayQuestion(id) {
+            console.log('delete');
             const result = fetch('/questions/essay/' + id, {
                 method: 'DELETE'
             });
