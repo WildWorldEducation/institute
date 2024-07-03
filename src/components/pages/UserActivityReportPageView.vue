@@ -128,7 +128,8 @@ export default {
             <hr class="mt-5 mb-3" />
 
             <!-- Questions -->
-            <div class="d-flex flex-column">
+            <!-- Only show Questions log if user is admin  -->
+            <div v-if="user.role === 'admin'" class="d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
                     <div
                         class="log-type"
@@ -166,7 +167,7 @@ export default {
                     </div>
                 </Transition>
             </div>
-            <hr class="mt-5 mb-3" />
+            <hr v-if="user.role === 'admin'" class="mt-5 mb-3" />
 
             <!-- Student Mc Questions -->
             <div class="d-flex flex-column">
@@ -356,6 +357,27 @@ export default {
     cursor: pointer;
 }
 
+/* === Buttons Styling === */
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    height: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
+}
+
+/* === End of Buttons Styling === */
+
 /* +-+-+ Rotate Arrow Animation +-+-+  */
 .arrow-point-down {
     animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
@@ -397,6 +419,7 @@ export default {
         transform: scaleY(1);
     }
 }
+
 .dropdown-enter-active {
     transform-origin: top center;
     animation: slide 0.5s;
@@ -419,12 +442,22 @@ export default {
     font-weight: 500;
 }
 
+.skill-link:hover {
+    color: #5b7dcc;
+    cursor: pointer;
+}
+
 .question-link {
     margin-left: 5px;
     margin-right: 5px;
     font-weight: 400;
     text-decoration: none;
     color: #667085;
+}
+
+.question-link:hover {
+    color: #5b7dcc;
+    cursor: pointer;
 }
 
 .user-link {
@@ -449,6 +482,49 @@ export default {
 .bulk-create-action {
     color: #5b7dcc;
 }
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+#add-resource-column {
+    padding-right: 0px !important;
+    margin-right: 0px !important;
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    /* Could be more or less, depending on screen size */
+}
+
+.modal-btn {
+    width: 25%;
+}
+/* End of Warning modal styling */
 
 /* Shake animation for waring line */
 .shake {

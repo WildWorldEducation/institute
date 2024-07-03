@@ -187,7 +187,6 @@ export default {
         deletePost(resourceId) {
             // Close the modal.
             this.showModal = false;
-
             // Delete record from DB.
             fetch('/resources/delete/' + resourceId, { method: 'DELETE' });
 
@@ -404,7 +403,11 @@ export default {
                                     >
                                         <!-- Edit Button -->
                                         <router-link
-                                            v-if="post.user_id == user.userId || user.role == 'admin' || user.role == 'editor'"
+                                            v-if="
+                                                post.user_id == user.userId ||
+                                                user.role == 'admin' ||
+                                                user.role == 'editor'
+                                            "
                                             :to="'/resources/edit/' + post.id"
                                             class="btn dropdown-btn"
                                             role="button"
