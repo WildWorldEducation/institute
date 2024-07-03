@@ -161,6 +161,7 @@ export default {
                 <RouterLink
                     v-if="questionSubmitted"
                     class="btn btn-light purple-btn"
+                    style="width: 136px"
                     to="/skills"
                 >
                     Back to skills
