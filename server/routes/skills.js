@@ -9,7 +9,6 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
-const { Cookie } = require('express-session');
 
 /*------------------------------------------
 --------------------------------------------
@@ -122,7 +121,7 @@ router.post('/add', async (req, res, next) => {
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM skills WHERE skills.visibility = 1';
+        let sqlQuery = 'SELECT * FROM skills WHERE skills.is_deleted = 0';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -142,7 +141,7 @@ router.get('/nested-list', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
     SELECT skill_tree.skills.id, name, parent, type, level, is_filtered, skills.order
-    FROM skill_tree.skills WHERE skill_tree.skills.visibility = 1`;
+    FROM skill_tree.skills WHERE skill_tree.skills.is_deleted = 0`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -188,7 +187,7 @@ router.get('/filtered-nested-list', (req, res, next) => {
         let sqlQuery = `
     SELECT skill_tree.skills.id, name, parent, type, level, skills.order
     FROM skill_tree.skills
-    WHERE is_filtered = 'available' AND visibility = 1;`;
+    WHERE is_filtered = 'available' AND is_deleted = 0;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -241,7 +240,7 @@ router.get('/show/:id', (req, res, next) => {
         // Get skill.
         const sqlQuery = `SELECT *
                           FROM skill_tree.skills
-                          WHERE skill_tree.skills.id = ${req.params.id} AND skill_tree.skills.visibility = 1`;
+                          WHERE skill_tree.skills.id = ${req.params.id} AND skill_tree.skills.is_deleted = 0`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -287,6 +286,7 @@ router.get('/last-visited', (req, res, next) => {
             FROM user_visited_skills
             INNER JOIN skills ON skills.id = user_visited_skills.skill_id
             WHERE user_id = ${req.session.userId}
+            AND skills.is_deleted = 0
             ORDER BY visited_at DESC
             LIMIT 5;
         `;
@@ -378,9 +378,8 @@ router.put('/:id/edit', (req, res, next) => {
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
         console.log('Session Data: ');
-        console.log(req.session)
-        // FOR NOW THIS ROUTE WILL ONLY TURN OFF THE VISIBILITY FLAG FOR SKILLS
-        const deleteQuery = `UPDATE skills SET visibility = 0 WHERE skills.id=${req.params.id}`
+        console.log(req.session);
+        const deleteQuery = `UPDATE skills SET is_deleted = 1 WHERE skills.id=${req.params.id}`;
         conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
@@ -393,8 +392,7 @@ router.delete('/:id', (req, res, next) => {
                         user_id: req.session.userId,
                         content_type: 'skill'
                     };
-                    const addActionQuery =
-                        'INSERT INTO user_actions SET ?';
+                    const addActionQuery = 'INSERT INTO user_actions SET ?';
                     conn.query(addActionQuery, actionData, (err) => {
                         if (err) throw err;
                         else res.end();
@@ -404,46 +402,6 @@ router.delete('/:id', (req, res, next) => {
                 next(err);
             }
         });
-
-        //  ---- //
-        /***** OLD DELETE SKILL CODE *****/
-        // let sqlQuery1 = 'DELETE FROM skills WHERE id=' + req.params.id;
-        // let query = conn.query(sqlQuery1, (err, results) => {
-        //     try {
-        //         if (err) {
-        //             throw err;
-        //         }
-        //         // Delete all skill filters.
-        //         let sqlQuery2 =
-        //             'DELETE FROM skill_tags WHERE skill_id=' + req.params.id;
-        //         let query = conn.query(sqlQuery2, (err, results) => {
-        //             try {
-        //                 if (err) {
-        //                     throw err;
-        //                 } else {
-        //                     // add delete skill actions into user_actions table
-        //                     const actionData = {
-        //                         action: 'delete',
-        //                         content_id: req.params.id,
-        //                         user_id: req.session.userId,
-        //                         content_type: 'skill'
-        //                     };
-        //                     const addActionQuery =
-        //                         'INSERT INTO user_actions SET ?';
-        //                     conn.query(addActionQuery, actionData, (err) => {
-        //                         if (err) throw err;
-        //                         else res.end();
-        //                     });
-        //                 }
-        //             } catch (err) {
-        //                 next(err);
-        //             }
-        //         });
-        //         res.end();
-        //     } catch (err) {
-        //         next(err);
-        //     }
-        // });
     } else {
         res.redirect('/login');
     }
@@ -454,8 +412,7 @@ router.delete('/:id', (req, res, next) => {
 router.get('/:id/resources', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            `SELECT * FROM resources WHERE skill_id= ${req.params.id} AND visibility = 1`;
+        let sqlQuery = `SELECT * FROM resources WHERE skill_id= ${req.params.id} AND is_deleted = 0`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -478,8 +435,7 @@ router.get('/:id/resources', (req, res, next) => {
 router.get('/:id/mc-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            `SELECT * FROM mc_questions WHERE skill_id = ${req.params.id} AND visibility = 1`;
+        let sqlQuery = `SELECT * FROM mc_questions WHERE skill_id = ${req.params.id} AND is_deleted = 0`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -496,8 +452,7 @@ router.get('/:id/mc-questions/list', (req, res, next) => {
 router.get('/:id/essay-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            `SELECT * FROM essay_questions WHERE skill_id = ${req.params.id} AND visibility =1`;
+        let sqlQuery = `SELECT * FROM essay_questions WHERE skill_id = ${req.params.id} AND is_deleted = 0`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
