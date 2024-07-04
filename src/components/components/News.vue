@@ -47,7 +47,7 @@ export default {
 </script>
 
 <template>
-  <div class="container">
+  <div class="">
     <table class="table table-bordered">
       <thead>
         <tr>
