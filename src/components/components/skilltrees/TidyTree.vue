@@ -64,13 +64,24 @@ export default {
             await this.skillTreeStore.getUserSkills();
         }
 
+        let orderedUserSkills;
+        // Order the skills based on the 'order' field in the DB.
+        function orderUserSkills(context) {
+            let orderedUserSkills = context.skillTreeStore.userSkills.sort(
+                ({ order: a }, { order: b }) => a - b
+            );
+            return orderedUserSkills;
+        }
+
+        orderedUserSkills = orderUserSkills(this);
+
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
 
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillTreeStore.userSkills
+            children: orderedUserSkills
         };
 
         this.getAlgorithm();
@@ -731,7 +742,10 @@ export default {
         Reset
     </button>
     <!-- Loading animation -->
-    <div v-if="isLoading == true" class="loading-animation d-flex justify-content-center align-items-center py-4">
+    <div
+        v-if="isLoading == true"
+        class="loading-animation d-flex justify-content-center align-items-center py-4"
+    >
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
