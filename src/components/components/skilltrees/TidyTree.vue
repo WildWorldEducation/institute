@@ -64,24 +64,13 @@ export default {
             await this.skillTreeStore.getUserSkills();
         }
 
-        let orderedUserSkills;
-        // Order the skills based on the 'order' field in the DB.
-        function orderUserSkills(context) {
-            let orderedUserSkills = context.skillTreeStore.userSkills.sort(
-                ({ order: a }, { order: b }) => a - b
-            );
-            return orderedUserSkills;
-        }
-
-        orderedUserSkills = orderUserSkills(this);
-
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
 
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: orderedUserSkills
+            children: this.skillTreeStore.userSkills
         };
 
         this.getAlgorithm();

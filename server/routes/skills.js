@@ -140,8 +140,10 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name, parent, type, level, is_filtered, skills.order
-    FROM skill_tree.skills WHERE skill_tree.skills.is_deleted = 0`;
+    SELECT id, name, parent, type, level, is_filtered, skills.order as skillorder
+    FROM skills
+    WHERE is_deleted = 0
+    ORDER BY skillorder;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -185,9 +187,10 @@ router.get('/filtered-nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT skill_tree.skills.id, name, parent, type, level, skills.order
-    FROM skill_tree.skills
-    WHERE is_filtered = 'available' AND is_deleted = 0;`;
+    SELECT id, name, parent, type, level, skills.order as skillorder
+    FROM skills
+    WHERE is_filtered = 'available' AND is_deleted = 0
+    ORDER BY skillorder;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
