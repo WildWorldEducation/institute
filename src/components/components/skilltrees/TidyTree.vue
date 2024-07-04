@@ -1,6 +1,5 @@
 <script>
 // Import the stores.
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
@@ -11,10 +10,8 @@ import * as d3 from 'd3';
 
 export default {
     setup() {
-        const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
         return {
-            userDetailsStore,
             skillTreeStore
         };
     },
