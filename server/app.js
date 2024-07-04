@@ -123,7 +123,9 @@ app.get('/google-login-attempt', (req, res) => {
                 req.session.userId = results[0].id;
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
-                res.redirect('/skills');
+                if (req.session.role == 'student')
+                    res.redirect('/vertical-tree');
+                else res.redirect('/');
             } else {
                 googleLoginResult = 'no account';
                 res.redirect('/');
