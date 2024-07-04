@@ -731,7 +731,10 @@ export default {
         Reset
     </button>
     <!-- Loading animation -->
-    <div v-if="isLoading == true" class="loading-animation d-flex justify-content-center align-items-center py-4">
+    <div
+        v-if="isLoading == true"
+        class="loading-animation d-flex justify-content-center align-items-center py-4"
+    >
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
