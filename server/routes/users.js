@@ -430,6 +430,7 @@ router.get('/instructors/list', (req, res, next) => {
 
 // One specific user.
 router.get('/show/:id', (req, res, next) => {
+    console.log(req.params.id);
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         // Select user and their instructor (if they have one).
