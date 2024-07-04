@@ -54,7 +54,7 @@ export default {
                         </li>
                         <li class="nav-item">
                             <RouterLink to="/skills" class="nav-link">
-                                <span>Collapsible Skill Tree</span>
+                                <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
                         <li
