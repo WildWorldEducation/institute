@@ -61,7 +61,7 @@ export default {
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
-                            <RouterLink to="/tidy-tree" class="nav-link"
+                            <RouterLink to="/vertical-tree" class="nav-link"
                                 >Vertical Tree</RouterLink
                             >
                         </li>

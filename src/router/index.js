@@ -8,8 +8,8 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/tidy-tree',
-            name: 'tidy-tree',
+            path: '/vertical-tree',
+            name: 'vertical-tree',
             component: () => import('../components/pages/TidyTreeView.vue')
         },
         {
