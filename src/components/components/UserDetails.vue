@@ -109,7 +109,7 @@ export default {
 
                 <router-link
                     v-if="userRole == 'student'"
-                    :to="this.$parent.user.id + '/skill-tree'"
+                    :to="`/student/${this.$parent.user.id}/skill-tree`"
                     class="btn green-btn mx-auto mt-3"
                 >
                     Skill tree
