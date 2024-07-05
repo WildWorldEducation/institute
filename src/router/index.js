@@ -13,6 +13,11 @@ const router = createRouter({
             component: () => import('../components/pages/TidyTreeView.vue')
         },
         {
+            path: '/student/:studentId/skill-tree',
+            name: 'student-vertical-tree',
+            component: () => import('../components/pages/StudentTidyTreeView.vue')
+        },
+        {
             path: '/',
             name: 'hub',
             component: () => import('../components/pages/HubView.vue')
