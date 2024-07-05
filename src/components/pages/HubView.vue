@@ -52,9 +52,7 @@ export default {
             <h1 id="user-name">{{ name }}</h1>
         </div>
         <div class="row content-row">
-            <div
-                id="profile-image-column"
-                class="column col-lg-4 col-md-4 mx-0"
+            <div class="col-lg-4 col-md-5 mb-4 pb-4 column mx-0"            
             >
                 <!-- Avatar image -->
                 <img
@@ -63,48 +61,36 @@ export default {
                     class="img-fluid rounded"
                 />
             </div>
-            <div
-                id="middle-profile-column"
-                class="column col-md-8 mb-5 mb-md-0"
-            >
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        <StudentProgress
-                            v-if="userDetailsStore.role == 'student'"
-                            :userId="userDetailsStore.userId"
-                        />
-                        <MarkAssessment
-                            v-else-if="userDetailsStore.role == 'instructor'"
-                        />
-                    </div>
-                    <div class="col-12 col-md-6 mt-4 mt-md-0">
-                        <LastVisitedSkills
-                            v-if="userDetailsStore.role == 'student'"
-                            :userId="userDetailsStore.userId"
-                        />
-                        <!-- Student Added Questions -->
-                        <CheckStudentQuestions
-                            v-else-if="
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'admin'
-                            "
-                        />
-                    </div>
-                </div>
+            <div class="col-lg-4 col-md-7 mb-4 pb-4">
+                <StudentProgress
+                    v-if="userDetailsStore.role == 'student'"
+                    :userId="userDetailsStore.userId"
+                />
+                <MarkAssessment
+                    v-else-if="userDetailsStore.role == 'instructor'"
+                />
             </div>
-        </div>
-        <div class="row">
-            <div id="notif-col" class="column col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-7 mb-4 pb-4">
+                <LastVisitedSkills
+                    v-if="userDetailsStore.role == 'student'"
+                    :userId="userDetailsStore.userId"
+                />
+                <!-- Student Added Questions -->
+                <CheckStudentQuestions
+                    v-else-if="
+                        userDetailsStore.role == 'instructor' ||
+                        userDetailsStore.role == 'admin'
+                    "
+                />
+            </div>
+            <div class="col-lg-3 col-md-5 mb-4 pb-4 column">
                 <Notifications />
             </div>
-            <div
-                id="sub-image"
-                class="column col-lg-9 col-md-6 d-none d-lg-block"
-            >
+            <div class="col-lg-9 col-md-6 mb-4 pb-4 column d-none d-lg-block">
                 <img src="/images/post-login.png" class="img-fluid" />
             </div>
         </div>
-        <div id="news-row" class="row pt-4">
+        <div id="news-row" class="row">
             <News />
         </div>
     </div>
@@ -231,9 +217,9 @@ h1 {
         display: relative;
     }
 
-    #news-row {
+    /* #news-row {
         min-height: 40vh;
-    }
+    } */
 
     #news-row > div {
         margin-bottom: 10px;

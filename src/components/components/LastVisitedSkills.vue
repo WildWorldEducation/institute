@@ -42,7 +42,7 @@ export default {
 }
 
 #skill-list {
-    overflow: auto;
+    overflow-y: auto;
     max-height: 300px;
 }
 
