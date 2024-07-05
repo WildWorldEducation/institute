@@ -1,8 +1,11 @@
 <script>
 import router from '../../router';
-
+import CheckPasswordComplexity from '../components/CheckPasswordComplexity.vue';
 export default {
     setup() {},
+    components: {
+        CheckPasswordComplexity
+    },
     data() {
         return {
             newStudent: {
@@ -20,7 +23,9 @@ export default {
                 username: false,
                 email: false,
                 emailFormat: false,
-                password: false
+                password: false,
+                // flag to make sure password is complex enough it will be check in child component
+                passwordComplex: false
             },
             // For Google sign up absolute API url.
             isProduction: import.meta.env.PROD
@@ -61,10 +66,13 @@ export default {
                 this.newStudent.password == null
             ) {
                 this.validate.password = true;
-            } else {
+            }
+            // After all check pass we see if the password is complex enough
+            else if (this.validate.passwordComplex) {
                 this.Submit();
             }
         },
+
         ValidateEmail() {
             if (
                 /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
@@ -225,6 +233,10 @@ export default {
                     >
                         please enter a password!
                     </div>
+                    <CheckPasswordComplexity
+                        :password="newStudent.password"
+                        :complexValidate="validate.passwordComplex"
+                    />
                 </div>
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
                     Sign up
