@@ -4,8 +4,8 @@ export default {
     data() {
         return {
             // password complex power
-            complexPower: '',
-            powerScore: 0,
+            strength: '',
+            strengthScore: 0,
             showCriteria: false,
             // criteria flag
             criteriaFlag: {
@@ -21,34 +21,34 @@ export default {
     mounted() {},
     destroyed() {},
     methods: {
-        checkPower(password) {
+        checkStrength(password) {
             // Using the score to measure the power. This is for easy adding criteria
-            let powerScore = 0;
+            let strengthScore = 0;
 
             // Check password contain any number in it using regex
             if (/\d/.test(password)) {
-                powerScore++;
+                strengthScore++;
                 this.criteriaFlag.noNumber = false;
             } else {
                 this.criteriaFlag.noNumber = true;
             }
             // Check password contain any alphabetical character
             if (/[a-z]/.test(password)) {
-                powerScore++;
+                strengthScore++;
                 this.criteriaFlag.noAlphabet = false;
             } else {
                 this.criteriaFlag.noAlphabet = true;
             }
             // Check password contain any special character (~`!@#$%^&*_+|{}":';'" ect)
             if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-                powerScore++;
+                strengthScore++;
                 this.criteriaFlag.noSpecialChar = false;
             } else {
                 this.criteriaFlag.noSpecialChar = true;
             }
             // Check password have upper-case character
             if (/[A-Z]/.test(password)) {
-                powerScore++;
+                strengthScore++;
                 this.criteriaFlag.noUpperCase = false;
             } else {
                 this.criteriaFlag.noUpperCase = true;
@@ -57,18 +57,18 @@ export default {
             if (password.length < 7) {
                 this.criteriaFlag.passwordLength = true;
                 // If password not long enough any other metric become meaningless
-                powerScore = 0;
+                strengthScore = 0;
             } else {
                 this.criteriaFlag.passwordLength = false;
             }
-            return powerScore;
+            return strengthScore;
         }
     },
     watch: {
         password: {
             handler(newPass, oldPass) {
-                const passwordPowerScore = this.checkPower(newPass);
-                this.powerScore = passwordPowerScore;
+                const passwordStrengthScore = this.checkStrength(newPass);
+                this.strengthScore = passwordStrengthScore;
                 if (newPass.length === 0) {
                     this.showCriteria = false;
                 }
@@ -76,28 +76,28 @@ export default {
                     this.showCriteria = true;
                 }
                 // Determine complex power base on password score
-                switch (passwordPowerScore) {
+                switch (passwordStrengthScore) {
                     case 0:
-                        this.complexPower = 'very weak';
+                        this.strength = 'very weak';
                     case 1:
-                        this.complexPower = 'weak';
+                        this.strength = 'weak';
                         break;
                     case 2:
-                        this.complexPower = 'moderate';
+                        this.strength = 'moderate';
                         break;
                     case 3:
-                        this.complexPower = 'strong';
+                        this.strength = 'strong';
                         break;
                     case 4:
-                        this.complexPower = 'very strong';
+                        this.strength = 'very strong';
                         break;
                     default:
-                        this.complexPower = 'very strong';
+                        this.strength = 'very strong';
                         break;
                 }
 
                 // We only accept password with power 4 or greater
-                if (passwordPowerScore >= 4) {
+                if (passwordStrengthScore >= 4) {
                     this.$parent.validate.passwordComplex = true;
                 } else {
                     this.$parent.validate.passwordComplex = false;
@@ -110,8 +110,8 @@ export default {
 
 <template>
     <div class="d-flex flex-column">
-        <div v-if="powerScore < 3" class="form-validate">
-            Your password is not good enough
+        <div v-if="strengthScore < 3" class="form-validate">
+            Your password is not strong enough
         </div>
 
         <!-- Only Show those line when password have at least 8 character long -->
@@ -124,35 +124,37 @@ export default {
                     'd-flex flex-row align-items-center'
                 ]"
             >
-                <!-- Check Icon -->
-                <svg
-                    v-if="!criteriaFlag.passwordLength"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="green"
-                    class="me-1"
-                >
-                    <path
-                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
-                    />
-                </svg>
+                <Transition name="fade">
+                    <!-- Check Icon -->
+                    <svg
+                        v-if="!criteriaFlag.passwordLength"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="green"
+                        class="me-1"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                        />
+                    </svg>
 
-                <!-- X circle Icon -->
-                <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="red"
-                    class="me-1"
-                >
-                    <path
-                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
-                    />
-                </svg>
+                    <!-- X circle Icon -->
+                    <svg
+                        v-else
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="red"
+                        class="me-1"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
+                        />
+                    </svg>
+                </Transition>
 
                 <span> At least 8 character long </span>
             </div>
@@ -165,35 +167,37 @@ export default {
                     'd-flex flex-row align-items-center'
                 ]"
             >
-                <!-- Check Icon -->
-                <svg
-                    v-if="!criteriaFlag.noUpperCase"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="green"
-                    class="me-1"
-                >
-                    <path
-                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
-                    />
-                </svg>
+                <Transition name="fade">
+                    <!-- Check Icon -->
+                    <svg
+                        v-if="!criteriaFlag.noUpperCase"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="green"
+                        class="me-1"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                        />
+                    </svg>
 
-                <!-- X circle Icon -->
-                <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="red"
-                    class="me-1"
-                >
-                    <path
-                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
-                    />
-                </svg>
+                    <!-- X circle Icon -->
+                    <svg
+                        v-else
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="red"
+                        class="me-1"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
+                        />
+                    </svg>
+                </Transition>
                 <span> At least 1 uppercase character </span>
             </div>
 
@@ -206,35 +210,37 @@ export default {
                     'd-flex flex-row align-items-center'
                 ]"
             >
-                <!-- Check Icon -->
-                <svg
-                    v-if="!criteriaFlag.noNumber"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="green"
-                    class="me-1"
-                >
-                    <path
-                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
-                    />
-                </svg>
+                <Transition name="fade">
+                    <!-- Check Icon -->
+                    <svg
+                        v-if="!criteriaFlag.noNumber"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="green"
+                        class="me-1"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                        />
+                    </svg>
 
-                <!-- X circle Icon -->
-                <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="red"
-                    class="me-1"
-                >
-                    <path
-                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
-                    />
-                </svg>
+                    <!-- X circle Icon -->
+                    <svg
+                        v-else
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="red"
+                        class="me-1"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
+                        />
+                    </svg>
+                </Transition>
                 <span> At least 1 number </span>
             </div>
 
@@ -247,35 +253,36 @@ export default {
                     'd-flex flex-row align-items-center'
                 ]"
             >
-                <!-- Check Icon -->
-                <svg
-                    v-if="!criteriaFlag.noAlphabet"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="green"
-                    class="me-1"
-                >
-                    <path
-                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
-                    />
-                </svg>
-
-                <!-- X circle Icon -->
-                <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="red"
-                    class="me-1"
-                >
-                    <path
-                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
-                    />
-                </svg>
+                <Transition name="fade">
+                    <!-- Check Icon -->
+                    <svg
+                        v-if="!criteriaFlag.noAlphabet"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="green"
+                        class="me-1"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                        />
+                    </svg>
+                    <!-- X circle Icon -->
+                    <svg
+                        v-else
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="red"
+                        class="me-1"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
+                        />
+                    </svg>
+                </Transition>
                 <span> At least 1 alphabetical character </span>
             </div>
 
@@ -289,58 +296,60 @@ export default {
                 ]"
             >
                 <!-- Check Icon -->
-                <svg
-                    v-if="!criteriaFlag.noSpecialChar"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="green"
-                    class="me-1"
-                >
-                    <path
-                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
-                    />
-                </svg>
 
-                <!-- X circle Icon -->
-                <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="red"
-                    class="me-1"
-                >
-                    <path
-                        d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
-                    />
-                </svg>
+                <Transition name="fade">
+                    <svg
+                        v-if="!criteriaFlag.noSpecialChar"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="green"
+                        class="me-1"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                        />
+                    </svg>
+                    <svg
+                        v-else
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="15"
+                        height="15"
+                        fill="red"
+                        class="me-1"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
+                        />
+                    </svg>
+                </Transition>
                 <span> At least 1 special character </span>
+                <!-- X circle Icon -->
             </div>
             <!-- Power of password indicator -->
             <div class="tile">
-                Password power:
+                Password strength:
                 <span
                     :style="{
                         color:
-                            powerScore > 1
-                                ? powerScore > 3
+                            strengthScore > 1
+                                ? strengthScore > 3
                                     ? 'green'
                                     : 'rgb(228, 206, 8)'
                                 : 'red'
                     }"
                 >
-                    {{ complexPower }}
+                    {{ strength }}
                 </span>
             </div>
             <div class="row ps-2 pe-2 mt-2">
                 <div class="col ps-1 pe-1">
                     <div
                         :class="[
-                            powerScore > 1
-                                ? powerScore > 3
+                            strengthScore > 1
+                                ? strengthScore > 3
                                     ? 'strong-power'
                                     : 'moderate-power'
                                 : 'weak-power',
@@ -350,10 +359,10 @@ export default {
                 </div>
                 <div class="col ps-1 pe-1">
                     <div
-                        v-if="powerScore > 1"
+                        v-if="strengthScore > 1"
                         :class="[
-                            powerScore > 1
-                                ? powerScore > 3
+                            strengthScore > 1
+                                ? strengthScore > 3
                                     ? 'strong-power'
                                     : 'moderate-power'
                                 : 'weak-power',
@@ -363,10 +372,10 @@ export default {
                 </div>
                 <div class="col ps-1 pe-1">
                     <div
-                        v-if="powerScore > 2"
+                        v-if="strengthScore > 2"
                         :class="[
-                            powerScore > 1
-                                ? powerScore > 3
+                            strengthScore > 1
+                                ? strengthScore > 3
                                     ? 'strong-power'
                                     : 'moderate-power'
                                 : 'weak-power',
@@ -376,10 +385,10 @@ export default {
                 </div>
                 <div class="col ps-1 pe-1">
                     <div
-                        v-if="powerScore > 3"
+                        v-if="strengthScore > 3"
                         :class="[
-                            powerScore > 1
-                                ? powerScore > 3
+                            strengthScore > 1
+                                ? strengthScore > 3
                                     ? 'strong-power'
                                     : 'moderate-power'
                                 : 'weak-power',
@@ -430,5 +439,21 @@ export default {
     color: rgb(173, 173, 170);
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
+}
+
+/* Fade animation */
+@keyframes fade {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.fade-enter-active {
+    animation: fade 1s;
 }
 </style>
