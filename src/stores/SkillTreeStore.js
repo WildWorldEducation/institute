@@ -6,7 +6,6 @@ import { useUserDetailsStore } from './UserDetailsStore.js';
 export const useSkillTreeStore = defineStore('skillTree', {
     state: () => ({
         userSkills: [],
-        userSkillsWithMasteryRequirements: [],
         userSkillsNoSubSkills: [],
         userSkillsSubSkillsSeparate: [],
         studentSkills: []
@@ -19,16 +18,6 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             const result = await fetch('/user-skills/' + userDetails.userId);
             this.userSkills = await result.json();
-        },
-        async getUserSkillsWithMasteryRequirements() {
-            // API call for skill tree.
-            const userDetailsStore = useUserDetailsStore();
-            const userDetails = await userDetailsStore.getUserDetails();
-
-            const result = await fetch(
-                '/user-skills/with-mastery-requirements/' + userDetails.userId
-            );
-            this.userSkillsWithMasteryRequirements = await result.json();
         },
         async getUserSkillsNoSubSkills() {
             // API call for skill tree.

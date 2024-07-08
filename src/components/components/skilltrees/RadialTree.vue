@@ -91,7 +91,7 @@ export default {
         this.defaultPosition();
 
         // Listen for clicks on the main canvas
-        canvas.addEventListener('click', (e) => {
+        canvas.addEventListener('click', async (e) => {
             // We actually only need to draw the hidden canvas when
             // there is an interaction. This sketch can draw it on
             // each loop, but that is only for demonstration.
@@ -125,8 +125,17 @@ export default {
                 this.skill.name = node.data.skill_name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
-                this.skill.masteryRequirements = node.data.mastery_requirements;
                 this.skill.subskills = node.data.subskills;
+
+                // Get the mastery requirements data separately.
+                // Because this is so much data, we do not send it with the rest of the skill tree,
+                // or it will slow the load down too much.
+                const result = await fetch(
+                    '/skills/mastery-requirements/' + this.skill.id
+                );
+                const masteryRequirements = await result.json();
+                this.skill.masteryRequirements = masteryRequirements;
+
                 this.showInfoPanel();
             }
         });
