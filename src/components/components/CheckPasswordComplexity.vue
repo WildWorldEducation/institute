@@ -15,7 +15,10 @@ export default {
                 unique: false,
                 haveUpperCase: false,
                 noAlphabet: false
-            }
+            },
+            // Vue cant handle escape character so we have to declare the hover tile here
+            hoverTile:
+                "(special characters): (~!@#$%^&*_-+=`|(){}[]:;\"''<>,.?/)"
         };
     },
     mounted() {},
@@ -156,7 +159,7 @@ export default {
                     </svg>
                 </Transition>
 
-                <span> At least 8 character long </span>
+                <span> At least 8 characters long </span>
             </div>
             <!-- Uppercase criteria -->
             <div
@@ -325,7 +328,13 @@ export default {
                         />
                     </svg>
                 </Transition>
-                <span> At least 1 special character </span>
+                <span
+                    class="special-character-hover"
+                    b-tooltip.hover
+                    :title="hoverTile"
+                >
+                    At least 1 special character (*)
+                </span>
                 <!-- X circle Icon -->
             </div>
             <!-- Power of password indicator -->
@@ -445,6 +454,10 @@ export default {
     color: rgb(173, 173, 170);
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
+}
+
+.special-character-hover:hover {
+    cursor: help;
 }
 
 /* Fade animation */
