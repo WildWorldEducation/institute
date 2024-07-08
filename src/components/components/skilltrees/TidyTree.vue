@@ -57,8 +57,8 @@ export default {
         JoystickControl
     },
     async mounted() {
-        if (this.skillTreeStore.userSkillsWithMasteryRequirements.length == 0) {
-            await this.skillTreeStore.getUserSkillsWithMasteryRequirements();
+        if (this.skillTreeStore.userSkills.length == 0) {
+            await this.skillTreeStore.getUserSkills();
         }
 
         // Specify the chart’s dimensions.
@@ -67,18 +67,20 @@ export default {
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillTreeStore.userSkillsWithMasteryRequirements
+            children: this.skillTreeStore.userSkills
         };
 
         this.getAlgorithm();
 
         // Set up the Hidden Canvas for Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
-        this.hiddenCanvasContext = hiddenCanvas.getContext('2d', { willReadFrequently: true });
+        this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
+            willReadFrequently: true
+        });
         hiddenCanvas.style.display = 'none';
 
         // Listen for clicks on the main canvas
-        canvas.addEventListener('click', (e) => {
+        canvas.addEventListener('click', async (e) => {
             // We actually only need to draw the hidden canvas when
             // there is an interaction. This sketch can draw it on
             // each loop, but that is only for demonstration.
@@ -94,13 +96,10 @@ export default {
 
             // This will return that pixel's color
             var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
-            //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
 
             //Our map uses these rgb strings as keys to nodes.
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
-
-            // console.log(this.colToNode);
 
             if (node) {
                 // We clicked on something, lets set the color of the node
@@ -112,7 +111,15 @@ export default {
                 this.skill.name = node.data.skill_name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
-                this.skill.masteryRequirements = node.data.mastery_requirements;
+
+                // Get the mastery requirements data separately.
+                // Because this is so much data, we do not send it with the rest of the skill tree,
+                // or it will slow the load down too much.
+                const result = await fetch(
+                    '/skills/mastery-requirements/' + this.skill.id
+                );
+                const masteryRequirements = await result.json();
+                this.skill.masteryRequirements = masteryRequirements;
                 this.showInfoPanel();
             }
         });
