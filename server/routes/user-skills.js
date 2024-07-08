@@ -25,7 +25,7 @@ router.get('/:id', (req, res, next) => {
 
         let sqlQuery =
             `
-    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level, mastery_requirements, skills.order as skillorder
+    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -34,7 +34,7 @@ router.get('/:id', (req, res, next) => {
             ` AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, parent, "", "", description, type, level, mastery_requirements,  skills.order as skillorder
+    SELECT skills.id, name, parent, "", "", type, level,  skills.order as skillorder
     FROM skills
     WHERE skills.id NOT IN 
 
