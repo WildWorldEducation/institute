@@ -57,8 +57,8 @@ export default {
         JoystickControl
     },
     async mounted() {
-        if (this.skillTreeStore.userSkills.length == 0) {
-            await this.skillTreeStore.getUserSkills();
+        if (this.skillTreeStore.userSkillsWithMasteryRequirements.length == 0) {
+            await this.skillTreeStore.getUserSkillsWithMasteryRequirements();
         }
 
         // Specify the chart’s dimensions.
@@ -67,14 +67,14 @@ export default {
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillTreeStore.userSkills
+            children: this.skillTreeStore.userSkillsWithMasteryRequirements
         };
 
         this.getAlgorithm();
 
         // Set up the Hidden Canvas for Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
-        this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
+        this.hiddenCanvasContext = hiddenCanvas.getContext('2d', { willReadFrequently: true });
         hiddenCanvas.style.display = 'none';
 
         // Listen for clicks on the main canvas
