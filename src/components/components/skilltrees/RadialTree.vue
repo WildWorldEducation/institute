@@ -170,7 +170,9 @@ export default {
             this.context.fillRect(0, 0, this.width, this.height);
             // Set up the Hidden Canvas for Interactivity.
             let hiddenCanvas = document.getElementById('hidden-canvas');
-            this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
+            this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
+                willReadFrequently: true
+            });
             hiddenCanvas.style.display = 'none';
 
             // Centre chart.
@@ -794,7 +796,10 @@ export default {
         Print
     </button>
     <!-- Loading animation -->
-    <div v-if="isLoading == true" class="loading-animation d-flex justify-content-center align-items-center py-4">
+    <div
+        v-if="isLoading == true"
+        class="loading-animation d-flex justify-content-center align-items-center py-4"
+    >
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
