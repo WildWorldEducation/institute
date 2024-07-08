@@ -337,7 +337,7 @@ export default {
                             strengthScore > 1
                                 ? strengthScore > 3
                                     ? 'green'
-                                    : 'rgb(228, 206, 8)'
+                                    : 'rgb(228, 206, 10)'
                                 : 'red'
                     }"
                 >
@@ -358,43 +358,49 @@ export default {
                     ></div>
                 </div>
                 <div class="col ps-1 pe-1">
-                    <div
-                        v-if="strengthScore > 1"
-                        :class="[
-                            strengthScore > 1
-                                ? strengthScore > 3
-                                    ? 'strong-power'
-                                    : 'moderate-power'
-                                : 'weak-power',
-                            'power-meter'
-                        ]"
-                    ></div>
+                    <Transition name="strength-bar">
+                        <div
+                            v-if="strengthScore > 1"
+                            :class="[
+                                strengthScore > 1
+                                    ? strengthScore > 3
+                                        ? 'strong-power'
+                                        : 'moderate-power'
+                                    : 'weak-power',
+                                'power-meter'
+                            ]"
+                        ></div>
+                    </Transition>
                 </div>
                 <div class="col ps-1 pe-1">
-                    <div
-                        v-if="strengthScore > 2"
-                        :class="[
-                            strengthScore > 1
-                                ? strengthScore > 3
-                                    ? 'strong-power'
-                                    : 'moderate-power'
-                                : 'weak-power',
-                            'power-meter'
-                        ]"
-                    ></div>
+                    <Transition name="strength-bar">
+                        <div
+                            v-if="strengthScore > 2"
+                            :class="[
+                                strengthScore > 1
+                                    ? strengthScore > 3
+                                        ? 'strong-power'
+                                        : 'moderate-power'
+                                    : 'weak-power',
+                                'power-meter'
+                            ]"
+                        ></div>
+                    </Transition>
                 </div>
                 <div class="col ps-1 pe-1">
-                    <div
-                        v-if="strengthScore > 3"
-                        :class="[
-                            strengthScore > 1
-                                ? strengthScore > 3
-                                    ? 'strong-power'
-                                    : 'moderate-power'
-                                : 'weak-power',
-                            'power-meter'
-                        ]"
-                    ></div>
+                    <Transition name="strength-bar">
+                        <div
+                            v-if="strengthScore > 3"
+                            :class="[
+                                strengthScore > 1
+                                    ? strengthScore > 3
+                                        ? 'strong-power'
+                                        : 'moderate-power'
+                                    : 'weak-power',
+                                'power-meter'
+                            ]"
+                        ></div>
+                    </Transition>
                 </div>
             </div>
         </div>
@@ -426,7 +432,7 @@ export default {
 }
 
 .moderate-power {
-    background-color: rgb(228, 206, 8);
+    background-color: rgb(228, 206, 10);
 }
 
 .strong-power {
@@ -455,5 +461,26 @@ export default {
 
 .fade-enter-active {
     animation: fade 1s;
+}
+
+/* Strength Bar Animation */
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+.strength-bar-enter-active {
+    transform-origin: center left;
+    animation: slide 1s;
+}
+.strength-bar-leave-active {
+    transform-origin: center left;
+    animation: slide 1s reverse;
 }
 </style>
