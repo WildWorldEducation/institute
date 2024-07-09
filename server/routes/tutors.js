@@ -117,5 +117,28 @@ router.delete('/delete/:tutorSourceId', (req, res, next) => {
     }
 });
 
+/**
+ * Show 1 Tutor Source
+ *
+ * @return response()
+ */
+router.get('/show/:tutorPostId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            'SELECT * FROM tutors WHERE id=' + req.params.tutorPostId;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
