@@ -717,7 +717,7 @@ async function checkQuestion(index, userId) {
                     content: prompt + ` Please respond with a JSON object.`
                 }
             ],
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-4o',
             response_format: { type: 'json_object' }
         });
         let responseJSON = completion.choices[0].message.content;
