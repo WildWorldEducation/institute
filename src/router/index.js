@@ -220,6 +220,11 @@ const router = createRouter({
             path: '/tutor/add/:skillId',
             name: 'add-tutor',
             component: () => import('../components/pages/AddTutorView.vue')
+        },
+        {
+            path: '/tutor/edit/:tutorPostId',
+            name: 'edit-tutor',
+            component: () => import('../components/pages/EditTutorPostView.vue')
         }
     ]
 });
