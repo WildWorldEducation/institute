@@ -1,6 +1,6 @@
 <script>
 export default {
-    props: ['password', 'complexValidate'],
+    props: ['formData'],
     data() {
         return {
             // password complex power
@@ -14,11 +14,11 @@ export default {
                 noSpecialChar: false,
                 unique: false,
                 haveUpperCase: false,
-                noAlphabet: false
+                noAlphabet: false,
+                predictable: false
             },
             // Vue cant handle escape character so we have to declare the hover tile here
-            hoverTile:
-                "(special characters): (~!@#$%^&*_-+=`|(){}[]:;\"''<>,.?/)"
+            hoverTile: "special characters: (~!@#$%^&*_-+=`|(){}[]:;\"''<>,.?/)"
         };
     },
     mounted() {},
@@ -64,48 +64,88 @@ export default {
             } else {
                 this.criteriaFlag.passwordLength = false;
             }
+
+            // Series Check if user re-use they name or user name for password
+
+            if (
+                password.toLowerCase().includes(this.formData.firstName) ||
+                password.toLowerCase().includes(this.formData.lastName) ||
+                password.toLowerCase().includes(this.formData.username) ||
+                password.toLowerCase().includes(this.formData.email)
+            ) {
+                this.criteriaFlag.predictable = true;
+                // if the password is predictable it strength return to 0
+                strengthScore = 0;
+            }
+
             return strengthScore;
         }
     },
     watch: {
-        password: {
-            handler(newPass, oldPass) {
-                const passwordStrengthScore = this.checkStrength(newPass);
-                this.strengthScore = passwordStrengthScore;
-                if (newPass.length === 0) {
-                    this.showCriteria = false;
-                }
-                if (newPass.length > 0) {
-                    this.showCriteria = true;
-                }
-                // Determine complex power base on password score
-                switch (passwordStrengthScore) {
-                    case 0:
-                        this.strength = 'very weak';
-                    case 1:
-                        this.strength = 'weak';
-                        break;
-                    case 2:
-                        this.strength = 'moderate';
-                        break;
-                    case 3:
-                        this.strength = 'strong';
-                        break;
-                    case 4:
-                        this.strength = 'very strong';
-                        break;
-                    default:
-                        this.strength = 'very strong';
-                        break;
-                }
+        formData: {
+            handler(newVal, oldVal) {
+                if (newVal.password) {
+                    if (newVal.password.length > 0) {
+                        this.showCriteria = true;
+                        const passwordStrengthScore = this.checkStrength(
+                            newVal.password
+                        );
+                        this.strengthScore = passwordStrengthScore;
+                        // Determine complex power base on password score
+                        switch (passwordStrengthScore) {
+                            case 0:
+                                this.strength = 'very weak';
+                            case 1:
+                                this.strength = 'weak';
+                                break;
+                            case 2:
+                                this.strength = 'moderate';
+                                break;
+                            case 3:
+                                this.strength = 'strong';
+                                break;
+                            case 4:
+                                this.strength = 'very strong';
+                                break;
+                            default:
+                                this.strength = 'very strong';
+                                break;
+                        }
 
-                // We only accept password with power 4 or greater
-                if (passwordStrengthScore >= 4) {
-                    this.$parent.validate.passwordComplex = true;
-                } else {
-                    this.$parent.validate.passwordComplex = false;
+                        // We only accept password with power 4 or greater
+                        if (passwordStrengthScore >= 4) {
+                            this.$parent.validate.passwordComplex = true;
+                        } else {
+                            this.$parent.validate.passwordComplex = false;
+                        }
+
+                        // Check predictable password
+                        if (
+                            newVal.password
+                                .toLowerCase()
+                                .includes(newVal.username) ||
+                            newVal.password
+                                .toLowerCase()
+                                .includes(newVal.firstName) ||
+                            newVal.password
+                                .toLowerCase()
+                                .includes(newVal.lastName) ||
+                            newVal.password.toLowerCase().includes(newVal.email)
+                        ) {
+                            this.criteriaFlag.predictable = true;
+                            // if the password is predictable it strength return to 0
+                            this.strengthScore = 0;
+                            this.strength = 'weak';
+                            this.$parent.validate.passwordComplex = false;
+                        } else {
+                            this.criteriaFlag.predictable = false;
+                        }
+                    } else {
+                        this.showCriteria = false;
+                    }
                 }
-            }
+            },
+            deep: true
         }
     }
 };
@@ -115,6 +155,10 @@ export default {
     <div class="d-flex flex-column">
         <div v-if="strengthScore < 3" class="form-validate">
             Your password is not strong enough
+        </div>
+        <div class="form-validate" v-if="criteriaFlag.predictable">
+            Your password is contain your name, user-name or email. Please do
+            not use predictable password
         </div>
 
         <!-- Only Show those line when password have at least 8 character long -->

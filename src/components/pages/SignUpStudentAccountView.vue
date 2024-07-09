@@ -275,10 +275,7 @@ export default {
                     >
                         please enter a password!
                     </div>
-                    <CheckPasswordComplexity
-                        :password="newStudent.password"
-                        :complexValidate="validate.passwordComplex"
-                    />
+                    <CheckPasswordComplexity :formData="newStudent" />
                 </div>
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
                     Sign up
