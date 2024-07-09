@@ -69,5 +69,53 @@ router.post('/add/:skillId', (req, res, next) => {
     }
 });
 
+/**
+ * Delete Tutor Source
+ *
+ * @return response()
+ */
+router.delete('/delete/:tutorSourceId', (req, res, next) => {
+    if (req.session.userName) {
+        // Check if the user has the right to delete the learning resource.
+        var tutorUserId;
+        let sqlQuery1 =
+            'SELECT user_id FROM tutors WHERE id=' + req.params.tutorSourceId;
+        let query1 = conn.query(sqlQuery1, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    postUserId = results[0].user_id;
+                    if (
+                        postUserId == req.session.userId ||
+                        req.session.role == 'admin'
+                    ) {
+                        // Delete the post.
+                        let sqlQuery2 =
+                            'DELETE FROM tutors WHERE id=' +
+                            req.params.tutorSourceId;
+                        let query2 = conn.query(sqlQuery2, (err, results) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                } else {
+                                    res.end();
+                                }
+                            } catch (err) {
+                                next(err);
+                            }
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

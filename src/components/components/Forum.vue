@@ -15,11 +15,12 @@ export default {
             showActionBtns: false,
             currentClickId: '',
             showThankModal: false,
-            tutors: []
+            tutors: [],
+            source: null
         };
     },
     computed: {
-        orderedAndNamedPosts() {          
+        orderedAndNamedPosts() {
             // Getting the student's name.
             for (let j = 0; j < this.posts.length; j++) {
                 for (let k = 0; k < this.users.length; k++) {
@@ -49,6 +50,7 @@ export default {
     },
     created() {
         this.getUserId();
+        console.log(this.user);
         this.getUsers();
         this.getPosts(this.skillId);
         this.getTutors(this.skillId);
@@ -188,17 +190,23 @@ export default {
             }
             //   location.reload();
         },
-        deletePost(resourceId) {
+        deletePost(source) {
             // Close the modal.
             this.showModal = false;
 
+            console.log(source);
+
             // Delete record from DB.
-            fetch('/resources/delete/' + resourceId, { method: 'DELETE' });
+            if (source.type != 'tutor') {
+                fetch('/resources/delete/' + source.id, { method: 'DELETE' });
+            } else {
+                fetch('/tutors/delete/' + source.id, { method: 'DELETE' });
+            }
 
             // Delete without refreshing page.
             var index;
             for (let i = 0; i < this.posts.length; i++) {
-                if (this.posts[i].id == resourceId) {
+                if (this.posts[i].id == source.id) {
                     index = i;
                 }
             }
@@ -206,8 +214,8 @@ export default {
                 this.posts.splice(index, 1);
             }
         },
-        showWarningModal(resourceId) {
-            this.resourceId = resourceId;
+        showWarningModal(source) {
+            this.source = source;
             this.showModal = true;
         },
         closeWarningModal() {
@@ -251,6 +259,7 @@ export default {
                         element.type = 'tutor';
                     });
                     console.log(data);
+
                     this.posts.push(...data);
                 });
         }
@@ -491,7 +500,7 @@ export default {
                                             "
                                             type="button"
                                             class="btn dropdown-btn"
-                                            @click="showWarningModal(post.id)"
+                                            @click="showWarningModal(post)"
                                         >
                                             <!-- X icon -->
                                             <svg
@@ -552,7 +561,7 @@ export default {
                         <button
                             type="button"
                             class="btn btn-danger"
-                            @click="deletePost(this.resourceId)"
+                            @click="deletePost(this.source)"
                         >
                             Yes
                         </button>
