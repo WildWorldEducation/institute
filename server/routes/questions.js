@@ -700,10 +700,10 @@ async function checkQuestion(index, userId) {
         `". Return the variable: 'all_incorrect_answers_are_incorrect' as true if so, otherwise, 
         return it as false.
         Please also check for any spelling errors. Please return a variable spelling_correct as true if it is,
-        otherwise, return this as false.
-        Lastly please check if the question is appropriate for the following grade: ` +
-        mcQuestions[index].level +
-        `. Please return the variable 'grade_is_correct' as true if it is, otherwise as false.`;
+        otherwise, return this as false.`;
+    // Lastly please check if the question is appropriate for the following grade: ` +
+    // mcQuestions[index].level +
+    // `. Please return the variable 'grade_is_correct' as true if it is, otherwise as false.`;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
@@ -732,8 +732,7 @@ async function checkQuestion(index, userId) {
         if (
             responseObj.correct_answer_is_correct == false ||
             responseObj.all_incorrect_answers_are_incorrect == false ||
-            responseObj.spelling_correct == false ||
-            responseObj.grade_is_correct == false
+            responseObj.spelling_correct == false
         ) {
             let data = {};
             data = {
