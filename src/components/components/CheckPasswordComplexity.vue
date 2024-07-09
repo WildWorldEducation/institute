@@ -143,6 +143,8 @@ export default {
                     } else {
                         this.showCriteria = false;
                     }
+                } else {
+                    this.showCriteria = false;
                 }
             },
             deep: true
@@ -153,12 +155,12 @@ export default {
 
 <template>
     <div class="d-flex flex-column">
-        <div v-if="strengthScore < 3" class="form-validate">
+        <div v-if="strengthScore < 3 && showCriteria" class="form-validate">
             Your password is not strong enough
         </div>
         <div class="form-validate" v-if="criteriaFlag.predictable">
-            Your password is contain your name, user-name or email. Please do
-            not use predictable password
+            Your password mustn&lsquo;t contain your name, user-name or email.
+            Please do not use predictable password
         </div>
 
         <!-- Only Show those line when password have at least 8 character long -->
@@ -388,7 +390,7 @@ export default {
                     :style="{
                         color:
                             strengthScore > 1
-                                ? strengthScore > 3
+                                ? strengthScore > 2
                                     ? 'green'
                                     : 'rgb(228, 206, 10)'
                                 : 'red'
@@ -402,7 +404,7 @@ export default {
                     <div
                         :class="[
                             strengthScore > 1
-                                ? strengthScore > 3
+                                ? strengthScore > 2
                                     ? 'strong-power'
                                     : 'moderate-power'
                                 : 'weak-power',
@@ -416,7 +418,7 @@ export default {
                             v-if="strengthScore > 1"
                             :class="[
                                 strengthScore > 1
-                                    ? strengthScore > 3
+                                    ? strengthScore > 2
                                         ? 'strong-power'
                                         : 'moderate-power'
                                     : 'weak-power',
@@ -431,7 +433,7 @@ export default {
                             v-if="strengthScore > 2"
                             :class="[
                                 strengthScore > 1
-                                    ? strengthScore > 3
+                                    ? strengthScore > 2
                                         ? 'strong-power'
                                         : 'moderate-power'
                                     : 'weak-power',
@@ -446,7 +448,7 @@ export default {
                             v-if="strengthScore > 3"
                             :class="[
                                 strengthScore > 1
-                                    ? strengthScore > 3
+                                    ? strengthScore > 2
                                         ? 'strong-power'
                                         : 'moderate-power'
                                     : 'weak-power',
