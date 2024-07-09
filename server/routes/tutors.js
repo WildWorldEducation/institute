@@ -140,5 +140,53 @@ router.get('/show/:tutorPostId', (req, res, next) => {
     }
 });
 
+/**
+ * Edit Tutor Post
+ *
+ * @return response()
+ */
+router.put('/edit/:id', (req, res, next) => {
+    if (req.session.userName) {
+        // Escape single quotes for SQL to accept.
+        if (req.body.description != null)
+            req.body.description = req.body.description.replace(/'/g, "\\'");
+
+        //Extra backend security check that the user is allowed to edit the post.
+        let postUserId;
+        const sqlQuery1 =
+            'SELECT user_id FROM tutors WHERE id=' + req.params.id;
+        conn.query(sqlQuery1, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    postUserId = results[0].user_id;
+                    if (
+                        postUserId == req.session.userId ||
+                        req.session.role == 'admin' ||
+                        req.session.role == 'editor'
+                    ) {
+                        // Edit the post.
+                        let sqlQuery2 =
+                            "UPDATE tutors SET description='" +
+                            req.body.description +
+                            "' WHERE id=" +
+                            req.params.id;
+                        conn.query(sqlQuery2, (err) => {
+                            if (err) throw err;
+
+                            res.end();
+                        });
+                    }
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

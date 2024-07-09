@@ -22,12 +22,11 @@ export default {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: this.question.name,
-                    question: this.question.question
+                    description: this.tutorPost.description
                 })
             };
 
-            var url = '/questions/essay/' + this.questionId + '/edit';
+            var url = '/tutors/edit/' + this.tutorPostId;
             fetch(url, requestOptions).then(() => {
                 this.$router.back();
             });
