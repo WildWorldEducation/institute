@@ -254,17 +254,17 @@ export default {
                         element.type = 'tutor';
                     });
 
-                    for (let i = 0; i < data.length; i++) {
-                        if (data[0].user_id == this.user.userId) {
-                            this.isAlreadyTutoring = true;
-                        }
-                    }
-
                     let tutorPosts = [];
 
                     for (let i = 0; i < data.length; i++) {
                         if (data[0].skill_id == this.skillId) {
                             tutorPosts.push(data[0]);
+                        }
+                    }
+
+                    for (let i = 0; i < tutorPosts.length; i++) {
+                        if (tutorPosts[0].user_id == this.user.userId) {
+                            this.isAlreadyTutoring = true;
                         }
                     }
 
