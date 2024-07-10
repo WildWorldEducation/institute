@@ -71,4 +71,38 @@ export default {
     </div>
 </template>
 
-<style></style>
+<style>
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    border: 1px solid #d33622;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.red-btn:hover {
+    background-color: #cc3535;
+    color: white;
+}
+
+.purple-btn {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.purple-btn:hover {
+    background-color: #8666ca;
+    color: white;
+}
+</style>
