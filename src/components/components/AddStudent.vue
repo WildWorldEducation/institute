@@ -56,7 +56,7 @@ export default {
                 notSquareImg: false,
                 // flag to show warning when cancel crop
                 notCropped: false,
-                complexPassword: false
+                passwordComplex: false
             },
             // Flag and data of crop image component
             showCropModal: false,
@@ -97,18 +97,15 @@ export default {
     async mounted() {},
     methods: {
         ValidateForm() {
-            if (this.user.first_name == '' || this.user.first_name == null) {
+            if (this.user.firstName == '' || this.user.firstName == null) {
                 this.validate.first_name = true;
-            } else if (
-                this.user.last_name == '' ||
-                this.user.last_name == null
-            ) {
+            } else if (this.user.lastName == '' || this.user.lastName == null) {
                 this.validate.last_name = true;
             } else if (this.user.username == '' || this.user.username == null) {
                 this.validate.username = true;
             } else if (this.user.email == '' || this.user.email == null) {
                 this.validate.email = true;
-            } else {
+            } else if (this.validate.passwordComplex) {
                 this.Submit();
             }
         },
@@ -128,8 +125,8 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    firstname: this.user.first_name,
-                    lastname: this.user.last_name,
+                    firstname: this.user.firstName,
+                    lastname: this.user.lastName,
                     username: this.user.username,
                     email: this.user.email,
                     avatar: this.user.avatar,
@@ -390,15 +387,14 @@ export default {
                             >First Name</label
                         >
                         <input
-                            v-model="user.first_name"
+                            v-model="user.firstName"
                             type="text"
                             class="form-control"
                         />
                         <div
                             v-if="
                                 validate.first_name &&
-                                (user.first_name == '' ||
-                                    user.first_name == null)
+                                (user.firstName == '' || user.firstName == null)
                             "
                             class="form-validate"
                         >
@@ -410,14 +406,14 @@ export default {
                             >Last Name</label
                         >
                         <input
-                            v-model="user.last_name"
+                            v-model="user.lastName"
                             type="text"
                             class="form-control"
                         />
                         <div
                             v-if="
                                 validate.last_name &&
-                                (user.last_name == '' || user.last_name == null)
+                                (user.lastName == '' || user.lastName == null)
                             "
                             class="form-validate"
                         >
