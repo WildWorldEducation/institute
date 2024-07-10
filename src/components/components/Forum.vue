@@ -332,7 +332,7 @@ export default {
                     <!-- Second row contain name and avatar -->
                     <div class="">
                         <div class="col post-user-row">
-                            <div id="user-avatar">
+                            <div v-if="post.type != 'tutor'" id="user-avatar">
                                 <img
                                     :src="post.userAvatar"
                                     class="user-avatar-img"
@@ -340,7 +340,12 @@ export default {
                                 />
                             </div>
                             <div class="user-name-div">
-                                <span id="user-name-text">
+                                <span
+                                    id="user-name-text"
+                                    :class="{
+                                        'tutor-user-name': post.type == 'tutor'
+                                    }"
+                                >
                                     {{ post.studentName }}
                                 </span>
                             </div>
@@ -410,8 +415,13 @@ export default {
                                 title="number of vote this resource receive"
                                 id="vote-count"
                                 :class="{
-                                    'text-danger': post.voteCount < 0,
-                                    'text-primary': post.voteCount > 0
+                                    'text-danger':
+                                        post.voteCount < 0 &&
+                                        post.type != 'tutor',
+                                    'text-primary':
+                                        post.voteCount > 0 &&
+                                        post.type != 'tutor',
+                                    'text-light': post.type == 'tutor'
                                 }"
                                 >{{ post.voteCount }}</span
                             >
@@ -765,7 +775,7 @@ export default {
 }
 
 .tutor {
-    background-color: #f6a192;
+    background-color: #a48be6;
 }
 
 .source {
@@ -793,6 +803,10 @@ export default {
     font-size: 1rem;
     font-weight: lighter;
     color: #778094;
+}
+
+.tutor-user-name {
+    color: white !important;
 }
 
 .user-name-div {
