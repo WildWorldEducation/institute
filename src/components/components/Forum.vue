@@ -257,13 +257,13 @@ export default {
                     let tutorPosts = [];
 
                     for (let i = 0; i < data.length; i++) {
-                        if (data[0].skill_id == this.skillId) {
-                            tutorPosts.push(data[0]);
+                        if (data[i].skill_id == this.skillId) {
+                            tutorPosts.push(data[i]);
                         }
                     }
 
                     for (let i = 0; i < tutorPosts.length; i++) {
-                        if (tutorPosts[0].user_id == this.user.userId) {
+                        if (tutorPosts[i].user_id == this.user.userId) {
                             this.isAlreadyTutoring = true;
                         }
                     }
