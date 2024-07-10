@@ -260,7 +260,15 @@ export default {
                         }
                     }
 
-                    this.posts.push(...data);
+                    let tutorPosts = [];
+
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[0].skill_id == this.skillId) {
+                            tutorPosts.push(data[0]);
+                        }
+                    }
+
+                    this.posts.push(...tutorPosts);
                 });
         }
     }
