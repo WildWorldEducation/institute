@@ -458,6 +458,7 @@ export default {
                             please enter a valid email address!
                         </div>
                     </div>
+                    <!-- Password Section -->
                     <div class="mb-3">
                         <label class="form-label">Password</label>
                         <div class="password-div">
