@@ -356,9 +356,17 @@ export default {
                             v-html="post.content"
                         ></div>
 
-                        <div v-else class="forum-post">
-                            <p>{{ post.description }}</p>
-                            <p>{{ post.email }}</p>
+                        <div v-else class="forum-post d-flex tutor-post">
+                            <img
+                                :src="post.userAvatar"
+                                class="tutor-img rounded"
+                                alt="user avatar"
+                            />
+
+                            <div>
+                                <p>{{ post.description }}</p>
+                                <p>{{ post.email }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -806,6 +814,12 @@ export default {
     object-fit: cover;
 }
 
+.tutor-img {
+    width: 100px !important;
+    height: 100px !important;
+    margin-right: 1rem;
+}
+
 .forum-post {
     background-color: #ffffff;
     border-radius: 5px;
@@ -1032,6 +1046,15 @@ h2 {
     .modal-content-flag {
         margin-top: 100%;
         width: 95%;
+    }
+
+    .tutor-post {
+        flex-direction: column;
+    }
+
+    .tutor-img {
+        margin-right: unset;
+        margin: auto;
     }
 }
 
