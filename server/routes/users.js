@@ -9,11 +9,12 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
+
+//Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
-const isAdmin = require('../middlewares/adminMiddleware');
 const createUserPermission = require('../middlewares/users/createUserMiddleware');
 const addInstructorPermission = require('../middlewares/users/addInstructorMiddleware');
-const checkRoleHierarchy = require('../middlewares/roleMiddleware')
+const editUserPermission = require('../middlewares/users/editUserMiddleware')
 
 /*------------------------------------------
 --------------------------------------------
@@ -522,7 +523,7 @@ router.delete('/:id', (req, res, next) => {
  * @return response()
  */
 
-router.put('/:id/edit', (req, res, next) => {
+router.put('/:id/edit', isAuthenticated, editUserPermission, (req, res, next) => {
     if (req.session.userName) {
         // Escape single quotes for SQL to accept.
         if (req.body.firstname != null)
@@ -611,49 +612,46 @@ router.put('/:id/edit/instructor', isAuthenticated, addInstructorPermission, (re
 });
 
 // Edit from profile page
-router.put('/profile/:id/edit', (req, res, next) => {
-    if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.firstName != null)
-            req.body.firstName = req.body.firstName.replace(/'/g, "\\'");
-        if (req.body.lastName != null)
-            req.body.lastName = req.body.lastName.replace(/'/g, "\\'");
-        if (req.body.username != null)
-            req.body.username = req.body.username.replace(/'/g, "\\'");
-        if (req.body.email != null)
-            req.body.email = req.body.email.replace(/'/g, "\\'");
-        if (req.body.password != null)
-            req.body.password = req.body.password.replace(/'/g, "\\'");
+router.put('/profile/:id/edit', isAuthenticated, editUserPermission, (req, res, next) => {
+    // Escape single quotes for SQL to accept.
+    if (req.body.firstName != null)
+        req.body.firstName = req.body.firstName.replace(/'/g, "\\'");
+    if (req.body.lastName != null)
+        req.body.lastName = req.body.lastName.replace(/'/g, "\\'");
+    if (req.body.username != null)
+        req.body.username = req.body.username.replace(/'/g, "\\'");
+    if (req.body.email != null)
+        req.body.email = req.body.email.replace(/'/g, "\\'");
+    if (req.body.password != null)
+        req.body.password = req.body.password.replace(/'/g, "\\'");
 
-        // Add data.
-        let sqlQuery =
-            'UPDATE users SET username="' +
-            req.body.username +
-            '", avatar ="' +
-            req.body.avatar +
-            '" ,first_name ="' +
-            req.body.firstName +
-            '", last_name="' +
-            req.body.lastName +
-            '",email="' +
-            req.body.email +
-            '", password="' +
-            req.body.password +
-            '" WHERE id=' +
-            req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.end();
-            } catch (err) {
-                next(err);
+    // Add data.
+    let sqlQuery =
+        'UPDATE users SET username="' +
+        req.body.username +
+        '", avatar ="' +
+        req.body.avatar +
+        '" ,first_name ="' +
+        req.body.firstName +
+        '", last_name="' +
+        req.body.lastName +
+        '",email="' +
+        req.body.email +
+        '", password="' +
+        req.body.password +
+        '" WHERE id=' +
+        req.params.id;
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    } else {
-        res.redirect('/login');
-    }
+            res.end();
+        } catch (err) {
+            next(err);
+        }
+    });
+    
 });
 
 // To see the user profile, and edit the app settings (if user is an admin).

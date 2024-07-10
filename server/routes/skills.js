@@ -9,6 +9,8 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
+
+//Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
 const isAdmin = require('../middlewares/adminMiddleware');
 const checkRoleHierarchy = require('../middlewares/roleMiddleware')
