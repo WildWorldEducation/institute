@@ -13,6 +13,7 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 const isAdmin = require('../middlewares/adminMiddleware');
 const createUserPermission = require('../middlewares/users/createUserMiddleware');
 const addInstructorPermission = require('../middlewares/users/addInstructorMiddleware');
+const checkRoleHierarchy = require('../middlewares/roleMiddleware')
 
 /*------------------------------------------
 --------------------------------------------
@@ -366,28 +367,24 @@ router.post('/add',isAuthenticated, createUserPermission, (req, res, next) => {
     });
 });
 
-router.post('/add/instructor', addInstructorPermission, (req, res, next) => {
-    if (req.session.userName) {
-        let data = {};
-        data = {
-            instructor_id: req.body.instructor_id,
-            student_id: req.body.student_id
-        };
-        let sqlQuery = 'INSERT INTO instructor_students SET ?';
-        let query = conn.query(sqlQuery, data, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                } else {
-                    res.end();
-                }
-            } catch (err) {
-                next(err);
+router.post('/add/instructor', isAuthenticated, addInstructorPermission, (req, res, next) => {
+    let data = {};
+    data = {
+        instructor_id: req.body.instructor_id,
+        student_id: req.body.student_id
+    };
+    let sqlQuery = 'INSERT INTO instructor_students SET ?';
+    let query = conn.query(sqlQuery, data, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            } else {
+                res.end();
             }
-        });
-    } else {
-        res.redirect('/login');
-    }
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 // All users.
@@ -578,42 +575,39 @@ router.put('/:id/edit', (req, res, next) => {
     }
 });
 
-router.put('/:id/edit/instructor', addInstructorPermission, (req, res, next) => {
-    if (req.session.userName) {
-        let sqlQuery = `
-            DELETE FROM instructor_students
-            WHERE student_id = ${req.params.id};
-        `;
+router.put('/:id/edit/instructor', isAuthenticated, addInstructorPermission, (req, res, next) => {
+    let sqlQuery = `
+        DELETE FROM instructor_students
+        WHERE student_id = ${req.params.id};
+    `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.end();
-            } catch (err) {
-                next(err);
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
+            res.end();
+        } catch (err) {
+            next(err);
+        }
+    });
 
-        sqlQuery = `
-            INSERT INTO instructor_students (instructor_id, student_id) 
-            VALUES (${req.body.instructor_id}, ${req.params.id});
-        `;
+    sqlQuery = `
+        INSERT INTO instructor_students (instructor_id, student_id) 
+        VALUES (${req.body.instructor_id}, ${req.params.id});
+    `;
 
-        let insertQuery = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.end();
-            } catch (err) {
-                next(err);
+    let insertQuery = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    } else {
-        res.redirect('/login');
-    }
+            res.end();
+        } catch (err) {
+            next(err);
+        }
+    });
+    
 });
 
 // Edit from profile page
