@@ -50,7 +50,7 @@ router.put('/:userId/:tutorPostId/edit/down', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             `
-        INSERT INTO user_votes (user_id, tutor_post_id, vote) 
+        INSERT INTO tutor_votes (user_id, tutor_post_id, vote) 
         VALUES(` +
             req.params.userId +
             `, ` +

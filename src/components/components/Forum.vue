@@ -118,14 +118,14 @@ export default {
                 })
                 .then((data) => (this.users = data));
         },
-        voteUp(resourceIndex, resourceId, hasVoted, type) {
+        voteUp(resourceIndex, postId, hasVoted, type) {
             if (type == 'source') {
                 if (hasVoted) {
                     fetch(
                         '/user-votes/' +
                             this.user.userId +
                             '/' +
-                            resourceId +
+                            postId +
                             '/edit/cancel',
                         {
                             method: 'PUT',
@@ -135,14 +135,14 @@ export default {
                             body: {}
                         }
                     ).then((response) =>
-                        this.getPostVote(resourceIndex, resourceId)
+                        this.getPostVote(resourceIndex, postId)
                     );
                 } else {
                     fetch(
                         '/user-votes/' +
                             this.user.userId +
                             '/' +
-                            resourceId +
+                            postId +
                             '/edit/up',
                         {
                             method: 'PUT',
@@ -152,19 +152,16 @@ export default {
                             body: {}
                         }
                     ).then((response) =>
-                        this.getPostVote(resourceIndex, resourceId)
+                        this.getPostVote(resourceIndex, postId)
                     );
                 }
-            }
-        },
-        voteDown(resourceIndex, resourceId, hasVoted, type) {
-            if (type == 'source') {
+            } else if (type == 'tutor') {
                 if (hasVoted) {
                     fetch(
-                        '/user-votes/' +
+                        '/tutor-votes/' +
                             this.user.userId +
                             '/' +
-                            resourceId +
+                            postId +
                             '/edit/cancel',
                         {
                             method: 'PUT',
@@ -174,14 +171,53 @@ export default {
                             body: {}
                         }
                     ).then((response) =>
-                        this.getPostVote(resourceIndex, resourceId)
+                        this.getPostVote(resourceIndex, postId)
+                    );
+                } else {
+                    fetch(
+                        '/tutor-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/up',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then((response) =>
+                        this.getPostVote(resourceIndex, postId)
+                    );
+                }
+            }
+        },
+        voteDown(resourceIndex, postId, hasVoted, type) {
+            if (type == 'source') {
+                if (hasVoted) {
+                    fetch(
+                        '/user-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/cancel',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then((response) =>
+                        this.getPostVote(resourceIndex, postId)
                     );
                 } else {
                     fetch(
                         '/user-votes/' +
                             this.user.userId +
                             '/' +
-                            resourceId +
+                            postId +
                             '/edit/down',
                         {
                             method: 'PUT',
@@ -191,7 +227,43 @@ export default {
                             body: {}
                         }
                     ).then((response) =>
-                        this.getPostVote(resourceIndex, resourceId)
+                        this.getPostVote(resourceIndex, postId)
+                    );
+                }
+            } else if (type == 'tutor') {
+                if (hasVoted) {
+                    fetch(
+                        '/tutor-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/cancel',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then((response) =>
+                        this.getPostVote(resourceIndex, postId)
+                    );
+                } else {
+                    fetch(
+                        '/tutor-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/down',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then((response) =>
+                        this.getPostVote(resourceIndex, postId)
                     );
                 }
             }
