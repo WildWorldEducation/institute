@@ -26,9 +26,7 @@ export default {
             userSkillsStore
         };
     },
-    components: {
-        CheckPasswordComplexity
-    },
+
     data() {
         return {
             user: { role: 'student' },
@@ -74,7 +72,8 @@ export default {
     },
     components: {
         Cropper,
-        Preview
+        Preview,
+        CheckPasswordComplexity
     },
     async created() {
         if (this.userDetailsStore.role == 'instructor') {

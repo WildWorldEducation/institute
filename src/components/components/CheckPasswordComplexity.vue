@@ -463,6 +463,11 @@ export default {
 </template>
 
 <style>
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
+}
 .meet-criteria {
     color: rgb(32, 114, 25);
     font-size: 14px;
