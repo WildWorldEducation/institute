@@ -762,6 +762,22 @@ export default {
     background-color: #3eb3a3;
 }
 
+.purple-btn {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.purple-btn:hover {
+    background-color: #8666ca;
+}
+
 #posts-big-container {
     padding-left: 10px;
     padding-right: 10px;
