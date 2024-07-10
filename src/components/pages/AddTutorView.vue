@@ -30,13 +30,19 @@ export default {
 </script>
 
 <template>
+    <div id="banner">
+        <img
+            v-bind:src="'/images/banners/students-banner.png'"
+            class="img-fluid"
+        />
+    </div>
     <div class="container mt-3 pb-3">
         <div class="row">
             <div class="col-10 d-flex align-items-end">
                 <h2 id="header-tile">Offer to Tutor</h2>
             </div>
         </div>
-        <div class="main-content-container container-fluid p-4">
+        <div class="main-content-container container-fluid p-2">
             <div class="row">
                 <div class="col">
                     <div class="mb-3">
@@ -72,6 +78,12 @@ export default {
 </template>
 
 <style>
+h2 {
+    color: #a48be6;
+    font-size: 30px;
+    font-weight: 700;
+}
+
 .red-btn {
     background-color: #e24d4d;
     color: white;

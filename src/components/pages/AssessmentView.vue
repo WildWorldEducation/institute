@@ -48,22 +48,10 @@ export default {
 
 <template>
     <div id="banner">
-        <!-- We will use a default banner for now -->
         <img
             v-bind:src="'/images/banners/skills-banner.png'"
             class="img-fluid"
         />
-        <!-- Assign banner dynamically -->
-        <!-- <img
-            v-bind:src="
-                '/images/banners/skills/' +
-                this.skill.firstAncestorId +
-                '/' +
-                this.skill.levelInHierarchy +
-                '.png'
-            "
-            class="img-fluid"
-        /> -->
     </div>
     <div class="container mt-3">
         <div class="d-flex justify-content-md-between justify-content-center">
