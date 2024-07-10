@@ -1,5 +1,8 @@
-<script setup>
+<script>
 import AddStudent from '../components/AddStudent.vue';
+export default {
+    components: { AddStudent }
+};
 </script>
 
 <template>
