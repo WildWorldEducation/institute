@@ -16,7 +16,8 @@ export default {
             currentClickId: '',
             showThankModal: false,
             tutors: [],
-            source: null
+            source: null,
+            isAlreadyTutoring: false
         };
     },
     computed: {
@@ -50,7 +51,6 @@ export default {
     },
     created() {
         this.getUserId();
-        console.log(this.user);
         this.getUsers();
         this.getPosts(this.skillId);
         this.getTutors(this.skillId);
@@ -194,8 +194,6 @@ export default {
             // Close the modal.
             this.showModal = false;
 
-            console.log(source);
-
             // Delete record from DB.
             if (source.type != 'tutor') {
                 fetch('/resources/delete/' + source.id, { method: 'DELETE' });
@@ -258,7 +256,12 @@ export default {
                     data.forEach(function (element) {
                         element.type = 'tutor';
                     });
-                    console.log(data);
+
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[0].user_id == this.user.userId) {
+                            this.isAlreadyTutoring = true;
+                        }
+                    }
 
                     this.posts.push(...data);
                 });
@@ -296,6 +299,7 @@ export default {
                     </svg>
                 </router-link>
                 <router-link
+                    v-if="user.role == 'student' && isAlreadyTutoring == false"
                     :to="'/tutor/add/' + skillId"
                     class="btn purple-btn"
                     role="button"
@@ -361,6 +365,10 @@ export default {
                         <div class="d-flex flex-row justify-content-end gap-1">
                             <!-- Upvote Button -->
                             <div
+                                v-if="
+                                    post.user_id != user.userId ||
+                                    post.type != 'tutor'
+                                "
                                 @click="
                                     voteUp(post.index, post.id, post.userUpVote)
                                 "
@@ -398,6 +406,10 @@ export default {
                             >
                             <!-- Down vote button -->
                             <div
+                                v-if="
+                                    post.user_id != user.userId ||
+                                    post.type != 'tutor'
+                                "
                                 b-tooltip.hover
                                 title="I Dislike This "
                                 @click="

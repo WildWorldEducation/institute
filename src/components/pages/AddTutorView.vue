@@ -1,5 +1,5 @@
 <script>
-// Import the store.
+import router from '../../router';
 
 export default {
     data() {
@@ -11,7 +11,7 @@ export default {
     setup() {},
     mounted: function () {},
     methods: {
-        Submit() {
+        async Submit() {
             var url = '/tutors/add/' + this.skillId;
 
             const requestOptions = {
@@ -21,8 +21,8 @@ export default {
                     description: this.description
                 })
             };
-            fetch(url, requestOptions).then(() => {
-                //this.$router.push('/skills/' + this.skillId);
+            await fetch(url, requestOptions).then(() => {
+                router.back();
             });
         }
     }
@@ -55,7 +55,10 @@ export default {
                     </div>
 
                     <div class="d-flex justify-content-end gap-4">
-                        <router-link class="btn red-btn" to="/users">
+                        <router-link
+                            class="btn red-btn"
+                            :to="'/skills/' + skillId"
+                        >
                             Cancel
                         </router-link>
                         <button class="btn purple-btn" @click="Submit()">

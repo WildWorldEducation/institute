@@ -58,8 +58,8 @@ router.post('/add/:skillId', (req, res, next) => {
             try {
                 if (err) {
                     throw err;
-                } else {
                 }
+                res.end();
             } catch (err) {
                 next(err);
             }
