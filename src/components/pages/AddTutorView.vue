@@ -30,6 +30,12 @@ export default {
 </script>
 
 <template>
+    <div id="banner">
+        <img
+            v-bind:src="'/images/banners/students-banner.png'"
+            class="img-fluid"
+        />
+    </div>
     <div class="container mt-3 pb-3">
         <div class="row">
             <div class="col-10 d-flex align-items-end">
