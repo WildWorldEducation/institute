@@ -480,7 +480,7 @@ export default {
                 </div>
                 <div  v-if="userDetailsStore.role == 'student'" class="mb-3">
                     <label class="form-label">Instructor</label>
-                    <select v-model="instructorID" class="form-control">
+                    <select v-model="instructorID" class="form-control" :disabled="userDetailsStore.instructor.id">
                         <option value="" disabled selected> - Select instructor -</option>
                         <option v-for="instructor in userStore.instructors" :value="instructor.id">
                             {{ instructor.username }}
