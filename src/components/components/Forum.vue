@@ -71,7 +71,13 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => (this.posts = data));
+                .then((data) => {
+                    data.forEach(function (element) {
+                        element.type = 'source';
+                    });
+
+                    this.posts = data;
+                });
         },
         async getPostVote(i, resourceId) {
             await fetch('/user-votes/' + resourceId)
@@ -112,81 +118,83 @@ export default {
                 })
                 .then((data) => (this.users = data));
         },
-        voteUp(resourceIndex, resourceId, hasVoted) {
-            if (hasVoted) {
-                fetch(
-                    '/user-votes/' +
-                        this.user.userId +
-                        '/' +
-                        resourceId +
-                        '/edit/cancel',
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'content/type'
-                        },
-                        body: {}
-                    }
-                ).then((response) =>
-                    this.getPostVote(resourceIndex, resourceId)
-                );
-            } else {
-                fetch(
-                    '/user-votes/' +
-                        this.user.userId +
-                        '/' +
-                        resourceId +
-                        '/edit/up',
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'content/type'
-                        },
-                        body: {}
-                    }
-                ).then((response) =>
-                    this.getPostVote(resourceIndex, resourceId)
-                );
+        voteUp(resourceIndex, resourceId, hasVoted, type) {
+            if (type == 'source') {
+                if (hasVoted) {
+                    fetch(
+                        '/user-votes/' +
+                            this.user.userId +
+                            '/' +
+                            resourceId +
+                            '/edit/cancel',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then((response) =>
+                        this.getPostVote(resourceIndex, resourceId)
+                    );
+                } else {
+                    fetch(
+                        '/user-votes/' +
+                            this.user.userId +
+                            '/' +
+                            resourceId +
+                            '/edit/up',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then((response) =>
+                        this.getPostVote(resourceIndex, resourceId)
+                    );
+                }
             }
-            //location.reload();
         },
-        voteDown(resourceIndex, resourceId, hasVoted) {
-            if (hasVoted) {
-                fetch(
-                    '/user-votes/' +
-                        this.user.userId +
-                        '/' +
-                        resourceId +
-                        '/edit/cancel',
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'content/type'
-                        },
-                        body: {}
-                    }
-                ).then((response) =>
-                    this.getPostVote(resourceIndex, resourceId)
-                );
-            } else {
-                fetch(
-                    '/user-votes/' +
-                        this.user.userId +
-                        '/' +
-                        resourceId +
-                        '/edit/down',
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'content/type'
-                        },
-                        body: {}
-                    }
-                ).then((response) =>
-                    this.getPostVote(resourceIndex, resourceId)
-                );
+        voteDown(resourceIndex, resourceId, hasVoted, type) {
+            if (type == 'source') {
+                if (hasVoted) {
+                    fetch(
+                        '/user-votes/' +
+                            this.user.userId +
+                            '/' +
+                            resourceId +
+                            '/edit/cancel',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then((response) =>
+                        this.getPostVote(resourceIndex, resourceId)
+                    );
+                } else {
+                    fetch(
+                        '/user-votes/' +
+                            this.user.userId +
+                            '/' +
+                            resourceId +
+                            '/edit/down',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then((response) =>
+                        this.getPostVote(resourceIndex, resourceId)
+                    );
+                }
             }
-            //   location.reload();
         },
         deletePost(source) {
             // Close the modal.
@@ -249,7 +257,6 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    data.map((obj) => ({ ...obj, type: 'tutor' }));
                     data.forEach(function (element) {
                         element.type = 'tutor';
                     });
@@ -413,7 +420,12 @@ export default {
                                     post.type != 'tutor'
                                 "
                                 @click="
-                                    voteUp(post.index, post.id, post.userUpVote)
+                                    voteUp(
+                                        post.index,
+                                        post.id,
+                                        post.userUpVote,
+                                        post.type
+                                    )
                                 "
                                 b-tooltip.hover
                                 title="I Like This "
@@ -464,7 +476,8 @@ export default {
                                     voteDown(
                                         post.index,
                                         post.id,
-                                        post.userDownVote
+                                        post.userDownVote,
+                                        post.type
                                     )
                                 "
                             >
