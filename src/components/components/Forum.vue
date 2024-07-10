@@ -55,7 +55,7 @@ export default {
         await this.getPosts(this.skillId);
         await this.getTutors(this.skillId);
         for (let i = 0; i < this.posts.length; i++) {
-            this.getPostVote(i, this.posts[i].id);
+            await this.getPostVote(i, this.posts[i].id);
         }
     },
     methods: {
@@ -73,8 +73,8 @@ export default {
                 })
                 .then((data) => (this.posts = data));
         },
-        getPostVote(i, resourceId) {
-            fetch('/user-votes/' + resourceId)
+        async getPostVote(i, resourceId) {
+            await fetch('/user-votes/' + resourceId)
                 .then((response) => {
                     return response.json();
                 })
@@ -255,13 +255,14 @@ export default {
                     });
 
                     let tutorPosts = [];
-
+                    // Add these tutor posts to the other posts, if the skill is the same.
                     for (let i = 0; i < data.length; i++) {
                         if (data[i].skill_id == this.skillId) {
                             tutorPosts.push(data[i]);
                         }
                     }
 
+                    // Prevent student from adding another tutor post, if they already have.
                     for (let i = 0; i < tutorPosts.length; i++) {
                         if (tutorPosts[i].user_id == this.user.userId) {
                             this.isAlreadyTutoring = true;
@@ -280,7 +281,6 @@ export default {
         <div class="d-flex flex-column flex-md-row justify-content-between">
             <div class="d-flex align-items-md-baseline align-items-start gap-2">
                 <h2>Best Places To Learn This</h2>
-                <!--TODO: get src from database -->
                 <img src="/images/recurso-69.png" class="" />
             </div>
             <div class="mx-auto mx-md-0 mt-3 mt-lg-0">
