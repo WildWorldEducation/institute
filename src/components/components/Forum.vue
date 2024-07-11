@@ -10,6 +10,7 @@ export default {
             posts: [],
             users: [],
             votes: [],
+            tutorPostVotes: [],
             user: {},
             showModal: false,
             resourceId: null,
@@ -60,8 +61,9 @@ export default {
         this.posts = this.sourcePosts;
         await this.getTutorPosts(this.skillId);
         for (let i = 0; i < this.tutorPosts.length; i++) {
-            await this.getTutorVote(i, this.tutorPosts[i].id);
+            await this.getTutorPostVotes(this.tutorPosts[i].id);
         }
+        this.posts = this.posts.concat(this.tutorPosts);
     },
     methods: {
         getUserId() {
@@ -140,37 +142,36 @@ export default {
                     }
                 });
         },
-        // async getTutorPostVote(i, tutorPostId) {
-        //     await fetch('/tutor-votes/' + tutorPostId)
-        //         .then((response) => {
-        //             return response.json();
-        //         })
-        //         .then((data) => (this.votes = data))
-        //         .then(() => {
-        //             this.posts[i].userUpVote = false;
-        //             this.posts[i].userDownVote = false;
-        //             var voteCount = 0;
-        //             for (let j = 0; j < this.votes.length; j++) {
-        //                 // Calculate SUM of votes.
-        //                 voteCount = voteCount + this.votes[j].vote;
-
-        //                 // See if current user has voted (will reflect as green or red arrow).
-        //                 if (this.votes[j].user_id == this.user.userId) {
-        //                     if (this.votes[j].vote == 1) {
-        //                         this.posts[i].userUpVote = true;
-        //                         this.posts[i].userDownVote = false;
-        //                     } else if (this.votes[j].vote == -1) {
-        //                         this.posts[i].userUpVote = false;
-        //                         this.posts[i].userDownVote = true;
-        //                     } else {
-        //                         this.posts[i].userUpVote = false;
-        //                         this.posts[i].userDownVote = false;
-        //                     }
-        //                 }
-        //             }
-        //             this.posts[i].voteCount = voteCount;
-        //         });
-        // },
+        async getTutorPostVotes(tutorPostId) {
+            await fetch('/tutor-votes/' + tutorPostId)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data) => {
+                    var votesOnThisTutor = data;
+                    var voteCount = 0;
+                    let userUpVote = false;
+                    let userDownVote = false;
+                    for (let i = 0; i < votesOnThisTutor.length; i++) {
+                        if (votesOnThisTutor[i].user_id == this.user.userId) {
+                            if (votesOnThisTutor[i].vote == 1) {
+                                userUpVote = true;
+                            } else if (votesOnThisTutor[i].vote == -1) {
+                                userDownVote = true;
+                            }
+                        }
+                        // Calculate SUM of votes.
+                        voteCount = voteCount + votesOnThisTutor[i].vote;
+                    }
+                    for (let i = 0; i < this.tutorPosts.length; i++) {
+                        if (this.tutorPosts[i].id == tutorPostId) {
+                            this.tutorPosts[i].voteCount = voteCount;
+                            this.tutorPosts[i].userUpVote = userUpVote;
+                            this.tutorPosts[i].userDownVote = userDownVote;
+                        }
+                    }
+                });
+        },
         // Get all users to map the post user ID to the user's name.
         async getUsers() {
             await fetch('/users/list')
@@ -231,9 +232,7 @@ export default {
                             },
                             body: {}
                         }
-                    ).then((response) =>
-                        this.getTutorPostVote(resourceIndex, postId)
-                    );
+                    ).then(() => this.getTutorPostVotes(postId));
                 } else {
                     fetch(
                         '/tutor-votes/' +
@@ -248,9 +247,7 @@ export default {
                             },
                             body: {}
                         }
-                    ).then((response) =>
-                        this.getTutorPostVote(resourceIndex, postId)
-                    );
+                    ).then(() => this.getTutorPostVotes(postId));
                 }
             }
         },
@@ -306,9 +303,7 @@ export default {
                             },
                             body: {}
                         }
-                    ).then((response) =>
-                        this.getTutorPostVote(resourceIndex, postId)
-                    );
+                    ).then(() => this.getTutorPostVotes(postId));
                 } else {
                     fetch(
                         '/tutor-votes/' +
@@ -323,9 +318,7 @@ export default {
                             },
                             body: {}
                         }
-                    ).then((response) =>
-                        this.getTutorPostVote(resourceIndex, postId)
-                    );
+                    ).then(() => this.getTutorPostVotes(postId));
                 }
             }
         },

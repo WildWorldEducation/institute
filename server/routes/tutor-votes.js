@@ -16,6 +16,33 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 /**
+ * Sum of votes per skill.
+ *
+ * @return response()
+ */
+router.get('/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        let sqlQuery =
+            `
+    SELECT * FROM tutor_votes
+    WHERE tutor_post_id =` + req.params.id;
+
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * Create or Update Item
  *
  * @return response()
@@ -77,7 +104,7 @@ router.put('/:userId/:tutorPostId/edit/cancel', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             `
-        INSERT INTO user_votes (user_id, tutor_post_id, vote) 
+        INSERT INTO tutor_votes (user_id, tutor_post_id, vote) 
         VALUES(` +
             req.params.userId +
             `, ` +
