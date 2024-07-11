@@ -62,6 +62,8 @@ const resourcesRouter = require('./routes/resources');
 app.use('/resources', resourcesRouter);
 const userVotesRouter = require('./routes/user-votes');
 app.use('/user-votes', userVotesRouter);
+const tutorVotesRouter = require('./routes/tutor-votes');
+app.use('/tutor-votes', tutorVotesRouter);
 const tagRouter = require('./routes/tags');
 app.use('/tags', tagRouter);
 const skillTagRouter = require('./routes/skill-tags');
@@ -84,6 +86,8 @@ const contentFlagsRouter = require('./routes/content-flags');
 app.use('/content-flags', contentFlagsRouter);
 const userActions = require('./routes/user-actions');
 app.use('/user-actions', userActions);
+const tutorPosts = require('./routes/tutor-posts');
+app.use('/tutor-posts', tutorPosts);
 
 app.locals.title = 'Skill Tree';
 
@@ -108,8 +112,9 @@ var googleLoginResult;
 app.get('/google-login-attempt', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     // Get user id based on Google email, if it exists.
-    let sqlQuery =
-        "SELECT * FROM users WHERE email = '" + googleUserDetails.email + "';";
+    let sqlQuery = `SELECT * FROM users 
+        WHERE email = '${googleUserDetails.email}'
+        AND is_deleted = 0;`;
     let query = conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -122,7 +127,9 @@ app.get('/google-login-attempt', (req, res) => {
                 req.session.userId = results[0].id;
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
-                res.redirect('/skills');
+                if (req.session.role == 'student')
+                    res.redirect('/vertical-tree');
+                else res.redirect('/');
             } else {
                 googleLoginResult = 'no account';
                 res.redirect('/');
@@ -165,7 +172,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 req.session.userId = results[0].id;
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
-                res.redirect('/skills');
+                res.redirect('/vertical-tree');
             }
             // If not.
             else {
@@ -200,7 +207,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                             // Unlock skills here
                             unlockInitialSkills(newStudentId);
 
-                            res.redirect('/skills');
+                            res.redirect('/vertical-tree');
                         }
                     } catch (err) {
                         next(err);
@@ -300,16 +307,16 @@ app.post('/login-attempt', (req, res, next) => {
     if (req.body.password != null)
         req.body.password = req.body.password.replace(/'/g, "\\'");
 
-    // Execute SQL query that'll select the account from the database based on the specified username and password.
-    let sqlQuery1 =
-        "SELECT * FROM users WHERE users.username = '" +
-        req.body.username +
-        "' AND users.password = '" +
-        req.body.password +
-        "';";
+    // Execute SQL query that'll select the account from the database based on the specified
+    const sqlQuery1 = `SELECT * 
+                       FROM skill_tree.users 
+                       WHERE skill_tree.users.username = '${req.body.username}' 
+                             AND skill_tree.users.password = '${req.body.password}' 
+                             AND skill_tree.users.is_deleted = 0;`;
     let query1 = conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
+                console.log(err);
                 throw err;
             }
             // Create session object.

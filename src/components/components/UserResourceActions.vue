@@ -63,10 +63,7 @@ export default {
                 <span :class="actionColor(resource.action)">
                     {{ resource.action }}
                 </span>
-                <span v-if="resource.action === 'delete'">
-                    a resource with id {{ resource.id }}
-                </span>
-                <span v-else> resource for skill: </span>
+                <span> resource in forum of skill: </span>
                 <router-link
                     class="skill-link"
                     target="_blank"

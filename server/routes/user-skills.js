@@ -16,16 +16,16 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 
-/* Nested list */
-// Individual user and user-skills.
-// Used for skill tree component, editing the user skill mastery component, and the skills list component.
+/* Nested list of user-skills, without the skill mastery requirements*/
+// For the skills list (also know as the "Collapsible Tree"), which does not require the mastery requirements.
+// Note: removing the mastery requirements decreases the network load hugely, increasing page load speed.
 router.get('/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery =
             `
-    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level, mastery_requirements, skills.order
+    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -34,7 +34,7 @@ router.get('/:id', (req, res, next) => {
             ` AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, parent, "", "", description, type, level, mastery_requirements, skills.order
+    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -45,7 +45,7 @@ router.get('/:id', (req, res, next) => {
     WHERE user_skills.user_id =` +
             req.params.id +
             `) AND is_filtered = 'available'
-    ORDER BY id;`;
+    ORDER BY skillorder, id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {
@@ -86,16 +86,15 @@ router.get('/:id', (req, res, next) => {
     }
 });
 
-/* Nested list */
-// Individual user and user-skills.
-// Used for skill tree component, editing the user skill mastery component, and the skills list component.
+/* Nested list of user-skills, with the subskills separate from the other child skills */
+// Used for the radial skill tree component.
 router.get('/separate-subskills/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery =
             `
-    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, level, mastery_requirements
+    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -104,7 +103,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
             ` AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, parent, "", "", description, type, level, mastery_requirements
+    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -115,7 +114,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
     WHERE user_skills.user_id =` +
             req.params.id +
             `) AND is_filtered = 'available'
-    ORDER BY id;`;
+    ORDER BY skillorder, id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
             try {

@@ -8,9 +8,15 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/tidy-tree',
-            name: 'tidy-tree',
+            path: '/vertical-tree',
+            name: 'vertical-tree',
             component: () => import('../components/pages/TidyTreeView.vue')
+        },
+        {
+            path: '/student/:studentId/skill-tree',
+            name: 'student-vertical-tree',
+            component: () =>
+                import('../components/pages/StudentTidyTreeView.vue')
         },
         {
             path: '/',
@@ -64,12 +70,14 @@ const router = createRouter({
         {
             path: '/skills/add',
             name: 'add-skill',
-            component: () => import('../components/pages/AddSkillView.vue')
+            component: () => import('../components/pages/AddSkillView.vue'),
+            meta: { requiresAuth: true, roles: ['admin'] }
         },
         {
             path: '/skills/edit/:id',
             name: 'edit-skill',
-            component: () => import('../components/pages/EditSkillView.vue')
+            component: () => import('../components/pages/EditSkillView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
         {
             path: '/skills/:id/question-bank/add',
@@ -155,7 +163,8 @@ const router = createRouter({
         {
             path: '/users',
             name: 'users',
-            component: () => import('../components/pages/UsersView.vue')
+            component: () => import('../components/pages/UsersView.vue'),
+            meta: { requiresAuth: true, roles: ['instructor', 'admin'] }
         },
         // {
         //   path: '/users/:username/skilltree',
@@ -165,17 +174,20 @@ const router = createRouter({
         {
             path: '/users/add',
             name: 'add-user',
-            component: () => import('../components/pages/AddUserView.vue')
+            component: () => import('../components/pages/AddUserView.vue'),
+            meta: { requiresAuth: true, roles: ['admin'] }
         },
         {
             path: '/users/add-student',
             name: 'add-student',
-            component: () => import('../components/pages/AddStudentView.vue')
+            component: () => import('../components/pages/AddStudentView.vue'),
+            meta: { requiresAuth: true, roles: ['instructor'] }
         },
         {
             path: '/users/edit/:id',
             name: 'edit-user',
-            component: () => import('../components/pages/EditUserView.vue')
+            component: () => import('../components/pages/EditUserView.vue'),
+            meta: { requiresAuth: true, roles: ['instructor', 'admin'] }
         },
         {
             path: '/user-skills/edit/:id',
@@ -220,36 +232,60 @@ const router = createRouter({
             name: 'check-student-question',
             component: () =>
                 import('../components/pages/CheckStudentQuestionView.vue')
+        },
+        {
+            path: '/tutor/add/:skillId',
+            name: 'add-tutor',
+            component: () => import('../components/pages/AddTutorPostView.vue')
+        },
+        {
+            path: '/tutor/edit/:tutorPostId',
+            name: 'edit-tutor',
+            component: () => import('../components/pages/EditTutorPostView.vue')
         }
     ]
 });
 
-// So as to only load stores once initially.
-var hasInitialLoadCompleted = false;
+router.beforeEach(async (to, from, next) => {
+    const sessionDetailsStore = useSessionDetailsStore();
+    const userDetailsStore = useUserDetailsStore();
 
-var sessionDetailsStore;
-var userDetailsStore;
-
-router.beforeEach(async (to) => {
-    // Make sure certain initial data has been loaded to the store before the home page opens.
-    sessionDetailsStore = useSessionDetailsStore();
-
-    if (sessionDetailsStore.isLoggedIn != true) {
+    // Check if the user is logged in and fetch session details if not
+    if (!sessionDetailsStore.isLoggedIn) {
         await sessionDetailsStore.getSessionDetails();
-        userDetailsStore = useUserDetailsStore();
         await userDetailsStore.getUserDetails();
     }
 
+    const isLoggedIn = sessionDetailsStore.isLoggedIn;
+    const userRole = userDetailsStore.role;
+
+
+    // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
-        hasInitialLoadCompleted == false &&
-        sessionDetailsStore.isLoggedIn == false &&
-        // Avoid an infinite redirect
+        !sessionDetailsStore.isLoggedIn &&
         to.name !== 'login' &&
         to.name !== 'student-signup' &&
         to.name !== 'editor-signup'
     ) {
-        // redirect the user to the login page
-        return { name: 'login' };
+        next({ name: 'login' });
+        return;
+    }
+
+    // Route requires authentication
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (!isLoggedIn) {
+            next({ name: 'login' });
+        } else if (to.matched.some(record => record.meta.roles)) {
+            if (to.meta.roles.includes(userRole)) {
+                next();
+            } else {
+                next({ name: 'hub' }); // Redirect to Home if user doesn't have the required role
+            }
+        } else {
+            next(); // Proceed if only authentication is required and user is authenticated
+        }
+    } else {
+        next(); // Proceed if no authentication is required
     }
 });
 

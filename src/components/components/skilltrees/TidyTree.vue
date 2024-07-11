@@ -1,6 +1,5 @@
 <script>
 // Import the stores.
-import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
@@ -11,10 +10,8 @@ import * as d3 from 'd3';
 
 export default {
     setup() {
-        const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
         return {
-            userDetailsStore,
             skillTreeStore
         };
     },
@@ -77,11 +74,13 @@ export default {
 
         // Set up the Hidden Canvas for Interactivity.
         let hiddenCanvas = document.getElementById('hidden-canvas');
-        this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
+        this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
+            willReadFrequently: true
+        });
         hiddenCanvas.style.display = 'none';
 
         // Listen for clicks on the main canvas
-        canvas.addEventListener('click', (e) => {
+        canvas.addEventListener('click', async (e) => {
             // We actually only need to draw the hidden canvas when
             // there is an interaction. This sketch can draw it on
             // each loop, but that is only for demonstration.
@@ -97,13 +96,10 @@ export default {
 
             // This will return that pixel's color
             var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
-            //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
 
             //Our map uses these rgb strings as keys to nodes.
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
-
-            // console.log(this.colToNode);
 
             if (node) {
                 // We clicked on something, lets set the color of the node
@@ -115,7 +111,15 @@ export default {
                 this.skill.name = node.data.skill_name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
-                this.skill.masteryRequirements = node.data.mastery_requirements;
+
+                // Get the mastery requirements data separately.
+                // Because this is so much data, we do not send it with the rest of the skill tree,
+                // or it will slow the load down too much.
+                const result = await fetch(
+                    '/skills/mastery-requirements/' + this.skill.id
+                );
+                const masteryRequirements = await result.json();
+                this.skill.masteryRequirements = masteryRequirements;
                 this.showInfoPanel();
             }
         });
@@ -731,7 +735,10 @@ export default {
         Reset
     </button>
     <!-- Loading animation -->
-    <div v-if="isLoading == true" class="loading-animation d-flex justify-content-center align-items-center py-4">
+    <div
+        v-if="isLoading == true"
+        class="loading-animation d-flex justify-content-center align-items-center py-4"
+    >
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->

@@ -24,8 +24,8 @@ Router
 // Delete multiple choice question.
 router.delete('/mc/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = 'DELETE FROM mc_questions WHERE id=' + req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        const deleteQuery = `UPDATE mc_questions SET is_deleted = 1 WHERE id=${req.params.id}`;
+        conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
                     throw err;
@@ -55,8 +55,9 @@ router.delete('/mc/:id', (req, res, next) => {
 // Delete essay question.
 router.delete('/essay/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = 'DELETE FROM essay_questions WHERE id=' + req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        // Delete Query using visibility flag
+        const deleteQuestion = `UPDATE essay_questions SET is_deleted = 1 WHERE id=${req.params.id}`;
+        conn.query(deleteQuestion, (err) => {
             try {
                 if (err) {
                     throw err;
@@ -252,13 +253,15 @@ router.put('/essay/:id/edit', (req, res, next) => {
     }
 });
 
-// Dynamically create assessments.
+// Dynamically create assessments / question banks.
 // Load multiple choice type questions.
 router.get('/:skillId/multiple-choice', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            'SELECT * FROM mc_questions WHERE skill_id = ' + req.params.skillId;
+        let sqlQuery = `SELECT * 
+            FROM mc_questions 
+            WHERE skill_id = ${req.params.skillId}
+            AND is_deleted = 0;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -276,9 +279,10 @@ router.get('/:skillId/multiple-choice', (req, res, next) => {
 router.get('/:skillId/essay', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            'SELECT * FROM essay_questions WHERE skill_id = ' +
-            req.params.skillId;
+        let sqlQuery = `SELECT * 
+            FROM essay_questions 
+            WHERE skill_id = ${req.params.skillId}
+            AND is_deleted = 0;`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -292,12 +296,12 @@ router.get('/:skillId/essay', (req, res, next) => {
     }
 });
 
-// TODO: find out where this is used, if at all. (We now use this to get flagged essay question)
+// Used to get flagged essay question AND in mark assessment Component
 // Load all essay type questions.
 router.get('/essay/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM essay_questions;';
+        let sqlQuery = 'SELECT * FROM essay_questions WHERE is_deleted = 0;';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -315,8 +319,8 @@ router.get('/essay/list', (req, res, next) => {
 router.get('/mc/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM mc_questions;';
-        let query = conn.query(sqlQuery, (err, results) => {
+        let sqlQuery = 'SELECT * FROM mc_questions WHERE is_deleted = 0;';
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -608,7 +612,9 @@ router.get('/check-questions', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Get all MC questions.
         let sqlQuery1 = `SELECT * FROM mc_questions   
-        WHERE is_checked = 0 AND skill_id < 51       
+        WHERE is_checked = 0
+        AND is_deleted = 0
+        AND skill_id = 37       
         ORDER BY skill_id`;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
@@ -694,10 +700,10 @@ async function checkQuestion(index, userId) {
         `". Return the variable: 'all_incorrect_answers_are_incorrect' as true if so, otherwise, 
         return it as false.
         Please also check for any spelling errors. Please return a variable spelling_correct as true if it is,
-        otherwise, return this as false.
-        Lastly please check if the question is appropriate for the following grade: ` +
-        mcQuestions[index].level +
-        `. Please return the variable 'grade_is_correct' as true if it is, otherwise as false.`;
+        otherwise, return this as false.`;
+    // Lastly please check if the question is appropriate for the following grade: ` +
+    // mcQuestions[index].level +
+    // `. Please return the variable 'grade_is_correct' as true if it is, otherwise as false.`;
 
     // Attempting to prevent the app from crashing if anything goes wrong with the API call.
     // ie, error handling.
@@ -711,7 +717,7 @@ async function checkQuestion(index, userId) {
                     content: prompt + ` Please respond with a JSON object.`
                 }
             ],
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-4o',
             response_format: { type: 'json_object' }
         });
         let responseJSON = completion.choices[0].message.content;
@@ -726,8 +732,7 @@ async function checkQuestion(index, userId) {
         if (
             responseObj.correct_answer_is_correct == false ||
             responseObj.all_incorrect_answers_are_incorrect == false ||
-            responseObj.spelling_correct == false ||
-            responseObj.grade_is_correct == false
+            responseObj.spelling_correct == false
         ) {
             let data = {};
             data = {

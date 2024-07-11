@@ -4,9 +4,11 @@ export default {
     data() {
         return {
             skillId: this.$route.params.id,
+            sourcePosts: [],
+            tutorPosts: [],
+            isAlreadyTutoring: false,
             posts: [],
             users: [],
-            votes: [],
             user: {},
             showModal: false,
             resourceId: null,
@@ -14,7 +16,8 @@ export default {
             flagPost: '',
             showActionBtns: false,
             currentClickId: '',
-            showThankModal: false
+            showThankModal: false,
+            source: null
         };
     },
     computed: {
@@ -29,6 +32,8 @@ export default {
                             this.users[k].last_name;
                         // I think we should get the user avatar too
                         this.posts[j].userAvatar = this.users[k].avatar;
+                        if (this.posts[j].type == 'tutor')
+                            this.posts[j].email = this.users[k].email;
                     }
                 }
             }
@@ -44,10 +49,25 @@ export default {
             return sortedPosts;
         }
     },
-    created() {
+    async created() {
         this.getUserId();
-        this.getUsers();
-        this.getPosts(this.skillId);
+        await this.getUsers();
+        // Get all sources for this skill.
+        await this.getSourcePosts(this.skillId);
+        // Get voting data on each.
+        for (let i = 0; i < this.sourcePosts.length; i++) {
+            await this.getSourceVotes(this.sourcePosts[i].id);
+        }
+        // Add to posts.
+        this.posts = this.sourcePosts;
+        // Get all tutor posts for this skill.
+        await this.getTutorPosts(this.skillId);
+        // Get voting data on each.
+        for (let i = 0; i < this.tutorPosts.length; i++) {
+            await this.getTutorPostVotes(this.tutorPosts[i].id);
+        }
+        // Add to posts.
+        this.posts = this.posts.concat(this.tutorPosts);
     },
     methods: {
         getUserId() {
@@ -57,144 +77,268 @@ export default {
                 })
                 .then((data) => (this.user = data));
         },
-        getPosts(skillId) {
-            fetch('/skills/' + skillId + '/resources')
+        async getSourcePosts(skillId) {
+            await fetch('/skills/' + skillId + '/resources')
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => (this.posts = data))
-                .then(() => {
-                    for (let i = 0; i < this.posts.length; i++) {
-                        this.getPostVote(i, this.posts[i].id);
-                    }
+                .then((data) => {
+                    data.forEach(function (element) {
+                        element.type = 'source';
+                    });
+
+                    this.sourcePosts = data;
                 });
         },
-        getPostVote(i, resourceId) {
-            fetch('/user-votes/' + resourceId)
+        async getSourceVotes(resourceId) {
+            await fetch('/user-votes/' + resourceId)
                 .then((response) => {
                     return response.json();
                 })
-                .then((data) => (this.votes = data))
-                .then(() => {
-                    this.posts[i].userUpVote = false;
-                    this.posts[i].userDownVote = false;
+                .then((data) => {
+                    var votesOnThisSource = data;
                     var voteCount = 0;
-                    for (let j = 0; j < this.votes.length; j++) {
-                        // Calculate SUM of votes.
-                        voteCount = voteCount + this.votes[j].vote;
-
-                        // See if current user has voted (will reflect as green or red arrow).
-                        if (this.votes[j].user_id == this.user.userId) {
-                            if (this.votes[j].vote == 1) {
-                                this.posts[i].userUpVote = true;
-                                this.posts[i].userDownVote = false;
-                            } else if (this.votes[j].vote == -1) {
-                                this.posts[i].userUpVote = false;
-                                this.posts[i].userDownVote = true;
-                            } else {
-                                this.posts[i].userUpVote = false;
-                                this.posts[i].userDownVote = false;
+                    let userUpVote = false;
+                    let userDownVote = false;
+                    // Work out if current user has already voted on this source post.
+                    for (let i = 0; i < votesOnThisSource.length; i++) {
+                        if (votesOnThisSource[i].user_id == this.user.userId) {
+                            if (votesOnThisSource[i].vote == 1) {
+                                userUpVote = true;
+                            } else if (votesOnThisSource[i].vote == -1) {
+                                userDownVote = true;
                             }
                         }
+                        // Calculate SUM of votes.
+                        voteCount = voteCount + votesOnThisSource[i].vote;
                     }
-                    this.posts[i].voteCount = voteCount;
+                    // Add the data to the post.
+                    for (let i = 0; i < this.sourcePosts.length; i++) {
+                        if (this.sourcePosts[i].id == resourceId) {
+                            this.sourcePosts[i].voteCount = voteCount;
+                            this.sourcePosts[i].userUpVote = userUpVote;
+                            this.sourcePosts[i].userDownVote = userDownVote;
+                        }
+                    }
+                });
+        },
+        async getTutorPosts(skillId) {
+            await fetch('/tutor-posts/' + skillId + '/list')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    data.forEach(function (element) {
+                        element.type = 'tutor';
+                    });
+
+                    // Add these tutor posts to the other posts, if the skill is the same.
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].skill_id == this.skillId) {
+                            this.tutorPosts.push(data[i]);
+                        }
+                    }
+
+                    // Prevent student from adding another tutor post, if they already have.
+                    for (let i = 0; i < this.tutorPosts.length; i++) {
+                        if (this.tutorPosts[i].user_id == this.user.userId) {
+                            this.isAlreadyTutoring = true;
+                        }
+                    }
+                });
+        },
+        async getTutorPostVotes(tutorPostId) {
+            await fetch('/tutor-votes/' + tutorPostId)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data) => {
+                    var votesOnThisTutor = data;
+                    var voteCount = 0;
+                    let userUpVote = false;
+                    let userDownVote = false;
+                    // Record if current user has already voted on this tutor post.
+                    for (let i = 0; i < votesOnThisTutor.length; i++) {
+                        if (votesOnThisTutor[i].user_id == this.user.userId) {
+                            if (votesOnThisTutor[i].vote == 1) {
+                                userUpVote = true;
+                            } else if (votesOnThisTutor[i].vote == -1) {
+                                userDownVote = true;
+                            }
+                        }
+                        // Calculate SUM of votes.
+                        voteCount = voteCount + votesOnThisTutor[i].vote;
+                    }
+                    // Add the data to the post.
+                    for (let i = 0; i < this.tutorPosts.length; i++) {
+                        if (this.tutorPosts[i].id == tutorPostId) {
+                            this.tutorPosts[i].voteCount = voteCount;
+                            this.tutorPosts[i].userUpVote = userUpVote;
+                            this.tutorPosts[i].userDownVote = userDownVote;
+                        }
+                    }
                 });
         },
         // Get all users to map the post user ID to the user's name.
-        getUsers() {
-            fetch('/users/list')
+        async getUsers() {
+            await fetch('/users/list')
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => (this.users = data));
         },
-        voteUp(resourceIndex, resourceId, hasVoted) {
-            if (hasVoted) {
-                fetch(
-                    '/user-votes/' +
-                        this.user.userId +
-                        '/' +
-                        resourceId +
-                        '/edit/cancel',
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'content/type'
-                        },
-                        body: {}
-                    }
-                ).then((response) =>
-                    this.getPostVote(resourceIndex, resourceId)
-                );
-            } else {
-                fetch(
-                    '/user-votes/' +
-                        this.user.userId +
-                        '/' +
-                        resourceId +
-                        '/edit/up',
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'content/type'
-                        },
-                        body: {}
-                    }
-                ).then((response) =>
-                    this.getPostVote(resourceIndex, resourceId)
-                );
+        voteUp(postId, hasVoted, type) {
+            if (type == 'source') {
+                if (hasVoted) {
+                    fetch(
+                        '/user-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/cancel',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then(() => this.getSourceVotes(postId));
+                } else {
+                    fetch(
+                        '/user-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/up',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then(() => this.getSourceVotes(postId));
+                }
+            } else if (type == 'tutor') {
+                if (hasVoted) {
+                    fetch(
+                        '/tutor-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/cancel',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then(() => this.getTutorPostVotes(postId));
+                } else {
+                    fetch(
+                        '/tutor-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/up',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then(() => this.getTutorPostVotes(postId));
+                }
             }
-            //location.reload();
         },
-        voteDown(resourceIndex, resourceId, hasVoted) {
-            if (hasVoted) {
-                fetch(
-                    '/user-votes/' +
-                        this.user.userId +
-                        '/' +
-                        resourceId +
-                        '/edit/cancel',
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'content/type'
-                        },
-                        body: {}
-                    }
-                ).then((response) =>
-                    this.getPostVote(resourceIndex, resourceId)
-                );
-            } else {
-                fetch(
-                    '/user-votes/' +
-                        this.user.userId +
-                        '/' +
-                        resourceId +
-                        '/edit/down',
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'content/type'
-                        },
-                        body: {}
-                    }
-                ).then((response) =>
-                    this.getPostVote(resourceIndex, resourceId)
-                );
+        voteDown(postId, hasVoted, type) {
+            if (type == 'source') {
+                if (hasVoted) {
+                    fetch(
+                        '/user-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/cancel',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then(() => {
+                        this.getSourceVotes(postId);
+                    });
+                } else {
+                    fetch(
+                        '/user-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/down',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then(() => {
+                        this.getSourceVotes(postId);
+                    });
+                }
+            } else if (type == 'tutor') {
+                if (hasVoted) {
+                    fetch(
+                        '/tutor-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/cancel',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then(() => this.getTutorPostVotes(postId));
+                } else {
+                    fetch(
+                        '/tutor-votes/' +
+                            this.user.userId +
+                            '/' +
+                            postId +
+                            '/edit/down',
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'content/type'
+                            },
+                            body: {}
+                        }
+                    ).then(() => this.getTutorPostVotes(postId));
+                }
             }
-            //   location.reload();
         },
-        deletePost(resourceId) {
+        deletePost(source) {
             // Close the modal.
             this.showModal = false;
-
             // Delete record from DB.
-            fetch('/resources/delete/' + resourceId, { method: 'DELETE' });
+            if (source.type != 'tutor') {
+                fetch('/resources/delete/' + source.id, { method: 'DELETE' });
+            } else {
+                fetch('/tutor-posts/delete/' + source.id, { method: 'DELETE' });
+            }
 
             // Delete without refreshing page.
             var index;
             for (let i = 0; i < this.posts.length; i++) {
-                if (this.posts[i].id == resourceId) {
+                if (this.posts[i].id == source.id) {
                     index = i;
                 }
             }
@@ -202,8 +346,8 @@ export default {
                 this.posts.splice(index, 1);
             }
         },
-        showWarningModal(resourceId) {
-            this.resourceId = resourceId;
+        showWarningModal(source) {
+            this.source = source;
             this.showModal = true;
         },
         closeWarningModal() {
@@ -245,52 +389,99 @@ export default {
         <div class="d-flex flex-column flex-md-row justify-content-between">
             <div class="d-flex align-items-md-baseline align-items-start gap-2">
                 <h2>Best Places To Learn This</h2>
-                <!--TODO: get src from database -->
                 <img src="/images/recurso-69.png" class="" />
             </div>
             <div class="mx-auto mx-md-0 mt-3 mt-lg-0">
-                <router-link
-                    :to="'/resources/add/' + skillId"
-                    class="btn green-btn"
-                    role="button"
-                    >Add source&nbsp;&nbsp;
-                    <!-- Plus sign -->
-                    <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M6.34811 20.0423L6.34811 13.6494L-0.0358702 13.6583C-0.320945 13.6579 -0.594203 13.5444 -0.795782 13.3428C-0.997361 13.1412 -1.11082 12.868 -1.11132 12.5829L-1.11729 7.41477C-1.1168 7.1297 -1.00334 6.85644 -0.801757 6.65486C-0.600179 6.45328 -0.326921 6.33982 -0.0418461 6.33933L6.3481 6.34231L6.3481 -0.0506238C6.34659 -0.193451 6.3736 -0.335145 6.42756 -0.467396C6.48152 -0.599646 6.56134 -0.719794 6.66234 -0.820794C6.76334 -0.921794 6.88349 -1.00161 7.01574 -1.05557C7.14799 -1.10953 7.28969 -1.13655 7.43251 -1.13503L12.5827 -1.12308C12.8678 -1.12259 13.141 -1.00913 13.3426 -0.807549C13.5442 -0.60597 13.6577 -0.332713 13.6582 -0.047637L13.6552 6.34231L20.0481 6.34231C20.3325 6.34248 20.6052 6.45552 20.8063 6.65661C21.0074 6.8577 21.1204 7.13039 21.1206 7.41477L21.1325 12.565C21.1324 12.8494 21.0193 13.122 20.8182 13.3231C20.6171 13.5242 20.3444 13.6373 20.0601 13.6374L13.6552 13.6494L13.6641 20.0334C13.6636 20.3184 13.5502 20.5917 13.3486 20.7933C13.147 20.9948 12.8738 21.1083 12.5887 21.1088L7.43252 21.1267C7.28969 21.1282 7.148 21.1012 7.01575 21.0473C6.88349 20.9933 6.76335 20.9135 6.66235 20.8125C6.56135 20.7115 6.48153 20.5913 6.42757 20.4591C6.37361 20.3268 6.34659 20.1851 6.34811 20.0423Z"
-                            fill="white"
-                        />
-                    </svg>
-                </router-link>
+                <div class="d-flex flex-column justify-content-between">
+                    <router-link
+                        :to="'/resources/add/' + skillId"
+                        class="btn green-btn"
+                        role="button"
+                        >Add source&nbsp;&nbsp;
+                        <!-- Plus sign -->
+                        <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                                d="M6.34811 20.0423L6.34811 13.6494L-0.0358702 13.6583C-0.320945 13.6579 -0.594203 13.5444 -0.795782 13.3428C-0.997361 13.1412 -1.11082 12.868 -1.11132 12.5829L-1.11729 7.41477C-1.1168 7.1297 -1.00334 6.85644 -0.801757 6.65486C-0.600179 6.45328 -0.326921 6.33982 -0.0418461 6.33933L6.3481 6.34231L6.3481 -0.0506238C6.34659 -0.193451 6.3736 -0.335145 6.42756 -0.467396C6.48152 -0.599646 6.56134 -0.719794 6.66234 -0.820794C6.76334 -0.921794 6.88349 -1.00161 7.01574 -1.05557C7.14799 -1.10953 7.28969 -1.13655 7.43251 -1.13503L12.5827 -1.12308C12.8678 -1.12259 13.141 -1.00913 13.3426 -0.807549C13.5442 -0.60597 13.6577 -0.332713 13.6582 -0.047637L13.6552 6.34231L20.0481 6.34231C20.3325 6.34248 20.6052 6.45552 20.8063 6.65661C21.0074 6.8577 21.1204 7.13039 21.1206 7.41477L21.1325 12.565C21.1324 12.8494 21.0193 13.122 20.8182 13.3231C20.6171 13.5242 20.3444 13.6373 20.0601 13.6374L13.6552 13.6494L13.6641 20.0334C13.6636 20.3184 13.5502 20.5917 13.3486 20.7933C13.147 20.9948 12.8738 21.1083 12.5887 21.1088L7.43252 21.1267C7.28969 21.1282 7.148 21.1012 7.01575 21.0473C6.88349 20.9933 6.76335 20.9135 6.66235 20.8125C6.56135 20.7115 6.48153 20.5913 6.42757 20.4591C6.37361 20.3268 6.34659 20.1851 6.34811 20.0423Z"
+                                fill="white"
+                            />
+                        </svg>
+                    </router-link>
+                    <router-link
+                        v-if="
+                            user.role == 'student' && isAlreadyTutoring == false
+                        "
+                        :to="'/tutor/add/' + skillId"
+                        class="btn purple-btn mt-2"
+                        role="button"
+                        >Offer to tutor&nbsp;&nbsp;<svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="18"
+                            height="20"
+                        >
+                            <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <path
+                                d="M32 32C32 14.3 46.3 0 64 0S96 14.3 96 32V240H32V32zM224 192c0-17.7 14.3-32 32-32s32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V192zm-64-64c17.7 0 32 14.3 32 32v48c0 17.7-14.3 32-32 32s-32-14.3-32-32V160c0-17.7 14.3-32 32-32zm160 96c0-17.7 14.3-32 32-32s32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V224zm-96 88l0-.6c9.4 5.4 20.3 8.6 32 8.6c13.2 0 25.4-4 35.6-10.8c8.7 24.9 32.5 42.8 60.4 42.8c11.7 0 22.6-3.1 32-8.6V352c0 88.4-71.6 160-160 160H162.3c-42.4 0-83.1-16.9-113.1-46.9L37.5 453.5C13.5 429.5 0 396.9 0 363V336c0-35.3 28.7-64 64-64h88c22.1 0 40 17.9 40 40s-17.9 40-40 40H96c-8.8 0-16 7.2-16 16s7.2 16 16 16h56c39.8 0 72-32.2 72-72z"
+                                fill="white"
+                            />
+                        </svg>
+                    </router-link>
+                </div>
             </div>
         </div>
         <div id="posts-big-container">
             <div
-                class="row forum-container mt-4"
+                class="row mt-4 forum-container"
+                :class="[post.type == 'tutor' ? 'tutor' : 'source']"
                 v-for="post in orderedAndNamedPosts"
             >
                 <div
                     class="d-flex align-items-center justify-content-between mb-2"
                 >
                     <!-- Second row contain name and avatar -->
-                    <div class="">
+                    <div class="w-100">
                         <div class="col post-user-row">
-                            <div id="user-avatar">
+                            <div v-if="post.type != 'tutor'" id="user-avatar">
                                 <img
                                     :src="post.userAvatar"
                                     class="user-avatar-img"
                                     alt="user avatar"
                                 />
                             </div>
-                            <div class="user-name-div">
-                                <span id="user-name-text">
+                            <div
+                                class="user-name-div d-flex justify-content-between w-100"
+                            >
+                                <span
+                                    id="user-name-text"
+                                    :class="{
+                                        'tutor-user-name': post.type == 'tutor'
+                                    }"
+                                >
                                     {{ post.studentName }}
+                                </span>
+                                <span
+                                    v-if="post.type == 'tutor'"
+                                    class="text-light"
+                                    style="font-weight: 500"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 640 512"
+                                        width="36"
+                                        height="36"
+                                    >
+                                        <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                        <path
+                                            d="M192 96a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm-8 384V352h16V480c0 17.7 14.3 32 32 32s32-14.3 32-32V192h56 64 16c17.7 0 32-14.3 32-32s-14.3-32-32-32H384V64H576V256H384V224H320v48c0 26.5 21.5 48 48 48H592c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H368c-26.5 0-48 21.5-48 48v80H243.1 177.1c-33.7 0-64.9 17.7-82.3 46.6l-58.3 97c-9.1 15.1-4.2 34.8 10.9 43.9s34.8 4.2 43.9-10.9L120 256.9V480c0 17.7 14.3 32 32 32s32-14.3 32-32z"
+                                            fill="white"
+                                        />
+                                    </svg>
                                 </span>
                             </div>
                         </div>
@@ -299,7 +490,24 @@ export default {
                 </div>
                 <div class="col-12">
                     <div class="">
-                        <div class="forum-post" v-html="post.content"></div>
+                        <div
+                            v-if="post.type != 'tutor'"
+                            class="forum-post"
+                            v-html="post.content"
+                        ></div>
+
+                        <div v-else class="forum-post d-flex tutor-post">
+                            <img
+                                :src="post.userAvatar"
+                                class="tutor-img rounded"
+                                alt="user avatar"
+                            />
+
+                            <div>
+                                <p>{{ post.description }}</p>
+                                <p>{{ post.email }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="d-flex align-items-center justify-content-end mt-3">
@@ -308,8 +516,12 @@ export default {
                         <div class="d-flex flex-row justify-content-end gap-1">
                             <!-- Upvote Button -->
                             <div
+                                v-if="
+                                    post.user_id != user.userId ||
+                                    post.type != 'tutor'
+                                "
                                 @click="
-                                    voteUp(post.index, post.id, post.userUpVote)
+                                    voteUp(post.id, post.userUpVote, post.type)
                                 "
                                 b-tooltip.hover
                                 title="I Like This "
@@ -338,20 +550,29 @@ export default {
                                 title="number of vote this resource receive"
                                 id="vote-count"
                                 :class="{
-                                    'text-danger': post.voteCount < 0,
-                                    'text-primary': post.voteCount > 0
+                                    'text-danger':
+                                        post.voteCount < 0 &&
+                                        post.type != 'tutor',
+                                    'text-primary':
+                                        post.voteCount > 0 &&
+                                        post.type != 'tutor',
+                                    'text-light': post.type == 'tutor'
                                 }"
                                 >{{ post.voteCount }}</span
                             >
                             <!-- Down vote button -->
                             <div
+                                v-if="
+                                    post.user_id != user.userId ||
+                                    post.type != 'tutor'
+                                "
                                 b-tooltip.hover
                                 title="I Dislike This "
                                 @click="
                                     voteDown(
-                                        post.index,
                                         post.id,
-                                        post.userDownVote
+                                        post.userDownVote,
+                                        post.type
                                     )
                                 "
                             >
@@ -404,12 +625,52 @@ export default {
                                     >
                                         <!-- Edit Button -->
                                         <router-link
-                                            v-if="post.user_id == user.userId || user.role == 'admin' || user.role == 'editor'"
+                                            v-if="
+                                                (post.user_id == user.userId ||
+                                                    user.role == 'admin' ||
+                                                    user.role == 'editor') &&
+                                                post.type != 'tutor'
+                                            "
                                             :to="'/resources/edit/' + post.id"
                                             class="btn dropdown-btn"
                                             role="button"
                                             b-tooltip.hover
                                             title="Edit This Source"
+                                        >
+                                            <!-- Pencil icon -->
+                                            <svg
+                                                width="19"
+                                                height="20"
+                                                viewBox="0 0 19 20"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
+                                                    fill="#857D99"
+                                                />
+                                                <path
+                                                    d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
+                                                    fill="#857D99"
+                                                />
+                                                <path
+                                                    d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
+                                                    fill="#857D99"
+                                                />
+                                            </svg>
+                                        </router-link>
+                                        <router-link
+                                            v-else-if="
+                                                (post.user_id == user.userId ||
+                                                    user.role == 'admin' ||
+                                                    user.role == 'editor') &&
+                                                post.type == 'tutor'
+                                            "
+                                            :to="'/tutor/edit/' + post.id"
+                                            class="btn dropdown-btn"
+                                            role="button"
+                                            b-tooltip.hover
+                                            title="Edit This Tutor Post"
                                         >
                                             <!-- Pencil icon -->
                                             <svg
@@ -443,7 +704,7 @@ export default {
                                             "
                                             type="button"
                                             class="btn dropdown-btn"
-                                            @click="showWarningModal(post.id)"
+                                            @click="showWarningModal(post)"
                                         >
                                             <!-- X icon -->
                                             <svg
@@ -504,7 +765,7 @@ export default {
                         <button
                             type="button"
                             class="btn btn-danger"
-                            @click="deletePost(this.resourceId)"
+                            @click="deletePost(this.source)"
                         >
                             Yes
                         </button>
@@ -637,16 +898,39 @@ export default {
     background-color: #3eb3a3;
 }
 
+.purple-btn {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.purple-btn:hover {
+    background-color: #8666ca;
+}
+
 #posts-big-container {
     padding-left: 10px;
     padding-right: 10px;
 }
 
 .forum-container {
-    background-color: #f2edff;
     border-radius: 12px;
     padding-top: 12px;
     padding-bottom: 12px;
+}
+
+.tutor {
+    background-color: #a48be6;
+}
+
+.source {
+    background-color: #f2edff;
 }
 
 #vote-count {
@@ -672,6 +956,10 @@ export default {
     color: #778094;
 }
 
+.tutor-user-name {
+    color: white !important;
+}
+
 .user-name-div {
     margin-left: 5px;
 }
@@ -689,6 +977,12 @@ export default {
     margin-left: auto;
     margin-top: 0px;
     object-fit: cover;
+}
+
+.tutor-img {
+    width: 100px !important;
+    height: 100px !important;
+    margin-right: 1rem;
 }
 
 .forum-post {
@@ -917,6 +1211,15 @@ h2 {
     .modal-content-flag {
         margin-top: 100%;
         width: 95%;
+    }
+
+    .tutor-post {
+        flex-direction: column;
+    }
+
+    .tutor-img {
+        margin-right: unset;
+        margin: auto;
     }
 }
 

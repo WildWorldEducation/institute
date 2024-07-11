@@ -63,7 +63,8 @@ export default {
 }
 
 #skill-list {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     max-height: 300px;
 }
 

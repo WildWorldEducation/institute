@@ -13,9 +13,6 @@ export default {
         // call to content flags route
         await this.getMcQuestionsLog();
         this.questionsData.forEach((question) => {
-            if (question.action === 'update') {
-                console.log(question);
-            }
             const contentObj = JSON.parse(question.content_obj);
             const parseDate = new Date(question.create_date);
             const createDate = parseDate.toLocaleString('en-gb', {
@@ -69,39 +66,13 @@ export default {
                 <span :class="actionColor(question.action)">
                     - {{ question.action }}
                 </span>
-                <span
-                    v-if="
-                        question.action === 'delete' &&
-                        question.type === 'mc_question'
-                    "
-                >
-                    mc question with id: {{ question.id }}
-                </span>
-                <span
-                    v-if="
-                        question.action !== 'delete' &&
-                        question.type === 'mc_question'
-                    "
-                >
-                    mc_question in skill:
-                </span>
-                <span
-                    v-if="
-                        question.action === 'delete' &&
-                        question.type === 'essay_question'
-                    "
-                >
-                    essay question with id: {{ question.id }}
-                </span>
-                <span
-                    v-if="
-                        question.action !== 'delete' &&
-                        question.type === 'essay_question'
-                    "
-                >
-                    essay question in skill:
+                <span v-if="question.type === 'mc_question'">
+                    mc_question in question bank of skill:
                 </span>
 
+                <span v-if="question.type === 'essay_question'">
+                    essay question in question bank of skill:
+                </span>
                 <router-link
                     class="skill-link"
                     target="_blank"

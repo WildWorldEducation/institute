@@ -54,15 +54,15 @@ export default {
                         </li>
                         <li class="nav-item">
                             <RouterLink to="/skills" class="nav-link">
-                                <span> Skills </span>
+                                <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
-                            <RouterLink to="/tidy-tree" class="nav-link"
-                                >Vertical Tree (Alpha)</RouterLink
+                            <RouterLink to="/vertical-tree" class="nav-link"
+                                >Vertical Tree</RouterLink
                             >
                         </li>
                         <li
@@ -70,7 +70,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink to="/radial-tree" class="nav-link"
-                                >Radial Tree (Alpha)</RouterLink
+                                >Radial Tree</RouterLink
                             >
                         </li>
                         <li

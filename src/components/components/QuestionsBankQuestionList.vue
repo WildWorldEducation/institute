@@ -35,7 +35,6 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     this.mcQuestions = data;
                 });
         },
@@ -61,6 +60,7 @@ export default {
             }
         },
         async deleteEssayQuestion(id) {
+            console.log('delete');
             const result = fetch('/questions/essay/' + id, {
                 method: 'DELETE'
             });
