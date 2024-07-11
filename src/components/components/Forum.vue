@@ -4,6 +4,9 @@ export default {
     data() {
         return {
             skillId: this.$route.params.id,
+            sourcePosts: [],
+            tutorPosts: [],
+            isAlreadyTutoring: false,
             posts: [],
             users: [],
             votes: [],
@@ -15,9 +18,7 @@ export default {
             showActionBtns: false,
             currentClickId: '',
             showThankModal: false,
-            tutors: [],
-            source: null,
-            isAlreadyTutoring: false
+            source: null
         };
     },
     computed: {
@@ -51,11 +52,15 @@ export default {
     },
     async created() {
         this.getUserId();
-        this.getUsers();
-        await this.getPosts(this.skillId);
-        await this.getTutors(this.skillId);
-        for (let i = 0; i < this.posts.length; i++) {
-            await this.getPostVote(i, this.posts[i].id);
+        await this.getUsers();
+        await this.getSourcePosts(this.skillId);
+        for (let i = 0; i < this.sourcePosts.length; i++) {
+            await this.getSourceVote(i, this.sourcePosts[i].id);
+        }
+        this.posts = this.sourcePosts;
+        await this.getTutorPosts(this.skillId);
+        for (let i = 0; i < this.tutorPosts.length; i++) {
+            await this.getTutorVote(i, this.tutorPosts[i].id);
         }
     },
     methods: {
@@ -66,7 +71,7 @@ export default {
                 })
                 .then((data) => (this.user = data));
         },
-        async getPosts(skillId) {
+        async getSourcePosts(skillId) {
             await fetch('/skills/' + skillId + '/resources')
                 .then(function (response) {
                     return response.json();
@@ -76,18 +81,18 @@ export default {
                         element.type = 'source';
                     });
 
-                    this.posts = data;
+                    this.sourcePosts = data;
                 });
         },
-        async getPostVote(i, resourceId) {
+        async getSourceVote(i, resourceId) {
             await fetch('/user-votes/' + resourceId)
                 .then((response) => {
                     return response.json();
                 })
                 .then((data) => (this.votes = data))
                 .then(() => {
-                    this.posts[i].userUpVote = false;
-                    this.posts[i].userDownVote = false;
+                    this.sourcePosts[i].userUpVote = false;
+                    this.sourcePosts[i].userDownVote = false;
                     var voteCount = 0;
                     for (let j = 0; j < this.votes.length; j++) {
                         // Calculate SUM of votes.
@@ -96,23 +101,79 @@ export default {
                         // See if current user has voted (will reflect as green or red arrow).
                         if (this.votes[j].user_id == this.user.userId) {
                             if (this.votes[j].vote == 1) {
-                                this.posts[i].userUpVote = true;
-                                this.posts[i].userDownVote = false;
+                                this.sourcePosts[i].userUpVote = true;
+                                this.sourcePosts[i].userDownVote = false;
                             } else if (this.votes[j].vote == -1) {
-                                this.posts[i].userUpVote = false;
-                                this.posts[i].userDownVote = true;
+                                this.sourcePosts[i].userUpVote = false;
+                                this.sourcePosts[i].userDownVote = true;
                             } else {
-                                this.posts[i].userUpVote = false;
-                                this.posts[i].userDownVote = false;
+                                this.sourcePosts[i].userUpVote = false;
+                                this.sourcePosts[i].userDownVote = false;
                             }
                         }
                     }
-                    this.posts[i].voteCount = voteCount;
+                    this.sourcePosts[i].voteCount = voteCount;
                 });
         },
+        async getTutorPosts(skillId) {
+            await fetch('/tutors/' + skillId + '/list')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    data.forEach(function (element) {
+                        element.type = 'tutor';
+                    });
+
+                    // Add these tutor posts to the other posts, if the skill is the same.
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].skill_id == this.skillId) {
+                            this.tutorPosts.push(data[i]);
+                        }
+                    }
+
+                    // Prevent student from adding another tutor post, if they already have.
+                    for (let i = 0; i < this.tutorPosts.length; i++) {
+                        if (this.tutorPosts[i].user_id == this.user.userId) {
+                            this.isAlreadyTutoring = true;
+                        }
+                    }
+                });
+        },
+        // async getTutorPostVote(i, tutorPostId) {
+        //     await fetch('/tutor-votes/' + tutorPostId)
+        //         .then((response) => {
+        //             return response.json();
+        //         })
+        //         .then((data) => (this.votes = data))
+        //         .then(() => {
+        //             this.posts[i].userUpVote = false;
+        //             this.posts[i].userDownVote = false;
+        //             var voteCount = 0;
+        //             for (let j = 0; j < this.votes.length; j++) {
+        //                 // Calculate SUM of votes.
+        //                 voteCount = voteCount + this.votes[j].vote;
+
+        //                 // See if current user has voted (will reflect as green or red arrow).
+        //                 if (this.votes[j].user_id == this.user.userId) {
+        //                     if (this.votes[j].vote == 1) {
+        //                         this.posts[i].userUpVote = true;
+        //                         this.posts[i].userDownVote = false;
+        //                     } else if (this.votes[j].vote == -1) {
+        //                         this.posts[i].userUpVote = false;
+        //                         this.posts[i].userDownVote = true;
+        //                     } else {
+        //                         this.posts[i].userUpVote = false;
+        //                         this.posts[i].userDownVote = false;
+        //                     }
+        //                 }
+        //             }
+        //             this.posts[i].voteCount = voteCount;
+        //         });
+        // },
         // Get all users to map the post user ID to the user's name.
-        getUsers() {
-            fetch('/users/list')
+        async getUsers() {
+            await fetch('/users/list')
                 .then(function (response) {
                     return response.json();
                 })
@@ -135,7 +196,7 @@ export default {
                             body: {}
                         }
                     ).then((response) =>
-                        this.getPostVote(resourceIndex, postId)
+                        this.getSourceVote(resourceIndex, postId)
                     );
                 } else {
                     fetch(
@@ -152,7 +213,7 @@ export default {
                             body: {}
                         }
                     ).then((response) =>
-                        this.getPostVote(resourceIndex, postId)
+                        this.getSourceVote(resourceIndex, postId)
                     );
                 }
             } else if (type == 'tutor') {
@@ -171,7 +232,7 @@ export default {
                             body: {}
                         }
                     ).then((response) =>
-                        this.getPostVote(resourceIndex, postId)
+                        this.getTutorPostVote(resourceIndex, postId)
                     );
                 } else {
                     fetch(
@@ -188,7 +249,7 @@ export default {
                             body: {}
                         }
                     ).then((response) =>
-                        this.getPostVote(resourceIndex, postId)
+                        this.getTutorPostVote(resourceIndex, postId)
                     );
                 }
             }
@@ -209,9 +270,9 @@ export default {
                             },
                             body: {}
                         }
-                    ).then((response) =>
-                        this.getPostVote(resourceIndex, postId)
-                    );
+                    ).then((response) => {
+                        this.getSourceVote(resourceIndex, postId);
+                    });
                 } else {
                     fetch(
                         '/user-votes/' +
@@ -226,9 +287,9 @@ export default {
                             },
                             body: {}
                         }
-                    ).then((response) =>
-                        this.getPostVote(resourceIndex, postId)
-                    );
+                    ).then((response) => {
+                        this.getSourceVote(resourceIndex, postId);
+                    });
                 }
             } else if (type == 'tutor') {
                 if (hasVoted) {
@@ -246,7 +307,7 @@ export default {
                             body: {}
                         }
                     ).then((response) =>
-                        this.getPostVote(resourceIndex, postId)
+                        this.getTutorPostVote(resourceIndex, postId)
                     );
                 } else {
                     fetch(
@@ -263,7 +324,7 @@ export default {
                             body: {}
                         }
                     ).then((response) =>
-                        this.getPostVote(resourceIndex, postId)
+                        this.getTutorPostVote(resourceIndex, postId)
                     );
                 }
             }
@@ -322,34 +383,6 @@ export default {
         handleClickActionBtns(postId) {
             this.showActionBtns = !this.showActionBtns;
             this.currentClickId = postId;
-        },
-        async getTutors(skillId) {
-            await fetch('/tutors/' + skillId + '/list')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => {
-                    data.forEach(function (element) {
-                        element.type = 'tutor';
-                    });
-
-                    let tutorPosts = [];
-                    // Add these tutor posts to the other posts, if the skill is the same.
-                    for (let i = 0; i < data.length; i++) {
-                        if (data[i].skill_id == this.skillId) {
-                            tutorPosts.push(data[i]);
-                        }
-                    }
-
-                    // Prevent student from adding another tutor post, if they already have.
-                    for (let i = 0; i < tutorPosts.length; i++) {
-                        if (tutorPosts[i].user_id == this.user.userId) {
-                            this.isAlreadyTutoring = true;
-                        }
-                    }
-
-                    this.posts.push(...tutorPosts);
-                });
         }
     }
 };
