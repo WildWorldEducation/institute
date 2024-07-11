@@ -32,6 +32,8 @@ export default {
             firstName: this.userDetailsStore.firstName,
             lastName: this.userDetailsStore.lastName,
             instructorID: this.userDetailsStore.instructor.id || '',
+            // get current instructor username for custom dropdown
+            instructorName: this.userDetailsStore.instructorUsername,
             validate: {
                 firstName: false,
                 lastName: false,
@@ -55,7 +57,8 @@ export default {
             },
             // Zoom relate state data
             lastZoomValue: 0,
-            zoomValue: 0
+            zoomValue: 0,
+            showDropDown: false
         };
     },
     components: {
@@ -64,7 +67,9 @@ export default {
         CheckPasswordComplexity
     },
     computed: {},
-
+    async mounted() {
+        console.log(this.userStore);
+    },
     methods: {
         ValidateForm() {
             if (this.firstName == '' || this.firstName == null) {
@@ -545,17 +550,51 @@ export default {
                 </div>
                 <div v-if="userDetailsStore.role == 'student'" class="mb-3">
                     <label class="form-label">Instructor</label>
-                    <select v-model="instructorID" class="form-control">
-                        <option value="" disabled selected>
-                            - Select instructor -
-                        </option>
-                        <option
-                            v-for="instructor in userStore.instructors"
-                            :value="instructor.id"
+                    <!-- Custom Dropdown -->
+                    <div class="d-flex flex-column">
+                        <div
+                            :class="[
+                                showDropDown
+                                    ? 'custom-select-button-focus'
+                                    : 'custom-select-button'
+                            ]"
+                            @click="showDropDown = !showDropDown"
                         >
-                            {{ instructor.username }}
-                        </option>
-                    </select>
+                            {{
+                                instructorName
+                                    ? instructorName
+                                    : 'Please choose an instructor'
+                            }}
+                            <span>
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                        fill="#344054"
+                                    />
+                                </svg>
+                            </span>
+                        </div>
+                        <div v-if="showDropDown" class="custom-dropdown-base">
+                            <div
+                                v-for="instructor in userStore.instructors"
+                                class="custom-dropdown-option"
+                                @click="
+                                    instructorID = instructor.id;
+                                    instructorName = instructor.username;
+                                    showDropDown = false;
+                                "
+                            >
+                                {{ instructor.username }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of custom dropdown -->
                 </div>
                 <div class="d-flex justify-content-between mb-3 mt-5">
                     <router-link class="btn red-btn" to="/profile-settings">
@@ -1037,6 +1076,117 @@ export default {
         transform: translate3d(4px, 0, 0);
     }
 }
+
+/* Style For The Custom Select */
+.custom-select-button {
+    width: 100%;
+    height: auto;
+    padding: 6px 14px 6px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #f2f4f7;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button-focus {
+    width: 100%;
+    height: auto;
+    padding: 6px 14px 6px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 0px 0px 4px #bca3ff4d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button:hover {
+    cursor: pointer;
+    border: 1px solid #9c7eec;
+}
+
+.custom-select-button > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.custom-select-button-focus > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
+}
+
+/* The animation key frame */
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.custom-select-button-focus:hover {
+    cursor: pointer;
+}
+
+.custom-dropdown-base {
+    border-radius: 8px;
+    border: 1px;
+    background: linear-gradient(0deg, #ffffff, #ffffff);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 4px 6px -2px #10182808;
+    box-shadow: 0px 12px 16px -4px #10182814;
+}
+
+.custom-dropdown-option {
+    padding: 10px 14px 10px 14px;
+    gap: 8px;
+    color: #344054;
+}
+
+.custom-dropdown-option:hover {
+    cursor: pointer;
+    background: #bca3ff1a;
+}
+
+/* End of CSS style for Custom Select */
 
 /* Mobile */
 @media (max-width: 480px) {
