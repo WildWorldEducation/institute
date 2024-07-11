@@ -8,9 +8,7 @@ export default {
             tutorPosts: [],
             isAlreadyTutoring: false,
             posts: [],
-            users: [],
-            votes: [],
-            tutorPostVotes: [],
+            users: [],            
             user: {},
             showModal: false,
             resourceId: null,
@@ -54,15 +52,21 @@ export default {
     async created() {
         this.getUserId();
         await this.getUsers();
+        // Get all sources for this skill.
         await this.getSourcePosts(this.skillId);
+        // Get voting data on each.
         for (let i = 0; i < this.sourcePosts.length; i++) {
-            await this.getSourceVote(i, this.sourcePosts[i].id);
+            await this.getSourceVotes(this.sourcePosts[i].id);
         }
+        // Add to posts.
         this.posts = this.sourcePosts;
+        // Get all tutor posts for this skill.
         await this.getTutorPosts(this.skillId);
+        // Get voting data on each.
         for (let i = 0; i < this.tutorPosts.length; i++) {
             await this.getTutorPostVotes(this.tutorPosts[i].id);
         }
+        // Add to posts.
         this.posts = this.posts.concat(this.tutorPosts);
     },
     methods: {
@@ -86,35 +90,36 @@ export default {
                     this.sourcePosts = data;
                 });
         },
-        async getSourceVote(i, resourceId) {
+        async getSourceVotes(resourceId) {
             await fetch('/user-votes/' + resourceId)
                 .then((response) => {
                     return response.json();
                 })
-                .then((data) => (this.votes = data))
-                .then(() => {
-                    this.sourcePosts[i].userUpVote = false;
-                    this.sourcePosts[i].userDownVote = false;
+                .then((data) => {
+                    var votesOnThisSource = data;
                     var voteCount = 0;
-                    for (let j = 0; j < this.votes.length; j++) {
-                        // Calculate SUM of votes.
-                        voteCount = voteCount + this.votes[j].vote;
-
-                        // See if current user has voted (will reflect as green or red arrow).
-                        if (this.votes[j].user_id == this.user.userId) {
-                            if (this.votes[j].vote == 1) {
-                                this.sourcePosts[i].userUpVote = true;
-                                this.sourcePosts[i].userDownVote = false;
-                            } else if (this.votes[j].vote == -1) {
-                                this.sourcePosts[i].userUpVote = false;
-                                this.sourcePosts[i].userDownVote = true;
-                            } else {
-                                this.sourcePosts[i].userUpVote = false;
-                                this.sourcePosts[i].userDownVote = false;
+                    let userUpVote = false;
+                    let userDownVote = false;
+                    // Work out if current user has already voted on this source post.
+                    for (let i = 0; i < votesOnThisSource.length; i++) {
+                        if (votesOnThisSource[i].user_id == this.user.userId) {
+                            if (votesOnThisSource[i].vote == 1) {
+                                userUpVote = true;
+                            } else if (votesOnThisSource[i].vote == -1) {
+                                userDownVote = true;
                             }
                         }
+                        // Calculate SUM of votes.
+                        voteCount = voteCount + votesOnThisSource[i].vote;
                     }
-                    this.sourcePosts[i].voteCount = voteCount;
+                    // Add the data to the post.
+                    for (let i = 0; i < this.sourcePosts.length; i++) {
+                        if (this.sourcePosts[i].id == resourceId) {
+                            this.sourcePosts[i].voteCount = voteCount;
+                            this.sourcePosts[i].userUpVote = userUpVote;
+                            this.sourcePosts[i].userDownVote = userDownVote;
+                        }
+                    }
                 });
         },
         async getTutorPosts(skillId) {
@@ -152,6 +157,7 @@ export default {
                     var voteCount = 0;
                     let userUpVote = false;
                     let userDownVote = false;
+                    // Record if current user has already voted on this tutor post.
                     for (let i = 0; i < votesOnThisTutor.length; i++) {
                         if (votesOnThisTutor[i].user_id == this.user.userId) {
                             if (votesOnThisTutor[i].vote == 1) {
@@ -163,6 +169,7 @@ export default {
                         // Calculate SUM of votes.
                         voteCount = voteCount + votesOnThisTutor[i].vote;
                     }
+                    // Add the data to the post.
                     for (let i = 0; i < this.tutorPosts.length; i++) {
                         if (this.tutorPosts[i].id == tutorPostId) {
                             this.tutorPosts[i].voteCount = voteCount;
@@ -180,7 +187,7 @@ export default {
                 })
                 .then((data) => (this.users = data));
         },
-        voteUp(resourceIndex, postId, hasVoted, type) {
+        voteUp(postId, hasVoted, type) {
             if (type == 'source') {
                 if (hasVoted) {
                     fetch(
@@ -196,9 +203,7 @@ export default {
                             },
                             body: {}
                         }
-                    ).then((response) =>
-                        this.getSourceVote(resourceIndex, postId)
-                    );
+                    ).then(() => this.getSourceVotes(postId));
                 } else {
                     fetch(
                         '/user-votes/' +
@@ -213,9 +218,7 @@ export default {
                             },
                             body: {}
                         }
-                    ).then((response) =>
-                        this.getSourceVote(resourceIndex, postId)
-                    );
+                    ).then(() => this.getSourceVotes(postId));
                 }
             } else if (type == 'tutor') {
                 if (hasVoted) {
@@ -251,7 +254,7 @@ export default {
                 }
             }
         },
-        voteDown(resourceIndex, postId, hasVoted, type) {
+        voteDown(postId, hasVoted, type) {
             if (type == 'source') {
                 if (hasVoted) {
                     fetch(
@@ -267,8 +270,8 @@ export default {
                             },
                             body: {}
                         }
-                    ).then((response) => {
-                        this.getSourceVote(resourceIndex, postId);
+                    ).then(() => {
+                        this.getSourceVotes(postId);
                     });
                 } else {
                     fetch(
@@ -284,8 +287,8 @@ export default {
                             },
                             body: {}
                         }
-                    ).then((response) => {
-                        this.getSourceVote(resourceIndex, postId);
+                    ).then(() => {
+                        this.getSourceVotes(postId);
                     });
                 }
             } else if (type == 'tutor') {
@@ -518,12 +521,7 @@ export default {
                                     post.type != 'tutor'
                                 "
                                 @click="
-                                    voteUp(
-                                        post.index,
-                                        post.id,
-                                        post.userUpVote,
-                                        post.type
-                                    )
+                                    voteUp(post.id, post.userUpVote, post.type)
                                 "
                                 b-tooltip.hover
                                 title="I Like This "
@@ -572,7 +570,6 @@ export default {
                                 title="I Dislike This "
                                 @click="
                                     voteDown(
-                                        post.index,
                                         post.id,
                                         post.userDownVote,
                                         post.type
