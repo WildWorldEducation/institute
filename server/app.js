@@ -86,8 +86,8 @@ const contentFlagsRouter = require('./routes/content-flags');
 app.use('/content-flags', contentFlagsRouter);
 const userActions = require('./routes/user-actions');
 app.use('/user-actions', userActions);
-const tutors = require('./routes/tutors');
-app.use('/tutors', tutors);
+const tutorPosts = require('./routes/tutor-posts');
+app.use('/tutor-posts', tutorPosts);
 
 app.locals.title = 'Skill Tree';
 

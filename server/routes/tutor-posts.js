@@ -22,7 +22,7 @@ Routes
 router.get('/:skillId/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM tutors';
+        let sqlQuery = 'SELECT * FROM tutor_posts';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -53,7 +53,7 @@ router.post('/add/:skillId', (req, res, next) => {
         };
 
         // Check that source is not in the list of blocked domains.
-        let sqlQuery = `INSERT INTO tutors SET ?;`;
+        let sqlQuery = `INSERT INTO tutor_posts SET ?;`;
         conn.query(sqlQuery, data, (err) => {
             try {
                 if (err) {
@@ -79,7 +79,8 @@ router.delete('/delete/:tutorSourceId', (req, res, next) => {
         // Check if the user has the right to delete the learning resource.
         var tutorUserId;
         let sqlQuery1 =
-            'SELECT user_id FROM tutors WHERE id=' + req.params.tutorSourceId;
+            'SELECT user_id FROM tutor_posts WHERE id=' +
+            req.params.tutorSourceId;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -92,7 +93,7 @@ router.delete('/delete/:tutorSourceId', (req, res, next) => {
                     ) {
                         // Delete the post.
                         let sqlQuery2 =
-                            'DELETE FROM tutors WHERE id=' +
+                            'DELETE FROM tutor_posts WHERE id=' +
                             req.params.tutorSourceId;
                         let query2 = conn.query(sqlQuery2, (err, results) => {
                             try {
@@ -126,7 +127,7 @@ router.get('/show/:tutorPostId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
-            'SELECT * FROM tutors WHERE id=' + req.params.tutorPostId;
+            'SELECT * FROM tutor_posts WHERE id=' + req.params.tutorPostId;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -154,7 +155,7 @@ router.put('/edit/:id', (req, res, next) => {
         //Extra backend security check that the user is allowed to edit the post.
         let postUserId;
         const sqlQuery1 =
-            'SELECT user_id FROM tutors WHERE id=' + req.params.id;
+            'SELECT user_id FROM tutor_posts WHERE id=' + req.params.id;
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -168,7 +169,7 @@ router.put('/edit/:id', (req, res, next) => {
                     ) {
                         // Edit the post.
                         let sqlQuery2 =
-                            "UPDATE tutors SET description='" +
+                            "UPDATE tutor_posts SET description='" +
                             req.body.description +
                             "' WHERE id=" +
                             req.params.id;

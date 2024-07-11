@@ -8,7 +8,7 @@ export default {
             tutorPosts: [],
             isAlreadyTutoring: false,
             posts: [],
-            users: [],            
+            users: [],
             user: {},
             showModal: false,
             resourceId: null,
@@ -123,7 +123,7 @@ export default {
                 });
         },
         async getTutorPosts(skillId) {
-            await fetch('/tutors/' + skillId + '/list')
+            await fetch('/tutor-posts/' + skillId + '/list')
                 .then(function (response) {
                     return response.json();
                 })
@@ -332,7 +332,7 @@ export default {
             if (source.type != 'tutor') {
                 fetch('/resources/delete/' + source.id, { method: 'DELETE' });
             } else {
-                fetch('/tutors/delete/' + source.id, { method: 'DELETE' });
+                fetch('/tutor-posts/delete/' + source.id, { method: 'DELETE' });
             }
 
             // Delete without refreshing page.

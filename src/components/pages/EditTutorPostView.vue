@@ -11,7 +11,7 @@ export default {
     },
     methods: {
         getTutorPost() {
-            fetch('/tutors/show/' + this.tutorPostId)
+            fetch('/tutor-posts/show/' + this.tutorPostId)
                 .then(function (response) {
                     return response.json();
                 })
@@ -26,7 +26,7 @@ export default {
                 })
             };
 
-            var url = '/tutors/edit/' + this.tutorPostId;
+            var url = '/tutor-posts/edit/' + this.tutorPostId;
             fetch(url, requestOptions).then(() => {
                 this.$router.back();
             });
