@@ -1,1 +1,0 @@
-import{_ as l,r as s,o as e,c as o,f as c,g as t,S as r,F as _,a as n,d}from"./main-b520d7de.js";const i={},u=n("div",{id:"purple-banner"},null,-1),p=n("span",null,"Loading...",-1);function S(f,k){const a=s("SkillTreeStudent");return e(),o(_,null,[u,(e(),c(r,null,{default:t(()=>[d(a)]),fallback:t(()=>[p]),_:1}))],64)}const x=l(i,[["render",S]]);export{x as default};
