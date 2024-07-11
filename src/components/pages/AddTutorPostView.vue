@@ -12,7 +12,7 @@ export default {
     mounted: function () {},
     methods: {
         async Submit() {
-            var url = '/tutors/add/' + this.skillId;
+            var url = '/tutor-posts/add/' + this.skillId;
 
             const requestOptions = {
                 method: 'POST',

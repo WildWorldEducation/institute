@@ -62,6 +62,8 @@ const resourcesRouter = require('./routes/resources');
 app.use('/resources', resourcesRouter);
 const userVotesRouter = require('./routes/user-votes');
 app.use('/user-votes', userVotesRouter);
+const tutorVotesRouter = require('./routes/tutor-votes');
+app.use('/tutor-votes', tutorVotesRouter);
 const tagRouter = require('./routes/tags');
 app.use('/tags', tagRouter);
 const skillTagRouter = require('./routes/skill-tags');
@@ -84,8 +86,8 @@ const contentFlagsRouter = require('./routes/content-flags');
 app.use('/content-flags', contentFlagsRouter);
 const userActions = require('./routes/user-actions');
 app.use('/user-actions', userActions);
-const tutors = require('./routes/tutors');
-app.use('/tutors', tutors);
+const tutorPosts = require('./routes/tutor-posts');
+app.use('/tutor-posts', tutorPosts);
 
 app.locals.title = 'Skill Tree';
 

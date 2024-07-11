@@ -15,7 +15,8 @@ const router = createRouter({
         {
             path: '/student/:studentId/skill-tree',
             name: 'student-vertical-tree',
-            component: () => import('../components/pages/StudentTidyTreeView.vue')
+            component: () =>
+                import('../components/pages/StudentTidyTreeView.vue')
         },
         {
             path: '/',
@@ -229,7 +230,7 @@ const router = createRouter({
         {
             path: '/tutor/add/:skillId',
             name: 'add-tutor',
-            component: () => import('../components/pages/AddTutorView.vue')
+            component: () => import('../components/pages/AddTutorPostView.vue')
         },
         {
             path: '/tutor/edit/:tutorPostId',
