@@ -190,12 +190,6 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ['instructor', 'admin'] }
         },
         {
-            path: '/user-skills/edit/:id',
-            name: 'edit-user-skills',
-            component: () =>
-                import('../components/pages/EditSkillMasteryView.vue')
-        },
-        {
             path: '/users/activity-report/:id',
             name: 'user-activity-report',
             component: () =>
@@ -259,7 +253,6 @@ router.beforeEach(async (to, from, next) => {
     const isLoggedIn = sessionDetailsStore.isLoggedIn;
     const userRole = userDetailsStore.role;
 
-
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&
@@ -272,10 +265,10 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // Route requires authentication
-    if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
         if (!isLoggedIn) {
             next({ name: 'login' });
-        } else if (to.matched.some(record => record.meta.roles)) {
+        } else if (to.matched.some((record) => record.meta.roles)) {
             if (to.meta.roles.includes(userRole)) {
                 next();
             } else {
