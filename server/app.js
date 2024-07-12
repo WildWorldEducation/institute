@@ -167,13 +167,18 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
             }
             // Check if user exists.
             if (typeof results[0] !== 'undefined') {
-                if(results[0].is_deleted){
-                    let restoreSqlQuery = "UPDATE users SET is_deleted = 0 WHERE email = ?"
-                    conn.query(restoreSqlQuery, [googleUserDetails.email], (error, res) => {
-                        if(error){
-                            throw error
+                if (results[0].is_deleted) {
+                    let restoreSqlQuery =
+                        'UPDATE users SET is_deleted = 0 WHERE email = ?';
+                    conn.query(
+                        restoreSqlQuery,
+                        [googleUserDetails.email],
+                        (error, res) => {
+                            if (error) {
+                                throw error;
+                            }
                         }
-                    })
+                    );
                 }
                 // Log user in.
                 req.session.isLoggedIn = true;
@@ -245,6 +250,20 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
             }
             // Check if user exists.
             if (typeof results[0] !== 'undefined') {
+                if (results[0].is_deleted) {
+                    let restoreSqlQuery =
+                        'UPDATE users SET is_deleted = 0 WHERE email = ?';
+                    conn.query(
+                        restoreSqlQuery,
+                        [googleUserDetails.email],
+                        (error, res) => {
+                            if (error) {
+                                throw error;
+                            }
+                        }
+                    );
+                }
+
                 // Log user in.
                 req.session.isLoggedIn = true;
                 req.session.userId = results[0].id;
