@@ -728,12 +728,6 @@ export default {
 </script>
 
 <template>
-    <button id="print-btn" class="btn btn-info" @click="printPDF()">
-        Print
-    </button>
-    <button id="reset-btn" class="btn btn-primary" @click="resetPos()">
-        Reset
-    </button>
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"
@@ -876,45 +870,6 @@ input[type='button'] {
     padding-left: 1%;
     z-index: 1;
     margin-top: 10px;
-}
-
-#print-btn {
-    position: absolute;
-    right: 0;
-    z-index: 1;
-    margin-top: 10px;
-    margin-right: 10px;
-    background-color: #184e80;
-    border: #184e80;
-    color: white;
-}
-
-#print-btn:hover {
-    background-color: #133b61;
-}
-
-#reset-btn {
-    position: absolute;
-    right: 80px;
-    z-index: 1;
-    margin-top: 10px;
-    margin-right: 10px;
-    background-color: #c4d2df;
-    border-color: #c4d2df;
-    color: black;
-}
-
-#reset-btn:hover {
-    background-color: #9da7b1;
-}
-
-#reset-button {
-    width: 100px;
-    position: absolute;
-    padding-left: 1%;
-    z-index: 1;
-    margin-top: 10px;
-    right: 10px;
 }
 
 #skilltree {

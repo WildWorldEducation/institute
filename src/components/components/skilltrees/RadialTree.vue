@@ -801,9 +801,9 @@ export default {
 </script>
 
 <template>
-    <button id="print-btn" class="btn btn-info" @click="printPDF()">
+    <!-- <button id="print-btn" class="btn btn-info" @click="printPDF()">
         Print
-    </button>
+    </button> -->
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"
@@ -881,13 +881,13 @@ input[type='button'] {
     height: 100%;
 }
 
-#print-btn {
+/* #print-btn {
     position: absolute;
     right: 0;
     z-index: 1;
     margin-top: 10px;
     margin-right: 10px;
-}
+} */
 
 #reset-button {
     width: 100px;
