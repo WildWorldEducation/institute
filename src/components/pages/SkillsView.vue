@@ -1,6 +1,5 @@
 <script>
 import SkillsListParent from '../components/SkillsListParent.vue';
-import GradeLevelLegend from '../components/skilltrees/GradeLevelLegend.vue';
 
 // Import the store
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
@@ -18,8 +17,7 @@ export default {
         };
     },
     components: {
-        SkillsListParent,
-        GradeLevelLegend
+        SkillsListParent
     },
     created() {
         // Check if the view is in instructor mode (a student's skills being viewed by an instructor or admin)

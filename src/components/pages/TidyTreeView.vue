@@ -10,10 +10,10 @@ export default {
     methods: {
         // Toggle info bar.
         ToggleInfobar() {
-            if (document.getElementById('legend').style.display == 'none') {
-                document.getElementById('legend').style.display = 'block';
-            } else {
+            if (document.getElementById('legend').style.display == 'block') {
                 document.getElementById('legend').style.display = 'none';
+            } else {
+                document.getElementById('legend').style.display = 'block';
             }
         }
     }
@@ -89,11 +89,7 @@ export default {
         </div>
     </div>
     <div id="thin-purple-banner">
-        <button
-            id="info-button"
-            class="sidebar-btn btn"
-            @click="ToggleInfobar()"
-        >
+        <button id="info-button" class="btn" @click="ToggleInfobar()">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 192 512"
@@ -120,10 +116,15 @@ export default {
 </template>
 
 <style>
+#legend {
+    display: none;
+}
+
 #info-button {
     width: 50px;
     height: 20px;
     padding: 0px;
+    float: right;
 }
 
 #info-button svg {
@@ -135,11 +136,6 @@ export default {
 #thin-purple-banner {
     height: 20px;
     background-color: #a48be640;
-}
-
-.sidebar-btn {
-    float: right;
-    max-height: 20px;
 }
 
 /* Grade level legend */
@@ -156,6 +152,10 @@ export default {
 
     #tablet-and-up-legend {
         display: none;
+    }
+
+    #print-btn {
+        margin-bottom: 5px;
     }
 }
 
