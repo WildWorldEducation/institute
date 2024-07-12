@@ -146,7 +146,10 @@ export default {
 
 <template>
     <div id="banner">
-        <img src="/images/banners/students-banner.png" class="w-100 img-fluid" />
+        <img
+            src="/images/banners/students-banner.png"
+            class="w-100 img-fluid"
+        />
     </div>
     <div
         v-if="userDetailsStore.role == 'admin'"
@@ -168,9 +171,6 @@ export default {
                     fill="white"
                 />
             </svg>
-        </router-link>
-        <router-link class="btn purple-btn" :to="'/user-skills/edit/' + user.id"
-            >Edit Skill Mastery
         </router-link>
     </div>
     <div id="user-container" class="container-fluid">
