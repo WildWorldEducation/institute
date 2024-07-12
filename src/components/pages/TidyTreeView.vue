@@ -1,10 +1,28 @@
-<script setup>
+<script>
 import TidyTree from '../components/skilltrees/TidyTree.vue';
+
+export default {
+    setup() {},
+    data() {
+        return {};
+    },
+    components: { TidyTree },
+    methods: {
+        // Toggle info bar.
+        ToggleInfobar() {
+            if (document.getElementById('legend').style.display == 'none') {
+                document.getElementById('legend').style.display = 'block';
+            } else {
+                document.getElementById('legend').style.display = 'none';
+            }
+        }
+    }
+};
 </script>
 
 <template>
-    <div class="collapsible-tree-legend container-fluid p-2">
-        <div class="mobile-legend">
+    <div id="legend" class="collapsible-tree-legend container-fluid p-2">
+        <div id="mobile-legend">
             <div class="legend row">
                 <div class="col-8">
                     <div class="col">
@@ -37,7 +55,7 @@ import TidyTree from '../components/skilltrees/TidyTree.vue';
                 </div>
             </div>
         </div>
-        <div class="tablet-and-up-legend">
+        <div id="tablet-and-up-legend">
             <div class="legend row">
                 <div class="col">
                     <span class="grade-school"></span>Grade school
@@ -70,7 +88,26 @@ import TidyTree from '../components/skilltrees/TidyTree.vue';
             </div>
         </div>
     </div>
-    <div id="thin-purple-banner"></div>
+    <div id="thin-purple-banner">
+        <button
+            id="info-button"
+            class="sidebar-btn btn"
+            @click="ToggleInfobar()"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 192 512"
+                height="12"
+                width="12"
+            >
+                <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                <path
+                    d="M144 80c0 26.5-21.5 48-48 48s-48-21.5-48-48s21.5-48 48-48s48 21.5 48 48zM0 224c0-17.7 14.3-32 32-32H96c17.7 0 32 14.3 32 32V448h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H64V256H32c-17.7 0-32-14.3-32-32z"
+                    fill="black"
+                />
+            </svg>
+        </button>
+    </div>
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
@@ -83,9 +120,26 @@ import TidyTree from '../components/skilltrees/TidyTree.vue';
 </template>
 
 <style>
+#info-button {
+    width: 50px;
+    height: 20px;
+    padding: 0px;
+}
+
+#info-button svg {
+    width: 25px;
+    height: 15px;
+    margin-bottom: 8px;
+}
+
 #thin-purple-banner {
     height: 20px;
     background-color: #a48be640;
+}
+
+.sidebar-btn {
+    float: right;
+    max-height: 20px;
 }
 
 /* Grade level legend */
@@ -96,22 +150,22 @@ import TidyTree from '../components/skilltrees/TidyTree.vue';
 
 /* X-Small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) {
-    .mobile-legend {
+    #mobile-legend {
         display: block;
     }
 
-    .tablet-and-up-legend {
+    #tablet-and-up-legend {
         display: none;
     }
 }
 
 /* Bigger devices */
 @media (min-width: 576px) {
-    .mobile-legend {
+    #mobile-legend {
         display: none;
     }
 
-    .tablet-and-up-legend {
+    #tablet-and-up-legend {
         display: block;
     }
 }
