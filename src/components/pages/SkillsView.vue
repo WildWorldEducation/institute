@@ -62,23 +62,27 @@ export default {
     </div>
     <div class="collapsible-tree-legend container-fluid p-2">
         <div class="legend row">
-            <div class="col-md">
+            <div class="col-md col-6">
                 <span class="grade-school"></span>Grade school
             </div>
-            <div class="col-md">
+            <div class="col-md col-6">
                 <span class="middle-school"></span> Middle school
             </div>
-            <div class="col-md">
+            <div class="col-md col-6">
                 <span class="high-school"></span> High school
             </div>
-            <div class="col-md"><span class="college"></span> College</div>
-            <div class="col-md"><span class="phd"></span> PHD</div>
+            <div class="col-md col-6">
+                <span class="college"></span> College
+            </div>
+            <div class="col-md col-6"><span class="phd"></span> PHD</div>
         </div>
     </div>
     <SkillsListParent />
 </template>
 
 <style>
+/* Grade level legend */
+
 .collapsible-tree-legend {
     width: 100%;
 }
