@@ -1,5 +1,6 @@
 <script>
 import SkillsListParent from '../components/SkillsListParent.vue';
+import GradeLevelLegend from '../components/skilltrees/GradeLevelLegend.vue';
 
 // Import the store
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
@@ -17,7 +18,8 @@ export default {
         };
     },
     components: {
-        SkillsListParent
+        SkillsListParent,
+        GradeLevelLegend
     },
     created() {
         // Check if the view is in instructor mode (a student's skills being viewed by an instructor or admin)
@@ -58,10 +60,61 @@ export default {
             >Skill Filters</router-link
         >
     </div>
+    <div class="collapsible-tree-legend container-fluid p-2">
+        <div class="legend row">
+            <div class="col-md">
+                <span class="grade-school"></span>Grade school
+            </div>
+            <div class="col-md">
+                <span class="middle-school"></span> Middle school
+            </div>
+            <div class="col-md">
+                <span class="high-school"></span> High school
+            </div>
+            <div class="col-md"><span class="college"></span> College</div>
+            <div class="col-md"><span class="phd"></span> PHD</div>
+        </div>
+    </div>
     <SkillsListParent />
 </template>
 
 <style>
+.collapsible-tree-legend {
+    width: 100%;
+}
+
+/* basic positioning */
+.legend {
+    list-style: none;
+}
+
+.legend span {
+    border: 1px solid #ccc;
+    float: left;
+    width: 20px;
+    height: 20px;
+    margin: 2px;
+    border-radius: 50%;
+}
+/* your colors */
+.legend .grade-school {
+    background-color: #36bbaa;
+}
+.legend .middle-school {
+    background-color: #97c8f7;
+}
+.legend .high-school {
+    background-color: #3983dd;
+}
+.legend .college {
+    background-color: #ab94e3;
+}
+.legend .phd {
+    background-color: #a48be5;
+}
+
+/*---*/
+
 #skill-nav {
     display: flex;
     justify-content: space-between;
@@ -82,5 +135,11 @@ export default {
     line-height: 24px;
     display: flex;
     align-items: center;
+}
+
+.grade-level-legend {
+    position: absolute;
+    margin-top: 10px;
+    right: 10px;
 }
 </style>
