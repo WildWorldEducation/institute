@@ -523,6 +523,11 @@ export default {
 .modal-btn {
     width: 25%;
 }
+
+.modal-label {
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+}
 /* End of Warning modal styling */
 
 /* Shake animation for waring line */

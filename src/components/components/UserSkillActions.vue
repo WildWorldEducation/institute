@@ -66,7 +66,7 @@ export default {
                     {{ skill.action }}
                 </span>
                 <span> skill: </span>
-                <!-- Show link to skill if it is not deleted -->
+                <!-- Show link to skill if it is not deleted else show a warn modal-->
                 <span
                     v-if="skill.action === 'delete' || skill.is_deleted === 1"
                     class="skill-link"
@@ -106,9 +106,4 @@ export default {
         </div>
     </div>
 </template>
-<style>
-.modal-label {
-    font-size: 18px;
-    font-family: 'Poppins', sans-serif;
-}
-</style>
+<style></style>
