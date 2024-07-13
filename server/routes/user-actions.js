@@ -242,7 +242,6 @@ router.get('/:userId/question', (req, res, next) => {
                             resResults = resResults.concat(results);
                             // we have to get delete essay question action separately
 
-                            resResults = resResults.concat(results);
                             // re-Sort by date because we made two query and mess up the order of the results array  
                             resResults.sort(function (x, y) {
                                 const date1 = new Date(x.create_date);
