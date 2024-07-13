@@ -272,7 +272,7 @@ router.get('/:userId/skill', (req, res, next) => {
     let resResults = [];
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id) AS content_obj 
+        let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'is_deleted', skills.is_deleted+0) AS content_obj 
                         FROM user_actions JOIN skills ON user_actions.content_id = skills.id 
                         WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'skill'`;
         conn.query(sqlQuery, (err, results) => {

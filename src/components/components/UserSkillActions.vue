@@ -14,9 +14,10 @@ export default {
     async created() {
         // call to content flags route
         await this.getSkillLogs();
-        this.skillsData.forEach((resource) => {
-            const contentObj = JSON.parse(resource.content_obj);
-            const parseDate = new Date(resource.create_date);
+        this.skillsData.forEach((skill) => {
+            console.log(skill);
+            const contentObj = JSON.parse(skill.content_obj);
+            const parseDate = new Date(skill.create_date);
             const createDate = parseDate.toLocaleString('en-gb', {
                 weekday: 'long',
                 year: 'numeric',
@@ -26,12 +27,13 @@ export default {
             const createTime = parseDate.toLocaleTimeString();
             this.rows.push({
                 skillName: contentObj.skill_name,
-                resourceId: resource.content_id,
+                resourceId: skill.content_id,
                 skillId: contentObj.skill_id,
-                action: resource.action,
+                action: skill.action,
                 date: createDate,
                 time: createTime,
-                id: resource.id
+                id: skill.id,
+                is_deleted: contentObj.is_deleted
             });
         });
     },
@@ -66,7 +68,7 @@ export default {
                 <span> skill: </span>
                 <!-- Show link to skill if it is not deleted -->
                 <span
-                    v-if="skill.action === 'delete'"
+                    v-if="skill.action === 'delete' || skill.is_deleted === 1"
                     class="skill-link"
                     @click="showWarnModal = true"
                 >
