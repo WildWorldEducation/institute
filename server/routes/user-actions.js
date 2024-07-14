@@ -149,7 +149,7 @@ router.get('/:userId/resource', (req, res, next) => {
     let resResults = [];
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        const sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id) AS content_obj 
+        const sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'is_deleted', skills.is_deleted+0) AS content_obj 
                           FROM user_actions JOIN resources ON resources.id = user_actions.content_id JOIN skills ON skills.id = resources.skill_id   
                           WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'resource'`;
         conn.query(sqlQuery, (err, results) => {
@@ -242,7 +242,6 @@ router.get('/:userId/question', (req, res, next) => {
                             resResults = resResults.concat(results);
                             // we have to get delete essay question action separately
 
-                            resResults = resResults.concat(results);
                             // re-Sort by date because we made two query and mess up the order of the results array  
                             resResults.sort(function (x, y) {
                                 const date1 = new Date(x.create_date);
@@ -273,7 +272,7 @@ router.get('/:userId/skill', (req, res, next) => {
     let resResults = [];
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id) AS content_obj 
+        let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'is_deleted', skills.is_deleted+0) AS content_obj 
                         FROM user_actions JOIN skills ON user_actions.content_id = skills.id 
                         WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'skill'`;
         conn.query(sqlQuery, (err, results) => {

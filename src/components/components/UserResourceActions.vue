@@ -5,7 +5,8 @@ export default {
     data() {
         return {
             resourcesData: [],
-            rows: []
+            rows: [],
+            showWarnModal: false
         };
     },
     components: {},
@@ -30,7 +31,8 @@ export default {
                 action: resource.action,
                 date: createDate,
                 time: createTime,
-                id: resource.id
+                id: resource.id,
+                is_deleted: contentObj.is_deleted
             });
         });
     },
@@ -64,7 +66,19 @@ export default {
                     {{ resource.action }}
                 </span>
                 <span> resource in forum of skill: </span>
+                <!-- Show link to skill if it is not deleted else show a warn modal-->
+                <span
+                    v-if="
+                        resource.action === 'delete' ||
+                        resource.is_deleted === 1
+                    "
+                    class="skill-link"
+                    @click="showWarnModal = true"
+                >
+                    {{ resource.skillName }}
+                </span>
                 <router-link
+                    v-else
                     class="skill-link"
                     target="_blank"
                     :to="`/skills/${resource.skillId}`"
@@ -74,5 +88,25 @@ export default {
         </div>
     </div>
     <div v-else class="shake">The user has no action on resource</div>
+    <!-- The modal popup when user click on not visible -->
+    <div v-if="showWarnModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex gap-4 justify-content-center mb-4">
+                    <div class="modal-label">This skill is deleted !!</div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button
+                        type="button"
+                        class="btn green-btn w-25"
+                        @click="showWarnModal = false"
+                    >
+                        <div>OK</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 <style></style>
