@@ -5,7 +5,6 @@ import { useUsersStore } from '../../stores/UsersStore';
 // Components
 import UserFlagActions from '../components/UserFlagActions.vue';
 import UserResourceActions from '../components/UserResourceActions.vue';
-import UserMcQuestionActions from '../components/UserMcQuestionActions.vue';
 import UserQuestionActions from '../components/UserQuestionActions.vue';
 import UserSkillActions from '../components/UserSkillActions.vue';
 import UserStudentMcQuestionActions from '../components/UserStudentMcQuestionActions.vue';
@@ -523,6 +522,11 @@ export default {
 
 .modal-btn {
     width: 25%;
+}
+
+.modal-label {
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
 }
 /* End of Warning modal styling */
 
