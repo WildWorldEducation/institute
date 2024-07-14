@@ -72,10 +72,14 @@ const router = createRouter({
             name: 'add-skill',
             component: () => import('../components/pages/AddSkillView.vue'),
             meta: { requiresAuth: true, roles: ['admin'] }
+            component: () => import('../components/pages/AddSkillView.vue'),
+            meta: { requiresAuth: true, roles: ['admin'] }
         },
         {
             path: '/skills/edit/:id',
             name: 'edit-skill',
+            component: () => import('../components/pages/EditSkillView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
             component: () => import('../components/pages/EditSkillView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
@@ -176,6 +180,8 @@ const router = createRouter({
             name: 'add-user',
             component: () => import('../components/pages/AddUserView.vue'),
             meta: { requiresAuth: true, roles: ['admin'] }
+            component: () => import('../components/pages/AddUserView.vue'),
+            meta: { requiresAuth: true, roles: ['admin'] }
         },
         {
             path: '/users/add-student',
@@ -255,6 +261,7 @@ router.beforeEach(async (to, from, next) => {
 
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
+        !sessionDetailsStore.isLoggedIn &&
         !sessionDetailsStore.isLoggedIn &&
         to.name !== 'login' &&
         to.name !== 'student-signup' &&
