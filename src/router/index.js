@@ -72,14 +72,10 @@ const router = createRouter({
             name: 'add-skill',
             component: () => import('../components/pages/AddSkillView.vue'),
             meta: { requiresAuth: true, roles: ['admin'] }
-            component: () => import('../components/pages/AddSkillView.vue'),
-            meta: { requiresAuth: true, roles: ['admin'] }
         },
         {
             path: '/skills/edit/:id',
             name: 'edit-skill',
-            component: () => import('../components/pages/EditSkillView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
             component: () => import('../components/pages/EditSkillView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
@@ -170,16 +166,9 @@ const router = createRouter({
             component: () => import('../components/pages/UsersView.vue'),
             meta: { requiresAuth: true, roles: ['instructor', 'admin'] }
         },
-        // {
-        //   path: '/users/:username/skilltree',
-        //   name: 'show-skilltree',
-        //   component: () => import('../components/pages/ShowSkillTreeView.vue')
-        // },
         {
             path: '/users/add',
             name: 'add-user',
-            component: () => import('../components/pages/AddUserView.vue'),
-            meta: { requiresAuth: true, roles: ['admin'] }
             component: () => import('../components/pages/AddUserView.vue'),
             meta: { requiresAuth: true, roles: ['admin'] }
         },
