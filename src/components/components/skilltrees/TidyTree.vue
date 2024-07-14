@@ -889,6 +889,9 @@ input[type='button'] {
     .flex-container {
         flex-direction: column;
     }
+    #wrapper {
+        height: calc(100% - 87px);
+    }
 }
 
 @media screen and (min-width: 992px) {
