@@ -1,6 +1,6 @@
 <script>
 export default {
-    props: ['userId', 'deleteResource'],
+    props: ['userId'],
 
     data() {
         return {
@@ -40,7 +40,6 @@ export default {
         async getResourceLogs() {
             const res = await fetch(`/user-actions/${this.userId}/resource`);
             this.resourcesData = await res.json();
-            console.log(this.resourcesData);
         },
         actionColor(action) {
             switch (action) {

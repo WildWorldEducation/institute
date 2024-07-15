@@ -1,6 +1,6 @@
 <script>
 export default {
-    props: ['userId', 'deleteMcQuestion'],
+    props: ['userId'],
     data() {
         return {
             questionsData: [],

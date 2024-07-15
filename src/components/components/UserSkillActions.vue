@@ -1,6 +1,6 @@
 <script>
 export default {
-    props: ['userId', 'deleteResource'],
+    props: ['userId'],
 
     data() {
         return {
@@ -15,7 +15,6 @@ export default {
         // call to content flags route
         await this.getSkillLogs();
         this.skillsData.forEach((skill) => {
-            console.log(skill);
             const contentObj = JSON.parse(skill.content_obj);
             const parseDate = new Date(skill.create_date);
             const createDate = parseDate.toLocaleString('en-gb', {

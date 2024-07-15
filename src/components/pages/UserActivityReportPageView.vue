@@ -118,7 +118,6 @@ export default {
                         <UserFlagActions
                             ref="contentFlagsPerUser"
                             :userId="user.id"
-                            :deleteFlag="deleteFlag"
                             @close-flag-div="showFlags = false"
                         />
                     </div>
@@ -160,7 +159,6 @@ export default {
                     <div v-if="showMcQuestions">
                         <UserQuestionActions
                             :userId="user.id"
-                            :deleteMcQuestion="deleteMcQuestion"
                             @close-mc-question-div="showMcQuestions = false"
                         />
                     </div>
@@ -203,7 +201,6 @@ export default {
                     <div v-if="showStudentMcQuestions">
                         <UserStudentMcQuestionActions
                             :userId="user.id"
-                            :deleteMcQuestion="deleteMcQuestion"
                             @close-mc-question-div="
                                 showStudentMcQuestions = false
                             "
@@ -246,7 +243,6 @@ export default {
                     <div v-if="showSources">
                         <UserResourceActions
                             :userId="user.id"
-                            :deleteResource="deleteResource"
                             @close-resource-div="showSources = false"
                         />
                     </div>
@@ -373,6 +369,7 @@ export default {
 
 .green-btn:hover {
     background-color: #3eb3a3;
+    color: white;
 }
 
 /* === End of Buttons Styling === */

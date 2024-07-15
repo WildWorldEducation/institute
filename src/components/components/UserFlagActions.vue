@@ -5,7 +5,7 @@ import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
 import { useEssayQuestionsStore } from '../../stores/EssayQuestionsStore.js';
 
 export default {
-    props: ['userId', 'deleteFlag'],
+    props: ['userId'],
     setup() {
         const skillsStore = useSkillsStore();
         const resourcesStore = useResourcesStore();
