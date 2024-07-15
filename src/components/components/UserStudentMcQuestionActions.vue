@@ -4,7 +4,8 @@ export default {
     data() {
         return {
             questionsData: [],
-            rows: []
+            rows: [],
+            showWarnModal: false
         };
     },
     components: {},
@@ -13,9 +14,6 @@ export default {
         // call to content flags route
         await this.getMcQuestionsLog();
         this.questionsData.forEach((question) => {
-            if (question.action === 'update') {
-                console.log(question);
-            }
             const contentObj = JSON.parse(question.content_obj);
             const parseDate = new Date(question.create_date);
             const createDate = parseDate.toLocaleString('en-gb', {
@@ -34,7 +32,8 @@ export default {
                 time: createTime,
                 id: question.id,
                 studentName: contentObj.student_name,
-                studentId: contentObj.student_id
+                studentId: contentObj.student_id,
+                skill_deleted: contentObj.skill_deleted
             });
         });
     },
@@ -84,7 +83,19 @@ export default {
                     >
                     on skill:
                 </span>
+                <!-- Show link to skill if it is not deleted else show a warn modal-->
+                <span
+                    v-if="
+                        question.action === 'delete' ||
+                        question.skill_deleted === 1
+                    "
+                    class="skill-link"
+                    @click="showWarnModal = true"
+                >
+                    {{ question.skillName }}
+                </span>
                 <router-link
+                    v-else
                     class="skill-link"
                     target="_blank"
                     :to="`/skills/${question.skillId}`"
@@ -95,6 +106,26 @@ export default {
     </div>
     <div v-else class="shake">
         The user has no action on multiple-choice questions
+    </div>
+    <!-- The modal popup when user click on not visible -->
+    <div v-if="showWarnModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex gap-4 justify-content-center mb-4">
+                    <div class="modal-label">This skill is deleted !!</div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button
+                        type="button"
+                        class="btn green-btn w-25"
+                        @click="showWarnModal = false"
+                    >
+                        <div>OK</div>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <style></style>
