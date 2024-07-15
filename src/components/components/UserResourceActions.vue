@@ -14,6 +14,7 @@ export default {
     async created() {
         // call to content flags route
         await this.getResourceLogs();
+
         this.resourcesData.forEach((resource) => {
             const contentObj = JSON.parse(resource.content_obj);
             const parseDate = new Date(resource.create_date);
@@ -32,7 +33,7 @@ export default {
                 date: createDate,
                 time: createTime,
                 id: resource.id,
-                is_deleted: contentObj.is_deleted
+                is_deleted: contentObj.skill_deleted
             });
         });
     },
