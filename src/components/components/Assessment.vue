@@ -485,7 +485,7 @@ export default {
                         <button
                             type="button"
                             class="btn green-btn"
-                            @click="this.updatedAssessment = false"
+                            @click="updatedAssessment = false"
                         >
                             OK
                         </button>
@@ -500,93 +500,95 @@ export default {
                 id="question-container"
             >
                 <!-- To wait for questions to be loaded, before the DOM renders. -->
-                <div class="row">
-                    <div
-                        class="col d-flex my-2 gap-2 justify-content-between flex-column flex-md-row"
-                    >
-                        <div class="d-flex align-items-lg-center">
-                            <div id="question-number-div">
-                                {{ this.questionNumber + 1 }}
-                            </div>
-
-                            <div id="question-content">
-                                {{ question.question }}
-                            </div>
-                        </div>
-                        <!-- Flag Icon -->
+                <div v-for="(question, questionNum) in questions" class="row">
+                    <div v-if="questionNum == questionNumber">
                         <div
-                            b-tooltip.hover
-                            title="flag this question for review"
-                            @click="showFlaggingModal = true"
-                            class="flagging-icon"
-                            style="height: 50px"
+                            class="col d-flex my-2 gap-2 justify-content-between flex-column flex-md-row"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                style="height: 22px; opacity: 0.5"
-                            >
-                                <path
-                                    fill="#8f7bd6"
-                                    d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
-                                />
-                            </svg>
-                        </div>
-                    </div>
-
-                    <!-- Multiple Choice Question -->
-                    <div v-if="this.question.questionType == 'mc'">
-                        <div
-                            v-for="(answerOption, index) in this.question
-                                .answerOptions"
-                            class="form-check my-3"
-                        >
-                            <label class="control control-checkbox">
-                                <div
-                                    :class="
-                                        answerHoveredIndex == answerOption.index
-                                            ? 'my-auto mx-2 me-4 answer-option checkbox-hovered'
-                                            : 'my-auto mx-2 me-4 answer-option'
-                                    "
-                                >
-                                    {{ answerOption.option }}
+                            <div class="d-flex align-items-lg-center">
+                                <div id="question-number-div">
+                                    {{ questionNum + 1 }}
                                 </div>
-                                <input
-                                    type="radio"
-                                    name="nodeType"
-                                    :value="answerOption.index"
-                                    v-model="
-                                        questions[this.questionNumber]
-                                            .userAnswer
-                                    "
-                                />
-                                <div
-                                    class="control_indicator"
-                                    @mouseover="
-                                        answerHoveredIndex = answerOption.index
-                                    "
-                                    @mouseleave="answerHoveredIndex = Infinity"
-                                ></div>
-                            </label>
+
+                                <div id="question-content">
+                                    {{ question.question }}
+                                </div>
+                            </div>
+                            <!-- Flag Icon -->
+                            <div
+                                b-tooltip.hover
+                                title="flag this question for review"
+                                @click="showFlaggingModal = true"
+                                class="flagging-icon"
+                                style="height: 50px"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 448 512"
+                                    style="height: 22px; opacity: 0.5"
+                                >
+                                    <path
+                                        fill="#8f7bd6"
+                                        d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                    />
+                                </svg>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Essay Question -->
-                    <div v-else-if="this.question.questionType == 'essay'">
-                        <div class="form-group">
-                            <EssayAnswer ref="essayAnswer" />
+
+                        <!-- Multiple Choice Question -->
+                        <div v-if="question.questionType == 'mc'">
+                            <div
+                                v-for="(answerOption, index) in question
+                                    .answerOptions"
+                                class="form-check my-3"
+                            >
+                                <label class="control control-checkbox">
+                                    <div
+                                        :class="
+                                            answerHoveredIndex == answerOption.index
+                                                ? 'my-auto mx-2 me-4 answer-option checkbox-hovered'
+                                                : 'my-auto mx-2 me-4 answer-option'
+                                        "
+                                    >
+                                        {{ answerOption.option }}
+                                    </div>
+                                    <input
+                                        type="radio"
+                                        :name="questionNum+'answer'"
+                                        :value="answerOption.index"
+                                        v-model="
+                                            questions[questionNum]
+                                                .userAnswer
+                                        "
+                                    />
+                                    <div
+                                        class="control_indicator"
+                                        @mouseover="
+                                            answerHoveredIndex = answerOption.index
+                                        "
+                                        @mouseleave="answerHoveredIndex = Infinity"
+                                    ></div>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Essay Question -->
+                        <div v-else-if="question.questionType == 'essay'">
+                            <div class="form-group">
+                                <EssayAnswer ref="essayAnswer" />
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="mt-3 d-flex justify-content-end">
                     <button
-                        v-if="this.questionNumber > 0"
+                        v-if="questionNumber > 0"
                         @click="Previous()"
                         class="btn red-btn me-2"
                     >
                         Previous
                     </button>
                     <button
-                        v-if="this.questionNumber != questions.length - 1"
+                        v-if="questionNumber != questions.length - 1"
                         @click="Next()"
                         class="btn green-btn"
                     >
@@ -595,7 +597,7 @@ export default {
                     <!-- <button disabled v-if="this.questionNumber == questions.length - 1 && !isAllQuestionsAnswered" @click="Submit()"
                     class="btn green-btn">Submit</button> -->
                     <button
-                        v-if="this.questionNumber == questions.length - 1"
+                        v-if="questionNumber == questions.length - 1"
                         @click="Submit()"
                         class="btn green-btn"
                     >
