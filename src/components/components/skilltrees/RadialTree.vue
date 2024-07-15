@@ -917,7 +917,7 @@ input[type='button'] {
         flex-direction: column;
     }
     #wrapper {
-        height: calc(100% - 87px);
+        height: calc(100% - 86px);
     }
 }
 
