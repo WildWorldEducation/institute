@@ -58,7 +58,10 @@ export default {
             // Zoom relate state data
             lastZoomValue: 0,
             zoomValue: 0,
-            showDropDown: false
+            showDropDown: false,
+            // special flag to indicate if student not have an instructor
+            haveInstructor: false,
+            showWarnModal: false
         };
     },
     components: {
@@ -67,8 +70,10 @@ export default {
         CheckPasswordComplexity
     },
     computed: {},
-    async mounted() {
-        console.log(this.userStore);
+    created() {
+        if (this.instructorName) {
+            this.haveInstructor = true;
+        }
     },
     methods: {
         ValidateForm() {
@@ -81,7 +86,7 @@ export default {
             } else if (this.email == '' || this.email == null) {
                 this.validate.email = true;
             } else if (this.validate.passwordComplex) {
-                this.Submit();
+                this.HandleClickSubmit();
             }
         },
 
@@ -138,6 +143,15 @@ export default {
                     this.$router.push('/profile-settings');
                 }
             });
+        },
+
+        HandleClickSubmit() {
+            // Only show the modal when user choose an instructor
+            if (this.instructorName && !this.haveInstructor) {
+                this.showWarnModal = true;
+            } else {
+                this.Submit();
+            }
         },
 
         // For image upload.
@@ -551,7 +565,7 @@ export default {
                 <div v-if="userDetailsStore.role == 'student'" class="mb-3">
                     <label class="form-label">Instructor</label>
                     <!-- Student can only choose an instructor if they don`t have one -->
-                    <div v-if="instructorName" class="custom-select-button">
+                    <div v-if="haveInstructor" class="custom-select-button">
                         {{ instructorName }}
                     </div>
                     <!-- Custom Dropdown -->
@@ -564,7 +578,11 @@ export default {
                             ]"
                             @click="showDropDown = !showDropDown"
                         >
-                            {{ 'Please choose an instructor' }}
+                            {{
+                                instructorName
+                                    ? instructorName
+                                    : 'Please choose an instructor'
+                            }}
                             <span>
                                 <svg
                                     width="20"
@@ -620,6 +638,7 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Modal show image crop feature -->
     <div v-if="showCropModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
@@ -724,6 +743,45 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Modal to show student if they are sure with they decision -->
+    <div v-if="showWarnModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="warn-content d-flex flex-column">
+                <div class="d-flex flex-row">
+                    <div class="me-3">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="35"
+                            height="35"
+                            fill="#eed888"
+                        >
+                            <path
+                                d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+                            />
+                        </svg>
+                    </div>
+                    <div>
+                        You can only choose your instructor once. Are you sure
+                        you want &nbsp;
+                        <span id="instructor-name-text">
+                            {{ instructorName }}
+                        </span>
+                        &nbsp; to be your instructor.
+                    </div>
+                </div>
+                <div class="d-flex flex-row-reverse gap-2">
+                    <div type="button" class="btn green-btn" @click="Submit()">
+                        Yes
+                    </div>
+                    <div class="btn red-btn" @click="showWarnModal = false">
+                        No
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -797,6 +855,14 @@ export default {
 
 .green-btn:hover {
     background-color: #3eb3a3;
+}
+
+#instructor-name-text {
+    font-style: italic;
+    color: #1f57c3;
+    background-color: #f9f9f9;
+    border-radius: 15px;
+    padding: 5px 15px;
 }
 
 #img-background {
@@ -979,6 +1045,16 @@ export default {
     /* Could be more or less, depending on screen size */
     width: 80%;
     height: 75%;
+}
+
+.warn-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 670px;
+    /* Could be more or less, depending on screen size */
 }
 
 .modal-message {
