@@ -39,9 +39,12 @@ export default {
             }
 
             // Ordering by vote.
-            var sortedPosts = this.posts.sort(
-                ({ voteCount: a }, { voteCount: b }) => b - a
-            );
+            var sortedPosts = this.posts.sort((a, b) => {
+                if (b.voteCount === a.voteCount) {
+                    return new Date(b.created_at) - new Date(a.created_at);
+                }
+                return b.voteCount - a.voteCount;
+            });
             for (let i = 0; i < sortedPosts.length; i++) {
                 this.posts[i].index = i;
             }
