@@ -588,7 +588,7 @@ export default {
                         Previous
                     </button>
                     <button
-                        v-if="questionNumber != questions.length - 1"
+                        v-if="questionNumber < questions.length - 1"
                         @click="Next()"
                         class="btn green-btn"
                     >
@@ -597,7 +597,7 @@ export default {
                     <!-- <button disabled v-if="this.questionNumber == questions.length - 1 && !isAllQuestionsAnswered" @click="Submit()"
                     class="btn green-btn">Submit</button> -->
                     <button
-                        v-if="questionNumber == questions.length - 1"
+                        v-if="questionNumber >= questions.length - 1"
                         @click="Submit()"
                         class="btn green-btn"
                     >
