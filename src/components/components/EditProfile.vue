@@ -550,8 +550,12 @@ export default {
                 </div>
                 <div v-if="userDetailsStore.role == 'student'" class="mb-3">
                     <label class="form-label">Instructor</label>
+                    <!-- Student can only choose an instructor if they don`t have one -->
+                    <div v-if="instructorName" class="custom-select-button">
+                        {{ instructorName }}
+                    </div>
                     <!-- Custom Dropdown -->
-                    <div class="d-flex flex-column">
+                    <div v-else class="d-flex flex-column">
                         <div
                             :class="[
                                 showDropDown
@@ -560,11 +564,7 @@ export default {
                             ]"
                             @click="showDropDown = !showDropDown"
                         >
-                            {{
-                                instructorName
-                                    ? instructorName
-                                    : 'Please choose an instructor'
-                            }}
+                            {{ 'Please choose an instructor' }}
                             <span>
                                 <svg
                                     width="20"
