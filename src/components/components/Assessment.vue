@@ -225,8 +225,11 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    if(data.length > 0 && !this.userDetailsStore.instructor.id){
-                        this.needToSelectInstructor = true
+                    if (
+                        data.length > 0 &&
+                        !this.userDetailsStore.instructor.id
+                    ) {
+                        this.needToSelectInstructor = true;
                     }
                     // Add the new questions to the existing questions.
                     this.essayQuestions = this.essayQuestions.concat(data);
@@ -470,7 +473,11 @@ export default {
     <!-- Loading screen -->
     <div v-if="loading == true">Loading...</div>
     <!-- Assessment -->
-    <div v-if="loading == false && isQuizPassed == false && !needToSelectInstructor">
+    <div
+        v-if="
+            loading == false && isQuizPassed == false && !needToSelectInstructor
+        "
+    >
         <!-- Show student a warning if their take this assessment before and still wait for marking -->
         <div v-if="updatedAssessment">
             <div id="myModal" class="modal">
@@ -538,14 +545,16 @@ export default {
                         <!-- Multiple Choice Question -->
                         <div v-if="question.questionType == 'mc'">
                             <div
-                                v-for="(answerOption, index) in question
-                                    .answerOptions"
+                                v-for="(
+                                    answerOption, index
+                                ) in question.answerOptions"
                                 class="form-check my-3"
                             >
                                 <label class="control control-checkbox">
                                     <div
                                         :class="
-                                            answerHoveredIndex == answerOption.index
+                                            answerHoveredIndex ==
+                                            answerOption.index
                                                 ? 'my-auto mx-2 me-4 answer-option checkbox-hovered'
                                                 : 'my-auto mx-2 me-4 answer-option'
                                         "
@@ -554,19 +563,21 @@ export default {
                                     </div>
                                     <input
                                         type="radio"
-                                        :name="questionNum+'answer'"
+                                        :name="questionNum + 'answer'"
                                         :value="answerOption.index"
                                         v-model="
-                                            questions[questionNum]
-                                                .userAnswer
+                                            questions[questionNum].userAnswer
                                         "
                                     />
                                     <div
                                         class="control_indicator"
                                         @mouseover="
-                                            answerHoveredIndex = answerOption.index
+                                            answerHoveredIndex =
+                                                answerOption.index
                                         "
-                                        @mouseleave="answerHoveredIndex = Infinity"
+                                        @mouseleave="
+                                            answerHoveredIndex = Infinity
+                                        "
                                     ></div>
                                 </label>
                             </div>
@@ -711,21 +722,23 @@ export default {
                     Please choose an instructor before taking these quizzes.
                 </p>
             </div>
-            <div class="d-flex flex-column-reverse flex-md-row justify-content-center gap-2">
-                    <RouterLink
-                        :to="`/skills/${skillId}`"
-                        type="button"
-                        class="btn green-btn w-100 w-md-50"
-                    >
-                        <span>Back</span>
-                    </RouterLink>
-                    <RouterLink
+            <div
+                class="d-flex flex-column-reverse flex-md-row justify-content-center gap-2"
+            >
+                <RouterLink
+                    :to="`/skills/${skillId}`"
+                    type="button"
+                    class="btn green-btn w-100 w-md-50"
+                >
+                    <span>Back</span>
+                </RouterLink>
+                <RouterLink
                     to="/profile/edit"
-                        type="button"
-                        class="btn green-btn w-100 w-md-50"
-                    >
-                        <span>Select Instructor</span>
-                    </RouterLink>
+                    type="button"
+                    class="btn green-btn w-100 w-md-50"
+                >
+                    <span>Select Instructor</span>
+                </RouterLink>
             </div>
         </div>
     </div>
