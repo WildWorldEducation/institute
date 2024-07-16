@@ -166,11 +166,6 @@ const router = createRouter({
             component: () => import('../components/pages/UsersView.vue'),
             meta: { requiresAuth: true, roles: ['instructor', 'admin'] }
         },
-        // {
-        //   path: '/users/:username/skilltree',
-        //   name: 'show-skilltree',
-        //   component: () => import('../components/pages/ShowSkillTreeView.vue')
-        // },
         {
             path: '/users/add',
             name: 'add-user',
@@ -255,6 +250,7 @@ router.beforeEach(async (to, from, next) => {
 
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
+        !sessionDetailsStore.isLoggedIn &&
         !sessionDetailsStore.isLoggedIn &&
         to.name !== 'login' &&
         to.name !== 'student-signup' &&

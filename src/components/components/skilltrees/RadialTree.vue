@@ -912,9 +912,12 @@ input[type='button'] {
     flex-direction: row;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 820px) {
     .flex-container {
         flex-direction: column;
+    }
+    #wrapper {
+        height: calc(100% - 86px);
     }
 }
 

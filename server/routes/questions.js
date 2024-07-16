@@ -614,7 +614,7 @@ router.get('/check-questions', (req, res, next) => {
         let sqlQuery1 = `SELECT * FROM mc_questions   
         WHERE is_checked = 0
         AND is_deleted = 0
-        AND skill_id = 37       
+        AND skill_id = 214       
         ORDER BY skill_id`;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {

@@ -118,6 +118,7 @@ export default {
 <style>
 #legend {
     display: none;
+    overflow-x: hidden;
 }
 
 #info-button {
