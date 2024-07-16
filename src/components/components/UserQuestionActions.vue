@@ -5,7 +5,9 @@ export default {
         return {
             questionsData: [],
             rows: [],
-            showWarnModal: false
+            showSkillWarnModal: false,
+            showQuestionWarnModal: false,
+            currentChooseSkill: ''
         };
     },
     components: {},
@@ -34,7 +36,7 @@ export default {
                 studentName: contentObj.student_name,
                 studentId: contentObj.student_id,
                 type: question.content_type,
-                is_deleted: contentObj.skill_deleted
+                skill_deleted: contentObj.skill_deleted
             });
         });
     },
@@ -42,6 +44,14 @@ export default {
         async getMcQuestionsLog() {
             const res = await fetch(`/user-actions/${this.userId}/question`);
             this.questionsData = await res.json();
+        },
+        handleNoneLinkClick(logAction, questionName) {
+            if (logAction === 'delete') {
+                this.showQuestionWarnModal = true;
+            } else {
+                this.showSkillWarnModal = true;
+                this.currentChooseSkill = questionName;
+            }
         },
         actionColor(action) {
             switch (action) {
@@ -79,10 +89,12 @@ export default {
                 <span
                     v-if="
                         question.action === 'delete' ||
-                        question.is_deleted === 1
+                        question.skill_deleted === 1
                     "
                     class="skill-link"
-                    @click="showWarnModal = true"
+                    @click="
+                        handleNoneLinkClick(question.action, question.skillName)
+                    "
                 >
                     {{ question.skillName }}
                 </span>
@@ -99,19 +111,45 @@ export default {
     <div v-else class="shake">
         The user has no action on multiple-choice questions
     </div>
-    <!-- The modal popup when user click on not visible -->
-    <div v-if="showWarnModal">
+    <!-- The modal popup when user click on a deleted skill -->
+    <div v-if="showSkillWarnModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
-            <div class="modal-content">
+            <div class="modal-content skill-modal">
                 <div class="d-flex gap-4 justify-content-center mb-4">
-                    <div class="modal-label">This skill is deleted !!</div>
+                    <div class="modal-label">
+                        Skill
+                        <span class="skill-modal-text">{{
+                            currentChooseSkill
+                        }}</span>
+                        is deleted !!
+                    </div>
                 </div>
                 <div class="d-flex justify-content-center">
                     <button
                         type="button"
-                        class="btn green-btn w-25"
-                        @click="showWarnModal = false"
+                        class="btn green-btn w-fit"
+                        @click="showSkillWarnModal = false"
+                    >
+                        <div>OK</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- The modal popup when user click on delete action -->
+    <div v-if="showQuestionWarnModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex gap-4 justify-content-center mb-4">
+                    <div class="modal-label">this question is deleted !!</div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button
+                        type="button"
+                        class="btn green-btn w-fit"
+                        @click="showQuestionWarnModal = false"
                     >
                         <div>OK</div>
                     </button>
@@ -120,4 +158,8 @@ export default {
         </div>
     </div>
 </template>
-<style></style>
+<style>
+.skill-modal {
+    width: fit-content !important;
+}
+</style>

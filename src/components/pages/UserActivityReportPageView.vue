@@ -348,6 +348,14 @@ export default {
     width: fit-content;
 }
 
+.skill-modal-text {
+    font-style: italic;
+    color: #1f57c3;
+    background-color: #f9f9f9;
+    border-radius: 15px;
+    padding: 5px 15px;
+}
+
 .log-type:hover {
     cursor: pointer;
 }
