@@ -94,7 +94,7 @@ export default {
         </div>
     </div>
     <div v-else class="shake">
-        The user has no action on multiple-choice questions
+        The user has no recorded actions on multiple-choice questions
     </div>
 </template>
 <style></style>
