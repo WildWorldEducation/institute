@@ -444,6 +444,7 @@ export default {
     text-decoration: none;
     color: #667085;
     font-weight: 500;
+    display: inline;
 }
 
 .skill-link:hover {

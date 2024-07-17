@@ -96,21 +96,18 @@ export default {
     <div v-if="rows.length" class="container-md main-container">
         <!-- Vue Data Table Desktop  -->
         <div class="d-flex flex-column gap-3">
-            <div class="d-flex" v-for="contentFlag in rows">
-                <div class="d-flex w-fit me-1">{{ contentFlag.date }}</div>
+            <div v-for="contentFlag in rows">
+                {{ contentFlag.date }}
                 <!-- flag type skill -->
-                <div
-                    class="d-flex flex-wrap ml-1"
-                    v-if="contentFlag.type === 'skill'"
-                >
+                <span v-if="contentFlag.type === 'skill'">
                     <span :class="actionColor(contentFlag.action)">
                         - {{ contentFlag.action }}
                     </span>
-                    &nbsp;
+
                     <!-- Handle Delete Actions -->
                     <span v-if="contentFlag.action == 'delete'">
                         flag with id: {{ contentFlag.id }} </span
-                    >flag on skill:&nbsp;
+                    >flag on skill:
                     <!-- Show link to skill if it is not deleted else show a warn modal-->
                     <span
                         v-if="
@@ -129,16 +126,13 @@ export default {
                         :to="`/skills/${contentFlag.skillId}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
-                </div>
+                </span>
                 <!-- flag type resource -->
-                <div
-                    class="d-flex flex-wrap ml-1"
-                    v-if="contentFlag.type === 'resource'"
-                >
+                <span v-if="contentFlag.type === 'resource'">
                     <span :class="actionColor(contentFlag.action)">
                         - {{ contentFlag.action }}
                     </span>
-                    &nbsp;flag on resource of skill:&nbsp;
+                    flag on resource of skill:
                     <!-- Show link to skill if it is not deleted else show a warn modal-->
                     <span
                         v-if="
@@ -158,23 +152,20 @@ export default {
                         :to="`/skills/${contentFlag.skillId}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
-                </div>
+                </span>
                 <!-- flag type mc_question -->
-                <div
-                    class="d-flex flex-wrap ml-1"
-                    v-if="contentFlag.type === 'mc_question'"
-                >
+                <span v-if="contentFlag.type === 'mc_question'">
                     <span :class="actionColor(contentFlag.action)">
                         - {{ contentFlag.action }}
                     </span>
-                    &nbsp;flag on mc_question:
+                    flag on mc_question:
                     <router-link
                         class="question-link"
                         target="_blank"
                         :to="`/skills/${contentFlag.skillId}/question-bank`"
                         >{{ contentFlag.questionName }}</router-link
                     >
-                    on skill:&nbsp;
+                    on skill:
                     <!-- Show link to skill if it is not deleted else show a warn modal-->
                     <span
                         v-if="
@@ -193,17 +184,14 @@ export default {
                         :to="`/skills/${contentFlag.skillId}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
-                </div>
+                </span>
                 <!-- Handle delete type flag action -->
-                <div
-                    class="d-flex flex-wrap ml-1"
-                    v-if="contentFlag.type === 'delete'"
-                >
-                    <span :class="actionColor(contentFlag.action) + ' me-1'">
+                <span v-if="contentFlag.type === 'delete'">
+                    <span :class="actionColor(contentFlag.action)">
                         - {{ contentFlag.action }}
                     </span>
                     flag with id {{ contentFlag.id }}
-                </div>
+                </span>
             </div>
         </div>
     </div>
