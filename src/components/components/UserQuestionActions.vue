@@ -36,7 +36,8 @@ export default {
                 studentName: contentObj.student_name,
                 studentId: contentObj.student_id,
                 type: question.content_type,
-                skill_deleted: contentObj.skill_deleted
+                skillDeleted: contentObj.skill_deleted,
+                questionDeleted: contentObj.question_deleted
             });
         });
     },
@@ -45,7 +46,7 @@ export default {
             const res = await fetch(`/user-actions/${this.userId}/question`);
             this.questionsData = await res.json();
         },
-        handleNoneLinkClick(logAction, questionName) {
+        handleNoneLinkClick(logAction, questionName, questionDeleted) {
             if (logAction === 'delete') {
                 this.showActionWarnModal = true;
             } else {
@@ -89,11 +90,16 @@ export default {
                 <span
                     v-if="
                         question.action === 'delete' ||
-                        question.skill_deleted === 1
+                        question.skillDeleted === 1 ||
+                        question.questionDeleted === 1
                     "
                     class="skill-link"
                     @click="
-                        handleNoneLinkClick(question.action, question.skillName)
+                        handleNoneLinkClick(
+                            question.action,
+                            question.skillName,
+                            question.questionDeleted
+                        )
                     "
                 >
                     {{ question.skillName }}

@@ -37,7 +37,7 @@ export default {
                 time: createTime,
                 id: resource.id,
                 skillDeleted: contentObj.skill_deleted,
-                resourceDeleted: contentObj.resource_delete
+                resourceDeleted: contentObj.resource_deleted
             });
         });
     },

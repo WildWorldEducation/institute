@@ -149,7 +149,7 @@ router.get('/:userId/resource', (req, res, next) => {
     let resResults = [];
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        const sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted, 'resource_delete', resources.is_deleted) AS content_obj 
+        const sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted, 'resource_deleted', resources.is_deleted) AS content_obj 
                           FROM user_actions JOIN resources ON resources.id = user_actions.content_id JOIN skills ON skills.id = resources.skill_id   
                           WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'resource'`;
         conn.query(sqlQuery, (err, results) => {
@@ -222,7 +222,7 @@ router.get('/:userId/question', (req, res, next) => {
     let resResults = [];
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username, 'skill_deleted', skills.is_deleted ) AS content_obj 
+        let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username, 'skill_deleted', skills.is_deleted, 'question_deleted', mc_questions.is_delete ) AS content_obj 
                         FROM user_actions JOIN mc_questions ON mc_questions.id = user_actions.content_id JOIN skills ON skills.id = mc_questions.skill_id  JOIN users ON users.id = user_actions.user_id 
                         WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'mc_question'`;
         conn.query(sqlQuery, (err, results) => {
@@ -232,7 +232,7 @@ router.get('/:userId/question', (req, res, next) => {
                 } else {
                     resResults = resResults.concat(results);
                     // WE also get the essay question actions here
-                    const essayQuestionQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username, 'skill_deleted' , skills.is_deleted ) AS content_obj 
+                    const essayQuestionQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username, 'skill_deleted' , skills.is_deleted, 'question_deleted', essay_questions.is_delete ) AS content_obj 
                                                         FROM user_actions JOIN essay_questions ON essay_questions.id = user_actions.content_id JOIN skills ON skills.id = essay_questions.skill_id  JOIN users ON users.id = user_actions.user_id 
                                                         WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'essay_question'`;
                     conn.query(essayQuestionQuery, (err, results) => {
