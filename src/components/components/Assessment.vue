@@ -273,6 +273,9 @@ export default {
                 });
         },
         Next() {
+            if ( this.questionNumber >= this.settingsStore.quizMaxQuestions ){
+                return
+            }
             // Handle essay answer with summernote
             if (this.question.questionType == 'essay') {
                 // Get the summernote answer code
@@ -294,6 +297,9 @@ export default {
             }
         },
         Previous() {
+            if ( this.questionNumber <= 0 ){
+                return
+            }
             if (this.question.questionType == 'essay') {
                 // Get the summernote answer code
                 const summerNote = this.$refs.essayAnswer.getAnswer();
