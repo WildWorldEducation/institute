@@ -44,8 +44,7 @@ export default {
      <!-- temporarily allowing non-admin to access content flags -->
     <section
         class="container mt-1 px-3 px-lg-0 mb-5"        
-        v-if="userDetailsStore.role == 'admin' || userDetailsStore.email == 'imenedyason@gmail.com' ||
-        userDetailsStore.email =='oilbrushedcanvas@gmail.com'" 
+        v-if="userDetailsStore.role == 'admin'" 
     >
         <hr />
         <h1>Content Flags</h1>
