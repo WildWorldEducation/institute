@@ -36,7 +36,8 @@ export default {
                 date: createDate,
                 time: createTime,
                 id: resource.id,
-                is_deleted: contentObj.skill_deleted
+                skillDeleted: contentObj.skill_deleted,
+                resourceDeleted: contentObj.resource_delete
             });
         });
     },
@@ -55,8 +56,10 @@ export default {
                     return 'delete-action';
             }
         },
-        handleNoneLinkClick(logAction, questionName) {
+        handleNoneLinkClick(logAction, questionName, resourceDeleted) {
             if (logAction === 'delete') {
+                this.showActionWarnModal = true;
+            } else if (resourceDeleted) {
                 this.showActionWarnModal = true;
             } else {
                 this.showSkillWarnModal = true;
@@ -81,11 +84,16 @@ export default {
                 <span
                     v-if="
                         resource.action === 'delete' ||
-                        resource.is_deleted === 1
+                        resource.skillDeleted === 1 ||
+                        resource.resourceDeleted === 1
                     "
                     class="skill-link"
                     @click="
-                        handleNoneLinkClick(resource.action, resource.skillName)
+                        handleNoneLinkClick(
+                            resource.action,
+                            resource.skillName,
+                            resource.resourceDeleted
+                        )
                     "
                 >
                     {{ resource.skillName }}
