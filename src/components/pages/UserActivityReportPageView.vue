@@ -567,4 +567,19 @@ export default {
 }
 
 /* ++--++ */
+
+.skill-modal {
+    width: 780px !important;
+}
+
+/* Tablet and phone Styling */
+@media (max-width: 1023px) {
+    .skill-modal {
+        width: 100% !important;
+    }
+
+    .modal-content {
+        top: 25%;
+    }
+}
 </style>

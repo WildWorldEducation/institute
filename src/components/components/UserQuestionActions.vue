@@ -6,7 +6,7 @@ export default {
             questionsData: [],
             rows: [],
             showSkillWarnModal: false,
-            showQuestionWarnModal: false,
+            showActionWarnModal: false,
             currentChooseSkill: ''
         };
     },
@@ -47,7 +47,7 @@ export default {
         },
         handleNoneLinkClick(logAction, questionName) {
             if (logAction === 'delete') {
-                this.showQuestionWarnModal = true;
+                this.showActionWarnModal = true;
             } else {
                 this.showSkillWarnModal = true;
                 this.currentChooseSkill = questionName;
@@ -116,7 +116,7 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content skill-modal">
-                <div class="d-flex gap-4 justify-content-center mb-4">
+                <div class="mb-4">
                     <div class="modal-label">
                         Skill
                         <span class="skill-modal-text">{{
@@ -138,7 +138,7 @@ export default {
         </div>
     </div>
     <!-- The modal popup when user click on delete action -->
-    <div v-if="showQuestionWarnModal">
+    <div v-if="showActionWarnModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
@@ -149,7 +149,7 @@ export default {
                     <button
                         type="button"
                         class="btn green-btn w-fit"
-                        @click="showQuestionWarnModal = false"
+                        @click="showActionWarnModal = false"
                     >
                         <div>OK</div>
                     </button>
@@ -158,8 +158,4 @@ export default {
         </div>
     </div>
 </template>
-<style>
-.skill-modal {
-    width: fit-content !important;
-}
-</style>
+<style></style>

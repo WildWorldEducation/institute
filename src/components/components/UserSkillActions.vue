@@ -6,7 +6,8 @@ export default {
         return {
             skillsData: [],
             rows: [],
-            showWarnModal: false
+            showWarnModal: false,
+            currentChooseSkill: ''
         };
     },
     components: {},
@@ -69,7 +70,10 @@ export default {
                 <span
                     v-if="skill.action === 'delete' || skill.is_deleted === 1"
                     class="skill-link"
-                    @click="showWarnModal = true"
+                    @click="
+                        showWarnModal = true;
+                        currentChooseSkill = skill.skillName;
+                    "
                 >
                     {{ skill.skillName }}
                 </span>
@@ -88,14 +92,20 @@ export default {
     <div v-if="showWarnModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
-            <div class="modal-content">
+            <div class="modal-content skill-modal">
                 <div class="d-flex gap-4 justify-content-center mb-4">
-                    <div class="modal-label">This skill is deleted !!</div>
+                    <div class="modal-label">
+                        Skill
+                        <span class="skill-modal-text">{{
+                            currentChooseSkill
+                        }}</span>
+                        is deleted !!
+                    </div>
                 </div>
                 <div class="d-flex justify-content-center">
                     <button
                         type="button"
-                        class="btn green-btn w-25"
+                        class="btn green-btn w-fit"
                         @click="showWarnModal = false"
                     >
                         <div>OK</div>
