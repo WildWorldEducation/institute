@@ -23,7 +23,9 @@ export default {
         return {
             contentFlags: [],
             rows: [],
-            showWarnModal: false
+            currentChooseSkill: '',
+            showActionWarnModal: false,
+            showSkillWarnModal: false
         };
     },
     components: {},
@@ -87,6 +89,14 @@ export default {
                 default:
                     return 'delete-action';
             }
+        },
+        handleNoneLinkClick(logAction, questionName) {
+            if (logAction === 'delete') {
+                this.showActionWarnModal = true;
+            } else {
+                this.showSkillWarnModal = true;
+                this.currentChooseSkill = questionName;
+            }
         }
     }
 };
@@ -115,7 +125,12 @@ export default {
                             contentFlag.skill_deleted === 1
                         "
                         class="skill-link"
-                        @click="showWarnModal = true"
+                        @click="
+                            handleNoneLinkClick(
+                                contentFlag.action,
+                                contentFlag.skillName
+                            )
+                        "
                     >
                         {{ contentFlag.skillName }}
                     </span>
@@ -140,7 +155,12 @@ export default {
                             contentFlag.skill_deleted === 1
                         "
                         class="skill-link"
-                        @click="showWarnModal = true"
+                        @click="
+                            handleNoneLinkClick(
+                                contentFlag.action,
+                                contentFlag.skillName
+                            )
+                        "
                     >
                         {{ contentFlag.skillName }}
                     </span>
@@ -173,7 +193,12 @@ export default {
                             contentFlag.skill_deleted === 1
                         "
                         class="skill-link"
-                        @click="showWarnModal = true"
+                        @click="
+                            handleNoneLinkClick(
+                                contentFlag.action,
+                                contentFlag.skillName
+                            )
+                        "
                     >
                         {{ contentFlag.skillName }}
                     </span>
@@ -196,19 +221,71 @@ export default {
         </div>
     </div>
     <div v-else class="shake">The user has no action on flags</div>
-    <!-- The modal popup when user click on not visible -->
-    <div v-if="showWarnModal">
+    <!-- The modal popup when user click on a deleted skill -->
+    <div v-if="showSkillWarnModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
-            <div class="modal-content">
-                <div class="d-flex gap-4 justify-content-center mb-4">
-                    <div class="modal-label">This skill is deleted !!</div>
+            <div class="modal-content skill-modal">
+                <div class="mb-4">
+                    <div class="modal-label">
+                        Skill
+                        <span class="skill-modal-text">{{
+                            currentChooseSkill
+                        }}</span>
+                        is deleted !!
+                    </div>
                 </div>
                 <div class="d-flex justify-content-center">
                     <button
                         type="button"
-                        class="btn green-btn w-25"
-                        @click="showWarnModal = false"
+                        class="btn green-btn w-fit"
+                        @click="showSkillWarnModal = false"
+                    >
+                        <div>OK</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- The modal popup when user click on a deleted skill -->
+    <div v-if="showSkillWarnModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content skill-modal">
+                <div class="mb-4">
+                    <div class="modal-label">
+                        Skill
+                        <span class="skill-modal-text">{{
+                            currentChooseSkill
+                        }}</span>
+                        is deleted !!
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button
+                        type="button"
+                        class="btn green-btn w-fit"
+                        @click="showSkillWarnModal = false"
+                    >
+                        <div>OK</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- The modal popup when user click on delete action -->
+    <div v-if="showActionWarnModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="d-flex gap-4 justify-content-center mb-4">
+                    <div class="modal-label">this flag is deleted !!</div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button
+                        type="button"
+                        class="btn green-btn w-fit"
+                        @click="showActionWarnModal = false"
                     >
                         <div>OK</div>
                     </button>
