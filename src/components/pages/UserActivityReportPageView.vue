@@ -222,7 +222,7 @@ export default {
                         b-on-hover
                         :title="showSources ? 'collapse' : 'expand'"
                     >
-                        <span> Resources </span>
+                        <span> Sources </span>
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"

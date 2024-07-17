@@ -124,7 +124,7 @@ export default {
                     <span :class="actionColor(contentFlag.action)">
                         - {{ contentFlag.action }}
                     </span>
-                    &nbsp;flag on resource of skill:&nbsp;
+                    &nbsp;flag on source of skill:&nbsp;
                     <router-link
                         class="skill-link"
                         target="_blank"
@@ -168,6 +168,6 @@ export default {
             </div>
         </div>
     </div>
-    <div v-else class="shake">The user has no action on flags</div>
+    <div v-else class="shake">The user has no recorded actions on flags</div>
 </template>
 <style></style>
