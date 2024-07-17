@@ -533,6 +533,10 @@ export default {
 .modal-label {
     font-size: 18px;
     font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    color: #667085;
+    text-align: center;
+    margin-bottom: 10px;
 }
 /* End of Warning modal styling */
 
@@ -569,7 +573,7 @@ export default {
 /* ++--++ */
 
 .skill-modal {
-    width: 780px !important;
+    width: 580px !important;
 }
 
 /* Tablet and phone Styling */

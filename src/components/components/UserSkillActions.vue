@@ -93,15 +93,14 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content skill-modal">
-                <div class="d-flex gap-4 justify-content-center mb-4">
-                    <div class="modal-label">
-                        Skill
-                        <span class="skill-modal-text">{{
-                            currentChooseSkill
-                        }}</span>
-                        is deleted !!
-                    </div>
+                <div class="modal-label">
+                    Skill
+                    <span class="skill-modal-text">{{
+                        currentChooseSkill
+                    }}</span>
+                    is deleted !!
                 </div>
+
                 <div class="d-flex justify-content-center">
                     <button
                         type="button"

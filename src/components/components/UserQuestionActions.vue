@@ -47,7 +47,7 @@ export default {
             this.questionsData = await res.json();
         },
         handleNoneLinkClick(logAction, questionName, questionDeleted) {
-            if (logAction === 'delete') {
+            if (logAction === 'delete' || questionDeleted) {
                 this.showActionWarnModal = true;
             } else {
                 this.showSkillWarnModal = true;
@@ -149,7 +149,7 @@ export default {
             <!-- Modal content -->
             <div class="modal-content">
                 <div class="d-flex gap-4 justify-content-center mb-4">
-                    <div class="modal-label">this question is deleted !!</div>
+                    <div class="modal-label">Question is deleted !!</div>
                 </div>
                 <div class="d-flex justify-content-center">
                     <button
