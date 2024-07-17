@@ -65,7 +65,7 @@ export default {
                 <span :class="actionColor(resource.action)">
                     {{ resource.action }}
                 </span>
-                <span> resource in forum of skill: </span>
+                <span> source in forum of skill: </span>
                 <!-- Show link to skill if it is not deleted else show a warn modal-->
                 <span
                     v-if="
@@ -87,14 +87,16 @@ export default {
             </div>
         </div>
     </div>
-    <div v-else class="shake">The user has no action on resource</div>
+    <div v-else class="shake">The user has no recorded actions on sources</div>
     <!-- The modal popup when user click on not visible -->
     <div v-if="showWarnModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
                 <div class="d-flex gap-4 justify-content-center mb-4">
-                    <div class="modal-label">This skill is deleted !!</div>
+                    <div class="modal-label">
+                        This skill has been deleted !!
+                    </div>
                 </div>
                 <div class="d-flex justify-content-center">
                     <button

@@ -15,7 +15,6 @@ export default {
         // call to content flags route
         await this.getSkillLogs();
         this.skillsData.forEach((skill) => {
-            console.log(skill);
             const contentObj = JSON.parse(skill.content_obj);
             const parseDate = new Date(skill.create_date);
             const createDate = parseDate.toLocaleString('en-gb', {
@@ -84,14 +83,16 @@ export default {
             </div>
         </div>
     </div>
-    <div v-else class="shake">The user has no action on skill</div>
+    <div v-else class="shake">The user has no recorded actions on skills</div>
     <!-- The modal popup when user click on not visible -->
     <div v-if="showWarnModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
                 <div class="d-flex gap-4 justify-content-center mb-4">
-                    <div class="modal-label">This skill is deleted !!</div>
+                    <div class="modal-label">
+                        This skill has been deleted !!
+                    </div>
                 </div>
                 <div class="d-flex justify-content-center">
                     <button
