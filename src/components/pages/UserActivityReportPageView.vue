@@ -348,6 +348,13 @@ export default {
     width: fit-content;
 }
 
+.page-tile {
+    color: #a48be7;
+    font-family: 'Poppins', sans-serif;
+    font-size: 25px;
+    font-weight: 600;
+}
+
 .skill-modal-text {
     font-style: italic;
     color: #1f57c3;
