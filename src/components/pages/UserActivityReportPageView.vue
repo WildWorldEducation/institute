@@ -70,7 +70,7 @@ export default {
 <template>
     <div class="container">
         <div class="mt-4 mb-4">
-            <h1>User Activity Report</h1>
+            <div class="page-tile">User Activity Report</div>
         </div>
         <!-- User Details -->
         <div class="row">
@@ -352,8 +352,9 @@ export default {
     font-style: italic;
     color: #1f57c3;
     background-color: #f9f9f9;
-    border-radius: 15px;
-    padding: 5px 15px;
+    border-radius: 8px;
+    padding: 3px 10px;
+    font-weight: 400;
 }
 
 .log-type:hover {
