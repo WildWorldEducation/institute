@@ -13,7 +13,7 @@ const conn = require('../config/db');
 //Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
 const isAdmin = require('../middlewares/adminMiddleware');
-const checkRoleHierarchy = require('../middlewares/roleMiddleware')
+const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 
 /*------------------------------------------
 --------------------------------------------
@@ -26,7 +26,7 @@ Routes
  *
  * @return response()
  */
-router.post('/add',isAuthenticated, isAdmin, async (req, res, next) => {
+router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
     // No need to escape single quotes for SQL to accept,
     // as using '?'.
     // Add the skill.
@@ -111,7 +111,6 @@ router.post('/add',isAuthenticated, isAdmin, async (req, res, next) => {
             next(err);
         }
     });
-
 });
 
 /**
@@ -338,66 +337,74 @@ router.get('/last-visited', (req, res, next) => {
  *
  * @return response()
  */
-router.put('/:id/edit', isAuthenticated, checkRoleHierarchy('editor'),  (req, res, next) => {
-    if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.name != null)
-            req.body.name = req.body.name.replace(/'/g, "\\'");
-        if (req.body.description != null)
-            req.body.description = req.body.description.replace(/'/g, "\\'");
-        if (req.body.mastery_requirements != null)
-            req.body.mastery_requirements =
-                req.body.mastery_requirements.replace(/'/g, "\\'");
-        var sqlQuery;
-        sqlQuery =
-            `UPDATE skills SET name = '` +
-            req.body.name +
-            `', parent = '` +
-            req.body.parent +
-            `', description = '` +
-            req.body.description +
-            `', icon_image = '` +
-            req.body.icon_image +
-            `', banner_image = '` +
-            req.body.banner_image +
-            `', mastery_requirements = '` +
-            req.body.mastery_requirements +
-            `', type = '` +
-            req.body.type +
-            `', level = '` +
-            req.body.level +
-            `', skills.order = ` +
-            req.body.order +
-            ` WHERE id = ` +
-            req.params.id;
+router.put(
+    '/:id/edit',
+    isAuthenticated,
+    checkRoleHierarchy('editor'),
+    (req, res, next) => {
+        if (req.session.userName) {
+            // Escape single quotes for SQL to accept.
+            if (req.body.name != null)
+                req.body.name = req.body.name.replace(/'/g, "\\'");
+            if (req.body.description != null)
+                req.body.description = req.body.description.replace(
+                    /'/g,
+                    "\\'"
+                );
+            if (req.body.mastery_requirements != null)
+                req.body.mastery_requirements =
+                    req.body.mastery_requirements.replace(/'/g, "\\'");
+            var sqlQuery;
+            sqlQuery =
+                `UPDATE skills SET name = '` +
+                req.body.name +
+                `', parent = '` +
+                req.body.parent +
+                `', description = '` +
+                req.body.description +
+                `', icon_image = '` +
+                req.body.icon_image +
+                `', banner_image = '` +
+                req.body.banner_image +
+                `', mastery_requirements = '` +
+                req.body.mastery_requirements +
+                `', type = '` +
+                req.body.type +
+                `', level = '` +
+                req.body.level +
+                `', skills.order = ` +
+                req.body.order +
+                ` WHERE id = ` +
+                req.params.id;
 
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                } else {
-                    // add edit (update) action into user_actions table
-                    const actionData = {
-                        action: 'update',
-                        content_id: req.params.id,
-                        user_id: req.session.userId,
-                        content_type: 'skill'
-                    };
+            let query = conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    } else {
+                        // add edit (update) action into user_actions table
+                        const actionData = {
+                            action: 'update',
+                            content_id: req.params.id,
+                            user_id: req.session.userId,
+                            content_type: 'skill'
+                        };
 
-                    const addActionQuery = `INSERT INTO user_actions SET ?`;
-                    conn.query(addActionQuery, actionData, (err) => {
-                        if (err) throw err;
-                        else res.redirect('back');
-                    });
+                        const addActionQuery = `INSERT INTO user_actions SET ?`;
+                        conn.query(addActionQuery, actionData, (err) => {
+                            if (err) throw err;
+                            else res.redirect('back');
+                        });
+                    }
+                } catch (err) {
+                    next(err);
                 }
-            } catch (err) {
-                next(err);
-            }
-        });
-    } else {
-        res.redirect('/login');
+            });
+        } else {
+            res.redirect('/login');
+        }
     }
-});
+);
 
 /**
  * Delete Item
@@ -406,8 +413,6 @@ router.put('/:id/edit', isAuthenticated, checkRoleHierarchy('editor'),  (req, re
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        console.log('Session Data: ');
-        console.log(req.session);
         const deleteQuery = `UPDATE skills SET is_deleted = 1 WHERE skills.id=${req.params.id}`;
         conn.query(deleteQuery, (err) => {
             try {
