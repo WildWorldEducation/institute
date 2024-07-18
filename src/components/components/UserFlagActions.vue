@@ -116,8 +116,9 @@ export default {
 
                     <!-- Handle Delete Actions -->
                     <span v-if="contentFlag.action == 'delete'">
-                        flag with id: {{ contentFlag.id }} </span
-                    >flag on skill:
+                        flag with id: {{ contentFlag.id }}
+                    </span>
+                    flag on skill:
                     <!-- Show link to skill if it is not deleted else show a warn modal-->
                     <span
                         v-if="
