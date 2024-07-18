@@ -87,7 +87,7 @@ export default {
             </div>
         </div>
     </div>
-    <div v-else class="shake">The user has no action on skill</div>
+    <div v-else class="shake">The user has no recorded actions on skills</div>
     <!-- The modal popup when user click on not visible -->
     <div v-if="showWarnModal">
         <div id="myModal" class="modal">

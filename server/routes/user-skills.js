@@ -31,7 +31,7 @@ router.get('/:id', (req, res, next) => {
     ON skills.id = user_skills.skill_id
     WHERE user_skills.user_id = ` +
             req.params.id +
-            ` AND is_filtered = 'available'
+            ` AND is_filtered = 'available' AND is_deleted = 0
 
     UNION
     SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder
@@ -44,7 +44,7 @@ router.get('/:id', (req, res, next) => {
     ON skills.id = user_skills.skill_id
     WHERE user_skills.user_id =` +
             req.params.id +
-            `) AND is_filtered = 'available'
+            `) AND is_filtered = 'available' AND is_deleted = 0
     ORDER BY skillorder, id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {

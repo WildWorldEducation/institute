@@ -652,7 +652,7 @@ export default {
                                                     showFlagTypeFilter = false;
                                                 "
                                             >
-                                                resource
+                                                source
                                             </div>
                                             <div
                                                 class="custom-dropdown-option"
@@ -1144,7 +1144,7 @@ export default {
                                                     showFlagTypeDropDown = false;
                                                 "
                                             >
-                                                resource
+                                                source
                                             </div>
                                             <div
                                                 class="custom-dropdown-option"

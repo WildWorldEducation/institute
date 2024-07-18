@@ -79,7 +79,7 @@ export default {
                 <span :class="actionColor(resource.action)">
                     {{ resource.action }}
                 </span>
-                <span> resource in forum of skill: </span>
+                <span> source in forum of skill: </span>
                 <!-- Show link to skill if it is not deleted else show a warn modal-->
                 <span
                     v-if="

@@ -614,7 +614,8 @@ router.get('/check-questions', (req, res, next) => {
         let sqlQuery1 = `SELECT * FROM mc_questions   
         WHERE is_checked = 0
         AND is_deleted = 0
-        AND skill_id = 40      
+        AND skill_id > 1591
+        AND skill_id < 1598      
         ORDER BY skill_id`;
         let query1 = conn.query(sqlQuery1, (err, results) => {
             try {
@@ -687,7 +688,11 @@ async function checkQuestion(index, userId) {
         `" Please review if the following answer is the correct
         answer for this question: "` +
         mcQuestions[index].correct_answer +
-        `". If it is, please return a variable called 'correct_answer_is_correct' as true, 
+        `". Please use the explanation:` +
+        mcQuestions[index].explanation +
+        `
+        to help you decide whether it is correct.
+        If it is, please return a variable called 'correct_answer_is_correct' as true, 
         otherwise return it as false. Please also check whether the 
         following four answers are all incorrect answers for this question: "` +
         mcQuestions[index].incorrect_answer_1 +
@@ -698,9 +703,10 @@ async function checkQuestion(index, userId) {
         '"; "' +
         mcQuestions[index].incorrect_answer_4 +
         `". Return the variable: 'all_incorrect_answers_are_incorrect' as true if so, otherwise, 
-        return it as false.
-        Please also check for any spelling errors. Please return a variable spelling_correct as true if it is,
-        otherwise, return this as false.`;
+        return it as false.`;
+
+    // Please also check for any spelling errors. Please return a variable spelling_correct as true if it is,
+    // otherwise, return this as false.`;
     // Lastly please check if the question is appropriate for the following grade: ` +
     // mcQuestions[index].level +
     // `. Please return the variable 'grade_is_correct' as true if it is, otherwise as false.`;
@@ -731,8 +737,7 @@ async function checkQuestion(index, userId) {
         // If it spots a problem, flag the question.
         if (
             responseObj.correct_answer_is_correct == false ||
-            responseObj.all_incorrect_answers_are_incorrect == false ||
-            responseObj.spelling_correct == false
+            responseObj.all_incorrect_answers_are_incorrect == false
         ) {
             let data = {};
             data = {
