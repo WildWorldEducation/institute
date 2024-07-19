@@ -273,44 +273,40 @@ export default {
                 });
         },
         Next() {
-            if ( this.questionNumber >= this.settingsStore.quizMaxQuestions ){
-                return
-            }
             // Handle essay answer with summernote
-            if (this.question.questionType == 'essay') {
+            if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer.getAnswer();
+                const summerNote = this.$refs.essayAnswer[0].getAnswer();
                 // Store user answer in questions array before move to next questions
                 this.questions[this.questionNumber].userAnswer = summerNote;
                 // Clear the summernote text
-                this.$refs.essayAnswer.clearAnswer();
+                this.$refs.essayAnswer[0].clearAnswer();
             }
             // Get next question data
             this.questionNumber++;
-            this.question = this.questions[this.questionNumber];
             //  If the next question is essay question we have to handle with summernote
-            if (this.question.questionType == 'essay') {
+            if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Set the next answer content if there are any
-                if (this.question.userAnswer) {
-                    this.$refs.essayAnswer.setAnswer(this.question.userAnswer);
+                if (this.questions[this.questionNumber].userAnswer) {
+                    setTimeout(() => {
+                        this.$refs.essayAnswer[0].setAnswer(this.questions[this.questionNumber].userAnswer);
+                    }, 500);
                 }
             }
         },
         Previous() {
-            if ( this.questionNumber <= 0 ){
-                return
-            }
-            if (this.question.questionType == 'essay') {
+            if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer.getAnswer();
+                const summerNote = this.$refs.essayAnswer[0].getAnswer();
                 // Store user answer in questions array before move to next questions
                 this.questions[this.questionNumber].userAnswer = summerNote;
             }
             this.questionNumber--;
-            this.question = this.questions[this.questionNumber];
-            if (this.question.questionType == 'essay') {
+            if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Set the summernote to previous answer
-                this.$refs.essayAnswer.setAnswer(this.question.userAnswer);
+                setTimeout(() => {
+                    this.$refs.essayAnswer[0].setAnswer(this.questions[this.questionNumber].userAnswer);
+                }, 500);
             }
         },
         Submit() {
@@ -318,9 +314,9 @@ export default {
             this.finishTime = new Date();
 
             // if the last answer is also an essay question we handle it just like with the next and previous
-            if (this.question.questionType == 'essay') {
+            if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer.getAnswer();
+                const summerNote = this.$refs.essayAnswer[0].getAnswer();
                 // Store user answer in questions array before move to next questions
                 this.questions[this.questionNumber].userAnswer = summerNote;
             }
@@ -442,7 +438,7 @@ export default {
         flagQuestion(questionId) {
             // Determine the type of flag based on question type
             const questionType =
-                this.question.questionType == 'mc'
+                this.questions[this.questionNumber].questionType == 'mc'
                     ? 'mc_question'
                     : 'essay_question';
             const requestOptions = {
@@ -589,7 +585,7 @@ export default {
                             </div>
                         </div>
                         <!-- Essay Question -->
-                        <div v-else-if="question.questionType == 'essay'">
+                        <div :class="`${question.questionType == 'essay' ? 'd-block' : 'd-none'}`">
                             <div class="form-group">
                                 <EssayAnswer ref="essayAnswer" />
                             </div>
@@ -677,7 +673,7 @@ export default {
                     <button
                         type="button"
                         class="btn green-btn w-md-25"
-                        @click="flagQuestion(question.id)"
+                        @click="flagQuestion(questions[questionNumber].id)"
                     >
                         <span class="d-none d-md-block"> Yes </span>
                         <svg
