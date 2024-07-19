@@ -6,7 +6,9 @@ export default {
     data() {
         return {
             showReasonPopup: false,
-            showThankModal: false
+            showThankModal: false,
+            reason: '',
+            shake: false
         };
     },
     mounted() {},
@@ -16,6 +18,14 @@ export default {
             this.$parent.showModal = false;
             showReasonPopup = false;
             showThankModal = false;
+        },
+        handleSubmitReason() {
+            if (this.reason.length > 5) {
+                this.shake = true;
+                setTimeout(() => {
+                    this.shake = false;
+                }, 200);
+            }
         }
     }
 };
@@ -98,16 +108,27 @@ export default {
             <!-- Modal content -->
             <div class="modal-content reason-popup">
                 <div class="d-flex flex-column">
-                    <div>Please enter reason to flag this skill:</div>
+                    <div>Please tell us why you flag this skill:</div>
                     <textarea
                         id="story"
                         name="story"
                         rows="5"
                         cols="33"
-                        placeholder="should be no more than 40 word"
+                        v-model="reason"
                     >
                     </textarea>
                     <!-- Suggest template -->
+                </div>
+                <!-- Reason validate message -->
+                <div
+                    v-if="reason.length > 5"
+                    :class="[
+                        shake
+                            ? 'click-shake form-validate'
+                            : 'form-validate initial-shake'
+                    ]"
+                >
+                    Your reason is too long !!
                 </div>
                 <!-- Buttons row -->
                 <div
@@ -138,7 +159,12 @@ export default {
                         class="btn green-btn modal-btn"
                         @click="flagSkill"
                     >
-                        <span class="d-none d-md-block"> Submit </span>
+                        <span
+                            class="d-none d-md-block"
+                            @click="handleSubmitReason"
+                        >
+                            Submit
+                        </span>
                         <!-- X icon Only show when in Phone View -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -336,7 +362,66 @@ export default {
     background: #bca3ff1a;
 }
 
-/* End of CSS style for Custom Select */
+/* ---- End of CSS style for Custom Select ---- */
+
+/* ++++ Shake animation for waring line ++++ */
+.click-shake {
+    animation: shake2 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.initial-shake {
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake2 {
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+@keyframes shake {
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 0, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, 0, 0);
+    }
+}
+
+/* ---- End of shake animation ---- */
 
 .purple-btn {
     background-color: #a48be6;
@@ -389,5 +474,6 @@ export default {
 
 .green-btn:hover {
     background-color: #3eb3a3;
+    color: white;
 }
 </style>
