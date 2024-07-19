@@ -276,11 +276,11 @@ export default {
             // Handle essay answer with summernote
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer[0].getAnswer();
+                const summerNote = this.$refs.essayAnswer.getAnswer();
                 // Store user answer in questions array before move to next questions
                 this.questions[this.questionNumber].userAnswer = summerNote;
                 // Clear the summernote text
-                this.$refs.essayAnswer[0].clearAnswer();
+                this.$refs.essayAnswer.clearAnswer();
             }
             // Get next question data
             this.questionNumber++;
@@ -288,25 +288,21 @@ export default {
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Set the next answer content if there are any
                 if (this.questions[this.questionNumber].userAnswer) {
-                    setTimeout(() => {
-                        this.$refs.essayAnswer[0].setAnswer(this.questions[this.questionNumber].userAnswer);
-                    }, 500);
+                    this.$refs.essayAnswer.setAnswer(this.questions[this.questionNumber].userAnswer);
                 }
             }
         },
         Previous() {
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer[0].getAnswer();
+                const summerNote = this.$refs.essayAnswer.getAnswer();
                 // Store user answer in questions array before move to next questions
                 this.questions[this.questionNumber].userAnswer = summerNote;
             }
             this.questionNumber--;
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Set the summernote to previous answer
-                setTimeout(() => {
-                    this.$refs.essayAnswer[0].setAnswer(this.questions[this.questionNumber].userAnswer);
-                }, 500);
+                this.$refs.essayAnswer.setAnswer(this.questions[this.questionNumber].userAnswer);
             }
         },
         Submit() {
@@ -316,7 +312,7 @@ export default {
             // if the last answer is also an essay question we handle it just like with the next and previous
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer[0].getAnswer();
+                const summerNote = this.$refs.essayAnswer.getAnswer();
                 // Store user answer in questions array before move to next questions
                 this.questions[this.questionNumber].userAnswer = summerNote;
             }
@@ -584,12 +580,13 @@ export default {
                                 </label>
                             </div>
                         </div>
-                        <!-- Essay Question -->
-                        <div :class="`${question.questionType == 'essay' ? 'd-block' : 'd-none'}`">
-                            <div class="form-group">
-                                <EssayAnswer ref="essayAnswer" />
-                            </div>
-                        </div>
+                        
+                    </div>
+                </div>
+                <!-- Essay Question -->
+                <div :class="`${questions[questionNumber].questionType == 'essay' ? 'd-block' : 'd-none'}`">
+                    <div class="form-group">
+                        <EssayAnswer ref="essayAnswer" />
                     </div>
                 </div>
                 <div class="mt-3 d-flex justify-content-end">
