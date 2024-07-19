@@ -6,6 +6,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import FlagModals from './FlagModals.vue';
 
 // Nested component.
 import Forum from './Forum.vue';
@@ -44,8 +45,6 @@ export default {
             isUnlocked: false,
             filters: [],
             showModal: false,
-            showThankModal: false,
-            showReasonPopup: false,
             ancestor: this.$route.params.id,
             // accessible List that will use to find nearest un-lockable node
             accessibleSkills: [],
@@ -53,7 +52,8 @@ export default {
         };
     },
     components: {
-        Forum
+        Forum,
+        FlagModals
     },
 
     async created() {
@@ -144,6 +144,10 @@ export default {
                 this.showModal = false;
                 this.showThankModal = true;
             });
+        },
+        closeFlagModal() {
+            console.log('closing');
+            this.showModal = false;
         },
         /**
          * Find the closest ancestor of this skill node that is not mastered, but is unlocked
@@ -452,167 +456,8 @@ export default {
         </div>
         <p>&nbsp;</p>
     </div>
-    <!-- The flagging Modal -->
-    <div v-if="showModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <div class="d-flex gap-4">
-                    <!-- Warn Triangle Icon -->
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        fill="grey"
-                        width="45"
-                        height="45"
-                    >
-                        <path
-                            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
-                        />
-                    </svg>
-                    <p>
-                        Would you like to flag this as unhelpful or incorrect
-                        for admin review?
-                    </p>
-                </div>
-                <!-- Buttons row -->
-                <div
-                    class="d-flex justify-content-lg-between justify-content-md-end justify-content-between gap-2"
-                >
-                    <button
-                        type="button"
-                        class="btn red-btn modal-btn"
-                        @click="showModal = false"
-                    >
-                        <span class="d-none d-md-block"> No </span>
-                        <!-- Tick Icon ONLY show when in Phone View -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="18"
-                            fill="white"
-                            class="d-md-none"
-                        >
-                            <path
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
-                            />
-                        </svg>
-                    </button>
-                    <button
-                        type="button"
-                        class="btn green-btn modal-btn"
-                        @click="
-                            showModal = false;
-                            showReasonPopup = true;
-                        "
-                    >
-                        <span class="d-none d-md-block"> Yes </span>
-                        <!-- X icon Only show when in Phone View -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="18"
-                            fill="white"
-                            class="d-md-none"
-                        >
-                            <path
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
-                            />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- An Popup for user to type reason for flagging -->
-    <div v-if="showReasonPopup">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal">
-                <div class="d-flex flex-column">
-                    <div>Please enter reason to flag this skill:</div>
-                    <textarea
-                        id="story"
-                        name="story"
-                        rows="5"
-                        cols="33"
-                        placeholder="should be no more than 40 word"
-                    >
-                    </textarea>
-                </div>
-            </div>
-            <!-- Buttons row -->
-            <div
-                class="d-flex justify-content-lg-between justify-content-md-end justify-content-between gap-2"
-            >
-                <button
-                    type="button"
-                    class="btn red-btn modal-btn"
-                    @click="showReasonModal = false"
-                >
-                    <span class="d-none d-md-block"> Cancel </span>
-                    <!-- Tick Icon ONLY show when in Phone View -->
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="18"
-                        height="18"
-                        fill="white"
-                        class="d-md-none"
-                    >
-                        <path
-                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
-                        />
-                    </svg>
-                </button>
-                <button
-                    type="button"
-                    class="btn green-btn modal-btn"
-                    @click="flagSkill"
-                >
-                    <span class="d-none d-md-block"> Submit </span>
-                    <!-- X icon Only show when in Phone View -->
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="18"
-                        height="18"
-                        fill="white"
-                        class="d-md-none"
-                    >
-                        <path
-                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
-                        />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-    <!-- Thanks You Modal After User Flagging -->
-    <div v-if="showThankModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-                <div class="d-flex gap-4 text-center">
-                    <p>
-                        Thank you for flagging this skill. We will take a look
-                        as soon as possible !!
-                    </p>
-                </div>
-                <div class="d-flex justify-content-center">
-                    <button
-                        type="button"
-                        class="btn green-btn w-25"
-                        @click="showThankModal = false"
-                    >
-                        <span> OK </span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- flag modals component -->
+    <FlagModals v-if="showModal" />
 </template>
 
 <style scoped>
@@ -698,22 +543,6 @@ export default {
     background-color: #8f7bd6;
 }
 
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.green-btn:hover {
-    background-color: #3eb3a3;
-}
-
 .red-btn {
     background-color: #e24d4d;
     color: white;
@@ -752,46 +581,6 @@ export default {
 .btn-icon {
     height: fit-content !important;
 }
-
-/* The Warning Modal */
-.modal {
-    display: block;
-    /* Hidden by default */
-    position: fixed;
-    /* Stay in place */
-    z-index: 1;
-    /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    /* Full width */
-    height: 100%;
-    /* Full height */
-    overflow: auto;
-    /* Enable scroll if needed */
-    background-color: rgb(0, 0, 0);
-    /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.4);
-    /* Black w/ opacity */
-}
-
-#add-resource-column {
-    padding-right: 0px !important;
-    margin-right: 0px !important;
-}
-
-/* Modal Content/Box */
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 320px;
-    font-size: 18px;
-    /* Could be more or less, depending on screen size */
-}
-/* End of Warning modal styling */
 
 .flag-icon {
     height: 20px !important;
@@ -871,6 +660,11 @@ export default {
 
     .modal-btn {
         width: fit-content;
+    }
+
+    .reason-popup {
+        width: 100%;
+        top: 25%;
     }
 }
 
