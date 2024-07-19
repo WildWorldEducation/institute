@@ -4,13 +4,18 @@
 export default {
     props: [],
     data() {
-        return {};
+        return {
+            showReasonPopup: false,
+            showThankModal: false
+        };
     },
     mounted() {},
     computed: {},
     methods: {
         closeModal() {
             this.$parent.showModal = false;
+            showReasonPopup = false;
+            showThankModal = false;
         }
     }
 };
@@ -66,7 +71,7 @@ export default {
                 <button
                     type="button"
                     class="btn green-btn modal-btn"
-                    @click="closeModal()"
+                    @click="showReasonPopup = true"
                 >
                     <span class="d-none d-md-block"> Yes </span>
                     <!-- X icon Only show when in Phone View -->
@@ -111,7 +116,7 @@ export default {
                     <button
                         type="button"
                         class="btn red-btn modal-btn"
-                        @click="showReasonPopup = false"
+                        @click="closeModal"
                     >
                         <span class="d-none d-md-block"> Cancel </span>
                         <!-- Tick Icon ONLY show when in Phone View -->
