@@ -15,9 +15,9 @@ export default {
             templates: [
                 `${this.contentType} have grammar error: `,
                 `${this.contentType} have inappropriate content: `,
-                `${this.contentType} skill have violent, drug abuse content`,
+                `${this.contentType} skill have violent, drug abuse content: `,
                 `${this.contentType} have wrong or misleading information: `,
-                `${this.contentType} have content use to attack another user`
+                `${this.contentType} have content use to attack another user: `
             ]
         };
     },
