@@ -6,6 +6,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+// Import Custom Components
 import FlagModals from './FlagModals.vue';
 
 // Nested component.
@@ -44,7 +45,7 @@ export default {
             isMastered: false,
             isUnlocked: false,
             filters: [],
-            showModal: false,
+            showFlagModal: false,
             ancestor: this.$route.params.id,
             // accessible List that will use to find nearest un-lockable node
             accessibleSkills: [],
@@ -441,7 +442,7 @@ export default {
     </div>
     <!-- flag modals component -->
     <FlagModals
-        v-if="showModal"
+        v-if="showFlagModal"
         :userId="userDetailsStore.userId"
         contentType="skill"
         :contentId="skillId"

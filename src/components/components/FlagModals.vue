@@ -25,7 +25,7 @@ export default {
     computed: {},
     methods: {
         closeModal() {
-            this.$parent.showModal = false;
+            this.$parent.showFlaggingModal = false;
             showReasonPopup = false;
             showThankModal = false;
             showWarnModal = false;

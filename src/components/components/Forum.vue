@@ -1,6 +1,17 @@
 <script>
+// Import the store.
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+// Import Custom Components
+import FlagModals from './FlagModals.vue';
 export default {
-    setup() {},
+    setup() {
+        // I think because store is in separate component so we will setup it in child
+        // instead of passing the store as prob
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            userDetailsStore
+        };
+    },
     data() {
         return {
             skillId: this.$route.params.id,
@@ -19,6 +30,9 @@ export default {
             showThankModal: false,
             source: null
         };
+    },
+    components: {
+        FlagModals
     },
     computed: {
         orderedAndNamedPosts() {
@@ -359,24 +373,6 @@ export default {
         },
         closeWarningModal() {
             this.showModal = false;
-        },
-        flagSource(resourceId) {
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    content_type: 'resource',
-                    content_id: resourceId,
-                    user_id: this.user.userId
-                })
-            };
-            var url = '/content-flags/add';
-
-            fetch(url, requestOptions).then(() => {
-                // Handle showing some modal after post content flags
-                this.showThankModal = true;
-                this.showFlaggingModal = false;
-            });
         },
         handleOpenFlagModal(postId) {
             this.flagPost = postId;
@@ -778,7 +774,7 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- The Modal -->
+        <!-- The Delete Warn Modal -->
         <div v-if="showModal">
             <div id="myModal" class="modal">
                 <!-- Modal content -->
@@ -804,6 +800,13 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Flagging Component -->
+    <FlagModals
+        v-if="showFlaggingModal"
+        :userId="userDetailsStore.userId"
+        contentType="resource"
+        :contentId="postId"
+    />
 </template>
 
 <style scoped>
