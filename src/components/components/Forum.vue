@@ -432,7 +432,6 @@ export default {
                             width="18"
                             height="20"
                         >
-                            <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                             <path
                                 d="M32 32C32 14.3 46.3 0 64 0S96 14.3 96 32V240H32V32zM224 192c0-17.7 14.3-32 32-32s32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V192zm-64-64c17.7 0 32 14.3 32 32v48c0 17.7-14.3 32-32 32s-32-14.3-32-32V160c0-17.7 14.3-32 32-32zm160 96c0-17.7 14.3-32 32-32s32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V224zm-96 88l0-.6c9.4 5.4 20.3 8.6 32 8.6c13.2 0 25.4-4 35.6-10.8c8.7 24.9 32.5 42.8 60.4 42.8c11.7 0 22.6-3.1 32-8.6V352c0 88.4-71.6 160-160 160H162.3c-42.4 0-83.1-16.9-113.1-46.9L37.5 453.5C13.5 429.5 0 396.9 0 363V336c0-35.3 28.7-64 64-64h88c22.1 0 40 17.9 40 40s-17.9 40-40 40H96c-8.8 0-16 7.2-16 16s7.2 16 16 16h56c39.8 0 72-32.2 72-72z"
                                 fill="white"
@@ -483,7 +482,6 @@ export default {
                                         width="36"
                                         height="36"
                                     >
-                                        <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                                         <path
                                             d="M192 96a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm-8 384V352h16V480c0 17.7 14.3 32 32 32s32-14.3 32-32V192h56 64 16c17.7 0 32-14.3 32-32s-14.3-32-32-32H384V64H576V256H384V224H320v48c0 26.5 21.5 48 48 48H592c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H368c-26.5 0-48 21.5-48 48v80H243.1 177.1c-33.7 0-64.9 17.7-82.3 46.6l-58.3 97c-9.1 15.1-4.2 34.8 10.9 43.9s34.8 4.2 43.9-10.9L120 256.9V480c0 17.7 14.3 32 32 32s32-14.3 32-32z"
                                             fill="white"
@@ -533,8 +531,32 @@ export default {
                                 b-tooltip.hover
                                 title="I Like This "
                             >
-                                <svg v-if="post.userUpVote" width="34" height="27" fill="#36c1af" class="vote-icon upvote-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23,10C23,8.89 22.1,8 21,8H14.68L15.64,3.43C15.66,3.33 15.67,3.22 15.67,3.11C15.67,2.7 15.5,2.32 15.23,2.05L14.17,1L7.59,7.58C7.22,7.95 7,8.45 7,9V19A2,2 0 0,0 9,21H18C18.83,21 19.54,20.5 19.84,19.78L22.86,12.73C22.95,12.5 23,12.26 23,12V10M1,21H5V9H1V21Z" /></svg>
-                                <svg v-else width="34" height="27" fill="#36c1af" class="vote-icon upvote-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5,9V21H1V9H5M9,21A2,2 0 0,1 7,19V9C7,8.45 7.22,7.95 7.59,7.59L14.17,1L15.23,2.06C15.5,2.33 15.67,2.7 15.67,3.11L15.64,3.43L14.69,8H21C22.11,8 23,8.9 23,10V12C23,12.26 22.95,12.5 22.86,12.73L19.84,19.78C19.54,20.5 18.83,21 18,21H9M9,19H18.03L21,12V10H12.21L13.34,4.68L9,9.03V19Z" /></svg>
+                                <svg
+                                    v-if="post.userUpVote"
+                                    width="34"
+                                    height="27"
+                                    fill="#36c1af"
+                                    class="vote-icon upvote-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        d="M23,10C23,8.89 22.1,8 21,8H14.68L15.64,3.43C15.66,3.33 15.67,3.22 15.67,3.11C15.67,2.7 15.5,2.32 15.23,2.05L14.17,1L7.59,7.58C7.22,7.95 7,8.45 7,9V19A2,2 0 0,0 9,21H18C18.83,21 19.54,20.5 19.84,19.78L22.86,12.73C22.95,12.5 23,12.26 23,12V10M1,21H5V9H1V21Z"
+                                    />
+                                </svg>
+                                <svg
+                                    v-else
+                                    width="34"
+                                    height="27"
+                                    fill="#36c1af"
+                                    class="vote-icon upvote-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        d="M5,9V21H1V9H5M9,21A2,2 0 0,1 7,19V9C7,8.45 7.22,7.95 7.59,7.59L14.17,1L15.23,2.06C15.5,2.33 15.67,2.7 15.67,3.11L15.64,3.43L14.69,8H21C22.11,8 23,8.9 23,10V12C23,12.26 22.95,12.5 22.86,12.73L19.84,19.78C19.54,20.5 18.83,21 18,21H9M9,19H18.03L21,12V10H12.21L13.34,4.68L9,9.03V19Z"
+                                    />
+                                </svg>
                             </div>
                             <!-- Vote count Div -->
                             <span
@@ -568,8 +590,32 @@ export default {
                                     )
                                 "
                             >
-                                <svg v-if="post.userDownVote" width="34" height="27" fill="#FC6E68" class="vote-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,15H23V3H19M15,3H6C5.17,3 4.46,3.5 4.16,4.22L1.14,11.27C1.05,11.5 1,11.74 1,12V14A2,2 0 0,0 3,16H9.31L8.36,20.57C8.34,20.67 8.33,20.77 8.33,20.88C8.33,21.3 8.5,21.67 8.77,21.94L9.83,23L16.41,16.41C16.78,16.05 17,15.55 17,15V5C17,3.89 16.1,3 15,3Z" /></svg>
-                                <svg v-else width="34" height="27" fill="#FC6E68" class="vote-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,15V3H23V15H19M15,3A2,2 0 0,1 17,5V15C17,15.55 16.78,16.05 16.41,16.41L9.83,23L8.77,21.94C8.5,21.67 8.33,21.3 8.33,20.88L8.36,20.57L9.31,16H3C1.89,16 1,15.1 1,14V12C1,11.74 1.05,11.5 1.14,11.27L4.16,4.22C4.46,3.5 5.17,3 6,3H15M15,5H5.97L3,12V14H11.78L10.65,19.32L15,14.97V5Z" /></svg>
+                                <svg
+                                    v-if="post.userDownVote"
+                                    width="34"
+                                    height="27"
+                                    fill="#FC6E68"
+                                    class="vote-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        d="M19,15H23V3H19M15,3H6C5.17,3 4.46,3.5 4.16,4.22L1.14,11.27C1.05,11.5 1,11.74 1,12V14A2,2 0 0,0 3,16H9.31L8.36,20.57C8.34,20.67 8.33,20.77 8.33,20.88C8.33,21.3 8.5,21.67 8.77,21.94L9.83,23L16.41,16.41C16.78,16.05 17,15.55 17,15V5C17,3.89 16.1,3 15,3Z"
+                                    />
+                                </svg>
+                                <svg
+                                    v-else
+                                    width="34"
+                                    height="27"
+                                    fill="#FC6E68"
+                                    class="vote-icon"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        d="M19,15V3H23V15H19M15,3A2,2 0 0,1 17,5V15C17,15.55 16.78,16.05 16.41,16.41L9.83,23L8.77,21.94C8.5,21.67 8.33,21.3 8.33,20.88L8.36,20.57L9.31,16H3C1.89,16 1,15.1 1,14V12C1,11.74 1.05,11.5 1.14,11.27L4.16,4.22C4.46,3.5 5.17,3 6,3H15M15,5H5.97L3,12V14H11.78L10.65,19.32L15,14.97V5Z"
+                                    />
+                                </svg>
                             </div>
                             <!-- Actions Dropdown Component -->
                             <div class="position-relative">
@@ -752,85 +798,6 @@ export default {
                             @click="showModal = false"
                         >
                             No
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Modal of flagging resource -->
-        <div v-if="showFlaggingModal">
-            <div id="myModal" class="modal">
-                <!-- Modal content -->
-                <div class="modal-content">
-                    <p>
-                        Would you like to flag this as unhelpful or incorrect
-                        for admin review
-                    </p>
-                    <div
-                        class="d-flex justify-content-lg-between justify-content-md-end justify-content-between gap-2"
-                    >
-                        <button
-                            type="button"
-                            class="btn red-btn w-lg-25"
-                            @click="showFlaggingModal = false"
-                        >
-                            <span class="d-none d-md-block"> No </span>
-                            <!-- Tick Icon ONLY show when in Phone View -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="18"
-                                height="18"
-                                fill="white"
-                                class="d-md-none"
-                            >
-                                <path
-                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
-                                />
-                            </svg>
-                        </button>
-                        <button
-                            type="button"
-                            class="btn green-btn w-lg-25"
-                            @click="flagSource(flagPost)"
-                        >
-                            <span class="d-none d-md-block"> Yes </span>
-                            <!-- X icon Only show when in Phone View -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="18"
-                                height="18"
-                                fill="white"
-                                class="d-md-none"
-                            >
-                                <path
-                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Thank You Modal After User Flagging -->
-        <div v-if="showThankModal">
-            <div id="myModal" class="modal">
-                <!-- Modal content -->
-                <div class="modal-content">
-                    <div class="d-flex gap-4 text-center">
-                        <p>
-                            Thank you for flagging this source. We will take a
-                            look as soon as possible!
-                        </p>
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <button
-                            type="button"
-                            class="btn green-btn w-25"
-                            @click="showThankModal = false"
-                        >
-                            <div>OK</div>
                         </button>
                     </div>
                 </div>
