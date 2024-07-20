@@ -2,9 +2,10 @@
 // Import
 
 export default {
-    props: [],
+    props: ['contentType', 'contentId', 'userId'],
     data() {
         return {
+            showWarnModal: true,
             showReasonPopup: false,
             showThankModal: false,
             reason: '',
@@ -20,12 +21,31 @@ export default {
             showThankModal = false;
         },
         handleSubmitReason() {
-            if (this.reason.length > 5) {
+            if (this.reason.length > 255) {
                 this.shake = true;
                 setTimeout(() => {
                     this.shake = false;
                 }, 200);
+            } else {
+                this.flagSkill;
             }
+        },
+        flagSkill() {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content_type: this.contentType,
+                    content_id: this.contentId,
+                    user_id: this.userId,
+                    reason: this.reason
+                })
+            };
+            var url = '/content-flags/add';
+            fetch(url, requestOptions).then(() => {
+                this.showReasonPopup = false;
+                this.showThankModal = true;
+            });
         }
     }
 };
@@ -33,7 +53,7 @@ export default {
 
 <template>
     <!-- The flagging Modal -->
-    <div id="myModal" class="modal">
+    <div v-if="" id="myModal" class="modal">
         <!-- Modal content -->
         <div class="modal-content">
             <div class="d-flex gap-4">
@@ -109,6 +129,12 @@ export default {
             <div class="modal-content reason-popup">
                 <div class="d-flex flex-column">
                     <div>Please tell us why you flag this skill:</div>
+                    <div class="reason-suggestion">
+                        Reason should state why and where error happen
+                    </div>
+                    <div class="reason-suggestion">
+                        Reason should have less than 40 words
+                    </div>
                     <textarea
                         id="story"
                         name="story"
@@ -121,7 +147,7 @@ export default {
                 </div>
                 <!-- Reason validate message -->
                 <div
-                    v-if="reason.length > 5"
+                    v-if="reason.length > 255"
                     :class="[
                         shake
                             ? 'click-shake form-validate'
@@ -198,7 +224,7 @@ export default {
                     <button
                         type="button"
                         class="btn green-btn w-25"
-                        @click="showThankModal = false"
+                        @click="closeModal"
                     >
                         <span> OK </span>
                     </button>
@@ -252,6 +278,11 @@ export default {
     width: 550px;
 }
 /* ---- End of Warning modal styling ---- */
+.reason-suggestion {
+    font-size: 12px;
+    color: #888;
+    font-family: 'Poppins', sans-serif;
+}
 
 /* ++++ Style For The Custom Select ++++ */
 .custom-select-button {
@@ -474,6 +505,11 @@ export default {
 
 .green-btn:hover {
     background-color: #3eb3a3;
+    color: white;
+}
+
+.green-btn:focus {
+    background-color: #2ca695;
     color: white;
 }
 </style>

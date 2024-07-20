@@ -128,25 +128,8 @@ export default {
             );
             this.getUserSkills();
         },
-        flagSkill() {
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    content_type: 'skill',
-                    content_id: this.skill.id,
-                    user_id: this.userDetailsStore.userId
-                })
-            };
-            var url = '/content-flags/add';
-            fetch(url, requestOptions).then(() => {
-                // Handle showing some modal after post content flags
-                this.showModal = false;
-                this.showThankModal = true;
-            });
-        },
+
         closeFlagModal() {
-            console.log('closing');
             this.showModal = false;
         },
         /**
@@ -457,7 +440,12 @@ export default {
         <p>&nbsp;</p>
     </div>
     <!-- flag modals component -->
-    <FlagModals v-if="showModal" />
+    <FlagModals
+        v-if="showModal"
+        :userId="userDetailsStore.userId"
+        contentType="skill"
+        :contentId="skillId"
+    />
 </template>
 
 <style scoped>
