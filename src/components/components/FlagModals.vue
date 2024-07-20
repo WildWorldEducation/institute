@@ -9,7 +9,16 @@ export default {
             showReasonPopup: false,
             showThankModal: false,
             reason: '',
-            shake: false
+            shake: false,
+            showDropDown: false,
+            // list of pre-made template
+            templates: [
+                `${this.contentType} have grammar error: `,
+                `${this.contentType} have inappropriate content: `,
+                `${this.contentType} skill have violent, drug abuse content`,
+                `${this.contentType} have wrong or misleading information: `,
+                `${this.contentType} have content use to attack another user`
+            ]
         };
     },
     mounted() {},
@@ -19,6 +28,7 @@ export default {
             this.$parent.showModal = false;
             showReasonPopup = false;
             showThankModal = false;
+            showWarnModal = false;
         },
         handleSubmitReason() {
             if (this.reason.length > 255) {
@@ -53,7 +63,7 @@ export default {
 
 <template>
     <!-- The flagging Modal -->
-    <div v-if="" id="myModal" class="modal">
+    <div v-if="showWarnModal" id="myModal" class="modal">
         <!-- Modal content -->
         <div class="modal-content">
             <div class="d-flex gap-4">
@@ -101,7 +111,10 @@ export default {
                 <button
                     type="button"
                     class="btn green-btn modal-btn"
-                    @click="showReasonPopup = true"
+                    @click="
+                        showReasonPopup = true;
+                        showWarnModal = false;
+                    "
                 >
                     <span class="d-none d-md-block"> Yes </span>
                     <!-- X icon Only show when in Phone View -->
@@ -156,6 +169,47 @@ export default {
                 >
                     Your reason is too long !!
                 </div>
+                <!-- A list of pre-made template for student to use -->
+                <!-- Custom Dropdown -->
+                <div v-else class="d-flex flex-column">
+                    <div
+                        :class="[
+                            showDropDown
+                                ? 'custom-select-button-focus'
+                                : 'custom-select-button'
+                        ]"
+                        @click="showDropDown = !showDropDown"
+                    >
+                        Or choose one of these reason below
+                        <span>
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 20 20"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                    fill="#344054"
+                                />
+                            </svg>
+                        </span>
+                    </div>
+                    <div v-if="showDropDown" class="custom-dropdown-base">
+                        <div
+                            v-for="template in templates"
+                            class="custom-dropdown-option"
+                            @click="
+                                reason = template;
+                                showDropDown = false;
+                            "
+                        >
+                            {{ template }}
+                        </div>
+                    </div>
+                </div>
+                <!-- End of custom dropdown -->
                 <!-- Buttons row -->
                 <div
                     class="d-flex justify-content-lg-between justify-content-md-end justify-content-between gap-2 mt-2"
