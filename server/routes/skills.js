@@ -387,20 +387,20 @@ router.put(
                     (id, version_number, user_id, name, parent, description, icon_image, banner_image,
                     mastery_requirements, type, level, is_filtered, skills_history.order, is_deleted)
                     VALUES
-                    (3,
+                    (${previousId},
                     1,
                     1,
-                    'name: ',
-                    0,
-                    'description:',
-                    'icon_image:',
-                    'banner_image:',
-                    'mastery_requirements:',
-                    'sub',
-                    'grade_school',
-                    'available',
-                    0,
-                    0);`;
+                    '${previousName}',
+                    ${previousParent},
+                    '${previousDescription}',
+                    '${previousIconImage}',
+                    '${previousBannerImage}',
+                    '${previousMasteryRequirements}',
+                    '${previousType}',
+                    '${previousLevel}',
+                    '${previousIsFiltered}',
+                    ${previousOrder},
+                    ${previousIsDeleted});`;
 
                     console.log(addVersionHistoryInsertSQLQuery);
 
