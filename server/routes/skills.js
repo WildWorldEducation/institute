@@ -381,6 +381,7 @@ router.put(
                     let previousIsFiltered = results[0].is_filtered;
                     let previousOrder = results[0].order;
                     let previousIsDeleted = results[0].is_deleted;
+                    let versionNumber = results[0].version_number;
 
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skills_history
@@ -388,8 +389,8 @@ router.put(
                     mastery_requirements, type, level, is_filtered, skills_history.order, is_deleted)
                     VALUES
                     (${previousId},
-                    1,
-                    1,
+                    ${versionNumber},
+                    ${req.session.userId},
                     '${previousName}',
                     ${previousParent},
                     '${previousDescription}',
@@ -402,8 +403,7 @@ router.put(
                     ${previousOrder},
                     ${previousIsDeleted});`;
 
-                    console.log(addVersionHistoryInsertSQLQuery);
-
+                    versionNumber = versionNumber + 1;
                     conn.query(addVersionHistoryInsertSQLQuery, (err) => {
                         try {
                             if (err) {
@@ -430,8 +430,10 @@ router.put(
                                 req.body.level +
                                 `', skills.order = ` +
                                 req.body.order +
-                                ` WHERE id = ` +
-                                req.params.id;
+                                `, version_number = ${versionNumber}                               
+                                WHERE id = ` +
+                                req.params.id +
+                                `;`;
 
                             conn.query(updateRecordSQLQuery, (err, results) => {
                                 try {
