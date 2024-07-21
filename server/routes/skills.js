@@ -384,7 +384,7 @@ router.put(
                     let versionNumber = results[0].version_number;
 
                     let addVersionHistoryInsertSQLQuery = `
-                    INSERT INTO skills_history
+                    INSERT INTO skill_history
                     (id, version_number, user_id, name, parent, description, icon_image, banner_image,
                     mastery_requirements, type, level, is_filtered, skills_history.order, is_deleted)
                     VALUES

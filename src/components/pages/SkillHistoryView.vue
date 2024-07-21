@@ -4,11 +4,13 @@ export default {
     data() {
         return {
             skillId: this.$route.params.id,
-            skill: {}
+            skill: {},
+            skillRevisions: []
         };
     },
     async created() {
         await this.getSkill();
+        await this.getRevisions();
     },
     async mounted() {},
     methods: {
@@ -19,8 +21,9 @@ export default {
         },
         async getRevisions() {
             // Load the skill data
-            const res = await fetch('/skills/show/' + this.skillId);
-            
+            const res = await fetch('/skill-history/' + this.skillId + '/list');
+            this.skillRevisions = await res.json();
+            console.log(this.skillRevisions);
         }
     }
 };

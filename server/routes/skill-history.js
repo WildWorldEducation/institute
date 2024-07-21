@@ -26,7 +26,10 @@ Routes
 router.get('/:skillId/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM skills WHERE skills.is_deleted = 0';
+        let sqlQuery =
+            `SELECT * 
+            FROM skill_history 
+            WHERE id = ` + req.params.skillId;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
