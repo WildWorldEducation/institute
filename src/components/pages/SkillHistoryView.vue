@@ -2,13 +2,41 @@
 export default {
     setup() {},
     data() {
-        return {};
+        return {
+            skillId: this.$route.params.id,
+            skill: {}
+        };
+    },
+    async created() {
+        await this.getSkill();
     },
     async mounted() {},
-    components: {}
+    methods: {
+        async getSkill() {
+            // Load the skill data
+            const res = await fetch('/skills/show/' + this.skillId);
+            this.skill = await res.json();
+        },
+        async getRevisions() {
+            // Load the skill data
+            const res = await fetch('/skills/show/' + this.skillId);
+            
+        }
+    }
 };
 </script>
 
-<template>skill history</template>
+<template>
+    <div class="container">
+        <h1>{{ skill.name }}: Revision history</h1>
+    </div>
+</template>
 
-<style scoped></style>
+<style scoped>
+h1 {
+    color: #a48be6;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+</style>
