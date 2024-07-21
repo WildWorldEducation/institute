@@ -215,7 +215,7 @@ export default {
             <div class="d-flex justify-content-between">
                 <!-- Show version history -->
                 <router-link
-                    to=""
+                    :to="'/skills/history/' + this.skillId"
                     class="btn purple-btn"
                     style="max-height: 37.6px"
                     ><span>History</span>

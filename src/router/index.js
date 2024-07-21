@@ -80,6 +80,12 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
         {
+            path: '/skills/history/:id',
+            name: 'skill-history',
+            component: () => import('../components/pages/SkillHistoryView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+        },
+        {
             path: '/skills/:id/question-bank/add',
             name: 'add-question',
             component: () => import('../components/pages/AddQuestionView.vue')
