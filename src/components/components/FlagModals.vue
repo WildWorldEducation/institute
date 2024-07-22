@@ -52,7 +52,7 @@ export default {
                 })
             };
             var url = '/content-flags/add';
-            fetch(url, requestOptions).then(() => {
+            fetch(url, requestOptions).then((err) => {
                 this.showReasonPopup = false;
                 this.showThankModal = true;
             });

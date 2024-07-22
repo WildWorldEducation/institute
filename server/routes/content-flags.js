@@ -101,6 +101,7 @@ router.post('/add', (req, res, next) => {
                         content_type: 'content_flag',
 
                     };
+
                     let userActionQuery =
                         'INSERT IGNORE INTO user_actions SET ?';
                     conn.query(userActionQuery, actionData, (err, result) => {

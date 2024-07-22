@@ -45,7 +45,7 @@ export default {
             isMastered: false,
             isUnlocked: false,
             filters: [],
-            showFlagModal: false,
+            showFlaggingModal: false,
             ancestor: this.$route.params.id,
             // accessible List that will use to find nearest un-lockable node
             accessibleSkills: [],
@@ -328,7 +328,7 @@ export default {
                     <!-- Flag the skill button -->
                     <div class="d-flex flex-row-reverse">
                         <div
-                            @click="showModal = true"
+                            @click="showFlaggingModal = true"
                             type="button"
                             class="me-1"
                             b-tooltip.hover
@@ -442,7 +442,7 @@ export default {
     </div>
     <!-- flag modals component -->
     <FlagModals
-        v-if="showFlagModal"
+        v-if="showFlaggingModal"
         :userId="userDetailsStore.userId"
         contentType="skill"
         :contentId="skillId"

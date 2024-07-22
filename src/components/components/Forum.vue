@@ -27,7 +27,6 @@ export default {
             flagPost: '',
             showActionBtns: false,
             currentClickId: '',
-            showThankModal: false,
             source: null
         };
     },
