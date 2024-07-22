@@ -26,9 +26,9 @@ export default {
     methods: {
         closeModal() {
             this.$parent.showFlaggingModal = false;
-            showReasonPopup = false;
-            showThankModal = false;
-            showWarnModal = false;
+            this.showReasonPopup = false;
+            this.showThankModal = false;
+            this.showWarnModal = false;
         },
         handleSubmitReason() {
             if (this.reason.length > 255) {
@@ -37,7 +37,7 @@ export default {
                     this.shake = false;
                 }, 200);
             } else {
-                this.flagSkill;
+                this.flagSkill();
             }
         },
         flagSkill() {

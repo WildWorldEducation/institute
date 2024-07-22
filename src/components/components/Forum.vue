@@ -805,7 +805,7 @@ export default {
         v-if="showFlaggingModal"
         :userId="userDetailsStore.userId"
         contentType="resource"
-        :contentId="postId"
+        :contentId="flagPost"
     />
 </template>
 
