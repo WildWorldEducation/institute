@@ -4,11 +4,13 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useSettingsStore } from '../../stores/SettingsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useAssessmentsStore } from '../../stores/AssessmentsStore';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
+// Import custom component
 import EssayAnswer from './EssayAnswer.vue';
 import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
 import AssessmentResult from './AssessmentResult.vue';
-import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
-import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
+import FlagModals from './FlagModals.vue';
 
 export default {
     setup() {
@@ -50,10 +52,11 @@ export default {
             // the flag to determine whether the student update assessment
             oldAssessment: undefined,
             updatedAssessment: false,
-            // flagging modal data
+            // flag relate variable
             showFlaggingModal: false,
+            flagContentType: '',
+            // flag to determine whether student pass the test
             isQuizPassed: false,
-            showThankModal: false,
             // assign the initial index to infinity because index is number type
             answerHoveredIndex: Infinity,
             // _____ result relate variable _____
@@ -150,7 +153,8 @@ export default {
     components: {
         EssayAnswer,
         StudentAddMCQuestion,
-        AssessmentResult
+        AssessmentResult,
+        FlagModals
     },
     methods: {
         async fetchMCQuestions(skillId) {
@@ -225,8 +229,11 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    if(data.length > 0 && !this.userDetailsStore.instructor.id){
-                        this.needToSelectInstructor = true
+                    if (
+                        data.length > 0 &&
+                        !this.userDetailsStore.instructor.id
+                    ) {
+                        this.needToSelectInstructor = true;
                     }
                     // Add the new questions to the existing questions.
                     this.essayQuestions = this.essayQuestions.concat(data);
@@ -261,6 +268,7 @@ export default {
 
                     // Set the first question in questions array for display
                     this.question = this.questions[0];
+                    console.log(this.question);
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
                     this.totalNumOfQuestions = this.questions.length;
@@ -430,26 +438,14 @@ export default {
             // this.MakeMastered(this.skill);
             this.isQuizPassed = true;
         },
-        flagQuestion(questionId) {
-            // Determine the type of flag based on question type
-            const questionType =
-                this.question.questionType == 'mc'
-                    ? 'mc_question'
-                    : 'essay_question';
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    content_type: questionType,
-                    content_id: questionId,
-                    user_id: this.userDetailsStore.userId
-                })
-            };
-            var url = '/content-flags/add';
-            fetch(url, requestOptions).then(() => {
-                this.showThankModal = true;
-                this.showFlaggingModal = false;
-            });
+        handleClickFlagIcon() {
+            // because we have difference name use in content-flag table
+            if (this.question.questionType === 'mc') {
+                this.flagContentType = 'mc_question';
+            } else {
+                this.flagContentType = 'essay_question';
+            }
+            this.showFlaggingModal = true;
         },
         async MakeMastered(skill) {
             await this.userSkillsStore.MakeMastered(
@@ -470,7 +466,11 @@ export default {
     <!-- Loading screen -->
     <div v-if="loading == true">Loading...</div>
     <!-- Assessment -->
-    <div v-if="loading == false && isQuizPassed == false && !needToSelectInstructor">
+    <div
+        v-if="
+            loading == false && isQuizPassed == false && !needToSelectInstructor
+        "
+    >
         <!-- Show student a warning if their take this assessment before and still wait for marking -->
         <div v-if="updatedAssessment">
             <div id="myModal" class="modal">
@@ -517,7 +517,7 @@ export default {
                         <div
                             b-tooltip.hover
                             title="flag this question for review"
-                            @click="showFlaggingModal = true"
+                            @click="handleClickFlagIcon"
                             class="flagging-icon"
                             style="height: 50px"
                         >
@@ -613,94 +613,12 @@ export default {
     <AssessmentResult :skill="skill" v-if="showResult" />
     <!--------------- Modals -------------->
     <!-- The flagging Modal -->
-    <div v-if="showFlaggingModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content-flag">
-                <div class="d-flex gap-4">
-                    <!-- Warn Triangle Icon -->
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        fill="grey"
-                        width="45"
-                        height="45"
-                    >
-                        <path
-                            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
-                        />
-                    </svg>
-                    <p>
-                        Would you like to flag this as unhelpful or incorrect
-                        for admin review
-                    </p>
-                </div>
-                <div class="d-flex justify-content-between gap-2">
-                    <button
-                        type="button"
-                        class="btn red-btn w-md-25"
-                        @click="showFlaggingModal = false"
-                    >
-                        <span class="d-none d-md-block"> No </span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="18"
-                            fill="white"
-                            class="d-md-none modal-icon"
-                        >
-                            <path
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
-                            />
-                        </svg>
-                    </button>
-                    <button
-                        type="button"
-                        class="btn green-btn w-md-25"
-                        @click="flagQuestion(question.id)"
-                    >
-                        <span class="d-none d-md-block"> Yes </span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="18"
-                            fill="white"
-                            class="d-md-none modal-icon"
-                        >
-                            <path
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
-                            />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Thank You Modal After User Flags Question -->
-    <div v-if="showThankModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content-flag">
-                <div class="d-flex gap-4 text-center">
-                    <p>
-                        Thank you for flagging this question. We will take a
-                        look as soon as possible !!
-                    </p>
-                </div>
-                <div class="d-flex justify-content-center">
-                    <button
-                        type="button"
-                        class="btn green-btn w-25"
-                        @click="showThankModal = false"
-                    >
-                        <span> OK </span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <FlagModals
+        v-if="showFlaggingModal"
+        :userId="userDetailsStore.userId"
+        :contentId="question.id"
+        :contentType="flagContentType"
+    />
     <div v-if="needToSelectInstructor" class="modal">
         <!-- Modal content -->
         <div class="modal-content">
@@ -709,21 +627,23 @@ export default {
                     Please choose an instructor before taking these quizzes.
                 </p>
             </div>
-            <div class="d-flex flex-column-reverse flex-md-row justify-content-center gap-2">
-                    <RouterLink
-                        :to="`/skills/${skillId}`"
-                        type="button"
-                        class="btn green-btn w-100 w-md-50"
-                    >
-                        <span>Back</span>
-                    </RouterLink>
-                    <RouterLink
+            <div
+                class="d-flex flex-column-reverse flex-md-row justify-content-center gap-2"
+            >
+                <RouterLink
+                    :to="`/skills/${skillId}`"
+                    type="button"
+                    class="btn green-btn w-100 w-md-50"
+                >
+                    <span>Back</span>
+                </RouterLink>
+                <RouterLink
                     to="/profile/edit"
-                        type="button"
-                        class="btn green-btn w-100 w-md-50"
-                    >
-                        <span>Select Instructor</span>
-                    </RouterLink>
+                    type="button"
+                    class="btn green-btn w-100 w-md-50"
+                >
+                    <span>Select Instructor</span>
+                </RouterLink>
             </div>
         </div>
     </div>
