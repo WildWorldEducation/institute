@@ -48,7 +48,7 @@ router.post('/new-student/add', (req, res, next) => {
 
     // Check if username or email address already exist.
     let sqlQuery1 =
-        "SELECT * FROM users WHERE username = '" + req.body.username + "';";
+        `SELECT * FROM users WHERE username = '${req.body.username}' AND NOT(email = '${req.body.email}' AND is_deleted = 1) ;`;
     let query1 = conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
@@ -67,9 +67,27 @@ router.post('/new-student/add', (req, res, next) => {
                             throw err;
                         } else {
                             if (results.length > 0) {
-                                res.json({
-                                    account: 'email already taken'
-                                });
+                                if(results[0].is_deleted){
+                                    let restoreSql = "UPDATE users SET ? , is_deleted = 0 WHERE email = ?"
+                                    conn.query(restoreSql, [data, data.email], (err) => {
+                                        if (err) {
+                                            throw err;
+                                        }else{
+                                            req.session.userId = results[0].id;
+                                            req.session.userName = req.body.username;
+                                            req.session.firstName = req.body.first_name;
+                                            req.session.lastName = req.body.last_name;
+                                            req.session.role = req.body.role;
+                                            // Unlock skills here
+                                            unlockInitialSkills(req.session.userId);
+                                            res.json({account:'authorized'});
+                                        }
+                                    });
+                                }else{
+                                    res.json({
+                                        account: 'email already taken'
+                                    });
+                                }
                             } else {
                                 // Remove the backslash from username.
                                 // Using '?', so dont need to escape it.
@@ -152,7 +170,7 @@ router.post('/new-editor/add', (req, res, next) => {
 
     // Check if username or email address already exist.
     let sqlQuery1 =
-        "SELECT * FROM users WHERE username = '" + req.body.username + "';";
+        `SELECT * FROM users WHERE username = '${req.body.username}' AND NOT(email = '${req.body.email}' AND is_deleted = 1) ;`;
     let query1 = conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
@@ -171,9 +189,27 @@ router.post('/new-editor/add', (req, res, next) => {
                             throw err;
                         } else {
                             if (results.length > 0) {
-                                res.json({
-                                    account: 'email already taken'
-                                });
+                                if(results[0].is_deleted){
+                                    let restoreSql = "UPDATE users SET ? , is_deleted = 0 WHERE email = ?"
+                                    conn.query(restoreSql, [data, data.email], (err) => {
+                                        if (err) {
+                                            throw err;
+                                        }else{
+                                            req.session.userId = results[0].id;
+                                            req.session.userName = req.body.username;
+                                            req.session.firstName = req.body.first_name;
+                                            req.session.lastName = req.body.last_name;
+                                            req.session.role = req.body.role;
+                                            // Unlock skills here
+                                            unlockInitialSkills(req.session.userId);
+                                            res.json({account:'authorized', role: req.session.role});
+                                        }
+                                    });
+                                }else{
+                                    res.json({
+                                        account: 'email already taken'
+                                    });
+                                }
                             } else {
                                 // Remove the backslash from username.
                                 // Using '?', so dont need to escape it.
@@ -283,7 +319,7 @@ router.post('/add',isAuthenticated, createUserPermission, (req, res, next) => {
 
     // Check if username or email address already exist.
     let sqlQuery1 =
-        "SELECT * FROM users WHERE username = '" + req.body.username + "';";
+        `SELECT * FROM users WHERE username = '${req.body.username}' AND NOT(email = '${req.body.email}' AND is_deleted = 1) ;`;
     let query1 = conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
@@ -302,9 +338,20 @@ router.post('/add',isAuthenticated, createUserPermission, (req, res, next) => {
                             throw err;
                         } else {
                             if (results.length > 0) {
-                                res.json({
-                                    account: 'email already taken'
-                                });
+                                if(results[0].is_deleted){
+                                    let restoreSql = "UPDATE users SET ? , is_deleted = 0 WHERE email = ?"
+                                    conn.query(restoreSql, [data, data.email], (err) => {
+                                        if (err) {
+                                            throw err;
+                                        }else{
+                                            res.json({account:'account created', id: results[0].id});
+                                        }
+                                    });
+                                }else{
+                                    res.json({
+                                        account: 'email already taken'
+                                    });
+                                }
                             } else {
                                 // Remove the backslash from username.
                                 // Using '?', so dont need to escape it.
