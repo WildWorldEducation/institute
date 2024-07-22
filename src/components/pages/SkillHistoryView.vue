@@ -24,6 +24,28 @@ export default {
             const res = await fetch('/skill-history/' + this.skillId + '/list');
             this.skillRevisions = await res.json();
             console.log(this.skillRevisions);
+
+            // Prepare the data.
+            for (let i = 0; i < this.skillRevisions.length; i++) {
+                // Split timestamp into [ Y, M, D, h, m, s ]
+                var date = this.skillRevisions[i].edited_date.replace('T', ' ');
+                date = date.replace('Z', ' ');
+                console.log(date);
+                let newDate = date.split(/[- :]/);
+                console.log(newDate);
+                // Apply each element to the Date function
+                var finalDate = new Date(
+                    Date.UTC(
+                        newDate[0],
+                        newDate[1] - 1,
+                        newDate[2],
+                        newDate[3],
+                        newDate[4],
+                        newDate[5]
+                    )
+                );
+                console.log(finalDate);
+            }
         }
     }
 };
@@ -32,6 +54,11 @@ export default {
 <template>
     <div class="container">
         <h1>{{ skill.name }}: Revision history</h1>
+        <ul>
+            <li v-for="revision in skillRevisions">
+                {{ revision.edited_date }}
+            </li>
+        </ul>
     </div>
 </template>
 
