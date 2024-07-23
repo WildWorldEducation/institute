@@ -31,9 +31,10 @@ export default {
             showDismissModal: false,
             flagId: '',
             headers: [
+                { text: 'Type', value: 'type' },
                 { text: 'Name', value: 'name' },
                 { text: 'User', value: 'user', width: 99 },
-                { text: 'Type', value: 'type' },
+                { text: 'date', value: 'date' },
                 { text: 'Action', value: 'action' }
             ],
             rows: [],
@@ -70,9 +71,18 @@ export default {
                 .then(() => {
                     for (let i = 0; i < this.contentFlags.length; i++) {
                         const flag = this.contentFlags[i];
-
                         // parse the content data because mysql library return it as a string
                         const contentObj = JSON.parse(flag.contentData);
+                        const parseDate = new Date(flag.create_date);
+                        const createDate = parseDate.toLocaleString('en-gb', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        const createTime = parseDate.toLocaleTimeString();
+                        const flagRow = {};
+                        flagRow.date = `${createTime}-${createDate}`;
                         switch (flag.content_type) {
                             // Handle for mc question flag
                             case 'mc_question':
@@ -86,99 +96,67 @@ export default {
                                 } else if (contentObj.level == 'high_school') {
                                     contentObj.level = 'high school';
                                 }
-
-                                const tableRowMC = {
-                                    type: 'mc question',
-                                    name:
-                                        contentObj.name +
-                                        ' ' +
-                                        contentObj.question,
-                                    nameUrl:
-                                        'skills/' +
-                                        contentObj.skillId +
-                                        '/question-bank',
-                                    flagId: flag.id,
-                                    editUrl:
-                                        '/mc-questions/edit/' + flag.content_id,
-                                    expandContent: contentObj,
-                                    user: {
-                                        username: flag.username,
-                                        id: flag.userId,
-                                        role: flag.userRole
-                                    }
+                                flagRow.type = 'mc question';
+                                flagRow.name = `${contentObj.name} ${contentObj.question}`;
+                                flagRow.nameUrl = `skills/${contentObj.skillId}/question-bank`;
+                                flagRow.flagId = flag.id;
+                                flagRow.editUrl = `/mc-questions/edit/${flag.content_id}`;
+                                flagRow.expandContent = contentObj;
+                                flagRow.user = {
+                                    username: flag.username,
+                                    id: flag.userId,
+                                    role: flag.userRole
                                 };
-                                this.rows.push(tableRowMC);
+
                                 break;
                             // Handle for mc question flag
                             case 'essay_question':
-                                const tableRowEssay = {
-                                    type: 'essay question',
-                                    name:
-                                        contentObj.name +
-                                        ' ' +
-                                        contentObj.question,
-                                    nameUrl:
-                                        'skills/' +
-                                        contentObj.skillId +
-                                        '/question-bank',
-                                    flagId: flag.id,
-                                    editUrl:
-                                        '/essay-questions/edit/' +
-                                        flag.content_id,
-                                    expandContent: contentObj,
-                                    user: {
-                                        username: flag.username,
-                                        id: flag.userId,
-                                        role: flag.userRole
-                                    }
+                                flagRow.type = 'essay question';
+                                flagRow.name = `${contentObj.name} ${contentObj.question}`;
+
+                                flagRow.nameUrl = `skills/${contentObj.skillId}/question-bank`;
+                                flagRow.flagId = flag.id;
+                                flagRow.editUrl = `/essay-questions/edit/${flag.content_id}`;
+                                flagRow.expandContent = contentObj;
+                                flagRow.user = {
+                                    username: flag.username,
+                                    id: flag.userId,
+                                    role: flag.userRole
                                 };
-                                this.rows.push(tableRowEssay);
                                 break;
                             // handle for skill flag
                             case 'skill':
-                                const tableRowSkill = {
-                                    type: 'skill',
-                                    name: contentObj.name,
-                                    nameUrl: 'skills/' + flag.content_id,
-
-                                    flagId: flag.id,
-                                    editUrl: '/skills/edit/' + flag.content_id,
-                                    expandContent: contentObj,
-                                    user: {
+                                flagRow.type = 'skill';
+                                flagRow.name = contentObj.name;
+                                flagRow.nameUrl = `skills/${flag.content_id}`;
+                                flagRow.flagId = flag.id;
+                                flagRow.editUrl = `/skills/edit/${flag.content_id}`;
+                                (flagRow.expandContent = contentObj),
+                                    (flagRow.user = {
                                         username: flag.username,
                                         id: flag.userId,
                                         role: flag.userRole
-                                    }
-                                };
-                                this.rows.push(tableRowSkill);
+                                    });
                                 break;
                             // handle for resource flag
                             case 'resource':
-                                const tableRowResource = {
-                                    type: 'resource',
-                                    name:
-                                        'Commented by user: ' +
-                                        contentObj.user +
-                                        ', in skill: ' +
-                                        contentObj.skill +
-                                        ' forum',
-                                    nameUrl: 'skills/' + contentObj.skillId,
-
-                                    flagId: flag.id,
-                                    editUrl:
-                                        '/resources/edit/' + flag.content_id,
-                                    expandContent: contentObj,
-                                    user: {
-                                        username: flag.username,
-                                        id: flag.userId,
-                                        role: flag.userRole
-                                    }
+                                flagRow.type = 'resource';
+                                flagRow.name = `Commented by user: ${contentObj.user} in skill: ${contentObj.skill} forum`;
+                                flagRow.nameUrl = `skills/${contentObj.skillId}`;
+                                flagRow.flagId = flag.id;
+                                flagRow.editUrl = `/resources/edit/${flag.content_id}`;
+                                flagRow.expandContent = contentObj;
+                                flagRow.user = {
+                                    username: flag.username,
+                                    id: flag.userId,
+                                    role: flag.userRole
                                 };
-                                this.rows.push(tableRowResource);
                                 break;
                             default:
                                 break;
                         }
+
+                        this.rows.push(flagRow);
                     }
                     this.rowsLength = this.rows.length;
                     this.isContentFlagsLoaded = true;
@@ -308,7 +286,6 @@ export default {
                 :headers="headers"
                 :items="rows"
                 alternating
-                show-index
                 :loading="!isContentFlagsLoaded"
                 table-class-name="customize-table"
                 :filter-options="filterOptions()"
@@ -331,6 +308,12 @@ export default {
                     >
                 </template>
 
+                <!-- --- Date column --- -->
+                <template #item-date="{ date }">
+                    <div class="date-cell">
+                        {{ date }}
+                    </div>
+                </template>
                 <!-- --- Action Buttons Column --- -->
                 <template #item-action="{ flagId, editUrl, type }">
                     <div
@@ -1582,6 +1565,12 @@ h2 {
 
 #expand-mc-answer {
     width: fit-content;
+}
+
+.date-cell {
+    color: #888;
+    font-family: 'Poppins' sans-serif;
+    font-size: 15px;
 }
 
 .expand-skill-requirement {
