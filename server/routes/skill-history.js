@@ -29,7 +29,9 @@ router.get('/:skillId/list', (req, res, next) => {
         let sqlQuery =
             `SELECT * 
             FROM skill_history 
-            WHERE id = ` + req.params.skillId;
+            WHERE id = ` +
+            req.params.skillId +
+            ` ORDER BY edited_date DESC`;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

@@ -81,7 +81,15 @@ export default {
         <h1>{{ skill.name }}: Revision history</h1>
         <ul>
             <li v-for="revision in skillRevisions">
-                {{ revision.edited_date }}, {{ revision.username }}
+                <router-link
+                    :to="
+                        '/skills/' +
+                        skillId +
+                        '/revision/' +
+                        revision.version_number
+                    "
+                    >{{ revision.edited_date }}</router-link
+                >, {{ revision.username }}
             </li>
         </ul>
     </div>
