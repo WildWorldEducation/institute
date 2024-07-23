@@ -1,6 +1,13 @@
 <script>
+import { useUsersStore } from '../../stores/UsersStore';
+
 export default {
-    setup() {},
+    setup() {
+        const usersStore = useUsersStore();
+        return {
+            usersStore
+        };
+    },
     data() {
         return {
             skillId: this.$route.params.id,
@@ -10,6 +17,8 @@ export default {
     },
     async created() {
         await this.getSkill();
+        // Set up the first user in the array to be selected on the page initially.
+        if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
         await this.getRevisions();
     },
     async mounted() {},
@@ -20,6 +29,7 @@ export default {
             this.skill = await res.json();
         },
         async getRevisions() {
+            console.log(this.usersStore.users);
             // Load the skill data
             const res = await fetch('/skill-history/' + this.skillId + '/list');
             this.skillRevisions = await res.json();
@@ -27,12 +37,11 @@ export default {
 
             // Prepare the data.
             for (let i = 0; i < this.skillRevisions.length; i++) {
+                // Prep the date and time data ---------------
                 // Split timestamp into [ Y, M, D, h, m, s ]
                 var date = this.skillRevisions[i].edited_date.replace('T', ' ');
                 date = date.replace('Z', ' ');
-                console.log(date);
                 let newDate = date.split(/[- :]/);
-                console.log(newDate);
                 // Apply each element to the Date function
                 var finalDate = new Date(
                     Date.UTC(
@@ -44,7 +53,23 @@ export default {
                         newDate[5]
                     )
                 );
-                console.log(finalDate);
+                var options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric'
+                };
+                this.skillRevisions[i].edited_date =
+                    finalDate.toLocaleDateString('en-US', options);
+
+                // -----------------------
+                // Prep the users data.
+                let obj = this.usersStore.users.find(
+                    (o) => o.id === this.skillRevisions[i].user_id
+                );
+                console.log(obj);
             }
         }
     }
@@ -56,7 +81,7 @@ export default {
         <h1>{{ skill.name }}: Revision history</h1>
         <ul>
             <li v-for="revision in skillRevisions">
-                {{ revision.edited_date }}
+                {{ revision.edited_date }}, user
             </li>
         </ul>
     </div>
