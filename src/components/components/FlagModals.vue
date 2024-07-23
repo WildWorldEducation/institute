@@ -17,7 +17,8 @@ export default {
                 `${this.contentType} have inappropriate content: `,
                 `${this.contentType} skill have violent, drug abuse content: `,
                 `${this.contentType} have wrong or misleading information: `,
-                `${this.contentType} have content use to attack another user: `
+                `${this.contentType} have content use to attack another user: `,
+                `${this.contentType} have spam and low effort content: `
             ]
         };
     },
@@ -149,10 +150,11 @@ export default {
                         Reason should have less than 40 words
                     </div>
                     <textarea
-                        id="story"
-                        name="story"
+                        id="reason"
+                        name="reason"
                         rows="5"
                         cols="33"
+                        autofocus
                         v-model="reason"
                     >
                     </textarea>
@@ -171,7 +173,8 @@ export default {
                 </div>
                 <!-- A list of pre-made template for student to use -->
                 <!-- Custom Dropdown -->
-                <div v-else class="d-flex flex-column">
+
+                <div v-else class="d-flex flex-column custom-select-div">
                     <div
                         :class="[
                             showDropDown
@@ -196,18 +199,20 @@ export default {
                             </svg>
                         </span>
                     </div>
-                    <div v-if="showDropDown" class="custom-dropdown-base">
-                        <div
-                            v-for="template in templates"
-                            class="custom-dropdown-option"
-                            @click="
-                                reason = template;
-                                showDropDown = false;
-                            "
-                        >
-                            {{ template }}
+                    <Transition name="dropdown">
+                        <div v-if="showDropDown" class="custom-dropdown-base">
+                            <div
+                                v-for="template in templates"
+                                class="custom-dropdown-option"
+                                @click="
+                                    reason = template;
+                                    showDropDown = false;
+                                "
+                            >
+                                {{ template }}
+                            </div>
                         </div>
-                    </div>
+                    </Transition>
                 </div>
                 <!-- End of custom dropdown -->
                 <!-- Buttons row -->
@@ -338,7 +343,28 @@ export default {
     font-family: 'Poppins', sans-serif;
 }
 
+/* Style for text area  */
+#reason {
+    outline: none;
+    border-radius: 8px;
+    border: #888 1px solid;
+    padding: 10px;
+    font-family: 'Poppins' sans-serif;
+    font-size: 15px;
+    color: #394353;
+}
+
+#reason:focus {
+    outline: none;
+}
+
 /* ++++ Style For The Custom Select ++++ */
+.custom-select-div {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 75%;
+}
+
 .custom-select-button {
     width: 100%;
     height: auto;
@@ -436,10 +462,34 @@ export default {
     box-shadow: 0px 12px 16px -4px #10182814;
 }
 
+/* Slide animation */
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+.dropdown-enter-active {
+    transform-origin: top center;
+    animation: slide 0.6s;
+}
+.dropdown-leave-active {
+    transform-origin: top center;
+    animation: slide 0.6s reverse;
+}
+
 .custom-dropdown-option {
     padding: 10px 14px 10px 14px;
     gap: 8px;
     color: #344054;
+    font-size: 15px;
+    font-family: 'Poppins' sans-serif;
 }
 
 .custom-dropdown-option:hover {

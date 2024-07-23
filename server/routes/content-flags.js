@@ -149,7 +149,6 @@ router.delete('/:id', (req, res, next) => {
                         else
                             res.end();
                     })
-
                 }
             } catch (err) {
                 next(err);
