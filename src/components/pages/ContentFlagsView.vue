@@ -176,6 +176,29 @@ export default {
                                 };
                                 this.rows.push(tableRowResource);
                                 break;
+                            case 'tutor_post':
+                                const tableTutorPost = {
+                                    type: 'tutor post',
+                                    name:
+                                        'Tutor post by user: ' +
+                                        contentObj.user +
+                                        ', in skill: ' +
+                                        contentObj.skill +
+                                        ' forum',
+                                    nameUrl: 'skills/' + contentObj.skillId,
+
+                                    flagId: flag.id,
+                                    editUrl:
+                                        'skills/' + contentObj.skillId,
+                                    expandContent: contentObj,
+                                    user: {
+                                        username: flag.username,
+                                        id: flag.userId,
+                                        role: flag.userRole
+                                    }
+                                };
+                                this.rows.push(tableTutorPost);
+                                break;
                             default:
                                 break;
                         }
@@ -528,6 +551,19 @@ export default {
                                 <div
                                     class="expand-skill-requirement"
                                     v-html="expandContent.content"
+                                ></div>
+                            </div>
+                        </div>
+                        <div v-if="type == 'tutor post'">
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">User:</div>
+                                <div>{{ expandContent.user }}</div>
+                            </div>
+                            <div class="d-flex flex-column mb-2">
+                                <div class="expand-tile">Description:</div>
+                                <div
+                                    class="expand-skill-requirement"
+                                    v-html="expandContent.description"
                                 ></div>
                             </div>
                         </div>
