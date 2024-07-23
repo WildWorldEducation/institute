@@ -29,7 +29,6 @@ export default {
             this.skill = await res.json();
         },
         async getRevisions() {
-            console.log(this.usersStore.users);
             // Load the skill data
             const res = await fetch('/skill-history/' + this.skillId + '/list');
             this.skillRevisions = await res.json();
@@ -66,10 +65,11 @@ export default {
 
                 // -----------------------
                 // Prep the users data.
-                let obj = this.usersStore.users.find(
+                let user = this.usersStore.users.find(
                     (o) => o.id === this.skillRevisions[i].user_id
                 );
-                console.log(obj);
+                this.skillRevisions[i].username = user.username;
+                //-------------
             }
         }
     }
@@ -81,7 +81,7 @@ export default {
         <h1>{{ skill.name }}: Revision history</h1>
         <ul>
             <li v-for="revision in skillRevisions">
-                {{ revision.edited_date }}, user
+                {{ revision.edited_date }}, {{ revision.username }}
             </li>
         </ul>
     </div>
