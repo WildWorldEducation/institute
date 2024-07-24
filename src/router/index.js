@@ -242,6 +242,11 @@ const router = createRouter({
             path: '/tutor/edit/:tutorPostId',
             name: 'edit-tutor',
             component: () => import('../components/pages/EditTutorPostView.vue')
+        },
+        {
+            path: '/edits/list',
+            name: 'approve-edits',
+            component: () => import('../components/pages/EditsListView.vue')
         }
     ]
 });

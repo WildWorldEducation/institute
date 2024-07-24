@@ -52,8 +52,7 @@ export default {
             <h1 id="user-name">{{ name }}</h1>
         </div>
         <div class="row content-row">
-            <div class="col-lg-4 col-md-5 mb-4 pb-4 column mx-0"            
-            >
+            <div class="col-lg-4 col-md-5 mb-4 pb-4 column mx-0">
                 <!-- Avatar image -->
                 <img
                     id="profile-img"
@@ -69,6 +68,9 @@ export default {
                 <MarkAssessment
                     v-else-if="userDetailsStore.role == 'instructor'"
                 />
+                <div v-else>
+                    <router-link to="/edits/list">Approve edits</router-link>
+                </div>
             </div>
             <div class="col-lg-4 col-md-7 mb-4 pb-4">
                 <LastVisitedSkills
