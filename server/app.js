@@ -90,6 +90,8 @@ const tutorPosts = require('./routes/tutor-posts');
 app.use('/tutor-posts', tutorPosts);
 const skillHistory = require('./routes/skill-history');
 app.use('/skill-history', skillHistory);
+const contentEdits = require('./routes/content-edits');
+app.use('/content-edits', contentEdits);
 
 app.locals.title = 'Skill Tree';
 
