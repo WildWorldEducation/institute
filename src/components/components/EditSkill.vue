@@ -852,11 +852,18 @@ export default {
         </div>
         <!-- Mastery Requirement summernote -->
         <div v-if="skill.type != 'domain'" class="mb-3">
-            <div class="d-flex justify-content-between">
+            <div
+                class="d-flex justify-content-between"
+                v-if="
+                    userDetailsStore.role == 'admin' ||
+                    userDetailsStore.role == 'editor'
+                "
+            >
                 <label for="mastery_requirements" class="form-label"
                     >Mastery Requirements</label
                 >
             </div>
+            <div v-else class="mt-3"></div>
             <textarea
                 class="form-control"
                 v-model="skill.mastery_requirements"
