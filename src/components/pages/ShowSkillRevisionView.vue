@@ -1,12 +1,18 @@
 <script>
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useSkillsStore } from '../../stores/SkillsStore';
+import { useUsersStore } from '../../stores/UsersStore';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const skillsStore = useSkillsStore();
+        const usersStore = useUsersStore();
 
         return {
-            userDetailsStore
+            userDetailsStore,
+            skillsStore,
+            usersStore
         };
     },
     data() {
@@ -17,6 +23,14 @@ export default {
         };
     },
     async created() {
+        // Get list of skills.
+        if (this.skillsStore.skillsList.length == 0) {
+            await this.skillsStore.getSkillsList();
+        }
+        // Get list of users.
+        if (this.usersStore.users.length == 0) {
+            await this.usersStore.getUsers();
+        }
         await this.getSkillVersion();
     },
     methods: {
@@ -26,7 +40,55 @@ export default {
 
             const res = await fetch(url);
             this.skillRevision = await res.json();
+
+            // Get name of parent.
+            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                if (
+                    this.skillsStore.skillsList[i].id ==
+                    this.skillRevision.parent
+                ) {
+                    this.skillRevision.parentName =
+                        this.skillsStore.skillsList[i].name;
+                }
+            }
+
             console.log(this.skillRevision);
+            // Get name of user that made the revision.
+            for (let i = 0; i < this.usersStore.users.length; i++) {
+                if (this.usersStore.users[i].id == this.skillRevision.user_id) {
+                    this.skillRevision.userName =
+                        this.usersStore.users[i].username;
+                }
+            }
+
+            // Prep the date and time data ---------------
+            var date = this.skillRevision.edited_date.replace('T', ' ');
+            date = date.replace('Z', ' ');
+            let newDate = date.split(/[- :]/);
+            var finalDate = new Date(
+                Date.UTC(
+                    newDate[0],
+                    newDate[1] - 1,
+                    newDate[2],
+                    newDate[3],
+                    newDate[4],
+                    newDate[5]
+                )
+            );
+            var options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric'
+            };
+            this.skillRevision.date = finalDate.toLocaleDateString(
+                'en-US',
+                options
+            );
+
+            // -----------------------
         }
     }
 };
@@ -59,6 +121,27 @@ export default {
                             <div class="skill-name">
                                 {{ skillRevision.name }}
                             </div>
+                            <div
+                                class="alert alert-warning d-flex"
+                                role="alert"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="20"
+                                    height="20"
+                                >
+                                    <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                    <path
+                                        d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480L40 480c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+                                    />
+                                </svg>
+                                <span class="ms-2">
+                                    This is an old revision of this page, as
+                                    edited by {{ skillRevision.userName }}, at
+                                    {{ skillRevision.date }}.
+                                </span>
+                            </div>
                             <!-- Description only seen by admins -->
                             <div
                                 v-if="userDetailsStore.role == 'admin'"
@@ -78,28 +161,19 @@ export default {
                                 />
                             </div>
                         </div>
-                        <!-- Level -->
+                        <!-- Type -->
                         <div class="mt-3 d-flex flex-column">
-                            <div class="h1-title">Level</div>
-                            <span v-if="skillRevision.level == 'grade_school'"
-                                >Grade School</span
-                            >
-                            <span
-                                v-else-if="
-                                    skillRevision.level == 'middle_school'
-                                "
-                                >Middle School</span
-                            >
-                            <span
-                                v-else-if="skillRevision.level == 'high_school'"
-                                >High School</span
-                            >
-                            <span v-else-if="skillRevision.level == 'college'"
-                                >College</span
-                            >
-                            <span v-else-if="skillRevision.level == 'phd'"
-                                >PHD</span
-                            >
+                            <div class="h1-title">Type</div>
+                            <div class="mastery-requirements">
+                                <div v-html="skillRevision.type"></div>
+                            </div>
+                        </div>
+                        <!-- Parent -->
+                        <div class="mt-3 d-flex flex-column">
+                            <div class="h1-title">Parent</div>
+                            <div class="mastery-requirements">
+                                <div v-html="skillRevision.parentName"></div>
+                            </div>
                         </div>
                         <!-- Mastery Requirements -->
                         <div class="mt-3 d-flex flex-column">
@@ -148,27 +222,14 @@ export default {
                                 userDetailsStore.role == 'editor') &&
                             skillRevision.type != 'domain'
                         "
-                    >
-                        <div class="row">
-                            <div class="col col-md-8 p-4 p-md-0">
-                                <hr
-                                    id="hr-parent"
-                                    class="border border-2 opacity-100"
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    ></div>
                 </div>
 
                 <p>&nbsp;</p>
             </div>
         </div>
         <div id="banner">
-            <!--TODO: Assign banner dynamically -->
-            <img v-bind:src="bannerImage" class="img-fluid" />
-            <!-- Show a static img if skill have no banner image -->
             <img
-                v-if="!bannerImage"
                 src="/images/banners/institute-collins-2.png"
                 class="img-fluid"
             />

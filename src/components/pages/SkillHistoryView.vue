@@ -32,7 +32,6 @@ export default {
             // Load the skill data
             const res = await fetch('/skill-history/' + this.skillId + '/list');
             this.skillRevisions = await res.json();
-            console.log(this.skillRevisions);
 
             // Prepare the data.
             for (let i = 0; i < this.skillRevisions.length; i++) {
