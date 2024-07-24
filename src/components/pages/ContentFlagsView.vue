@@ -1,5 +1,4 @@
 <script>
-import { ref, computed } from 'vue';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useResourcesStore } from '../../stores/ResourcesStore.js';
 import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
@@ -34,21 +33,26 @@ export default {
                 { text: 'Type', value: 'type' },
                 { text: 'Name', value: 'name' },
                 { text: 'User', value: 'user', width: 99 },
-                { text: 'date', value: 'date' },
+                { text: 'Date', value: 'date' },
                 { text: 'Action', value: 'action' }
             ],
+
             rows: [],
             rowsLength: 10,
             // Filter option data for the table
             flagTypeCriteria: 'all',
+            dateFilterCriteria: 'all',
             showFlagTypeFilter: false,
             userNameCriteria: '',
             showUserFilter: false,
+            showDateFilter: false,
             searchText: '',
             userRoleCriteria: 'all',
+            dateOrder: 'ascending',
             // Custom drop down flag and state
             showFlagTypeDropDown: false,
-            showUserRoleDropDown: false
+            showUserRoleDropDown: false,
+            showDateFilterDropDown: false
         };
     },
     components: {
@@ -71,18 +75,16 @@ export default {
                 .then(() => {
                     for (let i = 0; i < this.contentFlags.length; i++) {
                         const flag = this.contentFlags[i];
-                        // parse the content data because mysql library return it as a string
                         const contentObj = JSON.parse(flag.contentData);
-                        const parseDate = new Date(flag.create_date);
-                        const createDate = parseDate.toLocaleString('en-gb', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                        const createTime = parseDate.toLocaleTimeString();
+
+                        /**
+                         * flagRow is prepared data that we will use in vue-data-table below
+                         */
                         const flagRow = {};
-                        flagRow.date = `${createTime}-${createDate}`;
+
+                        flagRow.dateString = flag.create_date;
+                        flagRow.reason = flag.reason;
+                        // Prepare data differently for each type of content
                         switch (flag.content_type) {
                             // Handle for mc question flag
                             case 'mc_question':
@@ -230,6 +232,43 @@ export default {
                 });
             }
 
+            // *** Date Filter ***
+            if (this.dateFilterCriteria !== 'all') {
+                filterOptionsArray.push({
+                    field: 'dateString',
+                    criteria: this.dateFilterCriteria,
+                    comparison: (value, criteria) => {
+                        const parseDate = new Date(value);
+                        const dateNow = new Date();
+                        switch (criteria) {
+                            case 'this month':
+                                return (
+                                    parseDate.getMonth() === dateNow.getMonth()
+                                );
+                            case 'last three month':
+                                // Get the date of six month ago from today. This can leave wrong day for date but all we need is the month so it will be okay
+                                const compareDate3Month = dateNow.setMonth(
+                                    dateNow.getMonth() - 4
+                                );
+                                return parseDate >= compareDate3Month;
+                            case 'last six month':
+                                // Get the date of six month ago from today. This can leave wrong day for date but all we need is the month so it will be okay
+                                const compareDate = dateNow.setMonth(
+                                    dateNow.getMonth() - 7
+                                );
+                                return parseDate >= compareDate;
+                            case 'this year':
+                                return (
+                                    parseDate.getFullYear() ===
+                                    dateNow.getFullYear()
+                                );
+                            default:
+                                break;
+                        }
+                    }
+                });
+            }
+
             return filterOptionsArray;
         },
         handleUserKeyUp(e) {
@@ -242,6 +281,24 @@ export default {
             this.flagTypeCriteria = 'all';
             this.userNameCriteria = '';
             this.userRoleCriteria = 'all';
+            this.showFlagTypeFilter = false;
+            this.showUserFilter = false;
+        },
+        // parse date string into more readable format
+        formatDate(dateString) {
+            // parse the content data because mysql library return it as a string
+            const parseDate = new Date(dateString);
+            const createDate = parseDate.toLocaleString('en-gb', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const createTime = parseDate.toLocaleTimeString();
+            return `${createTime}-${createDate}`;
+        },
+        closeAllFilter() {
+            this.showDateFilter = false;
             this.showFlagTypeFilter = false;
             this.showUserFilter = false;
         }
@@ -309,9 +366,9 @@ export default {
                 </template>
 
                 <!-- --- Date column --- -->
-                <template #item-date="{ date }">
+                <template #item-date="{ dateString }">
                     <div class="date-cell">
-                        {{ date }}
+                        {{ formatDate(dateString) }}
                     </div>
                 </template>
                 <!-- --- Action Buttons Column --- -->
@@ -371,8 +428,21 @@ export default {
                 </template>
 
                 <!-- ---  Expand Part --- -->
-                <template #expand="{ expandContent, type }">
+                <template #expand="{ expandContent, type, reason }">
                     <div id="expand-div" style="padding: 15px">
+                        <!-- ***** Reason part share with all type of flag ***** -->
+                        <div class="d-flex align-items-center">
+                            <div class="expand-tile">Reason:</div>
+                            <div
+                                :class="[!reason && 'no-reason', 'flag-reason']"
+                            >
+                                {{
+                                    reason
+                                        ? reason
+                                        : 'There is no reason for this flag.'
+                                }}
+                            </div>
+                        </div>
                         <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'mc question'">
                             <div class="d-flex mb-2">
@@ -779,6 +849,135 @@ export default {
                                                     "
                                                 >
                                                     Admin
+                                                </div>
+                                            </div>
+                                        </Transition>
+                                    </div>
+                                    <!-- End of custom dropdown -->
+                                </div>
+                            </div>
+                        </Transition>
+                    </div>
+                </template>
+
+                <!-- Date Header (Date filter and sorting) -->
+                <template #header-date="header">
+                    <div class="filter-column user-header">
+                        <div
+                            @click.stop="showDateFilter = !showDateFilter"
+                            b-tooltip.hover
+                            :title="'Date filtering and ordering'"
+                        >
+                            <span id="type-head-tile" class="me-1">
+                                {{ header.text }}
+                            </span>
+                            <!-- Calender icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="16"
+                                height="14"
+                                class="mb-1 filter-icon"
+                                fill="#8f7bd6"
+                            >
+                                <path
+                                    d="M128 0c17.7 0 32 14.3 32 32l0 32 128 0 0-32c0-17.7 14.3-32 32-32s32 14.3 32 32l0 32 48 0c26.5 0 48 21.5 48 48l0 48L0 160l0-48C0 85.5 21.5 64 48 64l48 0 0-32c0-17.7 14.3-32 32-32zM0 192l448 0 0 272c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 192zm80 64c-8.8 0-16 7.2-16 16l0 96c0 8.8 7.2 16 16 16l96 0c8.8 0 16-7.2 16-16l0-96c0-8.8-7.2-16-16-16l-96 0z"
+                                />
+                            </svg>
+                        </div>
+                        <Transition name="dropdown">
+                            <div class="filter-menu" v-if="showDateFilter">
+                                <!-- Sort order -->
+                                <div class="d-flex user-filter">
+                                    <div>ascending</div>
+                                    <div>descending</div>
+                                </div>
+                                <!-- Date filter -->
+                                <div class="mt-2 d-flex flex-column">
+                                    <div id="role-filter-label">Flag Date:</div>
+                                    <!-- Custom Dropdown -->
+                                    <div class="d-flex flex-column">
+                                        <div
+                                            :class="[
+                                                showDateFilterDropDown
+                                                    ? 'custom-select-button-focus'
+                                                    : 'custom-select-button'
+                                            ]"
+                                            @click="
+                                                showDateFilterDropDown =
+                                                    !showDateFilterDropDown
+                                            "
+                                        >
+                                            {{ dateFilterCriteria }}
+                                            <span>
+                                                <svg
+                                                    width="20"
+                                                    height="20"
+                                                    viewBox="0 0 20 20"
+                                                    fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                        fill="#344054"
+                                                    />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <Transition name="dropdownFilter">
+                                            <div
+                                                v-if="showDateFilterDropDown"
+                                                class="custom-dropdown-base"
+                                            >
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        dateFilterCriteria =
+                                                            'all';
+                                                        showDateFilterDropDown = false;
+                                                    "
+                                                >
+                                                    All
+                                                </div>
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        dateFilterCriteria =
+                                                            'this month';
+                                                        showDateFilterDropDown = false;
+                                                    "
+                                                >
+                                                    This month
+                                                </div>
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        dateFilterCriteria =
+                                                            'last three month';
+                                                        showDateFilterDropDown = false;
+                                                    "
+                                                >
+                                                    Last three month
+                                                </div>
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        dateFilterCriteria =
+                                                            'last six month';
+                                                        showDateFilterDropDown = false;
+                                                    "
+                                                >
+                                                    Last six month
+                                                </div>
+                                                <div
+                                                    class="custom-dropdown-option"
+                                                    @click="
+                                                        dateFilterCriteria =
+                                                            'this year';
+                                                        showDateFilterDropDown = false;
+                                                    "
+                                                >
+                                                    This year
                                                 </div>
                                             </div>
                                         </Transition>
@@ -1647,6 +1846,19 @@ h2 {
 
 .flag-type-filter {
     left: -50px;
+}
+
+.flag-reason {
+    margin-left: 10px;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    border: 3px double #c2c9cc;
+    border-radius: 8px;
+}
+
+.no-reason {
+    border: 3px double #eed202;
+    color: #e9d543;
 }
 
 /* Style For The Custom Select */
