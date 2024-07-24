@@ -63,7 +63,7 @@ const router = createRouter({
             component: SkillsView
         },
         {
-            path: '/skills/:id',
+            path: '/skills/:skillId',
             name: 'show-skill',
             component: () => import('../components/pages/ShowSkillView.vue')
         },
@@ -78,6 +78,18 @@ const router = createRouter({
             name: 'edit-skill',
             component: () => import('../components/pages/EditSkillView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+        },
+        {
+            path: '/skills/history/:id',
+            name: 'skill-history',
+            component: () => import('../components/pages/SkillHistoryView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+        },
+        {
+            path: '/skills/:skillId/revision/:versionNumber',
+            name: 'skill-revision',
+            component: () =>
+                import('../components/pages/ShowSkillRevisionView.vue')
         },
         {
             path: '/skills/:id/question-bank/add',
