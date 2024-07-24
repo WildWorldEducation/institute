@@ -383,6 +383,18 @@ router.put(
                     let previousIsDeleted = results[0].is_deleted;
                     let versionNumber = results[0].version_number;
 
+                    // Escape single quotes for SQL to accept.
+                    if (previousName != null)
+                        previousName = previousName.replace(/'/g, "\\'");
+                    if (previousDescription != null)
+                        previousDescription = previousDescription.replace(
+                            /'/g,
+                            "\\'"
+                        );
+                    if (previousMasteryRequirements != null)
+                        previousMasteryRequirements =
+                            previousMasteryRequirements.replace(/'/g, "\\'");
+
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
                     (id, version_number, user_id, name, parent, description, icon_image, banner_image,
