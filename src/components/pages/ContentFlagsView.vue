@@ -189,7 +189,7 @@ export default {
 
                                     flagId: flag.id,
                                     editUrl:
-                                        'skills/' + contentObj.skillId,
+                                        '/tutor/edit/' + contentObj.id,
                                     expandContent: contentObj,
                                     user: {
                                         username: flag.username,
@@ -362,7 +362,6 @@ export default {
                         <router-link
                             :to="editUrl"
                             class="btn purple-btn"
-                            target="_blank"
                             b-tooltip.hover
                             :title="'Go To Edit Page For This ' + type"
                         >

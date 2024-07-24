@@ -70,6 +70,7 @@ router.get('/list', async (req, res, next) => {
                                 users.username, 
                                 users.role AS userRole, 
                                 json_object(
+                                    'id', tutor_posts.id, 
                                     'description', tutor_posts.description, 
                                     'skill', skills.name, 
                                     'skillId', skills.id, 
