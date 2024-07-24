@@ -293,6 +293,11 @@ export default {
                             userDetailsStore.role == 'editor'
                         "
                         class="d-flex flex-row-reverse center-header pb-2"
+                        :class="{
+                            'd-flex': isMobileCheck < 576,
+                            'justify-content-center': isMobileCheck < 576,
+                            'mb-2': isMobileCheck < 576
+                        }"
                     >
                         <router-link
                             :to="'/skills/edit/' + skillId"
