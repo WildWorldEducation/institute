@@ -14,6 +14,7 @@ export default {
             resourceId: null,
             showFlaggingModal: false,
             flagPost: '',
+            flagType: '',
             showActionBtns: false,
             currentClickId: '',
             showThankModal: false,
@@ -360,12 +361,12 @@ export default {
         closeWarningModal() {
             this.showModal = false;
         },
-        flagSource(resourceId) {
+        flagElement(resourceId) {
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    content_type: 'resource',
+                    content_type: this.flagType,
                     content_id: resourceId,
                     user_id: this.user.userId
                 })
@@ -378,7 +379,12 @@ export default {
                 this.showFlaggingModal = false;
             });
         },
-        handleOpenFlagModal(postId) {
+        handleOpenFlagModal(postId, type) {
+            if(type == "source" ){
+                this.flagType = "resource"
+            }else if(type == "tutor"){
+                this.flagType = "tutor_post"
+            }
             this.flagPost = postId;
             this.showFlaggingModal = true;
             this.showActionBtns = false;
@@ -704,7 +710,7 @@ export default {
                                             type="button"
                                             class="btn dropdown-btn"
                                             @click="
-                                                handleOpenFlagModal(post.id)
+                                                handleOpenFlagModal(post.id, post.type)
                                             "
                                         >
                                             <div
@@ -792,7 +798,7 @@ export default {
                         <button
                             type="button"
                             class="btn green-btn w-lg-25"
-                            @click="flagSource(flagPost)"
+                            @click="flagElement(flagPost)"
                         >
                             <span class="d-none d-md-block"> Yes </span>
                             <!-- X icon Only show when in Phone View -->
