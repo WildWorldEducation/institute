@@ -340,7 +340,7 @@ export default {
                 </div>
                 <!-- Level -->
                 <div class="mt-3 d-flex flex-column">
-                    <div class="h1-tile">Level</div>
+                    <div class="h1-title">Level</div>
                     <span v-if="skill.level == 'grade_school'"
                         >Grade School</span
                     >
@@ -355,7 +355,7 @@ export default {
                 </div>
                 <!-- Mastery Requirements -->
                 <div class="mt-3 d-flex flex-column">
-                    <div class="h1-tile">Mastery Requirements</div>
+                    <div class="h1-title">Mastery Requirements</div>
                     <div class="mastery-requirements">
                         <div v-html="skill.mastery_requirements"></div>
                     </div>
@@ -396,7 +396,7 @@ export default {
                 </div>
                 <!-- Filters -->
                 <div class="row mt-3">
-                    <div class="h1-tile">Filter</div>
+                    <div class="h1-title">Filter</div>
                     <label
                         v-for="tag in tagsStore.tagsList"
                         class="control control-checkbox"
@@ -429,7 +429,7 @@ export default {
                     </div>
                 </div>
                 <div class="row mt-3">
-                    <div class="h1-tile">Assessment</div>
+                    <div class="h1-title">Assessment</div>
                     <div class="col ms-1">
                         <router-link
                             v-if="skill.type != 'super'"
@@ -594,7 +594,7 @@ export default {
     color: #888;
 }
 
-.h1-tile {
+.h1-title {
     color: #a48be6;
     font-size: 30px;
     font-weight: 700;
@@ -821,7 +821,7 @@ export default {
         margin-top: 5px;
     }
 
-    .h1-tile {
+    .h1-title {
         font-size: 20px;
         margin-left: 4px;
     }

@@ -45,5 +45,34 @@ router.get('/:skillId/list', (req, res, next) => {
     }
 });
 
+/**
+ *
+ * Get A Single Skill Revision
+ *
+ */
+router.get('/:skillId/:versionNumber', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            `SELECT * 
+            FROM skill_history 
+            WHERE id = ` +
+            req.params.skillId +
+            ` AND version_number = ` +
+            req.params.versionNumber +
+            ';';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
