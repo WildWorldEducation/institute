@@ -651,6 +651,17 @@ export default {
                                                 class="custom-dropdown-option"
                                                 @click="
                                                     flagTypeCriteria =
+                                                        'tutor post';
+                                                    showFlagTypeFilter = false;
+                                                    showFlagTypeDropDown = false;
+                                                "
+                                            >
+                                                tutor post
+                                            </div>
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
                                                         'essay question';
                                                     showFlagTypeDropDown = false;
                                                     showFlagTypeFilter = false;
@@ -1139,6 +1150,17 @@ export default {
                                             v-if="showFlagTypeDropDown"
                                             class="custom-dropdown-base"
                                         >
+                                            <div
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
+                                                        'tutor post';
+                                                    showFlagTypeFilter = false;
+                                                    showFlagTypeDropDown = false;
+                                                "
+                                            >
+                                                tutor post
+                                            </div>
                                             <div
                                                 class="custom-dropdown-option"
                                                 @click="
