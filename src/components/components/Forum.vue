@@ -826,7 +826,7 @@ export default {
                 <div class="modal-content">
                     <div class="d-flex gap-4 text-center">
                         <p>
-                            Thank you for flagging this source. We will take a
+                            Thank you for flagging this {{ flagType == 'tutor_post' ? 'tutor post' : (flagType == 'resource' ? 'source' : '') }}. We will take a
                             look as soon as possible!
                         </p>
                     </div>
