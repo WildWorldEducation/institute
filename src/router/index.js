@@ -76,8 +76,7 @@ const router = createRouter({
         {
             path: '/skills/edit/:id',
             name: 'edit-skill',
-            component: () => import('../components/pages/EditSkillView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            component: () => import('../components/pages/EditSkillView.vue')
         },
         {
             path: '/skills/history/:id',
@@ -244,9 +243,10 @@ const router = createRouter({
             component: () => import('../components/pages/EditTutorPostView.vue')
         },
         {
-            path: '/edits/list',
-            name: 'approve-edits',
-            component: () => import('../components/pages/EditsListView.vue')
+            path: '/content-edits/list',
+            name: 'content-edits',
+            component: () =>
+                import('../components/pages/ContentEditsListView.vue')
         }
     ]
 });

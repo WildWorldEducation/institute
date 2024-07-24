@@ -69,7 +69,9 @@ export default {
                     v-else-if="userDetailsStore.role == 'instructor'"
                 />
                 <div v-else>
-                    <router-link to="/edits/list">Approve edits</router-link>
+                    <router-link to="/content-edits/list"
+                        >Approve edits</router-link
+                    >
                 </div>
             </div>
             <div class="col-lg-4 col-md-7 mb-4 pb-4">

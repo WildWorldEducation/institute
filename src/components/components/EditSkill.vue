@@ -410,460 +410,452 @@ export default {
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
-        <!-- Skill name -->
-        <div class="row mt-5">
-            <div class="col-12 col-md-8 col-lg-5 mt-2">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input
-                        v-model="skill.name"
-                        class="form-control"
-                        type="text"
-                        placeholder="name"
-                    />
+        <div
+            v-if="
+                userDetailsStore.role == 'admin' ||
+                userDetailsStore.role == 'editor'
+            "
+        >
+            <!-- Skill name -->
+            <div class="row mt-5">
+                <div class="col-12 col-md-8 col-lg-5 mt-2">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input
+                            v-model="skill.name"
+                            class="form-control"
+                            type="text"
+                            placeholder="name"
+                        />
+                        <div
+                            v-if="
+                                validate.name &&
+                                (skill.name == '' || skill.name == null)
+                            "
+                            class="form-validate"
+                        >
+                            please enter a skill name
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Skill level dropdown -->
+            <div class="row">
+                <div v-if="skill.type != 'domain' && skill.type != 'sub'">
+                    <div class="col col-md-8 col-lg-5 mt-2">
+                        <!-- Custom Dropdown -->
+                        <label class="form-label">Level</label>
+                        <div class="d-flex flex-column position-relative">
+                            <div
+                                :class="[
+                                    showLevelDropDown
+                                        ? 'custom-select-button-focus '
+                                        : 'custom-select-button '
+                                ]"
+                                @click="showLevelDropDown = !showLevelDropDown"
+                            >
+                                {{ showLevel }}
+                                <span>
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 20 20"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                            fill="#344054"
+                                        />
+                                    </svg>
+                                </span>
+                            </div>
+                            <div
+                                v-if="showLevelDropDown"
+                                class="custom-dropdown-base"
+                            >
+                                <div
+                                    v-for="level in levels"
+                                    class="custom-dropdown-option"
+                                    @click="handleChooseSkillLevel(level)"
+                                >
+                                    {{ level.name }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End of custom dropdown -->
+                    </div>
+                </div>
+            </div>
+            <!-- Skill Filter Checker -->
+            <div v-if="userDetailsStore.role == 'admin'" class="row">
+                <div class="col col-md-8 col-lg-5 mt-2">
+                    <div v-if="skill.type != 'sub'">
+                        <label class="form-label">Filters</label>
+                        <div class="col">
+                            <label
+                                v-for="tag in tagsStore.tagsList"
+                                class="control control-checkbox"
+                            >
+                                <span class="my-auto mx-2 me-4">
+                                    {{ tag.name }}</span
+                                >
+                                <input
+                                    type="checkbox"
+                                    :value="tag.id"
+                                    v-model="filters"
+                                />
+                                <div class="control_indicator"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Skills Types Radio choose -->
+            <div class="row">
+                <div class="col-12 col-md-8 col-lg-5 mt-2">
+                    <label class="form-label">Node Type</label>
+                    <div class="row p-0 m-0">
+                        <div class="form-check col-6 col-md-5 my-2">
+                            <label class="control control-checkbox">
+                                <span class="my-auto mx-2 me-4">Regular</span>
+                                <input
+                                    type="radio"
+                                    name="nodeType"
+                                    id="regularSkillRadio"
+                                    value="regular"
+                                    v-model="skill.type"
+                                />
+                                <div class="control_indicator"></div>
+                            </label>
+                        </div>
+                        <div class="form-check col-6 col-md-5 my-2">
+                            <label class="control control-checkbox">
+                                <span class="my-auto mx-2 me-4">Category</span>
+                                <input
+                                    type="radio"
+                                    name="nodeType"
+                                    id="domainSkillRadio"
+                                    value="domain"
+                                    v-model="skill.type"
+                                />
+                                <div class="control_indicator"></div>
+                            </label>
+                        </div>
+                        <div class="form-check col-6 col-md-5 my-2">
+                            <label class="control control-checkbox">
+                                <span class="my-auto mx-2 me-4"
+                                    >Cluster node center</span
+                                >
+                                <input
+                                    type="radio"
+                                    name="nodeType"
+                                    id="superSkillRadio"
+                                    value="super"
+                                    v-model="skill.type"
+                                />
+                                <div class="control_indicator"></div>
+                            </label>
+                        </div>
+                        <div class="form-check col-6 col-md-5 my-2">
+                            <label class="control control-checkbox">
+                                <span class="my-auto mx-2 me-4"
+                                    >Cluster node outer</span
+                                >
+                                <input
+                                    type="radio"
+                                    name="nodeType"
+                                    id="regularSkillRadio"
+                                    value="sub"
+                                    v-model="skill.type"
+                                />
+                                <div class="control_indicator"></div>
+                            </label>
+                        </div>
+                    </div>
                     <div
                         v-if="
-                            validate.name &&
-                            (skill.name == '' || skill.name == null)
+                            validate.orphan &&
+                            this.skill.type == 'sub' &&
+                            this.skill.parent == 0
                         "
                         class="form-validate"
                     >
-                        please enter a skill name
+                        please choose a parent for this skill
                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Skill level dropdown -->
-        <div class="row">
-            <div v-if="skill.type != 'domain' && skill.type != 'sub'">
-                <div class="col col-md-8 col-lg-5 mt-2">
-                    <!-- Custom Dropdown -->
-                    <label class="form-label">Level</label>
-                    <div class="d-flex flex-column position-relative">
-                        <div
-                            :class="[
-                                showLevelDropDown
-                                    ? 'custom-select-button-focus '
-                                    : 'custom-select-button '
-                            ]"
-                            @click="showLevelDropDown = !showLevelDropDown"
-                        >
-                            {{ showLevel }}
-                            <span>
-                                <svg
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 20 20"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
-                                        fill="#344054"
-                                    />
-                                </svg>
-                            </span>
-                        </div>
-                        <div
-                            v-if="showLevelDropDown"
-                            class="custom-dropdown-base"
-                        >
-                            <div
-                                v-for="level in levels"
-                                class="custom-dropdown-option"
-                                @click="handleChooseSkillLevel(level)"
-                            >
-                                {{ level.name }}
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End of custom dropdown -->
-                </div>
-            </div>
-        </div>
-        <!-- Skill Filter Checker -->
-        <div v-if="userDetailsStore.role == 'admin'" class="row">
-            <div class="col col-md-8 col-lg-5 mt-2">
-                <div v-if="skill.type != 'sub'">
-                    <label class="form-label">Filters</label>
-                    <div class="col">
-                        <label
-                            v-for="tag in tagsStore.tagsList"
-                            class="control control-checkbox"
-                        >
-                            <span class="my-auto mx-2 me-4">
-                                {{ tag.name }}</span
-                            >
-                            <input
-                                type="checkbox"
-                                :value="tag.id"
-                                v-model="filters"
-                            />
-                            <div class="control_indicator"></div>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Skills Types Radio choose -->
-        <div class="row">
-            <div class="col-12 col-md-8 col-lg-5 mt-2">
-                <label class="form-label">Node Type</label>
-                <div class="row p-0 m-0">
-                    <div class="form-check col-6 col-md-5 my-2">
-                        <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-4">Regular</span>
-                            <input
-                                type="radio"
-                                name="nodeType"
-                                id="regularSkillRadio"
-                                value="regular"
-                                v-model="skill.type"
-                            />
-                            <div class="control_indicator"></div>
-                        </label>
-                    </div>
-                    <div class="form-check col-6 col-md-5 my-2">
-                        <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-4">Category</span>
-                            <input
-                                type="radio"
-                                name="nodeType"
-                                id="domainSkillRadio"
-                                value="domain"
-                                v-model="skill.type"
-                            />
-                            <div class="control_indicator"></div>
-                        </label>
-                    </div>
-                    <div class="form-check col-6 col-md-5 my-2">
-                        <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-4"
-                                >Cluster node center</span
-                            >
-                            <input
-                                type="radio"
-                                name="nodeType"
-                                id="superSkillRadio"
-                                value="super"
-                                v-model="skill.type"
-                            />
-                            <div class="control_indicator"></div>
-                        </label>
-                    </div>
-                    <div class="form-check col-6 col-md-5 my-2">
-                        <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-4"
-                                >Cluster node outer</span
-                            >
-                            <input
-                                type="radio"
-                                name="nodeType"
-                                id="regularSkillRadio"
-                                value="sub"
-                                v-model="skill.type"
-                            />
-                            <div class="control_indicator"></div>
-                        </label>
-                    </div>
-                </div>
-                <div
-                    v-if="
-                        validate.orphan &&
-                        this.skill.type == 'sub' &&
-                        this.skill.parent == 0
-                    "
-                    class="form-validate"
-                >
-                    please choose a parent for this skill
-                </div>
-                <div
-                    v-if="validate.noChild && this.skill.type == 'sub'"
-                    class="form-validate"
-                >
-                    please delete this node's child skills, before changing it
-                    to a cluster child skill
-                </div>
-            </div>
-        </div>
-        <!-- Parent Typing Dropdown -->
-        <div class="row">
-            <div class="col-12 col-md-8 col-lg-5 mt-2">
-                <div v-if="skill.type != 'sub'" class="mb-3">
-                    <label class="form-label">Parent</label>
-                    <div class="row mt-3">
-                        <div class="col position-relative">
-                            <input
-                                id="skill-input"
-                                v-model="parentInput.inputText"
-                                @input="getReferenceSkill"
-                                placeholder="type skill name"
-                            />
-                            <div
-                                v-if="parentInput.suggestSkills.length > 0"
-                                id="suggest-skills"
-                                class="flex flex-column position-absolute"
-                            >
-                                <div
-                                    class="suggest-option"
-                                    v-for="skill in parentInput.suggestSkills"
-                                    @click="handleChooseSuggestSkill(skill)"
-                                >
-                                    {{ skill.name }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- -------------------------------------------------- -->
-                <div v-else class="mb-3">
-                    <label class="form-label">Cluster node center</label>
-                    <div class="row mt-3">
-                        <div class="col position-relative">
-                            <input
-                                id="skill-input"
-                                v-model="clusterParentInput.inputText"
-                                @input="getSuperSkillSuggestion"
-                                placeholder="type skill name"
-                            />
-                            <div
-                                v-if="
-                                    clusterParentInput.suggestSuperSkills
-                                        .length > 0
-                                "
-                                id="suggest-skills"
-                                class="flex flex-column position-absolute"
-                            >
-                                <div
-                                    class="suggest-option"
-                                    v-for="skill in clusterParentInput.suggestSuperSkills"
-                                    @click="handleChooseSuggestSkill(skill)"
-                                >
-                                    {{ skill.name }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Icon and Banner -->
-        <div class="row">
-            <!-- Icon chooser -->
-            <div class="col-8 col-md-3 col-lg-2 mt-2">
-                <div
-                    class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
-                >
-                    <label for="image" class="form-label">Icon</label>
-                    <div v-if="!iconImage">
-                        <input
-                            class="form-control d-none"
-                            type="file"
-                            accept="image/*"
-                            @change="onFileChange($event, 'icon')"
-                            id="iconFileChoose"
-                        />
-                        <div class="default-no-img">
-                            <div
-                                class="plus-svg"
-                                @click="openImage('iconFileChoose')"
-                            >
-                                <!-- The plus Icon On Top Of the avatar -->
-                                <svg
-                                    width="33"
-                                    height="33"
-                                    viewBox="0 0 53 53"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <circle
-                                        cx="26.5"
-                                        cy="26.5"
-                                        r="26.5"
-                                        fill="#D9D9D9"
-                                    />
-                                    <g clip-path="url(#clip0_372_11959)">
-                                        <path
-                                            d="M19.7439 45.0784L19.7439 33.2515L7.93354 33.268C7.40615 33.2671 6.90063 33.0572 6.52771 32.6843C6.15479 32.3114 5.94488 31.8059 5.94396 31.2785L5.93291 21.7174C5.93382 21.1901 6.14373 20.6845 6.51665 20.3116C6.88957 19.9387 7.3951 19.7288 7.92249 19.7279L19.7439 19.7334L19.7439 7.90646C19.7411 7.64223 19.7911 7.38009 19.8909 7.13543C19.9907 6.89076 20.1384 6.66849 20.3252 6.48164C20.5121 6.29479 20.7344 6.14713 20.979 6.0473C21.2237 5.94747 21.4858 5.8975 21.75 5.9003L31.2779 5.92241C31.8053 5.92332 32.3108 6.13322 32.6838 6.50615C33.0567 6.87907 33.2666 7.38459 33.2675 7.91198L33.262 19.7334L45.0889 19.7334C45.615 19.7337 46.1195 19.9428 46.4915 20.3148C46.8635 20.6869 47.0726 21.1913 47.073 21.7174L47.0951 31.2453C47.0948 31.7714 46.8856 32.2759 46.5136 32.6479C46.1416 33.0199 45.6371 33.229 45.111 33.2294L33.262 33.2515L33.2786 45.0618C33.2776 45.5892 33.0677 46.0947 32.6948 46.4677C32.3219 46.8406 31.8164 47.0505 31.289 47.0514L21.7501 47.0846C21.4858 47.0874 21.2237 47.0374 20.979 46.9376C20.7344 46.8377 20.5121 46.6901 20.3252 46.5032C20.1384 46.3164 19.9907 46.0941 19.8909 45.8494C19.7911 45.6048 19.7411 45.3426 19.7439 45.0784Z"
-                                            fill="white"
-                                        />
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clip0_372_11959">
-                                            <rect
-                                                width="37"
-                                                height="37"
-                                                fill="white"
-                                                transform="translate(8 8)"
-                                            />
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-                            </div>
-                        </div>
-                        <p style="font-size: 14px">
-                            <em>Maximum file size 15mb</em>
-                        </p>
-                    </div>
-                    <div v-else>
-                        <p>
-                            <img
-                                :src="iconImage"
-                                height="158"
-                                width="158"
-                                style="background-color: lightgrey"
-                            />
-                        </p>
-                        <p>
-                            <button
-                                class="btn red-btn"
-                                @click="deleteImage('icon')"
-                            >
-                                Remove &nbsp;&nbsp;
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                    width="20"
-                                    height="20"
-                                    fill="white"
-                                >
-                                    <path
-                                        d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
-                                    />
-                                </svg>
-                            </button>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <!-- Banner chooser -->
-            <div class="col-12 col-lg-10 mt-2">
-                <div class="mb-3 row">
-                    <label for="image" class="form-label">Banner</label>
-                    <div v-if="!bannerImage">
-                        <input
-                            class="form-control d-none"
-                            type="file"
-                            accept="image/*"
-                            @change="onFileChange($event, 'banner')"
-                            id="bannerFileChoose"
-                        />
-                        <div class="default-no-img">
-                            <div
-                                class="plus-svg"
-                                @click="openImage('bannerFileChoose')"
-                            >
-                                <!-- The plus Icon On Top Of the avatar -->
-                                <svg
-                                    width="33"
-                                    height="33"
-                                    viewBox="0 0 53 53"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <circle
-                                        cx="26.5"
-                                        cy="26.5"
-                                        r="26.5"
-                                        fill="#D9D9D9"
-                                    />
-                                    <g clip-path="url(#clip0_372_11959)">
-                                        <path
-                                            d="M19.7439 45.0784L19.7439 33.2515L7.93354 33.268C7.40615 33.2671 6.90063 33.0572 6.52771 32.6843C6.15479 32.3114 5.94488 31.8059 5.94396 31.2785L5.93291 21.7174C5.93382 21.1901 6.14373 20.6845 6.51665 20.3116C6.88957 19.9387 7.3951 19.7288 7.92249 19.7279L19.7439 19.7334L19.7439 7.90646C19.7411 7.64223 19.7911 7.38009 19.8909 7.13543C19.9907 6.89076 20.1384 6.66849 20.3252 6.48164C20.5121 6.29479 20.7344 6.14713 20.979 6.0473C21.2237 5.94747 21.4858 5.8975 21.75 5.9003L31.2779 5.92241C31.8053 5.92332 32.3108 6.13322 32.6838 6.50615C33.0567 6.87907 33.2666 7.38459 33.2675 7.91198L33.262 19.7334L45.0889 19.7334C45.615 19.7337 46.1195 19.9428 46.4915 20.3148C46.8635 20.6869 47.0726 21.1913 47.073 21.7174L47.0951 31.2453C47.0948 31.7714 46.8856 32.2759 46.5136 32.6479C46.1416 33.0199 45.6371 33.229 45.111 33.2294L33.262 33.2515L33.2786 45.0618C33.2776 45.5892 33.0677 46.0947 32.6948 46.4677C32.3219 46.8406 31.8164 47.0505 31.289 47.0514L21.7501 47.0846C21.4858 47.0874 21.2237 47.0374 20.979 46.9376C20.7344 46.8377 20.5121 46.6901 20.3252 46.5032C20.1384 46.3164 19.9907 46.0941 19.8909 45.8494C19.7911 45.6048 19.7411 45.3426 19.7439 45.0784Z"
-                                            fill="white"
-                                        />
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clip0_372_11959">
-                                            <rect
-                                                width="37"
-                                                height="37"
-                                                fill="white"
-                                                transform="translate(8 8)"
-                                            />
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-                            </div>
-                        </div>
-                        <p style="font-size: 14px">
-                            <em>Maximum file size 15mb</em>
-                        </p>
-                    </div>
-                    <div v-else>
-                        <p>
-                            <img
-                                :src="bannerImage"
-                                height="158"
-                                width="1175"
-                                style="background-color: lightgrey"
-                            />
-                        </p>
-                        <p>
-                            <button
-                                class="btn red-btn"
-                                @click="deleteImage('banner')"
-                            >
-                                Remove &nbsp;&nbsp;
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                    width="20"
-                                    height="20"
-                                    fill="white"
-                                >
-                                    <path
-                                        d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
-                                    />
-                                </svg>
-                            </button>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Description -->
-        <div v-if="userDetailsStore.role == 'admin'" class="row">
-            <div class="col">
-                <div class="mb-3">
-                    <label for="description" class="form-label"
-                        >Description</label
+                    <div
+                        v-if="validate.noChild && this.skill.type == 'sub'"
+                        class="form-validate"
                     >
-                    <textarea
-                        v-model="skill.description"
-                        class="form-control"
-                        rows="2"
-                    ></textarea>
+                        please delete this node's child skills, before changing
+                        it to a cluster child skill
+                    </div>
                 </div>
-                <div>
-                    <div v-if="validate.description" class="form-validate">
-                        please enter description for skill
+            </div>
+            <!-- Parent Typing Dropdown -->
+            <div class="row">
+                <div class="col-12 col-md-8 col-lg-5 mt-2">
+                    <div v-if="skill.type != 'sub'" class="mb-3">
+                        <label class="form-label">Parent</label>
+                        <div class="row mt-3">
+                            <div class="col position-relative">
+                                <input
+                                    id="skill-input"
+                                    v-model="parentInput.inputText"
+                                    @input="getReferenceSkill"
+                                    placeholder="type skill name"
+                                />
+                                <div
+                                    v-if="parentInput.suggestSkills.length > 0"
+                                    id="suggest-skills"
+                                    class="flex flex-column position-absolute"
+                                >
+                                    <div
+                                        class="suggest-option"
+                                        v-for="skill in parentInput.suggestSkills"
+                                        @click="handleChooseSuggestSkill(skill)"
+                                    >
+                                        {{ skill.name }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- -------------------------------------------------- -->
+                    <div v-else class="mb-3">
+                        <label class="form-label">Cluster node center</label>
+                        <div class="row mt-3">
+                            <div class="col position-relative">
+                                <input
+                                    id="skill-input"
+                                    v-model="clusterParentInput.inputText"
+                                    @input="getSuperSkillSuggestion"
+                                    placeholder="type skill name"
+                                />
+                                <div
+                                    v-if="
+                                        clusterParentInput.suggestSuperSkills
+                                            .length > 0
+                                    "
+                                    id="suggest-skills"
+                                    class="flex flex-column position-absolute"
+                                >
+                                    <div
+                                        class="suggest-option"
+                                        v-for="skill in clusterParentInput.suggestSuperSkills"
+                                        @click="handleChooseSuggestSkill(skill)"
+                                    >
+                                        {{ skill.name }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Icon and Banner -->
+            <div class="row">
+                <!-- Icon chooser -->
+                <div class="col-8 col-md-3 col-lg-2 mt-2">
+                    <div
+                        class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
+                    >
+                        <label for="image" class="form-label">Icon</label>
+                        <div v-if="!iconImage">
+                            <input
+                                class="form-control d-none"
+                                type="file"
+                                accept="image/*"
+                                @change="onFileChange($event, 'icon')"
+                                id="iconFileChoose"
+                            />
+                            <div class="default-no-img">
+                                <div
+                                    class="plus-svg"
+                                    @click="openImage('iconFileChoose')"
+                                >
+                                    <!-- The plus Icon On Top Of the avatar -->
+                                    <svg
+                                        width="33"
+                                        height="33"
+                                        viewBox="0 0 53 53"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <circle
+                                            cx="26.5"
+                                            cy="26.5"
+                                            r="26.5"
+                                            fill="#D9D9D9"
+                                        />
+                                        <g clip-path="url(#clip0_372_11959)">
+                                            <path
+                                                d="M19.7439 45.0784L19.7439 33.2515L7.93354 33.268C7.40615 33.2671 6.90063 33.0572 6.52771 32.6843C6.15479 32.3114 5.94488 31.8059 5.94396 31.2785L5.93291 21.7174C5.93382 21.1901 6.14373 20.6845 6.51665 20.3116C6.88957 19.9387 7.3951 19.7288 7.92249 19.7279L19.7439 19.7334L19.7439 7.90646C19.7411 7.64223 19.7911 7.38009 19.8909 7.13543C19.9907 6.89076 20.1384 6.66849 20.3252 6.48164C20.5121 6.29479 20.7344 6.14713 20.979 6.0473C21.2237 5.94747 21.4858 5.8975 21.75 5.9003L31.2779 5.92241C31.8053 5.92332 32.3108 6.13322 32.6838 6.50615C33.0567 6.87907 33.2666 7.38459 33.2675 7.91198L33.262 19.7334L45.0889 19.7334C45.615 19.7337 46.1195 19.9428 46.4915 20.3148C46.8635 20.6869 47.0726 21.1913 47.073 21.7174L47.0951 31.2453C47.0948 31.7714 46.8856 32.2759 46.5136 32.6479C46.1416 33.0199 45.6371 33.229 45.111 33.2294L33.262 33.2515L33.2786 45.0618C33.2776 45.5892 33.0677 46.0947 32.6948 46.4677C32.3219 46.8406 31.8164 47.0505 31.289 47.0514L21.7501 47.0846C21.4858 47.0874 21.2237 47.0374 20.979 46.9376C20.7344 46.8377 20.5121 46.6901 20.3252 46.5032C20.1384 46.3164 19.9907 46.0941 19.8909 45.8494C19.7911 45.6048 19.7411 45.3426 19.7439 45.0784Z"
+                                                fill="white"
+                                            />
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_372_11959">
+                                                <rect
+                                                    width="37"
+                                                    height="37"
+                                                    fill="white"
+                                                    transform="translate(8 8)"
+                                                />
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p style="font-size: 14px">
+                                <em>Maximum file size 15mb</em>
+                            </p>
+                        </div>
+                        <div v-else>
+                            <p>
+                                <img
+                                    :src="iconImage"
+                                    height="158"
+                                    width="158"
+                                    style="background-color: lightgrey"
+                                />
+                            </p>
+                            <p>
+                                <button
+                                    class="btn red-btn"
+                                    @click="deleteImage('icon')"
+                                >
+                                    Remove &nbsp;&nbsp;
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 448 512"
+                                        width="20"
+                                        height="20"
+                                        fill="white"
+                                    >
+                                        <path
+                                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                        />
+                                    </svg>
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Banner chooser -->
+                <div class="col-12 col-lg-10 mt-2">
+                    <div class="mb-3 row">
+                        <label for="image" class="form-label">Banner</label>
+                        <div v-if="!bannerImage">
+                            <input
+                                class="form-control d-none"
+                                type="file"
+                                accept="image/*"
+                                @change="onFileChange($event, 'banner')"
+                                id="bannerFileChoose"
+                            />
+                            <div class="default-no-img">
+                                <div
+                                    class="plus-svg"
+                                    @click="openImage('bannerFileChoose')"
+                                >
+                                    <!-- The plus Icon On Top Of the avatar -->
+                                    <svg
+                                        width="33"
+                                        height="33"
+                                        viewBox="0 0 53 53"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <circle
+                                            cx="26.5"
+                                            cy="26.5"
+                                            r="26.5"
+                                            fill="#D9D9D9"
+                                        />
+                                        <g clip-path="url(#clip0_372_11959)">
+                                            <path
+                                                d="M19.7439 45.0784L19.7439 33.2515L7.93354 33.268C7.40615 33.2671 6.90063 33.0572 6.52771 32.6843C6.15479 32.3114 5.94488 31.8059 5.94396 31.2785L5.93291 21.7174C5.93382 21.1901 6.14373 20.6845 6.51665 20.3116C6.88957 19.9387 7.3951 19.7288 7.92249 19.7279L19.7439 19.7334L19.7439 7.90646C19.7411 7.64223 19.7911 7.38009 19.8909 7.13543C19.9907 6.89076 20.1384 6.66849 20.3252 6.48164C20.5121 6.29479 20.7344 6.14713 20.979 6.0473C21.2237 5.94747 21.4858 5.8975 21.75 5.9003L31.2779 5.92241C31.8053 5.92332 32.3108 6.13322 32.6838 6.50615C33.0567 6.87907 33.2666 7.38459 33.2675 7.91198L33.262 19.7334L45.0889 19.7334C45.615 19.7337 46.1195 19.9428 46.4915 20.3148C46.8635 20.6869 47.0726 21.1913 47.073 21.7174L47.0951 31.2453C47.0948 31.7714 46.8856 32.2759 46.5136 32.6479C46.1416 33.0199 45.6371 33.229 45.111 33.2294L33.262 33.2515L33.2786 45.0618C33.2776 45.5892 33.0677 46.0947 32.6948 46.4677C32.3219 46.8406 31.8164 47.0505 31.289 47.0514L21.7501 47.0846C21.4858 47.0874 21.2237 47.0374 20.979 46.9376C20.7344 46.8377 20.5121 46.6901 20.3252 46.5032C20.1384 46.3164 19.9907 46.0941 19.8909 45.8494C19.7911 45.6048 19.7411 45.3426 19.7439 45.0784Z"
+                                                fill="white"
+                                            />
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clip0_372_11959">
+                                                <rect
+                                                    width="37"
+                                                    height="37"
+                                                    fill="white"
+                                                    transform="translate(8 8)"
+                                                />
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                </div>
+                            </div>
+                            <p style="font-size: 14px">
+                                <em>Maximum file size 15mb</em>
+                            </p>
+                        </div>
+                        <div v-else>
+                            <p>
+                                <img
+                                    :src="bannerImage"
+                                    height="158"
+                                    width="1175"
+                                    style="background-color: lightgrey"
+                                />
+                            </p>
+                            <p>
+                                <button
+                                    class="btn red-btn"
+                                    @click="deleteImage('banner')"
+                                >
+                                    Remove &nbsp;&nbsp;
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 448 512"
+                                        width="20"
+                                        height="20"
+                                        fill="white"
+                                    >
+                                        <path
+                                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                        />
+                                    </svg>
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div v-if="userDetailsStore.role == 'admin'" class="row">
+                <div class="col">
+                    <div class="mb-3">
+                        <label for="description" class="form-label"
+                            >Description</label
+                        >
+                        <textarea
+                            v-model="skill.description"
+                            class="form-control"
+                            rows="2"
+                        ></textarea>
+                    </div>
+                    <div>
+                        <div v-if="validate.description" class="form-validate">
+                            please enter description for skill
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <!-- Mastery Requirement summernote -->
         <div v-if="skill.type != 'domain'" class="mb-3">
             <div class="d-flex justify-content-between">
                 <label for="mastery_requirements" class="form-label"
                     >Mastery Requirements</label
                 >
-                <!-- Show version history -->
-                <button>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="20"
-                        height="20"
-                    >
-                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                        <path
-                            d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
-                        />
-                    </svg>
-                </button>
             </div>
             <textarea
                 class="form-control"
