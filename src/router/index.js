@@ -82,8 +82,7 @@ const router = createRouter({
         {
             path: '/skills/history/:id',
             name: 'skill-history',
-            component: () => import('../components/pages/SkillHistoryView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            component: () => import('../components/pages/SkillHistoryView.vue')
         },
         {
             path: '/skills/:skillId/revision/:versionNumber',
