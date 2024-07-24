@@ -88,6 +88,8 @@ const userActions = require('./routes/user-actions');
 app.use('/user-actions', userActions);
 const tutorPosts = require('./routes/tutor-posts');
 app.use('/tutor-posts', tutorPosts);
+const skillHistory = require('./routes/skill-history');
+app.use('/skill-history', skillHistory);
 
 app.locals.title = 'Skill Tree';
 
