@@ -380,10 +380,10 @@ export default {
             });
         },
         handleOpenFlagModal(postId, type) {
-            if(type == "source" ){
-                this.flagType = "resource"
-            }else if(type == "tutor"){
-                this.flagType = "tutor_post"
+            if (type == 'source') {
+                this.flagType = 'resource';
+            } else if (type == 'tutor') {
+                this.flagType = 'tutor_post';
             }
             this.flagPost = postId;
             this.showFlaggingModal = true;
@@ -728,7 +728,11 @@ export default {
                                         <!-- Delete Resource Button -->
                                         <button
                                             b-tooltip.hover
-                                            title="Delete This Source"
+                                            :title="
+                                                post.type != 'tutor'
+                                                    ? 'Delete This Source'
+                                                    : 'Delete This Tutor Post'
+                                            "
                                             v-if="
                                                 post.user_id == user.userId ||
                                                 user.role == 'admin'
@@ -754,11 +758,18 @@ export default {
                                         <!-- Flag button -->
                                         <button
                                             b-tooltip.hover
-                                            title="Flag This Source For Review"
+                                            :title="
+                                                post.type != 'tutor'
+                                                    ? 'Flag This Source For Review'
+                                                    : 'Flag This Tutor Post For Review'
+                                            "
                                             type="button"
                                             class="btn dropdown-btn"
                                             @click="
-                                                handleOpenFlagModal(post.id, post.type)
+                                                handleOpenFlagModal(
+                                                    post.id,
+                                                    post.type
+                                                )
                                             "
                                         >
                                             <div
@@ -874,8 +885,14 @@ export default {
                 <div class="modal-content">
                     <div class="d-flex gap-4 text-center">
                         <p>
-                            Thank you for flagging this source. We will take a
-                            look as soon as possible!
+                            Thank you for flagging this
+                            {{
+                                flagType == 'tutor_post'
+                                    ? 'tutor post'
+                                    : flagType == 'resource'
+                                    ? 'source'
+                                    : ''
+                            }}. We will take a look as soon as possible!
                         </p>
                     </div>
                     <div class="d-flex justify-content-center">

@@ -64,7 +64,38 @@ router.get('/list', async (req, res, next) => {
                             }
 
                             resData = resData.concat(results);
-                            res.json(resData);
+                            let sqlTutorQuerry = `SELECT 
+                                content_flags.*, 
+                                users.id AS userId, 
+                                users.username, 
+                                users.role AS userRole, 
+                                json_object(
+                                    'id', tutor_posts.id, 
+                                    'description', tutor_posts.description, 
+                                    'skill', skills.name, 
+                                    'skillId', skills.id, 
+                                    'user', post_users.username
+                                ) AS contentData
+                                FROM 
+                                    content_flags 
+                                JOIN 
+                                    tutor_posts ON content_flags.content_id = tutor_posts.id 
+                                JOIN 
+                                    skills ON skills.id = tutor_posts.skill_id 
+                                JOIN 
+                                    users ON content_flags.user_id = users.id 
+                                JOIN 
+                                    users AS post_users ON tutor_posts.user_id = post_users.id 
+                                WHERE 
+                                    content_flags.content_type = 'tutor_post';
+                            `
+                            conn.query(sqlTutorQuerry, (err, results) => {
+                                if (err) {
+                                    throw err;
+                                }
+                                resData = resData.concat(results);
+                                res.json(resData);
+                            })
                         });
                     });
                 });
