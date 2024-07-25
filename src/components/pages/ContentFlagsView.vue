@@ -46,9 +46,9 @@ export default {
             userNameCriteria: '',
             showUserFilter: false,
             showDateFilter: false,
+            dateOrder: 'asc',
             searchText: '',
             userRoleCriteria: 'all',
-            dateOrder: 'ascending',
             // Custom drop down flag and state
             showFlagTypeDropDown: false,
             showUserRoleDropDown: false,
@@ -301,6 +301,27 @@ export default {
             this.showDateFilter = false;
             this.showFlagTypeFilter = false;
             this.showUserFilter = false;
+        }
+    },
+    watch: {
+        dateOrder: {
+            handler(newVal, oldVal) {
+                if (newVal === 'asc') {
+                    this.rows = this.rows.sort((a, b) => {
+                        const dateA = new Date(a.dateString);
+                        const dateB = new Date(b.dateString);
+                        console.log(dateA - dateB);
+                        return dateA - dateB;
+                    });
+                } else {
+                    this.rows = this.rows.sort((a, b) => {
+                        const dateA = new Date(a.dateString);
+                        const dateB = new Date(b.dateString);
+                        return dateB - dateA;
+                    });
+                    console.log(this.rows);
+                }
+            }
         }
     }
 };
@@ -775,7 +796,7 @@ export default {
                                 </div>
                                 <!-- Role dropdown filter -->
                                 <div class="mt-2 d-flex flex-column">
-                                    <div id="role-filter-label">User Role:</div>
+                                    <div id="filter-label">User Role:</div>
                                     <!-- Custom Dropdown -->
                                     <div class="d-flex flex-column">
                                         <div
@@ -888,13 +909,40 @@ export default {
                         <Transition name="dropdown">
                             <div class="filter-menu" v-if="showDateFilter">
                                 <!-- Sort order -->
-                                <div class="d-flex user-filter">
-                                    <div>ascending</div>
-                                    <div>descending</div>
+                                <div class="d-flex flex-column">
+                                    <div class="filter-label">Date oder</div>
+
+                                    <label
+                                        class="control control-checkbox mt-2"
+                                    >
+                                        <span class="my-auto mx-2 me-4">
+                                            ascending</span
+                                        >
+                                        <input
+                                            type="radio"
+                                            value="asc"
+                                            v-model="dateOrder"
+                                        />
+                                        <div class="control_indicator"></div>
+                                    </label>
+                                    <label
+                                        class="control control-checkbox mt-2"
+                                    >
+                                        <span class="my-auto mx-2 me-4">
+                                            descending</span
+                                        >
+                                        <input
+                                            type="radio"
+                                            value="desc"
+                                            v-model="dateOrder"
+                                        />
+                                        <div class="control_indicator"></div>
+                                    </label>
                                 </div>
+
                                 <!-- Date filter -->
                                 <div class="mt-2 d-flex flex-column">
-                                    <div id="role-filter-label">Flag Date:</div>
+                                    <div class="filter-label">Flag Date:</div>
                                     <!-- Custom Dropdown -->
                                     <div class="d-flex flex-column">
                                         <div
@@ -1387,7 +1435,7 @@ export default {
                                 </div>
                                 <!-- Role dropdown filter -->
                                 <div class="mt-2 d-flex flex-column">
-                                    <div id="role-filter-label">User Role:</div>
+                                    <div id="filter-label">User Role:</div>
                                     <!-- Custom Dropdown -->
                                     <div class="d-flex flex-column">
                                         <div
@@ -1925,7 +1973,7 @@ h2 {
     font-weight: 300;
 }
 
-#role-filter-label {
+.filter-label {
     color: #888;
     font-size: 16px;
     font-weight: 400;
@@ -1981,6 +2029,105 @@ h2 {
 }
 
 /* End of CSS style for Custom Select */
+
+/**-------------------------------------  */
+/* A lot of CSS to styling two check box */
+.control {
+    font-family: 'Poppins' sans-serif;
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 5px;
+    padding-top: 3px;
+    cursor: pointer;
+}
+
+.control > span {
+    font-weight: 500;
+    font-size: 0.938rem;
+    color: #667085;
+    text-align: center;
+}
+.control input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+.control_indicator {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    height: 29.09px;
+    width: 29.09px;
+    background: #f9f5ff;
+    border: 1.45px solid #9c7eec;
+    border-radius: 8.73px;
+}
+.control:hover input ~ .control_indicator,
+.control input:focus ~ .control_indicator {
+    background: #e7ddf6;
+}
+
+.plus-svg:hover {
+    cursor: pointer;
+}
+.control input:checked ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control:hover input:not([disabled]):checked ~ .control_indicator,
+.control input:checked:focus ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control input:disabled ~ .control_indicator {
+    background: #e6e6e6;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.control_indicator:after {
+    box-sizing: unset;
+    content: '';
+    position: absolute;
+    display: none;
+}
+.control input:checked ~ .control_indicator:after {
+    display: block;
+}
+.control-checkbox .control_indicator:after {
+    left: 4px;
+    top: 5px;
+    width: 13.58px;
+    height: 9.33px;
+    border: solid #9c7eec;
+    border-width: 0px 0px 2.9px 2.9px;
+    transform: rotate(-45deg);
+}
+.control-checkbox input:disabled ~ .control_indicator:after {
+    border-color: #7b7b7b;
+}
+.control-checkbox .control_indicator::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-left: -1.3rem;
+    margin-top: -1.3rem;
+    background: #9c7eec;
+    border-radius: 3rem;
+    opacity: 0.6;
+    z-index: 99999;
+    transform: scale(0);
+}
+
+.control-checkbox input + .control_indicator::before {
+    animation: s-ripple 250ms ease-out;
+}
+.control-checkbox input:checked + .control_indicator::before {
+    animation-name: s-ripple-dup;
+}
+/* End of check box styling */
 
 /* View Specific On Phone */
 @media (min-width: 0px) and (max-width: 576px) {
