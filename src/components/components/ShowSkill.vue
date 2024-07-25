@@ -219,7 +219,8 @@ export default {
                     :class="{
                         'd-flex': isMobileCheck < 576,
                         'justify-content-center': isMobileCheck < 576,
-                        'mb-2': isMobileCheck < 576
+                        'mb-2': isMobileCheck < 576,
+                        'mb-4': isMobileCheck > 576
                     }"
                 >
                     <!-- Show version history -->
