@@ -735,7 +735,8 @@ export default {
                                             "
                                             v-if="
                                                 post.user_id == user.userId ||
-                                                user.role == 'admin'
+                                                user.role == 'admin' ||
+                                                user.role == 'editor'
                                             "
                                             type="button"
                                             class="btn dropdown-btn"
