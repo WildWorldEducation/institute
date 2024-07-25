@@ -5,6 +5,7 @@ export default {
         return {
             id: this.$route.params.id,
             skillId: null,
+            skill: {},
             contentEdit: {}
         };
     },
@@ -20,11 +21,24 @@ export default {
                 .then((data) => {
                     this.contentEdit = data;
                     console.log(this.contentEdit);
+                    if (
+                        this.contentEdit.content_type ==
+                        'skill_mastery_requirements'
+                    ) {
+                        this.getSkill();
+                    }
                 });
         },
-        async getSkill()
-        {
-            
+        async getSkill() {
+            this.skillId = this.contentEdit.content_id;
+            await fetch('/skills/show/' + this.skillId)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    this.skill = data;
+                    console.log(this.skill);
+                });
         }
     }
 };
@@ -37,7 +51,7 @@ export default {
             <h2>Change</h2>
             <div v-html="this.contentEdit.updated_content"></div>
             <h2>Original</h2>
-            <div></div>
+            <div v-html="this.skill.mastery_requirements"></div>
         </div>
     </div>
 </template>
