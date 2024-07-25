@@ -422,13 +422,7 @@ export default {
                 </div>
             </div>
             <!-- A line divide -->
-            <div
-                v-if="
-                    (userDetailsStore.role == 'admin' ||
-                        userDetailsStore.role == 'editor') &&
-                    skill.type != 'domain'
-                "
-            >
+            <div v-if="skill.type != 'domain'">
                 <div class="row">
                     <div class="col col-md-8 p-4 p-md-0">
                         <hr
