@@ -132,7 +132,8 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                     postUserId = results[0].user_id;
                     if (
                         postUserId == req.session.userId ||
-                        req.session.role == 'admin'
+                        req.session.role == 'admin' ||
+                        req.session.role == 'editor'
                     ) {
                         // Delete the post.
                         // new query using visibility flag
