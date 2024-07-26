@@ -18,7 +18,8 @@ export default {
                 validated: false,
                 name: false,
                 question: false
-            }
+            },
+            comment: ''
         };
     },
     created() {
@@ -32,6 +33,7 @@ export default {
                 })
                 .then((data) => (this.question = data));
         },
+        // If edit is from an admin or editor.
         Submit() {
             // reset validate flag before checking
             this.validate.validated = false;
@@ -67,6 +69,7 @@ export default {
                 this.$router.back();
             });
         },
+        // If edit is from a student or instructor.
         SubmitForReview() {}
     }
 };
@@ -122,9 +125,28 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter question contend !
+                            please enter question content !
                         </div>
                     </div>
+
+                    <!--Optional comment if this is a student/instructor submitting an edit for review --->
+                    <div
+                        v-if="
+                            userDetailsStore.role == 'instructor' ||
+                            userDetailsStore.role == 'student'
+                        "
+                        class="mb-3"
+                    >
+                        <label class="form-label"
+                            >Optional: explain this edit</label
+                        >
+                        <textarea
+                            v-model="comment"
+                            class="form-control"
+                            rows="3"
+                        ></textarea>
+                    </div>
+
                     <div class="mb-3 d-flex justify-content-end">
                         <button
                             v-if="

@@ -24,7 +24,8 @@ export default {
                 incorrect_answer3: false,
                 incorrect_answer4: false,
                 explanation: false
-            }
+            },
+            comment: ''
         };
     },
     created() {
@@ -38,6 +39,7 @@ export default {
                 })
                 .then((data) => (this.question = data));
         },
+        // If edit is from an admin or editor.
         Submit() {
             // Reset the validate flag before re-checking
             this.validate.validated = false;
@@ -128,9 +130,8 @@ export default {
                 this.$router.back();
             });
         },
-        SubmitForReview() {
-            
-        }
+        // If edit is from a student or instructor.
+        SubmitForReview() {}
     }
 };
 </script>
@@ -300,6 +301,23 @@ export default {
                         >
                             please enter a explanation !
                         </div>
+                    </div>
+                    <!--Optional comment if this is a student/instructor submitting an edit for review --->
+                    <div
+                        v-if="
+                            userDetailsStore.role == 'instructor' ||
+                            userDetailsStore.role == 'student'
+                        "
+                        class="mb-3"
+                    >
+                        <label class="form-label"
+                            >Optional: explain this edit</label
+                        >
+                        <textarea
+                            v-model="comment"
+                            class="form-control"
+                            rows="3"
+                        ></textarea>
                     </div>
 
                     <div class="d-flex justify-content-end gap-4">

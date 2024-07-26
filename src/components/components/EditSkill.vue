@@ -94,7 +94,8 @@ export default {
             step1Confirm: false,
             skillNameConfirm: '',
             step2Confirm: false,
-            orderArray: Array.from({ length: 20 }, (_, i) => i + 1)
+            orderArray: Array.from({ length: 20 }, (_, i) => i + 1),
+            comment: ''
         };
     },
     async mounted() {
@@ -236,6 +237,7 @@ export default {
                 });
             });
         },
+        // If edit is from an admin or editor.
         Submit() {
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
@@ -328,6 +330,7 @@ export default {
                     this.$router.push('/skills');
                 });
         },
+        // If edit is from a student or instructor.
         SubmitForReview() {},
         handleChooseSkillLevel(level) {
             this.showLevelDropDown = false;
@@ -920,6 +923,16 @@ export default {
                 </div>
                 <!-- End of custom dropdown -->
             </div>
+        </div>
+
+        <!--Optional comment if this is a student/instructor submitting an edit for review --->
+        <div class="mb-3">
+            <label class="form-label">Optional: explain this edit</label>
+            <textarea
+                v-model="comment"
+                class="form-control"
+                rows="3"
+            ></textarea>
         </div>
 
         <!-- Submit and cancel button -->
