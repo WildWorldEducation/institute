@@ -242,7 +242,11 @@ router.put('/mc/:id/edit-for-review', (req, res, next) => {
         let sqlQuery = `INSERT INTO mc_questions_awaiting_approval (mc_question_id, user_id, name, question, correct_answer,
             incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, incorrect_answer_4, explanation, comment)
             VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}', '${correctAnswer}', '${incorrectAnswer1}', '${incorrectAnswer2}', 
-            '${incorrectAnswer3}', '${incorrectAnswer4}', '${explanation}', '${req.body.comment}');`;
+            '${incorrectAnswer3}', '${incorrectAnswer4}', '${explanation}', '${req.body.comment}')
+            
+            ON DUPLICATE KEY
+            UPDATE name = '${name}', date = CURRENT_TIMESTAMP(), question = '${question}', correct_answer = '${correctAnswer}', incorrect_answer_1 = '${incorrectAnswer1}',
+            incorrect_answer_2 = '${incorrectAnswer2}', incorrect_answer_3 = '${incorrectAnswer3}', incorrect_answer_4 = '${incorrectAnswer4}', explanation = '${explanation}', comment = '${req.body.comment}';`;
 
         conn.query(sqlQuery, (err) => {
             try {
@@ -324,7 +328,10 @@ router.put('/essay/:id/edit-for-review', (req, res, next) => {
 
         // Add data.
         let sqlQuery = `INSERT INTO essay_questions_awaiting_approval (essay_question_id, user_id, name, question, comment)
-                        VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}','${req.body.comment}');`;
+                        VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}','${req.body.comment}')
+
+                        ON DUPLICATE KEY
+                        UPDATE date = CURRENT_TIMESTAMP(), name = '${name}', question = '${question}', comment = '${req.body.comment}';`;
 
         conn.query(sqlQuery, (err) => {
             try {
