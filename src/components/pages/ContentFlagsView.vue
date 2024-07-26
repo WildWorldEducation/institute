@@ -2031,7 +2031,7 @@ h2 {
 }
 
 .flag-type-filter {
-    left: -50px;
+    left: -10px;
 }
 
 .flag-reason {
