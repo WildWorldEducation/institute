@@ -329,20 +329,21 @@ export default {
                 });
         },
         SubmitForReview() {
-            var url = '/content-edits/skill/add/' + this.skillId;
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: this.userDetailsStore.userId,
-                    content_type: 'skill_mastery_requirements',
-                    content_id: this.skillId,
-                    updated_content: this.skill.mastery_requirements
-                })
-            };
-            fetch(url, requestOptions).then(() => {
-                this.$router.push('/skills');
-            });
+            console.log(this.skill.mastery_requirements);
+            // var url = '/content-edits/skill/add/' + this.skillId;
+            // const requestOptions = {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         user_id: this.userDetailsStore.userId,
+            //         content_type: 'skill_mastery_requirements',
+            //         content_id: this.skillId,
+            //         updated_content: this.skill.mastery_requirements
+            //     })
+            // };
+            // fetch(url, requestOptions).then(() => {
+            //     this.$router.push('/skills');
+            // });
         },
         handleChooseSkillLevel(level) {
             this.showLevelDropDown = false;
