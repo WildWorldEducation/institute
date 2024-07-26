@@ -52,7 +52,10 @@ export default {
             // Custom drop down flag and state
             showFlagTypeDropDown: false,
             showUserRoleDropDown: false,
-            showDateFilterDropDown: false
+            showDateFilterDropDown: false,
+            dateMonthCriteria: '',
+            dateYearCriteria: '',
+            dateDayCriteria: ''
         };
     },
     components: {
@@ -62,6 +65,8 @@ export default {
     async mounted() {
         // call to content flags route
         await this.getContentFlags();
+        // initial data for date criteria
+        const today = new Date();
     },
     methods: {
         async getContentFlags() {
@@ -269,6 +274,42 @@ export default {
                 });
             }
 
+            // *** Year Filter ***
+            if (this.dateYearCriteria !== '') {
+                filterOptionsArray.push({
+                    field: 'dateString',
+                    criteria: this.dateYearCriteria,
+                    comparison: (value, criteria) => {
+                        const flagDate = new Date(value);
+                        return flagDate.getFullYear() == criteria;
+                    }
+                });
+            }
+
+            // *** Month Filter ***
+            if (this.dateMonthCriteria !== '') {
+                filterOptionsArray.push({
+                    field: 'dateString',
+                    criteria: this.dateMonthCriteria,
+                    comparison: (value, criteria) => {
+                        const flagDate = new Date(value);
+                        return flagDate.getMonth() == criteria;
+                    }
+                });
+            }
+
+            // *** day Filter ***
+            if (this.dateDayCriteria !== '') {
+                filterOptionsArray.push({
+                    field: 'dateString',
+                    criteria: this.dateDayCriteria,
+                    comparison: (value, criteria) => {
+                        const flagDate = new Date(value);
+                        return flagDate.getDate() == criteria;
+                    }
+                });
+            }
+
             return filterOptionsArray;
         },
         handleUserKeyUp(e) {
@@ -297,10 +338,17 @@ export default {
             const createTime = parseDate.toLocaleTimeString();
             return `${createTime}-${createDate}`;
         },
-        closeAllFilter() {
-            this.showDateFilter = false;
-            this.showFlagTypeFilter = false;
-            this.showUserFilter = false;
+        closeAllFilter(showFilter) {
+            // Do not close the current open filter
+            if (showFilter !== 'date') {
+                this.showDateFilter = false;
+            }
+            if (showFilter !== 'type') {
+                this.showFlagTypeFilter = false;
+            }
+            if (showFilter !== 'user') {
+                this.showUserFilter = false;
+            }
         }
     },
     watch: {
@@ -319,7 +367,6 @@ export default {
                         const dateB = new Date(b.dateString);
                         return dateB - dateA;
                     });
-                    console.log(this.rows);
                 }
             }
         }
@@ -625,7 +672,8 @@ export default {
                     <div class="filter-column">
                         <div
                             @click.stop="
-                                showFlagTypeFilter = !showFlagTypeFilter
+                                closeAllFilter('type');
+                                showFlagTypeFilter = !showFlagTypeFilter;
                             "
                             b-tooltip.hover
                             :title="'filter this column'"
@@ -751,7 +799,10 @@ export default {
                 <template #header-user="header">
                     <div class="filter-column user-header">
                         <div
-                            @click.stop="showUserFilter = !showUserFilter"
+                            @click.stop="
+                                closeAllFilter('user');
+                                showUserFilter = !showUserFilter;
+                            "
                             b-tooltip.hover
                             :title="'Search for user name'"
                         >
@@ -885,7 +936,10 @@ export default {
                 <template #header-date="header">
                     <div class="filter-column user-header">
                         <div
-                            @click.stop="showDateFilter = !showDateFilter"
+                            @click.stop="
+                                closeAllFilter('date');
+                                showDateFilter = !showDateFilter;
+                            "
                             b-tooltip.hover
                             :title="'Date filtering and ordering'"
                         >
@@ -907,130 +961,202 @@ export default {
                             </svg>
                         </div>
                         <Transition name="dropdown">
-                            <div class="filter-menu" v-if="showDateFilter">
-                                <!-- Sort order -->
-                                <div class="d-flex flex-column">
-                                    <div class="filter-label">Date oder</div>
-
-                                    <label
-                                        class="control control-checkbox mt-2"
-                                    >
-                                        <span class="my-auto mx-2 me-4">
-                                            ascending</span
-                                        >
-                                        <input
-                                            type="radio"
-                                            value="asc"
-                                            v-model="dateOrder"
-                                        />
-                                        <div class="control_indicator"></div>
-                                    </label>
-                                    <label
-                                        class="control control-checkbox mt-2"
-                                    >
-                                        <span class="my-auto mx-2 me-4">
-                                            descending</span
-                                        >
-                                        <input
-                                            type="radio"
-                                            value="desc"
-                                            v-model="dateOrder"
-                                        />
-                                        <div class="control_indicator"></div>
-                                    </label>
-                                </div>
-
-                                <!-- Date filter -->
-                                <div class="mt-2 d-flex flex-column">
-                                    <div class="filter-label">Flag Date:</div>
-                                    <!-- Custom Dropdown -->
+                            <div
+                                class="filter-menu date-filter-menu"
+                                v-if="showDateFilter"
+                            >
+                                <div class="d-flex flex-row gap-3">
                                     <div class="d-flex flex-column">
-                                        <div
-                                            :class="[
-                                                showDateFilterDropDown
-                                                    ? 'custom-select-button-focus'
-                                                    : 'custom-select-button'
-                                            ]"
-                                            @click="
-                                                showDateFilterDropDown =
-                                                    !showDateFilterDropDown
-                                            "
-                                        >
-                                            {{ dateFilterCriteria }}
-                                            <span>
-                                                <svg
-                                                    width="20"
-                                                    height="20"
-                                                    viewBox="0 0 20 20"
-                                                    fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
-                                                        fill="#344054"
-                                                    />
-                                                </svg>
-                                            </span>
-                                        </div>
-                                        <Transition name="dropdownFilter">
-                                            <div
-                                                v-if="showDateFilterDropDown"
-                                                class="custom-dropdown-base"
-                                            >
-                                                <div
-                                                    class="custom-dropdown-option"
-                                                    @click="
-                                                        dateFilterCriteria =
-                                                            'all';
-                                                        showDateFilterDropDown = false;
-                                                    "
-                                                >
-                                                    All
-                                                </div>
-                                                <div
-                                                    class="custom-dropdown-option"
-                                                    @click="
-                                                        dateFilterCriteria =
-                                                            'this month';
-                                                        showDateFilterDropDown = false;
-                                                    "
-                                                >
-                                                    This month
-                                                </div>
-                                                <div
-                                                    class="custom-dropdown-option"
-                                                    @click="
-                                                        dateFilterCriteria =
-                                                            'last three month';
-                                                        showDateFilterDropDown = false;
-                                                    "
-                                                >
-                                                    Last three month
-                                                </div>
-                                                <div
-                                                    class="custom-dropdown-option"
-                                                    @click="
-                                                        dateFilterCriteria =
-                                                            'last six month';
-                                                        showDateFilterDropDown = false;
-                                                    "
-                                                >
-                                                    Last six month
-                                                </div>
-                                                <div
-                                                    class="custom-dropdown-option"
-                                                    @click="
-                                                        dateFilterCriteria =
-                                                            'this year';
-                                                        showDateFilterDropDown = false;
-                                                    "
-                                                >
-                                                    This year
-                                                </div>
+                                        <!-- Sort order -->
+                                        <div class="d-flex flex-column">
+                                            <div class="filter-label">
+                                                Date oder
                                             </div>
-                                        </Transition>
+
+                                            <label
+                                                class="control control-checkbox mt-2"
+                                            >
+                                                <span class="my-auto mx-2 me-4">
+                                                    ascending</span
+                                                >
+                                                <input
+                                                    type="radio"
+                                                    value="asc"
+                                                    v-model="dateOrder"
+                                                />
+                                                <div
+                                                    class="control_indicator"
+                                                ></div>
+                                            </label>
+                                            <label
+                                                class="control control-checkbox mt-2"
+                                            >
+                                                <span class="my-auto mx-2 me-4">
+                                                    descending</span
+                                                >
+                                                <input
+                                                    type="radio"
+                                                    value="desc"
+                                                    v-model="dateOrder"
+                                                />
+                                                <div
+                                                    class="control_indicator"
+                                                ></div>
+                                            </label>
+                                        </div>
+
+                                        <!-- Date filter -->
+                                        <div class="mt-2 d-flex flex-column">
+                                            <div class="filter-label">
+                                                Flag Date:
+                                            </div>
+                                            <!-- Custom Dropdown -->
+                                            <div class="d-flex flex-column">
+                                                <div
+                                                    :class="[
+                                                        showDateFilterDropDown
+                                                            ? 'custom-select-button-focus'
+                                                            : 'custom-select-button'
+                                                    ]"
+                                                    @click="
+                                                        showDateFilterDropDown =
+                                                            !showDateFilterDropDown
+                                                    "
+                                                >
+                                                    {{ dateFilterCriteria }}
+                                                    <span>
+                                                        <svg
+                                                            width="20"
+                                                            height="20"
+                                                            viewBox="0 0 20 20"
+                                                            fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                            <path
+                                                                d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                                fill="#344054"
+                                                            />
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                                <Transition
+                                                    name="dropdownFilter"
+                                                >
+                                                    <div
+                                                        v-if="
+                                                            showDateFilterDropDown
+                                                        "
+                                                        class="custom-dropdown-base"
+                                                    >
+                                                        <div
+                                                            class="custom-dropdown-option"
+                                                            @click="
+                                                                dateFilterCriteria =
+                                                                    'all';
+                                                                showDateFilterDropDown = false;
+                                                            "
+                                                        >
+                                                            All
+                                                        </div>
+                                                        <div
+                                                            class="custom-dropdown-option"
+                                                            @click="
+                                                                dateFilterCriteria =
+                                                                    'this month';
+                                                                showDateFilterDropDown = false;
+                                                            "
+                                                        >
+                                                            This month
+                                                        </div>
+                                                        <div
+                                                            class="custom-dropdown-option"
+                                                            @click="
+                                                                dateFilterCriteria =
+                                                                    'last three month';
+                                                                showDateFilterDropDown = false;
+                                                            "
+                                                        >
+                                                            Last three month
+                                                        </div>
+                                                        <div
+                                                            class="custom-dropdown-option"
+                                                            @click="
+                                                                dateFilterCriteria =
+                                                                    'last six month';
+                                                                showDateFilterDropDown = false;
+                                                            "
+                                                        >
+                                                            Last six month
+                                                        </div>
+                                                        <div
+                                                            class="custom-dropdown-option"
+                                                            @click="
+                                                                dateFilterCriteria =
+                                                                    'this year';
+                                                                showDateFilterDropDown = false;
+                                                            "
+                                                        >
+                                                            This year
+                                                        </div>
+                                                    </div>
+                                                </Transition>
+                                            </div>
+                                            <!-- End of custom dropdown -->
+                                        </div>
                                     </div>
-                                    <!-- End of custom dropdown -->
+                                    <div class="d-flex flex-column">
+                                        <!-- Year Filter -->
+                                        <div class="mt-2 d-flex flex-column">
+                                            <div
+                                                class="filter-label date-label"
+                                            >
+                                                Choose Year:
+                                            </div>
+                                            <div
+                                                class="d-flex user-filter date-filter-input"
+                                            >
+                                                <input
+                                                    placeholder="input number"
+                                                    type="text"
+                                                    v-model="dateYearCriteria"
+                                                />
+                                            </div>
+                                        </div>
+                                        <!-- Month Filter -->
+                                        <div class="mt-2 d-flex flex-column">
+                                            <div
+                                                class="filter-label date-label"
+                                            >
+                                                Choose Month:
+                                            </div>
+                                            <div
+                                                class="d-flex user-filter date-filter-input"
+                                            >
+                                                <input
+                                                    type="text"
+                                                    v-model="dateMonthCriteria"
+                                                    placeholder="input number"
+                                                />
+                                            </div>
+                                        </div>
+                                        <!-- Day Filter -->
+                                        <div class="mt-2 d-flex flex-column">
+                                            <div
+                                                class="filter-label date-label"
+                                            >
+                                                Choose Day:
+                                            </div>
+                                            <div
+                                                class="d-flex user-filter date-filter-input"
+                                            >
+                                                <input
+                                                    type="text"
+                                                    v-model="dateDayCriteria"
+                                                    placeholder="input day"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </Transition>
@@ -1285,7 +1411,8 @@ export default {
                     <div class="filter-column">
                         <div
                             @click.stop="
-                                showFlagTypeFilter = !showFlagTypeFilter
+                                closeAllFilter('type');
+                                showFlagTypeFilter = !showFlagTypeFilter;
                             "
                             b-tooltip.hover
                             :title="'filter this column'"
@@ -1399,7 +1526,10 @@ export default {
                 <template #header-user="header">
                     <div class="filter-column user-header">
                         <div
-                            @click.stop="showUserFilter = !showUserFilter"
+                            @click.stop="
+                                closeAllFilter('user');
+                                showUserFilter = !showUserFilter;
+                            "
                             b-tooltip.hover
                             :title="'Search for user name'"
                         >
@@ -1793,15 +1923,18 @@ h2 {
 
 /* ** End Of Dropdown Animation ** */
 
+.date-filter-menu {
+    left: -60px;
+    width: fit-content;
+}
+
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-
     --easy-table-header-font-size: 16px;
     --easy-table-header-font-color: #8f7bd6;
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
-
     --easy-table-header-item-padding: 15px 5px;
 }
 
@@ -1870,6 +2003,7 @@ h2 {
     width: fit-content;
     background-color: #fff;
     border: 1px solid #e0e0e0;
+    box-shadow: 4px 3px 2px rgba(0, 0, 0, 0.2);
 }
 
 .filter-column {
@@ -1890,6 +2024,10 @@ h2 {
 .user-filter input {
     outline: none;
     border: 0px;
+}
+
+.date-filter-input input {
+    width: 100%;
 }
 
 .flag-type-filter {
@@ -1978,6 +2116,10 @@ h2 {
     font-size: 16px;
     font-weight: 400;
     margin-top: 15px;
+}
+
+.date-label {
+    width: 120px;
 }
 
 /* The animation key frame */
