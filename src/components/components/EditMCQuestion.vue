@@ -41,6 +41,57 @@ export default {
         },
         // If edit is from an admin or editor.
         Submit() {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: this.question.name,
+                    question: this.question.question,
+                    correct_answer: this.question.correct_answer,
+                    incorrect_answer_1: this.question.incorrect_answer_1,
+                    incorrect_answer_2: this.question.incorrect_answer_2,
+                    incorrect_answer_3: this.question.incorrect_answer_3,
+                    incorrect_answer_4: this.question.incorrect_answer_4,
+                    correct_answer: this.question.correct_answer,
+                    explanation: this.question.explanation
+                })
+            };
+
+            var url = '/questions/mc/' + this.questionId + '/edit';
+            fetch(url, requestOptions).then(() => {
+                alert('Question edited successfully.');
+                this.$router.back();
+            });
+        },
+        // If edit is from a student or instructor.
+        SubmitForReview() {
+            console.log(this.question);
+            console.log(this.comment);
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: this.userDetailsStore.userId,
+                    name: this.question.name,
+                    question: this.question.question,
+                    correct_answer: this.question.correct_answer,
+                    incorrect_answer_1: this.question.incorrect_answer_1,
+                    incorrect_answer_2: this.question.incorrect_answer_2,
+                    incorrect_answer_3: this.question.incorrect_answer_3,
+                    incorrect_answer_4: this.question.incorrect_answer_4,
+                    correct_answer: this.question.correct_answer,
+                    explanation: this.question.explanation,
+                    comment: this.comment
+                })
+            };
+
+            var url = '//' + this.questionId + '/';
+            fetch(url, requestOptions).then(() => {
+                alert('Question edit submitted for review.');
+                this.$router.back();
+            });
+        },
+        ValidateForm(submissionType) {
             // Reset the validate flag before re-checking
             this.validate.validated = false;
             // Check data before fetching
@@ -108,30 +159,13 @@ export default {
             if (this.validate.validated) {
                 return; // stop the submit operation if there something violated validate condition
             }
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: this.question.name,
-                    question: this.question.question,
-                    correct_answer: this.question.correct_answer,
-                    incorrect_answer_1: this.question.incorrect_answer_1,
-                    incorrect_answer_2: this.question.incorrect_answer_2,
-                    incorrect_answer_3: this.question.incorrect_answer_3,
-                    incorrect_answer_4: this.question.incorrect_answer_4,
-                    correct_answer: this.question.correct_answer,
-                    explanation: this.question.explanation
-                })
-            };
 
-            var url = '/questions/mc/' + this.questionId + '/edit';
-            fetch(url, requestOptions).then(() => {
-                alert('Question edited successfully.');
-                this.$router.back();
-            });
-        },
-        // If edit is from a student or instructor.
-        SubmitForReview() {}
+            if (submissionType == 'submission') {
+                this.Submit();
+            } else if (submissionType == 'submissionForReview') {
+                this.SubmitForReview();
+            }
+        }
     }
 };
 </script>
@@ -330,7 +364,7 @@ export default {
                                 userDetailsStore.role == 'editor'
                             "
                             class="btn purple-btn"
-                            @click="Submit()"
+                            @click="ValidateForm('submission')"
                         >
                             Submit
                         </button>
@@ -340,7 +374,7 @@ export default {
                                 userDetailsStore.role == 'student'
                             "
                             class="btn purple-btn"
-                            @click="SubmitForReview()"
+                            @click="ValidateForm('submissionForReview')"
                         >
                             <div class="d-none d-md-block">
                                 Submit for review

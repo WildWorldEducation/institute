@@ -35,6 +35,42 @@ export default {
         },
         // If edit is from an admin or editor.
         Submit() {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: this.question.name,
+                    question: this.question.question
+                })
+            };
+
+            var url = '/questions/essay/' + this.questionId + '/edit';
+            fetch(url, requestOptions).then(() => {
+                this.$router.back();
+            });
+        },
+        // If edit is from a student or instructor.
+        SubmitForReview() {
+            console.log(this.question);
+            console.log(this.comment);
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: this.userDetailsStore.userId,
+                    name: this.question.name,
+                    question: this.question.question,
+                    comment: this.comment
+                })
+            };
+
+            var url = '//' + this.questionId + '/';
+            fetch(url, requestOptions).then(() => {
+                alert('Question edit submitted for review.');
+                this.$router.back();
+            });
+        },
+        ValidateForm(submissionType) {
             // reset validate flag before checking
             this.validate.validated = false;
 
@@ -55,22 +91,12 @@ export default {
                 return;
             }
 
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: this.question.name,
-                    question: this.question.question
-                })
-            };
-
-            var url = '/questions/essay/' + this.questionId + '/edit';
-            fetch(url, requestOptions).then(() => {
-                this.$router.back();
-            });
-        },
-        // If edit is from a student or instructor.
-        SubmitForReview() {}
+            if (submissionType == 'submission') {
+                this.Submit();
+            } else if (submissionType == 'submissionForReview') {
+                this.SubmitForReview();
+            }
+        }
     }
 };
 </script>
@@ -153,7 +179,7 @@ export default {
                                 userDetailsStore.role == 'admin' ||
                                 userDetailsStore.role == 'editor'
                             "
-                            @click="Submit()"
+                            @click="ValidateForm('submission')"
                             class="btn purple-btn"
                         >
                             Submit
@@ -164,7 +190,7 @@ export default {
                                 userDetailsStore.role == 'student'
                             "
                             class="btn purple-btn"
-                            @click="SubmitForReview()"
+                            @click="ValidateForm('submissionForReview')"
                         >
                             <div class="d-none d-md-block">
                                 Submit for review
