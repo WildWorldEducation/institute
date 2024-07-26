@@ -206,6 +206,60 @@ router.put('/mc/:id/edit', (req, res, next) => {
     }
 });
 
+/**
+ * Submit MC question edit for review.
+ */
+router.put('/mc/:id/edit-for-review', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+        let correctAnswer;
+        let incorrectAnswer1;
+        let incorrectAnswer2;
+        let incorrectAnswer3;
+        let incorrectAnswer4;
+        let explanation;
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+        if (req.body.correct_answer != null)
+            correctAnswer = req.body.correct_answer.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_1 != null)
+            incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_2 != null)
+            incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_3 != null)
+            incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_4 != null)
+            incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "\\'");
+        if (req.body.explanation != null)
+            explanation = req.body.explanation.replace(/'/g, "\\'");
+        if (req.body.comment != null)
+            req.body.comment = req.body.comment.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery = `INSERT INTO mc_questions_awaiting_approval (mc_question_id, user_id, name, question, correct_answer,
+            incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, incorrect_answer_4, explanation, comment)
+            VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}', '${correctAnswer}', '${incorrectAnswer1}', '${incorrectAnswer2}', 
+            '${incorrectAnswer3}', '${incorrectAnswer4}', '${explanation}', '${req.body.comment}');`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Edit Essay questions
 router.put('/essay/:id/edit', (req, res, next) => {
     if (req.session.userName) {
@@ -243,6 +297,41 @@ router.put('/essay/:id/edit', (req, res, next) => {
                         if (err) throw err;
                         else res.end();
                     });
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Submit Essay question edit for review.
+ */
+router.put('/essay/:id/edit-for-review', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+        if (req.body.comment != null)
+            req.body.comment = req.body.comment.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery = `INSERT INTO essay_questions_awaiting_approval (essay_question_id, user_id, name, question, comment)
+                        VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}','${req.body.comment}');`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
                 }
             } catch (err) {
                 next(err);

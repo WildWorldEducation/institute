@@ -85,7 +85,7 @@ export default {
                 })
             };
 
-            var url = '//' + this.questionId + '/';
+            var url = '/questions/mc/' + this.questionId + '/edit-for-review';
             fetch(url, requestOptions).then(() => {
                 alert('Question edit submitted for review.');
                 this.$router.back();
