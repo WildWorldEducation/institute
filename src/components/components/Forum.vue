@@ -1,6 +1,17 @@
 <script>
+// Import the store.
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+// Import Custom Components
+import FlagModals from './FlagModals.vue';
 export default {
-    setup() {},
+    setup() {
+        // I think because store is in separate component so we will setup it in child
+        // instead of passing the store as prob
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            userDetailsStore
+        };
+    },
     data() {
         return {
             skillId: this.$route.params.skillId,
@@ -17,9 +28,11 @@ export default {
             flagType: '',
             showActionBtns: false,
             currentClickId: '',
-            showThankModal: false,
             source: null
         };
+    },
+    components: {
+        FlagModals
     },
     computed: {
         orderedAndNamedPosts() {
@@ -361,30 +374,7 @@ export default {
         closeWarningModal() {
             this.showModal = false;
         },
-        flagElement(resourceId) {
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    content_type: this.flagType,
-                    content_id: resourceId,
-                    user_id: this.user.userId
-                })
-            };
-            var url = '/content-flags/add';
-
-            fetch(url, requestOptions).then(() => {
-                // Handle showing some modal after post content flags
-                this.showThankModal = true;
-                this.showFlaggingModal = false;
-            });
-        },
-        handleOpenFlagModal(postId, type) {
-            if (type == 'source') {
-                this.flagType = 'resource';
-            } else if (type == 'tutor') {
-                this.flagType = 'tutor_post';
-            }
+        handleOpenFlagModal(postId) {
             this.flagPost = postId;
             this.showFlaggingModal = true;
             this.showActionBtns = false;
@@ -438,7 +428,6 @@ export default {
                             width="18"
                             height="20"
                         >
-                            <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                             <path
                                 d="M32 32C32 14.3 46.3 0 64 0S96 14.3 96 32V240H32V32zM224 192c0-17.7 14.3-32 32-32s32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V192zm-64-64c17.7 0 32 14.3 32 32v48c0 17.7-14.3 32-32 32s-32-14.3-32-32V160c0-17.7 14.3-32 32-32zm160 96c0-17.7 14.3-32 32-32s32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V224zm-96 88l0-.6c9.4 5.4 20.3 8.6 32 8.6c13.2 0 25.4-4 35.6-10.8c8.7 24.9 32.5 42.8 60.4 42.8c11.7 0 22.6-3.1 32-8.6V352c0 88.4-71.6 160-160 160H162.3c-42.4 0-83.1-16.9-113.1-46.9L37.5 453.5C13.5 429.5 0 396.9 0 363V336c0-35.3 28.7-64 64-64h88c22.1 0 40 17.9 40 40s-17.9 40-40 40H96c-8.8 0-16 7.2-16 16s7.2 16 16 16h56c39.8 0 72-32.2 72-72z"
                                 fill="white"
@@ -489,7 +478,6 @@ export default {
                                         width="36"
                                         height="36"
                                     >
-                                        <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                                         <path
                                             d="M192 96a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm-8 384V352h16V480c0 17.7 14.3 32 32 32s32-14.3 32-32V192h56 64 16c17.7 0 32-14.3 32-32s-14.3-32-32-32H384V64H576V256H384V224H320v48c0 26.5 21.5 48 48 48H592c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48H368c-26.5 0-48 21.5-48 48v80H243.1 177.1c-33.7 0-64.9 17.7-82.3 46.6l-58.3 97c-9.1 15.1-4.2 34.8 10.9 43.9s34.8 4.2 43.9-10.9L120 256.9V480c0 17.7 14.3 32 32 32s32-14.3 32-32z"
                                             fill="white"
@@ -798,7 +786,7 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- The Modal -->
+        <!-- The Delete Warn Modal -->
         <div v-if="showModal">
             <div id="myModal" class="modal">
                 <!-- Modal content -->
@@ -823,92 +811,14 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- Modal of flagging resource -->
-        <div v-if="showFlaggingModal">
-            <div id="myModal" class="modal">
-                <!-- Modal content -->
-                <div class="modal-content">
-                    <p>
-                        Would you like to flag this as unhelpful or incorrect
-                        for admin review
-                    </p>
-                    <div
-                        class="d-flex justify-content-lg-between justify-content-md-end justify-content-between gap-2"
-                    >
-                        <button
-                            type="button"
-                            class="btn red-btn w-lg-25"
-                            @click="showFlaggingModal = false"
-                        >
-                            <span class="d-none d-md-block"> No </span>
-                            <!-- Tick Icon ONLY show when in Phone View -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="18"
-                                height="18"
-                                fill="white"
-                                class="d-md-none"
-                            >
-                                <path
-                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
-                                />
-                            </svg>
-                        </button>
-                        <button
-                            type="button"
-                            class="btn green-btn w-lg-25"
-                            @click="flagElement(flagPost)"
-                        >
-                            <span class="d-none d-md-block"> Yes </span>
-                            <!-- X icon Only show when in Phone View -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="18"
-                                height="18"
-                                fill="white"
-                                class="d-md-none"
-                            >
-                                <path
-                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Thank You Modal After User Flagging -->
-        <div v-if="showThankModal">
-            <div id="myModal" class="modal">
-                <!-- Modal content -->
-                <div class="modal-content">
-                    <div class="d-flex gap-4 text-center">
-                        <p>
-                            Thank you for flagging this
-                            {{
-                                flagType == 'tutor_post'
-                                    ? 'tutor post'
-                                    : flagType == 'resource'
-                                    ? 'source'
-                                    : ''
-                            }}. We will take a look as soon as possible!
-                        </p>
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <button
-                            type="button"
-                            class="btn green-btn w-25"
-                            @click="showThankModal = false"
-                        >
-                            <div>OK</div>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
+    <!-- Flagging Component -->
+    <FlagModals
+        v-if="showFlaggingModal"
+        :userId="userDetailsStore.userId"
+        contentType="resource"
+        :contentId="flagPost"
+    />
 </template>
 
 <style scoped>

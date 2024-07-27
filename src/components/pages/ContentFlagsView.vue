@@ -1,5 +1,4 @@
 <script>
-import { ref, computed } from 'vue';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useResourcesStore } from '../../stores/ResourcesStore.js';
 import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
@@ -31,25 +30,41 @@ export default {
             showDismissModal: false,
             flagId: '',
             headers: [
+                { text: 'Type', value: 'type' },
                 { text: 'Name', value: 'name' },
                 { text: 'User', value: 'user', width: 99 },
-                { text: 'Type', value: 'type' },
+                { text: 'Date', value: 'date' },
                 { text: 'Action', value: 'action' }
             ],
+            // In phone version we dont show some column
+            headersPhone: [
+                { text: 'Type', value: 'type' },
+                { text: 'Name', value: 'name' },
+                { text: 'User', value: 'user', width: 99 },
+                { text: 'Action', value: 'action' }
+            ],
+
             rows: [],
             rowsLength: 10,
             // Filter option data for the table
             flagTypeCriteria: 'all',
+            dateFilterCriteria: 'all',
             showFlagTypeFilter: false,
             userNameCriteria: '',
             showUserFilter: false,
+            showDateFilter: false,
+            dateOrder: 'asc',
             searchText: '',
             userRoleCriteria: 'all',
             // Custom drop down flag and state
             showFlagTypeDropDown: false,
             showUserRoleDropDown: false,
             source: null,
-            showModal: false
+            showModal: false,
+            showDateFilterDropDown: false,
+            dateMonthCriteria: '',
+            dateYearCriteria: '',
+            dateDayCriteria: ''
         };
     },
     components: {
@@ -59,6 +74,8 @@ export default {
     async mounted() {
         // call to content flags route
         await this.getContentFlags();
+        // initial data for date criteria
+        const today = new Date();
     },
     methods: {
         async getContentFlags() {
@@ -72,12 +89,20 @@ export default {
                 .then(() => {
                     for (let i = 0; i < this.contentFlags.length; i++) {
                         const flag = this.contentFlags[i];
-
-                        // parse the content data because mysql library return it as a string
                         const contentObj = JSON.parse(flag.contentData);
+
+                        /**
+                         * flagRow is prepared data that we will use in vue-data-table below
+                         */
+                        const flagRow = {};
+
+                        flagRow.dateString = flag.create_date;
+                        flagRow.reason = flag.reason;
+                        // Prepare data differently for each type of content
                         switch (flag.content_type) {
                             // Handle for mc question flag
                             case 'mc_question':
+                                flagRow.contentId = flag.content_id;
                                 // Nicer level names.
                                 if (contentObj.level == 'grade_school') {
                                     contentObj.level = 'grade school';
@@ -88,127 +113,85 @@ export default {
                                 } else if (contentObj.level == 'high_school') {
                                     contentObj.level = 'high school';
                                 }
-
-                                const tableRowMC = {
-                                    contentId: flag.content_id,
-                                    type: 'mc question',
-                                    name:
-                                        contentObj.name +
-                                        ' ' +
-                                        contentObj.question,
-                                    nameUrl:
-                                        'skills/' +
-                                        contentObj.skillId +
-                                        '/question-bank',
-                                    flagId: flag.id,
-                                    editUrl:
-                                        '/mc-questions/edit/' + flag.content_id,
-                                    expandContent: contentObj,
-                                    user: {
-                                        username: flag.username,
-                                        id: flag.userId,
-                                        role: flag.userRole
-                                    }
+                                flagRow.type = 'mc question';
+                                flagRow.name = `${contentObj.name} ${contentObj.question}`;
+                                flagRow.nameUrl = `skills/${contentObj.skillId}/question-bank`;
+                                flagRow.flagId = flag.id;
+                                flagRow.editUrl = `/mc-questions/edit/${flag.content_id}`;
+                                flagRow.expandContent = contentObj;
+                                flagRow.user = {
+                                    username: flag.username,
+                                    id: flag.userId,
+                                    role: flag.userRole
                                 };
-                                this.rows.push(tableRowMC);
+
                                 break;
                             // Handle for mc question flag
                             case 'essay_question':
-                                const tableRowEssay = {
-                                    contentId: flag.content_id,
-                                    type: 'essay question',
-                                    name:
-                                        contentObj.name +
-                                        ' ' +
-                                        contentObj.question,
-                                    nameUrl:
-                                        'skills/' +
-                                        contentObj.skillId +
-                                        '/question-bank',
-                                    flagId: flag.id,
-                                    editUrl:
-                                        '/essay-questions/edit/' +
-                                        flag.content_id,
-                                    expandContent: contentObj,
-                                    user: {
-                                        username: flag.username,
-                                        id: flag.userId,
-                                        role: flag.userRole
-                                    }
+                                flagRow.contentId = flag.content_id;
+                                flagRow.type = 'essay question';
+                                flagRow.name = `${contentObj.name} ${contentObj.question}`;
+
+                                flagRow.nameUrl = `skills/${contentObj.skillId}/question-bank`;
+                                flagRow.flagId = flag.id;
+                                flagRow.editUrl = `/essay-questions/edit/${flag.content_id}`;
+                                flagRow.expandContent = contentObj;
+                                flagRow.user = {
+                                    username: flag.username,
+                                    id: flag.userId,
+                                    role: flag.userRole
                                 };
-                                this.rows.push(tableRowEssay);
                                 break;
                             // handle for skill flag
                             case 'skill':
-                                const tableRowSkill = {
-                                    contentId: flag.content_id,
-                                    type: 'skill',
-                                    name: contentObj.name,
-                                    nameUrl: 'skills/' + flag.content_id,
-
-                                    flagId: flag.id,
-                                    editUrl: '/skills/edit/' + flag.content_id,
-                                    expandContent: contentObj,
-                                    user: {
+                                flagRow.contentId = flag.content_id;
+                                flagRow.type = 'skill';
+                                flagRow.name = contentObj.name;
+                                flagRow.nameUrl = `skills/${flag.content_id}`;
+                                flagRow.flagId = flag.id;
+                                flagRow.editUrl = `/skills/edit/${flag.content_id}`;
+                                (flagRow.expandContent = contentObj),
+                                    (flagRow.user = {
                                         username: flag.username,
                                         id: flag.userId,
                                         role: flag.userRole
-                                    }
-                                };
-                                this.rows.push(tableRowSkill);
+                                    });
                                 break;
                             // handle for resource flag
                             case 'resource':
-                                const tableRowResource = {
-                                    contentId: flag.content_id,
-                                    type: 'resource',
-                                    name:
-                                        'Commented by user: ' +
-                                        contentObj.user +
-                                        ', in skill: ' +
-                                        contentObj.skill +
-                                        ' forum',
-                                    nameUrl: 'skills/' + contentObj.skillId,
-
-                                    flagId: flag.id,
-                                    editUrl:
-                                        '/resources/edit/' + flag.content_id,
-                                    expandContent: contentObj,
-                                    user: {
-                                        username: flag.username,
-                                        id: flag.userId,
-                                        role: flag.userRole
-                                    }
+                                flagRow.contentId = flag.content_id;
+                                flagRow.type = 'resource';
+                                flagRow.name = `Commented by user: ${contentObj.user} in skill: ${contentObj.skill} forum`;
+                                flagRow.nameUrl = `skills/${contentObj.skillId}`;
+                                flagRow.flagId = flag.id;
+                                flagRow.editUrl = `/resources/edit/${flag.content_id}`;
+                                flagRow.expandContent = contentObj;
+                                flagRow.user = {
+                                    username: flag.username,
+                                    id: flag.userId,
+                                    role: flag.userRole
                                 };
-                                this.rows.push(tableRowResource);
                                 break;
                             case 'tutor_post':
-                                const tableTutorPost = {
-                                    contentId: flag.content_id,
-                                    type: 'tutor post',
-                                    name:
-                                        'Tutor post by user: ' +
-                                        contentObj.user +
-                                        ', in skill: ' +
-                                        contentObj.skill +
-                                        ' forum',
-                                    nameUrl: 'skills/' + contentObj.skillId,
-
-                                    flagId: flag.id,
-                                    editUrl:
-                                        '/tutor/edit/' + contentObj.id,
-                                    expandContent: contentObj,
-                                    user: {
-                                        username: flag.username,
-                                        id: flag.userId,
-                                        role: flag.userRole
-                                    }
+                                flagRow.contentId = flag.content_id;
+                                flagRow.type = 'tutor post';
+                                flagRow.name = `Tutor post by user: ${contentObj.user} in skill: ${contentObj.skill} forum`;
+                                flagRow.nameUrl = `skills/${contentObj.skillId}`;
+                                flagRow.flagId = flag.id;
+                                flagRow.editUrl = `/tutor/edit/${flag.content_id}`;
+                                flagRow.expandContent = contentObj;
+                                flagRow.user = {
+                                    username: flag.username,
+                                    id: flag.userId,
+                                    role: flag.userRole
                                 };
-                                this.rows.push(tableTutorPost);
                                 break;
+
                             default:
                                 break;
                         }
+
+                        this.rows.push(flagRow);
                     }
                     this.rowsLength = this.rows.length;
                     this.isContentFlagsLoaded = true;
@@ -282,6 +265,79 @@ export default {
                 });
             }
 
+            // *** Date Filter ***
+            if (this.dateFilterCriteria !== 'all') {
+                filterOptionsArray.push({
+                    field: 'dateString',
+                    criteria: this.dateFilterCriteria,
+                    comparison: (value, criteria) => {
+                        const parseDate = new Date(value);
+                        const dateNow = new Date();
+                        switch (criteria) {
+                            case 'this month':
+                                return (
+                                    parseDate.getMonth() === dateNow.getMonth()
+                                );
+                            case 'last three month':
+                                // Get the date of six month ago from today. This can leave wrong day for date but all we need is the month so it will be okay
+                                const compareDate3Month = dateNow.setMonth(
+                                    dateNow.getMonth() - 4
+                                );
+                                return parseDate >= compareDate3Month;
+                            case 'last six month':
+                                // Get the date of six month ago from today. This can leave wrong day for date but all we need is the month so it will be okay
+                                const compareDate = dateNow.setMonth(
+                                    dateNow.getMonth() - 7
+                                );
+                                return parseDate >= compareDate;
+                            case 'this year':
+                                return (
+                                    parseDate.getFullYear() ===
+                                    dateNow.getFullYear()
+                                );
+                            default:
+                                break;
+                        }
+                    }
+                });
+            }
+
+            // *** Year Filter ***
+            if (this.dateYearCriteria !== '') {
+                filterOptionsArray.push({
+                    field: 'dateString',
+                    criteria: this.dateYearCriteria,
+                    comparison: (value, criteria) => {
+                        const flagDate = new Date(value);
+                        return flagDate.getFullYear() == criteria;
+                    }
+                });
+            }
+
+            // *** Month Filter ***
+            if (this.dateMonthCriteria !== '') {
+                filterOptionsArray.push({
+                    field: 'dateString',
+                    criteria: this.dateMonthCriteria,
+                    comparison: (value, criteria) => {
+                        const flagDate = new Date(value);
+                        return flagDate.getMonth() == criteria;
+                    }
+                });
+            }
+
+            // *** day Filter ***
+            if (this.dateDayCriteria !== '') {
+                filterOptionsArray.push({
+                    field: 'dateString',
+                    criteria: this.dateDayCriteria,
+                    comparison: (value, criteria) => {
+                        const flagDate = new Date(value);
+                        return flagDate.getDate() == criteria;
+                    }
+                });
+            }
+
             return filterOptionsArray;
         },
         handleUserKeyUp(e) {
@@ -296,9 +352,46 @@ export default {
             this.userRoleCriteria = 'all';
             this.showFlagTypeFilter = false;
             this.showUserFilter = false;
+            this.showDateFilter = false;
+            this.dateFilterCriteria = 'all';
+            this.dateOrder = 'asc';
+            this.dateDayCriteria = '';
+            this.dateMonthCriteria = '';
+            this.dateYearCriteria = '';
+        },
+        // parse date string into more readable format
+        formatDate(dateString) {
+            // parse the content data because mysql library return it as a string
+            const parseDate = new Date(dateString);
+            const createDate = parseDate.toLocaleString('en-gb', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const createTime = parseDate.toLocaleTimeString();
+            return `${createTime}-${createDate}`;
+        },
+        closeAllFilter(showFilter) {
+            // Do not close the current open filter
+            if (showFilter !== 'date') {
+                this.showDateFilter = false;
+            }
+            if (showFilter !== 'type') {
+                this.showFlagTypeFilter = false;
+            }
+            if (showFilter !== 'user') {
+                this.showUserFilter = false;
+            }
+        },
+        // Helper function to show flag name in phone view
+        showShortName(name) {
+            let shortName = name.slice(0, 10);
+            shortName = shortName + ' ...';
+            return shortName;
         },
         showWarningModal(source) {
-            console.log(source)
+            console.log(source);
             this.source = source;
             this.showModal = true;
         },
@@ -337,7 +430,28 @@ export default {
             }
 
             // Remove the element from the array
-            this.rows = this.rows.filter(element => element.contentId !== source.contentId);
+            this.rows = this.rows.filter(
+                (element) => element.contentId !== source.contentId
+            );
+        }
+    },
+    watch: {
+        dateOrder: {
+            handler(newVal, oldVal) {
+                if (newVal === 'asc') {
+                    this.rows = this.rows.sort((a, b) => {
+                        const dateA = new Date(a.dateString);
+                        const dateB = new Date(b.dateString);
+                        return dateA - dateB;
+                    });
+                } else {
+                    this.rows = this.rows.sort((a, b) => {
+                        const dateA = new Date(a.dateString);
+                        const dateB = new Date(b.dateString);
+                        return dateB - dateA;
+                    });
+                }
+            }
         }
     }
 };
@@ -380,7 +494,6 @@ export default {
                 :headers="headers"
                 :items="rows"
                 alternating
-                show-index
                 :loading="!isContentFlagsLoaded"
                 table-class-name="customize-table"
                 :filter-options="filterOptions()"
@@ -403,6 +516,12 @@ export default {
                     >
                 </template>
 
+                <!-- --- Date column --- -->
+                <template #item-date="{ dateString }">
+                    <div class="date-cell">
+                        {{ formatDate(dateString) }}
+                    </div>
+                </template>
                 <!-- --- Action Buttons Column --- -->
                 <template #item-action="{ flagId, editUrl, type, contentId }">
                     <div
@@ -455,11 +574,16 @@ export default {
                             </svg>
                         </button>
                         <button
-                            v-if="type === 'tutor post' || type === 'mc question' || type === 'essay question' || type === 'resource'"
+                            v-if="
+                                type === 'tutor post' ||
+                                type === 'mc question' ||
+                                type === 'essay question' ||
+                                type === 'resource'
+                            "
                             b-tooltip.hover
-                            :title="'Dismiss This Flag'"
+                            :title="'Delete This Content'"
                             class="btn red-btn h-100"
-                            @click="showWarningModal({contentId, type})"
+                            @click="showWarningModal({ contentId, type })"
                         >
                             <!-- X icon -->
                             <svg
@@ -479,8 +603,21 @@ export default {
                 </template>
 
                 <!-- ---  Expand Part --- -->
-                <template #expand="{ expandContent, type }">
+                <template #expand="{ expandContent, type, reason }">
                     <div id="expand-div" style="padding: 15px">
+                        <!-- ***** Reason part share with all type of flag ***** -->
+                        <div class="d-flex align-items-center">
+                            <div class="expand-tile">Reason:</div>
+                            <div
+                                :class="[!reason && 'no-reason', 'flag-reason']"
+                            >
+                                {{
+                                    reason
+                                        ? reason
+                                        : 'No reason given for this flag'
+                                }}
+                            </div>
+                        </div>
                         <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'mc question'">
                             <div class="d-flex mb-2">
@@ -655,7 +792,8 @@ export default {
                     <div class="filter-column">
                         <div
                             @click.stop="
-                                showFlagTypeFilter = !showFlagTypeFilter
+                                closeAllFilter('type');
+                                showFlagTypeFilter = !showFlagTypeFilter;
                             "
                             b-tooltip.hover
                             :title="'filter this column'"
@@ -792,7 +930,10 @@ export default {
                 <template #header-user="header">
                     <div class="filter-column user-header">
                         <div
-                            @click.stop="showUserFilter = !showUserFilter"
+                            @click.stop="
+                                closeAllFilter('user');
+                                showUserFilter = !showUserFilter;
+                            "
                             b-tooltip.hover
                             :title="'Search for user name'"
                         >
@@ -813,7 +954,10 @@ export default {
                             </svg>
                         </div>
                         <Transition name="dropdown">
-                            <div class="filter-menu" v-if="showUserFilter">
+                            <div
+                                class="filter-menu user-filter-menu"
+                                v-if="showUserFilter"
+                            >
                                 <!-- User name search filter -->
                                 <div class="d-flex user-filter">
                                     <input
@@ -837,7 +981,7 @@ export default {
                                 </div>
                                 <!-- Role dropdown filter -->
                                 <div class="mt-2 d-flex flex-column">
-                                    <div id="role-filter-label">User Role:</div>
+                                    <div id="filter-label">User Role:</div>
                                     <!-- Custom Dropdown -->
                                     <div class="d-flex flex-column">
                                         <div
@@ -921,6 +1065,237 @@ export default {
                         </Transition>
                     </div>
                 </template>
+
+                <!-- Date Header (Date filter and sorting) -->
+                <template #header-date="header">
+                    <div class="filter-column user-header">
+                        <div
+                            @click.stop="
+                                closeAllFilter('date');
+                                showDateFilter = !showDateFilter;
+                            "
+                            b-tooltip.hover
+                            :title="'Date filtering and ordering'"
+                        >
+                            <span id="type-head-tile" class="me-1">
+                                {{ header.text }}
+                            </span>
+                            <!-- Calender icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="16"
+                                height="14"
+                                class="mb-1 filter-icon"
+                                fill="#8f7bd6"
+                            >
+                                <path
+                                    d="M128 0c17.7 0 32 14.3 32 32l0 32 128 0 0-32c0-17.7 14.3-32 32-32s32 14.3 32 32l0 32 48 0c26.5 0 48 21.5 48 48l0 48L0 160l0-48C0 85.5 21.5 64 48 64l48 0 0-32c0-17.7 14.3-32 32-32zM0 192l448 0 0 272c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 192zm80 64c-8.8 0-16 7.2-16 16l0 96c0 8.8 7.2 16 16 16l96 0c8.8 0 16-7.2 16-16l0-96c0-8.8-7.2-16-16-16l-96 0z"
+                                />
+                            </svg>
+                        </div>
+                        <Transition name="dropdown">
+                            <div
+                                class="filter-menu date-filter-menu"
+                                v-if="showDateFilter"
+                            >
+                                <div class="d-flex flex-row gap-3">
+                                    <div class="d-flex flex-column">
+                                        <!-- Sort order -->
+                                        <div class="d-flex flex-column">
+                                            <div class="filter-label">
+                                                Date order
+                                            </div>
+
+                                            <label
+                                                class="control control-checkbox mt-2"
+                                            >
+                                                <span class="my-auto mx-2 me-4">
+                                                    ascending</span
+                                                >
+                                                <input
+                                                    type="radio"
+                                                    value="asc"
+                                                    v-model="dateOrder"
+                                                />
+                                                <div
+                                                    class="control_indicator"
+                                                ></div>
+                                            </label>
+                                            <label
+                                                class="control control-checkbox mt-2"
+                                            >
+                                                <span class="my-auto mx-2 me-4">
+                                                    descending</span
+                                                >
+                                                <input
+                                                    type="radio"
+                                                    value="desc"
+                                                    v-model="dateOrder"
+                                                />
+                                                <div
+                                                    class="control_indicator"
+                                                ></div>
+                                            </label>
+                                        </div>
+
+                                        <!-- Date filter -->
+                                        <div class="mt-2 d-flex flex-column">
+                                            <div class="filter-label">
+                                                Flag Date:
+                                            </div>
+                                            <!-- Custom Dropdown -->
+                                            <div class="d-flex flex-column">
+                                                <div
+                                                    :class="[
+                                                        showDateFilterDropDown
+                                                            ? 'custom-select-button-focus'
+                                                            : 'custom-select-button'
+                                                    ]"
+                                                    @click="
+                                                        showDateFilterDropDown =
+                                                            !showDateFilterDropDown
+                                                    "
+                                                >
+                                                    {{ dateFilterCriteria }}
+                                                    <span>
+                                                        <svg
+                                                            width="20"
+                                                            height="20"
+                                                            viewBox="0 0 20 20"
+                                                            fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                            <path
+                                                                d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                                fill="#344054"
+                                                            />
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                                <Transition
+                                                    name="dropdownFilter"
+                                                >
+                                                    <div
+                                                        v-if="
+                                                            showDateFilterDropDown
+                                                        "
+                                                        class="custom-dropdown-base"
+                                                    >
+                                                        <div
+                                                            class="custom-dropdown-option"
+                                                            @click="
+                                                                dateFilterCriteria =
+                                                                    'all';
+                                                                showDateFilterDropDown = false;
+                                                            "
+                                                        >
+                                                            All
+                                                        </div>
+                                                        <div
+                                                            class="custom-dropdown-option"
+                                                            @click="
+                                                                dateFilterCriteria =
+                                                                    'this month';
+                                                                showDateFilterDropDown = false;
+                                                            "
+                                                        >
+                                                            This month
+                                                        </div>
+                                                        <div
+                                                            class="custom-dropdown-option"
+                                                            @click="
+                                                                dateFilterCriteria =
+                                                                    'last three month';
+                                                                showDateFilterDropDown = false;
+                                                            "
+                                                        >
+                                                            Last three months
+                                                        </div>
+                                                        <div
+                                                            class="custom-dropdown-option"
+                                                            @click="
+                                                                dateFilterCriteria =
+                                                                    'last six month';
+                                                                showDateFilterDropDown = false;
+                                                            "
+                                                        >
+                                                            Last six months
+                                                        </div>
+                                                        <div
+                                                            class="custom-dropdown-option"
+                                                            @click="
+                                                                dateFilterCriteria =
+                                                                    'this year';
+                                                                showDateFilterDropDown = false;
+                                                            "
+                                                        >
+                                                            This year
+                                                        </div>
+                                                    </div>
+                                                </Transition>
+                                            </div>
+                                            <!-- End of custom dropdown -->
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <!-- Year Filter -->
+                                        <div class="mt-2 d-flex flex-column">
+                                            <div
+                                                class="filter-label date-label"
+                                            >
+                                                Choose Year:
+                                            </div>
+                                            <div
+                                                class="d-flex user-filter date-filter-input"
+                                            >
+                                                <input
+                                                    placeholder="input number"
+                                                    type="text"
+                                                    v-model="dateYearCriteria"
+                                                />
+                                            </div>
+                                        </div>
+                                        <!-- Month Filter -->
+                                        <div class="mt-2 d-flex flex-column">
+                                            <div
+                                                class="filter-label date-label"
+                                            >
+                                                Choose Month:
+                                            </div>
+                                            <div
+                                                class="d-flex user-filter date-filter-input"
+                                            >
+                                                <input
+                                                    type="text"
+                                                    v-model="dateMonthCriteria"
+                                                    placeholder="input number"
+                                                />
+                                            </div>
+                                        </div>
+                                        <!-- Day Filter -->
+                                        <div class="mt-2 d-flex flex-column">
+                                            <div
+                                                class="filter-label date-label"
+                                            >
+                                                Choose Day:
+                                            </div>
+                                            <div
+                                                class="d-flex user-filter date-filter-input"
+                                            >
+                                                <input
+                                                    type="text"
+                                                    v-model="dateDayCriteria"
+                                                    placeholder="input day"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Transition>
+                    </div>
+                </template>
             </Vue3EasyDataTable>
         </div>
         <!-- ++++++++++++++++++++++++++++_______________________________ ++++++++++++++++++++++++++++ -->
@@ -928,7 +1303,7 @@ export default {
         <!-- Vue Data Table Phone -->
         <div class="mt-5 pb-5 d-md-none">
             <Vue3EasyDataTable
-                :headers="headers"
+                :headers="headersPhone"
                 :items="rows"
                 alternating
                 :loading="!isContentFlagsLoaded"
@@ -948,7 +1323,7 @@ export default {
                         class="flag-name"
                         :to="`/${nameUrl}`"
                         target="_blank"
-                        >{{ name }}</RouterLink
+                        >{{ showShortName(name) }}</RouterLink
                     >
                 </template>
                 <!-- --- Action Buttons Column -->
@@ -1007,8 +1382,28 @@ export default {
                     </div>
                 </template>
                 <!-- --- Expand Part --- -->
-                <template #expand="{ expandContent, type }">
+                <template #expand="{ expandContent, type, reason, dateString }">
                     <div id="expand-div" style="padding: 5px">
+                        <!-- ---- | Reason to flag | ---- -->
+                        <div class="d-flex align-items-center">
+                            <div class="expand-tile">Reason:</div>
+                            <div
+                                :class="[!reason && 'no-reason', 'flag-reason']"
+                            >
+                                {{
+                                    reason
+                                        ? reason
+                                        : 'There is no reason for this flag.'
+                                }}
+                            </div>
+                        </div>
+                        <!-- +_+_+ | Date of this flag created | +_+_+ -->
+                        <div class="d-flex mb-2">
+                            <div class="expand-tile">Date:</div>
+                            <div class="date-cell">
+                                {{ formatDate(dateString) }}
+                            </div>
+                        </div>
                         <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'mc question'">
                             <div class="d-flex mb-2">
@@ -1170,7 +1565,8 @@ export default {
                     <div class="filter-column">
                         <div
                             @click.stop="
-                                showFlagTypeFilter = !showFlagTypeFilter
+                                closeAllFilter('type');
+                                showFlagTypeFilter = !showFlagTypeFilter;
                             "
                             b-tooltip.hover
                             :title="'filter this column'"
@@ -1295,7 +1691,10 @@ export default {
                 <template #header-user="header">
                     <div class="filter-column user-header">
                         <div
-                            @click.stop="showUserFilter = !showUserFilter"
+                            @click.stop="
+                                closeAllFilter('user');
+                                showUserFilter = !showUserFilter;
+                            "
                             b-tooltip.hover
                             :title="'Search for user name'"
                         >
@@ -1331,7 +1730,7 @@ export default {
                                 </div>
                                 <!-- Role dropdown filter -->
                                 <div class="mt-2 d-flex flex-column">
-                                    <div id="role-filter-label">User Role:</div>
+                                    <div id="filter-label">User Role:</div>
                                     <!-- Custom Dropdown -->
                                     <div class="d-flex flex-column">
                                         <div
@@ -1495,7 +1894,7 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Are you sure you want to delete this {{source.type}}?</p>
+                <p>Are you sure you want to delete this {{ source.type }}?</p>
                 <div style="display: flex; gap: 10px">
                     <button
                         type="button"
@@ -1714,15 +2113,18 @@ h2 {
 
 /* ** End Of Dropdown Animation ** */
 
+.date-filter-menu {
+    left: -60px;
+    width: fit-content;
+}
+
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-
     --easy-table-header-font-size: 16px;
     --easy-table-header-font-color: #8f7bd6;
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
-
     --easy-table-header-item-padding: 15px 5px;
 }
 
@@ -1733,6 +2135,12 @@ h2 {
 
 #expand-mc-answer {
     width: fit-content;
+}
+
+.date-cell {
+    color: #888;
+    font-family: 'Poppins' sans-serif;
+    font-size: 15px;
 }
 
 .expand-skill-requirement {
@@ -1785,6 +2193,7 @@ h2 {
     width: fit-content;
     background-color: #fff;
     border: 1px solid #e0e0e0;
+    box-shadow: 4px 3px 2px rgba(0, 0, 0, 0.2);
 }
 
 .filter-column {
@@ -1807,8 +2216,27 @@ h2 {
     border: 0px;
 }
 
+.date-filter-input input {
+    width: 100%;
+}
+
 .flag-type-filter {
-    left: -50px;
+    left: -10px;
+}
+
+.flag-reason {
+    margin-left: 10px;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    border: 3px double #c2c9cc;
+    border-radius: 8px;
+    background-color: #edf2fa;
+}
+
+.no-reason {
+    border: 3px double #eed202;
+    color: #e9d543;
+    background-color: white !important;
 }
 
 /* Style For The Custom Select */
@@ -1875,11 +2303,15 @@ h2 {
     font-weight: 300;
 }
 
-#role-filter-label {
+.filter-label {
     color: #888;
     font-size: 16px;
     font-weight: 400;
     margin-top: 15px;
+}
+
+.date-label {
+    width: 120px;
 }
 
 /* The animation key frame */
@@ -1932,6 +2364,105 @@ h2 {
 
 /* End of CSS style for Custom Select */
 
+/**-------------------------------------  */
+/* A lot of CSS to styling two check box */
+.control {
+    font-family: 'Poppins' sans-serif;
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 5px;
+    padding-top: 3px;
+    cursor: pointer;
+}
+
+.control > span {
+    font-weight: 500;
+    font-size: 0.938rem;
+    color: #667085;
+    text-align: center;
+}
+.control input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+.control_indicator {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    height: 29.09px;
+    width: 29.09px;
+    background: #f9f5ff;
+    border: 1.45px solid #9c7eec;
+    border-radius: 8.73px;
+}
+.control:hover input ~ .control_indicator,
+.control input:focus ~ .control_indicator {
+    background: #e7ddf6;
+}
+
+.plus-svg:hover {
+    cursor: pointer;
+}
+.control input:checked ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control:hover input:not([disabled]):checked ~ .control_indicator,
+.control input:checked:focus ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control input:disabled ~ .control_indicator {
+    background: #e6e6e6;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.control_indicator:after {
+    box-sizing: unset;
+    content: '';
+    position: absolute;
+    display: none;
+}
+.control input:checked ~ .control_indicator:after {
+    display: block;
+}
+.control-checkbox .control_indicator:after {
+    left: 4px;
+    top: 5px;
+    width: 13.58px;
+    height: 9.33px;
+    border: solid #9c7eec;
+    border-width: 0px 0px 2.9px 2.9px;
+    transform: rotate(-45deg);
+}
+.control-checkbox input:disabled ~ .control_indicator:after {
+    border-color: #7b7b7b;
+}
+.control-checkbox .control_indicator::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-left: -1.3rem;
+    margin-top: -1.3rem;
+    background: #9c7eec;
+    border-radius: 3rem;
+    opacity: 0.6;
+    z-index: 99999;
+    transform: scale(0);
+}
+
+.control-checkbox input + .control_indicator::before {
+    animation: s-ripple 250ms ease-out;
+}
+.control-checkbox input:checked + .control_indicator::before {
+    animation-name: s-ripple-dup;
+}
+/* End of check box styling */
+
 /* View Specific On Phone */
 @media (min-width: 0px) and (max-width: 576px) {
     /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
@@ -1955,12 +2486,12 @@ h2 {
     }
 
     .filter-flag-phone {
-        left: -140px;
+        left: 0px;
         top: 45px;
     }
 
     .user-phone-filter-menu {
-        left: -25px;
+        left: -125px;
         top: 45px;
     }
 
@@ -1971,6 +2502,17 @@ h2 {
     .modal-content {
         margin: 75% auto;
         width: 80%;
+    }
+}
+
+/* View Specific on Tablet */
+@media (min-width: 577px) and (max-width: 1380px) {
+    .date-filter-menu {
+        left: -190px;
+    }
+
+    .user-filter-menu {
+        left: -40px;
     }
 }
 </style>
