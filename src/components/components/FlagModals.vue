@@ -183,7 +183,7 @@ export default {
                         ]"
                         @click="showDropDown = !showDropDown"
                     >
-                        Or choose one of these reason below
+                        Or choose one reason below
                         <span>
                             <svg
                                 width="20"
@@ -615,5 +615,17 @@ export default {
 .green-btn:focus {
     background-color: #2ca695;
     color: white;
+}
+
+/* ---|| Style Specific on Phone ||--- */
+@media (min-width: 0px) and (max-width: 576px) {
+    .modal-content {
+        margin: 45% 0%;
+        width: 100%;
+    }
+
+    .custom-select-div {
+        width: 100%;
+    }
 }
 </style>
