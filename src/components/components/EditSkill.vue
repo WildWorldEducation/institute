@@ -331,7 +331,9 @@ export default {
                 });
         },
         // If edit is from a student or instructor.
-        SubmitForReview() {},
+        SubmitForReview() {
+            
+        },
         handleChooseSkillLevel(level) {
             this.showLevelDropDown = false;
             this.showLevel = level.name;
