@@ -13,12 +13,11 @@ export default {
             showDropDown: false,
             // list of pre-made template
             templates: [
-                `${this.contentType} have grammar error: `,
-                `${this.contentType} have inappropriate content: `,
-                `${this.contentType} skill have violent, drug abuse content: `,
-                `${this.contentType} have wrong or misleading information: `,
-                `${this.contentType} have content use to attack another user: `,
-                `${this.contentType} have spam and low effort content: `
+                `Grammar or spelling error: `,
+                `Inappropriate content: `,
+                `Incorrect or misleading information: `,
+                `Content used to attack another user: `,
+                `Spam, adverts or low quality content: `
             ]
         };
     },
@@ -142,13 +141,11 @@ export default {
             <!-- Modal content -->
             <div class="modal-content reason-popup">
                 <div class="d-flex flex-column">
-                    <div>Please tell us why you flag this skill:</div>
+                    <div>Please tell us why you want to flag this skill:</div>
                     <div class="reason-suggestion">
-                        Reason should state why and where error happen
+                        why and where error happens
                     </div>
-                    <div class="reason-suggestion">
-                        Reason should have less than 40 words
-                    </div>
+                    <div class="reason-suggestion">less than 40 words</div>
                     <textarea
                         id="reason"
                         name="reason"
@@ -169,7 +166,7 @@ export default {
                             : 'form-validate initial-shake'
                     ]"
                 >
-                    Your reason is too long !!
+                    Your reason has too many words !!
                 </div>
                 <!-- A list of pre-made template for student to use -->
                 <!-- Custom Dropdown -->
@@ -183,7 +180,7 @@ export default {
                         ]"
                         @click="showDropDown = !showDropDown"
                     >
-                        Or choose one reason below
+                        Or choose a reason below
                         <span>
                             <svg
                                 width="20"

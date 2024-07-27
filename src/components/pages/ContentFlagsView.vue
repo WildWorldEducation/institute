@@ -525,7 +525,7 @@ export default {
                                 {{
                                     reason
                                         ? reason
-                                        : 'There is no reason for this flag.'
+                                        : 'No reason given for this flag'
                                 }}
                             </div>
                         </div>
