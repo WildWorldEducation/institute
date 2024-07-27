@@ -991,7 +991,7 @@ export default {
                                         <!-- Sort order -->
                                         <div class="d-flex flex-column">
                                             <div class="filter-label">
-                                                Date oder
+                                                Date order
                                             </div>
 
                                             <label
@@ -1097,7 +1097,7 @@ export default {
                                                                 showDateFilterDropDown = false;
                                                             "
                                                         >
-                                                            Last three month
+                                                            Last three months
                                                         </div>
                                                         <div
                                                             class="custom-dropdown-option"
@@ -1107,7 +1107,7 @@ export default {
                                                                 showDateFilterDropDown = false;
                                                             "
                                                         >
-                                                            Last six month
+                                                            Last six months
                                                         </div>
                                                         <div
                                                             class="custom-dropdown-option"
