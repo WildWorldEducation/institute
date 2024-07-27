@@ -36,6 +36,13 @@ export default {
                 { text: 'Date', value: 'date' },
                 { text: 'Action', value: 'action' }
             ],
+            // In phone version we dont show some column
+            headersPhone: [
+                { text: 'Type', value: 'type' },
+                { text: 'Name', value: 'name' },
+                { text: 'User', value: 'user', width: 99 },
+                { text: 'Action', value: 'action' }
+            ],
 
             rows: [],
             rowsLength: 10,
@@ -324,6 +331,12 @@ export default {
             this.userRoleCriteria = 'all';
             this.showFlagTypeFilter = false;
             this.showUserFilter = false;
+            this.showDateFilter = false;
+            this.dateFilterCriteria = 'all';
+            this.dateOrder = 'asc';
+            this.dateDayCriteria = '';
+            this.dateMonthCriteria = '';
+            this.dateYearCriteria = '';
         },
         // parse date string into more readable format
         formatDate(dateString) {
@@ -349,6 +362,12 @@ export default {
             if (showFilter !== 'user') {
                 this.showUserFilter = false;
             }
+        },
+        // Helper function to show flag name in phone view
+        showShortName(name) {
+            let shortName = name.slice(0, 10);
+            shortName = shortName + ' ...';
+            return shortName;
         }
     },
     watch: {
@@ -358,7 +377,6 @@ export default {
                     this.rows = this.rows.sort((a, b) => {
                         const dateA = new Date(a.dateString);
                         const dateB = new Date(b.dateString);
-                        console.log(dateA - dateB);
                         return dateA - dateB;
                     });
                 } else {
@@ -823,7 +841,10 @@ export default {
                             </svg>
                         </div>
                         <Transition name="dropdown">
-                            <div class="filter-menu" v-if="showUserFilter">
+                            <div
+                                class="filter-menu user-filter-menu"
+                                v-if="showUserFilter"
+                            >
                                 <!-- User name search filter -->
                                 <div class="d-flex user-filter">
                                     <input
@@ -1169,7 +1190,7 @@ export default {
         <!-- Vue Data Table Phone -->
         <div class="mt-5 pb-5 d-md-none">
             <Vue3EasyDataTable
-                :headers="headers"
+                :headers="headersPhone"
                 :items="rows"
                 alternating
                 :loading="!isContentFlagsLoaded"
@@ -1189,7 +1210,7 @@ export default {
                         class="flag-name"
                         :to="`/${nameUrl}`"
                         target="_blank"
-                        >{{ name }}</RouterLink
+                        >{{ showShortName(name) }}</RouterLink
                     >
                 </template>
                 <!-- --- Action Buttons Column -->
@@ -1248,8 +1269,28 @@ export default {
                     </div>
                 </template>
                 <!-- --- Expand Part --- -->
-                <template #expand="{ expandContent, type }">
+                <template #expand="{ expandContent, type, reason, dateString }">
                     <div id="expand-div" style="padding: 5px">
+                        <!-- ---- | Reason to flag | ---- -->
+                        <div class="d-flex align-items-center">
+                            <div class="expand-tile">Reason:</div>
+                            <div
+                                :class="[!reason && 'no-reason', 'flag-reason']"
+                            >
+                                {{
+                                    reason
+                                        ? reason
+                                        : 'There is no reason for this flag.'
+                                }}
+                            </div>
+                        </div>
+                        <!-- +_+_+ | Date of this flag created | +_+_+ -->
+                        <div class="d-flex mb-2">
+                            <div class="expand-tile">Date:</div>
+                            <div class="date-cell">
+                                {{ formatDate(dateString) }}
+                            </div>
+                        </div>
                         <!-- _+_+_+_+_+_+_+_ MC Question Expand _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'mc question'">
                             <div class="d-flex mb-2">
@@ -2040,11 +2081,13 @@ h2 {
     padding: 5px 10px;
     border: 3px double #c2c9cc;
     border-radius: 8px;
+    background-color: #edf2fa;
 }
 
 .no-reason {
     border: 3px double #eed202;
     color: #e9d543;
+    background-color: white !important;
 }
 
 /* Style For The Custom Select */
@@ -2294,12 +2337,12 @@ h2 {
     }
 
     .filter-flag-phone {
-        left: -140px;
+        left: 0px;
         top: 45px;
     }
 
     .user-phone-filter-menu {
-        left: -25px;
+        left: -125px;
         top: 45px;
     }
 
@@ -2310,6 +2353,17 @@ h2 {
     .modal-content {
         margin: 75% auto;
         width: 80%;
+    }
+}
+
+/* View Specific on Tablet */
+@media (min-width: 577px) and (max-width: 1380px) {
+    .date-filter-menu {
+        left: -190px;
+    }
+
+    .user-filter-menu {
+        left: -40px;
     }
 }
 </style>
