@@ -15,7 +15,7 @@ export default {
             templates: [
                 `Grammar or spelling error: `,
                 `Inappropriate content: `,
-                `Incorrect or misleading information: `,
+                `Incorrect or misleading: `,
                 `Content used to attack another user: `,
                 `Spam, adverts or low quality content: `
             ]
@@ -141,11 +141,11 @@ export default {
             <!-- Modal content -->
             <div class="modal-content reason-popup">
                 <div class="d-flex flex-column">
-                    <div>Please tell us why you want to flag this skill:</div>
+                    <div>Please tell us why you want to flag this skill,</div>
                     <div class="reason-suggestion">
-                        why and where error happens
+                        including where the issue happens,
                     </div>
-                    <div class="reason-suggestion">less than 40 words</div>
+                    <div class="reason-suggestion">in less than 40 words</div>
                     <textarea
                         id="reason"
                         name="reason"
