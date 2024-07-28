@@ -1,6 +1,13 @@
 <script>
+import { useUsersStore } from '../../stores/UsersStore';
+
 export default {
-    setup() {},
+    setup() {
+        const usersStore = useUsersStore();
+        return {
+            usersStore
+        };
+    },
     data() {
         return {
             skillEdits: [],
@@ -9,6 +16,8 @@ export default {
         };
     },
     async created() {
+        if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
+
         await this.getSkillEditsSubmittedForReview();
         await this.getMCQuestionEditsSubmittedForReview();
         await this.getEssayQuestionEditsSubmittedForReview();
@@ -23,6 +32,7 @@ export default {
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = this.formatDate(data[i].date);
+                        data[i].userName = this.findUserName(data[i].user_id);
                         this.skillEdits.push(data[i]);
                     }
                 });
@@ -36,9 +46,9 @@ export default {
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = this.formatDate(data[i].date);
+                        data[i].userName = this.findUserName(data[i].user_id);
                         this.mcQuestionEdits.push(data[i]);
                     }
-                    console.log(this.mcQuestionEdits);
                 });
         },
         // Get the essay question edits that have been submitted for review.
@@ -50,6 +60,7 @@ export default {
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
                         data[i].date = this.formatDate(data[i].date);
+                        data[i].userName = this.findUserName(data[i].user_id);
                         this.essayQuestionEdits.push(data[i]);
                     }
                 });
@@ -81,6 +92,15 @@ export default {
             };
             finalDate = finalDate.toLocaleDateString('en-US', options);
             return finalDate;
+        },
+        findUserName(userId) {
+            var userName = '';
+            for (let i = 0; i < this.usersStore.users.length; i++) {
+                if (this.usersStore.users[i].id == userId) {
+                    userName = this.usersStore.users[i].username;
+                }
+            }
+            return userName;
         }
     }
 };
@@ -101,7 +121,7 @@ export default {
                             skillEdit.user_id +
                             '/comparison?type=skill'
                         "
-                        >User: {{ skillEdit.user_id }}, Skill:
+                        >User: {{ skillEdit.userName }}, Skill:
                         {{ skillEdit.content_id }}, Date:
                         {{ skillEdit.date }}</router-link
                     >
@@ -118,7 +138,7 @@ export default {
                             mcQuestionEdit.user_id +
                             '/comparison?type=mcquestion'
                         "
-                        >User: {{ mcQuestionEdit.user_id }}, Question:
+                        >User: {{ mcQuestionEdit.userName }}, Question:
                         {{ mcQuestionEdit.content_id }}, Date:
                         {{ mcQuestionEdit.date }}</router-link
                     >
@@ -135,7 +155,7 @@ export default {
                             essayQuestionEdit.user_id +
                             '/comparison?type=essayquestion'
                         "
-                        >User: {{ essayQuestionEdit.user_id }}, Question:
+                        >User: {{ essayQuestionEdit.userName }}, Question:
                         {{ essayQuestionEdit.content_id }}, Date:
                         {{ essayQuestionEdit.date }}</router-link
                     >
