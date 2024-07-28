@@ -332,7 +332,33 @@ export default {
         },
         // If edit is from a student or instructor.
         SubmitForReview() {
-            
+            this.skill.mastery_requirements =
+                $('#summernote').summernote('code');
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: this.userDetailsStore.userId,
+                    mastery_requirements: this.skill.mastery_requirements,
+                    comment: this.comment,
+                    //these are not editable for users with this role.
+                    name: this.skill.name,
+                    parent: this.skill.parent,
+                    description: this.skill.description,
+                    icon_image: this.skill.icon_image,
+                    banner_image: this.skill.banner_image,
+                    type: this.skill.type,
+                    level: this.skill.level,
+                    order: this.skill.order
+                })
+            };
+
+            var url = '/skills/' + this.skillId + '/edit-for-review';
+            fetch(url, requestOptions).then(() => {
+                alert('Skill edit submitted for review.');
+                this.$router.back();
+            });
         },
         handleChooseSkillLevel(level) {
             this.showLevelDropDown = false;
