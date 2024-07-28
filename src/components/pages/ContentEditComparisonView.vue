@@ -1,58 +1,33 @@
 <script>
+import SkillEditComparison from '../components/edit-comparisons/SkillEditComparison.vue';
+import MCQuestionEditComparison from '../components/edit-comparisons/MCQuestionEditComparison.vue';
+import EssayQuestionEditComparison from '../components/edit-comparisons/EssayQuestionEditComparison.vue';
+
 export default {
     setup() {},
     data() {
         return {
-            id: this.$route.params.id,
-            skillId: null,
-            skill: {},
-            contentEdit: {}
+            type: null
         };
     },
-    async created() {
-        await this.getContentEdit();
+    components: {
+        SkillEditComparison,
+        MCQuestionEditComparison,
+        EssayQuestionEditComparison
     },
-    methods: {
-        async getContentEdit() {
-            await fetch('/content-edits/' + this.id)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => {
-                    this.contentEdit = data;
-                    console.log(this.contentEdit);
-                    if (
-                        this.contentEdit.content_type ==
-                        'skill_mastery_requirements'
-                    ) {
-                        this.getSkill();
-                    }
-                });
-        },
-        async getSkill() {
-            this.skillId = this.contentEdit.content_id;
-            await fetch('/skills/show/' + this.skillId)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => {
-                    this.skill = data;
-                    console.log(this.skill);
-                });
-        }
-    }
+    async created() {
+        console.log();
+        this.type = this.$route.query.type;
+    },
+    methods: {}
 };
 </script>
 
 <template>
     <div class="container">
-        <div class="mt-4 mb-4">
-            <h1 class="page-title">Comparison</h1>
-            <h2>Change</h2>
-            <div v-html="this.contentEdit.updated_content"></div>
-            <h2>Original</h2>
-            <div v-html="this.skill.mastery_requirements"></div>
-        </div>
+        <SkillEditComparison v-if="type == 'skill'" />
+        <MCQuestionEditComparison v-if="type == 'mcquestion'" />
+        <EssayQuestionEditComparison v-if="type == 'essayquestion'" />
     </div>
 </template>
 

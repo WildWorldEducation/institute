@@ -40,7 +40,7 @@ export default {
                     }
                 });
         },
-        // Get the multiple choice question edits that have been submitted for review.
+        // Get the essay question edits that have been submitted for review.
         async getEssayQuestionEditsSubmittedForReview() {
             await fetch('/questions/essay/submitted-for-review/list')
                 .then(function (response) {
@@ -93,7 +93,11 @@ export default {
             <ul>
                 <li v-for="skillEdit in skillEdits">
                     <router-link
-                        :to="'/content-edit/' + skillEdit.id + '/comparison'"
+                        :to="
+                            '/content-edit/' +
+                            skillEdit.id +
+                            '/comparison?type=skill'
+                        "
                         >User: {{ skillEdit.user_id }}, Skill:
                         {{ skillEdit.content_id }}, Date:
                         {{ skillEdit.date }}</router-link
@@ -105,7 +109,9 @@ export default {
                 <li v-for="mcQuestionEdit in mcQuestionEdits">
                     <router-link
                         :to="
-                            '/content-edit/' + mcQuestionEdit.id + '/comparison'
+                            '/content-edit/' +
+                            mcQuestionEdit.id +
+                            '/comparison?type=mcquestion'
                         "
                         >User: {{ mcQuestionEdit.user_id }}, Question:
                         {{ mcQuestionEdit.content_id }}, Date:
@@ -120,7 +126,7 @@ export default {
                         :to="
                             '/content-edit/' +
                             essayQuestionEdit.id +
-                            '/comparison'
+                            '/comparison?type=essayquestion'
                         "
                         >User: {{ essayQuestionEdit.user_id }}, Question:
                         {{ essayQuestionEdit.content_id }}, Date:
