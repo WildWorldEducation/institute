@@ -8,21 +8,19 @@ export default {
         };
     },
     async created() {
-        await this.getContentEdits();
+        await this.getSkillEditsSubmittedForReview();
     },
     methods: {
-        async getContentEdits() {
-            await fetch('/content-edits/list')
+        async getSkillEditsSubmittedForReview() {
+            await fetch('/skills/submitted-for-review/list')
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => {
-                    this.contentEdits = data;
-
-                    for (let i = 0; i < this.contentEdits.length; i++) {
+                    for (let i = 0; i < data.length; i++) {
                         // Prep the date and time data ---------------
                         // Split timestamp into [ Y, M, D, h, m, s ]
-                        var date = this.contentEdits[i].date.replace('T', ' ');
+                        var date = data[i].date.replace('T', ' ');
                         date = date.replace('Z', ' ');
                         let newDate = date.split(/[- :]/);
                         // Apply each element to the Date function
@@ -44,17 +42,13 @@ export default {
                             hour: 'numeric',
                             minute: 'numeric'
                         };
-                        this.contentEdits[i].date =
-                            finalDate.toLocaleDateString('en-US', options);
+                        data[i].date = finalDate.toLocaleDateString(
+                            'en-US',
+                            options
+                        );
 
-                        if (
-                            this.contentEdits[i].content_type ==
-                            'skill_mastery_requirements'
-                        ) {
-                            this.skillEdits.push(this.contentEdits[i]);
-                        }
+                        this.skillEdits.push(data[i]);
                     }
-                    console.log(this.skillEdits);
                 });
         }
     }

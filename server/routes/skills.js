@@ -535,6 +535,29 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
 });
 
 /**
+ * Get All Items
+ *
+ * @return response()
+ */
+// Used for choosing parent skill when adding a new skill.
+router.get('/submitted-for-review/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM skills_awaiting_approval';
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * Delete Item
  *
  * @return response()
