@@ -3,14 +3,18 @@ export default {
     setup() {},
     data() {
         return {
-            contentEdits: [],
-            skillEdits: []
+            skillEdits: [],
+            mcQuestionEdits: [],
+            essayQuestionEdits: []
         };
     },
     async created() {
         await this.getSkillEditsSubmittedForReview();
+        await this.getMCQuestionEditsSubmittedForReview();
+        await this.getEssayQuestionEditsSubmittedForReview();
     },
     methods: {
+        // Get the skill edits that have been submitted for review.
         async getSkillEditsSubmittedForReview() {
             await fetch('/skills/submitted-for-review/list')
                 .then(function (response) {
@@ -18,38 +22,64 @@ export default {
                 })
                 .then((data) => {
                     for (let i = 0; i < data.length; i++) {
-                        // Prep the date and time data ---------------
-                        // Split timestamp into [ Y, M, D, h, m, s ]
-                        var date = data[i].date.replace('T', ' ');
-                        date = date.replace('Z', ' ');
-                        let newDate = date.split(/[- :]/);
-                        // Apply each element to the Date function
-                        var finalDate = new Date(
-                            Date.UTC(
-                                newDate[0],
-                                newDate[1] - 1,
-                                newDate[2],
-                                newDate[3],
-                                newDate[4],
-                                newDate[5]
-                            )
-                        );
-                        var options = {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            minute: 'numeric'
-                        };
-                        data[i].date = finalDate.toLocaleDateString(
-                            'en-US',
-                            options
-                        );
-
+                        data[i].date = this.formatDate(data[i].date);
                         this.skillEdits.push(data[i]);
                     }
                 });
+        },
+        // Get the multiple choice question edits that have been submitted for review.
+        async getMCQuestionEditsSubmittedForReview() {
+            await fetch('/questions/mc/submitted-for-review/list')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = this.formatDate(data[i].date);
+                        this.mcQuestionEdits.push(data[i]);
+                    }
+                });
+        },
+        // Get the multiple choice question edits that have been submitted for review.
+        async getEssayQuestionEditsSubmittedForReview() {
+            await fetch('/questions/essay/submitted-for-review/list')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = this.formatDate(data[i].date);
+                        this.essayQuestionEdits.push(data[i]);
+                    }
+                });
+        },
+        formatDate(unformattedDate) {
+            // Prep the date and time data ---------------
+            // Split timestamp into [ Y, M, D, h, m, s ]
+            var date = unformattedDate.replace('T', ' ');
+            date = date.replace('Z', ' ');
+            let newDate = date.split(/[- :]/);
+            // Apply each element to the Date function
+            var finalDate = new Date(
+                Date.UTC(
+                    newDate[0],
+                    newDate[1] - 1,
+                    newDate[2],
+                    newDate[3],
+                    newDate[4],
+                    newDate[5]
+                )
+            );
+            var options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric'
+            };
+            finalDate = finalDate.toLocaleDateString('en-US', options);
+            return finalDate;
         }
     }
 };
@@ -70,7 +100,34 @@ export default {
                     >
                 </li>
             </ul>
-            <h2>Questions</h2>
+            <h2>Multiple Choice Questions</h2>
+            <ul>
+                <li v-for="mcQuestionEdit in mcQuestionEdits">
+                    <router-link
+                        :to="
+                            '/content-edit/' + mcQuestionEdit.id + '/comparison'
+                        "
+                        >User: {{ mcQuestionEdit.user_id }}, Question:
+                        {{ mcQuestionEdit.content_id }}, Date:
+                        {{ mcQuestionEdit.date }}</router-link
+                    >
+                </li>
+            </ul>
+            <h2>Written Questions</h2>
+            <ul>
+                <li v-for="essayQuestionEdit in essayQuestionEdits">
+                    <router-link
+                        :to="
+                            '/content-edit/' +
+                            essayQuestionEdit.id +
+                            '/comparison'
+                        "
+                        >User: {{ essayQuestionEdit.user_id }}, Question:
+                        {{ essayQuestionEdit.content_id }}, Date:
+                        {{ essayQuestionEdit.date }}</router-link
+                    >
+                </li>
+            </ul>
         </div>
     </div>
 </template>

@@ -264,6 +264,24 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
     }
 });
 
+// Load all mc type questions.
+router.get('/mc/submitted-for-review/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM mc_questions_awaiting_approval;';
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Edit Essay questions
 router.put('/essay/:id/edit', (req, res, next) => {
     if (req.session.userName) {
@@ -346,6 +364,24 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
         });
     } else {
         res.redirect('/login');
+    }
+});
+
+// Load all essay type questions.
+router.get('/essay/submitted-for-review/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM essay_questions_awaiting_approval;';
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
     }
 });
 
