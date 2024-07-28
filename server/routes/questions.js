@@ -209,7 +209,7 @@ router.put('/mc/:id/edit', (req, res, next) => {
 /**
  * Submit MC question edit for review.
  */
-router.put('/mc/:id/edit-for-review', (req, res, next) => {
+router.post('/mc/:id/edit-for-review', (req, res, next) => {
     if (req.session.userName) {
         let name;
         let question;
@@ -314,7 +314,7 @@ router.put('/essay/:id/edit', (req, res, next) => {
 /**
  * Submit Essay question edit for review.
  */
-router.put('/essay/:id/edit-for-review', (req, res, next) => {
+router.post('/essay/:id/edit-for-review', (req, res, next) => {
     if (req.session.userName) {
         let name;
         let question;

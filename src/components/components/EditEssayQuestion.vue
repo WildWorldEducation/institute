@@ -51,10 +51,8 @@ export default {
         },
         // If edit is from a student or instructor.
         SubmitForReview() {
-            console.log(this.question);
-            console.log(this.comment);
             const requestOptions = {
-                method: 'PUT',
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
