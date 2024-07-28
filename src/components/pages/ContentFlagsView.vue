@@ -160,7 +160,7 @@ export default {
                             // handle for resource flag
                             case 'resource':
                                 flagRow.contentId = flag.content_id;
-                                flagRow.type = 'resource';
+                                flagRow.type = 'source';
                                 flagRow.name = `Commented by user: ${contentObj.user} in skill: ${contentObj.skill} forum`;
                                 flagRow.nameUrl = `skills/${contentObj.skillId}`;
                                 flagRow.flagId = flag.id;
@@ -190,7 +190,6 @@ export default {
                             default:
                                 break;
                         }
-
                         this.rows.push(flagRow);
                     }
                     this.rowsLength = this.rows.length;
@@ -489,7 +488,7 @@ export default {
             </div>
         </div>
         <!-- Vue Data Table Desktop  -->
-        <div class="mt-5 pb-5 d-none d-md-block">
+        <div class="mt-5 pb-5 d-none d-md-block table-div">
             <Vue3EasyDataTable
                 :headers="headers"
                 :items="rows"
@@ -742,7 +741,7 @@ export default {
                             ></div>
                         </div>
                         <!-- _+_+_+_+_+_+_+_  Resource Expand content _+_+_+_+_+_+_+_  -->
-                        <div v-if="type == 'resource'">
+                        <div v-if="type == 'source'">
                             <div class="d-flex mb-2">
                                 <div class="expand-tile">Skill:</div>
                                 <div>{{ expandContent.skill }}</div>
@@ -899,8 +898,7 @@ export default {
                                             <div
                                                 class="custom-dropdown-option"
                                                 @click="
-                                                    flagTypeCriteria =
-                                                        'resource';
+                                                    flagTypeCriteria = 'source';
                                                     showFlagTypeDropDown = false;
                                                     showFlagTypeFilter = false;
                                                 "
@@ -1528,7 +1526,7 @@ export default {
                             ></div>
                         </div>
                         <!-- _+_+_+_+_+_+_+_  Resource Expand content _+_+_+_+_+_+_+_  -->
-                        <div v-if="type == 'resource'">
+                        <div v-if="type == 'source'">
                             <div class="d-flex mb-2">
                                 <div class="expand-tile">Skill:</div>
                                 <div>{{ expandContent.skill }}</div>
@@ -2472,6 +2470,8 @@ h2 {
         --easy-table-header-font-size: 13px;
 
         --easy-table-header-item-padding: 5px 5px;
+
+        --easy-table-min-height: 70vh;
     }
 
     .expand-skill-requirement {
