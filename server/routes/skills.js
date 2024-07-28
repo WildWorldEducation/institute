@@ -509,9 +509,9 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
 
         // Add data.
         let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, name, parent, description,
-         icon_image, banner_image, mastery_requirements, type, level, is_filtered, skills_awaiting_approval.order, comment)
+         icon_image, banner_image, mastery_requirements, type, level, skills_awaiting_approval.order, comment)
          VALUES (${req.params.id}, ${req.body.userId}, '${req.body.name}', '${req.body.parent}', '${req.body.description}', '${req.body.icon_image}', '${req.body.banner_image}', '${req.body.mastery_requirements}', 
-         '${req.body.type}', '${req.body.level}', '${req.body.is_filtered}', '${req.body.order}', '${req.body.comment}')
+         '${req.body.type}', '${req.body.level}', '${req.body.order}', '${req.body.comment}')
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = '${req.body.mastery_requirements}', date = CURRENT_TIMESTAMP(), comment = '${req.body.comment}';`;
