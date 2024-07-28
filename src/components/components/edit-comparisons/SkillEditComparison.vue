@@ -3,39 +3,38 @@ export default {
     setup() {},
     data() {
         return {
-            id: this.$route.params.id,
-            skillId: null,
-            skill: {},
-            skillEdit: {}
+            skillId: this.$route.params.skillId,
+            userId: this.$route.params.userId,
+            skill: null,
+            skillEdit: null
         };
     },
-    async created() {},
+    async created() {
+        await this.getSkillEdit();
+        await this.getSkill();
+    },
     methods: {
         async getSkillEdit() {
-            await fetch('/content-edits/' + this.id)
+            await fetch(
+                '/skills/submitted-for-review/' +
+                    this.skillId +
+                    '/' +
+                    this.userId
+            )
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => {
-                    this.contentEdit = data;
-                    console.log(this.contentEdit);
-                    if (
-                        this.contentEdit.content_type ==
-                        'skill_mastery_requirements'
-                    ) {
-                        this.getSkill();
-                    }
+                    this.skillEdit = data.mastery_requirements;
                 });
         },
         async getSkill() {
-            this.skillId = this.contentEdit.content_id;
             await fetch('/skills/show/' + this.skillId)
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => {
-                    this.skill = data;
-                    console.log(this.skill);
+                    this.skill = data.mastery_requirements;
                 });
         }
     }
@@ -43,12 +42,17 @@ export default {
 </script>
 
 <template>
-    <div class="container">
-        <div class="mt-4 mb-4">
-            <h1 class="page-title">Comparison</h1>
-            <h2>Change</h2>
-
-            <h2>Original</h2>
+    <div class="container mt-4 mb-4">
+        <h1 class="page-title">Comparison</h1>
+        <div class="row">
+            <div class="col">
+                <h2>Change</h2>
+                <div v-html="skillEdit"></div>
+            </div>
+            <div class="col">
+                <h2>Original</h2>
+                <div v-html="skill"></div>
+            </div>
         </div>
     </div>
 </template>

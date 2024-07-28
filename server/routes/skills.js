@@ -235,8 +235,6 @@ router.get('/filtered-nested-list', (req, res, next) => {
  *
  * @return response()
  */
-
-// Individual skills.
 router.get('/show/:id', (req, res, next) => {
     let skill;
     if (req.session.userName) {
@@ -535,7 +533,7 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
 });
 
 /**
- * Get All Items
+ * Get all skill mastery requirements submitted for review.
  *
  * @return response()
  */
@@ -550,6 +548,34 @@ router.get('/submitted-for-review/list', (req, res, next) => {
                     throw err;
                 }
                 res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Get one skill mastery requirement submitted for review.
+ *
+ * @return response()
+ */
+router.get('/submitted-for-review/:skillId/:userId', (req, res, next) => {
+    let skill;
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        // Get skill.
+        const sqlQuery = `SELECT *
+                          FROM skills_awaiting_approval
+                          WHERE skill_id = ${req.params.skillId}
+                          AND user_id = ${req.params.userId}`;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                skill = results[0];
+                res.json(skill);
             } catch (err) {
                 next(err);
             }
