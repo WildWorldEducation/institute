@@ -40,6 +40,15 @@ export default {
                     console.log(data);
                     this.essayQuestion = data;
                 });
+        },
+        dismissEdit() {
+            console.log('essay');
+        },
+        editMode() {
+            console.log('essay');
+        },
+        saveEdit() {
+            console.log('essay');
         }
     }
 };

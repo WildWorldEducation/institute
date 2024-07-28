@@ -40,6 +40,15 @@ export default {
                     console.log(data);
                     this.mcQuestion = data;
                 });
+        },
+        dismissEdit() {
+            console.log('mc');
+        },
+        editMode() {
+            console.log('mc');
+        },
+        saveEdit() {
+            console.log('mc');
         }
     }
 };

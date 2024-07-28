@@ -38,6 +38,15 @@ export default {
                 .then((data) => {
                     this.skill = data.mastery_requirements;
                 });
+        },
+        dismissEdit() {
+            console.log('skill');
+        },
+        editMode() {
+            console.log('skill');
+        },
+        saveEdit() {
+            console.log('skill');
         }
     }
 };
