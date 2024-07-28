@@ -91,7 +91,6 @@ router.delete('/essay/:id', (req, res, next) => {
  */
 // Show MC question.
 router.get('/mc/show/:id', (req, res, next) => {
-    console.log(req.params.id);
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM mc_questions WHERE id=' + req.params.id;
@@ -266,7 +265,7 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
 });
 
 /**
- * Get one skill mastery requirement submitted for review.
+ * Get one mc question submitted for review.
  *
  * @return response()
  */
@@ -288,6 +287,37 @@ router.get(
                     }
                     mcQuestion = results[0];
                     res.json(mcQuestion);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+/**
+ * Get one essay question submitted for review.
+ *
+ * @return response()
+ */
+router.get(
+    '/essay/submitted-for-review/:essayQuestionId/:userId',
+    (req, res, next) => {
+        let essayQuestion;
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            // Get skill.
+            const sqlQuery = `SELECT *
+                          FROM essay_questions_awaiting_approval
+                          WHERE essay_question_id = ${req.params.essayQuestionId}
+                          AND user_id = ${req.params.userId}`;
+            let query = conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    essayQuestion = results[0];
+                    res.json(essayQuestion);
                 } catch (err) {
                     next(err);
                 }

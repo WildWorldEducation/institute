@@ -6,7 +6,8 @@ export default {
             skillId: this.$route.params.contentId,
             userId: this.$route.params.userId,
             skill: null,
-            skillEdit: null
+            skillEdit: null,
+            comment: ''
         };
     },
     async created() {
@@ -26,6 +27,7 @@ export default {
                 })
                 .then((data) => {
                     this.skillEdit = data.mastery_requirements;
+                    this.comment = data.comment;
                 });
         },
         async getSkill() {
@@ -48,6 +50,8 @@ export default {
             <div class="col">
                 <h2>Change</h2>
                 <div v-html="skillEdit"></div>
+                <h3>Comment</h3>
+                <p>{{ comment }}</p>
             </div>
             <div class="col">
                 <h2>Original</h2>

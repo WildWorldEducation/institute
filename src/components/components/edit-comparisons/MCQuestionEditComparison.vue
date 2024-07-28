@@ -5,8 +5,9 @@ export default {
         return {
             mcQuestionId: this.$route.params.contentId,
             userId: this.$route.params.userId,
-            mcQuestion: null,
-            mcQuestionEdit: null
+            mcQuestion: {},
+            mcQuestionEdit: {},
+            comment: ''
         };
     },
     async created() {
@@ -26,6 +27,8 @@ export default {
                 })
                 .then((data) => {
                     console.log(data);
+                    this.comment = data.comment;
+                    this.mcQuestionEdit = data;
                 });
         },
         async getMCQuestion() {
@@ -35,6 +38,7 @@ export default {
                 })
                 .then((data) => {
                     console.log(data);
+                    this.mcQuestion = data;
                 });
         }
     }
@@ -47,11 +51,25 @@ export default {
         <div class="row">
             <div class="col">
                 <h2>Change</h2>
-                <div v-html="mcQuestionEdit"></div>
+                <p>{{ mcQuestionEdit.question }}</p>
+                <p>{{ mcQuestionEdit.correct_answer }}</p>
+                <p>{{ mcQuestionEdit.incorrect_answer_1 }}</p>
+                <p>{{ mcQuestionEdit.incorrect_answer_2 }}</p>
+                <p>{{ mcQuestionEdit.incorrect_answer_3 }}</p>
+                <p>{{ mcQuestionEdit.incorrect_answer_4 }}</p>
+                <p>{{ mcQuestionEdit.explanation }}</p>
+                <h3>Comment</h3>
+                <p>{{ comment }}</p>
             </div>
             <div class="col">
                 <h2>Original</h2>
-                <div v-html="mcQuestion"></div>
+                <p>{{ mcQuestion.question }}</p>
+                <p>{{ mcQuestion.correct_answer }}</p>
+                <p>{{ mcQuestion.incorrect_answer_1 }}</p>
+                <p>{{ mcQuestion.incorrect_answer_2 }}</p>
+                <p>{{ mcQuestion.incorrect_answer_3 }}</p>
+                <p>{{ mcQuestion.incorrect_answer_4 }}</p>
+                <p>{{ mcQuestion.explanation }}</p>
             </div>
         </div>
     </div>
