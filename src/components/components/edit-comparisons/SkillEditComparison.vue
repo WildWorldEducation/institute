@@ -3,7 +3,7 @@ export default {
     setup() {},
     data() {
         return {
-            skillId: this.$route.params.skillId,
+            skillId: this.$route.params.contentId,
             userId: this.$route.params.userId,
             skill: null,
             skillEdit: null

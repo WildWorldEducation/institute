@@ -90,7 +90,8 @@ router.delete('/essay/:id', (req, res, next) => {
  * @return response()
  */
 // Show MC question.
-router.get('/mc/show/:id', (req, res) => {
+router.get('/mc/show/:id', (req, res, next) => {
+    console.log(req.params.id);
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM mc_questions WHERE id=' + req.params.id;
@@ -263,6 +264,37 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+/**
+ * Get one skill mastery requirement submitted for review.
+ *
+ * @return response()
+ */
+router.get(
+    '/mc/submitted-for-review/:mcQuestionId/:userId',
+    (req, res, next) => {
+        let mcQuestion;
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            // Get skill.
+            const sqlQuery = `SELECT *
+                          FROM mc_questions_awaiting_approval
+                          WHERE mc_question_id = ${req.params.mcQuestionId}
+                          AND user_id = ${req.params.userId}`;
+            let query = conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    mcQuestion = results[0];
+                    res.json(mcQuestion);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
 
 // Load all mc type questions.
 router.get('/mc/submitted-for-review/list', (req, res, next) => {
