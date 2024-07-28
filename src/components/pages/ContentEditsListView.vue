@@ -38,6 +38,7 @@ export default {
                         data[i].date = this.formatDate(data[i].date);
                         this.mcQuestionEdits.push(data[i]);
                     }
+                    console.log(this.mcQuestionEdits);
                 });
         },
         // Get the essay question edits that have been submitted for review.
@@ -95,7 +96,9 @@ export default {
                     <router-link
                         :to="
                             '/content-edit/' +
-                            skillEdit.id +
+                            skillEdit.skill_id +
+                            '/' +
+                            skillEdit.user_id +
                             '/comparison?type=skill'
                         "
                         >User: {{ skillEdit.user_id }}, Skill:
@@ -110,7 +113,9 @@ export default {
                     <router-link
                         :to="
                             '/content-edit/' +
-                            mcQuestionEdit.id +
+                            mcQuestionEdit.mc_question_id +
+                            '/' +
+                            mcQuestionEdit.user_id +
                             '/comparison?type=mcquestion'
                         "
                         >User: {{ mcQuestionEdit.user_id }}, Question:
@@ -125,7 +130,9 @@ export default {
                     <router-link
                         :to="
                             '/content-edit/' +
-                            essayQuestionEdit.id +
+                            essayQuestionEdit.essay_question_id +
+                            '/' +
+                            essayQuestionEdit.user_id +
                             '/comparison?type=essayquestion'
                         "
                         >User: {{ essayQuestionEdit.user_id }}, Question:

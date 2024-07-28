@@ -16,7 +16,7 @@ export default {
         EssayQuestionEditComparison
     },
     async created() {
-        console.log();
+        // Show the correct component.
         this.type = this.$route.query.type;
     },
     methods: {}
