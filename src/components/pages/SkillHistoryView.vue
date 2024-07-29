@@ -71,7 +71,7 @@ export default {
                 );
                 this.skillRevisions[i].username = user.username;
                 //-------------
-
+                this.skillRevisions[i].isCurrentRevision = false;
                 if (
                     this.skillRevisions[i].version_number ==
                     this.currentVersionNumber
