@@ -442,7 +442,8 @@ router.put(
                                 req.body.level +
                                 `', skills.order = ` +
                                 req.body.order +
-                                `, version_number = ${versionNumber}                               
+                                `, version_number = ${versionNumber}
+                                , edited_date = current_timestamp
                                 WHERE id = ` +
                                 req.params.id +
                                 `;`;
