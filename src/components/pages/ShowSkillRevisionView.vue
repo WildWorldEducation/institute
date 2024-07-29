@@ -20,6 +20,7 @@ export default {
             skillId: this.$route.params.skillId,
             versionNumber: this.$route.params.versionNumber,
             skillRevision: {},
+            currentVersionNumber: null,
             isCurrentVersion: false
         };
     },
@@ -32,15 +33,28 @@ export default {
         if (this.usersStore.users.length == 0) {
             await this.usersStore.getUsers();
         }
-        await this.getSkillVersion();
+        await this.getSkill();
     },
     methods: {
+        async getSkill() {
+            // Load the skill data
+            const res = await fetch('/skills/show/' + this.skillId);
+            this.skill = await res.json();
+            this.currentVersionNumber = this.skill.version_number;
+            await this.getSkillVersion();
+        },
         async getSkillVersion() {
             let url =
                 '/skill-history/' + this.skillId + '/' + this.versionNumber;
 
             const res = await fetch(url);
             this.skillRevision = await res.json();
+
+            if (
+                this.skillRevision.version_number == this.currentVersionNumber
+            ) {
+                this.isCurrentVersion = true;
+            }
 
             // Get name of parent.
             for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
@@ -50,13 +64,6 @@ export default {
                 ) {
                     this.skillRevision.parentName =
                         this.skillsStore.skillsList[i].name;
-                }
-
-                if (
-                    this.skillsStore.skillsList[i].version_number ==
-                    this.skillRevision.version_number
-                ) {
-                    this.isCurrentVersion = true;
                 }
             }
 
