@@ -760,6 +760,10 @@ export default {
                         </div>
                         <div v-if="type == 'tutor post'">
                             <div class="d-flex mb-2">
+                                <div class="expand-tile">Skill:</div>
+                                <div>{{ expandContent.skill }}</div>
+                            </div>
+                            <div class="d-flex mb-2">
                                 <div class="expand-tile">User:</div>
                                 <div>{{ expandContent.user }}</div>
                             </div>
@@ -783,6 +787,13 @@ export default {
                         <div class="user-role">
                             {{ user.role }}
                         </div>
+                    </div>
+                </template>
+
+                <!-- --- Type Column -->
+                <template #item-type="{ type }">
+                    <div class="text-capitalize">
+                        {{ type }}
                     </div>
                 </template>
 
