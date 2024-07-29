@@ -314,7 +314,8 @@ export default {
                     mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
                     level: this.skill.level,
-                    order: this.skill.order
+                    order: this.skill.order,
+                    version_number: this.skill.version_number
                 })
             };
 
