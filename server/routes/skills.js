@@ -57,47 +57,81 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                         if (err) {
                             throw err;
                         } else {
-                            // add create skill action into user_actions
-                            const actionData = {
-                                action: 'create',
-                                content_id: skillId,
-                                user_id: req.session.userId,
-                                content_type: 'skill'
-                            };
-                            const actionQuery =
-                                'INSERT INTO user_actions SET ?';
-                            conn.query(actionQuery, actionData, (err) => {
-                                if (err) throw err;
-                                else {
-                                    // Insert any new filters for the skill.
-                                    for (
-                                        let i = 0;
-                                        i < req.body.filters.length;
-                                        i++
-                                    ) {
-                                        let sqlQuery3 =
-                                            `
+                            // Add skill revision history (this is the first revision.)
+                            let revisionHistoryQuery = `INSERT INTO skill_history
+                            (id, version_number, user_id, name, parent, description, icon_image, banner_image,
+                            mastery_requirements, type, level)
+                            VALUES
+                            (${skillId},
+                            1,
+                            ${req.session.userId},
+                            '${req.body.name}',
+                            ${req.body.parent},
+                            '${req.body.description}',
+                            '${req.body.icon_image}',
+                            '${req.body.banner_image}',
+                            '${req.body.mastery_requirements}',
+                            '${req.body.type}',
+                            '${req.body.level}');`;
+
+                            conn.query(revisionHistoryQuery, data, (err) => {
+                                try {
+                                    if (err) {
+                                        throw err;
+                                    } else {
+                                        // add create skill action into user_actions
+                                        const actionData = {
+                                            action: 'create',
+                                            content_id: skillId,
+                                            user_id: req.session.userId,
+                                            content_type: 'skill'
+                                        };
+                                        const actionQuery =
+                                            'INSERT INTO user_actions SET ?';
+                                        conn.query(
+                                            actionQuery,
+                                            actionData,
+                                            (err) => {
+                                                if (err) throw err;
+                                                else {
+                                                    // Insert any new filters for the skill.
+                                                    for (
+                                                        let i = 0;
+                                                        i <
+                                                        req.body.filters.length;
+                                                        i++
+                                                    ) {
+                                                        let sqlQuery3 =
+                                                            `
                             INSERT INTO skill_tags (skill_id, tag_id)
                             VALUES(` +
-                                            skillId +
-                                            `, ` +
-                                            req.body.filters[i] +
-                                            `);`;
-                                        let query = conn.query(
-                                            sqlQuery3,
-                                            (err, results) => {
-                                                try {
-                                                    if (err) {
-                                                        throw err;
-                                                    } else {
-                                                        res.end();
+                                                            skillId +
+                                                            `, ` +
+                                                            req.body.filters[
+                                                                i
+                                                            ] +
+                                                            `);`;
+                                                        let query = conn.query(
+                                                            sqlQuery3,
+                                                            (err, results) => {
+                                                                try {
+                                                                    if (err) {
+                                                                        throw err;
+                                                                    } else {
+                                                                        res.end();
+                                                                    }
+                                                                } catch (err) {
+                                                                    next(err);
+                                                                }
+                                                            }
+                                                        );
                                                     }
-                                                } catch (err) {
-                                                    next(err);
                                                 }
                                             }
                                         );
                                     }
+                                } catch (err) {
+                                    next(err);
                                 }
                             });
                         }
@@ -356,124 +390,83 @@ router.put(
                 req.body.mastery_requirements =
                     req.body.mastery_requirements.replace(/'/g, "\\'");
 
-            // Add old record to the skills_versions table.
-            // insert the above into the skills_version table,
-            // along with the new fields
-            let getPreviousRecordSQLQuery =
-                `SELECT * FROM skills where id = ` + req.params.id;
+            // Add new record to the skills_versions table.
 
-            conn.query(getPreviousRecordSQLQuery, (err, results) => {
+            let versionNumber = req.body.version_number + 1;
+
+            let addVersionHistoryInsertSQLQuery = `
+                    INSERT INTO skill_history
+                    (id, version_number, user_id, name, parent, description, icon_image, banner_image,
+                    mastery_requirements, type, level, skill_history.order)
+                    VALUES
+                    (${req.params.id},
+                    ${versionNumber},
+                    ${req.session.userId},
+                    '${req.body.name}',
+                    ${req.body.parent},
+                    '${req.body.description}',
+                    '${req.body.icon_image}',
+                    '${req.body.banner_image}',
+                    '${req.body.mastery_requirements}',
+                    '${req.body.type}',
+                    '${req.body.level}',                    
+                    ${req.body.order});`;
+
+            conn.query(addVersionHistoryInsertSQLQuery, (err) => {
                 try {
                     if (err) {
                         throw err;
                     }
 
-                    let previousId = results[0].id;
-                    let previousName = results[0].name;
-                    let previousParent = results[0].parent;
-                    let previousDescription = results[0].description;
-                    let previousIconImage = results[0].icon_image;
-                    let previousBannerImage = results[0].banner_image;
-                    let previousMasteryRequirements =
-                        results[0].mastery_requirements;
-                    let previousType = results[0].type;
-                    let previousLevel = results[0].level;
-                    let previousIsFiltered = results[0].is_filtered;
-                    let previousOrder = results[0].order;
-                    let previousIsDeleted = results[0].is_deleted;
-                    let versionNumber = results[0].version_number;
+                    // Update record in skill table.
+                    let updateRecordSQLQuery =
+                        `UPDATE skills SET name = '` +
+                        req.body.name +
+                        `', parent = '` +
+                        req.body.parent +
+                        `', description = '` +
+                        req.body.description +
+                        `', icon_image = '` +
+                        req.body.icon_image +
+                        `', banner_image = '` +
+                        req.body.banner_image +
+                        `', mastery_requirements = '` +
+                        req.body.mastery_requirements +
+                        `', type = '` +
+                        req.body.type +
+                        `', level = '` +
+                        req.body.level +
+                        `', skills.order = ` +
+                        req.body.order +
+                        `, version_number = ${versionNumber}
+                                , edited_date = current_timestamp
+                                WHERE id = ` +
+                        req.params.id +
+                        `;`;
 
-                    // Escape single quotes for SQL to accept.
-                    if (previousName != null)
-                        previousName = previousName.replace(/'/g, "\\'");
-                    if (previousDescription != null)
-                        previousDescription = previousDescription.replace(
-                            /'/g,
-                            "\\'"
-                        );
-                    if (previousMasteryRequirements != null)
-                        previousMasteryRequirements =
-                            previousMasteryRequirements.replace(/'/g, "\\'");
-
-                    let addVersionHistoryInsertSQLQuery = `
-                    INSERT INTO skill_history
-                    (id, version_number, user_id, name, parent, description, icon_image, banner_image,
-                    mastery_requirements, type, level, is_filtered, skill_history.order, is_deleted)
-                    VALUES
-                    (${previousId},
-                    ${versionNumber},
-                    ${req.session.userId},
-                    '${previousName}',
-                    ${previousParent},
-                    '${previousDescription}',
-                    '${previousIconImage}',
-                    '${previousBannerImage}',
-                    '${previousMasteryRequirements}',
-                    '${previousType}',
-                    '${previousLevel}',
-                    '${previousIsFiltered}',
-                    ${previousOrder},
-                    ${previousIsDeleted});`;
-
-                    versionNumber = versionNumber + 1;
-                    conn.query(addVersionHistoryInsertSQLQuery, (err) => {
+                    conn.query(updateRecordSQLQuery, (err, results) => {
                         try {
                             if (err) {
                                 throw err;
-                            }
+                            } else {
+                                // add edit (update) action into user_actions table
+                                const actionData = {
+                                    action: 'update',
+                                    content_id: req.params.id,
+                                    user_id: req.session.userId,
+                                    content_type: 'skill'
+                                };
 
-                            // Update record in skill table.
-                            let updateRecordSQLQuery =
-                                `UPDATE skills SET name = '` +
-                                req.body.name +
-                                `', parent = '` +
-                                req.body.parent +
-                                `', description = '` +
-                                req.body.description +
-                                `', icon_image = '` +
-                                req.body.icon_image +
-                                `', banner_image = '` +
-                                req.body.banner_image +
-                                `', mastery_requirements = '` +
-                                req.body.mastery_requirements +
-                                `', type = '` +
-                                req.body.type +
-                                `', level = '` +
-                                req.body.level +
-                                `', skills.order = ` +
-                                req.body.order +
-                                `, version_number = ${versionNumber}                               
-                                WHERE id = ` +
-                                req.params.id +
-                                `;`;
-
-                            conn.query(updateRecordSQLQuery, (err, results) => {
-                                try {
-                                    if (err) {
-                                        throw err;
-                                    } else {
-                                        // add edit (update) action into user_actions table
-                                        const actionData = {
-                                            action: 'update',
-                                            content_id: req.params.id,
-                                            user_id: req.session.userId,
-                                            content_type: 'skill'
-                                        };
-
-                                        const addActionQuery = `INSERT INTO user_actions SET ?`;
-                                        conn.query(
-                                            addActionQuery,
-                                            actionData,
-                                            (err) => {
-                                                if (err) throw err;
-                                                else res.redirect('back');
-                                            }
-                                        );
+                                const addActionQuery = `INSERT INTO user_actions SET ?`;
+                                conn.query(
+                                    addActionQuery,
+                                    actionData,
+                                    (err) => {
+                                        if (err) throw err;
+                                        else res.redirect('back');
                                     }
-                                } catch (err) {
-                                    next(err);
-                                }
-                            });
+                                );
+                            }
                         } catch (err) {
                             next(err);
                         }
