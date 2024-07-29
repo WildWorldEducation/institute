@@ -12,7 +12,8 @@ export default {
         return {
             skillId: this.$route.params.id,
             skill: {},
-            skillRevisions: []
+            skillRevisions: [],
+            currentVersionNumber: null
         };
     },
     async created() {
@@ -27,6 +28,7 @@ export default {
             // Load the skill data
             const res = await fetch('/skills/show/' + this.skillId);
             this.skill = await res.json();
+            this.currentVersionNumber = this.skill.version_number;
         },
         async getRevisions() {
             // Load the skill data
@@ -69,6 +71,12 @@ export default {
                 );
                 this.skillRevisions[i].username = user.username;
                 //-------------
+                if (
+                    (this.skillRevisions[i].version_number =
+                        this.currentVersionNumber)
+                ) {
+                    this.skillRevisions[i].isCurrentRevision = true;
+                }
             }
         }
     }
@@ -88,7 +96,10 @@ export default {
                         revision.version_number
                     "
                     >{{ revision.edited_date }}</router-link
-                >, {{ revision.username }}
+                >, {{ revision.username
+                }}<span v-show="revision.isCurrentRevision"
+                    >, (current revision)</span
+                >
             </li>
         </ul>
     </div>
