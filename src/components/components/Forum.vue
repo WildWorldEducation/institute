@@ -374,10 +374,11 @@ export default {
         closeWarningModal() {
             this.showModal = false;
         },
-        handleOpenFlagModal(postId) {
+        handleOpenFlagModal(postId, postType) {
             this.flagPost = postId;
             this.showFlaggingModal = true;
             this.showActionBtns = false;
+            this.flagType = postType === 'tutor' ? 'tutor_post' : postType;
         },
         handleClickActionBtns(postId) {
             this.showActionBtns = !this.showActionBtns;
@@ -437,6 +438,7 @@ export default {
                 </div>
             </div>
         </div>
+        <!-- ---- | Post List In This Forum | ---- -->
         <div id="posts-big-container">
             <div
                 class="row mt-4 forum-container"
@@ -786,6 +788,7 @@ export default {
                 </div>
             </div>
         </div>
+        <!-------------------------------------------------------------------------------------------->
         <!-- The Delete Warn Modal -->
         <div v-if="showModal">
             <div id="myModal" class="modal">
@@ -816,7 +819,7 @@ export default {
     <FlagModals
         v-if="showFlaggingModal"
         :userId="userDetailsStore.userId"
-        contentType="resource"
+        :contentType="flagType"
         :contentId="flagPost"
     />
 </template>
