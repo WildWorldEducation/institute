@@ -382,6 +382,14 @@ router.put(
                     let previousOrder = results[0].order;
                     let previousIsDeleted = results[0].is_deleted;
                     let versionNumber = results[0].version_number;
+                    // prepare date.
+                    let previousEditedDate = JSON.stringify(
+                        results[0].edited_date
+                    );
+                    previousEditedDate = previousEditedDate.replace(/"/g, '');
+                    previousEditedDate = previousEditedDate.replace(/T/g, ' ');
+                    let dateArray = previousEditedDate.split('.');
+                    previousEditedDate = dateArray[0];
 
                     // Escape single quotes for SQL to accept.
                     if (previousName != null)
@@ -398,7 +406,7 @@ router.put(
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
                     (id, version_number, user_id, name, parent, description, icon_image, banner_image,
-                    mastery_requirements, type, level, is_filtered, skill_history.order, is_deleted)
+                    mastery_requirements, type, level, is_filtered, skill_history.order, is_deleted, edited_date)
                     VALUES
                     (${previousId},
                     ${versionNumber},
@@ -413,7 +421,8 @@ router.put(
                     '${previousLevel}',
                     '${previousIsFiltered}',
                     ${previousOrder},
-                    ${previousIsDeleted});`;
+                    ${previousIsDeleted},
+                    '${previousEditedDate}');`;
 
                     versionNumber = versionNumber + 1;
                     conn.query(addVersionHistoryInsertSQLQuery, (err) => {
