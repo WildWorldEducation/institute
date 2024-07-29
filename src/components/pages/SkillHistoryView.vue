@@ -71,9 +71,10 @@ export default {
                 );
                 this.skillRevisions[i].username = user.username;
                 //-------------
+
                 if (
-                    (this.skillRevisions[i].version_number =
-                        this.currentVersionNumber)
+                    this.skillRevisions[i].version_number ==
+                    this.currentVersionNumber
                 ) {
                     this.skillRevisions[i].isCurrentRevision = true;
                 }
