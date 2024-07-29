@@ -52,7 +52,6 @@ export default {
                 }
             }
 
-            console.log(this.skillRevision);
             // Get name of user that made the revision.
             for (let i = 0; i < this.usersStore.users.length; i++) {
                 if (this.usersStore.users[i].id == this.skillRevision.user_id) {
@@ -185,44 +184,6 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <!-- A line divide -->
-                    <div v-if="userDetailsStore.role == 'admin'">
-                        <div class="row">
-                            <div class="col col-md-8 p-4 p-md-0">
-                                <hr
-                                    id="hr-parent"
-                                    class="border border-2 opacity-100"
-                                />
-                            </div>
-                        </div>
-                        <!-- Filters -->
-                        <div class="row mt-3">
-                            <div class="h1-title">Filter</div>
-                            <label
-                                v-for="tag in tagsStore.tagsList"
-                                class="control control-checkbox"
-                            >
-                                <span class="my-auto mx-2 me-4">
-                                    {{ tag.name }}</span
-                                >
-                                <input
-                                    type="checkbox"
-                                    :value="tag.id"
-                                    v-model="filters"
-                                    disabled
-                                />
-                                <div class="control_indicator"></div>
-                            </label>
-                        </div>
-                    </div>
-                    <!-- A line divide -->
-                    <div
-                        v-if="
-                            (userDetailsStore.role == 'admin' ||
-                                userDetailsStore.role == 'editor') &&
-                            skillRevision.type != 'domain'
-                        "
-                    ></div>
                 </div>
 
                 <p>&nbsp;</p>
