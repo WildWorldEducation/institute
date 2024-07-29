@@ -326,6 +326,61 @@ router.get(
     }
 );
 
+/**
+ * Delete mc question submitted for review.
+ *
+ * @return response()
+ */
+router.delete('/mc/submitted-for-review/:skillId/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        const deleteQuery = `DELETE 
+                             FROM mc_questions_awaiting_approval
+                             WHERE skill_id = ${req.params.skillId}
+                             AND user_id  = ${req.params.userId};`;
+        conn.query(deleteQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Delete mc question submitted for review.
+ *
+ * @return response()
+ */
+router.delete(
+    '/essay/submitted-for-review/:skillId/:userId',
+    (req, res, next) => {
+        if (req.session.userName) {
+            const deleteQuery = `DELETE 
+                             FROM essay_questions_awaiting_approval
+                             WHERE skill_id = ${req.params.skillId}
+                             AND user_id  = ${req.params.userId};`;
+            conn.query(deleteQuery, (err) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.end();
+                } catch (err) {
+                    next(err);
+                }
+            });
+        } else {
+            res.redirect('/login');
+        }
+    }
+);
+
 // Load all mc type questions.
 router.get('/mc/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {

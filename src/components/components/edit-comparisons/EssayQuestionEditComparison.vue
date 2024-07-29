@@ -42,7 +42,24 @@ export default {
                 });
         },
         dismissEdit() {
-            console.log('essay');
+            if (confirm('Delete this edit?')) {
+                const result = fetch(
+                    '/questions/essay/submitted-for-review/' +
+                        this.essayQuestionId +
+                        '/' +
+                        this.userId,
+                    {
+                        method: 'DELETE'
+                    }
+                );
+
+                if (result.error) {
+                    console.log(result.error);
+                }
+
+                // Return to hub page.
+                this.$router.back();
+            }
         },
         editMode() {
             console.log('essay');

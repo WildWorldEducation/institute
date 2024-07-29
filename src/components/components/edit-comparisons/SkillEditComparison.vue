@@ -40,7 +40,24 @@ export default {
                 });
         },
         dismissEdit() {
-            console.log('skill');
+            if (confirm('Delete this edit?')) {
+                const result = fetch(
+                    '/skills/submitted-for-review/' +
+                        this.skillId +
+                        '/' +
+                        this.userId,
+                    {
+                        method: 'DELETE'
+                    }
+                );
+
+                if (result.error) {
+                    console.log(result.error);
+                }
+
+                // Return to hub page.
+                this.$router.back();
+            }
         },
         editMode() {
             console.log('skill');

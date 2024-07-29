@@ -584,6 +584,32 @@ router.get('/submitted-for-review/:skillId/:userId', (req, res, next) => {
 });
 
 /**
+ * Delete skill mastery requirement submitted for review.
+ *
+ * @return response()
+ */
+router.delete('/submitted-for-review/:skillId/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        const deleteQuery = `DELETE 
+                             FROM skills_awaiting_approval
+                             WHERE skill_id = ${req.params.skillId}
+                             AND user_id  = ${req.params.userId};`;
+        conn.query(deleteQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
  * Delete Item
  *
  * @return response()

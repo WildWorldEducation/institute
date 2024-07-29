@@ -42,7 +42,24 @@ export default {
                 });
         },
         dismissEdit() {
-            console.log('mc');
+            if (confirm('Delete this edit?')) {
+                const result = fetch(
+                    '/questions/mc/submitted-for-review/' +
+                        this.mcQuestionId +
+                        '/' +
+                        this.userId,
+                    {
+                        method: 'DELETE'
+                    }
+                );
+
+                if (result.error) {
+                    console.log(result.error);
+                }
+
+                // Return to hub page.
+                this.$router.back();
+            }
         },
         editMode() {
             console.log('mc');
