@@ -59,19 +59,17 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                         } else {
                             // Add skill revision history (this is the first revision.)
                             let revisionHistoryQuery = `INSERT INTO skill_history
-                            (id, version_number, user_id, name, parent, description, icon_image, banner_image,
-                            mastery_requirements, type, level)
+                            (id, version_number, user_id, name, description, icon_image, banner_image,
+                            mastery_requirements, level)
                             VALUES
                             (${skillId},
                             1,
                             ${req.session.userId},
-                            '${req.body.name}',
-                            ${req.body.parent},
+                            '${req.body.name}',                           
                             '${req.body.description}',
                             '${req.body.icon_image}',
                             '${req.body.banner_image}',
                             '${req.body.mastery_requirements}',
-                            '${req.body.type}',
                             '${req.body.level}');`;
 
                             conn.query(revisionHistoryQuery, data, (err) => {
@@ -396,19 +394,17 @@ router.put(
 
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, parent, description, icon_image, banner_image,
-                    mastery_requirements, type, level, skill_history.order)
+                    (id, version_number, user_id, name, description, icon_image, banner_image,
+                    mastery_requirements, level, skill_history.order)
                     VALUES
                     (${req.params.id},
                     ${versionNumber},
                     ${req.session.userId},
-                    '${req.body.name}',
-                    ${req.body.parent},
+                    '${req.body.name}',                    
                     '${req.body.description}',
                     '${req.body.icon_image}',
                     '${req.body.banner_image}',
-                    '${req.body.mastery_requirements}',
-                    '${req.body.type}',
+                    '${req.body.mastery_requirements}',                    
                     '${req.body.level}',                    
                     ${req.body.order});`;
 
