@@ -108,12 +108,16 @@ export default {
                     'Are you sure you want to revert the skill to this version?'
                 )
             ) {
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                };
                 var url =
-                    '/skills/' +
+                    '/skill-history/' +
                     this.skillId +
-                    'revert-to/' +
+                    '/revert-to/' +
                     this.versionNumber;
-                //fetch(url, requestOptions).then(() => {});
+                fetch(url, requestOptions).then(() => {});
             }
         }
     }
