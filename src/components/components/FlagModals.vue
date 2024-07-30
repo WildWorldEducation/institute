@@ -31,6 +31,7 @@ export default {
             this.showWarnModal = false;
         },
         handleSubmitReason() {
+            alert(this.reason.length);
             if (this.reason.length > 255) {
                 this.shake = true;
                 setTimeout(() => {
@@ -325,7 +326,7 @@ export default {
     /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 320px;
+    width: 520px !important;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
 }

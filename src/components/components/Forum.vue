@@ -3,6 +3,8 @@
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 // Import Custom Components
 import FlagModals from './FlagModals.vue';
+import ForumResource from './ForumResource.vue';
+
 export default {
     setup() {
         // I think because store is in separate component so we will setup it in child
@@ -32,7 +34,8 @@ export default {
         };
     },
     components: {
-        FlagModals
+        FlagModals,
+        ForumResource
     },
     computed: {
         orderedAndNamedPosts() {
@@ -451,7 +454,10 @@ export default {
                     <!-- Second row contain name and avatar -->
                     <div class="w-100">
                         <div class="col post-user-row">
-                            <div v-if="post.type != 'tutor'" id="user-avatar">
+                            <div
+                                v-if="post.type != 'tutor'"
+                                class="user-avatar"
+                            >
                                 <img
                                     :src="post.userAvatar"
                                     class="user-avatar-img"
@@ -514,7 +520,7 @@ export default {
                     </div>
                 </div>
                 <div class="d-flex align-items-center justify-content-end mt-3">
-                    <!-- First row of post contain likes count and relate buttons -->
+                    <!-- Second row of post contain likes count and relate buttons -->
                     <div class="first-post-row">
                         <div class="d-flex flex-row justify-content-end gap-1">
                             <!-- Upvote Button -->
@@ -787,6 +793,8 @@ export default {
                     </div>
                 </div>
             </div>
+            <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ -->
+            <ForumResource :resourcePosts="sourcePosts" :user="user" />
         </div>
         <!-------------------------------------------------------------------------------------------->
         <!-- The Delete Warn Modal -->
@@ -824,7 +832,7 @@ export default {
     />
 </template>
 
-<style scoped>
+<style>
 .red-btn {
     background-color: #e24d4d;
     color: white;
@@ -891,11 +899,7 @@ export default {
     background-color: #a48be6;
 }
 
-.source {
-    background-color: #f2edff;
-}
-
-#vote-count {
+.vote-count {
     font-size: 1.563rem;
     font-weight: 700;
     margin-top: -7px;
@@ -911,13 +915,6 @@ export default {
     margin-top: -8px;
 }
 
-#user-name-text {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1rem;
-    font-weight: lighter;
-    color: #778094;
-}
-
 .tutor-user-name {
     color: white !important;
 }
@@ -926,7 +923,7 @@ export default {
     margin-left: 5px;
 }
 
-#user-avatar {
+.user-avatar {
     height: 45px;
     width: 45px;
 }
