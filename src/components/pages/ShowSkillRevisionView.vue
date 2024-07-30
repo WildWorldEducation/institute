@@ -108,12 +108,16 @@ export default {
                     'Are you sure you want to revert the skill to this version?'
                 )
             ) {
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                };
                 var url =
-                    '/skills/' +
+                    '/skill-history/' +
                     this.skillId +
-                    'revert-to/' +
+                    '/revert-to/' +
                     this.versionNumber;
-                //fetch(url, requestOptions).then(() => {});
+                fetch(url, requestOptions).then(() => {});
             }
         }
     }
@@ -201,7 +205,11 @@ export default {
                         </div>
                     </div>
                 </div>
-                <button class="btn purple-btn" @click="revert()">
+                <button
+                    v-if="!isCurrentVersion"
+                    class="btn purple-btn mt-2"
+                    @click="revert()"
+                >
                     Revert to this version
                 </button>
                 <p>&nbsp;</p>
