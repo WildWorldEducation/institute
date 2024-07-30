@@ -113,10 +113,24 @@ router.put('/:skillId/revert-to/:versionNumber', (req, res, next) => {
                         }
                         currentSkill = results[0];
 
+                        // Prep data.
                         let type = currentSkill.type;
                         let parent = currentSkill.parent;
                         let versionNumber = currentSkill.version_number + 1;
-                        console.log(currentSkill);
+                        if (skillRevision.name != null)
+                            skillRevision.name = skillRevision.name.replace(
+                                /'/g,
+                                "\\'"
+                            );
+                        if (skillRevision.description != null)
+                            skillRevision.description =
+                                skillRevision.description.replace(/'/g, "\\'");
+                        if (skillRevision.mastery_requirements != null)
+                            skillRevision.mastery_requirements =
+                                skillRevision.mastery_requirements.replace(
+                                    /'/g,
+                                    "\\'"
+                                );
 
                         // Insert the current skill into the skill history.
                         let addNewRevisionSqlQuery = `
