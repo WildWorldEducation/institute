@@ -208,7 +208,11 @@ export default {
                     </div>
                 </div>
                 <button
-                    v-if="!isCurrentVersion"
+                    v-if="
+                        !isCurrentVersion &&
+                        (userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'editor')
+                    "
                     class="btn purple-btn mt-2"
                     @click="revert()"
                 >
