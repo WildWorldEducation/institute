@@ -101,10 +101,6 @@ export default {
                 'en-US',
                 options
             );
-
-            console.log(this.skillRevision);
-
-            // -----------------------
         },
         revert() {
             if (
@@ -128,10 +124,7 @@ export default {
     <div class="position-relative d-flex">
         <div class="container show-skill-ctnr">
             <div class="container mt-3">
-                <div
-                    id="skill-info-container"
-                    :class="{ domain: skillRevision.type == 'domain' }"
-                >
+                <div id="skill-info-container">
                     <!-- Skill Info -->
                     <div class="d-flex flex-column gap-2">
                         <!-- Skill image -->
@@ -186,7 +179,7 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <div v-if="skillRevision.type != 'domain'">
+                    <div>
                         <!-- A line divide -->
                         <div class="row">
                             <div class="col col-md-8 p-4 p-md-0">
@@ -196,20 +189,7 @@ export default {
                                 />
                             </div>
                         </div>
-                        <!-- Type -->
-                        <div class="mt-3 d-flex flex-column">
-                            <div class="h1-title">Type</div>
-                            <div class="mastery-requirements">
-                                <div v-html="skillRevision.type"></div>
-                            </div>
-                        </div>
-                        <!-- Parent -->
-                        <div class="mt-3 d-flex flex-column">
-                            <div class="h1-title">Parent</div>
-                            <div class="mastery-requirements">
-                                <div v-html="skillRevision.parentName"></div>
-                            </div>
-                        </div>
+
                         <!-- Mastery Requirements -->
                         <div class="mt-3 d-flex flex-column">
                             <div class="h1-title">Mastery Requirements</div>
