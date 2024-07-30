@@ -74,5 +74,12 @@ router.get('/:skillId/:versionNumber', (req, res, next) => {
     }
 });
 
+/**
+ *
+ * Revert current skill to this version.
+ *
+ */
+
+
 // Export the router for app to use.
 module.exports = router;
