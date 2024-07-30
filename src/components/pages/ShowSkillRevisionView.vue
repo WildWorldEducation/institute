@@ -201,7 +201,11 @@ export default {
                         </div>
                     </div>
                 </div>
-                <button class="btn purple-btn" @click="revert()">
+                <button
+                    v-if="!isCurrentVersion"
+                    class="btn purple-btn mt-2"
+                    @click="revert()"
+                >
                     Revert to this version
                 </button>
                 <p>&nbsp;</p>
