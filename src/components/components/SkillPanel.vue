@@ -68,7 +68,6 @@ export default {
                 ></div>
             </div>
             <div v-if="skill.type == 'super'" class="mt-2">
-                <h2>Outer cluster nodes</h2>
                 <ul>
                     <li v-for="subskill in skill.subskills">
                         <router-link
