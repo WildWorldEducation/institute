@@ -142,12 +142,17 @@ router.put(
                                         /'/g,
                                         "\\'"
                                     );
+                            if (req.body.comment != null)
+                                req.body.comment = req.body.comment.replace(
+                                    /'/g,
+                                    "\\'"
+                                );
 
                             // Insert the current skill into the skill history.
                             let addNewRevisionSqlQuery = `
                             INSERT INTO skill_history
                             (id, version_number, user_id, name, description, icon_image, banner_image,
-                            mastery_requirements, level, skill_history.order)
+                            mastery_requirements, level, skill_history.order, comment)
                             VALUES
                             (${skillRevision.id},
                             ${versionNumber},
@@ -158,7 +163,8 @@ router.put(
                             '${currentSkill.banner_image}',
                             '${skillRevision.mastery_requirements}',                    
                             '${skillRevision.level}',                    
-                            ${skillRevision.order});`;
+                            ${skillRevision.order},
+                            '${req.body.comment}');`;
 
                             conn.query(addNewRevisionSqlQuery, (err) => {
                                 try {

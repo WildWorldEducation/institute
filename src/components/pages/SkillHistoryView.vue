@@ -18,7 +18,7 @@ export default {
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
-        await this.getSkill();        
+        await this.getSkill();
     },
     async mounted() {},
     methods: {
@@ -26,7 +26,7 @@ export default {
             // Load the skill data
             const res = await fetch('/skills/show/' + this.skillId);
             this.skill = await res.json();
-            this.currentVersionNumber = this.skill.version_number;           
+            this.currentVersionNumber = this.skill.version_number;
             await this.getRevisions();
         },
         async getRevisions() {
@@ -96,7 +96,7 @@ export default {
                         revision.version_number
                     "
                     >{{ revision.edited_date }}</router-link
-                >, {{ revision.username
+                >, {{ revision.username }}, {{ revision.comment
                 }}<span v-show="revision.isCurrentRevision"
                     >, (current revision)</span
                 >
