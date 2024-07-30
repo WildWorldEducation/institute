@@ -102,7 +102,23 @@ export default {
                 options
             );
 
+            console.log(this.skillRevision);
+
             // -----------------------
+        },
+        revert() {
+            if (
+                confirm(
+                    'Are you sure you want to revert the skill to this version?'
+                )
+            ) {
+                var url =
+                    '/skills/' +
+                    this.skillId +
+                    'revert-to/' +
+                    this.versionNumber;
+                //fetch(url, requestOptions).then(() => {});
+            }
         }
     }
 };
@@ -205,7 +221,9 @@ export default {
                         </div>
                     </div>
                 </div>
-
+                <button class="btn purple-btn" @click="revert()">
+                    Revert to this version
+                </button>
                 <p>&nbsp;</p>
             </div>
         </div>
