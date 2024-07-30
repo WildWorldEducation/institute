@@ -117,7 +117,9 @@ export default {
                     this.skillId +
                     '/revert-to/' +
                     this.versionNumber;
-                fetch(url, requestOptions).then(() => {});
+                fetch(url, requestOptions).then(() => {
+                    this.$router.push('/skills/' + this.skillId);
+                });
             }
         }
     }
