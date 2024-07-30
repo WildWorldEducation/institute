@@ -108,9 +108,13 @@ export default {
                     'Are you sure you want to revert the skill to this version?'
                 )
             ) {
+                let comment = prompt('Please add a comment to explain.', '');
                 const requestOptions = {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        comment: comment
+                    })
                 };
                 var url =
                     '/skill-history/' +
