@@ -120,6 +120,12 @@ export default {
                     this.$parent.getSourceVotes(postId);
                 });
             }
+        },
+        handleOpenFlagModal(postId) {
+            this.$parent.flagPost = postId;
+            this.$parent.showFlaggingModal = true;
+            this.showActionBtns = false;
+            this.$parent.flagType = 'resource';
         }
     }
 };

@@ -31,7 +31,6 @@ export default {
             this.showWarnModal = false;
         },
         handleSubmitReason() {
-            alert(this.reason.length);
             if (this.reason.length > 255) {
                 this.shake = true;
                 setTimeout(() => {
@@ -66,7 +65,7 @@ export default {
     <!-- The flagging Modal -->
     <div v-if="showWarnModal" id="myModal" class="modal">
         <!-- Modal content -->
-        <div class="modal-content">
+        <div class="modal-content asking-modal">
             <div class="d-flex gap-4">
                 <!-- Warn Triangle Icon -->
                 <svg
@@ -223,7 +222,7 @@ export default {
                         @click="closeModal"
                     >
                         <span class="d-none d-md-block"> Cancel </span>
-                        <!-- Tick Icon ONLY show when in Phone View -->
+                        <!-- X Icon ONLY show when in Phone View -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
@@ -240,15 +239,10 @@ export default {
                     <button
                         type="button"
                         class="btn green-btn modal-btn"
-                        @click="flagSkill"
+                        @click="handleSubmitReason"
                     >
-                        <span
-                            class="d-none d-md-block"
-                            @click="handleSubmitReason"
-                        >
-                            Submit
-                        </span>
-                        <!-- X icon Only show when in Phone View -->
+                        <span class="d-none d-md-block"> Submit </span>
+                        <!-- Tick icon Only show when in Phone View -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
@@ -326,13 +320,17 @@ export default {
     /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 520px !important;
+    width: 520px;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
 }
 
 .reason-popup {
-    width: 550px;
+    width: 550px !important;
+}
+
+.asking-modal {
+    width: 340px !important;
 }
 /* ---- End of Warning modal styling ---- */
 .reason-suggestion {
@@ -619,7 +617,7 @@ export default {
 @media (min-width: 0px) and (max-width: 576px) {
     .modal-content {
         margin: 45% 0%;
-        width: 100%;
+        width: 100% !important;
     }
 
     .custom-select-div {
