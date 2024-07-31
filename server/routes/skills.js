@@ -495,10 +495,6 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         // Prep data.
         // Escape single quotes for SQL to accept.
-        if (req.body.name != null)
-            req.body.name = req.body.name.replace(/'/g, "\\'");
-        if (req.body.description != null)
-            req.body.description = req.body.description.replace(/'/g, "\\'");
         if (req.body.mastery_requirements != null)
             req.body.mastery_requirements =
                 req.body.mastery_requirements.replace(/'/g, "\\'");
@@ -506,10 +502,9 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
             req.body.comment = req.body.comment.replace(/'/g, "\\'");
 
         // Add data.
-        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, name, parent, description,
-         icon_image, banner_image, mastery_requirements, type, level, skills_awaiting_approval.order, comment)
-         VALUES (${req.params.id}, ${req.body.userId}, '${req.body.name}', '${req.body.parent}', '${req.body.description}', '${req.body.icon_image}', '${req.body.banner_image}', '${req.body.mastery_requirements}', 
-         '${req.body.type}', '${req.body.level}', '${req.body.order}', '${req.body.comment}')
+        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, comment)
+         VALUES (${req.params.id}, ${req.body.userId}, '${req.body.mastery_requirements}', 
+         '${req.body.comment}')
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = '${req.body.mastery_requirements}', date = CURRENT_TIMESTAMP(), comment = '${req.body.comment}';`;
