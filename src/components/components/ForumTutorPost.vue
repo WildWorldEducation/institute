@@ -403,4 +403,30 @@ export default {
     </div>
 </template>
 
-<style></style>
+<style>
+.tutor {
+    background-color: #a48be6;
+}
+
+.tutor-user-name {
+    color: white !important;
+}
+
+.tutor-img {
+    width: 100px !important;
+    height: 100px !important;
+    margin-right: 1rem;
+}
+
+.tutor-post {
+    flex-direction: column;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .tutor-img {
+        margin-right: unset;
+        margin: auto;
+    }
+}
+</style>

@@ -159,7 +159,7 @@ export default {
             <!-- First row of post contain likes count and relate buttons -->
         </div>
         <div class="col-12">
-            <div class="">
+            <div class="source">
                 <!-- Post Content -->
                 <div class="forum-post" v-html="post.content"></div>
             </div>
@@ -383,5 +383,12 @@ export default {
 
 .source {
     background-color: #f2edff;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .user-avatar {
+        padding: 4px;
+    }
 }
 </style>
