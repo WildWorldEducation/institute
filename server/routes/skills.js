@@ -533,6 +533,120 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
 });
 
 /**
+ * Save item submitted for review.
+ *
+ * @return response()
+ */
+router.put(
+    '/:id/edit-for-review/save',
+    isAuthenticated,
+    checkRoleHierarchy('editor'),
+    (req, res, next) => {
+        if (req.session.userName) {
+            // Prep data.
+            // Escape single quotes for SQL to accept.
+            if (req.body.mastery_requirements != null)
+                req.body.mastery_requirements =
+                    req.body.mastery_requirements.replace(/'/g, "\\'");
+
+            // Add old record to the skills_versions table.
+            // insert the above into the skills_version table,
+            // along with the new fields
+            let getPreviousRecordSQLQuery =
+                `SELECT * FROM skills where id = ` + req.params.id;
+
+            conn.query(getPreviousRecordSQLQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+
+                    let previousId = results[0].id;
+                    let previousName = results[0].name;
+                    let previousParent = results[0].parent;
+                    let previousDescription = results[0].description;
+                    let previousIconImage = results[0].icon_image;
+                    let previousBannerImage = results[0].banner_image;
+                    let previousMasteryRequirements =
+                        results[0].mastery_requirements;
+                    let previousType = results[0].type;
+                    let previousLevel = results[0].level;
+                    let previousIsFiltered = results[0].is_filtered;
+                    let previousOrder = results[0].order;
+                    let previousIsDeleted = results[0].is_deleted;
+                    let versionNumber = results[0].version_number;
+
+                    // Escape single quotes for SQL to accept.
+                    if (previousName != null)
+                        previousName = previousName.replace(/'/g, "\\'");
+                    if (previousDescription != null)
+                        previousDescription = previousDescription.replace(
+                            /'/g,
+                            "\\'"
+                        );
+                    if (previousMasteryRequirements != null)
+                        previousMasteryRequirements =
+                            previousMasteryRequirements.replace(/'/g, "\\'");
+                    versionNumber = versionNumber + 1;
+
+                    let addVersionHistoryInsertSQLQuery = `
+                    INSERT INTO skill_history
+                    (id, version_number, user_id, name, description, icon_image, banner_image,
+                    mastery_requirements, level, skill_history.order)
+                    VALUES
+                    (${previousId},
+                    ${versionNumber},
+                    ${req.session.userId},
+                    '${previousName}',                    
+                    '${previousDescription}',
+                    '${previousIconImage}',
+                    '${previousBannerImage}',
+                    '${req.body.mastery_requirements}',                    
+                    '${previousLevel}',                    
+                    ${previousOrder});`;
+
+                    conn.query(addVersionHistoryInsertSQLQuery, (err) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+
+                            // Update record in skill table.
+                            let updateRecordSQLQuery =
+                                `UPDATE skills SET 
+                                mastery_requirements = '` +
+                                req.body.mastery_requirements +
+                                `', version_number = ${versionNumber}                               
+                                WHERE id = ` +
+                                req.params.id +
+                                `;`;
+
+                            conn.query(updateRecordSQLQuery, (err, results) => {
+                                try {
+                                    if (err) {
+                                        throw err;
+                                    } else {
+                                        res.end();
+                                    }
+                                } catch (err) {
+                                    next(err);
+                                }
+                            });
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                } catch (err) {
+                    next(err);
+                }
+            });
+        } else {
+            res.redirect('/login');
+        }
+    }
+);
+
+/**
  * Get all skill mastery requirements submitted for review.
  *
  * @return response()

@@ -5,8 +5,8 @@ export default {
         return {
             skillId: this.$route.params.contentId,
             userId: this.$route.params.userId,
-            skill: null,
-            skillEdit: null,
+            skill: {},
+            skillEdit: {},
             comment: ''
         };
     },
@@ -26,7 +26,7 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    this.skillEdit = data.mastery_requirements;
+                    this.skillEdit = data;
                     this.comment = data.comment;
                 });
         },
@@ -64,7 +64,22 @@ export default {
             document.getElementById('content').removeAttribute('readonly');
         },
         saveEdit() {
-            console.log('skill');
+            console.log(this.skillEdit);
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    mastery_requirements: this.skillEdit.mastery_requirements
+                })
+            };
+
+            var url =
+                '/skills/' + this.skillEdit.skill_id + '/edit-for-review/save';
+            fetch(url, requestOptions).then(() => {
+                this.$router.back();
+            });
+
+            // Delete it afterwards.
         }
     }
 };
@@ -81,7 +96,7 @@ export default {
                     id="content"
                     class="form-control"
                     readonly
-                    v-html="skillEdit"
+                    v-html="skillEdit.mastery_requirements"
                 ></textarea>
                 <h3>Comment</h3>
                 <p>{{ comment }}</p>
