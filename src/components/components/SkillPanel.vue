@@ -67,7 +67,7 @@ export default {
                     v-html="skill?.masteryRequirements"
                 ></div>
             </div>
-            <div v-if="skill.type == 'super'" class="mt-2">
+            <!-- <div v-if="skill.type == 'super'" class="mt-2">
                 <ul>
                     <li v-for="subskill in skill.subskills">
                         <router-link
@@ -78,7 +78,7 @@ export default {
                         </router-link>
                     </li>
                 </ul>
-            </div>
+            </div> -->
             <hr v-if="skill.type != 'domain'" />
             <router-link
                 v-if="skill.type != 'domain'"
