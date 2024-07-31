@@ -356,17 +356,17 @@ router.delete(
 );
 
 /**
- * Delete mc question submitted for review.
+ * Delete essay question submitted for review.
  *
  * @return response()
  */
 router.delete(
-    '/essay/submitted-for-review/:skillId/:userId',
+    '/essay/submitted-for-review/:essayQuestionId/:userId',
     (req, res, next) => {
         if (req.session.userName) {
             const deleteQuery = `DELETE 
                              FROM essay_questions_awaiting_approval
-                             WHERE skill_id = ${req.params.skillId}
+                             WHERE essay_question_id = ${req.params.essayQuestionId}
                              AND user_id  = ${req.params.userId};`;
             conn.query(deleteQuery, (err) => {
                 try {
