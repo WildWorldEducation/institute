@@ -37,6 +37,7 @@ export default {
                 })
                 .then((data) => {
                     this.skill = data.mastery_requirements;
+                    console.log(this.skill);
                 });
         },
         dismissEdit() {
@@ -60,7 +61,7 @@ export default {
             }
         },
         editMode() {
-            console.log('skill');
+            document.getElementById('content').removeAttribute('readonly');
         },
         saveEdit() {
             console.log('skill');
@@ -75,12 +76,19 @@ export default {
         <div class="row">
             <div class="col">
                 <h2>Change</h2>
-                <div v-html="skillEdit"></div>
+                <h5>Mastery Requirements</h5>
+                <textarea
+                    id="content"
+                    class="form-control"
+                    readonly
+                    v-html="skillEdit"
+                ></textarea>
                 <h3>Comment</h3>
                 <p>{{ comment }}</p>
             </div>
             <div class="col">
                 <h2>Original</h2>
+                <h5>Mastery Requirements</h5>
                 <div v-html="skill"></div>
             </div>
         </div>

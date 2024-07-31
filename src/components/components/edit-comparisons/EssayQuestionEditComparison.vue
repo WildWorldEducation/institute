@@ -77,7 +77,7 @@ export default {
         <div class="row">
             <div class="col">
                 <h2>Change</h2>
-                <h3>Question</h3>
+                <h5>Question</h5>
                 <p>{{ essayQuestionEdit.question }}</p>
 
                 <h3>Comment</h3>
@@ -85,7 +85,7 @@ export default {
             </div>
             <div class="col">
                 <h2>Original</h2>
-                <h3>Question</h3>
+                <h5>Question</h5>
                 <p>{{ essayQuestion.question }}</p>
             </div>
         </div>

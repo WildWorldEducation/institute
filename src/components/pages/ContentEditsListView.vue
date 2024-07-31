@@ -62,6 +62,7 @@ export default {
                         data[i].date = this.formatDate(data[i].date);
                         data[i].userName = this.findUserName(data[i].user_id);
                         this.essayQuestionEdits.push(data[i]);
+                        console.log(this.essayQuestionEdits);
                     }
                 });
         },
@@ -122,7 +123,7 @@ export default {
                             '/comparison?type=skill'
                         "
                         >User: {{ skillEdit.userName }}, Skill:
-                        {{ skillEdit.content_id }}, Date:
+                        {{ skillEdit.skill_id }}, Date:
                         {{ skillEdit.date }}</router-link
                     >
                 </li>
@@ -139,7 +140,7 @@ export default {
                             '/comparison?type=mcquestion'
                         "
                         >User: {{ mcQuestionEdit.userName }}, Question:
-                        {{ mcQuestionEdit.content_id }}, Date:
+                        {{ mcQuestionEdit.mc_question_id }}, Date:
                         {{ mcQuestionEdit.date }}</router-link
                     >
                 </li>
@@ -156,7 +157,7 @@ export default {
                             '/comparison?type=essayquestion'
                         "
                         >User: {{ essayQuestionEdit.userName }}, Question:
-                        {{ essayQuestionEdit.content_id }}, Date:
+                        {{ essayQuestionEdit.essay_question_id }}, Date:
                         {{ essayQuestionEdit.date }}</router-link
                     >
                 </li>

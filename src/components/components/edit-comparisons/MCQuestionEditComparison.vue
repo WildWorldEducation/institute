@@ -62,7 +62,7 @@ export default {
             }
         },
         editMode() {
-            console.log('mc');
+            document.getElementById('content').removeAttribute('readonly');
         },
         saveEdit() {
             console.log('mc');
@@ -77,24 +77,43 @@ export default {
         <div class="row">
             <div class="col">
                 <h2>Change</h2>
-                <p>{{ mcQuestionEdit.question }}</p>
+                <h5>Question</h5>
+                <input
+                    class="form-control"
+                    type="text"
+                    v-model="mcQuestionEdit.question"
+                    readonly
+                />
+                <h5>Correct Answer</h5>
                 <p>{{ mcQuestionEdit.correct_answer }}</p>
+                <h5>Correct Incorrect Answer 1</h5>
                 <p>{{ mcQuestionEdit.incorrect_answer_1 }}</p>
+                <h5>Correct Incorrect Answer 2</h5>
                 <p>{{ mcQuestionEdit.incorrect_answer_2 }}</p>
+                <h5>Correct Incorrect Answer 3</h5>
                 <p>{{ mcQuestionEdit.incorrect_answer_3 }}</p>
+                <h5>Correct Incorrect Answer 4</h5>
                 <p>{{ mcQuestionEdit.incorrect_answer_4 }}</p>
+                <h5>Explanation</h5>
                 <p>{{ mcQuestionEdit.explanation }}</p>
                 <h3>Comment</h3>
                 <p>{{ comment }}</p>
             </div>
             <div class="col">
                 <h2>Original</h2>
+                <h5>Question</h5>
                 <p>{{ mcQuestion.question }}</p>
+                <h5>Correct Answer</h5>
                 <p>{{ mcQuestion.correct_answer }}</p>
+                <h5>Correct Incorrect Answer 1</h5>
                 <p>{{ mcQuestion.incorrect_answer_1 }}</p>
+                <h5>Correct Incorrect Answer 2</h5>
                 <p>{{ mcQuestion.incorrect_answer_2 }}</p>
+                <h5>Correct Incorrect Answer 3</h5>
                 <p>{{ mcQuestion.incorrect_answer_3 }}</p>
+                <h5>Correct Incorrect Answer 4</h5>
                 <p>{{ mcQuestion.incorrect_answer_4 }}</p>
+                <h5>Explanation</h5>
                 <p>{{ mcQuestion.explanation }}</p>
             </div>
         </div>
