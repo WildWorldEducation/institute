@@ -51,6 +51,7 @@ export default {
                     reason: this.reason
                 })
             };
+
             var url = '/content-flags/add';
             fetch(url, requestOptions).then((err) => {
                 this.showReasonPopup = false;

@@ -442,7 +442,7 @@ export default {
         },
         handleClickFlagIcon() {
             // because we have difference name use in content-flag table
-            if (this.question.questionType === 'mc') {
+            if (this.questions[this.questionNumber].questionType === 'mc') {
                 this.flagContentType = 'mc_question';
             } else {
                 this.flagContentType = 'essay_question';
