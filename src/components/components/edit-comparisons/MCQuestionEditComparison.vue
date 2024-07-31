@@ -7,12 +7,28 @@ export default {
             userId: this.$route.params.userId,
             mcQuestion: {},
             mcQuestionEdit: {},
-            comment: ''
+            comment: '',
+            isEditMode: false
         };
     },
     async created() {
         await this.getMCQuestionEdit();
         await this.getMCQuestion();
+
+        // Auto size text area to show all text without scroll bar.
+        const tx = document.getElementsByTagName('textarea');
+        for (let i = 0; i < tx.length; i++) {
+            tx[i].setAttribute(
+                'style',
+                'height:' + tx[i].scrollHeight + 'px;overflow-y:hidden;'
+            );
+            tx[i].addEventListener('input', OnInput, false);
+        }
+
+        function OnInput() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        }
     },
     methods: {
         async getMCQuestionEdit() {
@@ -61,8 +77,9 @@ export default {
                 this.$router.back();
             }
         },
-        editMode() {
-            document.getElementById('content').removeAttribute('readonly');
+        edit() {
+            this.isEditMode = true;
+         
         },
         saveEdit() {
             const requestOptions = {
@@ -114,26 +131,61 @@ export default {
             <div class="col">
                 <h2>Change</h2>
                 <h5>Question</h5>
-                <input
-                    class="form-control"
+                <textarea
+                    class="form-control mb-2"
                     type="text"
                     v-model="mcQuestionEdit.question"
-                    readonly
+                    :readonly="!isEditMode"
                 />
                 <h5>Correct Answer</h5>
-                <p>{{ mcQuestionEdit.correct_answer }}</p>
+                <textarea
+                    class="form-control mb-2"
+                    type="text"
+                    v-model="mcQuestionEdit.correct_answer"
+                    :readonly="!isEditMode"
+                />
                 <h5>Correct Incorrect Answer 1</h5>
-                <p>{{ mcQuestionEdit.incorrect_answer_1 }}</p>
+                <textarea
+                    class="form-control mb-2"
+                    type="text"
+                    v-model="mcQuestionEdit.incorrect_answer_1"
+                    :readonly="!isEditMode"
+                />
                 <h5>Correct Incorrect Answer 2</h5>
-                <p>{{ mcQuestionEdit.incorrect_answer_2 }}</p>
+                <textarea
+                    class="form-control mb-2"
+                    type="text"
+                    v-model="mcQuestionEdit.incorrect_answer_2"
+                    :readonly="!isEditMode"
+                />
                 <h5>Correct Incorrect Answer 3</h5>
-                <p>{{ mcQuestionEdit.incorrect_answer_3 }}</p>
+                <textarea
+                    class="form-control mb-2"
+                    type="text"
+                    v-model="mcQuestionEdit.incorrect_answer_3"
+                    :readonly="!isEditMode"
+                />
                 <h5>Correct Incorrect Answer 4</h5>
-                <p>{{ mcQuestionEdit.incorrect_answer_4 }}</p>
+                <textarea
+                    class="form-control mb-2"
+                    type="text"
+                    v-model="mcQuestionEdit.incorrect_answer_4"
+                    :readonly="!isEditMode"
+                />
                 <h5>Explanation</h5>
-                <p>{{ mcQuestionEdit.explanation }}</p>
+                <textarea
+                    class="form-control mb-2"
+                    type="text"
+                    v-model="mcQuestionEdit.explanation"
+                    :readonly="!isEditMode"
+                />
                 <h3>Comment</h3>
-                <p>{{ comment }}</p>
+                <textarea
+                    class="form-control mb-2"
+                    type="text"
+                    v-model="mcQuestionEdit.comment"
+                    :readonly="!isEditMode"
+                />
             </div>
             <div class="col">
                 <h2>Original</h2>

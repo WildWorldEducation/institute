@@ -7,7 +7,8 @@ export default {
             userId: this.$route.params.userId,
             essayQuestion: {},
             essayQuestionEdit: {},
-            comment: ''
+            comment: '',
+            isEditMode: false
         };
     },
     async created() {
@@ -77,7 +78,7 @@ export default {
             }
         },
         editMode() {
-            document.getElementById('content').removeAttribute('readonly');
+            this.isEditMode = true;
         },
         saveEdit() {
             const requestOptions = {
@@ -124,7 +125,7 @@ export default {
                 <h2>Change</h2>
                 <h5>Question</h5>
                 <textarea
-                    readonly
+                    :readonly="!isEditMode"
                     id="content"
                     class="form-control"
                     v-model="essayQuestionEdit.question"

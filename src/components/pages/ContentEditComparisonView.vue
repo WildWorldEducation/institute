@@ -35,7 +35,7 @@ export default {
             <button class="btn red-btn" @click="$refs.child.dismissEdit()">
                 Dismiss Edit
             </button>
-            <button class="btn purple-btn" @click="$refs.child.editMode()">
+            <button class="btn purple-btn" @click="$refs.child.edit()">
                 Edit
             </button>
             <button class="btn green-btn" @click="$refs.child.saveEdit()">
