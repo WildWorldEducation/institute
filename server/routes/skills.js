@@ -563,17 +563,13 @@ router.put(
 
                     let previousId = results[0].id;
                     let previousName = results[0].name;
-                    let previousParent = results[0].parent;
                     let previousDescription = results[0].description;
                     let previousIconImage = results[0].icon_image;
                     let previousBannerImage = results[0].banner_image;
                     let previousMasteryRequirements =
                         results[0].mastery_requirements;
-                    let previousType = results[0].type;
                     let previousLevel = results[0].level;
-                    let previousIsFiltered = results[0].is_filtered;
                     let previousOrder = results[0].order;
-                    let previousIsDeleted = results[0].is_deleted;
                     let versionNumber = results[0].version_number;
 
                     // Escape single quotes for SQL to accept.
@@ -621,7 +617,7 @@ router.put(
                                 req.params.id +
                                 `;`;
 
-                            conn.query(updateRecordSQLQuery, (err, results) => {
+                            conn.query(updateRecordSQLQuery, (err) => {
                                 try {
                                     if (err) {
                                         throw err;
