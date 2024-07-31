@@ -64,7 +64,6 @@ export default {
             document.getElementById('content').removeAttribute('readonly');
         },
         saveEdit() {
-            console.log(this.skillEdit);
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -80,6 +79,19 @@ export default {
             });
 
             // Delete it afterwards.
+            const result = fetch(
+                '/skills/submitted-for-review/' +
+                    this.skillId +
+                    '/' +
+                    this.userId,
+                {
+                    method: 'DELETE'
+                }
+            );
+
+            if (result.error) {
+                console.log(result.error);
+            }
         }
     }
 };
