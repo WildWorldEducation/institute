@@ -378,7 +378,7 @@ export default {
             this.flagPost = postId;
             this.showFlaggingModal = true;
             this.showActionBtns = false;
-            this.flagType = postType === 'tutor' ? 'tutor_post' : postType;
+            this.flagType = postType === 'tutor' ? 'tutor_post' : 'resource';
         },
         handleClickActionBtns(postId) {
             this.showActionBtns = !this.showActionBtns;
