@@ -13,6 +13,21 @@ export default {
     async created() {
         await this.getEssayQuestionEdit();
         await this.getEssayQuestion();
+
+        // Auto size text area to show all text without scroll bar.
+        const tx = document.getElementsByTagName('textarea');
+        for (let i = 0; i < tx.length; i++) {
+            tx[i].setAttribute(
+                'style',
+                'height:' + tx[i].scrollHeight + 'px;overflow-y:hidden;'
+            );
+            tx[i].addEventListener('input', OnInput, false);
+        }
+
+        function OnInput() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        }
     },
     methods: {
         async getEssayQuestionEdit() {
@@ -62,7 +77,7 @@ export default {
             }
         },
         editMode() {
-            console.log('essay');
+            document.getElementById('content').removeAttribute('readonly');
         },
         saveEdit() {
             const requestOptions = {
@@ -108,7 +123,13 @@ export default {
             <div class="col">
                 <h2>Change</h2>
                 <h5>Question</h5>
-                <p>{{ essayQuestionEdit.question }}</p>
+                <textarea
+                    readonly
+                    id="content"
+                    class="form-control"
+                    v-model="essayQuestionEdit.question"
+                >
+                </textarea>
 
                 <h3>Comment</h3>
                 <p>{{ comment }}</p>
