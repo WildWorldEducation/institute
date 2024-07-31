@@ -65,7 +65,43 @@ export default {
             document.getElementById('content').removeAttribute('readonly');
         },
         saveEdit() {
-            console.log('mc');
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: this.mcQuestionEdit.name,
+                    question: this.mcQuestionEdit.question,
+                    correct_answer: this.mcQuestionEdit.correct_answer,
+                    incorrect_answer_1: this.mcQuestionEdit.incorrect_answer_1,
+                    incorrect_answer_2: this.mcQuestionEdit.incorrect_answer_2,
+                    incorrect_answer_3: this.mcQuestionEdit.incorrect_answer_3,
+                    incorrect_answer_4: this.mcQuestionEdit.incorrect_answer_4,
+                    correct_answer: this.mcQuestionEdit.correct_answer,
+                    explanation: this.mcQuestionEdit.explanation
+                })
+            };
+
+            var url =
+                '/questions/mc/' + this.mcQuestionEdit.mc_question_id + '/edit';
+
+            fetch(url, requestOptions).then(() => {
+                this.$router.back();
+            });
+
+            // Then delete.
+            const result = fetch(
+                '/questions/mc/submitted-for-review/' +
+                    this.mcQuestionId +
+                    '/' +
+                    this.userId,
+                {
+                    method: 'DELETE'
+                }
+            );
+
+            if (result.error) {
+                console.log(result.error);
+            }
         }
     }
 };

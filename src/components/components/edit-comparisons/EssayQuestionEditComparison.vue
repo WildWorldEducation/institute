@@ -65,7 +65,37 @@ export default {
             console.log('essay');
         },
         saveEdit() {
-            console.log('essay');
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: this.essayQuestionEdit.name,
+                    question: this.essayQuestionEdit.question
+                })
+            };
+
+            var url =
+                '/questions/essay/' +
+                this.essayQuestionEdit.essay_question_id +
+                '/edit';
+            fetch(url, requestOptions).then(() => {
+                this.$router.back();
+            });
+
+            // Delete it afterwards.
+            const result = fetch(
+                '/questions/essay/submitted-for-review/' +
+                    this.essayQuestionEdit.essay_question_id +
+                    '/' +
+                    this.userId,
+                {
+                    method: 'DELETE'
+                }
+            );
+
+            if (result.error) {
+                console.log(result.error);
+            }
         }
     }
 };
