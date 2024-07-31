@@ -394,7 +394,7 @@ export default {
             this.source = source;
             this.showModal = true;
         },
-        deletePost(source) {
+        deletePost(content) {
             // Close the modal.
             this.showModal = false;
 
@@ -411,18 +411,18 @@ export default {
             };
 
             // Delete record from DB
-            switch (source.type) {
+            switch (content.type) {
                 case 'tutor post':
-                    deleteRequest('/tutor-posts/delete/' + source.contentId);
+                    deleteRequest('/tutor-posts/delete/' + content.contentId);
                     break;
-                case 'resource':
-                    deleteRequest('/resources/delete/' + source.contentId);
+                case 'source':
+                    deleteRequest('/resources/delete/' + content.contentId);
                     break;
                 case 'mc question':
-                    deleteRequest('/questions/mc/' + source.contentId);
+                    deleteRequest('/questions/mc/' + content.contentId);
                     break;
                 case 'essay question':
-                    deleteRequest('/questions/essay/' + source.contentId);
+                    deleteRequest('/questions/essay/' + content.contentId);
                     break;
                 default:
                     break;
@@ -430,7 +430,7 @@ export default {
 
             // Remove the element from the array
             this.rows = this.rows.filter(
-                (element) => element.contentId !== source.contentId
+                (element) => element.contentId !== content.contentId
             );
         }
     },
@@ -577,7 +577,7 @@ export default {
                                 type === 'tutor post' ||
                                 type === 'mc question' ||
                                 type === 'essay question' ||
-                                type === 'resource'
+                                type === 'source'
                             "
                             b-tooltip.hover
                             :title="'Delete This Content'"
