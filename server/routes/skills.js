@@ -543,6 +543,8 @@ router.put(
             if (req.body.mastery_requirements != null)
                 req.body.mastery_requirements =
                     req.body.mastery_requirements.replace(/'/g, "\\'");
+            if (req.body.comment != null)
+                req.body.comment = req.body.comment.replace(/'/g, "\\'");
 
             // Add old record to the skills_versions table.
             // insert the above into the skills_version table,
@@ -583,7 +585,7 @@ router.put(
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
                     (id, version_number, user_id, name, description, icon_image, banner_image,
-                    mastery_requirements, level, skill_history.order)
+                    mastery_requirements, level, skill_history.order, comment)
                     VALUES
                     (${previousId},
                     ${versionNumber},
@@ -594,7 +596,8 @@ router.put(
                     '${previousBannerImage}',
                     '${req.body.mastery_requirements}',                    
                     '${previousLevel}',                    
-                    ${previousOrder});`;
+                    ${previousOrder},
+                    '${req.body.comment}');`;
 
                     conn.query(addVersionHistoryInsertSQLQuery, (err) => {
                         try {

@@ -77,11 +77,16 @@ export default {
                 .attr('contenteditable', true);
         },
         saveEdit() {
+            // Update this content, in case it has been changed.
+            this.skillEdit.mastery_requirements =
+                $('#summernote').summernote('code');
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    mastery_requirements: this.skillEdit.mastery_requirements
+                    mastery_requirements: this.skillEdit.mastery_requirements,
+                    comment: this.comment
                 })
             };
 
@@ -123,7 +128,7 @@ export default {
                     id="summernote"
                     rows="3"
                 ></textarea>
-                <h3>Comment</h3>
+                <h3 class="mt-2">Comment</h3>
                 <p>{{ comment }}</p>
             </div>
             <div class="col">
