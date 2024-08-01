@@ -531,6 +531,7 @@ export default {
     background-color: rgba(255, 255, 255, 0.692);
     border-radius: 5px;
     width: 98%;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 #hr-parent {
