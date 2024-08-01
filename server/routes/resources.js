@@ -664,7 +664,6 @@ router.get('/list-blocked-domains', (req, res, next) => {
  *
  */
 router.delete('/unblock-domain/:domainId', (req, res, next) => {
-    console.log('test');
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
