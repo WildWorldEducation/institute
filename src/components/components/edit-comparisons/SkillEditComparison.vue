@@ -13,6 +13,17 @@ export default {
     async created() {
         await this.getSkillEdit();
         await this.getSkill();
+
+        // Render the Summernote content.
+        $('#summernote').summernote(
+            'code',
+            this.skillEdit.mastery_requirements
+        );
+        // Disable editing.
+        $('#summernote')
+            .next()
+            .find('.note-editable')
+            .attr('contenteditable', false);
     },
     methods: {
         async getSkillEdit() {
@@ -37,7 +48,6 @@ export default {
                 })
                 .then((data) => {
                     this.skill = data.mastery_requirements;
-                    console.log(this.skill);
                 });
         },
         dismissEdit() {
@@ -60,8 +70,11 @@ export default {
                 this.$router.back();
             }
         },
-        editMode() {
-            document.getElementById('content').removeAttribute('readonly');
+        edit() {
+            $('#summernote')
+                .next()
+                .find('.note-editable')
+                .attr('contenteditable', true);
         },
         saveEdit() {
             const requestOptions = {
@@ -105,10 +118,10 @@ export default {
                 <h2>Change</h2>
                 <h5>Mastery Requirements</h5>
                 <textarea
-                    id="content"
                     class="form-control"
-                    readonly
-                    v-html="skillEdit.mastery_requirements"
+                    v-model="skillEdit.mastery_requirements"
+                    id="summernote"
+                    rows="3"
                 ></textarea>
                 <h3>Comment</h3>
                 <p>{{ comment }}</p>
