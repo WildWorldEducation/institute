@@ -9,7 +9,7 @@ import ForumTutorPost from './ForumTutorPost.vue';
 export default {
     setup() {
         // I think because store is in separate component so we will setup it in child
-        // instead of passing the store as prob
+        // instead of passing the store as prop.
         const userDetailsStore = useUserDetailsStore();
         return {
             userDetailsStore
