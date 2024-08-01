@@ -76,8 +76,7 @@ const router = createRouter({
         {
             path: '/skills/edit/:id',
             name: 'edit-skill',
-            component: () => import('../components/pages/EditSkillView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            component: () => import('../components/pages/EditSkillView.vue')
         },
         {
             path: '/skills/history/:id',
@@ -242,6 +241,18 @@ const router = createRouter({
             path: '/tutor/edit/:tutorPostId',
             name: 'edit-tutor',
             component: () => import('../components/pages/EditTutorPostView.vue')
+        },
+        {
+            path: '/content-edits',
+            name: 'content-edits',
+            component: () =>
+                import('../components/pages/ContentEditsListView.vue')
+        },
+        {
+            path: '/content-edit/:contentId/:userId/comparison',
+            name: 'content-edit-comparison',
+            component: () =>
+                import('../components/pages/ContentEditComparisonView.vue')
         }
     ]
 });
