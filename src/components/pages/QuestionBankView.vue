@@ -1,12 +1,15 @@
 <script>
 import QuestionsBankQuestionList from '../components/QuestionsBankQuestionList.vue';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
-            skillsStore
+            skillsStore,
+            userDetailsStore
         };
     },
     data() {
@@ -42,6 +45,10 @@ export default {
     <div class="row px-2 px-lg-2" id="purple-banner">
         <div class="col d-flex justify-content-between">
             <router-link
+                v-if="
+                    userDetailsStore.role == 'admin' ||
+                    userDetailsStore.role == 'editor'
+                "
                 class="purple-btn btn"
                 :to="'/skills/' + skillId + '/question-bank/add'"
             >
@@ -60,6 +67,7 @@ export default {
                     />
                 </svg>
             </router-link>
+            <div v-else></div>
             <div class="d-flex justify-content-between">
                 <a class="btn red-btn" @click="$router.go(-1)"
                     >Exit&ThickSpace;
