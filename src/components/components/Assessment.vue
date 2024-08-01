@@ -442,7 +442,7 @@ export default {
         },
         handleClickFlagIcon() {
             // because we have difference name use in content-flag table
-            if (this.question.questionType === 'mc') {
+            if (this.questions[this.questionNumber].questionType === 'mc') {
                 this.flagContentType = 'mc_question';
             } else {
                 this.flagContentType = 'essay_question';
@@ -630,7 +630,7 @@ export default {
     <FlagModals
         v-if="showFlaggingModal"
         :userId="userDetailsStore.userId"
-        :contentId="question.id"
+        :contentId="questions[questionNumber].id"
         :contentType="flagContentType"
     />
     <div v-if="needToSelectInstructor" class="modal">

@@ -19,10 +19,12 @@ export default {
         return {
             skillId: this.$route.params.skillId,
             versionNumber: this.$route.params.versionNumber,
-            skillRevision: {}
+            skillRevision: {},
+            currentVersionNumber: null,
+            isCurrentVersion: false
         };
     },
-    async created() {
+    async mounted() {
         // Get list of skills.
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList();
@@ -31,15 +33,28 @@ export default {
         if (this.usersStore.users.length == 0) {
             await this.usersStore.getUsers();
         }
-        await this.getSkillVersion();
+        await this.getSkill();
     },
     methods: {
+        async getSkill() {
+            // Load the skill data
+            const res = await fetch('/skills/show/' + this.skillId);
+            this.skill = await res.json();
+            this.currentVersionNumber = this.skill.version_number;
+            await this.getSkillVersion();
+        },
         async getSkillVersion() {
             let url =
                 '/skill-history/' + this.skillId + '/' + this.versionNumber;
 
             const res = await fetch(url);
             this.skillRevision = await res.json();
+
+            if (
+                this.skillRevision.version_number == this.currentVersionNumber
+            ) {
+                this.isCurrentVersion = true;
+            }
 
             // Get name of parent.
             for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
@@ -86,8 +101,30 @@ export default {
                 'en-US',
                 options
             );
-
-            // -----------------------
+        },
+        revert() {
+            if (
+                confirm(
+                    'Are you sure you want to revert the skill to this version?'
+                )
+            ) {
+                let comment = prompt('Please add a comment to explain.', '');
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        comment: comment
+                    })
+                };
+                var url =
+                    '/skill-history/' +
+                    this.skillId +
+                    '/revert-to/' +
+                    this.versionNumber;
+                fetch(url, requestOptions).then(() => {
+                    this.$router.push('/skills/' + this.skillId);
+                });
+            }
         }
     }
 };
@@ -97,10 +134,7 @@ export default {
     <div class="position-relative d-flex">
         <div class="container show-skill-ctnr">
             <div class="container mt-3">
-                <div
-                    id="skill-info-container"
-                    :class="{ domain: skillRevision.type == 'domain' }"
-                >
+                <div id="skill-info-container">
                     <!-- Skill Info -->
                     <div class="d-flex flex-column gap-2">
                         <!-- Skill image -->
@@ -135,10 +169,15 @@ export default {
                                         d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480L40 480c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
                                     />
                                 </svg>
-                                <span class="ms-2">
+                                <span v-if="!isCurrentVersion" class="ms-2">
                                     This is an old revision of this page, as
                                     edited by {{ skillRevision.userName }}, at
                                     {{ skillRevision.date }}.
+                                </span>
+                                <span v-else class="ms-2">
+                                    This is the current revision of this page,
+                                    as edited by {{ skillRevision.userName }},
+                                    at {{ skillRevision.date }}.
                                 </span>
                             </div>
                             <!-- Description only seen by admins -->
@@ -150,7 +189,7 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <div v-if="skillRevision.type != 'domain'">
+                    <div>
                         <!-- A line divide -->
                         <div class="row">
                             <div class="col col-md-8 p-4 p-md-0">
@@ -160,20 +199,7 @@ export default {
                                 />
                             </div>
                         </div>
-                        <!-- Type -->
-                        <div class="mt-3 d-flex flex-column">
-                            <div class="h1-title">Type</div>
-                            <div class="mastery-requirements">
-                                <div v-html="skillRevision.type"></div>
-                            </div>
-                        </div>
-                        <!-- Parent -->
-                        <div class="mt-3 d-flex flex-column">
-                            <div class="h1-title">Parent</div>
-                            <div class="mastery-requirements">
-                                <div v-html="skillRevision.parentName"></div>
-                            </div>
-                        </div>
+
                         <!-- Mastery Requirements -->
                         <div class="mt-3 d-flex flex-column">
                             <div class="h1-title">Mastery Requirements</div>
@@ -185,7 +211,17 @@ export default {
                         </div>
                     </div>
                 </div>
-
+                <button
+                    v-if="
+                        !isCurrentVersion &&
+                        (userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'editor')
+                    "
+                    class="btn purple-btn mt-2"
+                    @click="revert()"
+                >
+                    Revert to this version
+                </button>
                 <p>&nbsp;</p>
             </div>
         </div>

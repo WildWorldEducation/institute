@@ -94,7 +94,8 @@ export default {
             step1Confirm: false,
             skillNameConfirm: '',
             step2Confirm: false,
-            orderArray: Array.from({ length: 20 }, (_, i) => i + 1)
+            orderArray: Array.from({ length: 20 }, (_, i) => i + 1),
+            comment: ''
         };
     },
     async mounted() {
@@ -314,7 +315,9 @@ export default {
                     mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
                     level: this.skill.level,
-                    order: this.skill.order
+                    order: this.skill.order,
+                    version_number: this.skill.version_number,
+                    comment: this.comment
                 })
             };
 
@@ -905,6 +908,31 @@ export default {
                     </div>
                 </div>
                 <!-- End of custom dropdown -->
+            </div>
+        </div>
+
+        <!-- Comment -->
+        <div class="row">
+            <div class="col">
+                <div class="mb-3">
+                    <label for="description" class="form-label">Comment</label>
+                    <textarea
+                        v-model="comment"
+                        class="form-control"
+                        rows="2"
+                    ></textarea>
+                </div>
+                <!-- Reason validate message -->
+                <div
+                    v-if="comment.length > 255"
+                    :class="[
+                        shake
+                            ? 'click-shake form-validate'
+                            : 'form-validate initial-shake'
+                    ]"
+                >
+                    Your comment has too many words !!
+                </div>
             </div>
         </div>
 

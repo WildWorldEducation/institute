@@ -12,14 +12,13 @@ export default {
         return {
             skillId: this.$route.params.id,
             skill: {},
-            skillRevisions: []
+            skillRevisions: [],
+            currentVersionNumber: null
         };
     },
     async created() {
-        await this.getSkill();
-        // Set up the first user in the array to be selected on the page initially.
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
-        await this.getRevisions();
+        await this.getSkill();
     },
     async mounted() {},
     methods: {
@@ -27,6 +26,8 @@ export default {
             // Load the skill data
             const res = await fetch('/skills/show/' + this.skillId);
             this.skill = await res.json();
+            this.currentVersionNumber = this.skill.version_number;
+            await this.getRevisions();
         },
         async getRevisions() {
             // Load the skill data
@@ -69,6 +70,13 @@ export default {
                 );
                 this.skillRevisions[i].username = user.username;
                 //-------------
+                this.skillRevisions[i].isCurrentRevision = false;
+                if (
+                    this.skillRevisions[i].version_number ==
+                    this.currentVersionNumber
+                ) {
+                    this.skillRevisions[i].isCurrentRevision = true;
+                }
             }
         }
     }
@@ -88,7 +96,10 @@ export default {
                         revision.version_number
                     "
                     >{{ revision.edited_date }}</router-link
-                >, {{ revision.username }}
+                >, {{ revision.username }}, {{ revision.comment
+                }}<span v-show="revision.isCurrentRevision"
+                    >, (current revision)</span
+                >
             </li>
         </ul>
     </div>
