@@ -62,7 +62,7 @@ router.get('/list', async (req, res, next) => {
                             if (err) {
                                 throw err;
                             }
-
+                            // Get Data for tutor post flag
                             resData = resData.concat(results);
                             let sqlTutorQuerry = `SELECT 
                                 content_flags.*, 
