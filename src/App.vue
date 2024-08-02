@@ -59,7 +59,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/todo-list" class="nav-link"
+                            <RouterLink to="/todo" class="nav-link"
                                 >Todo List</RouterLink
                             >
                         </li>
