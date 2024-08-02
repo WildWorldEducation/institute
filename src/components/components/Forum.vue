@@ -31,7 +31,8 @@ export default {
             flagType: '',
             showActionBtns: false,
             currentClickId: '',
-            source: null
+            source: null,
+            activeTab: 'resource'
         };
     },
     components: {
@@ -242,14 +243,54 @@ export default {
         },
         closeWarningModal() {
             this.showModal = false;
+        },
+        handleTabClick(tabName) {
+            switch (tabName) {
+                case 'tutorPost':
+                    this.activeTab = 'tutorPost';
+                    break;
+                default:
+                    this.activeTab = 'resource';
+                    break;
+            }
         }
     }
 };
 </script>
 
 <template>
-    <div class="container-fluid">
-        <div class="d-flex flex-column flex-md-row justify-content-between">
+    <div class="container-fluid mt-4">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs border-3">
+            <li
+                class="nav-item"
+                b-on-hover
+                title="List of Resources for this skill"
+                @click="handleTabClick('resource')"
+            >
+                <div
+                    :class="['nav-link', activeTab === 'resource' && 'active']"
+                >
+                    Resources
+                </div>
+            </li>
+            <li
+                class="nav-item"
+                b-on-hover
+                title="List of tutor proposal for this skill"
+                @click="handleTabClick('tutorPost')"
+            >
+                <div
+                    :class="['nav-link', activeTab === 'tutorPost' && 'active']"
+                >
+                    Tutor Posts
+                </div>
+            </li>
+        </ul>
+
+        <div
+            class="d-flex flex-column flex-md-row justify-content-between mt-4"
+        >
             <div class="d-flex align-items-md-baseline align-items-start gap-2">
                 <h2>Best Places To Learn This</h2>
                 <img src="/images/recurso-69.png" class="" />
@@ -299,34 +340,16 @@ export default {
         </div>
         <!-- ---- | Post List In This Forum | ---- -->
         <div id="posts-big-container">
-            <ForumResource :resourcePosts="sourcePosts" :user="user" />
-            <ForumTutorPost :tutorPosts="tutorPosts" :user="user" />
-        </div>
-        <!-------------------------------------------------------------------------------------------->
-        <!-- The Delete Warn Modal -->
-        <div v-if="showModal">
-            <div id="myModal" class="modal">
-                <!-- Modal content -->
-                <div class="modal-content">
-                    <p>Are you sure you want to delete the source?</p>
-                    <div style="display: flex; gap: 10px">
-                        <button
-                            type="button"
-                            class="btn btn-danger"
-                            @click="deletePost(this.source)"
-                        >
-                            Yes
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-dark"
-                            @click="showModal = false"
-                        >
-                            No
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <ForumResource
+                v-if="activeTab === 'resource'"
+                :resourcePosts="sourcePosts"
+                :user="user"
+            />
+            <ForumTutorPost
+                v-if="activeTab === 'tutorPost'"
+                :tutorPosts="tutorPosts"
+                :user="user"
+            />
         </div>
     </div>
     <!-- Flagging Component -->
@@ -339,6 +362,26 @@ export default {
 </template>
 
 <style>
+.nav-tabs {
+    --bs-nav-tabs-border-width: 2px;
+    --bs-nav-tabs-border-color: #aea3ce;
+    --bs-nav-tabs-link-active-border-color: #aea3ce #aea3ce #fff;
+    --bs-nav-tabs-link-active-color: #8f7bd6;
+    --bs-nav-link-hover-color: #8f7bd6;
+    --bs-nav-link-color: #888
+    font-weight: 550;
+    cursor: pointer;
+}
+
+.active {
+    cursor: help;
+}
+
+.nav-link {
+    color: #888;
+    font-weight: 550;
+}
+
 .red-btn {
     background-color: #e24d4d;
     color: white;
@@ -511,13 +554,6 @@ h2 {
     width: 25%;
 }
 /* End of Warning modal styling */
-
-.post-user-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 5px;
-}
 
 #header-col {
     display: flex;

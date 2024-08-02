@@ -385,6 +385,12 @@ export default {
     background-color: #f2edff;
 }
 
+.post-user-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 5px;
+}
 /* Mobile */
 @media (max-width: 480px) {
     .user-avatar {
