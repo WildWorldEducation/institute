@@ -479,7 +479,7 @@ router.put(
 );
 
 /**
- * Submit skill mastery requirements for review.
+ * Submit skill edit for review.
  *
  * @return response()
  */
@@ -494,12 +494,12 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
             req.body.comment = req.body.comment.replace(/'/g, "\\'");
 
         // Add data.
-        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, comment)
-         VALUES (${req.params.id}, ${req.body.userId}, '${req.body.mastery_requirements}', 
+        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, banner_image, comment)
+         VALUES (${req.params.id}, ${req.body.userId}, '${req.body.mastery_requirements}', '${req.body.icon_image}', '${req.body.banner_image}', 
          '${req.body.comment}')
          
          ON DUPLICATE KEY
-         UPDATE mastery_requirements = '${req.body.mastery_requirements}', date = CURRENT_TIMESTAMP(), comment = '${req.body.comment}';`;
+         UPDATE mastery_requirements = '${req.body.mastery_requirements}', date = CURRENT_TIMESTAMP(), icon_image = '${req.body.icon_image}', banner_image = '${req.body.banner_image}', comment = '${req.body.comment}';`;
 
         // Update record in skill table.
 
