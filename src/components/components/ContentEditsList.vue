@@ -108,68 +108,57 @@ export default {
 </script>
 
 <template>
-    <div class="container">
-        <div class="mt-4 mb-4">
-            <h1 class="page-title">List of edits</h1>
-            <h2>Skills</h2>
-            <ul>
-                <li v-for="skillEdit in skillEdits">
-                    <router-link
-                        :to="
-                            '/content-edit/' +
-                            skillEdit.skill_id +
-                            '/' +
-                            skillEdit.user_id +
-                            '/comparison?type=skill'
-                        "
-                        >User: {{ skillEdit.userName }}, Skill:
-                        {{ skillEdit.skill_id }}, Date:
-                        {{ skillEdit.date }}</router-link
-                    >
-                </li>
-            </ul>
-            <h2>Multiple Choice Questions</h2>
-            <ul>
-                <li v-for="mcQuestionEdit in mcQuestionEdits">
-                    <router-link
-                        :to="
-                            '/content-edit/' +
-                            mcQuestionEdit.mc_question_id +
-                            '/' +
-                            mcQuestionEdit.user_id +
-                            '/comparison?type=mcquestion'
-                        "
-                        >User: {{ mcQuestionEdit.userName }}, Question:
-                        {{ mcQuestionEdit.mc_question_id }}, Date:
-                        {{ mcQuestionEdit.date }}</router-link
-                    >
-                </li>
-            </ul>
-            <h2>Written Questions</h2>
-            <ul>
-                <li v-for="essayQuestionEdit in essayQuestionEdits">
-                    <router-link
-                        :to="
-                            '/content-edit/' +
-                            essayQuestionEdit.essay_question_id +
-                            '/' +
-                            essayQuestionEdit.user_id +
-                            '/comparison?type=essayquestion'
-                        "
-                        >User: {{ essayQuestionEdit.userName }}, Question:
-                        {{ essayQuestionEdit.essay_question_id }}, Date:
-                        {{ essayQuestionEdit.date }}</router-link
-                    >
-                </li>
-            </ul>
-        </div>
-    </div>
+    <h3>Skills</h3>
+    <ul>
+        <li v-for="skillEdit in skillEdits">
+            <router-link
+                :to="
+                    '/content-edit/' +
+                    skillEdit.skill_id +
+                    '/' +
+                    skillEdit.user_id +
+                    '/comparison?type=skill'
+                "
+                >User: {{ skillEdit.userName }}, Skill:
+                {{ skillEdit.skill_id }}, Date:
+                {{ skillEdit.date }}</router-link
+            >
+        </li>
+    </ul>
+    <h3>Multiple Choice Questions</h3>
+    <ul>
+        <li v-for="mcQuestionEdit in mcQuestionEdits">
+            <router-link
+                :to="
+                    '/content-edit/' +
+                    mcQuestionEdit.mc_question_id +
+                    '/' +
+                    mcQuestionEdit.user_id +
+                    '/comparison?type=mcquestion'
+                "
+                >User: {{ mcQuestionEdit.userName }}, Question:
+                {{ mcQuestionEdit.mc_question_id }}, Date:
+                {{ mcQuestionEdit.date }}</router-link
+            >
+        </li>
+    </ul>
+    <h3>Written Questions</h3>
+    <ul>
+        <li v-for="essayQuestionEdit in essayQuestionEdits">
+            <router-link
+                :to="
+                    '/content-edit/' +
+                    essayQuestionEdit.essay_question_id +
+                    '/' +
+                    essayQuestionEdit.user_id +
+                    '/comparison?type=essayquestion'
+                "
+                >User: {{ essayQuestionEdit.userName }}, Question:
+                {{ essayQuestionEdit.essay_question_id }}, Date:
+                {{ essayQuestionEdit.date }}</router-link
+            >
+        </li>
+    </ul>
 </template>
 
-<style>
-.page-title {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-}
-</style>
+<style></style>

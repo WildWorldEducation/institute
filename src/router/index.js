@@ -243,12 +243,6 @@ const router = createRouter({
             component: () => import('../components/pages/EditTutorPostView.vue')
         },
         {
-            path: '/content-edits',
-            name: 'content-edits',
-            component: () =>
-                import('../components/pages/ContentEditsListView.vue')
-        },
-        {
             path: '/content-edit/:contentId/:userId/comparison',
             name: 'content-edit-comparison',
             component: () =>
