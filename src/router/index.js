@@ -253,6 +253,11 @@ const router = createRouter({
             name: 'content-edit-comparison',
             component: () =>
                 import('../components/pages/ContentEditComparisonView.vue')
+        },
+        {
+            path: '/todo',
+            name: 'todo-list',
+            component: () => import('../components/pages/TodoListView.vue')
         }
     ]
 });
