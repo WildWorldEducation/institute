@@ -922,7 +922,7 @@ router.get('/check-questions', (req, res, next) => {
     }
 });
 
-// Get source from ChatGPT.
+// Using ChatGPT.
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 // Include API key.
