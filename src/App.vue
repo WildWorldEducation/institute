@@ -52,6 +52,17 @@ export default {
                             <!-- ".native is used because Vue doesnt really allow for click handlers for routerlinks" -->
                             <RouterLink to="/" class="nav-link">Hub</RouterLink>
                         </li>
+                        <li
+                            v-if="
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink to="/todo-list" class="nav-link"
+                                >Todo List</RouterLink
+                            >
+                        </li>
                         <li class="nav-item">
                             <RouterLink to="/skills" class="nav-link">
                                 <span>Collapsible Tree</span>
