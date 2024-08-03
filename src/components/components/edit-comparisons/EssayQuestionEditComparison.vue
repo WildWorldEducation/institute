@@ -86,14 +86,15 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: this.essayQuestionEdit.name,
-                    question: this.essayQuestionEdit.question
+                    question: this.essayQuestionEdit.question,
+                    edit: this.isEditMode
                 })
             };
 
             var url =
                 '/questions/essay/' +
                 this.essayQuestionEdit.essay_question_id +
-                '/edit';
+                '/approve-edits';
             fetch(url, requestOptions).then(() => {
                 this.$router.back();
             });

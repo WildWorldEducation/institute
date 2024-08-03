@@ -7,7 +7,8 @@ export default {
             userId: this.$route.params.userId,
             skill: {},
             skillEdit: {},
-            comment: ''
+            comment: '',
+            isEditMode: false
         };
     },
     async created() {
@@ -75,6 +76,7 @@ export default {
                 .next()
                 .find('.note-editable')
                 .attr('contenteditable', true);
+            this.isEditMode = true;
         },
         saveEdit() {
             // Update this content, in case it has been changed.
@@ -86,7 +88,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     mastery_requirements: this.skillEdit.mastery_requirements,
-                    comment: this.comment
+                    comment: this.comment,
+                    edit: this.isEditMode
                 })
             };
 
