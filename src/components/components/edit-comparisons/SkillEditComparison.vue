@@ -40,6 +40,8 @@ export default {
                     this.skillEdit = data;
                     this.comment = data.comment;
                 });
+
+            console.log(this.skillEdit);
         },
         async getSkill() {
             await fetch('/skills/show/' + this.skillId)
@@ -121,19 +123,57 @@ export default {
         <div class="row">
             <div class="col">
                 <h2>Change</h2>
-                <h5>Mastery Requirements</h5>
+                <h5>Icon</h5>
+                <div id="skill-image">
+                    <img
+                        v-if="skillEdit.icon_image"
+                        :src="skillEdit.icon_image"
+                        class="skill-icon border border-dark rounded"
+                    />
+                    <p v-else>No icon</p>
+                </div>
+                <h5 class="mt-3">Banner</h5>
+                <div>
+                    <img
+                        v-if="skillEdit.banner_image"
+                        :src="skillEdit.banner_image"
+                        class="skill-banner border border-dark rounded"
+                    />
+                    <p v-else>No banner</p>
+                </div>
+                <h5 class="mt-3">Mastery Requirements</h5>
                 <textarea
                     class="form-control"
                     v-model="skillEdit.mastery_requirements"
                     id="summernote"
                     rows="3"
                 ></textarea>
-                <h3 class="mt-2">Comment</h3>
+                <h3 class="mt-3">Comment</h3>
                 <p>{{ comment }}</p>
             </div>
             <div class="col">
                 <h2>Original</h2>
-                <h5>Mastery Requirements</h5>
+                <h5>Icon</h5>
+                <div id="skill-image">
+                    <!-- Show a default skill avatar if skill not have image yet -->
+                    <img
+                        v-if="skill.icon_image"
+                        :src="skill.icon_image"
+                        class="skill-icon border border-dark rounded"
+                    />
+                    <p v-else>No icon</p>
+                </div>
+                <h5 class="mt-3">Banner</h5>
+                <div id="skill-image">
+                    <!-- Show a default skill avatar if skill not have image yet -->
+                    <img
+                        v-if="skill.banner"
+                        :src="skill.banner"
+                        class="border border-dark rounded"
+                    />
+                    <p v-else>No banner</p>
+                </div>
+                <h5 class="mt-3">Mastery Requirements</h5>
                 <div v-html="skill"></div>
             </div>
         </div>
@@ -145,5 +185,35 @@ export default {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
+}
+
+.skill-icon {
+    width: fit-content;
+    height: auto;
+}
+
+.skill-banner {
+    width: fit-content;
+    height: auto;
+}
+
+#skill-image {
+    max-width: 600px;
+}
+
+/* Specific phone view css */
+@media (max-width: 576px) {
+    img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+    }
+
+    #skill-image {
+        width: 75%;
+        height: auto;
+        margin: auto;
+    }
 }
 </style>
