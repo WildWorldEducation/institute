@@ -299,6 +299,7 @@ export default {
             v-if="activeTab === 'tutorPost'"
             :tutorPosts="tutorPosts"
             :user="user"
+            :skillId="skillId"
         />
     </div>
     <!-- Flagging Component -->

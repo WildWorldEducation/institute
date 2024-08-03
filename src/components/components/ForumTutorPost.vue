@@ -1,11 +1,12 @@
 <script>
 export default {
-    props: [`tutorPosts`, 'user'],
+    props: [`tutorPosts`, 'user', 'skillId'],
     data() {
         return {
             showActionBtns: false,
             currentClickId: 0,
-            isAlreadyTutoring: this.$parent.isAlreadyTutoring
+            isAlreadyTutoring: this.$parent.isAlreadyTutoring,
+            showCoverLetter: false
         };
     },
     mounted() {
@@ -187,16 +188,33 @@ export default {
                     alt="user avatar"
                 />
             </div>
-            <div class="d-flex flex-column">
-                <div class="tutor-user-name text-capitalize">
-                    {{ post.studentName }}
+            <div class="d-flex flex-column w-100">
+                <div class="d-flex flex-row justify-content-between">
+                    <div class="tutor-user-name text-capitalize">
+                        {{ post.studentName }}
+                    </div>
+                    <div>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 448 512"
+                        >
+                            <path
+                                d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <div class="user-email">
+                    <div>
+                        {{ post.email }}
+                    </div>
                 </div>
                 <!-- First row of post contain proposal content -->
-                <div class="forum-post d-flex tutor-post">
-                    <div>
-                        <p>{{ post.description }}</p>
-                        <p>{{ post.email }}</p>
-                    </div>
+                <div class="d-flex mt-4 tutor-post">
+                    <p class="tutor-post-content">
+                        <span class="cover-letter-word">cover letter - </span
+                        >{{ post.description }}
+                    </p>
                 </div>
                 <!-- Second row of post contain likes count and relate buttons -->
                 <div class="d-flex align-items-center justify-content-end mt-3">
@@ -209,7 +227,7 @@ export default {
                                     voteUp(post.id, post.userUpVote, post.type)
                                 "
                                 b-tooltip.hover
-                                title="I Like This "
+                                title="I Vote This User "
                             >
                                 <svg
                                     v-if="post.userUpVote"
@@ -243,9 +261,6 @@ export default {
                                 b-on-hover
                                 title="number of vote this resource receive"
                                 id="vote-count"
-                                :class="{
-                                    'text-light': post.type == 'tutor'
-                                }"
                                 >{{ post.voteCount }}</span
                             >
                             <!-- Down vote button -->
@@ -295,7 +310,7 @@ export default {
                                     class="toggle-actions-bnt"
                                     @click="handleClickActionBtns(post.id)"
                                     b-tooltip.hover
-                                    title="More Actions For This Source"
+                                    title="More Actions For This Tutor Offer"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -426,7 +441,7 @@ export default {
 
 <style>
 .tutor {
-    border-top: 2px solid #aea3ce;
+    border-top: 2px dotted #aea3ce;
     border-right: 2px solid #aea3ce;
     border-left: 2px solid #aea3ce;
     color: #7469b6;
@@ -436,21 +451,43 @@ export default {
     border-bottom: 2px solid #aea3ce;
 }
 
+.tutor:first-child {
+    border-top: 2px solid #aea3ce;
+}
+
 .tutor:nth-child(odd) {
-    background-color: #f2edff;
+    background-color: #ede6ff;
 }
 
 .tutor:nth-child(even) {
-    background-color: #e3dafa;
+    background-color: #f8f6ff;
 }
 
 .tutor-avatar-div {
     width: 18%;
 }
+.cover-letter-word {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgb(54, 54, 54) !important;
+}
+
+.tutor-post-content {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+}
+
+.user-email {
+    font-size: 14px;
+    color: #888;
+}
 
 .tutor-user-name {
     color: #a48be6;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
 }
 
@@ -462,6 +499,39 @@ export default {
 
 .tutor-post {
     flex-direction: column;
+    color: #242323;
+    font-family: sans-serif;
+}
+
+.arrow-up {
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.arrow-down {
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+/* The animation key frame */
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
 }
 
 /* Mobile */
