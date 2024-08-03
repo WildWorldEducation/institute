@@ -6,12 +6,10 @@ export default {
             showActionBtns: false,
             currentClickId: 0,
             isAlreadyTutoring: this.$parent.isAlreadyTutoring,
-            showCoverLetter: false
+            expandPostId: Infinity
         };
     },
-    mounted() {
-        console.log(this.isAlreadyTutoring);
-    },
+    mounted() {},
     computed: {
         orderedAndNamedPosts() {
             // Getting the student's name.
@@ -126,6 +124,13 @@ export default {
             this.showActionBtns = false;
             this.$parent.flagType = 'tutor_post';
         },
+        handleExpandPost(postId) {
+            if (this.expandPostId !== Infinity) {
+                this.expandPostId = Infinity;
+            } else {
+                this.expandPostId = postId;
+            }
+        },
         deleteTutorPost(source) {
             // Close the modal.
             this.showModal = false;
@@ -193,10 +198,22 @@ export default {
                     <div class="tutor-user-name text-capitalize">
                         {{ post.studentName }}
                     </div>
-                    <div>
+                    <div
+                        b-on-hover
+                        title="expand cover letter"
+                        style="cursor: pointer"
+                        @click="handleExpandPost(post.id)"
+                        :class="[
+                            expandPostId === post.id ? 'arrow-up' : 'arrow-down'
+                        ]"
+                    >
+                        <!-- Chevron Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 448 512"
+                            heigh="15"
+                            width="15"
+                            fill="grey"
                         >
                             <path
                                 d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"
@@ -211,10 +228,23 @@ export default {
                 </div>
                 <!-- First row of post contain proposal content -->
                 <div class="d-flex mt-4 tutor-post">
-                    <p class="tutor-post-content">
+                    <p
+                        v-if="post.id !== expandPostId"
+                        class="tutor-post-content"
+                        b-on-hover
+                        title="expand this cover letter"
+                        @click="expandPostId = post.id"
+                    >
                         <span class="cover-letter-word">cover letter - </span
                         >{{ post.description }}
                     </p>
+                    <Transition name="dropdown">
+                        <p v-if="post.id === expandPostId">
+                            <span class="cover-letter-word"
+                                >cover letter - </span
+                            >{{ post.description }}
+                        </p>
+                    </Transition>
                 </div>
                 <!-- Second row of post contain likes count and relate buttons -->
                 <div class="d-flex align-items-center justify-content-end mt-3">
@@ -478,6 +508,7 @@ export default {
     -webkit-line-clamp: 2;
     line-clamp: 2;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .user-email {
