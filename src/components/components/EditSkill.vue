@@ -149,6 +149,7 @@ export default {
                             return element.id === this.skill.parent;
                         });
                         this.parentInput.inputText = parentResult.name;
+                        this.clusterParentInput.inputText = parentResult.name;
                     }
 
                     this.getSkillFilters();
