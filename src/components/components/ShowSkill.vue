@@ -352,8 +352,7 @@ export default {
                     <span v-else-if="skill.level == 'phd'">PHD</span>
                 </div>
                 <!-- Mastery Requirements -->
-                <div class="mt-3 d-flex flex-column">
-                    <div class="h1-title">Mastery Requirements</div>
+                <div class="mt-3 d-flex flex-column">                  
                     <div class="mastery-requirements">
                         <div v-html="skill.mastery_requirements"></div>
                     </div>
