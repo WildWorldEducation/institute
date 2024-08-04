@@ -149,6 +149,7 @@ export default {
                             return element.id === this.skill.parent;
                         });
                         this.parentInput.inputText = parentResult.name;
+                        this.clusterParentInput.inputText = parentResult.name;
                     }
 
                     this.getSkillFilters();
@@ -377,12 +378,19 @@ export default {
             }
         },
         handleChooseSuggestSkill(skill) {
-            //turn off the suggestion drop down
-            this.parentInput.suggestSkills = [];
             // set form data
             this.skill.parent = skill.id;
-            // set input text
-            this.parentInput.inputText = skill.name;
+            if(this.skill.type != 'sub'){
+                //turn off the suggestion drop down
+                this.parentInput.suggestSkills = [];
+                // set input text
+                this.parentInput.inputText = skill.name;
+            }else{
+                //turn off the suggestion drop down
+                this.clusterParentInput.suggestSuperSkills = [];
+                // set input text
+                this.clusterParentInput.inputText = skill.name;
+            }
         },
         // -----------------------------------------
         // 2 method for cluster outer skill type input
