@@ -195,7 +195,13 @@ export default {
                             ></textarea>
                         </div>
 
-                        <div v-if="userDetailsStore.role == 'admin'" class="d-flex justify-content-end gap-4">
+                        <div
+                            v-if="
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                            class="d-flex justify-content-end gap-4"
+                        >
                             <a class="btn red-btn" @click="editMode()">Edit</a>
                             <a
                                 class="btn red-btn"
