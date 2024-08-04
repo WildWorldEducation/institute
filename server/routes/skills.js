@@ -511,7 +511,7 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
                 } else {
                     recordUserAction({
                         userId: req.body.userId,
-                        userAction: 'update',
+                        userAction: 'submit_update_for_review',
                         contentId: req.params.id,
                         contentType: 'skill'
                     }, (err) => {

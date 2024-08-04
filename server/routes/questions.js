@@ -337,7 +337,7 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
                 } else {
                     recordUserAction({
                         userId: req.body.userId,
-                        userAction: 'update',
+                        userAction: 'submit_update_for_review',
                         contentType: 'mc_question',
                         contentId: req.params.id
                     }, (err) => {
@@ -618,7 +618,7 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
                 } else {
                     recordUserAction({
                         userId: req.body.userId,
-                        userAction: 'update',
+                        userAction: 'submit_update_for_review',
                         contentType: 'essay_question',
                         contentId: req.params.id
                     }, (err) => {
