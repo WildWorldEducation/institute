@@ -329,7 +329,7 @@ export default {
                     this.SubmitFilters();
                 })
                 .then(() => {
-                    this.$router.push('/skills');
+                    this.$router.push(`/skills/${this.skillId}`);
                 });
         },
         // If edit is from a student or instructor.
