@@ -9,16 +9,57 @@ export default {
         };
     },
     setup() {},
-    mounted: function () {},
+    mounted: function () {
+        // calculate summer note height base on window height
+        let summernoteHeight =
+            window.innerHeight -
+            document.getElementById('banner').clientHeight -
+            document.getElementById('header-tile').clientHeight -
+            50;
+
+        // return difference height base on window width ( manual responsive )
+        /** == Phone Screen == **/
+        if (window.innerWidth < 481) {
+            summernoteHeight = summernoteHeight - 310;
+        } else if (window.innerWidth >= 481 && window.innerWidth < 1024) {
+            /** == Tablet Screen == **/
+            summernoteHeight = summernoteHeight - 300;
+        } else {
+            /** == PC Screen == **/
+            summernoteHeight = summernoteHeight - 450;
+        }
+
+        //  summernote config
+        $('#summernote').summernote({
+            placeholder: '',
+            height: summernoteHeight,
+            tabsize: 2,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            maximumImageFileSize: 2048 * 1024, // 2 MB
+            callbacks: {
+                onImageUploadError: function (msg) {
+                    alert('Max image size is 2MB.');
+                }
+            }
+        });
+    },
     methods: {
         async Submit() {
             var url = '/tutor-posts/add/' + this.skillId;
-
+            var resourceData = $('#summernote').summernote('code');
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    description: this.description
+                    description: resourceData
                 })
             };
             await fetch(url, requestOptions).then(() => {
@@ -50,11 +91,12 @@ export default {
                             >Describe your tutoring style and experience with
                             the subject</label
                         >
-                        <textarea
-                            v-model="description"
-                            type="text"
-                            class="form-control"
-                        />
+                        <div class="mb-3 mt-3 text-area-div">
+                            <textarea
+                                id="summernote"
+                                name="editordata"
+                            ></textarea>
+                        </div>
                         <div v-if="1 == 2" class="form-validate">
                             please complete this section!
                         </div>

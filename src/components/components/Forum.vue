@@ -68,7 +68,6 @@ export default {
             for (let i = 0; i < sortedPosts.length; i++) {
                 this.posts[i].index = i;
             }
-
             return sortedPosts;
         }
     },

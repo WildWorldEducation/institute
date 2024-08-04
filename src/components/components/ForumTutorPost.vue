@@ -147,13 +147,19 @@ export default {
             this.tutorPosts = this.tutorPosts().filter((tutorPost) => {
                 return tutorPost.id != source.id;
             });
+        },
+        /* Because we store the tutor post with HTML tags so we 
+           need to strip all the tags to show it in the non-expand version
+        */
+        toPlainText(code) {
+            return code.replace(/<\/?[^>]+(>|$)/g, '');
         }
     }
 };
 </script>
 
 <template>
-    <div class="d-flex flex-column flex-md-row justify-content-between mt-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between my-4">
         <div class="d-flex align-items-md-baseline align-items-start gap-2">
             <h2>Tutor Offer Proposals</h2>
             <img src="/images/recurso-69.png" class="" />
@@ -180,9 +186,9 @@ export default {
             </div>
         </div>
     </div>
-    <div id="posts-big-container">
+    <div id="">
         <div
-            class="user-name-div tutor d-flex w-100 p-3"
+            class="tutor d-flex w-100 p-3"
             v-for="post in orderedAndNamedPosts"
         >
             <!-- User avatar -->
@@ -236,14 +242,15 @@ export default {
                         @click="expandPostId = post.id"
                     >
                         <span class="cover-letter-word">cover letter - </span
-                        >{{ post.description }}
+                        >{{ toPlainText(post.description) }}
                     </p>
                     <Transition name="dropdown">
-                        <p v-if="post.id === expandPostId">
-                            <span class="cover-letter-word"
-                                >cover letter - </span
-                            >{{ post.description }}
-                        </p>
+                        <div
+                            v-if="post.id === expandPostId"
+                            class="d-inline-block"
+                        >
+                            <p v-html="post.description"></p>
+                        </div>
                     </Transition>
                 </div>
                 <!-- Second row of post contain likes count and relate buttons -->
