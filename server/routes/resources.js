@@ -292,7 +292,10 @@ router.post('/generate-sources', (req, res, next) => {
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'  
         AND is_deleted = 0            
-        AND id = 486
+        AND id IN (221, 222, 231, 233, 234, 235, 241, 243, 246, 247, 248, 249, 255, 258, 261,
+        263, 264, 270, 272, 278, 281, 282, 286, 291, 292, 293, 294, 297, 298, 301, 302, 313, 
+        318, 321, 324, 329, 339, 342, 346, 347, 351, 353, 357, 359, 362, 367, 370, 373, 374, 388,
+        389, 390, 391, 392, 393, 399, 400)
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
