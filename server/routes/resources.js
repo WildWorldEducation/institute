@@ -292,7 +292,7 @@ router.post('/generate-sources', (req, res, next) => {
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'  
         AND is_deleted = 0            
-        AND id BETWEEN 3959 AND 4044
+        AND id BETWEEN 3968 AND 4044
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
