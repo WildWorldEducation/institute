@@ -188,7 +188,7 @@ export default {
     watch: {
         async $route(to, from) {
             // react to route changes...
-            this.skillId = to.params.id;
+            this.skillId = to.params.skillId;
             await this.getSkill();
             await this.getUserSkills();
         }
