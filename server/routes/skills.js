@@ -553,10 +553,6 @@ router.put(
                     let previousId = results[0].id;
                     let previousName = results[0].name;
                     let previousDescription = results[0].description;
-                    let previousIconImage = results[0].icon_image;
-                    let previousBannerImage = results[0].banner_image;
-                    let previousMasteryRequirements =
-                        results[0].mastery_requirements;
                     let previousLevel = results[0].level;
                     let previousOrder = results[0].order;
                     let versionNumber = results[0].version_number;
@@ -569,9 +565,6 @@ router.put(
                             /'/g,
                             "\\'"
                         );
-                    if (previousMasteryRequirements != null)
-                        previousMasteryRequirements =
-                            previousMasteryRequirements.replace(/'/g, "\\'");
                     versionNumber = versionNumber + 1;
 
                     let addVersionHistoryInsertSQLQuery = `
@@ -584,8 +577,8 @@ router.put(
                     ${req.session.userId},
                     '${previousName}',                    
                     '${previousDescription}',
-                    '${previousIconImage}',
-                    '${previousBannerImage}',
+                    '${req.body.icon_image}',
+                    '${req.body.banner_image}',
                     '${req.body.mastery_requirements}',                    
                     '${previousLevel}',                    
                     ${previousOrder},
@@ -602,6 +595,10 @@ router.put(
                                 `UPDATE skills SET 
                                 mastery_requirements = '` +
                                 req.body.mastery_requirements +
+                                `', icon_image = '` +
+                                req.body.icon_image +
+                                `', banner_image = '` +
+                                req.body.banner_image +
                                 `', version_number = ${versionNumber}                               
                                 WHERE id = ` +
                                 req.params.id +

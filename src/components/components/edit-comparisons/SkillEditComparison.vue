@@ -7,7 +7,8 @@ export default {
             userId: this.$route.params.userId,
             skill: {},
             skillEdit: {},
-            comment: ''
+            comment: '',
+            isEditMode: false
         };
     },
     async created() {
@@ -49,7 +50,7 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    this.skill = data.mastery_requirements;
+                    this.skill = data;
                 });
         },
         dismissEdit() {
@@ -72,11 +73,23 @@ export default {
                 this.$router.back();
             }
         },
+        dismissIcon() {
+            if (confirm('Revert the icon?')) {
+                this.skillEdit.icon_image = this.skill.icon_image;
+            }
+        },
+        dismissBanner() {
+            if (confirm('Revert the banner?')) {
+                this.skillEdit.banner_image = this.skill.banner_image;
+            }
+        },
         edit() {
             $('#summernote')
                 .next()
                 .find('.note-editable')
                 .attr('contenteditable', true);
+
+            this.isEditMode = true;
         },
         saveEdit() {
             // Update this content, in case it has been changed.
@@ -88,6 +101,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     mastery_requirements: this.skillEdit.mastery_requirements,
+                    icon_image: this.skillEdit.icon_image,
+                    banner_image: this.skillEdit.banner_image,
                     comment: this.comment
                 })
             };
@@ -124,22 +139,36 @@ export default {
             <div class="col">
                 <h2>Change</h2>
                 <h5>Icon</h5>
-                <div id="skill-image">
+                <div class="">
                     <img
                         v-if="skillEdit.icon_image"
                         :src="skillEdit.icon_image"
-                        class="skill-icon border border-dark rounded"
+                        class="icon-image border border-dark rounded"
                     />
                     <p v-else>No icon</p>
+                    <button
+                        v-if="isEditMode"
+                        class="btn btn-danger"
+                        @click="dismissIcon"
+                    >
+                        X
+                    </button>
                 </div>
                 <h5 class="mt-3">Banner</h5>
                 <div>
                     <img
                         v-if="skillEdit.banner_image"
                         :src="skillEdit.banner_image"
-                        class="skill-banner border border-dark rounded"
+                        class="banner-image border border-dark rounded"
                     />
                     <p v-else>No banner</p>
+                    <button
+                        v-if="isEditMode"
+                        class="btn btn-danger"
+                        @click="dismissBanner"
+                    >
+                        X
+                    </button>
                 </div>
                 <h5 class="mt-3">Mastery Requirements</h5>
                 <textarea
@@ -154,27 +183,27 @@ export default {
             <div class="col">
                 <h2>Original</h2>
                 <h5>Icon</h5>
-                <div id="skill-image">
+                <div class="">
                     <!-- Show a default skill avatar if skill not have image yet -->
                     <img
                         v-if="skill.icon_image"
                         :src="skill.icon_image"
-                        class="skill-icon border border-dark rounded"
+                        class="border border-dark rounded icon-image"
                     />
                     <p v-else>No icon</p>
                 </div>
                 <h5 class="mt-3">Banner</h5>
-                <div id="skill-image">
+                <div>
                     <!-- Show a default skill avatar if skill not have image yet -->
                     <img
-                        v-if="skill.banner"
-                        :src="skill.banner"
-                        class="border border-dark rounded"
+                        v-if="skill.banner_image"
+                        :src="skill.banner_image"
+                        class="border border-dark rounded banner-image"
                     />
                     <p v-else>No banner</p>
                 </div>
                 <h5 class="mt-3">Mastery Requirements</h5>
-                <div v-html="skill"></div>
+                <div v-html="skill.mastery_requirements"></div>
             </div>
         </div>
     </div>
@@ -187,18 +216,12 @@ export default {
     font-weight: 600;
 }
 
-.skill-icon {
-    width: fit-content;
-    height: auto;
+.banner-image {
+    max-width: 100%;
 }
 
-.skill-banner {
-    width: fit-content;
-    height: auto;
-}
-
-#skill-image {
-    max-width: 600px;
+.icon-image {
+    max-width: 50%;
 }
 
 /* Specific phone view css */
@@ -210,7 +233,7 @@ export default {
         width: 50%;
     }
 
-    #skill-image {
+    .icon-image {
         width: 75%;
         height: auto;
         margin: auto;
