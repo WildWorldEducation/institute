@@ -15,7 +15,7 @@ export default {
     },
     data() {
         return {
-            skillId: this.$route.params.id,
+            skillId: this.$route.params.skillId,
             bannerImage: null
         };
     },
