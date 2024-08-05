@@ -467,23 +467,23 @@ export default {
     font-size: 12px;
 }
 .grade-school-level {
-    border-color: #40b9a9;
+    border-color: #00ff00;
 }
 
 .middle-school-level {
-    border-color: #6eb3f5;
+    border-color: #ffff00;
 }
 
 .high-school-level {
-    border-color: #3983dd;
+    border-color: #ffa500;
 }
 
 .college-level {
-    border-color: #baa9e1;
+    border-color: #ff4500;
 }
 
 .phd-level {
-    border-color: #9c7eec;
+    border-color: #ff0000;
 }
 
 .top-level-skills svg path {
