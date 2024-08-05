@@ -1,10 +1,10 @@
 <script>
 // Import the store.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 // Import Custom Components
-import FlagModals from './FlagModals.vue';
-import ForumResource from './ForumResource.vue';
-import ForumTutorPost from './ForumTutorPost.vue';
+import FlagModals from '../FlagModals.vue';
+import ForumResource from './source-post/ForumResource.vue';
+import ForumTutorPost from './tutor-post/ForumTutorPost.vue';
 
 export default {
     setup() {

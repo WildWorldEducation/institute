@@ -10,7 +10,7 @@ import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import FlagModals from './FlagModals.vue';
 
 // Nested component.
-import Forum from './Forum.vue';
+import Forum from './forum/Forum.vue';
 import router from '../../router';
 
 export default {
@@ -352,7 +352,7 @@ export default {
                     <span v-else-if="skill.level == 'phd'">PHD</span>
                 </div>
                 <!-- Mastery Requirements -->
-                <div class="mt-3 d-flex flex-column">                  
+                <div class="mt-3 d-flex flex-column">
                     <div class="mastery-requirements">
                         <div v-html="skill.mastery_requirements"></div>
                     </div>
