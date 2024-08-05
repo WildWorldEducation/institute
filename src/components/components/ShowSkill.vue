@@ -315,7 +315,7 @@ export default {
                                 ? skill.icon_image
                                 : '/images/skill-avatar/recurso.png'
                         "
-                        class="skill-icon"
+                        class="skill-icon rounded"
                     />
                 </div>
                 <!-- Skill name and skill description -->
@@ -486,8 +486,7 @@ export default {
 }
 
 .skill-icon {
-    width: fit-content;
-    height: auto;
+    max-width: 200px;
 }
 
 .skill-name {
