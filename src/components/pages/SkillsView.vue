@@ -101,19 +101,19 @@ export default {
 
 /* Level colors */
 .legend .grade-school {
-    background-color: #00ff00;
+    background-color: #3ecd14;
 }
 .legend .middle-school {
-    background-color: #ffff00;
+    background-color: #b9db42;
 }
 .legend .high-school {
-    background-color: #ffa500;
+    background-color: #f5e379;
 }
 .legend .college {
-    background-color: #ff4500;
+    background-color: #f1a335;
 }
 .legend .phd {
-    background-color: #ff0000;
+    background-color: #e42b24;
 }
 
 /*---*/
