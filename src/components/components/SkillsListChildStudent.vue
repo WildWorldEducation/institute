@@ -463,24 +463,45 @@ export default {
 .four-row-domain-name {
     font-size: 13px;
 }
+
 .grade-school-level {
     border-color: #00ff00;
+}
+
+.grade-school-level.mastered {
+    background-color: #ccffcc;
 }
 
 .middle-school-level {
     border-color: #ffff00;
 }
 
+.middle-school-level.mastered {
+    background-color: #ffffcc;
+}
+
 .high-school-level {
     border-color: #ffa500;
+}
+
+.high-school-level.mastered {
+    background-color: #ffe5cc;
 }
 
 .college-level {
     border-color: #ff4500;
 }
 
+.college-level.mastered {
+    background-color: #ffcccc;
+}
+
 .phd-level {
     border-color: #ff0000;
+}
+
+.phd-level.mastered {
+    background-color: #ffcccc;
 }
 
 .top-level-skills svg path {
@@ -501,10 +522,6 @@ export default {
 
 .locked svg path {
     fill: #c8d7da;
-}
-
-.mastered {
-    background-color: #e4daff;
 }
 
 @media (max-width: 480px) {
