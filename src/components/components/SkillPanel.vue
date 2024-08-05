@@ -60,8 +60,7 @@ export default {
                     Attained
                 </label>
             </div>
-            <div v-if="skill?.type != 'domain'" class="mt-4">
-                <h2>Mastery Requirements</h2>
+            <div v-if="skill?.type != 'domain'" class="mt-2">
                 <div
                     class="truncate-overflow"
                     v-html="skill?.masteryRequirements"

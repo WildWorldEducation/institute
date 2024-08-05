@@ -308,15 +308,15 @@ export default {
             if (node.data.type == 'domain') {
                 color = 'orange';
             } else if (node.data.level == 'grade_school') {
-                color = '#36c1af';
+                color = '#00FF00';
             } else if (node.data.level == 'middle_school') {
-                color = '#6eb3f5';
+                color = '#FFFF00';
             } else if (node.data.level == 'high_school') {
-                color = '#3983dd';
+                color = '#FFA500';
             } else if (node.data.level == 'college') {
-                color = '#baa9e1';
+                color = '#FF4500';
             } else if (node.data.level == 'phd') {
-                color = '#9c7eec';
+                color = '#FF0000';
             }
 
             let size;

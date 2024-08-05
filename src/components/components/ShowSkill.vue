@@ -188,7 +188,7 @@ export default {
     watch: {
         async $route(to, from) {
             // react to route changes...
-            this.skillId = to.params.id;
+            this.skillId = to.params.skillId;
             await this.getSkill();
             await this.getUserSkills();
         }
@@ -236,6 +236,10 @@ export default {
 
                     <!-- Show version history -->
                     <router-link
+                        v-if="
+                            userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'editor'
+                        "
                         :to="'/skills/history/' + this.skillId"
                         class="btn purple-btn"
                         style="max-height: 37.6px"
@@ -353,7 +357,6 @@ export default {
                 </div>
                 <!-- Mastery Requirements -->
                 <div class="mt-3 d-flex flex-column">
-                    <div class="h1-title">Mastery Requirements</div>
                     <div class="mastery-requirements">
                         <div v-html="skill.mastery_requirements"></div>
                     </div>
