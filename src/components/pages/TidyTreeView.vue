@@ -10,10 +10,10 @@ export default {
     methods: {
         // Toggle info bar.
         ToggleInfobar() {
-            if (document.getElementById('legend').style.display == 'block') {
-                document.getElementById('legend').style.display = 'none';
-            } else {
+            if (document.getElementById('legend').style.display == 'none') {
                 document.getElementById('legend').style.display = 'block';
+            } else {
+                document.getElementById('legend').style.display = 'none';
             }
         }
     }
@@ -117,7 +117,7 @@ export default {
 
 <style>
 #legend {
-    display: none;
+    display: block;
     overflow-x: hidden;
 }
 
