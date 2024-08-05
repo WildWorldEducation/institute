@@ -382,12 +382,12 @@ export default {
         handleChooseSuggestSkill(skill) {
             // set form data
             this.skill.parent = skill.id;
-            if(this.skill.type != 'sub'){
+            if (this.skill.type != 'sub') {
                 //turn off the suggestion drop down
                 this.parentInput.suggestSkills = [];
                 // set input text
                 this.parentInput.inputText = skill.name;
-            }else{
+            } else {
                 //turn off the suggestion drop down
                 this.clusterParentInput.suggestSuperSkills = [];
                 // set input text
@@ -839,6 +839,7 @@ export default {
                                 height="158"
                                 width="1175"
                                 style="background-color: lightgrey"
+                                class="banner-image rounded"
                             />
                         </p>
                         <p>
@@ -1653,5 +1654,9 @@ export default {
     .exit-icon {
         transform: scale(-1, 1);
     }
+}
+
+.banner-image {
+    max-width: fit-content;
 }
 </style>
