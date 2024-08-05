@@ -41,8 +41,6 @@ export default {
                     this.skillEdit = data;
                     this.comment = data.comment;
                 });
-
-            console.log(this.skillEdit);
         },
         async getSkill() {
             await fetch('/skills/show/' + this.skillId)
