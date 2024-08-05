@@ -134,7 +134,7 @@ export default {
 <template>
     <div class="d-flex flex-column flex-md-row justify-content-between mt-4">
         <div class="d-flex align-items-md-baseline align-items-start gap-2">
-            <h2>Best Places To Learn This</h2>
+            <div class="forum-sub-page-tile">Best Places To Learn This</div>
             <img src="/images/recurso-69.png" class="" />
         </div>
         <div class="mx-auto mx-md-0 mt-3 mt-lg-0">
@@ -426,6 +426,17 @@ export default {
 </template>
 
 <style>
+#posts-big-container {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.forum-container {
+    border-radius: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
 .user-name-text {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
@@ -437,6 +448,21 @@ export default {
     margin-left: 5px;
 }
 
+.user-avatar {
+    height: 45px;
+    width: 45px;
+}
+
+.user-avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    margin-right: 0px;
+    margin-left: auto;
+    margin-top: 0px;
+    object-fit: cover;
+}
+
 .source {
     background-color: #f2edff;
 }
@@ -446,6 +472,12 @@ export default {
     flex-direction: row;
     align-items: center;
     margin-bottom: 5px;
+}
+
+.forum-post {
+    padding: 10px;
+    border-radius: 5px;
+    background-color: white;
 }
 /* Mobile */
 @media (max-width: 480px) {

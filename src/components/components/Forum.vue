@@ -310,14 +310,12 @@ export default {
     />
 </template>
 
-<style>
+<style scoped>
 .nav-tabs {
     --bs-nav-tabs-border-width: 2px;
     --bs-nav-tabs-border-color: #aea3ce;
     --bs-nav-tabs-link-active-border-color: #aea3ce #aea3ce #fff;
     --bs-nav-tabs-link-active-color: #8f7bd6;
-    --bs-nav-link-hover-color: #8f7bd6;
-    --bs-nav-link-color: #888
     font-weight: 550;
     cursor: pointer;
 }
@@ -331,7 +329,14 @@ export default {
     font-weight: 550;
 }
 
-.red-btn {
+:deep(.forum-sub-page-tile) {
+    color: #8666ca;
+    font-size: 2rem;
+    font-weight: 600;
+    font-family: 'Poppins' sans-serif;
+}
+
+:deep(.red-btn) {
     background-color: #e24d4d;
     color: white;
     border: 1px solid #d33622;
@@ -343,12 +348,12 @@ export default {
     justify-content: center;
 }
 
-.red-btn:hover {
+:deep(.red-btn:hover) {
     background-color: #cc3535;
     color: white;
 }
 
-.green-btn {
+:deep(.green-btn) {
     background-color: #36c1af;
     color: white;
     border: 1px solid #2ca695;
@@ -362,11 +367,11 @@ export default {
     justify-content: center;
 }
 
-.green-btn:hover {
+:deep(.green-btn:hover) {
     background-color: #3eb3a3;
 }
 
-.purple-btn {
+:deep(.purple-btn) {
     background-color: #a48be6;
     color: white;
     border: 1px solid #7f56d9;
@@ -378,74 +383,36 @@ export default {
     align-items: center;
 }
 
-.purple-btn:hover {
+:deep(.purple-btn:hover) {
     background-color: #8666ca;
     color: white;
 }
 
-#posts-big-container {
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.forum-container {
-    border-radius: 12px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-}
-
-.vote-count {
+:deep(.vote-count) {
     font-size: 1.563rem;
     font-weight: 700;
     margin-top: -7px;
     cursor: help;
 }
 
-.vote-icon {
+:deep(.vote-icon) {
     height: 34px !important;
     cursor: pointer;
 }
 
-.upvote-icon {
+:deep(.upvote-icon) {
     margin-top: -8px;
 }
 
-
-.user-avatar {
-    height: 45px;
-    width: 45px;
-}
-
-.user-avatar-img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    margin-right: 0px;
-    margin-left: auto;
-    margin-top: 0px;
-    object-fit: cover;
-}
-
-.forum-post {
-    background-color: #ffffff;
-    border-radius: 5px;
-    padding: 10px 20px;
-}
-
-.forum-post img {
-    max-width: 100%;
-    height: auto;
-}
-
-.resource-vote-button {
+:deep(.resource-vote-button) {
     width: 32px;
 }
 
-.userUpVote {
+:deep(.userUpVote) {
     background-color: green;
 }
 
-.userDownVote {
+:deep(.userDownVote) {
     background-color: red;
 }
 
@@ -503,20 +470,8 @@ h2 {
 }
 /* End of Warning modal styling */
 
-#header-col {
-    display: flex;
-    align-items: end;
-    justify-content: start;
-}
-
-#header-col > h2 {
-    margin-bottom: 0px;
-    font-size: 1.75rem;
-    margin-left: 0px;
-}
-
 /* Style For dropdown div */
-.toggle-actions-bnt {
+:deep(.toggle-actions-bnt) {
     cursor: pointer;
     background-color: #fefefe;
     border-radius: 50px;
@@ -528,17 +483,17 @@ h2 {
     margin-left: 5px;
 }
 
-.toggle-actions-bnt:hover {
+:deep(.toggle-actions-bnt:hover) {
     outline: 1px solid gray;
     background-color: white;
 }
 
-.more-icon {
+:deep(.more-icon) {
     height: 100%;
     width: auto;
 }
 
-.action-btns-div {
+:deep(.action-btns-div) {
     background-color: white;
     border-radius: 12px;
     display: flex;
@@ -551,17 +506,16 @@ h2 {
     box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.dropdown-btn {
+:deep(.dropdown-btn) {
     outline: none !important;
     border: 0px;
 }
 
-.dropdown-btn:hover {
+:deep(.dropdown-btn:hover) {
     scale: 1.2;
 }
 
 /* Dropdown Animation */
-
 @keyframes slide {
     0% {
         opacity: 0;
@@ -573,18 +527,19 @@ h2 {
         transform: scaleY(1);
     }
 }
-.dropdown-enter-active {
+
+:deep(.dropdown-enter-active) {
     transform-origin: top center;
     animation: slide 0.2s;
 }
-.dropdown-leave-active {
+
+:deep(.dropdown-leave-active) {
     transform-origin: top center;
     animation: slide 0.2s reverse;
 }
 
 /* Delay The button transition */
-.dropdown-enter-active .btn,
-.dropdown-leave-active .btn {
+:depp(.dropdown-enter-active .btn, .dropdown-leave-active .btn) {
     transition-delay: 0.2s;
 }
 

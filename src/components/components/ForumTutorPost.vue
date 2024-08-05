@@ -161,7 +161,7 @@ export default {
 <template>
     <div class="d-flex flex-column flex-md-row justify-content-between my-4">
         <div class="d-flex align-items-md-baseline align-items-start gap-2">
-            <h2>Tutor Offer Proposals</h2>
+            <div class="forum-sub-page-tile">Tutor Offer Proposals</div>
             <img src="/images/recurso-69.png" class="" />
         </div>
         <div class="mx-auto mx-md-0 mt-3 mt-lg-0">
