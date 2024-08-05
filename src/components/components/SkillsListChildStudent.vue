@@ -465,43 +465,43 @@ export default {
 }
 
 .grade-school-level {
-    border-color: #00ff00;
+    border-color: #3ecd14;
 }
 
 .grade-school-level.mastered {
-    background-color: #ccffcc;
+    background-color: #2e9e0f;
 }
 
 .middle-school-level {
-    border-color: #ffff00;
+    border-color: #b9db42;
 }
 
 .middle-school-level.mastered {
-    background-color: #ffffcc;
+    background-color: #93b235;
 }
 
 .high-school-level {
-    border-color: #ffa500;
+    border-color: #f5e379;
 }
 
 .high-school-level.mastered {
-    background-color: #ffe5cc;
+    background-color: #c4b45f;
 }
 
 .college-level {
-    border-color: #ff4500;
+    border-color: #f1a335;
 }
 
 .college-level.mastered {
-    background-color: #ffcccc;
+    background-color: #f1a335;
 }
 
 .phd-level {
-    border-color: #ff0000;
+    border-color: #e42b24;
 }
 
 .phd-level.mastered {
-    background-color: #ffcccc;
+    background-color: #b4221c;
 }
 
 .top-level-skills svg path {

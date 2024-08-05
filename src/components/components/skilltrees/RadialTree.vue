@@ -306,17 +306,17 @@ export default {
             // Node colour.
             let color;
             if (node.data.type == 'domain') {
-                color = 'orange';
+                color = 'black';
             } else if (node.data.level == 'grade_school') {
-                color = '#00FF00';
+                color = '#3ecd14';
             } else if (node.data.level == 'middle_school') {
-                color = '#FFFF00';
+                color = '#b9db42';
             } else if (node.data.level == 'high_school') {
-                color = '#FFA500';
+                color = '#f5e379';
             } else if (node.data.level == 'college') {
-                color = '#FF4500';
+                color = '#f1a335';
             } else if (node.data.level == 'phd') {
-                color = '#FF0000';
+                color = '#e42b24';
             }
 
             let size;
