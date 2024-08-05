@@ -282,7 +282,7 @@ export default {
                 <div
                     :class="['nav-link', activeTab === 'tutorPost' && 'active']"
                 >
-                    Tutor Posts
+                    Tutor Offers
                 </div>
             </li>
         </ul>

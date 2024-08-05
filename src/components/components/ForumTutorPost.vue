@@ -164,22 +164,24 @@ export default {
             <div class="forum-sub-page-tile">Tutor Offer Proposals</div>
             <img src="/images/recurso-69.png" />
         </div>
-        <div class="mx-auto mx-md-0 mt-3 mt-lg-0">
-            <div class="d-flex flex-column justify-content-between">
+        <div class="ms-0 me-auto ms-lg-auto me-lg-0">
+            <div class="d-flex flex-column align-items-baseline">
                 <router-link
                     v-if="user.role == 'student' && isAlreadyTutoring == false"
                     :to="'/tutor/add/' + skillId"
                     class="btn purple-btn mt-2"
                     role="button"
-                    >Offer to tutor&nbsp;&nbsp;<svg
+                    >Offer to tutor&nbsp;&nbsp;
+                    <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                        width="18"
-                        height="20"
+                        viewBox="0 0 576 512"
+                        width="35"
+                        height="35"
+                        fill="white"
+                        class="mb-3"
                     >
                         <path
-                            d="M32 32C32 14.3 46.3 0 64 0S96 14.3 96 32V240H32V32zM224 192c0-17.7 14.3-32 32-32s32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V192zm-64-64c17.7 0 32 14.3 32 32v48c0 17.7-14.3 32-32 32s-32-14.3-32-32V160c0-17.7 14.3-32 32-32zm160 96c0-17.7 14.3-32 32-32s32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V224zm-96 88l0-.6c9.4 5.4 20.3 8.6 32 8.6c13.2 0 25.4-4 35.6-10.8c8.7 24.9 32.5 42.8 60.4 42.8c11.7 0 22.6-3.1 32-8.6V352c0 88.4-71.6 160-160 160H162.3c-42.4 0-83.1-16.9-113.1-46.9L37.5 453.5C13.5 429.5 0 396.9 0 363V336c0-35.3 28.7-64 64-64h88c22.1 0 40 17.9 40 40s-17.9 40-40 40H96c-8.8 0-16 7.2-16 16s7.2 16 16 16h56c39.8 0 72-32.2 72-72z"
-                            fill="white"
+                            d="M559.7 392.2c17.8-13.1 21.6-38.1 8.5-55.9s-38.1-21.6-55.9-8.5L392.6 416 272 416c-8.8 0-16-7.2-16-16s7.2-16 16-16l16 0 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0-16 0-78.3 0c-29.1 0-57.3 9.9-80 28L68.8 384 32 384c-17.7 0-32 14.3-32 32l0 64c0 17.7 14.3 32 32 32l160 0 160.5 0c29 0 57.3-9.3 80.7-26.5l126.6-93.3zm-367-8.2c.3 0 .6 0 .9 0c0 0 0 0 0 0c-.3 0-.6 0-.9 0z"
                         />
                     </svg>
                 </router-link>
@@ -249,9 +251,28 @@ export default {
                     <Transition name="dropdown">
                         <div
                             v-if="post.id === expandPostId"
-                            class="d-inline-block"
+                            class="d-flex flex-column"
                         >
                             <p v-html="post.description"></p>
+                            <div
+                                class="btn green-btn mt-2 me-0 ms-auto w-auto mb-3"
+                                role="button"
+                                @click="expandPostId = Infinity"
+                            >
+                                Shrink
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 384 512"
+                                    width="15"
+                                    heigh="15"
+                                    fill="white"
+                                    class="ms-2"
+                                >
+                                    <path
+                                        d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2 160 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-306.7L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
+                                    />
+                                </svg>
+                            </div>
                         </div>
                     </Transition>
                 </div>
