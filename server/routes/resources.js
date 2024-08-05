@@ -292,7 +292,51 @@ router.post('/generate-sources', (req, res, next) => {
         let sqlQuery = `SELECT * FROM skills 
         WHERE type <> 'domain'  
         AND is_deleted = 0            
-        AND id = 486
+        AND id IN (351, 353, 357, 359, 362, 367, 370, 373, 374, 388,
+        389, 390, 391, 392, 393, 399, 400, 401,
+402,
+408,
+423,
+424,
+430,
+431,
+434,
+435,
+438,
+439,
+443,
+444,
+446,
+447,
+449,
+451,
+455,
+457,
+462,
+463,
+465,
+466,
+469,
+470,
+471,
+472,
+476,
+480,
+481,
+482,
+483,
+501,
+502,
+503,
+506,
+511,
+514,
+630,
+1001,
+1087,
+1542,
+2339
+)
         
         ORDER BY id`;
         let query = conn.query(sqlQuery, (err, results) => {
@@ -364,6 +408,86 @@ router.post('/generate-sources', (req, res, next) => {
         });
     }
 });
+
+function getSingleSource(skillId) {
+    // The user posting the source.
+    userId = 24;
+    // As we are posting sources for all skills, we get all skills.
+    let sqlQuery = `SELECT * FROM skills 
+        WHERE type <> 'domain'  
+        AND is_deleted = 0            
+        AND id = ${skillId}
+        
+        ORDER BY id`;
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            skills = results;
+            skillsLength = skills.length;
+
+            // User input number of sources per skill required.
+            numSourcesRequired = 7;
+            numSourcesForSkillRemaining = numSourcesRequired;
+            // For going through all skills.
+            let index = 0;
+            // To prevent duplication of links.
+            let usedLinks = [];
+            // For dev to check if wasting too many ChatGPT tokens.
+            let brokenLinkCount = 0;
+            // Check new urls agains this list.
+            let blockedDomains = [];
+            let whiteListedDomains = [];
+
+            // As we are posting sources for all skills, we get all skills.
+            let sqlQuery2 = `SELECT * FROM blacklisted_sources`;
+            let query2 = conn.query(sqlQuery2, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    // Get the blocked domain urls.
+                    for (let i = 0; i < results.length; i++) {
+                        blockedDomains.push(results[i].root_domain);
+                    }
+                    // As we are posting sources for all skills, we get all skills.
+                    let sqlQuery3 = `SELECT * FROM whitelisted_sources`;
+                    let query3 = conn.query(sqlQuery3, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            // Get the whitelisted domain urls.
+                            for (let i = 0; i < results.length; i++) {
+                                whiteListedDomains.push(results[i].root_domain);
+                            }
+                            // We go through all skills sequencially, one at a time.
+                            getSource(
+                                usedLinks,
+                                brokenLinkCount,
+                                index,
+                                numSourcesForSkillRemaining,
+                                blockedDomains,
+                                whiteListedDomains
+                            );
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                } catch (err) {
+                    next(err);
+                }
+            });
+        } catch (err) {
+            next(err);
+        }
+    });
+}
+
+// let skillId = 344;
+//getSingleSource(skillIds[i]);
 
 // Get source from ChatGPT.
 async function getSource(

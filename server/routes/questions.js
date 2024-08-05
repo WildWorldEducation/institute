@@ -90,7 +90,7 @@ router.delete('/essay/:id', (req, res, next) => {
  * @return response()
  */
 // Show MC question.
-router.get('/mc/show/:id', (req, res) => {
+router.get('/mc/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM mc_questions WHERE id=' + req.params.id;
@@ -206,6 +206,202 @@ router.put('/mc/:id/edit', (req, res, next) => {
     }
 });
 
+/**
+ * Submit MC question edit for review.
+ */
+router.post('/mc/:id/edit-for-review', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+        let correctAnswer;
+        let incorrectAnswer1;
+        let incorrectAnswer2;
+        let incorrectAnswer3;
+        let incorrectAnswer4;
+        let explanation;
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+        if (req.body.correct_answer != null)
+            correctAnswer = req.body.correct_answer.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_1 != null)
+            incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_2 != null)
+            incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_3 != null)
+            incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_4 != null)
+            incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "\\'");
+        if (req.body.explanation != null)
+            explanation = req.body.explanation.replace(/'/g, "\\'");
+        if (req.body.comment != null)
+            req.body.comment = req.body.comment.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery = `INSERT INTO mc_questions_awaiting_approval (mc_question_id, user_id, name, question, correct_answer,
+            incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, incorrect_answer_4, explanation, comment)
+            VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}', '${correctAnswer}', '${incorrectAnswer1}', '${incorrectAnswer2}', 
+            '${incorrectAnswer3}', '${incorrectAnswer4}', '${explanation}', '${req.body.comment}')
+            
+            ON DUPLICATE KEY
+            UPDATE name = '${name}', date = CURRENT_TIMESTAMP(), question = '${question}', correct_answer = '${correctAnswer}', incorrect_answer_1 = '${incorrectAnswer1}',
+            incorrect_answer_2 = '${incorrectAnswer2}', incorrect_answer_3 = '${incorrectAnswer3}', incorrect_answer_4 = '${incorrectAnswer4}', explanation = '${explanation}', comment = '${req.body.comment}';`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Get one mc question submitted for review.
+ *
+ * @return response()
+ */
+router.get(
+    '/mc/submitted-for-review/:mcQuestionId/:userId',
+    (req, res, next) => {
+        let mcQuestion;
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            // Get skill.
+            const sqlQuery = `SELECT *
+                          FROM mc_questions_awaiting_approval
+                          WHERE mc_question_id = ${req.params.mcQuestionId}
+                          AND user_id = ${req.params.userId}`;
+            let query = conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    mcQuestion = results[0];
+                    res.json(mcQuestion);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+/**
+ * Get one essay question submitted for review.
+ *
+ * @return response()
+ */
+router.get(
+    '/essay/submitted-for-review/:essayQuestionId/:userId',
+    (req, res, next) => {
+        let essayQuestion;
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            // Get skill.
+            const sqlQuery = `SELECT *
+                          FROM essay_questions_awaiting_approval
+                          WHERE essay_question_id = ${req.params.essayQuestionId}
+                          AND user_id = ${req.params.userId}`;
+            let query = conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    essayQuestion = results[0];
+                    res.json(essayQuestion);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+/**
+ * Delete mc question submitted for review.
+ *
+ * @return response()
+ */
+router.delete(
+    '/mc/submitted-for-review/:mcQuestionId/:userId',
+    (req, res, next) => {
+        if (req.session.userName) {
+            const deleteQuery = `DELETE 
+                             FROM mc_questions_awaiting_approval
+                             WHERE mc_question_id = ${req.params.mcQuestionId}
+                             AND user_id  = ${req.params.userId};`;
+            conn.query(deleteQuery, (err) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.end();
+                } catch (err) {
+                    next(err);
+                }
+            });
+        } else {
+            res.redirect('/login');
+        }
+    }
+);
+
+/**
+ * Delete essay question submitted for review.
+ *
+ * @return response()
+ */
+router.delete(
+    '/essay/submitted-for-review/:essayQuestionId/:userId',
+    (req, res, next) => {
+        if (req.session.userName) {
+            const deleteQuery = `DELETE 
+                             FROM essay_questions_awaiting_approval
+                             WHERE essay_question_id = ${req.params.essayQuestionId}
+                             AND user_id  = ${req.params.userId};`;
+            conn.query(deleteQuery, (err) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.end();
+                } catch (err) {
+                    next(err);
+                }
+            });
+        } else {
+            res.redirect('/login');
+        }
+    }
+);
+
+// Load all mc type questions.
+router.get('/mc/submitted-for-review/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM mc_questions_awaiting_approval;';
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Edit Essay questions
 router.put('/essay/:id/edit', (req, res, next) => {
     if (req.session.userName) {
@@ -250,6 +446,62 @@ router.put('/essay/:id/edit', (req, res, next) => {
         });
     } else {
         res.redirect('/login');
+    }
+});
+
+/**
+ * Submit Essay question edit for review.
+ */
+router.post('/essay/:id/edit-for-review', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+        if (req.body.comment != null)
+            req.body.comment = req.body.comment.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery = `INSERT INTO essay_questions_awaiting_approval (essay_question_id, user_id, name, question, comment)
+                        VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}','${req.body.comment}')
+
+                        ON DUPLICATE KEY
+                        UPDATE date = CURRENT_TIMESTAMP(), name = '${name}', question = '${question}', comment = '${req.body.comment}';`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+// Load all essay type questions.
+router.get('/essay/submitted-for-review/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM essay_questions_awaiting_approval;';
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
     }
 });
 
@@ -670,7 +922,7 @@ router.get('/check-questions', (req, res, next) => {
     }
 });
 
-// Get source from ChatGPT.
+// Using ChatGPT.
 // Import OpenAI package.
 const { OpenAI } = require('openai');
 // Include API key.

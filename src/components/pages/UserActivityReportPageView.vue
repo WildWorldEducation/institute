@@ -70,7 +70,7 @@ export default {
 <template>
     <div class="container">
         <div class="mt-4 mb-4">
-            <div class="page-tile">User Activity Report</div>
+            <div class="page-title">User Activity Report</div>
         </div>
         <!-- User Details -->
         <div class="row">
@@ -348,7 +348,7 @@ export default {
     width: fit-content;
 }
 
-.page-tile {
+.page-title {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
     font-size: 25px;
