@@ -551,36 +551,36 @@ h2 {
         justify-content: center;
     }
 
-    .forum-post {
+    :deep(.forum-post) {
         width: 94%;
     }
 
-    #vote-count {
+    :deep(.vote-count) {
         font-size: 18px;
         font-weight: 500;
     }
 
-    .vote-icon {
+    :deep(.vote-icon) {
         height: 18px !important;
         margin-top: -15px;
     }
 
-    .upvote-icon {
+    :deep(.upvote-icon) {
         margin-top: -20px;
     }
 
-    .toggle-actions-bnt {
+    :deep(.toggle-actions-bnt) {
         width: 22px;
         height: 22px;
         padding-top: 0px;
         padding-left: 2px;
     }
 
-    .first-post-row {
+    :deep(.first-post-row) {
         margin-left: 15px;
     }
 
-    .action-btns-div {
+    :deep(.action-btns-div) {
         left: -10px;
     }
 
@@ -605,11 +605,11 @@ h2 {
         justify-content: center;
     }
 
-    .first-post-row {
+    :deep(.first-post-row) {
         margin-left: 20px;
     }
 
-    .forum-post {
+    :deep(.forum-post) {
         width: 96%;
     }
 

@@ -162,7 +162,7 @@ export default {
     <div class="d-flex flex-column flex-md-row justify-content-between my-4">
         <div class="d-flex align-items-md-baseline align-items-start gap-2">
             <div class="forum-sub-page-tile">Tutor Offer Proposals</div>
-            <img src="/images/recurso-69.png" class="" />
+            <img src="/images/recurso-69.png" />
         </div>
         <div class="mx-auto mx-md-0 mt-3 mt-lg-0">
             <div class="d-flex flex-column justify-content-between">
@@ -188,11 +188,13 @@ export default {
     </div>
     <div id="">
         <div
-            class="tutor d-flex w-100 p-3"
+            class="tutor d-flex w-100 p-3 flex-column flex-lg-row"
             v-for="post in orderedAndNamedPosts"
         >
             <!-- User avatar -->
-            <div class="d-flex justify-content-center tutor-avatar-div">
+            <div
+                class="d-flex justify-content-center ms-3 ms-md-0 tutor-avatar-div"
+            >
                 <img
                     :src="post.userAvatar"
                     class="tutor-img rounded"

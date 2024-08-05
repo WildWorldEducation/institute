@@ -485,4 +485,8 @@ export default {
         padding: 4px;
     }
 }
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
+}
 </style>
