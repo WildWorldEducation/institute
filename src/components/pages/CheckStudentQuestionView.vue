@@ -4,17 +4,19 @@ import router from '../../router';
 import { useStudentMCQuestionsStore } from '../../stores/StudentMCQuestionsStore.js';
 import { useUsersStore } from '../../stores/UsersStore';
 import { useSkillsStore } from '../../stores/SkillsStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 export default {
     setup() {
         const studentMCQuestionsStore = useStudentMCQuestionsStore();
         const usersStore = useUsersStore();
         const skillsStore = useSkillsStore();
-
+        const userDetailsStore = useUserDetailsStore();
         return {
             studentMCQuestionsStore,
             usersStore,
-            skillsStore
+            skillsStore,
+            userDetailsStore
         };
     },
     data() {
@@ -193,7 +195,13 @@ export default {
                             ></textarea>
                         </div>
 
-                        <div class="d-flex justify-content-end gap-4">
+                        <div
+                            v-if="
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                            class="d-flex justify-content-end gap-4"
+                        >
                             <a class="btn red-btn" @click="editMode()">Edit</a>
                             <a
                                 class="btn red-btn"
