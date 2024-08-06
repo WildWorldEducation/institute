@@ -127,7 +127,7 @@ export default {
 
             <!-- Questions -->
             <!-- Only show Questions log if user is admin  -->
-            <div v-if="user.role === 'admin'" class="d-flex flex-column">
+            <div class="d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
                     <div
                         class="log-type"
