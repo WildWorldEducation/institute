@@ -44,9 +44,9 @@ export default {
         </div>
         <div id="skillInfoPanelContainer">
             <h1>{{ skill?.name }}</h1>
-            <div class="form-check">
-                <!-- 'pointer-events: none' to make checkbox unclickable, without it being greyed out (disabled). -->
-                <input
+            <!-- <div class="form-check"> -->
+            <!-- 'pointer-events: none' to make checkbox unclickable, without it being greyed out (disabled). -->
+            <!-- <input
                     id="mastery-checkbox"
                     class="form-check-input"
                     type="checkbox"
@@ -59,7 +59,7 @@ export default {
                 >
                     Attained
                 </label>
-            </div>
+            </div> -->
             <div v-if="skill?.type != 'domain'" class="mt-2">
                 <div
                     class="truncate-overflow"
