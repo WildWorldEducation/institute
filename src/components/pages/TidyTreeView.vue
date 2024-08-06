@@ -180,19 +180,19 @@ export default {
 }
 /* Level colors */
 .legend .grade-school {
-    background-color: #3ecd14;
+    background-color: #40e0d0;
 }
 .legend .middle-school {
-    background-color: #b9db42;
+    background-color: #33a133;
 }
 .legend .high-school {
-    background-color: #f5e379;
+    background-color: #ffd700;
 }
 .legend .college {
-    background-color: #f1a335;
+    background-color: #ffa500;
 }
 .legend .phd {
-    background-color: #e42b24;
+    background-color: #ff0000;
 }
 
 #print-btn {
