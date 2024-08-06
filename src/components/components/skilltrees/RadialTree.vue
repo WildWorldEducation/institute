@@ -306,15 +306,15 @@ export default {
             // Node colour.
             let color;
             if (node.data.type == 'domain') {
-                color = 'orange';
+                color = 'black';
             } else if (node.data.level == 'grade_school') {
-                color = '#00FF00';
+                color = '#40E0D0';
             } else if (node.data.level == 'middle_school') {
-                color = '#FFFF00';
+                color = '#33A133';
             } else if (node.data.level == 'high_school') {
-                color = '#FFA500';
+                color = '#FFD700';
             } else if (node.data.level == 'college') {
-                color = '#FF4500';
+                color = '#FFA500';
             } else if (node.data.level == 'phd') {
                 color = '#FF0000';
             }

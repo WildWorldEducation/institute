@@ -8,14 +8,14 @@ export default {
     },
     components: { TidyTree },
     methods: {
-        // Toggle info bar.
-        ToggleInfobar() {
-            if (document.getElementById('legend').style.display == 'block') {
-                document.getElementById('legend').style.display = 'none';
-            } else {
-                document.getElementById('legend').style.display = 'block';
-            }
-        }
+        // // Toggle info bar.
+        // ToggleInfobar() {
+        //     if (document.getElementById('legend').style.display == 'none') {
+        //         document.getElementById('legend').style.display = 'block';
+        //     } else {
+        //         document.getElementById('legend').style.display = 'none';
+        //     }
+        // }
     }
 };
 </script>
@@ -89,20 +89,20 @@ export default {
         </div>
     </div>
     <div id="thin-purple-banner">
-        <button id="info-button" class="btn" @click="ToggleInfobar()">
+        <!-- <button id="info-button" class="btn" @click="ToggleInfobar()">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 192 512"
                 height="12"
                 width="12"
-            >
-                <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
-                <path
+            > -->
+        <!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+        <!-- <path
                     d="M144 80c0 26.5-21.5 48-48 48s-48-21.5-48-48s21.5-48 48-48s48 21.5 48 48zM0 224c0-17.7 14.3-32 32-32H96c17.7 0 32 14.3 32 32V448h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H64V256H32c-17.7 0-32-14.3-32-32z"
                     fill="black"
                 />
             </svg>
-        </button>
+        </button> -->
     </div>
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
@@ -117,7 +117,7 @@ export default {
 
 <style>
 #legend {
-    display: none;
+    display: block;
     overflow-x: hidden;
 }
 
@@ -135,7 +135,7 @@ export default {
 }
 
 #thin-purple-banner {
-    height: 20px;
+    height: 2px;
     background-color: #a48be640;
 }
 
@@ -180,16 +180,16 @@ export default {
 }
 /* Level colors */
 .legend .grade-school {
-    background-color: #00ff00;
+    background-color: #40e0d0;
 }
 .legend .middle-school {
-    background-color: #ffff00;
+    background-color: #33a133;
 }
 .legend .high-school {
-    background-color: #ffa500;
+    background-color: #ffd700;
 }
 .legend .college {
-    background-color: #ff4500;
+    background-color: #ffa500;
 }
 .legend .phd {
     background-color: #ff0000;

@@ -693,13 +693,13 @@ export default {
         hexColor(skillLevel) {
             switch (skillLevel) {
                 case 'college':
-                    return '#FF4500';
-                case 'grade_school':
-                    return '#00FF00';
-                case 'high_school':
                     return '#FFA500';
+                case 'grade_school':
+                    return '#40E0D0';
+                case 'high_school':
+                    return '#FFD700';
                 case 'middle_school':
-                    return '#FFFF00';
+                    return '#33A133';
                 case 'phd':
                     return '#FF0000';
                 default:
@@ -710,15 +710,15 @@ export default {
         hexBorderColor(skillLevel) {
             switch (skillLevel) {
                 case 'college':
-                    return '#B03000';
-                case 'grade_school':
-                    return '#008000';
-                case 'high_school':
                     return '#CC8400';
+                case 'grade_school':
+                    return '#33B3A6';
+                case 'high_school':
+                    return '#CCAC00';
                 case 'middle_school':
-                    return '#808000';
+                    return '#006400';
                 case 'phd':
-                    return '#800000';
+                    return '#CC0000';
                 default:
                     break;
             }
