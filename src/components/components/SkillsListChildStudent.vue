@@ -469,7 +469,7 @@ export default {
 }
 
 .grade-school-level.mastered {
-    background-color: #2e9e0f;
+    background-color: #75e85a;
 }
 
 .middle-school-level {
@@ -477,7 +477,7 @@ export default {
 }
 
 .middle-school-level.mastered {
-    background-color: #93b235;
+    background-color: #d3e97b;
 }
 
 .high-school-level {
@@ -485,7 +485,7 @@ export default {
 }
 
 .high-school-level.mastered {
-    background-color: #c4b45f;
+    background-color: #faeb9e;
 }
 
 .college-level {
@@ -493,7 +493,7 @@ export default {
 }
 
 .college-level.mastered {
-    background-color: #f1a335;
+    background-color: #f4ba64;
 }
 
 .phd-level {
@@ -501,7 +501,7 @@ export default {
 }
 
 .phd-level.mastered {
-    background-color: #b4221c;
+    background-color: #ec5d57;
 }
 
 .top-level-skills svg path {
