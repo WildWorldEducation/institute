@@ -236,6 +236,24 @@ export default {
                     break;
             }
         },
+        deleteTutorPost(source) {
+            // Close the modal.
+            this.showModal = false;
+            // Delete record from DB.
+
+            fetch('/tutor-posts/delete/' + source.id, {
+                method: 'DELETE'
+            }).then(() => {
+                this.getS;
+                this.isAlreadyTutoring = false;
+            });
+
+            console.log(this.tutorPosts);
+            // Delete without refreshing page using filter will be quicker.
+            this.tutorPosts = this.tutorPosts.filter((tutorPost) => {
+                return tutorPost.id != source.id;
+            });
+        },
         showWarningModal(source) {
             this.source = source;
             this.showModal = true;
