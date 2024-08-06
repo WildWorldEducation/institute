@@ -293,6 +293,7 @@ export default {
             v-if="activeTab === 'resource'"
             :resourcePosts="sourcePosts"
             :user="user"
+            :skillId="skillId"
         />
         <ForumTutorPost
             v-if="activeTab === 'tutorPost'"
@@ -428,7 +429,7 @@ h2 {
 }
 
 /* The Warning Modal */
-.modal {
+:deep(.modal) {
     display: block;
     /* Hidden by default */
     position: fixed;
@@ -455,7 +456,7 @@ h2 {
 }
 
 /* Modal Content/Box */
-.modal-content {
+:deep(.modal-content) {
     background-color: #fefefe;
     margin: 15% auto;
     /* 15% from the top and centered */
@@ -465,7 +466,7 @@ h2 {
     /* Could be more or less, depending on screen size */
 }
 
-.modal-btn {
+:deep(.modal-btn) {
     width: 25%;
 }
 /* End of Warning modal styling */
@@ -584,16 +585,16 @@ h2 {
         left: -10px;
     }
 
-    .modal-btn {
+    :deep(.modal-btn) {
         width: fit-content;
     }
 
-    .modal-content {
+    :deep(.modal-content) {
         margin-top: 100%;
         width: 90%;
     }
 
-    .modal-content-flag {
+    :deep(.modal-content-flag) {
         margin-top: 100%;
         width: 95%;
     }
@@ -613,17 +614,17 @@ h2 {
         width: 96%;
     }
 
-    .modal-content {
+    :deep(.modal-content) {
         margin-top: 60%;
         width: 70%;
     }
 
-    .modal-content-flag {
+    :deep(.modal-content-flag) {
         margin-top: 55%;
         width: 50%;
     }
 
-    .modal-btn {
+    :deep(.modal-btn) {
         width: fit-content;
     }
 }

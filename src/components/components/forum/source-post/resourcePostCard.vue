@@ -1,8 +1,11 @@
 <script>
 export default {
-    props: ['post'],
+    props: ['post', 'user'],
     data() {
-        return {};
+        return {
+            showActionBtns: false,
+            currentClickId: 0
+        };
     },
     mounted() {},
     computed: {},
@@ -85,10 +88,7 @@ export default {
             }
         },
         handleOpenFlagModal(postId) {
-            this.$parent.flagPost = postId;
-            this.$parent.showFlaggingModal = true;
-            this.showActionBtns = false;
-            this.$parent.flagType = 'resource';
+            this.$parent.handleOpenFlagModal(postId);
         }
     }
 };
