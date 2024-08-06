@@ -464,44 +464,54 @@ export default {
     font-size: 13px;
 }
 
+/* Border */
 .grade-school-level {
-    border-color: #3ecd14;
+    border-color: #33b3a6;
 }
 
+/* Background when mastered */
 .grade-school-level.mastered {
-    background-color: #75e85a;
+    background-color: #b3f9eb;
 }
 
+/* Border */
 .middle-school-level {
-    border-color: #b9db42;
+    border-color: #008000;
 }
 
+/* Background when mastered */
 .middle-school-level.mastered {
-    background-color: #d3e97b;
+    background-color: #99d899;
 }
 
+/* Border */
 .high-school-level {
-    border-color: #f5e379;
+    border-color: #ccac00;
 }
 
+/* Background when mastered */
 .high-school-level.mastered {
-    background-color: #faeb9e;
+    background-color: #ffe34c;
 }
 
+/* Border */
 .college-level {
-    border-color: #f1a335;
+    border-color: #ffa500;
 }
 
+/* Background when mastered */
 .college-level.mastered {
-    background-color: #f4ba64;
+    background-color: #ffd999;
 }
 
+/* Border */
 .phd-level {
-    border-color: #e42b24;
+    border-color: #cc0000;
 }
 
+/* Background when mastered */
 .phd-level.mastered {
-    background-color: #ec5d57;
+    background-color: #ff9999;
 }
 
 .top-level-skills svg path {
