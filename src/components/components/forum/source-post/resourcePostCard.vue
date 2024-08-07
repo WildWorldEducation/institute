@@ -1,6 +1,6 @@
 <script>
 export default {
-    props: [`resourcePosts`, 'user'],
+    props: ['post', 'user'],
     data() {
         return {
             showActionBtns: false,
@@ -8,48 +8,14 @@ export default {
         };
     },
     mounted() {},
-    computed: {
-        orderedAndNamedPosts() {
-            // Getting the student's name.
-            for (let j = 0; j < this.resourcePosts.length; j++) {
-                for (let k = 0; k < this.$parent.users.length; k++) {
-                    if (
-                        this.resourcePosts[j].user_id ==
-                        this.$parent.users[k].id
-                    ) {
-                        this.resourcePosts[j].studentName =
-                            this.$parent.users[k].first_name +
-                            ' ' +
-                            this.$parent.users[k].last_name;
-                        // I think we should get the user avatar too
-                        this.resourcePosts[j].userAvatar =
-                            this.$parent.users[k].avatar;
-                    }
-                }
-            }
-
-            // Ordering by vote.
-            var sortedPosts = this.resourcePosts.sort((a, b) => {
-                if (b.voteCount === a.voteCount) {
-                    return new Date(b.created_at) - new Date(a.created_at);
-                }
-                return b.voteCount - a.voteCount;
-            });
-
-            // for (let i = 0; i < sortedPosts.length; i++) {
-            //     this.resourcePosts[i].index = i;
-            // }
-
-            return sortedPosts;
-        }
-    },
+    computed: {},
     methods: {
         handleClickActionBtns(postId) {
             this.showActionBtns = !this.showActionBtns;
             this.currentClickId = postId;
         },
         showWarningModal(post) {
-            this.$parent.showWarningModal(post);
+            this.$parent.showWarningModal(post, 'resource');
         },
         voteUp(postId, hasVoted) {
             if (hasVoted) {
@@ -100,7 +66,7 @@ export default {
                         body: {}
                     }
                 ).then(() => {
-                    this.$parent.getSourceVotes(postId);
+                    this.$parent.getSourceVotes(postId, this.post.type);
                 });
             } else {
                 fetch(
@@ -117,25 +83,19 @@ export default {
                         body: {}
                     }
                 ).then(() => {
-                    this.$parent.getSourceVotes(postId);
+                    this.$parent.getSourceVotes(postId, this.post.type);
                 });
             }
         },
         handleOpenFlagModal(postId) {
-            this.$parent.flagPost = postId;
-            this.$parent.showFlaggingModal = true;
-            this.showActionBtns = false;
-            this.$parent.flagType = 'resource';
+            this.$parent.handleOpenFlagModal(postId, 'resource');
         }
     }
 };
 </script>
 
 <template>
-    <div
-        class="row mt-4 forum-container source"
-        v-for="post in orderedAndNamedPosts"
-    >
+    <div class="row mt-4 forum-container source">
         <div class="d-flex align-items-center justify-content-between mb-2">
             <!-- Second row contain name and avatar -->
             <div class="w-100">
@@ -158,12 +118,12 @@ export default {
             </div>
             <!-- First row of post contain likes count and relate buttons -->
         </div>
-        <div class="col-12">
-            <div class="source">
-                <!-- Post Content -->
-                <div class="forum-post" v-html="post.content"></div>
-            </div>
+
+        <div class="source">
+            <!-- Post Content -->
+            <div class="forum-post w-auto" v-html="post.content"></div>
         </div>
+
         <div class="d-flex align-items-center justify-content-end mt-3">
             <!-- row contain likes count and relate buttons -->
             <div class="first-post-row">
@@ -381,14 +341,49 @@ export default {
     color: #778094;
 }
 
+.user-name-div {
+    margin-left: 5px;
+}
+
+.user-avatar {
+    height: 45px;
+    width: 45px;
+}
+
+.user-avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    margin-right: 0px;
+    margin-left: auto;
+    margin-top: 0px;
+    object-fit: cover;
+}
+
 .source {
     background-color: #f2edff;
 }
 
+.post-user-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.forum-post {
+    padding: 10px;
+    border-radius: 5px;
+    background-color: white;
+}
 /* Mobile */
 @media (max-width: 480px) {
     .user-avatar {
         padding: 4px;
     }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
 }
 </style>
