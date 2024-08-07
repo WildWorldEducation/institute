@@ -5,6 +5,7 @@ import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 import SkillPanel from './../SkillPanel.vue';
 import SliderControl from './SliderControl.vue';
 import JoystickControl from './JoystickControl.vue';
+
 // Algorithm.
 import * as d3 from 'd3';
 
@@ -747,9 +748,9 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <JoystickControl />
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
+        <JoystickControl />
     </div>
 </template>
 
@@ -776,17 +777,6 @@ export default {
 /* End of loading animation */
 
 /* ___________ Button Style ___________ */
-#controlsWrapper {
-    position: absolute;
-    width: 200px;
-    bottom: 2px;
-    left: 2px;
-}
-
-#panJoystick {
-    width: 100px;
-    height: 100px;
-}
 
 .slidecontainer {
     width: 100%; /* Width of the outside container */
@@ -830,13 +820,6 @@ export default {
     height: calc(100% - 92px);
     overflow: hidden;
     position: relative;
-}
-
-#buttonWrapper {
-    position: absolute;
-    width: 30px;
-    top: 90px;
-    right: 2px;
 }
 
 input[type='button'] {
