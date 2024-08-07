@@ -395,7 +395,7 @@ export default {
 <style scoped>
 /* ___________ Button Style ___________ */
 #controlsWrapper {
-    position: absolute;
+    position: fixed;
     width: 200px;
     bottom: 0px;
     left: 12px;

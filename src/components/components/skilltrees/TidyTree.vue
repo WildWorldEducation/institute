@@ -776,12 +776,6 @@ export default {
 /* End of loading animation */
 
 /* ___________ Button Style ___________ */
-#controlsWrapper {
-    position: absolute;
-    width: 200px;
-    bottom: 2px;
-    left: 2px;
-}
 
 #panJoystick {
     width: 100px;
@@ -827,7 +821,6 @@ export default {
 #wrapper {
     width: 100%;
     height: 100%;
-    height: calc(100% - 130px);
     overflow: hidden;
     position: relative;
 }
