@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
+const { recordUserAction } = require('../utilities/record-user-action');
 // DB
 const conn = require('../config/db');
 
@@ -207,6 +208,87 @@ router.put('/mc/:id/edit', (req, res, next) => {
 });
 
 /**
+ *
+ * @return response()
+ */
+// Edit MC questions
+router.put('/mc/:id/approve-edits', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+        let correctAnswer;
+        let incorrectAnswer1;
+        let incorrectAnswer2;
+        let incorrectAnswer3;
+        let incorrectAnswer4;
+        let explanation;
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+        if (req.body.correct_answer != null)
+            correctAnswer = req.body.correct_answer.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_1 != null)
+            incorrectAnswer1 = req.body.incorrect_answer_1.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_2 != null)
+            incorrectAnswer2 = req.body.incorrect_answer_2.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_3 != null)
+            incorrectAnswer3 = req.body.incorrect_answer_3.replace(/'/g, "\\'");
+        if (req.body.incorrect_answer_4 != null)
+            incorrectAnswer4 = req.body.incorrect_answer_4.replace(/'/g, "\\'");
+        if (req.body.explanation != null)
+            explanation = req.body.explanation.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery =
+            `UPDATE mc_questions 
+        SET name='` +
+            name +
+            `', question = '` +
+            question +
+            `', correct_answer = '` +
+            correctAnswer +
+            `', incorrect_answer_1 = '` +
+            incorrectAnswer1 +
+            `', incorrect_answer_2 = '` +
+            incorrectAnswer2 +
+            `', incorrect_answer_3 = '` +
+            incorrectAnswer3 +
+            `', incorrect_answer_4 = '` +
+            incorrectAnswer4 +
+            `', explanation = '` +
+            explanation +
+            `' WHERE id = ` +
+            req.params.id;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // add approve question action into user_actions table
+                    recordUserAction({
+                        userId: req.session.userId,
+                        userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'}`,
+                        contentId: req.params.id,
+                        contentType: 'mc_question'
+                    }, (err) => {
+                        if (err) {
+                            throw err;
+                        }else{
+                            res.end();
+                        }
+                    })
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
  * Submit MC question edit for review.
  */
 router.post('/mc/:id/edit-for-review', (req, res, next) => {
@@ -253,7 +335,18 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    res.end();
+                    recordUserAction({
+                        userId: req.body.userId,
+                        userAction: 'submit_update_for_review',
+                        contentType: 'mc_question',
+                        contentId: req.params.id
+                    }, (err) => {
+                        if (err) {
+                            throw err;
+                        }else{
+                            res.end();
+                        }
+                    })
                 }
             } catch (err) {
                 next(err);
@@ -449,6 +542,53 @@ router.put('/essay/:id/edit', (req, res, next) => {
     }
 });
 
+// Edit Essay questions
+router.put('/essay/:id/approve-edits', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery =
+            `UPDATE essay_questions 
+        SET name='` +
+            name +
+            `', question = '` +
+            question +
+            `' WHERE id = ` +
+            req.params.id;
+        let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // add approve essay question action into user_actions table
+                    recordUserAction({
+                        userId: req.session.userId,
+                        userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'}`,
+                        contentId: req.params.id,
+                        contentType: 'essay_question'
+                    }, (err) => {
+                        if (err) {
+                            throw err;
+                        }else{
+                            res.end();
+                        }
+                    })
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 /**
  * Submit Essay question edit for review.
  */
@@ -476,7 +616,18 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    res.end();
+                    recordUserAction({
+                        userId: req.body.userId,
+                        userAction: 'submit_update_for_review',
+                        contentType: 'essay_question',
+                        contentId: req.params.id
+                    }, (err) => {
+                        if (err) {
+                            throw err;
+                        }else{
+                            res.end();
+                        }
+                    })
                 }
             } catch (err) {
                 next(err);

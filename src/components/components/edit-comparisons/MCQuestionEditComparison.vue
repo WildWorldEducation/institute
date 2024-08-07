@@ -79,7 +79,6 @@ export default {
         },
         edit() {
             this.isEditMode = true;
-         
         },
         saveEdit() {
             const requestOptions = {
@@ -94,12 +93,13 @@ export default {
                     incorrect_answer_3: this.mcQuestionEdit.incorrect_answer_3,
                     incorrect_answer_4: this.mcQuestionEdit.incorrect_answer_4,
                     correct_answer: this.mcQuestionEdit.correct_answer,
-                    explanation: this.mcQuestionEdit.explanation
+                    explanation: this.mcQuestionEdit.explanation,
+                    edit: this.isEditMode
                 })
             };
 
             var url =
-                '/questions/mc/' + this.mcQuestionEdit.mc_question_id + '/edit';
+                '/questions/mc/' + this.mcQuestionEdit.mc_question_id + '/approve-edits';
 
             fetch(url, requestOptions).then(() => {
                 this.$router.back();
