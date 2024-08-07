@@ -5,6 +5,7 @@ import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import FlagModals from '../FlagModals.vue';
 import ForumResource from './source-post/ForumResource.vue';
 import ForumTutorPost from './tutor-post/ForumTutorPost.vue';
+import ForumAllPost from './all-post/ForumAllPost.vue';
 
 export default {
     setup() {
@@ -32,45 +33,16 @@ export default {
             showActionBtns: false,
             currentClickId: '',
             source: null,
-            activeTab: 'resource'
+            activeTab: 'allPost'
         };
     },
     components: {
         FlagModals,
         ForumResource,
-        ForumTutorPost
+        ForumTutorPost,
+        ForumAllPost
     },
-    computed: {
-        orderedAndNamedPosts() {
-            // Getting the student's name.
-            for (let j = 0; j < this.posts.length; j++) {
-                for (let k = 0; k < this.users.length; k++) {
-                    if (this.posts[j].user_id == this.users[k].id) {
-                        this.posts[j].studentName =
-                            this.users[k].first_name +
-                            ' ' +
-                            this.users[k].last_name;
-                        // I think we should get the user avatar too
-                        this.posts[j].userAvatar = this.users[k].avatar;
-                        if (this.posts[j].type == 'tutor')
-                            this.posts[j].email = this.users[k].email;
-                    }
-                }
-            }
-
-            // Ordering by vote.
-            var sortedPosts = this.posts.sort((a, b) => {
-                if (b.voteCount === a.voteCount) {
-                    return new Date(b.created_at) - new Date(a.created_at);
-                }
-                return b.voteCount - a.voteCount;
-            });
-            for (let i = 0; i < sortedPosts.length; i++) {
-                this.posts[i].index = i;
-            }
-            return sortedPosts;
-        }
-    },
+    computed: {},
     async created() {
         this.getUserId();
         await this.getUsers();
@@ -108,7 +80,6 @@ export default {
                     data.forEach(function (element) {
                         element.type = 'source';
                     });
-
                     this.sourcePosts = data;
                 });
         },
@@ -266,8 +237,11 @@ export default {
                 case 'tutorPost':
                     this.activeTab = 'tutorPost';
                     break;
-                default:
+                case 'resource':
                     this.activeTab = 'resource';
+                    break;
+                default:
+                    this.activeTab = 'allPost';
                     break;
             }
         }
@@ -279,6 +253,16 @@ export default {
     <div class="container-fluid mt-4">
         <!-- Navigation Tabs -->
         <ul class="nav nav-tabs border-3">
+            <li
+                class="nav-item"
+                b-on-hover
+                title="List of tutor proposal for this skill"
+                @click="handleTabClick('allPost')"
+            >
+                <div :class="['nav-link', activeTab === 'allPost' && 'active']">
+                    All
+                </div>
+            </li>
             <li
                 class="nav-item"
                 b-on-hover
@@ -316,6 +300,12 @@ export default {
         <ForumTutorPost
             v-if="activeTab === 'tutorPost'"
             :tutorPosts="tutorPosts"
+            :user="user"
+            :skillId="skillId"
+        />
+        <ForumAllPost
+            v-if="activeTab === 'allPost'"
+            :posts="posts"
             :user="user"
             :skillId="skillId"
         />

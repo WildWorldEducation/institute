@@ -1,49 +1,51 @@
 <script>
-import ResourcePostCard from './ResourcePostCard.vue';
+import ResourcePostCard from '../source-post/ResourcePostCard.vue';
+import TutorPostCard from '../tutor-post/TutorPostCard.vue';
 
 export default {
-    props: [`resourcePosts`, 'user', 'skillId'],
+    props: [`posts`, 'user', 'skillId'],
     data() {
         return {
             showActionBtns: false,
             currentClickId: 0,
             isAlreadyTutoring: this.$parent.isAlreadyTutoring,
             showWarnModal: false,
-            currentPost: null
+            currentPost: null,
+            warnText: '',
+            deletePostType: ''
         };
     },
     components: {
+        TutorPostCard,
         ResourcePostCard
     },
-    mounted() {},
+    mounted() {
+        console.log(this.user);
+    },
     computed: {
         orderedAndNamedPosts() {
             // Getting the student's name.
-            for (let j = 0; j < this.resourcePosts.length; j++) {
+            for (let j = 0; j < this.posts.length; j++) {
                 for (let k = 0; k < this.$parent.users.length; k++) {
-                    if (
-                        this.resourcePosts[j].user_id ==
-                        this.$parent.users[k].id
-                    ) {
-                        this.resourcePosts[j].studentName =
+                    if (this.posts[j].user_id == this.$parent.users[k].id) {
+                        this.posts[j].studentName =
                             this.$parent.users[k].first_name +
                             ' ' +
                             this.$parent.users[k].last_name;
+                        this.posts[j].email = this.$parent.users[k].email;
                         // I think we should get the user avatar too
-                        this.resourcePosts[j].userAvatar =
-                            this.$parent.users[k].avatar;
+                        this.posts[j].userAvatar = this.$parent.users[k].avatar;
                     }
                 }
             }
 
             // Ordering by vote.
-            var sortedPosts = this.resourcePosts.sort((a, b) => {
+            var sortedPosts = this.posts.sort((a, b) => {
                 if (b.voteCount === a.voteCount) {
                     return new Date(b.created_at) - new Date(a.created_at);
                 }
                 return b.voteCount - a.voteCount;
             });
-
             // for (let i = 0; i < sortedPosts.length; i++) {
             //     this.resourcePosts[i].index = i;
             // }
@@ -52,22 +54,45 @@ export default {
         }
     },
     methods: {
-        deletePost() {
-            this.$parent.deletePost(this.currentPost);
+        deletePost(post, postType) {
+            switch (postType) {
+                case 'tutorPost':
+                    this.$parent.deleteTutorPost(post);
+                    break;
+                // default case will be source type post
+                default:
+                    this.$parent.deletePost(this.currentPost);
+                    break;
+            }
             this.showWarnModal = false;
         },
-        showWarningModal(post) {
+        showWarningModal(post, postType) {
+            switch (postType) {
+                case 'tutorPost':
+                    this.warnText = 'tutor offer';
+                    this.deletePostType = 'tutorPost';
+                    break;
+                // default case will be source type post
+                default:
+                    this.deletePostType = 'resource';
+                    this.warnText = 'source';
+                    break;
+            }
             this.currentPost = post;
             this.showWarnModal = true;
         },
-        handleOpenFlagModal(postId) {
+
+        handleOpenFlagModal(postId, postType) {
             this.$parent.flagPost = postId;
             this.$parent.showFlaggingModal = true;
             this.showActionBtns = false;
-            this.$parent.flagType = 'resource';
+            this.$parent.flagType = postType;
         },
         getSourceVotes(postId) {
             this.$parent.getSourceVotes(postId);
+        },
+        getTutorPostVotes(postId) {
+            this.$parent.getTutorPostVotes(postId);
         }
     }
 };
@@ -87,7 +112,7 @@ export default {
                         class="btn green-btn"
                         role="button"
                         >Add source&nbsp;&nbsp;
-                        <!-- Plus sign -->
+                        <!-- Plus icon -->
                         <svg
                             width="18"
                             height="18"
@@ -101,16 +126,45 @@ export default {
                             />
                         </svg>
                     </router-link>
+                    <router-link
+                        v-if="
+                            user.role == 'student' && isAlreadyTutoring == false
+                        "
+                        :to="'/tutor/add/' + skillId"
+                        class="btn purple-btn mt-2"
+                        role="button"
+                        >Offer to tutor&nbsp;&nbsp;
+                        <!-- hand point up icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="18"
+                            height="20"
+                        >
+                            <path
+                                d="M32 32C32 14.3 46.3 0 64 0S96 14.3 96 32V240H32V32zM224 192c0-17.7 14.3-32 32-32s32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V192zm-64-64c17.7 0 32 14.3 32 32v48c0 17.7-14.3 32-32 32s-32-14.3-32-32V160c0-17.7 14.3-32 32-32zm160 96c0-17.7 14.3-32 32-32s32 14.3 32 32v64c0 17.7-14.3 32-32 32s-32-14.3-32-32V224zm-96 88l0-.6c9.4 5.4 20.3 8.6 32 8.6c13.2 0 25.4-4 35.6-10.8c8.7 24.9 32.5 42.8 60.4 42.8c11.7 0 22.6-3.1 32-8.6V352c0 88.4-71.6 160-160 160H162.3c-42.4 0-83.1-16.9-113.1-46.9L37.5 453.5C13.5 429.5 0 396.9 0 363V336c0-35.3 28.7-64 64-64h88c22.1 0 40 17.9 40 40s-17.9 40-40 40H96c-8.8 0-16 7.2-16 16s7.2 16 16 16h56c39.8 0 72-32.2 72-72z"
+                                fill="white"
+                            />
+                        </svg>
+                    </router-link>
                 </div>
             </div>
         </div>
     </div>
     <div id="posts-big-container">
-        <ResourcePostCard
-            v-for="post in orderedAndNamedPosts"
-            :post="post"
-            :user="user"
-        />
+        <div v-for="post in orderedAndNamedPosts">
+            <ResourcePostCard
+                v-if="post.type === 'source'"
+                :post="post"
+                :user="user"
+            />
+            <TutorPostCard
+                v-if="post.type === 'tutor'"
+                :post="post"
+                :user="user"
+                class="my-4"
+            />
+        </div>
     </div>
     <!-- The Delete Warn Modal -->
     <div v-if="showWarnModal">

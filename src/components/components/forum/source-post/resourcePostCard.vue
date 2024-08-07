@@ -15,7 +15,7 @@ export default {
             this.currentClickId = postId;
         },
         showWarningModal(post) {
-            this.$parent.showWarningModal(post);
+            this.$parent.showWarningModal(post, 'resource');
         },
         voteUp(postId, hasVoted) {
             if (hasVoted) {
@@ -66,7 +66,7 @@ export default {
                         body: {}
                     }
                 ).then(() => {
-                    this.$parent.getSourceVotes(postId);
+                    this.$parent.getSourceVotes(postId, this.post.type);
                 });
             } else {
                 fetch(
@@ -83,12 +83,12 @@ export default {
                         body: {}
                     }
                 ).then(() => {
-                    this.$parent.getSourceVotes(postId);
+                    this.$parent.getSourceVotes(postId, this.post.type);
                 });
             }
         },
         handleOpenFlagModal(postId) {
-            this.$parent.handleOpenFlagModal(postId);
+            this.$parent.handleOpenFlagModal(postId, 'resource');
         }
     }
 };

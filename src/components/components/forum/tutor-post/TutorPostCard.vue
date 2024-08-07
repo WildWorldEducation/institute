@@ -14,7 +14,7 @@ export default {
     computed: {},
     methods: {
         showWarningModal(post) {
-            this.$parent.showWarningModal(post);
+            this.$parent.showWarningModal(post, 'tutorPost');
         },
         voteUp(postId, hasVoted) {
             if (hasVoted) {
@@ -83,17 +83,17 @@ export default {
             }
         },
         handleOpenFlagModal(postId) {
-            this.$parent.handleOpenFlagModal(postId);
+            this.$parent.handleOpenFlagModal(postId, 'tutorPost');
         },
 
         deleteTutorPost(source) {
-            this.$parent.deleteTutorPost(source);
+            this.$parent.deleteTutorPost(source, 'tutorPost');
         },
         /* Because we store the tutor post with HTML tags so we 
            need to strip all the tags to show it in the non-expand version
         */
         toPlainText(code) {
-            return code.replace(/<\/?[^>]+(>|$)/g, '');
+            return code?.replace(/<\/?[^>]+(>|$)/g, '');
         }
     }
 };
@@ -221,7 +221,11 @@ export default {
                         <span
                             b-on-hover
                             title="number of vote this resource receive"
-                            id="vote-count"
+                            :class="{
+                                'text-danger': post.voteCount < 0,
+                                'text-primary': post.voteCount > 0,
+                                'vote-count': true
+                            }"
                             >{{ post.voteCount }}</span
                         >
                         <!-- Down vote button -->
