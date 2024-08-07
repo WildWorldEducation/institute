@@ -466,24 +466,55 @@ export default {
 .four-row-domain-name {
     font-size: 12px;
 }
+
+/* Border */
 .grade-school-level {
-    border-color: #40b9a9;
+    border-color: #33b3a6;
 }
 
+/* Background when mastered */
+.grade-school-level.mastered {
+    background-color: #b3f9eb;
+}
+
+/* Border */
 .middle-school-level {
-    border-color: #6eb3f5;
+    border-color: #008000;
 }
 
+/* Background when mastered */
+.middle-school-level.mastered {
+    background-color: #99d899;
+}
+
+/* Border */
 .high-school-level {
-    border-color: #3983dd;
+    border-color: #ccac00;
 }
 
+/* Background when mastered */
+.high-school-level.mastered {
+    background-color: #ffe34c;
+}
+
+/* Border */
 .college-level {
-    border-color: #baa9e1;
+    border-color: #ffa500;
 }
 
+/* Background when mastered */
+.college-level.mastered {
+    background-color: #ffd999;
+}
+
+/* Border */
 .phd-level {
-    border-color: #9c7eec;
+    border-color: #cc0000;
+}
+
+/* Background when mastered */
+.phd-level.mastered {
+    background-color: #ff9999;
 }
 
 .top-level-skills svg path {

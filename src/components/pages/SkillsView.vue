@@ -98,21 +98,22 @@ export default {
     margin: 2px;
     border-radius: 50%;
 }
-/* your colors */
+
+/* Level colors */
 .legend .grade-school {
-    background-color: #36bbaa;
+    background-color: #40e0d0;
 }
 .legend .middle-school {
-    background-color: #97c8f7;
+    background-color: #33a133;
 }
 .legend .high-school {
-    background-color: #3983dd;
+    background-color: #ffd700;
 }
 .legend .college {
-    background-color: #ab94e3;
+    background-color: #ffa500;
 }
 .legend .phd {
-    background-color: #a48be5;
+    background-color: #ff0000;
 }
 
 /*---*/

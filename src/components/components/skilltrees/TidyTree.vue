@@ -101,7 +101,7 @@ export default {
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
 
-            if (node && node.data.id) {             
+            if (node && node.data.id) {
                 // We clicked on something, lets set the color of the node
                 // we also have access to the data associated with it, which in
                 // this case is just its original index in the data array.
@@ -693,15 +693,15 @@ export default {
         hexColor(skillLevel) {
             switch (skillLevel) {
                 case 'college':
-                    return '#ab94e3';
+                    return '#FFA500';
                 case 'grade_school':
-                    return '#36bbaa';
+                    return '#40E0D0';
                 case 'high_school':
-                    return '#3983dd';
+                    return '#FFD700';
                 case 'middle_school':
-                    return '#97c8f7';
+                    return '#33A133';
                 case 'phd':
-                    return '#a48be5';
+                    return '#FF0000';
                 default:
                     break;
             }
@@ -710,15 +710,15 @@ export default {
         hexBorderColor(skillLevel) {
             switch (skillLevel) {
                 case 'college':
-                    return '#8271ab';
+                    return '#CC8400';
                 case 'grade_school':
-                    return '#2a9184';
+                    return '#33B3A6';
                 case 'high_school':
-                    return '#2d67ad';
+                    return '#CCAC00';
                 case 'middle_school':
-                    return '#769dc2';
+                    return '#006400';
                 case 'phd':
-                    return '#826eb5';
+                    return '#CC0000';
                 default:
                     break;
             }

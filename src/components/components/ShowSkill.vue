@@ -188,7 +188,7 @@ export default {
     watch: {
         async $route(to, from) {
             // react to route changes...
-            this.skillId = to.params.id;
+            this.skillId = to.params.skillId;
             await this.getSkill();
             await this.getUserSkills();
         }
@@ -236,6 +236,10 @@ export default {
 
                     <!-- Show version history -->
                     <router-link
+                        v-if="
+                            userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'editor'
+                        "
                         :to="'/skills/history/' + this.skillId"
                         class="btn purple-btn"
                         style="max-height: 37.6px"
@@ -311,7 +315,7 @@ export default {
                                 ? skill.icon_image
                                 : '/images/skill-avatar/recurso.png'
                         "
-                        class="skill-icon"
+                        class="skill-icon rounded"
                     />
                 </div>
                 <!-- Skill name and skill description -->
@@ -479,8 +483,7 @@ export default {
 }
 
 .skill-icon {
-    width: fit-content;
-    height: auto;
+    max-width: 200px;
 }
 
 .skill-name {
