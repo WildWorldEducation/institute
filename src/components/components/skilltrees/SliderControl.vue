@@ -108,7 +108,7 @@ export default {
 <style scoped>
 /* ___________ Button Style ___________ */
 #sliderWrapper {
-    position: absolute;
+    position: fixed;
     width: 16px;
     bottom: 15px;
     right: 18px;
