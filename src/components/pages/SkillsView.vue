@@ -88,6 +88,7 @@ export default {
 /* basic positioning */
 .legend {
     list-style: none;
+    width: 100%;
 }
 
 .legend span {

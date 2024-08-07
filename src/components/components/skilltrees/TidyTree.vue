@@ -827,7 +827,7 @@ export default {
 #wrapper {
     width: 100%;
     height: 100%;
-    height: calc(100% - 92px);
+    height: calc(100% - 130px);
     overflow: hidden;
     position: relative;
 }
@@ -890,7 +890,7 @@ input[type='button'] {
         flex-direction: column;
     }
     #wrapper {
-        height: calc(100% - 86px);
+        height: calc(100% - 130px);
     }
 }
 
