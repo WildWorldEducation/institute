@@ -219,7 +219,6 @@ export default {
                 this.isAlreadyTutoring = false;
             });
 
-            console.log(this.tutorPosts);
             // Delete without refreshing page using filter will be quicker.
             this.tutorPosts = this.tutorPosts.filter((tutorPost) => {
                 return tutorPost.id != source.id;
@@ -251,12 +250,16 @@ export default {
 
 <template>
     <div class="container-fluid mt-4">
+        <div class="d-flex align-items-md-baseline align-items-start gap-2">
+            <div class="forum-sub-page-tile">Best Places To Learn This</div>
+            <img src="/images/recurso-69.png" class="" />
+        </div>
         <!-- Navigation Tabs -->
         <ul class="nav nav-tabs border-3">
             <li
                 class="nav-item"
                 b-on-hover
-                title="List of tutor proposal for this skill"
+                title="All posts related to this skill"
                 @click="handleTabClick('allPost')"
             >
                 <div :class="['nav-link', activeTab === 'allPost' && 'active']">
@@ -266,7 +269,7 @@ export default {
             <li
                 class="nav-item"
                 b-on-hover
-                title="List of Resources for this skill"
+                title="Only sources"
                 @click="handleTabClick('resource')"
             >
                 <div
@@ -278,7 +281,7 @@ export default {
             <li
                 class="nav-item"
                 b-on-hover
-                title="List of tutor proposal for this skill"
+                title="Only potential tutors"
                 @click="handleTabClick('tutorPost')"
             >
                 <div

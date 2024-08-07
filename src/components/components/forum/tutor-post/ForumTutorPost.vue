@@ -84,10 +84,6 @@ export default {
 
 <template>
     <div class="d-flex flex-column flex-md-row justify-content-between my-4">
-        <div class="d-flex align-items-md-baseline align-items-start gap-2">
-            <div class="forum-sub-page-tile">Tutors</div>
-            <img src="/images/recurso-69.png" />
-        </div>
         <div class="ms-0 me-auto ms-lg-auto me-lg-0">
             <div class="d-flex flex-column align-items-baseline">
                 <router-link
