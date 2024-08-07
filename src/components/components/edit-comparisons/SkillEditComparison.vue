@@ -86,7 +86,6 @@ export default {
                 .next()
                 .find('.note-editable')
                 .attr('contenteditable', true);
-
             this.isEditMode = true;
         },
         saveEdit() {
@@ -101,7 +100,8 @@ export default {
                     mastery_requirements: this.skillEdit.mastery_requirements,
                     icon_image: this.skillEdit.icon_image,
                     banner_image: this.skillEdit.banner_image,
-                    comment: this.comment
+                    comment: this.comment,
+                    edit: this.isEditMode
                 })
             };
 
