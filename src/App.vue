@@ -21,7 +21,7 @@ export default {
 
 <template>
     <header v-if="sessionDetailsStore.isLoggedIn">
-        <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav id="navbar" class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link">
                     <img
@@ -108,8 +108,9 @@ export default {
             </div>
         </nav>
     </header>
-
-    <RouterView />
+    <div class="router-view">
+        <RouterView />
+    </div>
 </template>
 
 <style>
@@ -138,5 +139,13 @@ export default {
     width: 40px;
     height: 40px;
     border-radius: 8px;
+}
+.router-view{
+    padding-top: 72px;
+}
+@media (max-width: 991px) {
+    .router-view{
+        padding-top: 66px;
+    }
 }
 </style>
