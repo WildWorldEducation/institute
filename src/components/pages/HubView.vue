@@ -6,6 +6,7 @@ import Notifications from '../components/Notifications.vue';
 import News from '../components/News.vue';
 import MarkAssessment from '../components/MarkAssessment.vue';
 import CheckStudentQuestions from '../components/CheckStudentQuestions.vue';
+import ApproveLinkBtn from '../components/approve-edit/ApproveLinkBtn.vue';
 
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -28,7 +29,8 @@ export default {
         StudentProgress,
         MarkAssessment,
         CheckStudentQuestions,
-        LastVisitedSkills
+        LastVisitedSkills,
+        ApproveLinkBtn
     },
     computed: {
         name() {
@@ -68,8 +70,9 @@ export default {
                 <MarkAssessment
                     v-else-if="userDetailsStore.role == 'instructor'"
                 />
+                <!-- Go to await approve list page -->
                 <div v-else>
-                    <router-link to="/content-edits">Approve edits</router-link>
+                    <ApproveLinkBtn />
                 </div>
             </div>
             <div class="col-lg-4 col-md-7 mb-4 pb-4">
