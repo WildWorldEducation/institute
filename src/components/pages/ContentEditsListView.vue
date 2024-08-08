@@ -114,113 +114,119 @@ export default {
     <div class="container">
         <div class="mt-4 mb-4">
             <h1 class="page-title">List of edits waiting for approval</h1>
-            <!-- Nav bar  -->
-            <div
-                class="nav flex-column nav-pills me-3"
-                id="v-pills-tab"
-                role="tablist"
-                aria-orientation="vertical"
-            >
-                <button
-                    class="nav-link"
-                    id="v-pills-home-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#v-pills-home"
-                    type="button"
-                    role="tab"
-                    aria-controls="v-pills-home"
-                    aria-selected="true"
+            <div class="d-flex">
+                <!-- Nav bar  -->
+                <div
+                    class="nav flex-column nav-pills me-3"
+                    id="v-pills-tab"
+                    role="tablist"
+                    aria-orientation="vertical"
                 >
-                    Home
-                </button>
-                <button
-                    class="nav-link"
-                    id="v-pills-profile-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#v-pills-profile"
-                    type="button"
-                    role="tab"
-                    aria-controls="v-pills-profile"
-                    aria-selected="false"
-                >
-                    Profile
-                </button>
-                <button
-                    class="nav-link"
-                    id="v-pills-messages-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#v-pills-messages"
-                    type="button"
-                    role="tab"
-                    aria-controls="v-pills-messages"
-                    aria-selected="false"
-                >
-                    Messages
-                </button>
-                <button
-                    class="nav-link"
-                    id="v-pills-settings-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#v-pills-settings"
-                    type="button"
-                    role="tab"
-                    aria-controls="v-pills-settings"
-                    aria-selected="false"
-                >
-                    Settings
-                </button>
+                    <button
+                        class="nav-link"
+                        id="v-pills-home-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#v-pills-home"
+                        type="button"
+                        role="tab"
+                        aria-controls="v-pills-home"
+                        aria-selected="true"
+                    >
+                        Home
+                    </button>
+                    <button
+                        class="nav-link"
+                        id="v-pills-profile-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#v-pills-profile"
+                        type="button"
+                        role="tab"
+                        aria-controls="v-pills-profile"
+                        aria-selected="false"
+                    >
+                        Profile
+                    </button>
+                    <button
+                        class="nav-link"
+                        id="v-pills-messages-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#v-pills-messages"
+                        type="button"
+                        role="tab"
+                        aria-controls="v-pills-messages"
+                        aria-selected="false"
+                    >
+                        Messages
+                    </button>
+                    <button
+                        class="nav-link"
+                        id="v-pills-settings-tab"
+                        data-bs-toggle="pill"
+                        data-bs-target="#v-pills-settings"
+                        type="button"
+                        role="tab"
+                        aria-controls="v-pills-settings"
+                        aria-selected="false"
+                    >
+                        Settings
+                    </button>
+                </div>
+                <!-- Awaiting approval content -->
+                <div>
+                    <h2>Skills</h2>
+                    <ul>
+                        <li v-for="skillEdit in skillEdits">
+                            <router-link
+                                :to="
+                                    '/content-edit/' +
+                                    skillEdit.skill_id +
+                                    '/' +
+                                    skillEdit.user_id +
+                                    '/comparison?type=skill'
+                                "
+                                >User: {{ skillEdit.userName }}, Skill:
+                                {{ skillEdit.skill_id }}, Date:
+                                {{ skillEdit.date }}</router-link
+                            >
+                        </li>
+                    </ul>
+                    <h2>Multiple Choice Questions</h2>
+                    <ul>
+                        <li v-for="mcQuestionEdit in mcQuestionEdits">
+                            <router-link
+                                :to="
+                                    '/content-edit/' +
+                                    mcQuestionEdit.mc_question_id +
+                                    '/' +
+                                    mcQuestionEdit.user_id +
+                                    '/comparison?type=mcquestion'
+                                "
+                                >User: {{ mcQuestionEdit.userName }}, Question:
+                                {{ mcQuestionEdit.mc_question_id }}, Date:
+                                {{ mcQuestionEdit.date }}</router-link
+                            >
+                        </li>
+                    </ul>
+                    <h2>Written Questions</h2>
+                    <ul>
+                        <li v-for="essayQuestionEdit in essayQuestionEdits">
+                            <router-link
+                                :to="
+                                    '/content-edit/' +
+                                    essayQuestionEdit.essay_question_id +
+                                    '/' +
+                                    essayQuestionEdit.user_id +
+                                    '/comparison?type=essayquestion'
+                                "
+                                >User: {{ essayQuestionEdit.userName }},
+                                Question:
+                                {{ essayQuestionEdit.essay_question_id }}, Date:
+                                {{ essayQuestionEdit.date }}</router-link
+                            >
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <h2>Skills</h2>
-            <ul>
-                <li v-for="skillEdit in skillEdits">
-                    <router-link
-                        :to="
-                            '/content-edit/' +
-                            skillEdit.skill_id +
-                            '/' +
-                            skillEdit.user_id +
-                            '/comparison?type=skill'
-                        "
-                        >User: {{ skillEdit.userName }}, Skill:
-                        {{ skillEdit.skill_id }}, Date:
-                        {{ skillEdit.date }}</router-link
-                    >
-                </li>
-            </ul>
-            <h2>Multiple Choice Questions</h2>
-            <ul>
-                <li v-for="mcQuestionEdit in mcQuestionEdits">
-                    <router-link
-                        :to="
-                            '/content-edit/' +
-                            mcQuestionEdit.mc_question_id +
-                            '/' +
-                            mcQuestionEdit.user_id +
-                            '/comparison?type=mcquestion'
-                        "
-                        >User: {{ mcQuestionEdit.userName }}, Question:
-                        {{ mcQuestionEdit.mc_question_id }}, Date:
-                        {{ mcQuestionEdit.date }}</router-link
-                    >
-                </li>
-            </ul>
-            <h2>Written Questions</h2>
-            <ul>
-                <li v-for="essayQuestionEdit in essayQuestionEdits">
-                    <router-link
-                        :to="
-                            '/content-edit/' +
-                            essayQuestionEdit.essay_question_id +
-                            '/' +
-                            essayQuestionEdit.user_id +
-                            '/comparison?type=essayquestion'
-                        "
-                        >User: {{ essayQuestionEdit.userName }}, Question:
-                        {{ essayQuestionEdit.essay_question_id }}, Date:
-                        {{ essayQuestionEdit.date }}</router-link
-                    >
-                </li>
-            </ul>
         </div>
     </div>
 </template>
@@ -230,5 +236,19 @@ export default {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
+}
+
+.nav-tabs {
+    --bs-nav-tabs-border-width: 2px;
+    --bs-nav-tabs-border-color: #aea3ce;
+    --bs-nav-tabs-link-active-border-color: #aea3ce #aea3ce #fff;
+    --bs-nav-tabs-link-active-color: #8f7bd6;
+
+    font-weight: 550;
+    cursor: pointer;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #a48be7;
 }
 </style>
