@@ -343,8 +343,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
-                    icon_image: this.skill.icon_image,
-                    banner_image: this.skill.banner_image,
+                    icon_image: this.iconImage,
+                    banner_image: this.bannerImage,
                     mastery_requirements: this.skill.mastery_requirements,
                     comment: this.comment
                 })
