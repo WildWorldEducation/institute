@@ -65,7 +65,9 @@ export default {
             var url =
                 '/questions/essay/' + this.questionId + '/edit-for-review';
             fetch(url, requestOptions).then(() => {
-                alert('Question edit submitted for review.');
+                alert(
+                    `This edit is being submitted for review.\nWe do this to prevent misinformation and sloppy wording from being added. If you would like to become an editor and help with this, please reach out.`
+                );
                 this.$router.back();
             });
         },
