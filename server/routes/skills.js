@@ -461,7 +461,7 @@ router.put(
                                     actionData,
                                     (err) => {
                                         if (err) throw err;
-                                        else res.redirect('back');
+                                        res.end();
                                     }
                                 );
                             }
@@ -509,18 +509,21 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    recordUserAction({
-                        userId: req.body.userId,
-                        userAction: 'submit_update_for_review',
-                        contentId: req.params.id,
-                        contentType: 'skill'
-                    }, (err) => {
-                        if (err) {
-                            throw err;
-                        }else{
-                            res.end();
+                    recordUserAction(
+                        {
+                            userId: req.body.userId,
+                            userAction: 'submit_update_for_review',
+                            contentId: req.params.id,
+                            contentType: 'skill'
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
                         }
-                    })  
+                    );
                 }
             } catch (err) {
                 next(err);
@@ -621,18 +624,25 @@ router.put(
                                     if (err) {
                                         throw err;
                                     } else {
-                                        recordUserAction({
-                                            userId: req.session.userId,
-                                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'}`,
-                                            contentId: req.params.id,
-                                            contentType: 'skill'
-                                        }, (err) => {
-                                            if (err) {
-                                                throw err;
-                                            }else{
-                                                res.end();
+                                        recordUserAction(
+                                            {
+                                                userId: req.session.userId,
+                                                userAction: `${
+                                                    req.body.edit
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
+                                                }`,
+                                                contentId: req.params.id,
+                                                contentType: 'skill'
+                                            },
+                                            (err) => {
+                                                if (err) {
+                                                    throw err;
+                                                } else {
+                                                    res.end();
+                                                }
                                             }
-                                        })
+                                        );
                                     }
                                 } catch (err) {
                                     next(err);
