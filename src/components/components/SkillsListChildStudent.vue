@@ -471,7 +471,7 @@ export default {
 
 /* Background when mastered */
 .grade-school-level.mastered {
-    background-color: #b3f9eb;
+    background-color: #d9fbf3;
 }
 
 /* Border */
