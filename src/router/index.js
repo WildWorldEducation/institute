@@ -297,10 +297,17 @@ router.beforeEach(async (to, from, next) => {
     } else {
         next(); // Proceed if no authentication is required
     }
+
+    // To remove the vertical scroll bar for the Vertical and Radial skill tree pages.
+    if (to.name == 'vertical-tree' || to.name == 'radial-tree') {
+        document.getElementById('app').style.overflow = 'hidden';
+    } else {
+        document.getElementById('app').style.overflow = 'auto';
+    }
 });
 
 router.afterEach((to, from, next) => {
-    window.scrollTo(0, 0);   
+    window.scrollTo(0, 0);
 });
 
 export default router;

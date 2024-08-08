@@ -5,6 +5,7 @@ import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 import SkillPanel from './../SkillPanel.vue';
 import SliderControl from './SliderControl.vue';
 import JoystickControl from './JoystickControl.vue';
+
 // Algorithm.
 import * as d3 from 'd3';
 
@@ -693,13 +694,13 @@ export default {
         hexColor(skillLevel) {
             switch (skillLevel) {
                 case 'college':
-                    return '#FF4500';
-                case 'grade_school':
-                    return '#00FF00';
-                case 'high_school':
                     return '#FFA500';
+                case 'grade_school':
+                    return '#40E0D0';
+                case 'high_school':
+                    return '#FFD700';
                 case 'middle_school':
-                    return '#FFFF00';
+                    return '#33A133';
                 case 'phd':
                     return '#FF0000';
                 default:
@@ -710,15 +711,15 @@ export default {
         hexBorderColor(skillLevel) {
             switch (skillLevel) {
                 case 'college':
-                    return '#B03000';
-                case 'grade_school':
-                    return '#008000';
-                case 'high_school':
                     return '#CC8400';
+                case 'grade_school':
+                    return '#33B3A6';
+                case 'high_school':
+                    return '#CCAC00';
                 case 'middle_school':
-                    return '#808000';
+                    return '#006400';
                 case 'phd':
-                    return '#800000';
+                    return '#CC0000';
                 default:
                     break;
             }
@@ -747,9 +748,9 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <JoystickControl />
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
+        <JoystickControl />
     </div>
 </template>
 
@@ -776,17 +777,6 @@ export default {
 /* End of loading animation */
 
 /* ___________ Button Style ___________ */
-#controlsWrapper {
-    position: absolute;
-    width: 200px;
-    bottom: 2px;
-    left: 2px;
-}
-
-#panJoystick {
-    width: 100px;
-    height: 100px;
-}
 
 .slidecontainer {
     width: 100%; /* Width of the outside container */
@@ -827,16 +817,8 @@ export default {
 #wrapper {
     width: 100%;
     height: 100%;
-    height: calc(100% - 92px);
     overflow: hidden;
     position: relative;
-}
-
-#buttonWrapper {
-    position: absolute;
-    width: 30px;
-    top: 90px;
-    right: 2px;
 }
 
 input[type='button'] {
@@ -890,7 +872,7 @@ input[type='button'] {
         flex-direction: column;
     }
     #wrapper {
-        height: calc(100% - 86px);
+        height: calc(100% - 130px);
     }
 }
 

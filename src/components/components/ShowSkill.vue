@@ -10,7 +10,7 @@ import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import FlagModals from './FlagModals.vue';
 
 // Nested component.
-import Forum from './Forum.vue';
+import Forum from './forum/Forum.vue';
 import router from '../../router';
 
 export default {
@@ -462,9 +462,6 @@ export default {
             </div>
         </div>
         <div v-if="skill.type != 'domain'">
-            <div id="resource-hr">
-                <hr class="border border-1 opacity-100" />
-            </div>
             <div class="row mt-3 mb-3">
                 <Forum />
             </div>
@@ -521,11 +518,6 @@ export default {
 
 #hr-parent {
     border-color: #aea3ce !important;
-}
-
-#resource-hr {
-    margin-top: 46px;
-    margin-bottom: 46px;
 }
 
 #skill-image {

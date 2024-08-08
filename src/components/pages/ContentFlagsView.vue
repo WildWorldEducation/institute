@@ -2029,6 +2029,11 @@ h2 {
     text-decoration: none;
     font-family: 'Poppins';
     color: #8f7bd6;
+    text-overflow: ellipsis;
+    /* Needed to make the over flow work */
+    overflow: hidden;
+    white-space: nowrap;
+    width: 200px;
 }
 
 .flag-name:hover {
@@ -2157,6 +2162,7 @@ h2 {
     padding: 15px 20px;
     border-radius: 5px;
     background-color: #f2edffcc;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 #skill-expand-head {
