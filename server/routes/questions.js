@@ -1106,18 +1106,15 @@ router.post('/mark-essay-question', async (req, res, next) => {
     if (req.session.userName) {
         let question = req.body.question;
         let answer = req.body.answer;
+        // Remove Summernote HTML tags.
         let regex = /(<([^>]+)>)/gi;
         answer = answer?.replace(regex, '');
-        let level = req.body.level;
-        console.log(question);
-        console.log(answer);
-        console.log(level);
+        let level = req.body.level;    
         let teacherReview = await aiMarkEssayQuestionAnswer(
             question,
             answer,
             level
-        );
-        console.log(teacherReview);
+        );        
         let result = {
             isCorrect: teacherReview
         };
