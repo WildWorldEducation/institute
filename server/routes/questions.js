@@ -1102,19 +1102,58 @@ const openai = new OpenAI({
 /**
  * Mark essay questions.
  */
-router.post('/mark-essay-question', (req, res, next) => {
+router.post('/mark-essay-question', async (req, res, next) => {
     if (req.session.userName) {
         let question = req.body.question;
         let answer = req.body.answer;
+        let regex = /(<([^>]+)>)/gi;
+        answer = answer?.replace(regex, '');
+        let level = req.body.level;
         console.log(question);
         console.log(answer);
-
-        // Create prompt for ChatGPT.
-        let prompt = ``;
+        console.log(level);
+        await aiMarkEssayQuestionAnswer(question, answer, level);
     } else {
         res.redirect('/login');
     }
 });
+
+async function aiMarkEssayQuestionAnswer(question, answer, level) {
+    // Create prompt for ChatGPT.
+    let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
+    If it does, please return the variable 'is_correct' as true, if not, please return it as false.`;
+
+    // Prevent the app from crashing if anything goes wrong with the API call.
+    try {
+        console.log('Marking essay question: ');
+        const completion = await openai.chat.completions.create({
+            messages: [
+                {
+                    role: 'system',
+                    content:
+                        'You are a kind and patient teacher of someone at a ' +
+                        level +
+                        ' level.'
+                },
+                {
+                    role: 'user',
+                    content: prompt + ` Please respond with a JSON object.`
+                }
+            ],
+            model: 'gpt-4o',
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
+        // Convert string to object.
+        var responseObj = JSON.parse(escapedResponseJSON);
+        console.log(responseObj.is_correct);
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+        return;
+    }
+}
 
 async function checkQuestion(index, userId) {
     // Create prompt for ChatGPT.
