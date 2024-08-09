@@ -91,7 +91,6 @@ export default {
         });
     },
     async created() {
-        await this.checkSkillUnlocked();
         // Load the max quiz question number setting.
         if (this.settingsStore.quizMaxQuestions == null) {
             await this.settingsStore.getSettings();
@@ -457,14 +456,7 @@ export default {
             );
             // Reload the skills list for the student.
             await this.skillTreeStore.getUserSkills();
-        },
-        async checkSkillUnlocked() {
-            await this.userSkillsStore.getUnnestedList(this.userDetailsStore.userId);
-            const currentSkill = this.userSkillsStore.unnestedList.find(item => item.id == this.skillId);console.log(currentSkill)
-            if (!(currentSkill.is_accessible == 1)){
-                this.$router.push(`/skills/${this.skillId}`)
-            }
-        },
+        }
     }
 };
 </script>
