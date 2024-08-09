@@ -1112,7 +1112,16 @@ router.post('/mark-essay-question', async (req, res, next) => {
         console.log(question);
         console.log(answer);
         console.log(level);
-        await aiMarkEssayQuestionAnswer(question, answer, level);
+        let teacherReview = await aiMarkEssayQuestionAnswer(
+            question,
+            answer,
+            level
+        );
+        console.log(teacherReview);
+        let result = {
+            isCorrect: teacherReview
+        };
+        res.json(result);
     } else {
         res.redirect('/login');
     }
@@ -1148,7 +1157,8 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
-        console.log(responseObj.is_correct);
+        //console.log(responseObj.is_correct);
+        return responseObj.is_correct;
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
         return;
