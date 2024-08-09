@@ -315,115 +315,27 @@ export default {
             }
         },
         Submit() {
-            // get the time when user submit the assessment result for result page
-            this.finishTime = new Date();
+            console.log('test');
 
-            // if the last answer is also an essay question we handle it just like with the next and previous
-            if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer.getAnswer();
-                // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = summerNote;
-            }
-            // Mark the MC questions (if there are any).
-            for (let i = 0; i < this.questions.length; i++) {
-                // Tally the score.
-                if (this.questions[i].questionType == 'mc') {
-                    this.numMCQuestions++;
-                    if (this.questions[i].userAnswer == 1) {
-                        this.score++;
-                    }
-                } else {
-                    this.numEssayQuestions++;
-                }
-            }
-
-            // If there are no essay questions we, mark the test now. If there are essay question , requiring manual marking
-            if (this.numEssayQuestions === 0) {
-                // Pass mark of 80%.
-                if ((this.score / this.numMCQuestions) * 100 >= 80) {
-                    this.MakeMastered(this.skill);
-                    this.isQuizPassed = true;
-                    // show result page and hide assessment part
-                    this.assessmentStatus = 'pass';
-                    this.showResult = true;
-                } else {
-                    // show result page and hide assessment part
-                    this.isQuizPassed = true;
-                    this.assessmentStatus = 'fails';
-                    this.showResult = true;
-                }
-            } else {
-                // Deal with the essay questions.
-
-                let fetchMethod = 'POST';
-
-                if (this.oldAssessment !== undefined) {
-                    fetchMethod = 'PUT';
-                }
-
-                // create an unmarked assessment record
-                const requestOptions = {
-                    method: fetchMethod,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        totalScore: this.totalNumOfQuestions,
-                        currentScore: this.score,
-                        numUnmarkedQuestions: this.numEssayQuestions
-                    })
-                };
-                var url =
-                    '/assessments/' +
-                    this.userDetailsStore.userId +
-                    '/' +
-                    this.skillId;
-                /**
-                 * we have the function below so we can access this key word in the promise
-                 */
-                const turnOnModal = () => {
-                    this.isQuizPassed = true;
-                    this.showResult = true;
-                    this.assessmentStatus = 'wait for essay answers to be mark';
-                };
-
-                fetch(url, requestOptions)
-                    .then(function (response) {
-                        return response.json();
-                    })
-                    // Retrieve the assessment id.
-                    .then((data) => {
-                        this.assessmentId = data.id;
-                        // Delete any existing questions in this assessment.
-                        fetch('/unmarked-answers/delete/' + this.assessmentId, {
-                            method: 'DELETE'
-                        }).then(() => {
-                            for (let i = 0; i < this.questions.length; i++) {
-                                if (this.questions[i].questionType == 'essay') {
-                                    // create unmarked essay question records for each one.
-                                    const requestOptions = {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({
-                                            answer: this.questions[i]
-                                                .userAnswer,
-                                            questionId: this.questions[i].id
-                                        })
-                                    };
-                                    var url =
-                                        '/unmarked-answers/add/' +
-                                        this.assessmentId;
-                                    fetch(url, requestOptions).then(function (
-                                        response
-                                    ) {
-                                        turnOnModal();
-                                    });
-                                }
-                            }
-                        });
-                    });
-            }
+            // Get the summernote answer code
+            const summerNote = this.$refs.essayAnswer.getAnswer();
+            // Store user answer in questions array before move to next questions
+            this.questions[this.questionNumber].userAnswer = summerNote;
+            let question = this.questions[this.questionNumber].question;
+            let answer = this.questions[this.questionNumber].userAnswer;
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question: question,
+                    answer: answer
+                })
+            };
+            let url = '/questions/mark-essay-question';
+            fetch(url, requestOptions).then(function (response) {
+                return response.json();
+            });
+            console.log(this.questions);
         },
         UserAnswer() {
             for (let i = 0; i < this.questions.length; i++) {

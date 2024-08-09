@@ -266,18 +266,23 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
                     throw err;
                 } else {
                     // add approve question action into user_actions table
-                    recordUserAction({
-                        userId: req.session.userId,
-                        userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'}`,
-                        contentId: req.params.id,
-                        contentType: 'mc_question'
-                    }, (err) => {
-                        if (err) {
-                            throw err;
-                        }else{
-                            res.end();
+                    recordUserAction(
+                        {
+                            userId: req.session.userId,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
+                            contentId: req.params.id,
+                            contentType: 'mc_question'
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
                         }
-                    })
+                    );
                 }
             } catch (err) {
                 next(err);
@@ -335,18 +340,21 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    recordUserAction({
-                        userId: req.body.userId,
-                        userAction: 'submit_update_for_review',
-                        contentType: 'mc_question',
-                        contentId: req.params.id
-                    }, (err) => {
-                        if (err) {
-                            throw err;
-                        }else{
-                            res.end();
+                    recordUserAction(
+                        {
+                            userId: req.body.userId,
+                            userAction: 'submit_update_for_review',
+                            contentType: 'mc_question',
+                            contentId: req.params.id
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
                         }
-                    })
+                    );
                 }
             } catch (err) {
                 next(err);
@@ -567,18 +575,23 @@ router.put('/essay/:id/approve-edits', (req, res, next) => {
                     throw err;
                 } else {
                     // add approve essay question action into user_actions table
-                    recordUserAction({
-                        userId: req.session.userId,
-                        userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'}`,
-                        contentId: req.params.id,
-                        contentType: 'essay_question'
-                    }, (err) => {
-                        if (err) {
-                            throw err;
-                        }else{
-                            res.end();
+                    recordUserAction(
+                        {
+                            userId: req.session.userId,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
+                            contentId: req.params.id,
+                            contentType: 'essay_question'
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
                         }
-                    })
+                    );
                 }
             } catch (err) {
                 next(err);
@@ -616,18 +629,21 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    recordUserAction({
-                        userId: req.body.userId,
-                        userAction: 'submit_update_for_review',
-                        contentType: 'essay_question',
-                        contentId: req.params.id
-                    }, (err) => {
-                        if (err) {
-                            throw err;
-                        }else{
-                            res.end();
+                    recordUserAction(
+                        {
+                            userId: req.body.userId,
+                            userAction: 'submit_update_for_review',
+                            contentType: 'essay_question',
+                            contentId: req.params.id
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
                         }
-                    })
+                    );
                 }
             } catch (err) {
                 next(err);
@@ -1081,6 +1097,23 @@ const { OpenAI } = require('openai');
 require('dotenv').config();
 const openai = new OpenAI({
     apiKey: process.env.CHAT_GPT_API_KEY
+});
+
+/**
+ * Mark essay questions.
+ */
+router.post('/mark-essay-question', (req, res, next) => {
+    if (req.session.userName) {
+        let question = req.body.question;
+        let answer = req.body.answer;
+        console.log(question);
+        console.log(answer);
+
+        // Create prompt for ChatGPT.
+        let prompt = ``;
+    } else {
+        res.redirect('/login');
+    }
 });
 
 async function checkQuestion(index, userId) {
