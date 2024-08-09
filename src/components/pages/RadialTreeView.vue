@@ -143,7 +143,7 @@ export default {
 }
 
 /* X-Small devices (portrait phones, less than 576px) */
-@media (max-width: 575.98px) {
+@media (max-width: 800px) {
     .mobile-legend {
         display: block;
     }
@@ -158,13 +158,23 @@ export default {
 }
 
 /* Bigger devices */
-@media (min-width: 576px) {
+@media (min-width: 801px) {
     .mobile-legend {
         display: none;
     }
 
     .tablet-and-up-legend {
         display: block;
+    }
+    .legend{
+        align-items: center;
+    }
+
+    .legend .col{
+        display: flex;
+    }
+    .legend span{
+        flex-shrink: 0;
     }
 }
 
