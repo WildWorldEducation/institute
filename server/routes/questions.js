@@ -266,18 +266,23 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
                     throw err;
                 } else {
                     // add approve question action into user_actions table
-                    recordUserAction({
-                        userId: req.session.userId,
-                        userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'}`,
-                        contentId: req.params.id,
-                        contentType: 'mc_question'
-                    }, (err) => {
-                        if (err) {
-                            throw err;
-                        }else{
-                            res.end();
+                    recordUserAction(
+                        {
+                            userId: req.session.userId,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
+                            contentId: req.params.id,
+                            contentType: 'mc_question'
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
                         }
-                    })
+                    );
                 }
             } catch (err) {
                 next(err);
@@ -335,18 +340,21 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    recordUserAction({
-                        userId: req.body.userId,
-                        userAction: 'submit_update_for_review',
-                        contentType: 'mc_question',
-                        contentId: req.params.id
-                    }, (err) => {
-                        if (err) {
-                            throw err;
-                        }else{
-                            res.end();
+                    recordUserAction(
+                        {
+                            userId: req.body.userId,
+                            userAction: 'submit_update_for_review',
+                            contentType: 'mc_question',
+                            contentId: req.params.id
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
                         }
-                    })
+                    );
                 }
             } catch (err) {
                 next(err);
@@ -567,18 +575,23 @@ router.put('/essay/:id/approve-edits', (req, res, next) => {
                     throw err;
                 } else {
                     // add approve essay question action into user_actions table
-                    recordUserAction({
-                        userId: req.session.userId,
-                        userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'}`,
-                        contentId: req.params.id,
-                        contentType: 'essay_question'
-                    }, (err) => {
-                        if (err) {
-                            throw err;
-                        }else{
-                            res.end();
+                    recordUserAction(
+                        {
+                            userId: req.session.userId,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
+                            contentId: req.params.id,
+                            contentType: 'essay_question'
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
                         }
-                    })
+                    );
                 }
             } catch (err) {
                 next(err);
@@ -616,18 +629,21 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    recordUserAction({
-                        userId: req.body.userId,
-                        userAction: 'submit_update_for_review',
-                        contentType: 'essay_question',
-                        contentId: req.params.id
-                    }, (err) => {
-                        if (err) {
-                            throw err;
-                        }else{
-                            res.end();
+                    recordUserAction(
+                        {
+                            userId: req.body.userId,
+                            userAction: 'submit_update_for_review',
+                            contentType: 'essay_question',
+                            contentId: req.params.id
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
                         }
-                    })
+                    );
                 }
             } catch (err) {
                 next(err);
@@ -1082,6 +1098,70 @@ require('dotenv').config();
 const openai = new OpenAI({
     apiKey: process.env.CHAT_GPT_API_KEY
 });
+
+/**
+ * Mark essay questions.
+ */
+router.post('/mark-essay-question', async (req, res, next) => {
+    if (req.session.userName) {
+        let question = req.body.question;
+        let answer = req.body.answer;
+        // Remove underscores from the variables.
+        let level = req.body.level.replace('_', ' ');
+        let teacherReview = await aiMarkEssayQuestionAnswer(
+            question,
+            answer,
+            level
+        );
+        let result = {
+            isCorrect: teacherReview.is_correct,
+            explanation: teacherReview.explanation
+        };
+        res.json(result);
+    } else {
+        res.redirect('/login');
+    }
+});
+
+async function aiMarkEssayQuestionAnswer(question, answer, level) {
+    // Create prompt for ChatGPT.
+    let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
+
+    Please imagine this answer comes from a student at a '${level}' level, and answer appropriately to that level.
+    If it does, please return the variable 'is_correct' as true, if not, please return it as false.
+    If the answer is not correct, please explain why, by returning the variable 'explanation', containing a string that explains this.`;
+
+    // Prevent the app from crashing if anything goes wrong with the API call.
+    try {
+        const completion = await openai.chat.completions.create({
+            messages: [
+                {
+                    role: 'system',
+                    content:
+                        'You are a kind and patient teacher of someone at a ' +
+                        level +
+                        ' level.'
+                },
+                {
+                    role: 'user',
+                    content: prompt + ` Please respond with a JSON object.`
+                }
+            ],
+            model: 'gpt-4o',
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
+        // Convert string to object.
+        var responseObj = JSON.parse(escapedResponseJSON);
+        //console.log(responseObj.is_correct);
+        return responseObj;
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+        return;
+    }
+}
 
 async function checkQuestion(index, userId) {
     // Create prompt for ChatGPT.
