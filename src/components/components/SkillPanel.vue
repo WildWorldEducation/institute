@@ -6,9 +6,14 @@ export default {
     },
     props: ['skill'],
     computed: {
-        strippedContent() {
-            let regex = /(<([^>]+)>)/ig;
-            return this.skill.masteryRequirements?.replace(regex, " ");
+        removeStyles() {
+            // Remove style tags
+            let withoutStyleTags = this.skill.masteryRequirements?.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+
+            // Remove inline style attributes
+            let withoutInlineStyles = withoutStyleTags?.replace(/ style=["'][^"']*["']/gi, '');
+
+            return withoutInlineStyles;
         }
     },
     methods: {
@@ -40,7 +45,6 @@ export default {
                 const skillInfoPanelBottom = this.$refs.skillInfoPanelBottom;
                 const container = this.$refs.truncateContainer;
                 const content = this.$refs.truncateContent;
-                console.log(skillInfoPanel.clientHeight, skillInfoPanelTop.clientHeight, skillInfoPanelBottom.clientHeight)
                 if (screen.width > 800) {
                     container.style.height = (skillInfoPanel.clientHeight - skillInfoPanelBottom.clientHeight - skillInfoPanelTop.clientHeight - 40)+"px"
                 }else{
@@ -48,9 +52,9 @@ export default {
                 }
                 const containerHeight = container.clientHeight;
                 const lineHeight = parseInt(window.getComputedStyle(container).lineHeight);
-                const numLines = Math.trunc(containerHeight / lineHeight);
-                content.style.clampedLines = numLines;
-                content.style.webkitLineClamp = numLines;
+                const numLines = Math.trunc(containerHeight / lineHeight) - (screen.width > 800 ? 2 : 0);
+                content.style.clampedLines = numLines ;
+                content.style.webkitLineClamp = numLines ;
             });
         }
     },
@@ -96,7 +100,7 @@ export default {
                 <div
                     class="truncate-overflow"
                     ref="truncateContent"
-                    v-html="strippedContent"
+                    v-html="removeStyles"
                 ></div>
             </div>
             <div class="skill-info-panel-bottom" ref="skillInfoPanelBottom">
@@ -256,6 +260,10 @@ export default {
     -webkit-line-clamp: 3; /* number of lines to show */
     line-clamp: 3;
     -webkit-box-orient: vertical;
+}
+.truncate-overflow *{
+    list-style: none;
+    padding-left: 0px;
 }
 /* Mastery Requirements header */
 h2 {
