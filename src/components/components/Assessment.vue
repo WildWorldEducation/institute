@@ -234,7 +234,8 @@ export default {
                         data.length > 0 &&
                         !this.userDetailsStore.instructor.id
                     ) {
-                        this.needToSelectInstructor = true;
+                        if (this.settingsStore.isManualEssayMarking == 1)
+                            this.needToSelectInstructor = true;
                     }
                     // Add the new questions to the existing questions.
                     this.essayQuestions = this.essayQuestions.concat(data);
