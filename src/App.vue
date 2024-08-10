@@ -108,7 +108,7 @@ export default {
             </div>
         </nav>
     </header>
-    <div class="router-view">
+    <div :class="`${sessionDetailsStore.isLoggedIn ? 'router-view-padding router-view' : 'router-view'}`">
         <RouterView />
     </div>
 </template>
@@ -141,10 +141,13 @@ export default {
     border-radius: 8px;
 }
 .router-view{
+    height: 100vh;
+}
+.router-view-padding{
     padding-top: 72px;
 }
 @media (max-width: 991px) {
-    .router-view{
+    .router-view-padding{
         padding-top: 66px;
     }
 }
