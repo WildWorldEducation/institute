@@ -37,7 +37,7 @@ export default {
             showFlaggingModal: false
         };
     },
-    props: ['skill'],
+    props: ['skill', 'isManualEssayMarking'],
     mounted() {
         this.assessmentResult = this.$parent.assessmentStatus;
         // Show modal based on  assessment status
@@ -160,7 +160,10 @@ export default {
                     ( {{ scorePercent }}%)
                     <span>*</span>
                 </div>
-                <div class="essay-warning" v-if="essayQuestions != 0">
+                <div
+                    class="essay-warning"
+                    v-if="isManualEssayMarking == 1 && essayQuestions != 0"
+                >
                     There are {{ essayQuestions }} answers that needed to be
                     mark by your instructor
                 </div>

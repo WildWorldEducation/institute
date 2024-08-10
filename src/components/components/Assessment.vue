@@ -64,8 +64,7 @@ export default {
             assessmentStatus: '',
             haveEssayQuestion: false,
             finishTime: null,
-            needToSelectInstructor: false,
-            isManualEssayMarking: false
+            needToSelectInstructor: false
         };
     },
     mounted: function () {
@@ -360,7 +359,7 @@ export default {
 
             // If there are essay questions.
             else {
-                if (this.isManualEssayMarking == true) {
+                if (this.settingsStore.isManualEssayMarking == 1) {
                     // Deal with the essay questions.
                     let fetchMethod = 'POST';
 
@@ -455,6 +454,11 @@ export default {
                         // show result page and hide assessment part
                         this.assessmentStatus = 'pass';
                         this.showResult = true;
+                    } else {
+                        // show result page and hide assessment part
+                        this.isQuizPassed = true;
+                        this.assessmentStatus = 'fails';
+                        this.showResult = true;
                     }
                 }
             }
@@ -475,8 +479,7 @@ export default {
                     return response.json();
                 })
                 .then((result) => {
-                    console.log(result);
-                    if (result.isCorrect) {
+                    if (result.isCorrect == true) {
                         this.score++;
                     }
                 });
@@ -680,7 +683,11 @@ export default {
     </div>
 
     <!------- Assessment Result Page ------>
-    <AssessmentResult :skill="skill" v-if="showResult" />
+    <AssessmentResult
+        :skill="skill"
+        :isManualEssayMarking="settingsStore.isManualEssayMarking"
+        v-if="showResult"
+    />
     <!--------------- Modals -------------->
     <!-- The flagging Modal -->
     <FlagModals
