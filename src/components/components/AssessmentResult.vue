@@ -293,7 +293,14 @@ export default {
                     </div>
                 </div>
                 <!-- Question explanation -->
-                <div class="explain-answer">
+                <div
+                    v-if="
+                        question.questionType == 'mc' ||
+                        (question.questionType == 'essay' &&
+                            question.isCorrect == false)
+                    "
+                    class="explain-answer"
+                >
                     <div class="explain-label">Explanation:</div>
                     <div class="explain-text">
                         {{ question.explanation }}
