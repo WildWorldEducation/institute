@@ -1,32 +1,50 @@
 <script>
+import PageNav from '../components/todo/PageNav.vue';
 import CheckStudentQuestions from '../components/CheckStudentQuestions.vue';
 import ContentEditsList from '../components/ContentEditsList.vue';
-import PageNav from '../components/todo/PageNav.vue';
+import ContentFlagsView from './ContentFlagsView.vue';
+
 export default {
     setup() {},
     data() {
-        return {};
+        return {
+            activeContent: 'flagList',
+            contentHeight: 0
+        };
     },
+
     components: {
         CheckStudentQuestions,
         ContentEditsList,
-        PageNav
+        PageNav,
+        ContentFlagsView
     },
-    methods: {}
+    computed: {},
+    methods: {
+        hideNavBar() {
+            this.showNavBar = false;
+        }
+    }
 };
 </script>
 
 <template>
     <div class="container-fluid h-100 p-0">
         <div class="d-flex h-100">
-            <PageNav />
-            <div class="d-flex flex-column">
-                <h1 class="page-title">Todo List</h1>
-                <h2>Student Edited Content</h2>
-                <ContentEditsList />
-                <h2>Student Suggested Questions</h2>
-                <CheckStudentQuestions />
-                <h2>Content Flags</h2>
+            <PageNav class="h-100" :activeContent="activeContent" />
+
+            <div id="contentDiv" class="d-flex flex-column w-100">
+                <div v-if="activeContent === 'editList'">
+                    <h2>Student Edited Content</h2>
+                    <ContentEditsList />
+                </div>
+                <div v-if="activeContent === 'studentQuestionList'">
+                    <h2>Student Suggested Questions</h2>
+                    <CheckStudentQuestions />
+                </div>
+                <div v-if="activeContent === 'flagList'" class="w-100">
+                    <ContentFlagsView />
+                </div>
             </div>
         </div>
     </div>
