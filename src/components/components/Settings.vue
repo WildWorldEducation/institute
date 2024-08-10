@@ -44,6 +44,13 @@ export default {
                 max number of questions per quiz:
                 {{ settingsStore.quizMaxQuestions }}
             </p>
+            <p>
+                grading method for essay questions:
+                <span v-if="settingsStore.isManualEssayMarking == 0"
+                    >Automatic (AI)</span
+                >
+                <span v-else>Manual (instructor)</span>
+            </p>
             <p class="mt-4">
                 <router-link
                     to="/settings/edit"
