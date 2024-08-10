@@ -8,7 +8,7 @@ export default {
     setup() {},
     data() {
         return {
-            activeContent: 'flagList',
+            activeContent: 'editList',
             contentHeight: 0
         };
     },

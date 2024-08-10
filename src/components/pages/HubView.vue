@@ -74,13 +74,6 @@ export default {
                     v-if="userDetailsStore.role == 'student'"
                     :userId="userDetailsStore.userId"
                 />
-                <!-- Student Added Questions -->
-                <CheckStudentQuestions
-                    v-else-if="
-                        userDetailsStore.role == 'instructor' ||
-                        userDetailsStore.role == 'admin'
-                    "
-                />
             </div>
             <div class="col-lg-3 col-md-5 mb-4 pb-4 column">
                 <Notifications />
