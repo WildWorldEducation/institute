@@ -443,17 +443,20 @@ export default {
                 } else {
                     for (let i = 0; i < this.questions.length; i++) {
                         if (this.questions[i].questionType == 'essay') {
-                            console.log('mark essay question');
                             let question = this.questions[i].question;
                             let answer = this.questions[i].userAnswer;
                             await this.AIMarkEssayQuestion(question, answer);
-
-                            console.log(this.score);
                         }
+                    }
+                    if ((this.score / this.questions.length) * 100 >= 80) {
+                        this.MakeMastered(this.skill);
+                        this.isQuizPassed = true;
+                        // show result page and hide assessment part
+                        this.assessmentStatus = 'pass';
+                        this.showResult = true;
                     }
                 }
             }
-            console.log(this.score);
         },
         async AIMarkEssayQuestion(question, answer) {
             const requestOptions = {

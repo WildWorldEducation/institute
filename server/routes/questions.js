@@ -1109,12 +1109,12 @@ router.post('/mark-essay-question', async (req, res, next) => {
         // Remove Summernote HTML tags.
         let regex = /(<([^>]+)>)/gi;
         answer = answer?.replace(regex, '');
-        let level = req.body.level;    
+        let level = req.body.level;
         let teacherReview = await aiMarkEssayQuestionAnswer(
             question,
             answer,
             level
-        );        
+        );
         let result = {
             isCorrect: teacherReview
         };
@@ -1131,7 +1131,6 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
 
     // Prevent the app from crashing if anything goes wrong with the API call.
     try {
-        console.log('Marking essay question: ');
         const completion = await openai.chat.completions.create({
             messages: [
                 {
