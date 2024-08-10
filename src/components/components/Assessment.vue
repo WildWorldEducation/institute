@@ -445,7 +445,7 @@ export default {
                         if (this.questions[i].questionType == 'essay') {
                             let question = this.questions[i].question;
                             let answer = this.questions[i].userAnswer;
-                            await this.AIMarkEssayQuestion(question, answer);
+                            await this.AIMarkEssayQuestion(question, answer, i);                           
                         }
                     }
                     if ((this.score / this.questions.length) * 100 >= 80) {
@@ -463,7 +463,7 @@ export default {
                 }
             }
         },
-        async AIMarkEssayQuestion(question, answer) {
+        async AIMarkEssayQuestion(question, answer, i) {
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -481,6 +481,8 @@ export default {
                 .then((result) => {
                     if (result.isCorrect == true) {
                         this.score++;
+                    } else {
+                        this.questions[i].explanation = result.explanation;
                     }
                 });
         },

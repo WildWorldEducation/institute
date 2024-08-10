@@ -1116,8 +1116,10 @@ router.post('/mark-essay-question', async (req, res, next) => {
             level
         );
         let result = {
-            isCorrect: teacherReview
+            isCorrect: teacherReview.is_correct,
+            explanation: teacherReview.explanation
         };
+        console.log(result);
         res.json(result);
     } else {
         res.redirect('/login');
@@ -1127,7 +1129,8 @@ router.post('/mark-essay-question', async (req, res, next) => {
 async function aiMarkEssayQuestionAnswer(question, answer, level) {
     // Create prompt for ChatGPT.
     let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
-    If it does, please return the variable 'is_correct' as true, if not, please return it as false.`;
+    If it does, please return the variable 'is_correct' as true, if not, please return it as false.
+    If the answer is not correct, please explain why, by returning the variable 'explanation', containing a string that explains this.`;
 
     // Prevent the app from crashing if anything goes wrong with the API call.
     try {
@@ -1154,7 +1157,7 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
         //console.log(responseObj.is_correct);
-        return responseObj.is_correct;
+        return responseObj;
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
         return;

@@ -25,8 +25,8 @@ export default {
             // number of mc question is total score, default value to 1 to avoid divine with 0
             totalScore: 1,
             scorePercent: 0,
-            mcQuestions: [],
-            essayQuestions: 0,
+            questions: [],
+            essayQuestionsLength: 0,
             correctIndex: [],
             // modal show state data
             passModal: false,
@@ -67,7 +67,9 @@ export default {
         this.finishTime = this.$parent.finishTime.toLocaleTimeString();
 
         this.score = this.$parent.score;
-        this.totalScore = this.$parent.numMCQuestions;
+        if (this.isManualEssayMarking == 1)
+            this.totalScore = this.$parent.numMCQuestions;
+        else this.totalScore = this.$parent.questions.length;
         // not calculate if we divide by 0
         if (this.totalScore !== 0) {
             this.scorePercent = Math.floor(
@@ -75,13 +77,17 @@ export default {
             );
         }
 
-        // only get mc question
-        this.mcQuestions = this.$parent.questions.filter(
-            (question) => question.questionType === 'mc'
-        );
-        // get essay questions without looping the question array
-        this.essayQuestions =
-            this.$parent.questions.length - this.mcQuestions.length;
+        if (this.isManualEssayMarking == 1) {
+            // only get mc question
+            this.questions = this.$parent.questions.filter(
+                (question) => question.questionType === 'mc'
+            );
+            // get essay questions without looping the question array
+            this.essayQuestionsLength =
+                this.$parent.questions.length - this.questions.length;
+        } else {
+            this.questions = this.$parent.questions;
+        }
 
         this.correctIndex = [1];
     },
@@ -162,17 +168,19 @@ export default {
                 </div>
                 <div
                     class="essay-warning"
-                    v-if="isManualEssayMarking == 1 && essayQuestions != 0"
+                    v-if="
+                        isManualEssayMarking == 1 && essayQuestionsLength != 0
+                    "
                 >
-                    There are {{ essayQuestions }} answers that needed to be
-                    mark by your instructor
+                    There are {{ essayQuestionsLength }} answers that needed to
+                    be mark by your instructor
                 </div>
             </div>
             <!-- Student can add a question if they pass -->
             <StudentAddMCQuestion v-if="assessmentResult === 'pass'" />
         </div>
         <!-- Question list include right answer and explain -->
-        <div class="mc-question-result" v-for="question of mcQuestions">
+        <div class="mc-question-result" v-for="question of questions">
             <!-- Flag button -->
             <div
                 b-tooltip.hover
