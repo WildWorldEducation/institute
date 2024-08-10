@@ -233,7 +233,8 @@ export default {
                         data.length > 0 &&
                         !this.userDetailsStore.instructor.id
                     ) {
-                        this.needToSelectInstructor = true;
+                        if (this.settingsStore.isManualEssayMarking == 1)
+                            this.needToSelectInstructor = true;
                     }
                     // Add the new questions to the existing questions.
                     this.essayQuestions = this.essayQuestions.concat(data);
@@ -314,7 +315,8 @@ export default {
                 );
             }
         },
-        Submit() {
+        // Async because essay questions are marked on server.
+        async Submit() {
             // get the time when user submit the assessment result for result page
             this.finishTime = new Date();
 
@@ -338,7 +340,7 @@ export default {
                 }
             }
 
-            // If there are no essay questions we, mark the test now. If there are essay question , requiring manual marking
+            // If no essay questions, we return result.
             if (this.numEssayQuestions === 0) {
                 // Pass mark of 80%.
                 if ((this.score / this.numMCQuestions) * 100 >= 80) {
@@ -353,77 +355,144 @@ export default {
                     this.assessmentStatus = 'fails';
                     this.showResult = true;
                 }
-            } else {
-                // Deal with the essay questions.
-
-                let fetchMethod = 'POST';
-
-                if (this.oldAssessment !== undefined) {
-                    fetchMethod = 'PUT';
-                }
-
-                // create an unmarked assessment record
-                const requestOptions = {
-                    method: fetchMethod,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        totalScore: this.totalNumOfQuestions,
-                        currentScore: this.score,
-                        numUnmarkedQuestions: this.numEssayQuestions
-                    })
-                };
-                var url =
-                    '/assessments/' +
-                    this.userDetailsStore.userId +
-                    '/' +
-                    this.skillId;
-                /**
-                 * we have the function below so we can access this key word in the promise
-                 */
-                const turnOnModal = () => {
-                    this.isQuizPassed = true;
-                    this.showResult = true;
-                    this.assessmentStatus = 'wait for essay answers to be mark';
-                };
-
-                fetch(url, requestOptions)
-                    .then(function (response) {
-                        return response.json();
-                    })
-                    // Retrieve the assessment id.
-                    .then((data) => {
-                        this.assessmentId = data.id;
-                        // Delete any existing questions in this assessment.
-                        fetch('/unmarked-answers/delete/' + this.assessmentId, {
-                            method: 'DELETE'
-                        }).then(() => {
-                            for (let i = 0; i < this.questions.length; i++) {
-                                if (this.questions[i].questionType == 'essay') {
-                                    // create unmarked essay question records for each one.
-                                    const requestOptions = {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({
-                                            answer: this.questions[i]
-                                                .userAnswer,
-                                            questionId: this.questions[i].id
-                                        })
-                                    };
-                                    var url =
-                                        '/unmarked-answers/add/' +
-                                        this.assessmentId;
-                                    fetch(url, requestOptions).then(function (
-                                        response
-                                    ) {
-                                        turnOnModal();
-                                    });
-                                }
-                            }
-                        });
-                    });
             }
+
+            // If there are essay questions.
+            else {
+                if (this.settingsStore.isManualEssayMarking == 1) {
+                    // Deal with the essay questions.
+                    let fetchMethod = 'POST';
+
+                    if (this.oldAssessment !== undefined) {
+                        fetchMethod = 'PUT';
+                    }
+
+                    // create an unmarked assessment record
+                    const requestOptions = {
+                        method: fetchMethod,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            totalScore: this.totalNumOfQuestions,
+                            currentScore: this.score,
+                            numUnmarkedQuestions: this.numEssayQuestions
+                        })
+                    };
+                    var url =
+                        '/assessments/' +
+                        this.userDetailsStore.userId +
+                        '/' +
+                        this.skillId;
+                    /**
+                     * we have the function below so we can access this key word in the promise
+                     */
+                    const turnOnModal = () => {
+                        this.isQuizPassed = true;
+                        this.showResult = true;
+                        this.assessmentStatus =
+                            'wait for essay answers to be mark';
+                    };
+
+                    fetch(url, requestOptions)
+                        .then(function (response) {
+                            return response.json();
+                        })
+                        // Retrieve the assessment id.
+                        .then((data) => {
+                            this.assessmentId = data.id;
+                            // Delete any existing questions in this assessment.
+                            fetch(
+                                '/unmarked-answers/delete/' + this.assessmentId,
+                                {
+                                    method: 'DELETE'
+                                }
+                            ).then(() => {
+                                for (
+                                    let i = 0;
+                                    i < this.questions.length;
+                                    i++
+                                ) {
+                                    if (
+                                        this.questions[i].questionType ==
+                                        'essay'
+                                    ) {
+                                        // create unmarked essay question records for each one.
+                                        const requestOptions = {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type':
+                                                    'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                answer: this.questions[i]
+                                                    .userAnswer,
+                                                questionId: this.questions[i].id
+                                            })
+                                        };
+                                        var url =
+                                            '/unmarked-answers/add/' +
+                                            this.assessmentId;
+                                        fetch(url, requestOptions).then(
+                                            function (response) {
+                                                turnOnModal();
+                                            }
+                                        );
+                                    }
+                                }
+                            });
+                        });
+                } else {
+                    for (let i = 0; i < this.questions.length; i++) {
+                        if (this.questions[i].questionType == 'essay') {
+                            let question = this.questions[i].question;
+                            // Remove Summernote HTML tags.
+                            let regex = /(<([^>]+)>)/gi;
+                            this.questions[i].userAnswer = this.questions[
+                                i
+                            ].userAnswer?.replace(regex, '');
+                            let answer = this.questions[i].userAnswer;
+
+                            await this.AIMarkEssayQuestion(question, answer, i);
+                        }
+                    }
+                    if ((this.score / this.questions.length) * 100 >= 80) {
+                        this.MakeMastered(this.skill);
+                        this.isQuizPassed = true;
+                        // show result page and hide assessment part
+                        this.assessmentStatus = 'pass';
+                        this.showResult = true;
+                    } else {
+                        // show result page and hide assessment part
+                        this.isQuizPassed = true;
+                        this.assessmentStatus = 'fails';
+                        this.showResult = true;
+                    }
+                }
+            }
+        },
+        async AIMarkEssayQuestion(question, answer, i) {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question: question,
+                    answer: answer,
+                    level: this.skill.level
+                })
+            };
+            let url = '/questions/mark-essay-question';
+            await fetch(url, requestOptions)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((result) => {
+                    if (result.isCorrect == true) {
+                        this.score++;
+                        this.questions[i].isCorrect = true;
+                    } else {
+                        this.questions[i].explanation = result.explanation;
+                        this.questions[i].isCorrect = false;
+                    }
+                });
         },
         UserAnswer() {
             for (let i = 0; i < this.questions.length; i++) {
@@ -624,7 +693,11 @@ export default {
     </div>
 
     <!------- Assessment Result Page ------>
-    <AssessmentResult :skill="skill" v-if="showResult" />
+    <AssessmentResult
+        :skill="skill"
+        :isManualEssayMarking="settingsStore.isManualEssayMarking"
+        v-if="showResult"
+    />
     <!--------------- Modals -------------->
     <!-- The flagging Modal -->
     <FlagModals
