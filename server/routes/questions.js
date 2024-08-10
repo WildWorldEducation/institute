@@ -1106,10 +1106,8 @@ router.post('/mark-essay-question', async (req, res, next) => {
     if (req.session.userName) {
         let question = req.body.question;
         let answer = req.body.answer;
-        // Remove Summernote HTML tags.
-        let regex = /(<([^>]+)>)/gi;
-        answer = answer?.replace(regex, '');
-        let level = req.body.level;
+        // Remove underscores from the variables.
+        let level = req.body.level.replace('_', ' ');
         let teacherReview = await aiMarkEssayQuestionAnswer(
             question,
             answer,
@@ -1119,7 +1117,6 @@ router.post('/mark-essay-question', async (req, res, next) => {
             isCorrect: teacherReview.is_correct,
             explanation: teacherReview.explanation
         };
-        console.log(result);
         res.json(result);
     } else {
         res.redirect('/login');
@@ -1129,6 +1126,8 @@ router.post('/mark-essay-question', async (req, res, next) => {
 async function aiMarkEssayQuestionAnswer(question, answer, level) {
     // Create prompt for ChatGPT.
     let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
+
+    Please imagine this answer comes from a student at a '${level}' level, and answer appropriately to that level.
     If it does, please return the variable 'is_correct' as true, if not, please return it as false.
     If the answer is not correct, please explain why, by returning the variable 'explanation', containing a string that explains this.`;
 

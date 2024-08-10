@@ -157,7 +157,7 @@ export default {
                 <div
                     class="hover-cursor"
                     b-on-hover
-                    title="you need to score above 90% to pass the assessment"
+                    title="you need to score above 80% to pass the assessment"
                 >
                     <span class="info-label">Score: </span>
                     <span class="info-value"
@@ -183,6 +183,7 @@ export default {
         <div class="mc-question-result" v-for="question of questions">
             <!-- Flag button -->
             <div
+                v-if="question.questionType == 'mc'"
                 b-tooltip.hover
                 title="flag this question for review"
                 @click="setQuestionForFlagging(question.id, 'mc_question')"
@@ -203,17 +204,25 @@ export default {
             <!-- The label indicate user answer right or wrong -->
             <div
                 :class="
-                    question.userAnswer === 1 ? 'correct-label' : 'wrong-label'
+                    question.userAnswer === 1 || question.isCorrect == true
+                        ? 'correct-label'
+                        : 'wrong-label'
                 "
             >
-                {{ question.userAnswer === 1 ? 'Correct !!' : 'Incorrect !!' }}
+                {{
+                    question.userAnswer === 1 || question.isCorrect == true
+                        ? 'Correct !!'
+                        : 'Incorrect !!'
+                }}
             </div>
             <div class="question">
                 {{ question.question }}
             </div>
             <div class="d-flex flex-column">
+                <!-- For MC Questions Only -->
                 <!-- Question options -->
                 <div
+                    v-if="question.questionType == 'mc'"
                     v-for="(answerOption, index) in question.answerOptions"
                     class="form-check my-3"
                 >
@@ -276,9 +285,16 @@ export default {
                         </div>
                     </label>
                 </div>
+                <!-- For Essay Questions Only -->
+                <div v-else>
+                    <span class="explain-label">Your answer: </span>
+                    <div class="explain-text">
+                        {{ question.userAnswer }}
+                    </div>
+                </div>
                 <!-- Question explanation -->
                 <div class="explain-answer">
-                    <div class="explain-label">Explain:</div>
+                    <div class="explain-label">Explanation:</div>
                     <div class="explain-text">
                         {{ question.explanation }}
                     </div>

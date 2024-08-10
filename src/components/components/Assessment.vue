@@ -444,8 +444,14 @@ export default {
                     for (let i = 0; i < this.questions.length; i++) {
                         if (this.questions[i].questionType == 'essay') {
                             let question = this.questions[i].question;
+                            // Remove Summernote HTML tags.
+                            let regex = /(<([^>]+)>)/gi;
+                            this.questions[i].userAnswer = this.questions[
+                                i
+                            ].userAnswer?.replace(regex, '');
                             let answer = this.questions[i].userAnswer;
-                            await this.AIMarkEssayQuestion(question, answer, i);                           
+
+                            await this.AIMarkEssayQuestion(question, answer, i);
                         }
                     }
                     if ((this.score / this.questions.length) * 100 >= 80) {
@@ -481,8 +487,10 @@ export default {
                 .then((result) => {
                     if (result.isCorrect == true) {
                         this.score++;
+                        this.questions[i].isCorrect = true;
                     } else {
                         this.questions[i].explanation = result.explanation;
+                        this.questions[i].isCorrect = false;
                     }
                 });
         },
