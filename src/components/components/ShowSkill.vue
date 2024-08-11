@@ -6,6 +6,8 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
+import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
+
 // Import Custom Components
 import FlagModals from './FlagModals.vue';
 
@@ -21,6 +23,7 @@ export default {
         const skillsStore = useSkillsStore();
         const skillTreeStore = useSkillTreeStore();
         const userSkillsStore = useUserSkillsStore();
+        const sessionDetailsStore = useSessionDetailsStore();
 
         // If method hasnt been run before.
         if (tagsStore.tagsList.length == 0) {
@@ -34,7 +37,8 @@ export default {
             userDetailsStore,
             skillsStore,
             skillTreeStore,
-            userSkillsStore
+            userSkillsStore,
+            sessionDetailsStore
         };
     },
     data() {
@@ -202,7 +206,7 @@ export default {
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
         >
-            <div class="row">
+            <div v-if="sessionDetailsStore.isLoggedIn" class="row">
                 <div
                     class="col-sm mb-2"
                     :class="{
@@ -361,7 +365,10 @@ export default {
                         <div v-html="skill.mastery_requirements"></div>
                     </div>
                 </div>
-                <div class="row mt-3 me-1">
+                <div
+                    v-if="sessionDetailsStore.isLoggedIn"
+                    class="row mt-3 me-1"
+                >
                     <!-- Flag the skill button -->
                     <div class="d-flex flex-row-reverse">
                         <div
@@ -414,7 +421,9 @@ export default {
                 </div>
             </div>
             <!-- A line divide -->
-            <div v-if="skill.type != 'domain'">
+            <div
+                v-if="skill.type != 'domain' && sessionDetailsStore.isLoggedIn"
+            >
                 <div class="row">
                     <div class="col col-md-8 p-4 p-md-0">
                         <hr

@@ -1,8 +1,17 @@
 <script>
+import { useSessionDetailsStore } from '../../../../stores/SessionDetailsStore.js';
+
 import ResourcePostCard from '../source-post/ResourcePostCard.vue';
 import TutorPostCard from '../tutor-post/TutorPostCard.vue';
 
 export default {
+    setup() {
+        const sessionDetailsStore = useSessionDetailsStore();
+
+        return {
+            sessionDetailsStore
+        };
+    },
     props: [`posts`, 'user', 'skillId'],
     data() {
         return {
@@ -99,7 +108,7 @@ export default {
 </script>
 
 <template>
-    <div class="d-flex flex-column mt-4">
+    <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex flex-column mt-4">
         <div class="d-flex flex-column flex-lg-row">
             <div class="ms-0 me-auto ms-lg-auto me-lg-0">
                 <div class="d-flex flex-column align-items-baseline">
