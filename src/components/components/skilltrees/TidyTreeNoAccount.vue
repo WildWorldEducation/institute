@@ -103,14 +103,14 @@ export default {
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
 
-            if (node && node.data.id) {
+            if (node && node.data.id) {                
                 // We clicked on something, lets set the color of the node
                 // we also have access to the data associated with it, which in
                 // this case is just its original index in the data array.
                 node.renderCol = node.__pickColor;
 
                 //Update the display with some data
-                this.skill.name = node.data.skill_name;
+                this.skill.name = node.data.name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
 

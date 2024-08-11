@@ -293,24 +293,23 @@ router.get('/show/:id', (req, res, next) => {
 // We send it separately because otherwise, if we send it with the other data, it slows
 // down the page load of the skill trees.
 router.get('/mastery-requirements/:id', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        // Get skill.
-        const sqlQuery = `SELECT mastery_requirements
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    // Get skill.
+    const sqlQuery = `SELECT mastery_requirements
                           FROM skills
                           WHERE skills.id = ${req.params.id} AND skills.is_deleted = 0`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                masteryRequirements = results[0].mastery_requirements;
-                res.json(masteryRequirements);
-            } catch (err) {
-                next(err);
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    }
+            masteryRequirements = results[0].mastery_requirements;
+            res.json(masteryRequirements);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 router.get('/record-visit/:id', (req, res, next) => {
