@@ -64,7 +64,8 @@ export default {
             assessmentStatus: '',
             haveEssayQuestion: false,
             finishTime: null,
-            needToSelectInstructor: false
+            needToSelectInstructor: false,
+            aiLoading: false
         };
     },
     mounted: function () {
@@ -470,6 +471,7 @@ export default {
             }
         },
         async AIMarkEssayQuestion(question, answer, i) {
+            this.aiLoading = true;
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -492,6 +494,9 @@ export default {
                         this.questions[i].explanation = result.explanation;
                         this.questions[i].isCorrect = false;
                     }
+                })
+                .finally(() => {
+                    this.aiLoading = false;
                 });
         },
         UserAnswer() {
@@ -536,10 +541,19 @@ export default {
     </button> -->
     <!-- Loading screen -->
     <div v-if="loading == true">Loading...</div>
+    
+    <!-- AI Loading annimation -->
+    <div
+        v-if="aiLoading"
+        class="loading-animation d-flex justify-content-center align-items-center py-4"
+    >
+        <span class="loader"></span>
+    </div>
+
     <!-- Assessment -->
     <div
         v-if="
-            loading == false && isQuizPassed == false && !needToSelectInstructor
+            loading == false && isQuizPassed == false && !needToSelectInstructor && !aiLoading
         "
     >
         <!-- Show student a warning if their take this assessment before and still wait for marking -->
@@ -998,6 +1012,24 @@ export default {
 }
 /* End of Modal Styling */
 
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #a48be5;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 /******************************/
 /* Mobile Styling */
 @media (max-width: 480px) {
