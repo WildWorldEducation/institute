@@ -269,24 +269,23 @@ router.get('/filtered-nested-list', (req, res, next) => {
  */
 router.get('/show/:id', (req, res, next) => {
     let skill;
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        // Get skill.
-        const sqlQuery = `SELECT *
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    // Get skill.
+    const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${req.params.id} AND skills.is_deleted = 0`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                skill = results[0];
-                res.json(skill);
-            } catch (err) {
-                next(err);
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    }
+            skill = results[0];
+            res.json(skill);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 // For sending the mastery requirements data separately to the skill tree skill panels.
