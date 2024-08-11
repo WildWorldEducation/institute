@@ -292,7 +292,9 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'login' &&
         to.name !== 'student-signup' &&
         to.name !== 'editor-signup' &&
-        to.name !== 'vertical-tree'
+        // For guest access.
+        to.name !== 'vertical-tree' &&
+        to.name !== 'show-skill'
     ) {
         next({ name: 'vertical-tree' });
         return;
