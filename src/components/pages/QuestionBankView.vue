@@ -38,7 +38,7 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
+    <div id="banner" class="overflow-hidden">
         <img src="/images/banners/general-banner.png" class="image-fluid" />
     </div>
     <!-- Purple Banner Row -->
