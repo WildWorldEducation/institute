@@ -188,7 +188,7 @@ export default {
 
                         // Create a new child node, with the subskills in it.
                         var superSkillEndNode = {
-                            skill_name: parentChildren[i].skill_name,
+                            name: parentChildren[i].name,
                             type: 'super',
                             position: 'end',
                             children: subSkills
@@ -369,12 +369,8 @@ export default {
                     ctx1.lineWidth = 4;
                     ctx1.fillStyle = '#849cab';
                     ctx1.direction = 'rtl';
-                    ctx1.strokeText(
-                        node.data.skill_name,
-                        node.y - 5,
-                        node.x + 2
-                    );
-                    ctx1.fillText(node.data.skill_name, node.y - 5, node.x + 2);
+                    ctx1.strokeText(node.data.name, node.y - 5, node.x + 2);
+                    ctx1.fillText(node.data.name, node.y - 5, node.x + 2);
                 }
             }
 
