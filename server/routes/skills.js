@@ -216,51 +216,50 @@ router.get('/nested-list', (req, res, next) => {
     }
 });
 
-// Filtered Nested List - for "Instructor Role"
+// Filtered Nested List - for "Instructor Role" and for "Guest Access" (no account)
 router.get('/filtered-nested-list', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery = `
     SELECT id, name, parent, type, level, skills.order as skillorder
     FROM skills
     WHERE is_filtered = 'available' AND is_deleted = 0
     ORDER BY skillorder;`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
 
-                // Create the 'children' array.
-                for (var i = 0; i < results.length; i++) {
-                    results[i].children = [];
-                }
+            // Create the 'children' array.
+            for (var i = 0; i < results.length; i++) {
+                results[i].children = [];
+            }
 
-                for (var i = 0; i < results.length; i++) {
-                    if (results[i].parent != null && results[i].parent != 0) {
-                        var parentId = results[i].parent;
-                        // go through all rows again, add children
-                        for (let j = 0; j < results.length; j++) {
-                            if (results[j].id == parentId) {
-                                results[j].children.push(results[i]);
-                            }
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].parent != null && results[i].parent != 0) {
+                    var parentId = results[i].parent;
+                    // go through all rows again, add children
+                    for (let j = 0; j < results.length; j++) {
+                        if (results[j].id == parentId) {
+                            results[j].children.push(results[i]);
                         }
                     }
                 }
-
-                let filteredNestedSkills = [];
-                for (var i = 0; i < results.length; i++) {
-                    if (results[i].parent == null || results[i].parent == 0) {
-                        filteredNestedSkills.push(results[i]);
-                    }
-                }
-
-                res.json(filteredNestedSkills);
-            } catch (err) {
-                next(err);
             }
-        });
-    }
+
+            let filteredNestedSkills = [];
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].parent == null || results[i].parent == 0) {
+                    filteredNestedSkills.push(results[i]);
+                }
+            }
+
+            res.json(filteredNestedSkills);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 /**

@@ -289,12 +289,12 @@ router.beforeEach(async (to, from, next) => {
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&
-        !sessionDetailsStore.isLoggedIn &&
         to.name !== 'login' &&
         to.name !== 'student-signup' &&
-        to.name !== 'editor-signup'
+        to.name !== 'editor-signup' &&
+        to.name !== 'vertical-tree'
     ) {
-        next({ name: 'login' });
+        next({ name: 'vertical-tree' });
         return;
     }
 
