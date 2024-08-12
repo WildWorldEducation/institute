@@ -280,7 +280,7 @@ router.beforeEach(async (to, from, next) => {
             (item) => item.id == to.params.id
         );
 
-        if (!(currentSkill.is_accessible == 1)) {
+        if (currentSkill.is_accessible != 1 || currentSkill.is_mastered == 1) {
             next({ path: '/skills/' + to.params.id });
             return;
         }
