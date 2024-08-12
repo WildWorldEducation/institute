@@ -294,7 +294,8 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'editor-signup' &&
         // For guest access.
         to.name !== 'vertical-tree' &&
-        to.name !== 'show-skill'
+        to.name !== 'show-skill' &&
+        to.name !== 'profile-settings'
     ) {
         next({ name: 'vertical-tree' });
         return;

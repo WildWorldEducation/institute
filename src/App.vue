@@ -103,20 +103,21 @@ export default {
                         </li>
                     </ul>
                     <ul class="navbar-nav d-flex">
-                        <li class="nav-item me-2">
+                        <li
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="nav-item me-2"
+                        >
                             <RouterLink to="/profile-settings" class="nav-link">
                                 <img
-                                    v-if="sessionDetailsStore.isLoggedIn"
                                     id="user-avatar"
                                     :src="userDetailsStore.avatar"
                                     alt="user avatar"
                                 />
-                                <img
-                                    id="user-avatar"
-                                    src="/images/source-avatars/source-default-avatar.png"
-                                    alt="user avatar"
-                                    v-else
-                                />
+                            </RouterLink>
+                        </li>
+                        <li class="nav-item me-2" v-else>
+                            <RouterLink to="/student-signup" class="nav-link">
+                                Sign up
                             </RouterLink>
                         </li>
                     </ul>
