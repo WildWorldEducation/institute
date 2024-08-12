@@ -120,7 +120,7 @@ export default {
 <template>
     <div class="signup-page">
         <div class="form-signin">
-            <!-- <div class="text-center">
+            <div class="text-center">
                 <img
                     class="mb-4"
                     src="/images/logo-red.png"
@@ -128,7 +128,7 @@ export default {
                     width="72"
                     height="72"
                 />
-            </div> -->
+            </div>
             <h1 class="h3 mb-3 font-weight-normal">Student Sign up</h1>
 
             <div class="mt-3">
