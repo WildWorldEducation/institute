@@ -51,6 +51,7 @@ export default {
                 const skillInfoPanelBottom = this.$refs.skillInfoPanelBottom;
                 const container = this.$refs.truncateContainer;
                 const content = this.$refs.truncateContent;
+
                 if (screen.width > 800) {
                     container.style.height =
                         skillInfoPanel.clientHeight -
@@ -99,22 +100,6 @@ export default {
         <div id="skillInfoPanelContainer" ref="skillInfoPanel">
             <div class="skill-info-panel-top" ref="skillInfoPanelTop">
                 <h1>{{ skill?.name }}</h1>
-                <!-- <div class="form-check"> -->
-                <!-- 'pointer-events: none' to make checkbox unclickable, without it being greyed out (disabled). -->
-                <!-- <input
-                        id="mastery-checkbox"
-                        class="form-check-input"
-                        type="checkbox"
-                        value="skill?.isMastered"
-                        style="pointer-events: none"
-                    />
-                    <label
-                        class="form-check-label"
-                        style="color: #9c7eec; pointer-events: none"
-                    >
-                        Attained
-                    </label>
-                </div> -->
             </div>
             <div
                 v-if="skill?.type != 'domain'"
@@ -188,6 +173,12 @@ export default {
     color: #9c7eec;
     font-size: 32px;
     font-weight: 600;
+}
+
+h1 {
+    color: #8f7bd6;
+    font-family: Poppins, sans-serif;
+    font-weight: 900;
 }
 
 #skillDescription {

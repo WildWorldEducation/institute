@@ -116,8 +116,8 @@ export default {
                             </RouterLink>
                         </li>
                         <li class="nav-item me-2" v-else>
-                            <RouterLink to="/student-signup" class="nav-link">
-                                Sign up
+                            <RouterLink to="/login" class="nav-link">
+                                Log in
                             </RouterLink>
                         </li>
                     </ul>

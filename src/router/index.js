@@ -319,7 +319,13 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // To remove the vertical scroll bar for the Vertical and Radial skill tree pages.
-    if (to.name == 'vertical-tree' || to.name == 'radial-tree') {
+    if (
+        to.name == 'vertical-tree' ||
+        to.name == 'radial-tree' ||
+        to.name == 'student-signup' ||
+        to.name == 'editor-signup' ||
+        to.name == 'login'
+    ) {
         document.getElementById('app').style.overflow = 'hidden';
     } else {
         document.getElementById('app').style.overflow = 'auto';

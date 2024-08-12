@@ -103,7 +103,7 @@ export default {
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
 
-            if (node && node.data.id) {                
+            if (node && node.data.id) {
                 // We clicked on something, lets set the color of the node
                 // we also have access to the data associated with it, which in
                 // this case is just its original index in the data array.
@@ -153,8 +153,6 @@ export default {
             skillsWithSubSkillsMoved = JSON.parse(
                 JSON.stringify(this.skill.children)
             );
-
-            console.log(skillsWithSubSkillsMoved);
 
             // Duplicate super skill node, and make second one a child of the first.
             // Put all the subskills of the node in the second version.
