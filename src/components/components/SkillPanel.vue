@@ -8,10 +8,16 @@ export default {
     computed: {
         removeStyles() {
             // Remove style tags
-            let withoutStyleTags = this.skill.masteryRequirements?.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+            let withoutStyleTags = this.skill.masteryRequirements?.replace(
+                /<style[^>]*>[\s\S]*?<\/style>/gi,
+                ''
+            );
 
             // Remove inline style attributes
-            let withoutInlineStyles = withoutStyleTags?.replace(/ style=["'][^"']*["']/gi, '');
+            let withoutInlineStyles = withoutStyleTags?.replace(
+                / style=["'][^"']*["']/gi,
+                ''
+            );
 
             return withoutInlineStyles;
         }
@@ -46,22 +52,36 @@ export default {
                 const container = this.$refs.truncateContainer;
                 const content = this.$refs.truncateContent;
                 if (screen.width > 800) {
-                    container.style.height = (skillInfoPanel.clientHeight - skillInfoPanelBottom.clientHeight - skillInfoPanelTop.clientHeight - 40)+"px"
-                }else{
-                    container.style.height = (434 - skillInfoPanelBottom.clientHeight - skillInfoPanelTop.clientHeight - 110)+"px"
+                    container.style.height =
+                        skillInfoPanel.clientHeight -
+                        skillInfoPanelBottom.clientHeight -
+                        skillInfoPanelTop.clientHeight -
+                        40 +
+                        'px';
+                } else {
+                    container.style.height =
+                        434 -
+                        skillInfoPanelBottom.clientHeight -
+                        skillInfoPanelTop.clientHeight -
+                        110 +
+                        'px';
                 }
                 const containerHeight = container.clientHeight;
-                const lineHeight = parseInt(window.getComputedStyle(container).lineHeight);
-                const numLines = Math.trunc(containerHeight / lineHeight) - (screen.width > 800 ? 2 : 0);
-                content.style.clampedLines = numLines ;
-                content.style.webkitLineClamp = numLines ;
+                const lineHeight = parseInt(
+                    window.getComputedStyle(container).lineHeight
+                );
+                const numLines =
+                    Math.trunc(containerHeight / lineHeight) -
+                    (screen.width > 800 ? 2 : 0);
+                content.style.clampedLines = numLines;
+                content.style.webkitLineClamp = numLines;
             });
         }
     },
-    mounted(){
+    mounted() {
         document.addEventListener('click', () => {
             this.adjustClamping();
-        })
+        });
     }
 };
 </script>
@@ -79,9 +99,9 @@ export default {
         <div id="skillInfoPanelContainer" ref="skillInfoPanel">
             <div class="skill-info-panel-top" ref="skillInfoPanelTop">
                 <h1>{{ skill?.name }}</h1>
-                <div class="form-check">
-                    <!-- 'pointer-events: none' to make checkbox unclickable, without it being greyed out (disabled). -->
-                    <input
+                <!-- <div class="form-check"> -->
+                <!-- 'pointer-events: none' to make checkbox unclickable, without it being greyed out (disabled). -->
+                <!-- <input
                         id="mastery-checkbox"
                         class="form-check-input"
                         type="checkbox"
@@ -94,9 +114,13 @@ export default {
                     >
                         Attained
                     </label>
-                </div>
+                </div> -->
             </div>
-            <div v-if="skill?.type != 'domain'" ref="truncateContainer" class="mt-2 preview">
+            <div
+                v-if="skill?.type != 'domain'"
+                ref="truncateContainer"
+                class="mt-2 preview"
+            >
                 <div
                     class="truncate-overflow"
                     ref="truncateContent"
@@ -128,9 +152,9 @@ export default {
                 </router-link>
                 <div v-if="skill?.type == 'domain'" class="mt-4">
                     <p>
-                        This is a larger subject holding a series of more specific
-                        skills; click through to the skills within it to master each
-                        one!
+                        This is a larger subject holding a series of more
+                        specific skills; click through to the skills within it
+                        to master each one!
                     </p>
                     <!-- <p>
                         To master this subject, you need to master all the skills
@@ -190,7 +214,7 @@ export default {
     flex-direction: column;
     height: calc(100% - 40px);
 }
-.preview{
+.preview {
     flex-grow: 0;
     flex-shrink: 0;
     overflow: hidden;
@@ -201,7 +225,8 @@ export default {
     bottom: 20px;
     right: 20px;
 }
-.skill-info-panel-top, .skill-info-panel-bottom{
+.skill-info-panel-top,
+.skill-info-panel-bottom {
     width: 474px;
 }
 
@@ -222,7 +247,8 @@ export default {
         width: 100%;
         bottom: 0;
     }
-    .skill-info-panel-top, .skill-info-panel-bottom{
+    .skill-info-panel-top,
+    .skill-info-panel-bottom {
         width: initial;
     }
 }
@@ -261,7 +287,7 @@ export default {
     line-clamp: 3;
     -webkit-box-orient: vertical;
 }
-.truncate-overflow *{
+.truncate-overflow * {
     list-style: none;
     padding-left: 0px;
 }
