@@ -106,9 +106,16 @@ export default {
                         <li class="nav-item me-2">
                             <RouterLink to="/profile-settings" class="nav-link">
                                 <img
+                                    v-if="sessionDetailsStore.isLoggedIn"
                                     id="user-avatar"
                                     :src="userDetailsStore.avatar"
                                     alt="user avatar"
+                                />
+                                <img
+                                    id="user-avatar"
+                                    src="/images/source-avatars/source-default-avatar.png"
+                                    alt="user avatar"
+                                    v-else
                                 />
                             </RouterLink>
                         </li>
