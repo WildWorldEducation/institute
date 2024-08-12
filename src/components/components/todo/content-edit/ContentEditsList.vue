@@ -1,5 +1,5 @@
 <script>
-import { useUsersStore } from '../../stores/UsersStore';
+import { useUsersStore } from '../../../../stores/UsersStore';
 
 export default {
     setup() {
@@ -17,7 +17,6 @@ export default {
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
-
         await this.getSkillEditsSubmittedForReview();
         await this.getMCQuestionEditsSubmittedForReview();
         await this.getEssayQuestionEditsSubmittedForReview();
@@ -108,6 +107,14 @@ export default {
 </script>
 
 <template>
+    <!-- Banner -->
+    <div id="banner">
+        <img src="/images/banners/general-banner.png" class="img-fluid" />
+    </div>
+    <!-- Page tile -->
+    <h1>Users Edit Content List</h1>
+    <!-- Nav List On Desktop -->
+
     <h3>Skills</h3>
     <ul>
         <li v-for="skillEdit in skillEdits">
@@ -161,4 +168,9 @@ export default {
     </ul>
 </template>
 
-<style></style>
+<style scoped>
+#banner {
+    width: 100%;
+    height: fit-content;
+}
+</style>

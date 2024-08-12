@@ -1,7 +1,7 @@
 <script>
 import PageNav from '../components/todo/PageNav.vue';
 import CheckStudentQuestions from '../components/CheckStudentQuestions.vue';
-import ContentEditsList from '../components/ContentEditsList.vue';
+import ContentEditsList from '../components/todo/content-edit/ContentEditsList.vue';
 import ContentFlagsView from './ContentFlagsView.vue';
 
 export default {
@@ -35,8 +35,7 @@ export default {
             <PageNav class="h-100" :activeContent="activeContent" />
 
             <div id="contentDiv" class="d-flex flex-column">
-                <div v-if="activeContent === 'editList'" class="ps-0 ps-md-2">
-                    <h2>Student Edited Content</h2>
+                <div v-if="activeContent === 'editList'">
                     <ContentEditsList />
                 </div>
                 <div
