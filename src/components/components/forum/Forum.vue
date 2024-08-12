@@ -45,13 +45,18 @@ export default {
     computed: {},
     async created() {
         this.getUserId();
-        await this.getUsers();
+        // Dont show the users if guest account.
+        if (this.$parent.sessionDetailsStore.isLoggedIn == true) {
+            await this.getUsers();
+        }
         // Get all sources for this skill.
         await this.getSourcePosts(this.skillId);
+
         // Get voting data on each.
         for (let i = 0; i < this.sourcePosts.length; i++) {
             await this.getSourceVotes(this.sourcePosts[i].id);
         }
+
         // Add to posts.
         this.posts = this.sourcePosts;
         // Get all tutor posts for this skill.
@@ -255,7 +260,8 @@ export default {
             <img src="/images/recurso-69.png" class="" />
         </div>
         <!-- Navigation Tabs -->
-        <ul class="nav nav-tabs border-3">
+        <!-- If guest account, we dont show tutors, only sources -->
+        <ul v-if="$parent.sessionDetailsStore" class="nav nav-tabs border-3">
             <li
                 class="nav-item"
                 b-on-hover
