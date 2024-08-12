@@ -148,8 +148,6 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- Image: character with a sign. -->
-        <!-- <img src="/images/char-with-sign.svg" /> -->
     </div>
 </template>
 
