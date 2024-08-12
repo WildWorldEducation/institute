@@ -46,7 +46,7 @@ export default {
                     <h2>Student Suggested Questions</h2>
                     <CheckStudentQuestions />
                 </div>
-                <div v-if="activeContent === 'flagList'" class="w-100">
+                <div v-if="activeContent === 'flagList'">
                     <ContentFlagsView />
                 </div>
             </div>
@@ -62,14 +62,15 @@ export default {
 }
 
 #contentDiv {
-    overflow: scroll;
+    overflow: auto;
+    width: 100%;
 }
 
 /* View Specific On Phone */
 @media (min-width: 0px) and (max-width: 576px) {
     #contentDiv {
         width: fit-content;
-        overflow: scroll;
+        overflow: auto;
     }
 }
 </style>

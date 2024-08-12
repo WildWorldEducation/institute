@@ -251,7 +251,8 @@ const router = createRouter({
         {
             path: '/todo',
             name: 'todo-list',
-            component: () => import('../components/pages/TodoListView.vue')
+            component: () => import('../components/pages/TodoListView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         }
     ]
 });
