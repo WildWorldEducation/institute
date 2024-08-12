@@ -76,11 +76,14 @@ export default {
         </div>
     </Transition>
     <Transition name="navbarMini">
-        <div v-if="!showNavBar" class="position-relative">
-            <div class="nav-col"></div>
+        <div
+            v-if="!showNavBar"
+            class="position-relative minimize-navbar"
+            @click="showNavBar = true"
+        >
+            <div class="nav-col group"></div>
             <div
-                class="expand-icon-div"
-                @click="showNavBar = true"
+                class="expand-icon-div group"
                 b-on-hover
                 title="Expand Nav Bar"
             >
@@ -184,9 +187,9 @@ export default {
     padding: 2px 7px;
 }
 
-.expand-icon-div:hover {
+.minimize-navbar:hover .group {
     cursor: pointer;
-    background-color: #cecbd6;
+    background-color: #bbb9c0;
 }
 
 /* View Specific On Phone */
@@ -197,6 +200,11 @@ export default {
 
     .nav-col {
         width: 8px;
+    }
+
+    .expand-icon-div:hover {
+        cursor: pointer;
+        background-color: #cecbd6;
     }
 }
 </style>
