@@ -774,20 +774,19 @@ router.delete('/:id', (req, res, next) => {
 // Learning Resources
 // List all for a particular skill.
 router.get('/:id/resources', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * FROM resources WHERE skill_id= ${req.params.id} AND is_deleted = 0`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.json(results);
-            } catch (err) {
-                next(err);
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery = `SELECT * FROM resources WHERE skill_id= ${req.params.id} AND is_deleted = 0`;
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 // Questions -------------------
