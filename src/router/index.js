@@ -224,13 +224,15 @@ const router = createRouter({
         {
             path: '/content-flags',
             name: 'content-flags',
-            component: () => import('../components/pages/ContentFlagsView.vue')
+            component: () => import('../components/pages/ContentFlagsView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
         {
             path: '/check-student-question/:id',
             name: 'check-student-question',
             component: () =>
-                import('../components/pages/CheckStudentQuestionView.vue')
+                import('../components/pages/CheckStudentQuestionView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
         {
             path: '/tutor/add/:skillId',
