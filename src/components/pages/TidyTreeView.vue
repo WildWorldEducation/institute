@@ -1,12 +1,21 @@
 <script>
+import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import TidyTree from '../components/skilltrees/TidyTree.vue';
+import TidyTreeNoAccount from '../components/skilltrees/TidyTreeNoAccount.vue';
 
 export default {
-    setup() {},
+    setup() {
+        const sessionDetailsStore = useSessionDetailsStore();
+
+        return {
+            sessionDetailsStore
+        };
+    },
     data() {
         return {};
     },
-    components: { TidyTree },
+    created() {},
+    components: { TidyTree, TidyTreeNoAccount },
     methods: {
         // // Toggle info bar.
         // ToggleInfobar() {
@@ -106,7 +115,11 @@ export default {
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
-            <TidyTree ref="childComponent" />
+            <TidyTree
+                v-if="sessionDetailsStore.isLoggedIn"
+                ref="childComponent"
+            />
+            <TidyTreeNoAccount v-else ref="childComponent" />
         </template>
         <template #fallback>
             <span>Loading...</span>
@@ -169,14 +182,14 @@ export default {
     #tablet-and-up-legend {
         display: block;
     }
-    .legend{
+    .legend {
         align-items: center;
     }
 
-    .legend .col{
+    .legend .col {
         display: flex;
     }
-    .legend span{
+    .legend span {
         flex-shrink: 0;
     }
 }

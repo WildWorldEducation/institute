@@ -17,25 +17,23 @@ Routes
 --------------------------------------------*/
 // Sum of votes per skill.
 router.get('/:id', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-
-        let sqlQuery =
-            `
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery =
+        `
     SELECT * FROM user_votes
     WHERE resource_id =` + req.params.id;
 
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.json(results);
-            } catch (err) {
-                next(err);
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 /**

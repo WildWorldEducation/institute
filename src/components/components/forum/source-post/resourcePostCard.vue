@@ -1,5 +1,14 @@
 <script>
+import { useSessionDetailsStore } from '../../../../stores/SessionDetailsStore.js';
+
 export default {
+    setup() {
+        const sessionDetailsStore = useSessionDetailsStore();
+
+        return {
+            sessionDetailsStore
+        };
+    },
     props: ['post', 'user'],
     data() {
         return {
@@ -7,7 +16,9 @@ export default {
             currentClickId: 0
         };
     },
-    mounted() {},
+    mounted() {
+        console.log(this.sessionDetailsStore.isLoggedIn);
+    },
     computed: {},
     methods: {
         handleClickActionBtns(postId) {
@@ -102,7 +113,14 @@ export default {
                 <div class="col post-user-row">
                     <div class="user-avatar">
                         <img
+                            v-if="sessionDetailsStore.isLoggedIn"
                             :src="post.userAvatar"
+                            class="user-avatar-img"
+                            alt="user avatar"
+                        />
+                        <img
+                            v-else
+                            src="/images/source-avatars/source-default-avatar.png"
                             class="user-avatar-img"
                             alt="user avatar"
                         />
@@ -130,6 +148,7 @@ export default {
                 <div class="d-flex flex-row justify-content-end gap-1">
                     <!-- Upvote Button -->
                     <div
+                        v-if="sessionDetailsStore.isLoggedIn"
                         @click="voteUp(post.id, post.userUpVote)"
                         b-tooltip.hover
                         title="I Like This "
@@ -176,6 +195,7 @@ export default {
                     >
                     <!-- Down vote button -->
                     <div
+                        v-if="sessionDetailsStore.isLoggedIn"
                         b-tooltip.hover
                         title="I Dislike This "
                         @click="voteDown(post.id, post.userDownVote)"
@@ -210,7 +230,10 @@ export default {
                         </svg>
                     </div>
                     <!-- Actions Dropdown Component -->
-                    <div class="position-relative">
+                    <div
+                        v-if="sessionDetailsStore.isLoggedIn"
+                        class="position-relative"
+                    >
                         <!-- Button to toggle the action dropdown -->
                         <div
                             class="toggle-actions-bnt"
