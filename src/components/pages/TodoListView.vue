@@ -30,15 +30,19 @@ export default {
 
 <template>
     <div class="container-fluid h-100 p-0">
-        <div class="d-flex h-100">
+        <!-- In the pc view we display flex row -->
+        <div class="h-100 d-flex">
             <PageNav class="h-100" :activeContent="activeContent" />
 
-            <div id="contentDiv" class="d-flex flex-column w-100">
-                <div v-if="activeContent === 'editList'">
+            <div id="contentDiv" class="d-flex flex-column">
+                <div v-if="activeContent === 'editList'" class="ps-0 ps-md-2">
                     <h2>Student Edited Content</h2>
                     <ContentEditsList />
                 </div>
-                <div v-if="activeContent === 'studentQuestionList'">
+                <div
+                    v-if="activeContent === 'studentQuestionList'"
+                    class="ps-0 ps-md-2"
+                >
                     <h2>Student Suggested Questions</h2>
                     <CheckStudentQuestions />
                 </div>
@@ -55,5 +59,17 @@ export default {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
+}
+
+#contentDiv {
+    overflow: scroll;
+}
+
+/* View Specific On Phone */
+@media (min-width: 0px) and (max-width: 576px) {
+    #contentDiv {
+        width: fit-content;
+        overflow: scroll;
+    }
 }
 </style>

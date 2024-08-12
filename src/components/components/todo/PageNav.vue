@@ -188,4 +188,15 @@ export default {
     cursor: pointer;
     background-color: #cecbd6;
 }
+
+/* View Specific On Phone */
+@media (min-width: 0px) and (max-width: 576px) {
+    .nav-bar-container {
+        min-width: 300px;
+    }
+
+    .nav-col {
+        width: 8px;
+    }
+}
 </style>
