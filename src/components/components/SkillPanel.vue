@@ -57,14 +57,14 @@ export default {
                         skillInfoPanel.clientHeight -
                         skillInfoPanelBottom.clientHeight -
                         skillInfoPanelTop.clientHeight -
-                        200 +
+                        250 +
                         'px';
                 } else {
                     container.style.height =
                         434 -
                         skillInfoPanelBottom.clientHeight -
                         skillInfoPanelTop.clientHeight -
-                        250 +
+                        300 +
                         'px';
                 }
                 const containerHeight = container.clientHeight;
