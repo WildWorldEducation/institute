@@ -419,7 +419,8 @@ export default {
 /* View Specific On Phone */
 @media (min-width: 0px) and (max-width: 576px) {
     .mobile-nav-bar {
-        padding: 15px;
+        margin-left: 15px;
+        margin-top: 10px;
     }
 }
 </style>

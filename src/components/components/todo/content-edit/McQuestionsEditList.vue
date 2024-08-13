@@ -69,4 +69,8 @@ export default {
     --easy-table-header-height: 50px;
     --easy-table-header-item-padding: 15px 5px;
 }
+
+.customize-table :deep(tbody tr:hover) {
+    cursor: pointer;
+}
 </style>
