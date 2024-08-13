@@ -16,93 +16,88 @@ export default {
 </script>
 
 <template>
-    <div>
-        <Transition name="navbar">
-            <div v-if="showNavBar" class="nav-bar-container d-flex flex-column">
-                <div class="d-flex justify-content-between pe-4">
-                    <div class="todo-tile ps-2 pt-2">Todo List</div>
-                    <div
-                        class="icon-div d-flex align-items-center px-3 py-2"
-                        @click="showNavBar = false"
-                        b-on-hover
-                        title="Shrink Nav Bar"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 448 512"
-                            width="20"
-                            heigh="20"
-                            fill="#8666ca"
-                        >
-                            <path
-                                d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"
-                            />
-                        </svg>
-                    </div>
-                </div>
-                <hr />
+    <Transition name="navbar">
+        <div v-if="showNavBar" class="nav-bar-container d-flex flex-column">
+            <div class="d-flex justify-content-between pe-4">
+                <div class="todo-tile ps-2 pt-2">Todo List</div>
                 <div
-                    :class="[
-                        activeContent === 'editList'
-                            ? 'active-item'
-                            : 'nav-bar-item'
-                    ]"
-                    @click="changeActiveContent('editList')"
-                >
-                    Approval Edit Content
-                </div>
-                <div
-                    :class="[
-                        activeContent === 'studentQuestionList'
-                            ? 'active-item'
-                            : 'nav-bar-item'
-                    ]"
-                    @click="changeActiveContent('studentQuestionList')"
-                >
-                    Approval Student Question Suggestion
-                </div>
-                <div
-                    :class="[
-                        activeContent === 'flagList'
-                            ? 'active-item'
-                            : 'nav-bar-item'
-                    ]"
-                    @click="changeActiveContent('flagList')"
-                >
-                    Checking Content Flag
-                </div>
-                <h1>
-                    {{ contentHeight }}
-                </h1>
-            </div>
-        </Transition>
-        <Transition name="navbarMini">
-            <div
-                v-if="!showNavBar"
-                class="position-relative minimize-navbar"
-                @click="showNavBar = true"
-            >
-                <div class="nav-col group"></div>
-                <div
-                    class="expand-icon-div group"
+                    class="icon-div d-flex align-items-center px-3 py-2"
+                    @click="showNavBar = false"
                     b-on-hover
-                    title="Expand Nav Bar"
+                    title="Shrink Nav Bar"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 448 512"
-                        width="12"
-                        heigh="12"
+                        width="20"
+                        heigh="20"
                         fill="#8666ca"
                     >
                         <path
-                            d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
+                            d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"
                         />
                     </svg>
                 </div>
             </div>
-        </Transition>
-    </div>
+            <hr />
+            <div
+                :class="[
+                    activeContent === 'editList'
+                        ? 'active-item'
+                        : 'nav-bar-item'
+                ]"
+                @click="changeActiveContent('editList')"
+            >
+                Approval Edit Content
+            </div>
+            <div
+                :class="[
+                    activeContent === 'studentQuestionList'
+                        ? 'active-item'
+                        : 'nav-bar-item'
+                ]"
+                @click="changeActiveContent('studentQuestionList')"
+            >
+                Approval Student Question Suggestion
+            </div>
+            <div
+                :class="[
+                    activeContent === 'flagList'
+                        ? 'active-item'
+                        : 'nav-bar-item'
+                ]"
+                @click="changeActiveContent('flagList')"
+            >
+                Checking Content Flag
+            </div>
+        </div>
+    </Transition>
+    <Transition name="navbarMini">
+        <div
+            v-if="!showNavBar"
+            class="position-relative minimize-navbar"
+            @click="showNavBar = true"
+        >
+            <div class="nav-col group"></div>
+            <div
+                class="expand-icon-div group"
+                b-on-hover
+                title="Expand Nav Bar"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                    width="12"
+                    heigh="12"
+                    fill="#8666ca"
+                >
+                    <path
+                        d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
+                    />
+                </svg>
+            </div>
+        </div>
+    </Transition>
 </template>
 
 <style scoped>
@@ -202,6 +197,7 @@ export default {
 
     .nav-col {
         width: 8px;
+        border-right: solid 1px #9f9da1;
     }
 
     .expand-icon-div:hover {

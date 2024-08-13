@@ -24,12 +24,18 @@ export default {
     async created() {
         console.log(this.mcQuestionList);
     },
-    methods: {}
+    methods: {
+        goToComparePage(item) {
+            this.$router.push(
+                `/content-edit/${item.mc_question_id}/${item.user_id}/comparison?type=mcquestion`
+            );
+        }
+    }
 };
 </script>
 
 <template>
-    <div class="mt-3 px-2 pt-4">
+    <div class="mt-3 pt-4 table-div">
         <Vue3EasyDataTable
             :headers="headers"
             :items="mcQuestionList"
@@ -38,6 +44,7 @@ export default {
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"
+            @click-row="goToComparePage"
         >
             <!-- --- Loading Part --- -->
             <template #loading>
@@ -48,6 +55,11 @@ export default {
 </template>
 
 <style scoped>
+.table-div {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;

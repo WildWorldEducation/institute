@@ -123,9 +123,9 @@ export default {
             <img src="/images/banners/general-banner.png" class="img-fluid" />
         </div>
         <!-- Page tile -->
-        <h1 class="ps-3">Users Edit Content List</h1>
+        <div class="ps-3 page-tile">User Edit Content List</div>
         <!-- ---- | Nav List On Desktop | ---- -->
-        <div class="d-none d-lg-flex desktop-nav-bar gap-4 ps-3">
+        <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
             <div
                 :class="[activeList === 'skills' ? 'active-nav' : 'normal-nav']"
                 @click="activeList = 'skills'"
@@ -257,11 +257,19 @@ export default {
     overflow: auto;
 }
 
+.page-tile {
+    color: #9c7eec;
+    font-size: 30px;
+    font-weight: 600;
+}
+
 .desktop-nav-bar {
     padding-top: 15px;
     padding-bottom: 15px;
-    border-top: 1px solid grey;
-    border-bottom: 1px solid grey;
+    border: 1px solid #e0e0e0;
+    width: fit-content;
+    border-radius: 5px;
+    margin-left: 15px;
 }
 
 .normal-nav {
