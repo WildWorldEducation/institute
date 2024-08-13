@@ -186,6 +186,7 @@ export default {
         },
         copyShareableURLToClipBoard() {
             navigator.clipboard.writeText(window.location.href);
+            alert('URL copied to clipboard');
         }
     },
     /**
