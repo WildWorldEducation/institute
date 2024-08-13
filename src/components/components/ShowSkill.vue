@@ -206,8 +206,9 @@ export default {
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
         >
-            <div v-if="sessionDetailsStore.isLoggedIn" class="row">
+            <div class="row">
                 <div
+                    v-if="sessionDetailsStore.isLoggedIn"
                     class="col-sm mb-2"
                     :class="{
                         'd-flex': isMobileCheck < 576,
@@ -266,7 +267,10 @@ export default {
                 <!-- Take assessment -->
                 <div class="col-sm">
                     <div
-                        v-if="userDetailsStore.role == 'student'"
+                        v-if="
+                            userDetailsStore.role == 'student' ||
+                            !sessionDetailsStore.isLoggedIn
+                        "
                         class="xs:flex xs:justify-content-center"
                     >
                         <div
@@ -286,7 +290,10 @@ export default {
                             </router-link>
                             <!-- Take Assessment Button -->
                             <router-link
-                                v-if="isUnlocked && !isMastered"
+                                v-if="
+                                    (isUnlocked && !isMastered) ||
+                                    !sessionDetailsStore.isLoggedIn
+                                "
                                 class="btn purple-btn assessment-btn"
                                 :to="skillId + '/assessment'"
                             >

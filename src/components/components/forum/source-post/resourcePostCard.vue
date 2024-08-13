@@ -16,9 +16,7 @@ export default {
             currentClickId: 0
         };
     },
-    mounted() {
-        console.log(this.sessionDetailsStore.isLoggedIn);
-    },
+    mounted() {},
     computed: {},
     methods: {
         handleClickActionBtns(postId) {
