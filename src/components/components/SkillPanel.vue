@@ -64,7 +64,7 @@ export default {
                         434 -
                         skillInfoPanelBottom.clientHeight -
                         skillInfoPanelTop.clientHeight -
-                        300 +
+                        290 +
                         'px';
                 }
                 const containerHeight = container.clientHeight;
