@@ -21,7 +21,10 @@ export default {
 
 <template>
     <header>
-        <nav id="navbar" class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+        <nav
+            id="navbar"
+            class="navbar fixed-top navbar-expand-lg navbar-light bg-light"
+        >
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link">
                     <img
@@ -117,7 +120,11 @@ export default {
                         </li>
                         <li class="nav-item me-2" v-else>
                             <RouterLink to="/login" class="nav-link">
-                                Log in
+                                <img
+                                    id="user-avatar"
+                                    src="/images/source-avatars/source-default-avatar.png"
+                                    alt="login"
+                                />
                             </RouterLink>
                         </li>
                     </ul>
@@ -125,7 +132,7 @@ export default {
             </div>
         </nav>
     </header>
-    <div :class="`${sessionDetailsStore.isLoggedIn ? 'router-view-padding router-view' : 'router-view'}`">
+    <div class="router-view-padding router-view">
         <RouterView />
     </div>
 </template>
@@ -157,14 +164,14 @@ export default {
     height: 40px;
     border-radius: 8px;
 }
-.router-view{
+.router-view {
     height: 100vh;
 }
-.router-view-padding{
+.router-view-padding {
     padding-top: 72px;
 }
 @media (max-width: 991px) {
-    .router-view-padding{
+    .router-view-padding {
         padding-top: 66px;
     }
 }
