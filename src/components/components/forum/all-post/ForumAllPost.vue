@@ -28,9 +28,7 @@ export default {
         TutorPostCard,
         ResourcePostCard
     },
-    mounted() {
-        console.log(this.user);
-    },
+    mounted() {},
     computed: {
         orderedAndNamedPosts() {
             // Getting the student's name.
