@@ -183,6 +183,9 @@ export default {
                     // recursively call the function with parent node data
                     return this.nearestAccessibleAncestor(data);
                 });
+        },
+        copyShareableURLToClipBoard() {
+            navigator.clipboard.writeText(window.location.href);
         }
     },
     /**
@@ -265,7 +268,10 @@ export default {
                     </router-link>
 
                     <!-- Sharable URL -->
-                    <button class="btn purple-btn">
+                    <button
+                        @click="copyShareableURLToClipBoard"
+                        class="btn purple-btn"
+                    >
                         Sharable URL&nbsp;
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
