@@ -7,31 +7,54 @@ export default {
         return {};
     },
     data() {
-        return {};
+        return {
+            headers: [
+                { text: 'User', value: 'userName' },
+                { text: 'Question Name', value: 'name' },
+                { text: 'Question Content', value: 'question' },
+                { text: 'Comment', value: 'comment' },
+                { text: 'Date', value: 'date' }
+            ]
+        };
+    },
+    components: {
+        Vue3EasyDataTable
     },
     props: ['mcQuestionList'],
-    async created() {},
+    async created() {
+        console.log(this.mcQuestionList);
+    },
     methods: {}
 };
 </script>
 
 <template>
-    <Vue3EasyDataTable
-        :headers="headers"
-        :items="rows"
-        alternating
-        :loading="mcQuestionList.length <= 0"
-        table-class-name="customize-table"
-        :filter-options="filterOptions()"
-        :search-value="searchText"
-        buttons-pagination
-        theme-color="#a48be6"
-    >
-        <!-- --- Loading Part --- -->
-        <template #loading>
-            <img src="/images/loading.gif" alt="loading data" />
-        </template>
-    </Vue3EasyDataTable>
+    <div class="mt-3 px-2 pt-4">
+        <Vue3EasyDataTable
+            :headers="headers"
+            :items="mcQuestionList"
+            alternating
+            :loading="mcQuestionList.length <= 0"
+            table-class-name="customize-table"
+            buttons-pagination
+            theme-color="#a48be6"
+        >
+            <!-- --- Loading Part --- -->
+            <template #loading>
+                <img src="/images/loading.gif" alt="loading data" />
+            </template>
+        </Vue3EasyDataTable>
+    </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* +-+-+ Vue Easy Table Custom CSS +-+-+  */
+.customize-table {
+    --easy-table-body-row-font-size: 16px;
+    --easy-table-header-font-size: 16px;
+    --easy-table-header-font-color: #8f7bd6;
+    --easy-table-header-background-color: #fefefe;
+    --easy-table-header-height: 50px;
+    --easy-table-header-item-padding: 15px 5px;
+}
+</style>

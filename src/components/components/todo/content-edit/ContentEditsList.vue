@@ -1,5 +1,6 @@
 <script>
 import { useUsersStore } from '../../../../stores/UsersStore';
+import McQuestionsEditList from './McQuestionsEditList.vue';
 
 export default {
     setup() {
@@ -16,6 +17,9 @@ export default {
             activeList: 'skills',
             showDropDown: false
         };
+    },
+    components: {
+        McQuestionsEditList
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -121,7 +125,7 @@ export default {
         <!-- Page tile -->
         <h1 class="ps-3">Users Edit Content List</h1>
         <!-- ---- | Nav List On Desktop | ---- -->
-        <div class="d-none d-lg-flex nav-list-container gap-4 ps-3">
+        <div class="d-none d-lg-flex desktop-nav-bar gap-4 ps-3">
             <div
                 :class="[activeList === 'skills' ? 'active-nav' : 'normal-nav']"
                 @click="activeList = 'skills'"
@@ -199,7 +203,6 @@ export default {
 
         <!-- Skill edits List -->
         <div v-if="activeList === 'skills'">
-            <h3>Skills</h3>
             <ul>
                 <li v-for="skillEdit in skillEdits">
                     <router-link
@@ -219,27 +222,10 @@ export default {
         </div>
         <!-- MC question edits list -->
         <div v-if="activeList === 'mcQuestions'">
-            <h3>Multiple Choice Questions</h3>
-            <ul>
-                <li v-for="mcQuestionEdit in mcQuestionEdits">
-                    <router-link
-                        :to="
-                            '/content-edit/' +
-                            mcQuestionEdit.mc_question_id +
-                            '/' +
-                            mcQuestionEdit.user_id +
-                            '/comparison?type=mcquestion'
-                        "
-                        >User: {{ mcQuestionEdit.userName }}, Question:
-                        {{ mcQuestionEdit.mc_question_id }}, Date:
-                        {{ mcQuestionEdit.date }}</router-link
-                    >
-                </li>
-            </ul>
+            <McQuestionsEditList :mcQuestionList="mcQuestionEdits" />
         </div>
         <!-- Written question edits list -->
         <div v-if="activeList === 'writtenQuestions'">
-            <h3>Written Questions</h3>
             <ul>
                 <li v-for="essayQuestionEdit in essayQuestionEdits">
                     <router-link
@@ -271,7 +257,7 @@ export default {
     overflow: auto;
 }
 
-.nav-list-container {
+.desktop-nav-bar {
     padding-top: 15px;
     padding-bottom: 15px;
     border-top: 1px solid grey;
