@@ -59,14 +59,20 @@ export default {
 
         // Add to posts.
         this.posts = this.sourcePosts;
-        // Get all tutor posts for this skill.
-        await this.getTutorPosts(this.skillId);
-        // Get voting data on each.
-        for (let i = 0; i < this.tutorPosts.length; i++) {
-            await this.getTutorPostVotes(this.tutorPosts[i].id);
+
+        // Dont show the tutors if guest account.
+        if (this.$parent.sessionDetailsStore.isLoggedIn == true) {
+            // Get all tutor posts for this skill.
+            await this.getTutorPosts(this.skillId);
+
+            // Get voting data on each.
+            for (let i = 0; i < this.tutorPosts.length; i++) {
+                await this.getTutorPostVotes(this.tutorPosts[i].id);
+            }
+
+            // Add to posts.
+            this.posts = this.posts.concat(this.tutorPosts);
         }
-        // Add to posts.
-        this.posts = this.posts.concat(this.tutorPosts);
     },
     methods: {
         getUserId() {
@@ -261,7 +267,10 @@ export default {
         </div>
         <!-- Navigation Tabs -->
         <!-- If guest account, we dont show tutors, only sources -->
-        <ul v-if="$parent.sessionDetailsStore" class="nav nav-tabs border-3">
+        <ul
+            v-if="$parent.sessionDetailsStore.isLoggedIn"
+            class="nav nav-tabs border-3"
+        >
             <li
                 class="nav-item"
                 b-on-hover
