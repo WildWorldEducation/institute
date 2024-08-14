@@ -48,6 +48,7 @@ export default {
                 </div>
                 <div class="col-4 d-flex flex-column align-items-end">
                     <button
+                        v-if="sessionDetailsStore.isLoggedIn"
                         id="print-btn"
                         class="btn btn-info"
                         @click="$refs.childComponent.printPDF()"
@@ -80,6 +81,7 @@ export default {
 
                 <div class="col d-flex justify-content-end">
                     <button
+                        v-if="sessionDetailsStore.isLoggedIn"
                         id="print-btn"
                         class="btn btn-info me-3"
                         @click="$refs.childComponent.printPDF()"
