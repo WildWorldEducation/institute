@@ -889,4 +889,14 @@ input[type='button'] {
         transform: translate(-50%, -50%);
     }
 }
+
+:root {
+    touch-action: pan-x pan-y;
+    height: 100%;
+}
+
+html {
+    touch-action: pan-x pan-y;
+    height: 100%;
+}
 </style>
