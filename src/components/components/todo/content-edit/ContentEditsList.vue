@@ -2,6 +2,7 @@
 import { useUsersStore } from '../../../../stores/UsersStore';
 import McQuestionsEditList from './McQuestionsEditList.vue';
 import SkillEditsList from './SkillEditsList.vue';
+import WrittenQuestionEditsList from './WrittenQuestionEditsList.vue';
 
 export default {
     setup() {
@@ -21,7 +22,8 @@ export default {
     },
     components: {
         McQuestionsEditList,
-        SkillEditsList
+        SkillEditsList,
+        WrittenQuestionEditsList
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -213,22 +215,7 @@ export default {
         </div>
         <!-- Written question edits list -->
         <div v-if="activeList === 'writtenQuestions'">
-            <ul>
-                <li v-for="essayQuestionEdit in essayQuestionEdits">
-                    <router-link
-                        :to="
-                            '/content-edit/' +
-                            essayQuestionEdit.essay_question_id +
-                            '/' +
-                            essayQuestionEdit.user_id +
-                            '/comparison?type=essayquestion'
-                        "
-                        >User: {{ essayQuestionEdit.userName }}, Question:
-                        {{ essayQuestionEdit.essay_question_id }}, Date:
-                        {{ essayQuestionEdit.date }}</router-link
-                    >
-                </li>
-            </ul>
+            <WrittenQuestionEditsList :writtenEditsList="essayQuestionEdits" />
         </div>
     </div>
 </template>
