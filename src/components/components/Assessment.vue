@@ -343,8 +343,8 @@ export default {
 
             // If no essay questions, we return result.
             if (this.numEssayQuestions === 0) {
-                // Pass mark of 80%.
-                if ((this.score / this.numMCQuestions) * 100 >= 80) {
+                // Pass mark from settings store.
+                if ((this.score / this.numMCQuestions) * 100 >= this.settingsStore.passMark) {
                     this.MakeMastered(this.skill);
                     this.isQuizPassed = true;
                     // show result page and hide assessment part
@@ -455,7 +455,7 @@ export default {
                             await this.AIMarkEssayQuestion(question, answer, i);
                         }
                     }
-                    if ((this.score / this.questions.length) * 100 >= 80) {
+                    if ((this.score / this.questions.length) * 100 >= this.settingsStore.passMark) {
                         this.MakeMastered(this.skill);
                         this.isQuizPassed = true;
                         // show result page and hide assessment part

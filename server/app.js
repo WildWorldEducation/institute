@@ -443,6 +443,8 @@ app.put('/settings/edit', (req, res, next) => {
             req.body.quiz_max_questions +
             `, is_manual_essay_marking = ` +
             req.body.is_manual_essay_marking +
+            `, pass_mark = ` +
+            req.body.pass_mark +
             `;`;
 
         conn.query(sqlQuery, (err, results) => {
