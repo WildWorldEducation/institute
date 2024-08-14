@@ -10,8 +10,8 @@ export default {
         return {
             headers: [
                 { text: 'User', value: 'userName' },
-                { text: 'Question Name', value: 'name' },
-                { text: 'Question Content', value: 'question' },
+                { text: 'Skill Name', value: 'name' },
+                { text: 'Skill Level', value: 'level' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
             ]
@@ -20,8 +20,10 @@ export default {
     components: {
         Vue3EasyDataTable
     },
-    props: ['mcQuestionList'],
-    async created() {},
+    props: ['skillsEditList'],
+    async created() {
+        console.log(this.skillsEditList);
+    },
     methods: {
         goToComparePage(item) {
             this.$router.push(
@@ -36,9 +38,9 @@ export default {
     <div class="mt-3 pt-4 table-div">
         <Vue3EasyDataTable
             :headers="headers"
-            :items="mcQuestionList"
+            :items="skillsEditList"
             alternating
-            :loading="mcQuestionList.length <= 0"
+            :loading="skillsEditList.length <= 0"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"

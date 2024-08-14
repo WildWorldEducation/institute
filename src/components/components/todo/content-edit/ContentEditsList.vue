@@ -1,6 +1,7 @@
 <script>
 import { useUsersStore } from '../../../../stores/UsersStore';
 import McQuestionsEditList from './McQuestionsEditList.vue';
+import SkillEditsList from './SkillEditsList.vue';
 
 export default {
     setup() {
@@ -19,7 +20,8 @@ export default {
         };
     },
     components: {
-        McQuestionsEditList
+        McQuestionsEditList,
+        SkillEditsList
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -203,22 +205,7 @@ export default {
 
         <!-- Skill edits List -->
         <div v-if="activeList === 'skills'">
-            <ul>
-                <li v-for="skillEdit in skillEdits">
-                    <router-link
-                        :to="
-                            '/content-edit/' +
-                            skillEdit.skill_id +
-                            '/' +
-                            skillEdit.user_id +
-                            '/comparison?type=skill'
-                        "
-                        >User: {{ skillEdit.userName }}, Skill:
-                        {{ skillEdit.skill_id }}, Date:
-                        {{ skillEdit.date }}</router-link
-                    >
-                </li>
-            </ul>
+            <SkillEditsList :skillsEditList="skillEdits" />
         </div>
         <!-- MC question edits list -->
         <div v-if="activeList === 'mcQuestions'">

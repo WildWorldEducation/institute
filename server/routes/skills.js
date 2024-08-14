@@ -107,7 +107,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                                                             skillId +
                                                             `, ` +
                                                             req.body.filters[
-                                                                i
+                                                            i
                                                             ] +
                                                             `);`;
                                                         let query = conn.query(
@@ -517,10 +517,10 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
                     }, (err) => {
                         if (err) {
                             throw err;
-                        }else{
+                        } else {
                             res.end();
                         }
-                    })  
+                    })
                 }
             } catch (err) {
                 next(err);
@@ -629,7 +629,7 @@ router.put(
                                         }, (err) => {
                                             if (err) {
                                                 throw err;
-                                            }else{
+                                            } else {
                                                 res.end();
                                             }
                                         })
@@ -661,7 +661,7 @@ router.put(
 router.get('/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM skills_awaiting_approval';
+        let sqlQuery = 'SELECT * FROM skills_awaiting_approval JOIN skills ON skills_awaiting_approval.skill_id = skills.id';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
