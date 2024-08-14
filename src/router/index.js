@@ -332,14 +332,14 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // To prevent the ability to zoom the entire browser on the skill tree pages.
-    if (to.name == 'vertical-tree' || to.name == 'radial-tree') {
-        let meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content =
-            'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0';
-    } else {
-        document.getElementById('app').style.overflow = 'auto';
-    }
+    // if (to.name == 'vertical-tree' || to.name == 'radial-tree') {
+    //     let meta = document.createElement('meta');
+    //     meta.name = 'viewport';
+    //     meta.content =
+    //         'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0';
+    // } else {
+    //     document.getElementById('app').style.overflow = 'auto';
+    // }
 });
 
 router.afterEach((to, from, next) => {
