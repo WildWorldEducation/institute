@@ -113,7 +113,10 @@ export default {
             return userName;
         },
         handleDropDownNavChoose(value) {
-            this.activeList = value;
+            const result = value.replace(/([A-Z])/g, ' $1');
+            const finalResult =
+                result.charAt(0).toUpperCase() + result.slice(1);
+            this.activeList = finalResult;
             this.showDropDown = false;
         }
     }
@@ -392,6 +395,14 @@ export default {
 
 /* View Specific On Phone */
 @media (min-width: 0px) and (max-width: 576px) {
+    .mobile-nav-bar {
+        margin-left: 15px;
+        margin-top: 10px;
+    }
+}
+
+/* View Specific on Tablet */
+@media (min-width: 577px) and (max-width: 1380px) {
     .mobile-nav-bar {
         margin-left: 15px;
         margin-top: 10px;

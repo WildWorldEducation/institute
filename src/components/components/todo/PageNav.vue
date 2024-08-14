@@ -186,7 +186,7 @@ export default {
 
 .minimize-navbar:hover .group {
     cursor: pointer;
-    background-color: #bbb9c0;
+    background-color: #e9e8ec;
 }
 
 /* View Specific On Phone */
