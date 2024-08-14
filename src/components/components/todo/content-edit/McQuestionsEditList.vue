@@ -14,6 +14,11 @@ export default {
                 { text: 'Question Content', value: 'question' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
+            ],
+            mobileHeaders: [
+                { text: 'User', value: 'userName' },
+                { text: 'Comment', value: 'comment' },
+                { text: 'Date', value: 'date' }
             ]
         };
     },
@@ -34,6 +39,7 @@ export default {
 
 <template>
     <div class="mt-3 pt-4 table-div">
+        <!-- Desktop Table -->
         <Vue3EasyDataTable
             :headers="headers"
             :items="mcQuestionList"
@@ -43,6 +49,24 @@ export default {
             buttons-pagination
             theme-color="#a48be6"
             @click-row="goToComparePage"
+            class="d-none d-md-block"
+        >
+            <!-- --- Loading Part --- -->
+            <template #loading>
+                <img src="/images/loading.gif" alt="loading data" />
+            </template>
+        </Vue3EasyDataTable>
+        <!-- Mobile Table -->
+        <Vue3EasyDataTable
+            :headers="mobileHeaders"
+            :items="mcQuestionList"
+            alternating
+            :loading="mcQuestionList.length <= 0"
+            table-class-name="customize-table"
+            buttons-pagination
+            theme-color="#a48be6"
+            @click-row="goToComparePage"
+            class="d-md-none"
         >
             <!-- --- Loading Part --- -->
             <template #loading>

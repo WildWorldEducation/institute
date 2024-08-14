@@ -14,6 +14,11 @@ export default {
                 { text: 'Skill Level', value: 'level' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
+            ],
+            mobileHeaders: [
+                { text: 'User', value: 'userName' },
+                { text: 'Skill Name', value: 'name' },
+                { text: 'Comment', value: 'comment' }
             ]
         };
     },
@@ -36,6 +41,7 @@ export default {
 
 <template>
     <div class="mt-3 pt-4 table-div">
+        <!-- Desktop table -->
         <Vue3EasyDataTable
             :headers="headers"
             :items="skillsEditList"
@@ -45,6 +51,24 @@ export default {
             buttons-pagination
             theme-color="#a48be6"
             @click-row="goToComparePage"
+            class="d-none d-md-block"
+        >
+            <!-- --- Loading Part --- -->
+            <template #loading>
+                <img src="/images/loading.gif" alt="loading data" />
+            </template>
+        </Vue3EasyDataTable>
+        <!-- Mobile table -->
+        <Vue3EasyDataTable
+            :headers="mobileHeaders"
+            :items="skillsEditList"
+            alternating
+            :loading="skillsEditList.length <= 0"
+            table-class-name="customize-table"
+            buttons-pagination
+            theme-color="#a48be6"
+            @click-row="goToComparePage"
+            class="d-md-none d-block"
         >
             <!-- --- Loading Part --- -->
             <template #loading>
