@@ -270,6 +270,7 @@ export default {
 
                     <!-- Sharable URL -->
                     <button
+                        v-if="!sessionDetailsStore.isLoggedIn"
                         @click="copyShareableURLToClipBoard"
                         class="btn purple-btn"
                     >
