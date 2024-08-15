@@ -222,6 +222,7 @@ export default {
                     <!-- <label class="form-label">Password</label> -->
                     <div class="password-div">
                         <input
+                            id="password-input"
                             v-model="newEditor.password"
                             :type="passwordVisible ? 'text' : 'password'"
                             placeholder="Password"
