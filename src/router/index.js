@@ -3,6 +3,7 @@ import SkillsView from '../components/pages/SkillsView.vue';
 
 import { useSessionDetailsStore } from '../stores/SessionDetailsStore';
 import { useUserDetailsStore } from '../stores/UserDetailsStore';
+import { useUserSkillsStore } from '../stores/UserSkillsStore.js';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -272,15 +273,33 @@ router.beforeEach(async (to, from, next) => {
     const isLoggedIn = sessionDetailsStore.isLoggedIn;
     const userRole = userDetailsStore.role;
 
+    // Checking if skill is unlocked before allowing student to take assessment.
+    if (to.name == 'assessment') {
+        const userSkillsStore = useUserSkillsStore();
+
+        await userSkillsStore.getUnnestedList(userDetailsStore.userId);
+        const currentSkill = userSkillsStore.unnestedList.find(
+            (item) => item.id == to.params.id
+        );
+
+        if (currentSkill.is_accessible != 1 || currentSkill.is_mastered == 1) {
+            next({ path: '/skills/' + to.params.id });
+            return;
+        }
+    }
+
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&
-        !sessionDetailsStore.isLoggedIn &&
         to.name !== 'login' &&
         to.name !== 'student-signup' &&
-        to.name !== 'editor-signup'
+        to.name !== 'editor-signup' &&
+        // For guest access.
+        to.name !== 'vertical-tree' &&
+        to.name !== 'show-skill' &&
+        to.name !== 'profile-settings'
     ) {
-        next({ name: 'login' });
+        next({ name: 'vertical-tree' });
         return;
     }
 
@@ -302,7 +321,13 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // To remove the vertical scroll bar for the Vertical and Radial skill tree pages.
-    if (to.name == 'vertical-tree' || to.name == 'radial-tree') {
+    if (
+        to.name == 'vertical-tree' ||
+        to.name == 'radial-tree' ||
+        to.name == 'student-signup' ||
+        to.name == 'editor-signup' ||
+        to.name == 'login'
+    ) {
         document.getElementById('app').style.overflow = 'hidden';
     } else {
         document.getElementById('app').style.overflow = 'auto';

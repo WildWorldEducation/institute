@@ -66,7 +66,6 @@ export const useSkillsStore = defineStore('skills', {
 
             // Update the store.
             this.getNestedSkillsList();
-
         }
     }
 });
