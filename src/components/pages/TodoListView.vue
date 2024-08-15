@@ -38,11 +38,7 @@ export default {
                 <div v-if="activeContent === 'editList'">
                     <ContentEditsList />
                 </div>
-                <div
-                    v-if="activeContent === 'studentQuestionList'"
-                    class="ps-0 ps-md-2"
-                >
-                    <h2>Student Suggested Questions</h2>
+                <div v-if="activeContent === 'studentQuestionList'">
                     <CheckStudentQuestions />
                 </div>
                 <div v-if="activeContent === 'flagList'">

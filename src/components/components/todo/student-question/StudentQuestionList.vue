@@ -9,10 +9,9 @@ export default {
     data() {
         return {
             headers: [
-                { text: 'User', value: 'userName' },
-                { text: 'Skill Name', value: 'name' },
-                { text: 'Skill Level', value: 'level' },
-                { text: 'Comment', value: 'comment' },
+                { text: 'Student', value: 'studentName' },
+                { text: 'Question', value: 'question' },
+                { text: 'Skill', value: 'skillName' },
                 { text: 'Date', value: 'date' }
             ],
             mobileHeaders: [
@@ -25,15 +24,11 @@ export default {
     components: {
         Vue3EasyDataTable
     },
-    props: ['skillsEditList'],
-    async created() {
-        console.log(this.skillsEditList);
-    },
+    props: ['studentQuestion'],
+    async mounted() {},
     methods: {
         goToComparePage(item) {
-            this.$router.push(
-                `/content-edit/${item.mc_question_id}/${item.user_id}/comparison?type=mcquestion`
-            );
+            this.$router.push(`/check-student-question/${item.id}`);
         },
         formatDate(unformattedDate) {
             // Prep the date and time data ---------------
@@ -72,9 +67,9 @@ export default {
         <!-- Desktop table -->
         <Vue3EasyDataTable
             :headers="headers"
-            :items="skillsEditList"
+            :items="studentQuestion"
             alternating
-            :loading="skillsEditList.length <= 0"
+            :loading="studentQuestion.length <= 0"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"
@@ -85,13 +80,19 @@ export default {
             <template #loading>
                 <img src="/images/loading.gif" alt="loading data" />
             </template>
+            <!-- Format date -->
+            <template #item-date="{ create_date }">
+                <div>
+                    {{ formatDate(create_date) }}
+                </div>
+            </template>
         </Vue3EasyDataTable>
         <!-- Mobile table -->
         <Vue3EasyDataTable
             :headers="mobileHeaders"
-            :items="skillsEditList"
+            :items="studentQuestion"
             alternating
-            :loading="skillsEditList.length <= 0"
+            :loading="studentQuestion.length <= 0"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"

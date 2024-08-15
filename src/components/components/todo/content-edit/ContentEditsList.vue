@@ -71,7 +71,6 @@ export default {
                         data[i].date = this.formatDate(data[i].date);
                         data[i].userName = this.findUserName(data[i].user_id);
                         this.essayQuestionEdits.push(data[i]);
-                        console.log(this.essayQuestionEdits);
                     }
                 });
         },
@@ -207,18 +206,21 @@ export default {
             </div>
         </div>
         <!-- End of custom dropdown -->
-
-        <!-- Skill edits List -->
-        <div v-if="activeList === 'skills'">
-            <SkillEditsList :skillsEditList="skillEdits" />
-        </div>
-        <!-- MC question edits list -->
-        <div v-if="activeList === 'mcQuestions'">
-            <McQuestionsEditList :mcQuestionList="mcQuestionEdits" />
-        </div>
-        <!-- Written question edits list -->
-        <div v-if="activeList === 'writtenQuestions'">
-            <WrittenQuestionEditsList :writtenEditsList="essayQuestionEdits" />
+        <div class="h-100">
+            <!-- Skill edits List -->
+            <div v-if="activeList === 'skills'">
+                <SkillEditsList :skillsEditList="skillEdits" />
+            </div>
+            <!-- MC question edits list -->
+            <div v-if="activeList === 'mcQuestions'">
+                <McQuestionsEditList :mcQuestionList="mcQuestionEdits" />
+            </div>
+            <!-- Written question edits list -->
+            <div v-if="activeList === 'writtenQuestions'">
+                <WrittenQuestionEditsList
+                    :writtenEditsList="essayQuestionEdits"
+                />
+            </div>
         </div>
     </div>
 </template>

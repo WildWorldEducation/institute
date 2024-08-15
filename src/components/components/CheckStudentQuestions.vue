@@ -4,6 +4,7 @@ import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore
 import { useUsersStore } from '../../stores/UsersStore';
 import { useSkillsStore } from '../../stores/SkillsStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import StudentQuestionList from './todo/student-question/studentQuestionList.vue';
 
 export default {
     setup() {
@@ -25,6 +26,9 @@ export default {
         return {
             questions: []
         };
+    },
+    components: {
+        StudentQuestionList
     },
     async created() {
         // Question list needs to be created for both admins (all questions), and instructors
@@ -146,19 +150,15 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
-        <div id="question-header">
-            <div id="assessment-tile">Student Questions</div>
+    <div>
+        <!-- Banner -->
+        <div id="banner">
+            <img src="/images/banners/general-banner.png" class="img-fluid" />
         </div>
-        <div id="list-body">
-            <div class="assessment" v-for="question in this.questions">
-                <RouterLink
-                    :to="'/check-student-question/' + question.id"
-                    class="assessment-link"
-                    >{{ question.studentName }},
-                    {{ question.skillName }}</RouterLink
-                >
-            </div>
+        <!-- Page tile -->
+        <div class="ps-3 mt-2 page-tile">User Edit Content List</div>
+        <div class="container-fluid">
+            <StudentQuestionList :studentQuestion="questions" />
         </div>
     </div>
 </template>
@@ -259,5 +259,11 @@ h2 {
     align-items: center;
     max-width: fit-content;
     height: 44px;
+}
+
+.page-tile {
+    color: #9c7eec;
+    font-size: 30px;
+    font-weight: 600;
 }
 </style>

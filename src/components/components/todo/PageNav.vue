@@ -123,6 +123,8 @@ export default {
 .nav-bar-item {
     cursor: pointer;
     padding: 5px 10px;
+    font-weight: 500;
+    color: #9f9da1;
 }
 
 .nav-bar-item:hover {
