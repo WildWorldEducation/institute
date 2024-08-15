@@ -32,7 +32,7 @@ export default {
     methods: {
         goToComparePage(item) {
             this.$router.push(
-                `/content-edit/${item.mc_question_id}/${item.user_id}/comparison?type=mcquestion`
+                `/content-edit/${item.skill_id}/${item.user_id}/comparison?type=skill`
             );
         },
         formatDate(unformattedDate) {
