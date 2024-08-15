@@ -8,8 +8,7 @@ export default {
     setup() {},
     data() {
         return {
-            activeContent: 'editList',
-            contentHeight: 0
+            activeContent: 'editList'
         };
     },
 
@@ -20,6 +19,7 @@ export default {
         ContentFlagsView
     },
     computed: {},
+    async mounted() {},
     methods: {
         hideNavBar() {
             this.showNavBar = false;

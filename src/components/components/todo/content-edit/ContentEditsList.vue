@@ -44,6 +44,8 @@ export default {
                         data[i].userName = this.findUserName(data[i].user_id);
                         this.skillEdits.push(data[i]);
                     }
+                    this.$parent.contentEditCount =
+                        this.$parent.contentEditCount + this.skillEdits.length;
                 });
         },
         // Get the multiple choice question edits that have been submitted for review.
@@ -58,6 +60,9 @@ export default {
                         data[i].userName = this.findUserName(data[i].user_id);
                         this.mcQuestionEdits.push(data[i]);
                     }
+                    this.$parent.contentEditCount =
+                        this.$parent.contentEditCount +
+                        this.mcQuestionEdits.length;
                 });
         },
         // Get the essay question edits that have been submitted for review.
@@ -72,6 +77,9 @@ export default {
                         data[i].userName = this.findUserName(data[i].user_id);
                         this.essayQuestionEdits.push(data[i]);
                     }
+                    this.$parent.contentEditCount =
+                        this.$parent.contentEditCount +
+                        this.essayQuestionEdits.length;
                 });
         },
         formatDate(unformattedDate) {
@@ -233,6 +241,7 @@ export default {
 
 .content-edit-page {
     min-width: 700px;
+    min-height: 100vh;
     overflow: auto;
 }
 

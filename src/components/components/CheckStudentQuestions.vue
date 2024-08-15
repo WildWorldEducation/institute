@@ -142,6 +142,7 @@ export default {
             }
         } else {
             this.questions = this.studentMCQuestionsStore.studentMCQuestions;
+            this.$parent.studentQuestionCount = this.questions.length;
         }
     },
     computed: {},

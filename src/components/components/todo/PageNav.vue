@@ -3,14 +3,30 @@ export default {
     setup() {},
     data() {
         return {
-            showNavBar: true
+            showNavBar: true,
+            todoCount: null,
+            contentEditCount: 0,
+            studentQuestionCount: 0,
+            contentFlagCount: 0
         };
     },
-    props: ['activeContent', 'contentHeight'],
+    props: ['activeContent'],
     methods: {
         changeActiveContent(content) {
             this.$parent.activeContent = content;
         }
+    },
+    async mounted() {
+        // Getting the count of all todo actions
+        const resData = await fetch('/todo-count/total');
+        const resJson = await resData.json();
+        this.todoCount = resJson;
+        this.studentQuestionCount = this.todoCount.student_question_count;
+        this.contentFlagCount = this.todoCount.content_flag_count;
+        this.contentEditCount =
+            parseInt(this.todoCount.skill_edit_count) +
+            parseInt(this.todoCount.mc_question_edit_count) +
+            parseInt(this.todoCount.essay_question_edit_count);
     }
 };
 </script>
@@ -49,6 +65,12 @@ export default {
                 @click="changeActiveContent('editList')"
             >
                 Approval Edit Content
+                <span
+                    class="badge bg-danger"
+                    b-on-hover
+                    title="number of content edit that needed to approve"
+                    >{{ contentEditCount }}</span
+                >
             </div>
             <div
                 :class="[
@@ -59,6 +81,12 @@ export default {
                 @click="changeActiveContent('studentQuestionList')"
             >
                 Approval Student Question Suggestion
+                <span
+                    b-on-hover
+                    title="number of student question that needed to approve"
+                    class="badge bg-danger"
+                    >{{ studentQuestionCount }}</span
+                >
             </div>
             <div
                 :class="[
@@ -69,6 +97,12 @@ export default {
                 @click="changeActiveContent('flagList')"
             >
                 Checking Content Flag
+                <span
+                    class="badge bg-danger"
+                    b-on-hover
+                    title="number of content flag that needed to check"
+                    >{{ contentFlagCount }}</span
+                >
             </div>
         </div>
     </Transition>
