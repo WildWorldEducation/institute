@@ -33,7 +33,8 @@ export default {
                         this.settingsStore.skillDegradationDays,
                     quiz_max_questions: this.settingsStore.quizMaxQuestions,
                     is_manual_essay_marking:
-                        this.settingsStore.isManualEssayMarking
+                        this.settingsStore.isManualEssayMarking,
+                    pass_mark: this.settingsStore.passMark
                 })
             };
             var url = '/settings/edit';
@@ -72,6 +73,20 @@ export default {
                 id="quizMaxQuestions"
                 min="1"
                 max="200"
+                class="form-control"
+                aria-describedby="quizMaxQuestions"
+            />
+        </div>
+        <div class="mb-3">
+            <label for="daysForSkillToDegrade" class="form-label"
+                >Pass mark:</label
+            >
+            <input
+                v-model="settingsStore.passMark"
+                type="number"
+                id="quizMaxQuestions"
+                min="50"
+                max="100"
                 class="form-control"
                 aria-describedby="quizMaxQuestions"
             />

@@ -45,6 +45,10 @@ export default {
                 {{ settingsStore.quizMaxQuestions }}
             </p>
             <p>
+                Pass mark:
+                {{ settingsStore.passMark }}%
+            </p>
+            <p>
                 grading method for essay questions:
                 <span v-if="settingsStore.isManualEssayMarking == 0"
                     >Automatic (AI)</span
