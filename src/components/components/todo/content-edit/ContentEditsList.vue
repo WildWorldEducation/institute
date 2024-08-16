@@ -17,7 +17,11 @@ export default {
             mcQuestionEdits: [],
             essayQuestionEdits: [],
             activeList: 'skills',
-            showDropDown: false
+            showDropDown: false,
+            // Flag to pass to child list for loading indicate
+            skillEditsLoading: true,
+            mcQuestionEditsLoading: true,
+            essayQuestionEditsLoading: true
         };
     },
     components: {
@@ -44,8 +48,7 @@ export default {
                         data[i].userName = this.findUserName(data[i].user_id);
                         this.skillEdits.push(data[i]);
                     }
-                    this.$parent.contentEditCount =
-                        this.$parent.contentEditCount + this.skillEdits.length;
+                    this.skillEditsLoading = false;
                 });
         },
         // Get the multiple choice question edits that have been submitted for review.
@@ -60,9 +63,7 @@ export default {
                         data[i].userName = this.findUserName(data[i].user_id);
                         this.mcQuestionEdits.push(data[i]);
                     }
-                    this.$parent.contentEditCount =
-                        this.$parent.contentEditCount +
-                        this.mcQuestionEdits.length;
+                    this.mcQuestionEditsLoading = false;
                 });
         },
         // Get the essay question edits that have been submitted for review.
@@ -77,9 +78,7 @@ export default {
                         data[i].userName = this.findUserName(data[i].user_id);
                         this.essayQuestionEdits.push(data[i]);
                     }
-                    this.$parent.contentEditCount =
-                        this.$parent.contentEditCount +
-                        this.essayQuestionEdits.length;
+                    this.essayQuestionEditsLoading = false;
                 });
         },
         formatDate(unformattedDate) {
@@ -217,16 +216,23 @@ export default {
         <div class="h-100">
             <!-- Skill edits List -->
             <div v-if="activeList === 'skills'">
-                <SkillEditsList :skillsEditList="skillEdits" />
+                <SkillEditsList
+                    :skillsEditList="skillEdits"
+                    :skillEditsLoading="skillEditsLoading"
+                />
             </div>
             <!-- MC question edits list -->
             <div v-if="activeList === 'mcQuestions'">
-                <McQuestionsEditList :mcQuestionList="mcQuestionEdits" />
+                <McQuestionsEditList
+                    :mcQuestionList="mcQuestionEdits"
+                    :mcQuestionEditsLoading="mcQuestionEditsLoading"
+                />
             </div>
             <!-- Written question edits list -->
             <div v-if="activeList === 'writtenQuestions'">
                 <WrittenQuestionEditsList
                     :writtenEditsList="essayQuestionEdits"
+                    :essayQuestionEditsLoading="essayQuestionEditsLoading"
                 />
             </div>
         </div>

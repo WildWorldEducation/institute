@@ -25,7 +25,7 @@ export default {
     components: {
         Vue3EasyDataTable
     },
-    props: ['writtenEditsList'],
+    props: ['writtenEditsList', 'essayQuestionEditsLoading'],
     async created() {},
     methods: {
         goToComparePage(item) {
@@ -44,7 +44,7 @@ export default {
             :headers="headers"
             :items="writtenEditsList"
             alternating
-            :loading="writtenEditsList.length <= 0"
+            :loading="essayQuestionEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"
@@ -61,7 +61,7 @@ export default {
             :headers="mobileHeaders"
             :items="writtenEditsList"
             alternating
-            :loading="writtenEditsList.length <= 0"
+            :loading="essayQuestionEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"

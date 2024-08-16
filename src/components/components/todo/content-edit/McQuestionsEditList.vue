@@ -25,7 +25,7 @@ export default {
     components: {
         Vue3EasyDataTable
     },
-    props: ['mcQuestionList'],
+    props: ['mcQuestionList', 'mcQuestionEditsLoading'],
     async created() {},
     methods: {
         goToComparePage(item) {
@@ -44,7 +44,7 @@ export default {
             :headers="headers"
             :items="mcQuestionList"
             alternating
-            :loading="mcQuestionList.length <= 0"
+            :loading="mcQuestionEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"
@@ -61,7 +61,7 @@ export default {
             :headers="mobileHeaders"
             :items="mcQuestionList"
             alternating
-            :loading="mcQuestionList.length <= 0"
+            :loading="mcQuestionEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"

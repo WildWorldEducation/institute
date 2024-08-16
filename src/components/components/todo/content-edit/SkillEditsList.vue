@@ -4,7 +4,9 @@ import 'vue3-easy-data-table/dist/style.css';
 
 export default {
     setup() {
-        return {};
+        return {
+            isLoading: true
+        };
     },
     data() {
         return {
@@ -25,10 +27,8 @@ export default {
     components: {
         Vue3EasyDataTable
     },
-    props: ['skillsEditList'],
-    async created() {
-        console.log(this.skillsEditList);
-    },
+    props: ['skillsEditList', 'skillEditsLoading'],
+    async created() {},
     methods: {
         goToComparePage(item) {
             this.$router.push(
@@ -74,7 +74,7 @@ export default {
             :headers="headers"
             :items="skillsEditList"
             alternating
-            :loading="skillsEditList.length <= 0"
+            :loading="skillEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"
@@ -91,7 +91,7 @@ export default {
             :headers="mobileHeaders"
             :items="skillsEditList"
             alternating
-            :loading="skillsEditList.length <= 0"
+            :loading="skillEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"
