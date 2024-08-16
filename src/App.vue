@@ -59,6 +59,18 @@ export default {
                             <RouterLink to="/" class="nav-link">Hub</RouterLink>
                         </li>
                         <li
+                            v-if="
+                                sessionDetailsStore.isLoggedIn ||
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink to="/todo" class="nav-link">
+                                <span>Todo</span>
+                            </RouterLink>
+                        </li>
+                        <li
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
@@ -66,6 +78,7 @@ export default {
                                 <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
+
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' ||
