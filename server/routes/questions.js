@@ -932,20 +932,26 @@ router.get('/student-mc-questions/list', (req, res, next) => {
  */
 router.get('/student-mc-questions/full-data-list', (req, res, next) => {
     if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * 
-                        FROM student_mc_questions JOIN users ON users.id = student_mc_questions.student_id 
-	                    JOIN skills ON student_mc_questions.skill_id = skills.id`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
+        // extra check for user role
+        if (req.session.role = 'instructor') {
+
+            res.setHeader('Content-Type', 'application/json');
+            let sqlQuery = `SELECT student_mc_questions.*, skills.name AS skillname, users.username AS student
+                            FROM student_mc_questions JOIN users ON users.id = student_mc_questions.student_id 
+                            JOIN skills ON student_mc_questions.skill_id = skills.id 
+                            JOIN instructor_students ON instructor_students.student_id = student_mc_questions.student_id 
+                            WHERE instructor_students.instructor_id = ${req.session.userId}`;
+            let query = conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.json(results);
+                } catch (err) {
+                    next(err);
                 }
-                res.json(results);
-            } catch (err) {
-                next(err);
-            }
-        });
+            });
+        }
     }
 });
 

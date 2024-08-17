@@ -233,7 +233,7 @@ const router = createRouter({
             name: 'check-student-question',
             component: () =>
                 import('../components/pages/CheckStudentQuestionView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            meta: { requiresAuth: true, roles: ['admin', 'editor', 'instructor'] }
         },
         {
             path: '/tutor/add/:skillId',

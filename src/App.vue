@@ -60,9 +60,9 @@ export default {
                         </li>
                         <li
                             v-if="
-                                sessionDetailsStore.isLoggedIn ||
-                                userDetailsStore.role == 'admin' ||
-                                userDetailsStore.role == 'editor'
+                                sessionDetailsStore.isLoggedIn &&
+                                (userDetailsStore.role == 'admin' ||
+                                    userDetailsStore.role == 'editor')
                             "
                             class="nav-item"
                         >

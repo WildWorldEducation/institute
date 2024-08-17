@@ -61,7 +61,26 @@ export default {
 </script>
 
 <template>
-    <div class="mt-3 pt-4">{{ questions }}</div>
+    <div class="container-fluid">
+        <div class="question-header">
+            <div class="question-tile">Student Question</div>
+        </div>
+
+        <div class="list-body">
+            <div class="question" v-for="question in questions">
+                <RouterLink
+                    class="question-link"
+                    :to="`/check-student-question/${question.id}`"
+                >
+                    <span class="student-name"> {{ question.student }}, </span>
+                    <span class="skill-name"> {{ question.skillname }}, </span>
+                    <span class="date">{{
+                        formatDate(question.create_date)
+                    }}</span>
+                </RouterLink>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -70,17 +89,47 @@ export default {
     padding-right: 15px;
 }
 
-/* +-+-+ Vue Easy Table Custom CSS +-+-+  */
-.customize-table {
-    --easy-table-body-row-font-size: 16px;
-    --easy-table-header-font-size: 16px;
-    --easy-table-header-font-color: #8f7bd6;
-    --easy-table-header-background-color: #fefefe;
-    --easy-table-header-height: 50px;
-    --easy-table-header-item-padding: 15px 10px;
+.question-header {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 20px;
+    background: #e8e2f9;
+    border: 1px solid #dbd0f9;
 }
 
-.customize-table :deep(tbody tr:hover) {
-    cursor: pointer;
+.question-link {
+    font-family: 'Poppins';
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+    text-decoration: none;
+    color: #667085;
+}
+
+.question-tile {
+    font-family: 'Poppins';
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #ad9af3;
+}
+
+.question {
+    border: 1px solid #dbd0f9;
+    margin: 0px;
+    padding: 10px 6px;
+}
+
+.student-name {
+    color: #8f7bd6;
+}
+
+.list-body {
+    height: 340px;
+    overflow: auto;
 }
 </style>
