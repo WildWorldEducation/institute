@@ -1129,7 +1129,8 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
 
     Please imagine this answer comes from a student at a '${level}' level, and answer appropriately to that level.
     If it does, please return the variable 'is_correct' as true, if not, please return it as false.
-    If the answer is not correct, please explain why, by returning the variable 'explanation', containing a string that explains this.`;
+    If the answer is not correct, please explain why, by returning the variable 'explanation', containing a string that explains this.
+    `;
 
     // Prevent the app from crashing if anything goes wrong with the API call.
     try {
@@ -1162,6 +1163,31 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
         return;
     }
 }
+
+/**
+ * Mark images.
+ */
+async function main() {
+    const response = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+            {
+                role: 'user',
+                content: [
+                    { type: 'text', text: 'What’s in this image?' },
+                    {
+                        type: 'image_url',
+                        image_url: {
+                            url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg'
+                        }
+                    }
+                ]
+            }
+        ]
+    });
+    console.log(response.choices[0]);
+}
+//main();
 
 async function checkQuestion(index, userId) {
     // Create prompt for ChatGPT.
