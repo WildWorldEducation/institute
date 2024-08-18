@@ -73,6 +73,7 @@ export default {
             // Load the skill data
             const res = await fetch('/skills/show/' + this.skillId);
             this.skill = await res.json();
+            document.title = this.skill.name+' - The Collins Institute';
 
             //Load skill filters
             this.getSkillFilters();
