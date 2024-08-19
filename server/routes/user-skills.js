@@ -129,7 +129,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
 
         let sqlQuery =
             `
-    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder
+    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, optional_parent_2, optional_parent_3
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -138,7 +138,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
             ` AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder
+    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, optional_parent_2, optional_parent_3
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -162,6 +162,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
                     results[i].subskills = [];
                 }
 
+                // Add children for first parent.
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].parent != null && results[i].parent != 0) {
                         var parentId = results[i].parent;
@@ -179,6 +180,49 @@ router.get('/separate-subskills/:id', (req, res, next) => {
                     }
                 }
 
+                // Add children for optional second parent.
+                for (var i = 0; i < results.length; i++) {
+                    if (
+                        results[i].optional_parent_2 != null &&
+                        results[i].optional_parent_2 != 0
+                    ) {
+                        var parent2Id = results[i].optional_parent_2;
+
+                        // go through all rows again, add children
+                        for (let j = 0; j < results.length; j++) {
+                            if (results[j].id == parent2Id) {
+                                if (results[i].type == 'sub') {
+                                    results[j].subskills.push(results[i]);
+                                } else {
+                                    results[j].children.push(results[i]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Add children for optional third parent.
+                for (var i = 0; i < results.length; i++) {
+                    if (
+                        results[i].optional_parent_3 != null &&
+                        results[i].optional_parent_3 != 0
+                    ) {
+                        var parent3Id = results[i].optional_parent_3;
+
+                        // go through all rows again, add children
+                        for (let j = 0; j < results.length; j++) {
+                            if (results[j].id == parent3Id) {
+                                if (results[i].type == 'sub') {
+                                    results[j].subskills.push(results[i]);
+                                } else {
+                                    results[j].children.push(results[i]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Add the first level to the array.
                 let studentSkills = [];
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].parent == null || results[i].parent == 0) {
