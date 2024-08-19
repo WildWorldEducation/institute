@@ -123,7 +123,7 @@ export default {
 <template>
     <div class="signup-page">
         <div class="form-signin">
-            <div class="text-center">
+            <!-- <div class="text-center">
                 <img
                     class="mb-4"
                     src="/images/logo-red.png"
@@ -131,7 +131,7 @@ export default {
                     width="72"
                     height="72"
                 />
-            </div>
+            </div> -->
             <h1 class="h3 mb-3 font-weight-normal">Editor Sign up</h1>
 
             <div class="mt-3">
@@ -222,6 +222,7 @@ export default {
                     <!-- <label class="form-label">Password</label> -->
                     <div class="password-div">
                         <input
+                            id="password-input"
                             v-model="newEditor.password"
                             :type="passwordVisible ? 'text' : 'password'"
                             placeholder="Password"

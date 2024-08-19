@@ -107,7 +107,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                                                             skillId +
                                                             `, ` +
                                                             req.body.filters[
-                                                                i
+                                                            i
                                                             ] +
                                                             `);`;
                                                         let query = conn.query(
@@ -216,51 +216,50 @@ router.get('/nested-list', (req, res, next) => {
     }
 });
 
-// Filtered Nested List - for "Instructor Role"
+// Filtered Nested List - for "Instructor Role" and for "Guest Access" (no account)
 router.get('/filtered-nested-list', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery = `
     SELECT id, name, parent, type, level, skills.order as skillorder
     FROM skills
     WHERE is_filtered = 'available' AND is_deleted = 0
     ORDER BY skillorder;`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
 
-                // Create the 'children' array.
-                for (var i = 0; i < results.length; i++) {
-                    results[i].children = [];
-                }
+            // Create the 'children' array.
+            for (var i = 0; i < results.length; i++) {
+                results[i].children = [];
+            }
 
-                for (var i = 0; i < results.length; i++) {
-                    if (results[i].parent != null && results[i].parent != 0) {
-                        var parentId = results[i].parent;
-                        // go through all rows again, add children
-                        for (let j = 0; j < results.length; j++) {
-                            if (results[j].id == parentId) {
-                                results[j].children.push(results[i]);
-                            }
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].parent != null && results[i].parent != 0) {
+                    var parentId = results[i].parent;
+                    // go through all rows again, add children
+                    for (let j = 0; j < results.length; j++) {
+                        if (results[j].id == parentId) {
+                            results[j].children.push(results[i]);
                         }
                     }
                 }
-
-                let filteredNestedSkills = [];
-                for (var i = 0; i < results.length; i++) {
-                    if (results[i].parent == null || results[i].parent == 0) {
-                        filteredNestedSkills.push(results[i]);
-                    }
-                }
-
-                res.json(filteredNestedSkills);
-            } catch (err) {
-                next(err);
             }
-        });
-    }
+
+            let filteredNestedSkills = [];
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].parent == null || results[i].parent == 0) {
+                    filteredNestedSkills.push(results[i]);
+                }
+            }
+
+            res.json(filteredNestedSkills);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 /**
@@ -270,48 +269,46 @@ router.get('/filtered-nested-list', (req, res, next) => {
  */
 router.get('/show/:id', (req, res, next) => {
     let skill;
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        // Get skill.
-        const sqlQuery = `SELECT *
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    // Get skill.
+    const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${req.params.id} AND skills.is_deleted = 0`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                skill = results[0];
-                res.json(skill);
-            } catch (err) {
-                next(err);
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    }
+            skill = results[0];
+            res.json(skill);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 // For sending the mastery requirements data separately to the skill tree skill panels.
 // We send it separately because otherwise, if we send it with the other data, it slows
 // down the page load of the skill trees.
 router.get('/mastery-requirements/:id', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        // Get skill.
-        const sqlQuery = `SELECT mastery_requirements
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    // Get skill.
+    const sqlQuery = `SELECT mastery_requirements
                           FROM skills
                           WHERE skills.id = ${req.params.id} AND skills.is_deleted = 0`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                masteryRequirements = results[0].mastery_requirements;
-                res.json(masteryRequirements);
-            } catch (err) {
-                next(err);
+    let query = conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    }
+            masteryRequirements = results[0].mastery_requirements;
+            res.json(masteryRequirements);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 router.get('/record-visit/:id', (req, res, next) => {
@@ -461,7 +458,7 @@ router.put(
                                     actionData,
                                     (err) => {
                                         if (err) throw err;
-                                        else res.redirect('back');
+                                        res.end();
                                     }
                                 );
                             }
@@ -509,18 +506,21 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    recordUserAction({
-                        userId: req.body.userId,
-                        userAction: 'submit_update_for_review',
-                        contentId: req.params.id,
-                        contentType: 'skill'
-                    }, (err) => {
-                        if (err) {
-                            throw err;
-                        }else{
-                            res.end();
+                    recordUserAction(
+                        {
+                            userId: req.body.userId,
+                            userAction: 'submit_update_for_review',
+                            contentId: req.params.id,
+                            contentType: 'skill'
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
                         }
-                    })  
+                    );
                 }
             } catch (err) {
                 next(err);
@@ -621,18 +621,24 @@ router.put(
                                     if (err) {
                                         throw err;
                                     } else {
-                                        recordUserAction({
-                                            userId: req.session.userId,
-                                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'}`,
-                                            contentId: req.params.id,
-                                            contentType: 'skill'
-                                        }, (err) => {
-                                            if (err) {
-                                                throw err;
-                                            }else{
-                                                res.end();
+                                        recordUserAction(
+                                            {
+                                                userId: req.session.userId,
+                                                userAction: `${req.body.edit
+                                                    ? 'edit_and_approve'
+                                                    : 'approve'
+                                                    }`,
+                                                contentId: req.params.id,
+                                                contentType: 'skill'
+                                            },
+                                            (err) => {
+                                                if (err) {
+                                                    throw err;
+                                                } else {
+                                                    res.end();
+                                                }
                                             }
-                                        })
+                                        );
                                     }
                                 } catch (err) {
                                     next(err);
@@ -661,7 +667,7 @@ router.put(
 router.get('/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM skills_awaiting_approval';
+        let sqlQuery = 'SELECT * FROM skills_awaiting_approval JOIN skills ON skills_awaiting_approval.skill_id = skills.id';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -767,20 +773,19 @@ router.delete('/:id', (req, res, next) => {
 // Learning Resources
 // List all for a particular skill.
 router.get('/:id/resources', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * FROM resources WHERE skill_id= ${req.params.id} AND is_deleted = 0`;
-        let query = conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.json(results);
-            } catch (err) {
-                next(err);
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery = `SELECT * FROM resources WHERE skill_id= ${req.params.id} AND is_deleted = 0`;
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 // Questions -------------------

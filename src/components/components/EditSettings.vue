@@ -31,7 +31,10 @@ export default {
                 body: JSON.stringify({
                     skill_degradation_days:
                         this.settingsStore.skillDegradationDays,
-                    quiz_max_questions: this.settingsStore.quizMaxQuestions
+                    quiz_max_questions: this.settingsStore.quizMaxQuestions,
+                    is_manual_essay_marking:
+                        this.settingsStore.isManualEssayMarking,
+                    pass_mark: this.settingsStore.passMark
                 })
             };
             var url = '/settings/edit';
@@ -73,6 +76,43 @@ export default {
                 class="form-control"
                 aria-describedby="quizMaxQuestions"
             />
+        </div>
+        <div class="mb-3">
+            <label for="daysForSkillToDegrade" class="form-label"
+                >Pass mark:</label
+            >
+            <input
+                v-model="settingsStore.passMark"
+                type="number"
+                id="quizMaxQuestions"
+                min="50"
+                max="100"
+                class="form-control"
+                aria-describedby="quizMaxQuestions"
+            />
+        </div>
+        <div class="mb-3">
+            <label class="form-label"
+                >Grading method for written questions:</label
+            >
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="radio"
+                    value="0"
+                    v-model="settingsStore.isManualEssayMarking"
+                />
+                <label class="form-check-label"> Automatic (AI) </label>
+            </div>
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="radio"
+                    value="1"
+                    v-model="settingsStore.isManualEssayMarking"
+                />
+                <label class="form-check-label"> Manual (instructor) </label>
+            </div>
         </div>
         <div class="d-flex justify-content-between mb-3">
             <router-link class="btn btn-dark" to="/profile-settings">

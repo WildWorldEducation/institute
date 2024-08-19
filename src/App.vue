@@ -20,8 +20,11 @@ export default {
 </script>
 
 <template>
-    <header v-if="sessionDetailsStore.isLoggedIn">
-        <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
+    <header>
+        <nav
+            id="navbar"
+            class="navbar fixed-top navbar-expand-lg navbar-light bg-light"
+        >
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link">
                     <img
@@ -48,17 +51,39 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
+                        <li
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="nav-item"
+                        >
                             <!-- ".native is used because Vue doesnt really allow for click handlers for routerlinks" -->
                             <RouterLink to="/" class="nav-link">Hub</RouterLink>
                         </li>
-                        <li class="nav-item">
+                        <li
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                (userDetailsStore.role == 'admin' ||
+                                    userDetailsStore.role == 'editor')
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink to="/todo" class="nav-link">
+                                <span>Todo</span>
+                            </RouterLink>
+                        </li>
+                        <li
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="nav-item"
+                        >
                             <RouterLink to="/skills" class="nav-link">
                                 <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
+
                         <li
-                            v-if="userDetailsStore.role == 'student'"
+                            v-if="
+                                userDetailsStore.role == 'student' ||
+                                !sessionDetailsStore.isLoggedIn
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/vertical-tree" class="nav-link"
@@ -94,7 +119,10 @@ export default {
                         </li>
                     </ul>
                     <ul class="navbar-nav d-flex">
-                        <li class="nav-item me-2">
+                        <li
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="nav-item me-2"
+                        >
                             <RouterLink to="/profile-settings" class="nav-link">
                                 <img
                                     id="user-avatar"
@@ -103,13 +131,23 @@ export default {
                                 />
                             </RouterLink>
                         </li>
+                        <li class="nav-item me-2" v-else>
+                            <RouterLink to="/login" class="nav-link">
+                                <img
+                                    id="user-avatar"
+                                    src="/images/source-avatars/source-default-avatar.png"
+                                    alt="login"
+                                />
+                            </RouterLink>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-
-    <RouterView />
+    <div class="router-view-padding router-view">
+        <RouterView />
+    </div>
 </template>
 
 <style>
@@ -138,5 +176,16 @@ export default {
     width: 40px;
     height: 40px;
     border-radius: 8px;
+}
+.router-view {
+    height: 100vh;
+}
+.router-view-padding {
+    padding-top: 72px;
+}
+@media (max-width: 991px) {
+    .router-view-padding {
+        padding-top: 66px;
+    }
 }
 </style>

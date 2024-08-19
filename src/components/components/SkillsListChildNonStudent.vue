@@ -96,7 +96,7 @@ export default {
                 window.open('/skills/' + this.id, '_blank');
             } else this.toggleChildren();
         },
-        openEdit(id){
+        openEdit(id) {
             this.$router.push(`/skills/edit/${id}`);
         },
         // Save the state of the skills list to browser storage.
@@ -478,23 +478,23 @@ export default {
 }
 
 .grade-school-level {
-    border-color: #40b9a9;
+    border-color: #33b3a6;
 }
 
 .middle-school-level {
-    border-color: #6eb3f5;
+    border-color: #008000;
 }
 
 .high-school-level {
-    border-color: #3983dd;
+    border-color: #ccac00;
 }
 
 .college-level {
-    border-color: #baa9e1;
+    border-color: #ffa500;
 }
 
 .phd-level {
-    border-color: #9c7eec;
+    border-color: #cc0000;
 }
 
 .user-name {
@@ -539,7 +539,7 @@ export default {
     .four-row-domain-name {
         font-size: 8px;
     }
-    
+
     .domains {
         height: 55px;
     }

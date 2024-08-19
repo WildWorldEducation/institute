@@ -3,6 +3,7 @@ import SkillsView from '../components/pages/SkillsView.vue';
 
 import { useSessionDetailsStore } from '../stores/SessionDetailsStore';
 import { useUserDetailsStore } from '../stores/UserDetailsStore';
+import { useUserSkillsStore } from '../stores/UserSkillsStore.js';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,7 +11,8 @@ const router = createRouter({
         {
             path: '/vertical-tree',
             name: 'vertical-tree',
-            component: () => import('../components/pages/TidyTreeView.vue')
+            component: () => import('../components/pages/TidyTreeView.vue'),
+            meta: { preventZoom: true }
         },
         {
             path: '/student/:studentId/skill-tree',
@@ -26,7 +28,8 @@ const router = createRouter({
         {
             path: '/radial-tree',
             name: 'radial-tree',
-            component: () => import('../components/pages/RadialTreeView.vue')
+            component: () => import('../components/pages/RadialTreeView.vue'),
+            meta: { preventZoom: true }
         },
         {
             path: '/:id/skill-tree',
@@ -224,13 +227,15 @@ const router = createRouter({
         {
             path: '/content-flags',
             name: 'content-flags',
-            component: () => import('../components/pages/ContentFlagsView.vue')
+            component: () => import('../components/pages/ContentFlagsView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
         {
             path: '/check-student-question/:id',
             name: 'check-student-question',
             component: () =>
-                import('../components/pages/CheckStudentQuestionView.vue')
+                import('../components/pages/CheckStudentQuestionView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor', 'instructor'] }
         },
         {
             path: '/tutor/add/:skillId',
@@ -243,21 +248,27 @@ const router = createRouter({
             component: () => import('../components/pages/EditTutorPostView.vue')
         },
         {
-            path: '/content-edits',
-            name: 'content-edits',
-            component: () =>
-                import('../components/pages/ContentEditsListView.vue')
-        },
-        {
             path: '/content-edit/:contentId/:userId/comparison',
             name: 'content-edit-comparison',
             component: () =>
                 import('../components/pages/ContentEditComparisonView.vue')
+        },
+        {
+            path: '/todo',
+            name: 'todo-list',
+            component: () => import('../components/pages/TodoListView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         }
     ]
 });
 
 router.beforeEach(async (to, from, next) => {
+
+    if (to.meta.preventZoom) {
+        setViewport();
+    } else {
+        resetViewport();
+    }
     const sessionDetailsStore = useSessionDetailsStore();
     const userDetailsStore = useUserDetailsStore();
 
@@ -270,15 +281,33 @@ router.beforeEach(async (to, from, next) => {
     const isLoggedIn = sessionDetailsStore.isLoggedIn;
     const userRole = userDetailsStore.role;
 
+    // Checking if skill is unlocked before allowing student to take assessment.
+    if (to.name == 'assessment') {
+        const userSkillsStore = useUserSkillsStore();
+
+        await userSkillsStore.getUnnestedList(userDetailsStore.userId);
+        const currentSkill = userSkillsStore.unnestedList.find(
+            (item) => item.id == to.params.id
+        );
+
+        if (currentSkill.is_accessible != 1 || currentSkill.is_mastered == 1) {
+            next({ path: '/skills/' + to.params.id });
+            return;
+        }
+    }
+
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&
-        !sessionDetailsStore.isLoggedIn &&
         to.name !== 'login' &&
         to.name !== 'student-signup' &&
-        to.name !== 'editor-signup'
+        to.name !== 'editor-signup' &&
+        // For guest access.
+        to.name !== 'vertical-tree' &&
+        to.name !== 'show-skill' &&
+        to.name !== 'profile-settings'
     ) {
-        next({ name: 'login' });
+        next({ name: 'vertical-tree' });
         return;
     }
 
@@ -300,7 +329,13 @@ router.beforeEach(async (to, from, next) => {
     }
 
     // To remove the vertical scroll bar for the Vertical and Radial skill tree pages.
-    if (to.name == 'vertical-tree' || to.name == 'radial-tree') {
+    if (
+        to.name == 'vertical-tree' ||
+        to.name == 'radial-tree' ||
+        to.name == 'student-signup' ||
+        to.name == 'editor-signup' ||
+        to.name == 'login'
+    ) {
         document.getElementById('app').style.overflow = 'hidden';
     } else {
         document.getElementById('app').style.overflow = 'auto';
@@ -311,4 +346,20 @@ router.afterEach((to, from, next) => {
     window.scrollTo(0, 0);
 });
 
+function setViewport() {
+    let metaTag = document.querySelector('meta[name=viewport]');
+    if (!metaTag) {
+      metaTag = document.createElement('meta');
+      metaTag.name = "viewport";
+      document.head.appendChild(metaTag);
+    }
+    metaTag.content = "width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0";
+}
+  
+function resetViewport() {
+    const metaTag = document.querySelector('meta[name=viewport]');
+    if (metaTag) {
+      metaTag.content = "width=device-width, initial-scale=1.0"; // or your default value
+    }
+}
 export default router;

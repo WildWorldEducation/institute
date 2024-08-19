@@ -39,7 +39,7 @@ export default {
     </div>
 
     <div class="container mt-3">
-        <h1>Tag List</h1>
+        <h1>Filters List</h1>
         <div class="table_div">
             <table class="skilltree-table table-bordered">
                 <tr>

@@ -40,18 +40,7 @@ export default {
     <!--Only show if admin ----------------->
     <!-- App Settings --->
     <Settings v-if="userDetailsStore.role == 'admin'" />
-    <!-- Link to Content Flags page --->
-     <!-- temporarily allowing non-admin to access content flags -->
-    <section
-        class="container mt-1 px-3 px-lg-0 mb-5"        
-        v-if="userDetailsStore.role == 'admin'" 
-    >
-        <hr />
-        <h1>Content Flags</h1>
-        <router-link class="btn green-btn mt-3" to="/content-flags"
-            >Go to page</router-link
-        >
-    </section>
+
     <!-- Ability to bulk upload multiple choice questions --->
     <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
     <!-- AI Check MC Questions --->

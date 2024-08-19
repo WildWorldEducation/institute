@@ -25,8 +25,8 @@ export default {
             // number of mc question is total score, default value to 1 to avoid divine with 0
             totalScore: 1,
             scorePercent: 0,
-            mcQuestions: [],
-            essayQuestions: 0,
+            questions: [],
+            essayQuestionsLength: 0,
             correctIndex: [],
             // modal show state data
             passModal: false,
@@ -37,7 +37,7 @@ export default {
             showFlaggingModal: false
         };
     },
-    props: ['skill'],
+    props: ['skill', 'isManualEssayMarking'],
     mounted() {
         this.assessmentResult = this.$parent.assessmentStatus;
         // Show modal based on  assessment status
@@ -67,7 +67,9 @@ export default {
         this.finishTime = this.$parent.finishTime.toLocaleTimeString();
 
         this.score = this.$parent.score;
-        this.totalScore = this.$parent.numMCQuestions;
+        if (this.isManualEssayMarking == 1)
+            this.totalScore = this.$parent.numMCQuestions;
+        else this.totalScore = this.$parent.questions.length;
         // not calculate if we divide by 0
         if (this.totalScore !== 0) {
             this.scorePercent = Math.floor(
@@ -75,13 +77,17 @@ export default {
             );
         }
 
-        // only get mc question
-        this.mcQuestions = this.$parent.questions.filter(
-            (question) => question.questionType === 'mc'
-        );
-        // get essay questions without looping the question array
-        this.essayQuestions =
-            this.$parent.questions.length - this.mcQuestions.length;
+        if (this.isManualEssayMarking == 1) {
+            // only get mc question
+            this.questions = this.$parent.questions.filter(
+                (question) => question.questionType === 'mc'
+            );
+            // get essay questions without looping the question array
+            this.essayQuestionsLength =
+                this.$parent.questions.length - this.questions.length;
+        } else {
+            this.questions = this.$parent.questions;
+        }
 
         this.correctIndex = [1];
     },
@@ -151,7 +157,7 @@ export default {
                 <div
                     class="hover-cursor"
                     b-on-hover
-                    title="you need to score above 90% to pass the assessment"
+                    title="you need to score above 80% to pass the assessment"
                 >
                     <span class="info-label">Score: </span>
                     <span class="info-value"
@@ -160,18 +166,24 @@ export default {
                     ( {{ scorePercent }}%)
                     <span>*</span>
                 </div>
-                <div class="essay-warning" v-if="essayQuestions != 0">
-                    There are {{ essayQuestions }} answers that needed to be
-                    mark by your instructor
+                <div
+                    class="essay-warning"
+                    v-if="
+                        isManualEssayMarking == 1 && essayQuestionsLength != 0
+                    "
+                >
+                    There are {{ essayQuestionsLength }} answers that needed to
+                    be mark by your instructor
                 </div>
             </div>
             <!-- Student can add a question if they pass -->
             <StudentAddMCQuestion v-if="assessmentResult === 'pass'" />
         </div>
         <!-- Question list include right answer and explain -->
-        <div class="mc-question-result" v-for="question of mcQuestions">
+        <div class="mc-question-result" v-for="question of questions">
             <!-- Flag button -->
             <div
+                v-if="question.questionType == 'mc'"
                 b-tooltip.hover
                 title="flag this question for review"
                 @click="setQuestionForFlagging(question.id, 'mc_question')"
@@ -192,17 +204,25 @@ export default {
             <!-- The label indicate user answer right or wrong -->
             <div
                 :class="
-                    question.userAnswer === 1 ? 'correct-label' : 'wrong-label'
+                    question.userAnswer === 1 || question.isCorrect == true
+                        ? 'correct-label'
+                        : 'wrong-label'
                 "
             >
-                {{ question.userAnswer === 1 ? 'Correct !!' : 'Incorrect !!' }}
+                {{
+                    question.userAnswer === 1 || question.isCorrect == true
+                        ? 'Correct !!'
+                        : 'Incorrect !!'
+                }}
             </div>
             <div class="question">
                 {{ question.question }}
             </div>
             <div class="d-flex flex-column">
+                <!-- For MC Questions Only -->
                 <!-- Question options -->
                 <div
+                    v-if="question.questionType == 'mc'"
                     v-for="(answerOption, index) in question.answerOptions"
                     class="form-check my-3"
                 >
@@ -265,9 +285,23 @@ export default {
                         </div>
                     </label>
                 </div>
+                <!-- For Essay Questions Only -->
+                <div v-else>
+                    <span class="explain-label">Your answer: </span>
+                    <div class="explain-text">
+                        {{ question.userAnswer }}
+                    </div>
+                </div>
                 <!-- Question explanation -->
-                <div class="explain-answer">
-                    <div class="explain-label">Explain:</div>
+                <div
+                    v-if="
+                        question.questionType == 'mc' ||
+                        (question.questionType == 'essay' &&
+                            question.isCorrect == false)
+                    "
+                    class="explain-answer"
+                >
+                    <div class="explain-label">Explanation:</div>
                     <div class="explain-text">
                         {{ question.explanation }}
                     </div>

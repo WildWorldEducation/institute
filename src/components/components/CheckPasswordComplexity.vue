@@ -21,7 +21,25 @@ export default {
             hoverTile: "special characters: (~!@#$%^&*_-+=`|(){}[]:;\"''<>,.?/)"
         };
     },
-    mounted() {},
+    mounted() {
+        // To make the password criteria text dissappear when not required.
+        var body = document.getElementsByTagName('body')[0];
+        var except = document.getElementById('password-input');
+        body.addEventListener(
+            'click',
+            () => {
+                this.showCriteria = false;
+            },
+            false
+        );
+        except.addEventListener(
+            'click',
+            function (ev) {
+                ev.stopPropagation();
+            },
+            false
+        );
+    },
     destroyed() {},
     methods: {
         checkStrength(password) {

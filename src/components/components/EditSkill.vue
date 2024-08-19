@@ -312,8 +312,8 @@ export default {
                     name: this.skill.name,
                     parent: this.skill.parent,
                     description: this.skill.description,
-                    icon_image: this.skill.icon_image,
-                    banner_image: this.skill.banner_image,
+                    icon_image: this.iconImage,
+                    banner_image: this.bannerImage,
                     mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
                     level: this.skill.level,
@@ -343,8 +343,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: this.userDetailsStore.userId,
-                    icon_image: this.skill.icon_image,
-                    banner_image: this.skill.banner_image,
+                    icon_image: this.iconImage,
+                    banner_image: this.bannerImage,
                     mastery_requirements: this.skill.mastery_requirements,
                     comment: this.comment
                 })
@@ -352,7 +352,9 @@ export default {
 
             var url = '/skills/' + this.skillId + '/edit-for-review';
             fetch(url, requestOptions).then(() => {
-                alert('Skill edit submitted for review.');
+                alert(
+                    `This edit is being submitted for review.\nWe do this to prevent misinformation and sloppy wording from being added. If you would like to become an editor and help with this, please reach out.`
+                );
                 this.$router.back();
             });
         },

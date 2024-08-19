@@ -8,12 +8,23 @@ export default {
             skill: {},
             skillEdit: {},
             comment: '',
-            isEditMode: false
+            isEditMode: false,
+            changeIcon: false,
+            changeBanner: false,
+            changeMasteryText: false
         };
     },
     async created() {
         await this.getSkillEdit();
         await this.getSkill();
+
+        if (this.skill.banner_image !== this.skillEdit.banner_image) {
+            this.changeBanner = true;
+        }
+
+        if (this.skill.icon_image !== this.skillEdit.icon_image) {
+            this.changeIcon = true;
+        }
 
         // Render the Summernote content.
         $('#summernote').summernote(
@@ -39,6 +50,7 @@ export default {
                 })
                 .then((data) => {
                     this.skillEdit = data;
+                    console.log(this.skillEdit);
                     this.comment = data.comment;
                 });
         },
@@ -133,6 +145,39 @@ export default {
 <template>
     <div class="container mt-4 mb-4">
         <h1 class="page-title">Comparison</h1>
+        <hr />
+        <div v-if="changeBanner" class="d-flex flex-column">
+            <h4>Banner</h4>
+            <!-- Old Banner -->
+            <div class="old-container banner-container">
+                <div class="container-tile">Original</div>
+                <img :src="skill.banner_image" class="banner-image" />
+            </div>
+            <!-- Long arrow pointing down -->
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 320 512"
+                fill="#ac90e8"
+                height="70"
+                width="70"
+                class="mx-auto mt-1"
+            >
+                <path
+                    d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
+                />
+            </svg>
+            <!-- New Banner -->
+            <div class="new-container banner-container">
+                <div class="container-tile">Changed</div>
+                <img :src="skill.banner_image" class="banner-image" />
+            </div>
+        </div>
+        <!-- Banner image compare -->
+        <!-- -------------------------------------------------------------------------------------------------------------------------------- -->
+        <!--************************************ 
+            * OLD PAGE WILL GET DELETE LATER   *
+            *                                  * 
+            ************************************ -->
         <div class="row">
             <div class="col-sm">
                 <h2>Change</h2>
@@ -233,13 +278,48 @@ export default {
 }
 
 .banner-image {
-    max-width: 100%;
+    width: 80%;
+    height: auto;
 }
 
 .icon-image {
     max-width: 50%;
 }
 
+.old-container {
+    position: relative;
+    background-color: white;
+    border: 1px solid rgb(163, 42, 42);
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: rgb(163, 42, 42);
+}
+
+.new-container {
+    position: relative;
+    background-color: white;
+    border: 1px solid rgb(46, 126, 38);
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: rgb(46, 126, 38);
+}
+
+.banner-container {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+}
+
+.container-tile {
+    position: absolute;
+    top: -15px;
+    font-size: 18px;
+    left: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: white;
+}
 /* Specific phone view css */
 @media (max-width: 576px) {
     img {

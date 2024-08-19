@@ -90,8 +90,9 @@ const tutorPosts = require('./routes/tutor-posts');
 app.use('/tutor-posts', tutorPosts);
 const skillHistory = require('./routes/skill-history');
 app.use('/skill-history', skillHistory);
-const waitingApproval = require('./routes/waiting-approval');
-app.use('/waiting-approval', waitingApproval);
+const todoCount = require('./routes/todo-count');
+app.use('/todo-count', todoCount);
+
 
 app.locals.title = 'Skill Tree';
 
@@ -442,9 +443,14 @@ app.put('/settings/edit', (req, res, next) => {
         SET skill_degradation_days = ` +
             req.body.skill_degradation_days +
             `, quiz_max_questions = ` +
-            req.body.quiz_max_questions;
+            req.body.quiz_max_questions +
+            `, is_manual_essay_marking = ` +
+            req.body.is_manual_essay_marking +
+            `, pass_mark = ` +
+            req.body.pass_mark +
+            `;`;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;

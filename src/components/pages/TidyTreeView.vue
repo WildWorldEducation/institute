@@ -1,12 +1,21 @@
 <script>
+import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import TidyTree from '../components/skilltrees/TidyTree.vue';
+import TidyTreeNoAccount from '../components/skilltrees/TidyTreeNoAccount.vue';
 
 export default {
-    setup() {},
+    setup() {
+        const sessionDetailsStore = useSessionDetailsStore();
+
+        return {
+            sessionDetailsStore
+        };
+    },
     data() {
         return {};
     },
-    components: { TidyTree },
+    created() {},
+    components: { TidyTree, TidyTreeNoAccount },
     methods: {
         // // Toggle info bar.
         // ToggleInfobar() {
@@ -39,6 +48,7 @@ export default {
                 </div>
                 <div class="col-4 d-flex flex-column align-items-end">
                     <button
+                        v-if="sessionDetailsStore.isLoggedIn"
                         id="print-btn"
                         class="btn btn-info"
                         @click="$refs.childComponent.printPDF()"
@@ -71,6 +81,7 @@ export default {
 
                 <div class="col d-flex justify-content-end">
                     <button
+                        v-if="sessionDetailsStore.isLoggedIn"
                         id="print-btn"
                         class="btn btn-info me-3"
                         @click="$refs.childComponent.printPDF()"
@@ -88,25 +99,14 @@ export default {
             </div>
         </div>
     </div>
-    <!-- <div id="thin-purple-banner">
-        <button id="info-button" class="btn" @click="ToggleInfobar()">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 192 512"
-                height="12"
-                width="12"
-            >
-                <path
-                    d="M144 80c0 26.5-21.5 48-48 48s-48-21.5-48-48s21.5-48 48-48s48 21.5 48 48zM0 224c0-17.7 14.3-32 32-32H96c17.7 0 32 14.3 32 32V448h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H64V256H32c-17.7 0-32-14.3-32-32z"
-                    fill="black"
-                />
-            </svg>
-        </button>
-    </div> -->
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
-            <TidyTree ref="childComponent" />
+            <TidyTree
+                v-if="sessionDetailsStore.isLoggedIn"
+                ref="childComponent"
+            />
+            <TidyTreeNoAccount v-else ref="childComponent" />
         </template>
         <template #fallback>
             <span>Loading...</span>
@@ -146,7 +146,7 @@ export default {
 }
 
 /* X-Small devices (portrait phones, less than 576px) */
-@media (max-width: 575.98px) {
+@media (max-width: 800px) {
     #mobile-legend {
         display: block;
     }
@@ -161,13 +161,23 @@ export default {
 }
 
 /* Bigger devices */
-@media (min-width: 576px) {
+@media (min-width: 801px) {
     #mobile-legend {
         display: none;
     }
 
     #tablet-and-up-legend {
         display: block;
+    }
+    .legend {
+        align-items: center;
+    }
+
+    .legend .col {
+        display: flex;
+    }
+    .legend span {
+        flex-shrink: 0;
     }
 }
 
