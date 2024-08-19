@@ -24,13 +24,15 @@ export default {
     },
     data() {
         return {
-            questions: []
+            questions: [],
+            loadingQuestion: true
         };
     },
     components: {
         StudentQuestionList
     },
     async created() {
+        this.loadingQuestion = true;
         // Question list needs to be created for both admins (all questions), and instructors
         // (only their students' questions).
 
@@ -96,54 +98,9 @@ export default {
             }
         }
 
-        // For instructors only.
-        if (this.userDetailsStore.role == 'instructor') {
-            // Get the instructor student list, if not yet loaded.
-            if (
-                this.instructorStudentsStore.instructorStudentsList.length == 0
-            ) {
-                await this.instructorStudentsStore.getInstructorStudentsList();
-            }
-
-            let studentIds = [];
-            // Just get the students that this instructors teaches.
-            for (
-                let i = 0;
-                i < this.instructorStudentsStore.instructorStudentsList.length;
-                i++
-            ) {
-                if (
-                    this.$parent.userDetailsStore.userId ==
-                    this.instructorStudentsStore.instructorStudentsList[i]
-                        .instructor_id
-                ) {
-                    studentIds.push(
-                        this.instructorStudentsStore.instructorStudentsList[i]
-                            .student_id
-                    );
-                }
-            }
-            // Get the questions made by these students.
-            for (
-                let i = 0;
-                i < this.studentMCQuestionsStore.studentMCQuestions.length;
-                i++
-            ) {
-                for (let j = 0; j < studentIds.length; j++) {
-                    if (
-                        this.studentMCQuestionsStore.studentMCQuestions[i]
-                            .student_id == studentIds[j]
-                    ) {
-                        this.questions.push(
-                            this.studentMCQuestionsStore.studentMCQuestions[i]
-                        );
-                    }
-                }
-            }
-        } else {
-            this.questions = this.studentMCQuestionsStore.studentMCQuestions;
-            this.$parent.studentQuestionCount = this.questions.length;
-        }
+        this.questions = this.studentMCQuestionsStore.studentMCQuestions;
+        this.$parent.studentQuestionCount = this.questions.length;
+        this.loadingQuestion = false;
     },
     computed: {},
     methods: {}
@@ -159,7 +116,10 @@ export default {
         <!-- Page tile -->
         <div class="ps-3 mt-2 page-tile">User Edit Content List</div>
         <div class="container-fluid">
-            <StudentQuestionList :studentQuestion="questions" />
+            <StudentQuestionList
+                :studentQuestion="questions"
+                :loadingQuestion="loadingQuestion"
+            />
         </div>
     </div>
 </template>
