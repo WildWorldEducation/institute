@@ -174,7 +174,7 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT id, name, parent, type, level, is_filtered, skills.order as skillorder
+    SELECT id, name, parent, type, level, is_filtered, skills.order as skillorder, optional_parent_2, optional_parent_3
     FROM skills
     WHERE is_deleted = 0
     ORDER BY skillorder;`;
@@ -189,6 +189,7 @@ router.get('/nested-list', (req, res, next) => {
                     results[i].children = [];
                 }
 
+                // Add children to the parents.
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].parent != null && results[i].parent != 0) {
                         var parentId = results[i].parent;
@@ -201,6 +202,39 @@ router.get('/nested-list', (req, res, next) => {
                     }
                 }
 
+                // Add children to the optional second parents.
+                for (var i = 0; i < results.length; i++) {
+                    if (
+                        results[i].optional_parent_2 != null &&
+                        results[i].optional_parent_2 != 0
+                    ) {
+                        var parent2Id = results[i].optional_parent_2;
+                        // go through all rows again, add children
+                        for (let j = 0; j < results.length; j++) {
+                            if (results[j].id == parent2Id) {
+                                results[j].children.push(results[i]);
+                            }
+                        }
+                    }
+                }
+
+                // Add children to the optional third parents.
+                for (var i = 0; i < results.length; i++) {
+                    if (
+                        results[i].optional_parent_3 != null &&
+                        results[i].optional_parent_3 != 0
+                    ) {
+                        var parent3Id = results[i].optional_parent_3;
+                        // go through all rows again, add children
+                        for (let j = 0; j < results.length; j++) {
+                            if (results[j].id == parent3Id) {
+                                results[j].children.push(results[i]);
+                            }
+                        }
+                    }
+                }
+
+                // Create first level of array.
                 let nestedSkills = [];
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].parent == null || results[i].parent == 0) {
