@@ -98,7 +98,8 @@ export default {
             step2Confirm: false,
             orderArray: Array.from({ length: 20 }, (_, i) => i + 1),
             comment: '',
-            isMultipleParents: false,
+            isTwoParents: false,
+            isThreeParents: false,
             optional_parent_2: null,
             optional_parent_3: null
         };
@@ -249,7 +250,14 @@ export default {
         },
         // If edit is from an admin or editor.
         Submit() {
-            console.log(this.skill);
+          
+            if (this.isTwoParents == false) {
+                this.skill.optional_parent_2 = null;
+                this.skill.optional_parent_3 = null;
+            }
+            if (this.isThreeParents == false) {
+                this.skill.optional_parent_3 = null;
+            }
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
                 var hasSubSkills = false;
@@ -315,6 +323,7 @@ export default {
             if (this.validate.violated) {
                 return;
             }
+            console.log(this.skill);
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -329,19 +338,21 @@ export default {
                     level: this.skill.level,
                     order: this.skill.order,
                     version_number: this.skill.version_number,
-                    comment: this.comment
+                    comment: this.comment,
+                    optional_parent_2: this.skill.optional_parent_2,
+                    optional_parent_3: this.skill.optional_parent_3
                 })
             };
 
-            // var url = '/skills/' + this.skillId + '/edit';
-            // fetch(url, requestOptions)
-            //     .then(() => {
-            //         this.skillsStore.getNestedSkillsList();
-            //         this.SubmitFilters();
-            //     })
-            //     .then(() => {
-            //         this.$router.push(`/skills/${this.skillId}`);
-            //     });
+            var url = '/skills/' + this.skillId + '/edit';
+            fetch(url, requestOptions)
+                .then(() => {
+                    this.skillsStore.getNestedSkillsList();
+                    this.SubmitFilters();
+                })
+                .then(() => {
+                    this.$router.push(`/skills/${this.skillId}`);
+                });
         },
         // If edit is from a student or instructor.
         SubmitForReview() {
@@ -701,20 +712,21 @@ export default {
                 </div>
             </div>
             <!-- Multiple Parents? -->
+            <!-- 2 Parents? -->
             <div class="form-check col-6 col-md-5 my-2">
                 <label class="control control-checkbox">
                     <span class="my-auto mx-2 me-4"
-                        >Does this skill need to appear in more than one place?
+                        >Does this skill need to appear 2 places?
                     </span>
                     <input
                         type="checkbox"
                         value="true"
-                        v-model="isMultipleParents"
+                        v-model="isTwoParents"
                     />
                     <div class="control_indicator"></div>
                 </label>
             </div>
-            <div v-if="isMultipleParents">
+            <div v-if="isTwoParents">
                 <div class="col col-md-8 col-lg-5 mt-2">
                     <!-- Extra Parents drop down -->
                     <label class="form-label">Second Parent</label>
@@ -731,21 +743,36 @@ export default {
                         </option>
                     </select>
                 </div>
-                <div class="col col-md-8 col-lg-5 mt-2">
-                    <!-- Extra Parents drop down -->
-                    <label class="form-label">Third Parent</label>
-                    <select
-                        class="form-select"
-                        aria-label="Default select example"
-                        v-model="skill.optional_parent_3"
-                    >
-                        <option
-                            v-for="parentSkill in skills"
-                            :value="parentSkill.id"
+                <div class="form-check col-6 col-md-5 my-2">
+                    <label class="control control-checkbox">
+                        <span class="my-auto mx-2 me-4"
+                            >Does this skill need to appear 3 places?
+                        </span>
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isThreeParents"
+                        />
+                        <div class="control_indicator"></div>
+                    </label>
+                </div>
+                <div v-if="isThreeParents">
+                    <div class="col col-md-8 col-lg-5 mt-2">
+                        <!-- Extra Parents drop down -->
+                        <label class="form-label">Third Parent</label>
+                        <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            v-model="skill.optional_parent_3"
                         >
-                            {{ parentSkill.name }}
-                        </option>
-                    </select>
+                            <option
+                                v-for="parentSkill in skills"
+                                :value="parentSkill.id"
+                            >
+                                {{ parentSkill.name }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>

@@ -419,7 +419,11 @@ router.put(
                         req.body.name +
                         `', parent = '` +
                         req.body.parent +
-                        `', description = '` +
+                        `', optional_parent_2 = ` +
+                        req.body.optional_parent_2 +
+                        `, optional_parent_3 = ` +
+                        req.body.optional_parent_3 +
+                        `, description = '` +
                         req.body.description +
                         `', icon_image = '` +
                         req.body.icon_image +
