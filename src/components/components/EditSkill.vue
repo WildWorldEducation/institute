@@ -250,7 +250,6 @@ export default {
         },
         // If edit is from an admin or editor.
         Submit() {
-          
             if (this.isTwoParents == false) {
                 this.skill.optional_parent_2 = null;
                 this.skill.optional_parent_3 = null;
@@ -323,7 +322,7 @@ export default {
             if (this.validate.violated) {
                 return;
             }
-            console.log(this.skill);
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -736,7 +735,15 @@ export default {
                         v-model="skill.optional_parent_2"
                     >
                         <option
+                            v-if="skill.type != 'sub'"
                             v-for="parentSkill in skills"
+                            :value="parentSkill.id"
+                        >
+                            {{ parentSkill.name }}
+                        </option>
+                        <option
+                            v-else
+                            v-for="parentSkill in superSkills"
                             :value="parentSkill.id"
                         >
                             {{ parentSkill.name }}
@@ -766,7 +773,15 @@ export default {
                             v-model="skill.optional_parent_3"
                         >
                             <option
+                                v-if="skill.type != 'sub'"
                                 v-for="parentSkill in skills"
+                                :value="parentSkill.id"
+                            >
+                                {{ parentSkill.name }}
+                            </option>
+                            <option
+                                v-else
+                                v-for="parentSkill in superSkills"
                                 :value="parentSkill.id"
                             >
                                 {{ parentSkill.name }}
