@@ -12,13 +12,14 @@ const router = createRouter({
             path: '/vertical-tree',
             name: 'vertical-tree',
             component: () => import('../components/pages/TidyTreeView.vue'),
-            meta: { preventZoom: true }
+            meta: { preventZoom: true, title: 'Vertical Tree' }
         },
         {
             path: '/student/:studentId/skill-tree',
             name: 'student-vertical-tree',
             component: () =>
-                import('../components/pages/StudentTidyTreeView.vue')
+                import('../components/pages/StudentTidyTreeView.vue'),
+            meta: {title: 'Skill Tree'}
         },
         {
             path: '/',
@@ -29,7 +30,7 @@ const router = createRouter({
             path: '/radial-tree',
             name: 'radial-tree',
             component: () => import('../components/pages/RadialTreeView.vue'),
-            meta: { preventZoom: true }
+            meta: { preventZoom: true, title: 'Radial Tree' }
         },
         {
             path: '/:id/skill-tree',
@@ -40,30 +41,35 @@ const router = createRouter({
         {
             path: '/login',
             name: 'login',
-            component: () => import('../components/pages/LoginView.vue')
+            component: () => import('../components/pages/LoginView.vue'),
+            meta: {title: 'Login'}
         },
         {
             path: '/student-signup',
             name: 'student-signup',
             component: () =>
-                import('../components/pages/SignUpStudentAccountView.vue')
+                import('../components/pages/SignUpStudentAccountView.vue'),
+            meta: {title: 'Student Sign Up'}
         },
         {
             path: '/editor-signup',
             name: 'editor-signup',
             component: () =>
-                import('../components/pages/SignUpEditorAccountView.vue')
+                import('../components/pages/SignUpEditorAccountView.vue'),
+            meta: {title: 'Editor Sign Up'}
         },
 
         {
             path: '/skills',
             name: 'skills',
-            component: SkillsView
+            component: SkillsView,
+            meta: {title: 'Skills'}
         },
         {
             path: '/student/:studentId/skills',
             name: 'student-skills',
-            component: SkillsView
+            component: SkillsView,
+            meta: {title: 'Student Skills'}
         },
         {
             path: '/skills/:skillId',
@@ -263,7 +269,12 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-
+    const baseTitle = 'The Collins Institute';
+    if (to.meta.title) {
+        document.title = `${to.meta.title} - ${baseTitle}`;
+    } else {
+        document.title = baseTitle; // Fallback to base title
+    }
     if (to.meta.preventZoom) {
         setViewport();
     } else {
