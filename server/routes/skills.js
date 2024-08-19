@@ -236,6 +236,7 @@ router.get('/filtered-nested-list', (req, res, next) => {
                 results[i].children = [];
             }
 
+            // First parent.
             for (var i = 0; i < results.length; i++) {
                 if (results[i].parent != null && results[i].parent != 0) {
                     var parentId = results[i].parent;
