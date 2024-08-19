@@ -11,7 +11,8 @@ const router = createRouter({
         {
             path: '/vertical-tree',
             name: 'vertical-tree',
-            component: () => import('../components/pages/TidyTreeView.vue')
+            component: () => import('../components/pages/TidyTreeView.vue'),
+            meta: { preventZoom: true }
         },
         {
             path: '/student/:studentId/skill-tree',
@@ -27,7 +28,8 @@ const router = createRouter({
         {
             path: '/radial-tree',
             name: 'radial-tree',
-            component: () => import('../components/pages/RadialTreeView.vue')
+            component: () => import('../components/pages/RadialTreeView.vue'),
+            meta: { preventZoom: true }
         },
         {
             path: '/:id/skill-tree',
@@ -261,6 +263,12 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+
+    if (to.meta.preventZoom) {
+        setViewport();
+    } else {
+        resetViewport();
+    }
     const sessionDetailsStore = useSessionDetailsStore();
     const userDetailsStore = useUserDetailsStore();
 
@@ -338,4 +346,20 @@ router.afterEach((to, from, next) => {
     window.scrollTo(0, 0);
 });
 
+function setViewport() {
+    let metaTag = document.querySelector('meta[name=viewport]');
+    if (!metaTag) {
+      metaTag = document.createElement('meta');
+      metaTag.name = "viewport";
+      document.head.appendChild(metaTag);
+    }
+    metaTag.content = "width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0";
+}
+  
+function resetViewport() {
+    const metaTag = document.querySelector('meta[name=viewport]');
+    if (metaTag) {
+      metaTag.content = "width=device-width, initial-scale=1.0"; // or your default value
+    }
+}
 export default router;
