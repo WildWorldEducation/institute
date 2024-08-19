@@ -143,36 +143,101 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 mb-4">
+    <div class="mt-4 mb-4">
         <h1 class="page-title">Comparison</h1>
         <hr />
-        <div v-if="changeBanner" class="d-flex flex-column">
-            <h4>Banner</h4>
-            <!-- Old Banner -->
-            <div class="old-container banner-container">
-                <div class="container-tile">Original</div>
-                <img :src="skill.banner_image" class="banner-image" />
-            </div>
-            <!-- Long arrow pointing down -->
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 320 512"
-                fill="#ac90e8"
-                height="70"
-                width="70"
-                class="mx-auto mt-1"
-            >
-                <path
-                    d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
-                />
-            </svg>
-            <!-- New Banner -->
-            <div class="new-container banner-container">
-                <div class="container-tile">Changed</div>
-                <img :src="skill.banner_image" class="banner-image" />
+        <!-- Banner image compare -->
+        <div v-if="changeBanner">
+            <div class="compare-container">
+                <div class="compare-container-tile mb-3">Banner</div>
+                <div class="d-flex flex-lg-row flex-column">
+                    <!-- Old Banner -->
+                    <div class="old-container banner-container">
+                        <div class="container-tile">Original</div>
+                        <img :src="skill.banner_image" class="banner-image" />
+                    </div>
+                    <!-- Long arrow pointing right -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="50"
+                        height="50"
+                        fill="#ac90e8"
+                        class="d-none d-lg-block my-auto mx-1"
+                    >
+                        <path
+                            d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
+                        />
+                    </svg>
+                    <!-- Long arrow pointing down on tablet and mobile-->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 320 512"
+                        fill="#ac90e8"
+                        height="70"
+                        width="70"
+                        class="mx-auto my-2 d-lg-none"
+                    >
+                        <path
+                            d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
+                        />
+                    </svg>
+                    <!-- New Banner -->
+                    <div class="new-container banner-container">
+                        <div class="container-tile">Changed</div>
+                        <img
+                            :src="skillEdit.banner_image"
+                            class="banner-image"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
-        <!-- Banner image compare -->
+        <!-- Icon image compare -->
+        <div v-if="changeIcon" class="mt-5">
+            <div class="compare-container">
+                <div class="compare-container-tile mb-3">Skill Icon</div>
+                <div class="d-flex flex-lg-row flex-column">
+                    <!-- Old Banner -->
+                    <div class="old-container icon-container">
+                        <div class="container-tile">Original</div>
+                        <img :src="skill.icon_image" class="icon-image" />
+                    </div>
+                    <!-- Long arrow pointing right -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="50"
+                        height="50"
+                        fill="#ac90e8"
+                        class="d-none d-lg-block my-auto mx-1"
+                    >
+                        <path
+                            d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
+                        />
+                    </svg>
+                    <!-- Long arrow pointing down on tablet and mobile-->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 320 512"
+                        fill="#ac90e8"
+                        height="70"
+                        width="70"
+                        class="mx-auto my-2 d-lg-none"
+                    >
+                        <path
+                            d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
+                        />
+                    </svg>
+                    <!-- New Banner -->
+                    <div class="new-container icon-container">
+                        <div class="container-tile">Changed</div>
+                        <img :src="skillEdit.icon_image" class="icon-image" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- -------------------------------------------------------------------------------------------------------------------------------- -->
         <!--************************************ 
             * OLD PAGE WILL GET DELETE LATER   *
@@ -253,7 +318,7 @@ export default {
                     />
                     <p v-else>No icon</p>
                 </div>
-                <h5 class="mt-3">Banner</h5>
+                <h5 class="mt-3 mb">Banner</h5>
                 <div>
                     <!-- Show a default skill avatar if skill not have image yet -->
                     <img
@@ -283,7 +348,28 @@ export default {
 }
 
 .icon-image {
+    width: auto;
+    height: 80%;
+}
+
+.icon-image {
     max-width: 50%;
+}
+
+.compare-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 5px;
+    padding: 10px 15px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.compare-container-tile {
+    color: #a48be7;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
 }
 
 .old-container {
@@ -309,6 +395,14 @@ export default {
     height: fit-content;
     display: flex;
     justify-content: center;
+}
+
+.icon-container {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container-tile {
