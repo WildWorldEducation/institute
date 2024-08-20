@@ -1,4 +1,6 @@
 <script>
+import HtmlDiff from 'htmldiff-js';
+
 export default {
     setup() {},
     data() {
@@ -11,7 +13,8 @@ export default {
             isEditMode: false,
             changeIcon: false,
             changeBanner: false,
-            changeMasteryText: false
+            changeMasteryText: false,
+            diffHtml: ''
         };
     },
     async created() {
@@ -24,6 +27,19 @@ export default {
 
         if (this.skill.icon_image !== this.skillEdit.icon_image) {
             this.changeIcon = true;
+        }
+
+        if (
+            this.skill.mastery_requirements !==
+            this.skillEdit.mastery_requirements
+        ) {
+            this.changeMasteryText = true;
+            // Compare two mastery requirement html string
+            this.diffHtml = HtmlDiff.execute(
+                this.skill.mastery_requirements,
+                this.skillEdit.mastery_requirements
+            );
+            console.log(this.diffHtml);
         }
 
         // Render the Summernote content.
@@ -237,7 +253,18 @@ export default {
                 </div>
             </div>
         </div>
-
+        <!-- Mastery requirement compare -->
+        <div v-if="changeMasteryText" class="compare-container mt-5">
+            <div class="compare-container-tile">Mastery Requirements</div>
+            <div class="d-flex flex-lg-row flex-column">
+                <div class="old-container">
+                    <div v-html="skill.mastery_requirements"></div>
+                </div>
+                <div class="new-container">
+                    <div v-html="diffHtml"></div>
+                </div>
+            </div>
+        </div>
         <!-- -------------------------------------------------------------------------------------------------------------------------------- -->
         <!--************************************ 
             * OLD PAGE WILL GET DELETE LATER   *
@@ -329,6 +356,7 @@ export default {
                     <p v-else>No banner</p>
                 </div>
                 <h5 class="mt-3">Mastery Requirements</h5>
+
                 <div v-html="skill.mastery_requirements"></div>
             </div>
         </div>
@@ -414,6 +442,7 @@ export default {
     padding-right: 5px;
     background-color: white;
 }
+
 /* Specific phone view css */
 @media (max-width: 576px) {
     img {
