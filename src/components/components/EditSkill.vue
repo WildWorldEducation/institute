@@ -257,6 +257,14 @@ export default {
             if (this.isThreeParents == false) {
                 this.skill.optional_parent_3 = null;
             }
+            if (
+                this.skill.parent == this.skill.optional_parent_2 ||
+                this.skill.parent == this.skill.optional_parent_3 ||
+                this.skill.optional_parent_3 == this.skill.optional_parent_2
+            ) {
+                alert('The same skill cannot be a parent more than once.');
+                return;
+            }
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
                 var hasSubSkills = false;
@@ -344,14 +352,14 @@ export default {
             };
 
             var url = '/skills/' + this.skillId + '/edit';
-            fetch(url, requestOptions)
-                .then(() => {
-                    this.skillsStore.getNestedSkillsList();
-                    this.SubmitFilters();
-                })
-                .then(() => {
-                    this.$router.push(`/skills/${this.skillId}`);
-                });
+            // fetch(url, requestOptions)
+            //     .then(() => {
+            //         this.skillsStore.getNestedSkillsList();
+            //         this.SubmitFilters();
+            //     })
+            //     .then(() => {
+            //         this.$router.push(`/skills/${this.skillId}`);
+            //     });
         },
         // If edit is from a student or instructor.
         SubmitForReview() {
