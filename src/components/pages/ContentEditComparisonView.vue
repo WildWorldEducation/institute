@@ -24,7 +24,11 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+    <!-- Banner -->
+    <div id="banner">
+        <img src="/images/banners/general-banner.png" class="img-fluid" />
+    </div>
+    <div class="container-fluid">
         <SkillEditComparison ref="child" v-if="type == 'skill'" />
         <MCQuestionEditComparison ref="child" v-if="type == 'mcquestion'" />
         <EssayQuestionEditComparison

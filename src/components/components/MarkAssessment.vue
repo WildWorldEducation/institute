@@ -135,7 +135,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 .assessment {
     border: 1px solid #dbd0f9;
     margin: 0px;
