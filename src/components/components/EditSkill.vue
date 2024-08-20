@@ -162,6 +162,14 @@ export default {
                         this.clusterParentInput.inputText = parentResult.name;
                     }
 
+                    // Optional 2nd and 3rd parents
+                    if (this.skill.optional_parent_2 != null) {
+                        this.isTwoParents = true;
+                    }
+                    if (this.skill.optional_parent_3 != null) {
+                        this.isThreeParents = true;
+                    }
+
                     this.getSkillFilters();
                 });
         },
@@ -257,10 +265,14 @@ export default {
             if (this.isThreeParents == false) {
                 this.skill.optional_parent_3 = null;
             }
+            // Check parents are not the same skill, but allow for both
+            // optional parents to be null.
             if (
-                this.skill.parent == this.skill.optional_parent_2 ||
-                this.skill.parent == this.skill.optional_parent_3 ||
-                this.skill.optional_parent_3 == this.skill.optional_parent_2
+                (this.skill.parent == this.skill.optional_parent_2 ||
+                    this.skill.parent == this.skill.optional_parent_3 ||
+                    this.skill.optional_parent_3 ==
+                        this.skill.optional_parent_2) &&
+                this.skill.optional_parent_3 != null
             ) {
                 alert('The same skill cannot be a parent more than once.');
                 return;
@@ -352,14 +364,14 @@ export default {
             };
 
             var url = '/skills/' + this.skillId + '/edit';
-            // fetch(url, requestOptions)
-            //     .then(() => {
-            //         this.skillsStore.getNestedSkillsList();
-            //         this.SubmitFilters();
-            //     })
-            //     .then(() => {
-            //         this.$router.push(`/skills/${this.skillId}`);
-            //     });
+            fetch(url, requestOptions)
+                .then(() => {
+                    this.skillsStore.getNestedSkillsList();
+                    this.SubmitFilters();
+                })
+                .then(() => {
+                    this.$router.push(`/skills/${this.skillId}`);
+                });
         },
         // If edit is from a student or instructor.
         SubmitForReview() {
