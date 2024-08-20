@@ -256,12 +256,30 @@ export default {
         <!-- Mastery requirement compare -->
         <div v-if="changeMasteryText" class="compare-container mt-5">
             <div class="compare-container-tile">Mastery Requirements</div>
-            <div class="d-flex flex-lg-row flex-column">
-                <div class="old-container">
-                    <div v-html="skill.mastery_requirements"></div>
+            <div class="d-flex flex-lg-row flex-column mt-4">
+                <div class="old-container skill-mastery-container">
+                    <div class="container-tile">Original</div>
+                    <div
+                        class="innerHTMLmastery"
+                        v-html="skill.mastery_requirements"
+                    ></div>
                 </div>
-                <div class="new-container">
-                    <div v-html="diffHtml"></div>
+                <!-- Long arrow pointing right -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    width="50"
+                    height="50"
+                    fill="#ac90e8"
+                    class="d-none d-lg-block my-auto mx-1"
+                >
+                    <path
+                        d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
+                    />
+                </svg>
+                <div class="new-container skill-mastery-container">
+                    <div class="container-tile">Changed</div>
+                    <div class="innerHTMLmastery" v-html="diffHtml"></div>
                 </div>
             </div>
         </div>
@@ -418,6 +436,11 @@ export default {
     color: rgb(46, 126, 38);
 }
 
+.skill-mastery-container {
+    width: 48%;
+    height: fit-content;
+}
+
 .banner-container {
     width: 100%;
     height: fit-content;
@@ -441,6 +464,10 @@ export default {
     padding-left: 5px;
     padding-right: 5px;
     background-color: white;
+}
+
+.innerHTMLmastery {
+    color: black;
 }
 
 /* Specific phone view css */
