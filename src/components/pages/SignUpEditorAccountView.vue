@@ -17,15 +17,11 @@ export default {
         return {
             newEditor: {
                 username: null,
-                firstName: null,
-                lastName: null,
                 email: null,
                 password: null
             },
             // Validate Object flag
             validate: {
-                firstName: false,
-                lastName: false,
                 username: false,
                 email: false,
                 emailFormat: false,
@@ -53,16 +49,6 @@ export default {
                 this.newEditor.username == null
             ) {
                 this.validate.username = true;
-            } else if (
-                this.newEditor.firstName == '' ||
-                this.newEditor.firstName == null
-            ) {
-                this.validate.firstName = true;
-            } else if (
-                this.newEditor.lastName == '' ||
-                this.newEditor.lastName == null
-            ) {
-                this.validate.lastName = true;
             } else if (
                 this.newEditor.email == '' ||
                 this.newEditor.email == null
@@ -94,8 +80,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     username: this.newEditor.username,
-                    first_name: this.newEditor.firstName,
-                    last_name: this.newEditor.lastName,
+                    first_name: '',
+                    last_name: '',
                     email: this.newEditor.email,
                     password: this.newEditor.password
                 })
@@ -153,46 +139,6 @@ export default {
                         class="form-validate"
                     >
                         please enter a username!
-                    </div>
-                </div>
-                <div class="mb-3 text-start">
-                    <!-- <label class="form-label">First name</label> -->
-                    <input
-                        v-model="newEditor.firstName"
-                        type="text"
-                        placeholder="First name"
-                        class="form-control"
-                        required
-                    />
-                    <div
-                        v-if="
-                            validate.firstName &&
-                            (newEditor.firstName == '' ||
-                                newEditor.firstName == null)
-                        "
-                        class="form-validate"
-                    >
-                        please your first name!
-                    </div>
-                </div>
-                <div class="mb-3 text-start">
-                    <!-- <label class="form-label">Last name</label> -->
-                    <input
-                        v-model="newEditor.lastName"
-                        type="text"
-                        placeholder="Last name"
-                        class="form-control"
-                        required
-                    />
-                    <div
-                        v-if="
-                            validate.lastName &&
-                            (newEditor.lastName == '' ||
-                                newEditor.lastName == null)
-                        "
-                        class="form-validate"
-                    >
-                        please your last name!
                     </div>
                 </div>
                 <div class="mb-3 text-start">
