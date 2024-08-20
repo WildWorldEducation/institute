@@ -13,6 +13,8 @@ const publicPath = path.join(path.resolve(), 'public');
 const distPath = path.join(path.resolve(), 'dist');
 // Database Connection
 const conn = require('./config/db');
+const xmlbuilder = require('xmlbuilder');
+
 // Allow things to work.
 var cors = require('cors');
 app.use(cors());
@@ -463,6 +465,73 @@ app.put('/settings/edit', (req, res, next) => {
         });
     }
 });
+
+app.get('/sitemap.xml', (req, res) => {
+    const rootUrl = 'https://parrhesia.io';
+    const today = new Date().toISOString();
+    const routes = [
+        {
+            path: '',
+            priority: 1.0
+        },
+        {
+            path: '/vertical-tree',
+            priority: 0.8
+        },
+        {
+            path: '/radial-tree',
+            priority: 0.8
+        },
+        {
+            path: '/login',
+            priority: 0.9
+        },
+        {
+            path: '/student-signup',
+            priority: 0.9
+        },
+        {
+            path: '/editor-signup',
+            priority: 0.9
+        },
+        {
+            path: '/skills',
+            priority: 0.8
+        },
+    ];
+
+    const sqlQuery = 'SELECT * FROM skills WHERE skills.is_deleted = 0 AND ( type = "regular" OR type = "super" )';
+    conn.query(sqlQuery, (err, results) => {
+        if (err) {
+            return res.status(500).send('Internal Server Error');
+        }
+
+        results.forEach(element => {
+            routes.push({
+                path: `/skills/${element.name.replace(/ /g, '_')}`,
+                priority: 1.0
+            });
+        });
+
+        // Create the XML structure
+        let sitemap = xmlbuilder.create('urlset', { encoding: 'UTF-8' })
+                                .att('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+
+        // Add URLs to the sitemap
+        routes.forEach(route => {
+            sitemap.ele('url')
+               .ele('loc', `${rootUrl}${route.path}`).up()  // Ensured no extra slash added
+               .ele('lastmod', today).up()
+               .ele('changefreq', 'weekly').up()
+               .ele('priority', route.priority).up();  // Use route.priority as a number
+        });
+
+        // Send the XML sitemap as the response
+        res.header('Content-Type', 'application/xml');
+        res.send(sitemap.end({ pretty: true }));
+    });
+});
+
 
 const environment = process.env.NODE_ENV;
 
