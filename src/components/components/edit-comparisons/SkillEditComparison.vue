@@ -470,6 +470,22 @@ export default {
     color: black;
 }
 
+/* ======== Style for skill mastery comparison ========  */
+ins {
+    background-color: rgb(113, 167, 113);
+    padding: 2px;
+    color: white;
+    text-decoration: none;
+    margin: 5px;
+}
+
+del {
+    background-color: rgb(214, 36, 36);
+    color: white;
+    padding: 2px;
+    margin: 5px;
+}
+
 /* Specific phone view css */
 @media (max-width: 576px) {
     img {
