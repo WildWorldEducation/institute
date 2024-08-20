@@ -11,15 +11,11 @@ export default {
             newStudent: {
                 id: null,
                 username: null,
-                firstName: null,
-                lastName: null,
                 email: null,
                 password: null
             },
             // Validate Object flag
             validate: {
-                firstName: false,
-                lastName: false,
                 username: false,
                 email: false,
                 emailFormat: false,
@@ -47,16 +43,6 @@ export default {
                 this.newStudent.username == null
             ) {
                 this.validate.username = true;
-            } else if (
-                this.newStudent.firstName == '' ||
-                this.newStudent.firstName == null
-            ) {
-                this.validate.firstName = true;
-            } else if (
-                this.newStudent.lastName == '' ||
-                this.newStudent.lastName == null
-            ) {
-                this.validate.lastName = true;
             } else if (
                 this.newStudent.email == '' ||
                 this.newStudent.email == null
@@ -91,8 +77,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     username: this.newStudent.username,
-                    first_name: this.newStudent.firstName,
-                    last_name: this.newStudent.lastName,
+                    first_name: '',
+                    last_name: '',
                     email: this.newStudent.email,
                     password: this.newStudent.password
                 })
@@ -150,46 +136,6 @@ export default {
                         class="form-validate"
                     >
                         please enter a username!
-                    </div>
-                </div>
-                <div class="mb-3 text-start">
-                    <!-- <label class="form-label">First name</label> -->
-                    <input
-                        v-model="newStudent.firstName"
-                        type="text"
-                        placeholder="First name"
-                        class="form-control"
-                        required
-                    />
-                    <div
-                        v-if="
-                            validate.firstName &&
-                            (newStudent.firstName == '' ||
-                                newStudent.firstName == null)
-                        "
-                        class="form-validate"
-                    >
-                        please your first name!
-                    </div>
-                </div>
-                <div class="mb-3 text-start">
-                    <!-- <label class="form-label">Last name</label> -->
-                    <input
-                        v-model="newStudent.lastName"
-                        type="text"
-                        placeholder="Last name"
-                        class="form-control"
-                        required
-                    />
-                    <div
-                        v-if="
-                            validate.lastName &&
-                            (newStudent.lastName == '' ||
-                                newStudent.lastName == null)
-                        "
-                        class="form-validate"
-                    >
-                        please enter your last name!
                     </div>
                 </div>
                 <div class="mb-3 text-start">

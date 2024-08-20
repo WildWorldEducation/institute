@@ -50,7 +50,7 @@ export default {
                     "
                     @click="changeUserId(user)"
                 >
-                    {{ user.first_name }} {{ user.last_name }}
+                    {{ user.username }}
                 </button>
             </div>
             <!-- divide line for pc and tablet view -->
@@ -76,7 +76,7 @@ export default {
                     "
                     @click="changeUserId(student)"
                 >
-                    {{ student.first_name }} {{ student.last_name }}
+                    {{ student.username }}
                 </button>
             </div>
             <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
