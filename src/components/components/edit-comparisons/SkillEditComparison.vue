@@ -207,6 +207,22 @@ export default {
                         />
                     </div>
                 </div>
+                <div class="ms-auto me-0 mt-3">
+                    <button class="btn red-btn" @click="dismissIcon()">
+                        Revert &nbsp;&nbsp;
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="20"
+                            height="20"
+                            fill="white"
+                        >
+                            <path
+                                d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
+                            />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
         <!-- Icon image compare -->
@@ -251,6 +267,22 @@ export default {
                         <img :src="skillEdit.icon_image" class="icon-image" />
                     </div>
                 </div>
+                <div class="ms-auto me-0 mt-3">
+                    <button class="btn red-btn" @click="dismissIcon()">
+                        Revert &nbsp;&nbsp;
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="20"
+                            height="20"
+                            fill="white"
+                        >
+                            <path
+                                d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
+                            />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
         <!-- Mastery requirement compare -->
@@ -288,96 +320,6 @@ export default {
             * OLD PAGE WILL GET DELETE LATER   *
             *                                  * 
             ************************************ -->
-        <div class="row">
-            <div class="col-sm">
-                <h2>Change</h2>
-                <h5>Icon</h5>
-                <div class="">
-                    <img
-                        v-if="skillEdit.icon_image"
-                        :src="skillEdit.icon_image"
-                        class="icon-image border border-dark rounded"
-                    />
-                    <p v-else>No icon</p>
-                    <p class="mt-2">
-                        <button class="btn red-btn" @click="dismissIcon()">
-                            Remove &nbsp;&nbsp;
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="20"
-                                height="20"
-                                fill="white"
-                            >
-                                <path
-                                    d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
-                                />
-                            </svg>
-                        </button>
-                    </p>
-                </div>
-                <h5 class="mt-3">Banner</h5>
-                <div>
-                    <img
-                        v-if="skillEdit.banner_image"
-                        :src="skillEdit.banner_image"
-                        class="banner-image border border-dark rounded"
-                    />
-                    <p v-else>No banner</p>
-                    <p class="mt-2">
-                        <button class="btn red-btn" @click="dismissBanner()">
-                            Remove &nbsp;&nbsp;
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="20"
-                                height="20"
-                                fill="white"
-                            >
-                                <path
-                                    d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
-                                />
-                            </svg>
-                        </button>
-                    </p>
-                </div>
-                <h5 class="mt-3">Mastery Requirements</h5>
-                <textarea
-                    class="form-control"
-                    v-model="skillEdit.mastery_requirements"
-                    id="summernote"
-                    rows="3"
-                ></textarea>
-                <h3 class="mt-3">Comment</h3>
-                <p>{{ comment }}</p>
-            </div>
-            <div class="col-sm">
-                <h2>Original</h2>
-                <h5>Icon</h5>
-                <div class="">
-                    <!-- Show a default skill avatar if skill not have image yet -->
-                    <img
-                        v-if="skill.icon_image"
-                        :src="skill.icon_image"
-                        class="border border-dark rounded icon-image"
-                    />
-                    <p v-else>No icon</p>
-                </div>
-                <h5 class="mt-3 mb">Banner</h5>
-                <div>
-                    <!-- Show a default skill avatar if skill not have image yet -->
-                    <img
-                        v-if="skill.banner_image"
-                        :src="skill.banner_image"
-                        class="border border-dark rounded banner-image"
-                    />
-                    <p v-else>No banner</p>
-                </div>
-                <h5 class="mt-3">Mastery Requirements</h5>
-
-                <div v-html="skill.mastery_requirements"></div>
-            </div>
-        </div>
     </div>
 </template>
 
