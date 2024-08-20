@@ -109,7 +109,7 @@ export default {
 <template>
     <div class="signup-page">
         <div class="form-signin">
-            <!-- <div class="text-center">
+            <div class="text-center">
                 <img
                     class="mb-4"
                     src="/images/logo-red.png"
@@ -117,7 +117,7 @@ export default {
                     width="72"
                     height="72"
                 />
-            </div> -->
+            </div>
             <h1 class="h3 mb-3 font-weight-normal">Editor Sign up</h1>
 
             <div class="mt-3">
@@ -276,6 +276,12 @@ export default {
     background-repeat: no-repeat;
     width: 100%;
     font-family: 'Inter', sans-serif;
+}
+
+h1 {
+    color: #8f7bd6;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
 }
 
 .welcome-message {
