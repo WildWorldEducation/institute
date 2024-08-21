@@ -288,6 +288,27 @@ export default {
         <!-- Mastery requirement compare -->
         <div v-if="changeMasteryText" class="compare-container mt-5">
             <div class="compare-container-tile">Mastery Requirements</div>
+            <div class="ms-auto me-3 mt-3">
+                <!-- Explain Label -->
+                <div
+                    class="d-flex align-items-center justify-content-between gap-2"
+                >
+                    <div class="label-name">Added:</div>
+                    <div class="added-block"></div>
+                </div>
+                <div
+                    class="d-flex align-items-center gap-2 justify-content-between"
+                >
+                    <div class="label-name">Remove:</div>
+                    <div class="remove-block"></div>
+                </div>
+                <div
+                    class="d-flex align-items-center gap-2 justify-content-between"
+                >
+                    <div class="label-name">Unchange:</div>
+                    <div class="unchange-block"></div>
+                </div>
+            </div>
             <div class="d-flex flex-lg-row flex-column mt-4">
                 <div class="old-container skill-mastery-container">
                     <div class="container-tile">Original</div>
@@ -311,6 +332,7 @@ export default {
                 </svg>
                 <div class="new-container skill-mastery-container">
                     <div class="container-tile">Changed</div>
+                    <!-- HTML change content -->
                     <div class="innerHTMLmastery" v-html="diffHtml"></div>
                 </div>
             </div>
@@ -331,8 +353,10 @@ export default {
 }
 
 .banner-image {
-    width: 80%;
-    height: auto;
+    width: auto;
+    height: 80%;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .icon-image {
@@ -385,7 +409,7 @@ export default {
 
 .banner-container {
     width: 100%;
-    height: fit-content;
+    height: 400;
     display: flex;
     justify-content: center;
 }
@@ -410,6 +434,32 @@ export default {
 
 .innerHTMLmastery {
     color: black;
+}
+
+.label-name {
+    color: rgb(154, 157, 160);
+    font-size: 16px;
+}
+
+.added-block {
+    height: 20px;
+    width: 20px;
+    background-color: rgb(113, 167, 113);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.remove-block {
+    height: 20px;
+    width: 20px;
+    background-color: rgb(214, 36, 36);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.unchange-block {
+    height: 20px;
+    width: 20px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    border-radius: 2px;
 }
 
 /* ======== Style for skill mastery comparison ========  */
