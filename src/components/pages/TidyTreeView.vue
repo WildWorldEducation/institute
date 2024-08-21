@@ -17,6 +17,9 @@ export default {
     created() {},
     components: { TidyTree, TidyTreeNoAccount },
     methods: {
+        resetPos(){
+            this.$refs.childComponent.resetPos()
+        }
         // // Toggle info bar.
         // ToggleInfobar() {
         //     if (document.getElementById('legend').style.display == 'none') {
