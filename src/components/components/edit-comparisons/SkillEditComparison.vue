@@ -16,7 +16,6 @@ export default {
             changeBanner: false,
             changeMasteryText: false,
             diffHtml: '',
-
             showEditMastery: false
         };
     },
@@ -112,6 +111,7 @@ export default {
             }
         },
         applyMasteryChange() {
+            this.$parent.disableBtn = false;
             this.skillEdit.mastery_requirements =
                 $('#summernote').summernote('code');
 
@@ -122,10 +122,14 @@ export default {
             );
             this.showEditMastery = false;
         },
+        cancelEditMastery() {
+            this.$parent.disableBtn = false;
+            this.showEditMastery = false;
+        },
         edit() {
             this.showEditMastery = true;
             this.isEditMode = true;
-
+            this.$parent.disableBtn = true;
             nextTick(() => {
                 $('#summernote')
                     .summernote({
@@ -403,7 +407,7 @@ export default {
                 </div>
                 <div
                     class="btn red-btn d-flex align-items-center my-3"
-                    @click="showEditMastery = false"
+                    @click="cancelEditMastery"
                 >
                     Cancel Change
                 </div>
