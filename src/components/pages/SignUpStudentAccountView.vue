@@ -170,6 +170,7 @@ export default {
                             :type="passwordVisible ? 'text' : 'password'"
                             placeholder="Password"
                             class="form-control"
+                            autocomplete="new-password"
                             required
                         />
                         <!-- Show and Hide Password Section -->

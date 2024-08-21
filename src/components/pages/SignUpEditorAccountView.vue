@@ -172,6 +172,7 @@ export default {
                             v-model="newEditor.password"
                             :type="passwordVisible ? 'text' : 'password'"
                             placeholder="Password"
+                            autocomplete="new-password"
                             class="form-control"
                             required
                         />
