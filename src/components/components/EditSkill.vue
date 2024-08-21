@@ -330,7 +330,11 @@ export default {
                     this.SubmitFilters();
                 })
                 .then(() => {
-                    this.$router.push(`/skills/${this.skillId}`);
+                    if(this.skill.type == "domain"){
+                        this.router.push('/skills');
+                    }else{
+                        this.$router.push(`/skills/${this.skillId}`);
+                    }
                 });
         },
         // If edit is from a student or instructor.
