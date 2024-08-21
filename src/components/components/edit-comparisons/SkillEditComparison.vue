@@ -200,6 +200,7 @@ export default {
         <!-- Banner image compare -->
         <div v-if="changeBanner">
             <div class="compare-container">
+                <div></div>
                 <div class="compare-container-tile mb-3">Banner</div>
                 <div class="d-flex flex-lg-row flex-column">
                     <!-- Old Banner -->
@@ -375,7 +376,7 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- Skill mastery summernote -->
+        <!-- Skill mastery edit with summernote -->
         <div v-else class="mt-5 compare-container">
             <div class="compare-container-tile my-3">
                 Edit Mastery Requirement
@@ -410,6 +411,15 @@ export default {
                     @click="cancelEditMastery"
                 >
                     Cancel Change
+                </div>
+            </div>
+        </div>
+        <!-- User Comment -->
+        <div class="mt-5 w-lg-50 w-md-75 w-100 compare-container">
+            <div class="d-flex flex-md-row flex-column gap-2">
+                <div class="compare-container-tile mb-3">Comment:</div>
+                <div class="comment-text">
+                    {{ skillEdit.comment }}
                 </div>
             </div>
         </div>
@@ -605,6 +615,13 @@ export default {
     to {
         transform: rotate(0deg);
     }
+}
+
+.comment-text {
+    background-color: #f1f5f9;
+    border-radius: 5px;
+    padding: 15px;
+    width: 100%;
 }
 
 /* Specific phone view css */
