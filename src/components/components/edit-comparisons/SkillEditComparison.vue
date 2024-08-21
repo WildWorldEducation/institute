@@ -1,5 +1,6 @@
 <script>
 import HtmlDiff from 'htmldiff-js';
+import { nextTick } from 'vue';
 
 export default {
     setup() {},
@@ -14,7 +15,9 @@ export default {
             changeIcon: false,
             changeBanner: false,
             changeMasteryText: false,
-            diffHtml: ''
+            diffHtml: '',
+
+            showEditMastery: false
         };
     },
     async created() {
@@ -39,14 +42,13 @@ export default {
                 this.skill.mastery_requirements,
                 this.skillEdit.mastery_requirements
             );
-            console.log(this.diffHtml);
         }
 
-        // Render the Summernote content.
-        $('#summernote').summernote(
-            'code',
-            this.skillEdit.mastery_requirements
-        );
+        // // Render the Summernote content.
+        // $('#summernote').summernote(
+        //     'code',
+        //     this.skillEdit.mastery_requirements
+        // );
         // Disable editing.
         $('#summernote')
             .next()
@@ -109,12 +111,41 @@ export default {
                 this.skillEdit.banner_image = this.skill.banner_image;
             }
         },
+        applyMasteryChange() {
+            this.skillEdit.mastery_requirements =
+                $('#summernote').summernote('code');
+
+            // re-compare ordinal html with newly apply html
+            this.diffHtml = HtmlDiff.execute(
+                this.skill.mastery_requirements,
+                this.skillEdit.mastery_requirements
+            );
+            this.showEditMastery = false;
+        },
         edit() {
-            $('#summernote')
-                .next()
-                .find('.note-editable')
-                .attr('contenteditable', true);
+            this.showEditMastery = true;
             this.isEditMode = true;
+
+            nextTick(() => {
+                $('#summernote')
+                    .summernote({
+                        toolbar: [
+                            // [groupName, [list of button]]
+                            ['style', ['bold', 'italic', 'underline', 'clear']],
+                            [
+                                'font',
+                                ['strikethrough', 'superscript', 'subscript']
+                            ],
+                            ['fontsize', ['fontsize']],
+                            ['color', ['color']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['height', ['height']]
+                        ]
+                    })
+                    .next()
+                    .find('.note-editable')
+                    .attr('contenteditable', true);
+            });
         },
         saveEdit() {
             // Update this content, in case it has been changed.
@@ -286,7 +317,10 @@ export default {
             </div>
         </div>
         <!-- Mastery requirement compare -->
-        <div v-if="changeMasteryText" class="compare-container mt-5">
+        <div
+            v-if="changeMasteryText && !showEditMastery"
+            class="compare-container mt-5"
+        >
             <div class="compare-container-tile">Mastery Requirements</div>
             <div class="ms-auto me-3 mt-3">
                 <!-- Explain Label -->
@@ -337,15 +371,57 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- -------------------------------------------------------------------------------------------------------------------------------- -->
-        <!--************************************ 
-            * OLD PAGE WILL GET DELETE LATER   *
-            *                                  * 
-            ************************************ -->
+        <!-- Skill mastery summernote -->
+        <div v-else class="mt-5 compare-container">
+            <div class="compare-container-tile my-3">
+                Edit Mastery Requirement
+            </div>
+            <textarea
+                class="form-control"
+                id="summernote"
+                rows="33"
+                v-model="skillEdit.mastery_requirements"
+            ></textarea>
+            <div class="d-flex flex-row-reverse gap-3">
+                <div
+                    class="btn green-btn d-flex align-items-center my-3"
+                    @click="applyMasteryChange"
+                >
+                    Apply Change
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 576 512"
+                        width="20"
+                        heigh="20"
+                        fill="white"
+                        class="ms-2"
+                    >
+                        <path
+                            d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 125.7-86.8 86.8c-10.3 10.3-17.5 23.1-21 37.2l-18.7 74.9c-2.3 9.2-1.8 18.8 1.3 27.5L64 512c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zM549.8 235.7l14.4 14.4c15.6 15.6 15.6 40.9 0 56.6l-29.4 29.4-71-71 29.4-29.4c15.6-15.6 40.9-15.6 56.6 0zM311.9 417L441.1 287.8l71 71L382.9 487.9c-4.1 4.1-9.2 7-14.9 8.4l-60.1 15c-5.5 1.4-11.2-.2-15.2-4.2s-5.6-9.7-4.2-15.2l15-60.1c1.4-5.6 4.3-10.8 8.4-14.9z"
+                        />
+                    </svg>
+                </div>
+                <div
+                    class="btn red-btn d-flex align-items-center my-3"
+                    @click="showEditMastery = false"
+                >
+                    Cancel Change
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
-<style>
+<style scoped>
+.green-btn {
+    background-color: rgb(46, 126, 38);
+}
+
+.green-btn:hover {
+    background-color: rgb(55, 148, 47);
+    color: white;
+}
+
 .page-title {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
@@ -463,7 +539,7 @@ export default {
 }
 
 /* ======== Style for skill mastery comparison ========  */
-ins {
+:deep(ins) {
     background-color: rgb(113, 167, 113);
     padding: 2px;
     color: white;
@@ -471,11 +547,60 @@ ins {
     margin: 5px;
 }
 
-del {
+:deep(del) {
     background-color: rgb(214, 36, 36);
     color: white;
     padding: 2px;
     margin: 5px;
+}
+
+/* Slide down animation */
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+.dropdown-enter-active {
+    transform-origin: top center;
+    animation: slide 0.2s;
+}
+.dropdown-leave-active {
+    transform-origin: top center;
+    animation: slide 0.2s reverse;
+}
+
+.expand-arrow {
+    animation: rotation 0.2s;
+}
+
+.minimize-arrow {
+    transform: rotationBack 0.2s;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
 }
 
 /* Specific phone view css */
