@@ -104,7 +104,6 @@ export default {
             handler(newVal, oldVal) {
                 if (newVal.password) {
                     if (newVal.password.length > 0) {
-                        console.log(newVal.password)
                         this.showCriteria = true;
                         const passwordStrengthScore = this.checkStrength(
                             newVal.password
