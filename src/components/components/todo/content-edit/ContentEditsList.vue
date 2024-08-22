@@ -136,7 +136,7 @@ export default {
             <img src="/images/banners/general-banner.png" class="img-fluid" />
         </div>
         <!-- Page tile -->
-        <h1 class="ps-3 mt-2 page-title">Approve Content Edits</h1>
+        <h2 class="ps-3 mt-2 page-title">Approve Content Edits</h2>
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
             <div

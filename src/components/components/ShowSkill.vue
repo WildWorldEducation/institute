@@ -73,7 +73,7 @@ export default {
             // Load the skill data
             const res = await fetch('/skills/show/' + this.skillId);
             this.skill = await res.json();
-            document.title = this.skill.name+' - The Collins Institute';
+            document.title = this.skill.name + ' - The Collins Institute';
 
             //Load skill filters
             this.getSkillFilters();
@@ -373,7 +373,7 @@ export default {
                 </div>
                 <!-- Skill name and skill description -->
                 <div class="d-flex flex-column">
-                    <div class="skill-name">{{ skill.name }}</div>
+                    <h1 class="skill-name">{{ skill.name }}</h1>
                     <!-- Description only seen by admins -->
                     <div
                         v-if="userDetailsStore.role == 'admin'"
@@ -394,19 +394,23 @@ export default {
                     </div>
                 </div>
                 <!-- Level -->
-                <div class="mt-3 d-flex flex-column">
-                    <div class="h1-title">Level</div>
-                    <span v-if="skill.level == 'grade_school'"
-                        >Grade School</span
-                    >
-                    <span v-else-if="skill.level == 'middle_school'"
-                        >Middle School</span
-                    >
-                    <span v-else-if="skill.level == 'high_school'"
-                        >High School</span
-                    >
-                    <span v-else-if="skill.level == 'college'">College</span>
-                    <span v-else-if="skill.level == 'phd'">PHD</span>
+                <div class="mt-3" style="color: #a48be6">
+                    <strong>
+                        <!-- <div class="h1-title">Level</div> -->
+                        <span v-if="skill.level == 'grade_school'"
+                            >Grade School</span
+                        >
+                        <span v-else-if="skill.level == 'middle_school'"
+                            >Middle School</span
+                        >
+                        <span v-else-if="skill.level == 'high_school'"
+                            >High School</span
+                        >
+                        <span v-else-if="skill.level == 'college'"
+                            >College</span
+                        >
+                        <span v-else-if="skill.level == 'phd'">PHD</span>
+                    </strong>
                 </div>
                 <!-- Mastery Requirements -->
                 <div class="mt-3 d-flex flex-column">
@@ -594,7 +598,6 @@ export default {
 .skill-name {
     font-family: 'Poppins', sans-serif;
     font-size: 40px;
-    margin-top: -12px;
     color: #a48be6;
     font-weight: 800;
 }
