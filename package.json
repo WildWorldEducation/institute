@@ -24,7 +24,7 @@
     "express": "^4.18.2",
     "express-mysql-session": "^3.0.0",
     "express-session": "^1.17.3",
-    "jsonwebtoken": "^9.0.0",    
+    "jsonwebtoken": "^9.0.0",
     "mysql": "^2.18.1",
     "nipplejs": "^0.10.1",
     "openai": "^4.0.0",
@@ -37,7 +37,8 @@
     "vue-multiselect": "^3.0.0-beta.3",
     "vue-router": "^4.1.6",
     "vue-socials": "^2.0.3",
-    "vue3-easy-data-table": "^1.5.47"
+    "vue3-easy-data-table": "^1.5.47",
+    "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

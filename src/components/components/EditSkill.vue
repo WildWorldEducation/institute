@@ -37,7 +37,9 @@ export default {
                 tags: [],
                 type: null,
                 level: null,
-                order: null
+                order: null,
+                optional_parent_2: '',
+                optional_parent_3: ''
             },
             filterChecked: false,
             iconImage: '',
@@ -95,7 +97,11 @@ export default {
             skillNameConfirm: '',
             step2Confirm: false,
             orderArray: Array.from({ length: 20 }, (_, i) => i + 1),
-            comment: ''
+            comment: '',
+            isTwoParents: false,
+            isThreeParents: false,
+            optional_parent_2: null,
+            optional_parent_3: null
         };
     },
     async mounted() {
@@ -117,6 +123,10 @@ export default {
                     }
                 }
             }
+
+            // Allow for there to be no parent.
+            this.skills.unshift({ name: 'None', id: 0 });
+
             // Call this after the above, so that parent field loaded correctly.
             this.getSkill();
         },
@@ -150,6 +160,14 @@ export default {
                         });
                         this.parentInput.inputText = parentResult.name;
                         this.clusterParentInput.inputText = parentResult.name;
+                    }
+
+                    // Optional 2nd and 3rd parents
+                    if (this.skill.optional_parent_2 != null) {
+                        this.isTwoParents = true;
+                    }
+                    if (this.skill.optional_parent_3 != null) {
+                        this.isThreeParents = true;
                     }
 
                     this.getSkillFilters();
@@ -240,6 +258,25 @@ export default {
         },
         // If edit is from an admin or editor.
         Submit() {
+            if (this.isTwoParents == false) {
+                this.skill.optional_parent_2 = null;
+                this.skill.optional_parent_3 = null;
+            }
+            if (this.isThreeParents == false) {
+                this.skill.optional_parent_3 = null;
+            }
+            // Check parents are not the same skill, but allow for both
+            // optional parents to be null.
+            if (
+                (this.skill.parent == this.skill.optional_parent_2 ||
+                    this.skill.parent == this.skill.optional_parent_3 ||
+                    this.skill.optional_parent_3 ==
+                        this.skill.optional_parent_2) &&
+                this.skill.optional_parent_3 != null
+            ) {
+                alert('The same skill cannot be a parent more than once.');
+                return;
+            }
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
                 var hasSubSkills = false;
@@ -305,6 +342,7 @@ export default {
             if (this.validate.violated) {
                 return;
             }
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -319,7 +357,9 @@ export default {
                     level: this.skill.level,
                     order: this.skill.order,
                     version_number: this.skill.version_number,
-                    comment: this.comment
+                    comment: this.comment,
+                    optional_parent_2: this.skill.optional_parent_2,
+                    optional_parent_3: this.skill.optional_parent_3
                 })
             };
 
@@ -330,7 +370,11 @@ export default {
                     this.SubmitFilters();
                 })
                 .then(() => {
-                    this.$router.push(`/skills/${this.skillId}`);
+                    if(this.skill.type == "domain"){
+                        this.router.push('/skills');
+                    }else{
+                        this.$router.push(`/skills/${this.skillId}`);
+                    }
                 });
         },
         // If edit is from a student or instructor.
@@ -687,6 +731,86 @@ export default {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Multiple Parents? -->
+            <!-- 2 Parents? -->
+            <div class="form-check col-6 col-md-5 my-2">
+                <label class="control control-checkbox">
+                    <span class="my-auto mx-2 me-4"
+                        >Does this skill need to appear 2 places?
+                    </span>
+                    <input
+                        type="checkbox"
+                        value="true"
+                        v-model="isTwoParents"
+                    />
+                    <div class="control_indicator"></div>
+                </label>
+            </div>
+            <div v-if="isTwoParents">
+                <div class="col col-md-8 col-lg-5 mt-2">
+                    <!-- Extra Parents drop down -->
+                    <label class="form-label">Second Parent</label>
+                    <select
+                        class="form-select"
+                        aria-label="Default select example"
+                        v-model="skill.optional_parent_2"
+                    >
+                        <option
+                            v-if="skill.type != 'sub'"
+                            v-for="parentSkill in skills"
+                            :value="parentSkill.id"
+                        >
+                            {{ parentSkill.name }}
+                        </option>
+                        <option
+                            v-else
+                            v-for="parentSkill in superSkills"
+                            :value="parentSkill.id"
+                        >
+                            {{ parentSkill.name }}
+                        </option>
+                    </select>
+                </div>
+                <div class="form-check col-6 col-md-5 my-2">
+                    <label class="control control-checkbox">
+                        <span class="my-auto mx-2 me-4"
+                            >Does this skill need to appear 3 places?
+                        </span>
+                        <input
+                            type="checkbox"
+                            value="true"
+                            v-model="isThreeParents"
+                        />
+                        <div class="control_indicator"></div>
+                    </label>
+                </div>
+                <div v-if="isThreeParents">
+                    <div class="col col-md-8 col-lg-5 mt-2">
+                        <!-- Extra Parents drop down -->
+                        <label class="form-label">Third Parent</label>
+                        <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            v-model="skill.optional_parent_3"
+                        >
+                            <option
+                                v-if="skill.type != 'sub'"
+                                v-for="parentSkill in skills"
+                                :value="parentSkill.id"
+                            >
+                                {{ parentSkill.name }}
+                            </option>
+                            <option
+                                v-else
+                                v-for="parentSkill in superSkills"
+                                :value="parentSkill.id"
+                            >
+                                {{ parentSkill.name }}
+                            </option>
+                        </select>
                     </div>
                 </div>
             </div>

@@ -50,7 +50,10 @@ export default {
             // We store the d3 zoom call so the slider can call it
             d3Zoom: null,
             // For the loading animation.
-            isLoading: true
+            isLoading: true,
+            xPos: 0,
+            yPos: 0,
+            showAnimation: false
         };
     },
     components: {
@@ -91,7 +94,14 @@ export default {
             //Figure out where the mouse click occurred.
             var mouseX = e.layerX;
             var mouseY = e.layerY;
+            this.xPos = mouseX;
+            this.yPos = mouseY;
 
+            this.showAnimation = true;
+            // Hide animation after 0.5 seconds (adjust as needed)
+            setTimeout(() => {
+                this.showAnimation = false;
+            }, 500);
             // Get the corresponding pixel color on the hidden canvas
             // and look up the node in our map.
             var ctx = this.hiddenCanvasContext;
@@ -713,6 +723,11 @@ export default {
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div v-show="isLoading == false" id="wrapper">
         <SkillPanel :skill="skill" />
+        <div
+            v-if="showAnimation"
+            :style="{ top: `${yPos}px`, left: `${xPos}px` }"
+            class="click-animation"
+            ></div>
         <canvas
             id="canvas"
             width="1500"
@@ -840,6 +855,29 @@ input[type='button'] {
 .flex-container {
     display: flex;
     flex-direction: row;
+}
+canvas{
+    cursor: pointer;
+}
+.click-animation {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #7a46ff; /* Color of the animation */
+  border-radius: 50%;
+  transform: translate(-50%, -50%); /* Center the circle on click */
+  animation: clickEffect 0.7s infinite ease-out ;
+}
+
+@keyframes clickEffect {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
+  }
 }
 
 @media (max-width: 820px) {

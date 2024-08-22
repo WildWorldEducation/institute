@@ -5,7 +5,7 @@ import LastVisitedSkills from '../components/LastVisitedSkills.vue';
 import Notifications from '../components/Notifications.vue';
 import News from '../components/News.vue';
 import MarkAssessment from '../components/MarkAssessment.vue';
-import CheckStudentQuestions from '../components/CheckStudentQuestions.vue';
+import HubStudentQuestionList from '../components/HubStudentQuestionList.vue';
 
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -27,8 +27,8 @@ export default {
         Notifications,
         StudentProgress,
         MarkAssessment,
-        CheckStudentQuestions,
-        LastVisitedSkills
+        LastVisitedSkills,
+        HubStudentQuestionList
     },
     computed: {
         name() {
@@ -68,21 +68,15 @@ export default {
                 <MarkAssessment
                     v-else-if="userDetailsStore.role == 'instructor'"
                 />
-                <div v-else>
-                    <router-link to="/content-edits">Approve edits</router-link>
-                </div>
             </div>
             <div class="col-lg-4 col-md-7 mb-4 pb-4">
                 <LastVisitedSkills
                     v-if="userDetailsStore.role == 'student'"
                     :userId="userDetailsStore.userId"
                 />
-                <!-- Student Added Questions -->
-                <CheckStudentQuestions
-                    v-else-if="
-                        userDetailsStore.role == 'instructor' ||
-                        userDetailsStore.role == 'admin'
-                    "
+                <!-- Student Added Questions List -->
+                <HubStudentQuestionList
+                    v-else-if="userDetailsStore.role == 'instructor'"
                 />
             </div>
             <div class="col-lg-3 col-md-5 mb-4 pb-4 column">
