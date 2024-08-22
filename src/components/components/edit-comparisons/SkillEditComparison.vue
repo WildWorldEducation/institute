@@ -155,10 +155,6 @@ export default {
             });
         },
         saveEdit() {
-            // Update this content, in case it has been changed.
-            this.skillEdit.mastery_requirements =
-                $('#summernote').summernote('code');
-
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
