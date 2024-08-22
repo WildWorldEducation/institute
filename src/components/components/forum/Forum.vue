@@ -262,7 +262,7 @@ export default {
 <template>
     <div class="container-fluid mt-4">
         <div class="d-flex align-items-md-baseline align-items-start gap-2">
-            <div class="forum-sub-page-tile">Best Places To Learn This</div>
+            <h2 class="forum-sub-page-title">Best Places To Learn This</h2>
             <img src="/images/recurso-69.png" class="" />
         </div>
         <!-- Navigation Tabs -->
@@ -356,7 +356,7 @@ export default {
     font-weight: 550;
 }
 
-:deep(.forum-sub-page-tile) {
+:deep(.forum-sub-page-title) {
     color: #8666ca;
     font-size: 2rem;
     font-weight: 600;
