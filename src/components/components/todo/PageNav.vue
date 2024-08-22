@@ -35,7 +35,7 @@ export default {
     <Transition name="navbar">
         <div v-if="showNavBar" class="nav-bar-container d-flex flex-column">
             <div class="d-flex justify-content-between pe-4">
-                <div class="todo-tile ps-2 pt-2">Todo List</div>
+                <h1 class="todo-title ps-2 pt-2">Todo List</h1>
                 <div
                     class="icon-div d-flex align-items-center px-3 py-2"
                     @click="showNavBar = false"
@@ -139,10 +139,11 @@ export default {
     height: 100%;
     background-color: #e8e2f9;
 }
-.todo-tile {
+.todo-title {
     font-size: 30px;
     font-weight: 600;
     color: #8666ca;
+    margin-bottom: 0px;
 }
 
 .icon-div {

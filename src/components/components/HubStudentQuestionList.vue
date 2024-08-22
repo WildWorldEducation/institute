@@ -63,7 +63,7 @@ export default {
 <template>
     <div class="container-fluid">
         <div class="question-header">
-            <div class="question-tile">Student Question</div>
+            <h2 class="question-title">Student Question</h2>
         </div>
 
         <div class="list-body">
@@ -108,7 +108,7 @@ export default {
     color: #667085;
 }
 
-.question-tile {
+.question-title {
     font-family: 'Poppins';
     font-size: 20px;
     font-weight: 900;
@@ -116,6 +116,7 @@ export default {
     letter-spacing: 0em;
     text-align: left;
     color: #ad9af3;
+    margin-bottom: 0px;
 }
 
 .question {

@@ -465,7 +465,7 @@ export default {
     </div>
     <div class="container-md pb-5">
         <div class="mt-3">
-            <h1 class="page-title">Content Flags</h1>
+            <h2 class="page-title">Content Flags</h2>
         </div>
         <hr />
         <!-- Search Table Section -->

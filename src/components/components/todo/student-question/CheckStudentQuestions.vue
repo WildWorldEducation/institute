@@ -114,7 +114,7 @@ export default {
             <img src="/images/banners/general-banner.png" class="img-fluid" />
         </div>
         <!-- Page tile -->
-        <h1 class="ps-3 mt-2 page-title">Approve Student Added Questions</h1>
+        <h2 class="ps-3 mt-2 page-title">Approve Student Added Questions</h2>
         <div class="container-fluid">
             <StudentQuestionList
                 :studentQuestion="questions"

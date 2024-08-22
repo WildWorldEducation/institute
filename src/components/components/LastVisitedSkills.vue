@@ -10,16 +10,16 @@ export default {
     async created() {
         const result = await fetch('/skills/last-visited/');
         this.visitedSkills = await result.json();
-        if(this.visitedSkills.length > 0){
-            this.noSkills = false
+        if (this.visitedSkills.length > 0) {
+            this.noSkills = false;
         }
-    },
+    }
 };
 </script>
 
 <template>
     <div class="table-responsive"></div>
-    <div id="tile">Last visited Skills</div>
+    <h2 id="title">Last visited Skills</h2>
     <div id="skill-list">
         <div v-for="skill in visitedSkills">
             <router-link
@@ -46,7 +46,7 @@ export default {
     max-height: 300px;
 }
 
-#tile {
+#title {
     background-color: #e8e2f9;
     border-color: #dbd0f9;
     color: #ad9af3;
@@ -54,6 +54,7 @@ export default {
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
     font-size: 20px;
+    margin-bottom: 0px;
 }
 
 #skill-list div {
