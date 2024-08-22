@@ -197,7 +197,7 @@ export default {
         <h1 class="page-title">Skill Change Comparison</h1>
         <hr />
         <!-- General info of skills -->
-        <div class="d-flex flex-column gap-2">
+        <div class="d-flex flex-column gap-2 mb-3">
             <div class="d-flex gap-2 align-items-center">
                 <div class="compare-container-tile">Skill:</div>
                 <div class="minor-text">{{ skill.name }}</div>
@@ -279,8 +279,11 @@ export default {
                                 />
                             </div>
                         </div>
-                        <div class="ms-auto me-0 mt-3">
-                            <button class="btn red-btn" @click="dismissIcon()">
+                        <div>
+                            <button
+                                class="btn red-btn ms-auto me-0 mt-3"
+                                @click="dismissBanner()"
+                            >
                                 Revert &nbsp;&nbsp;
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -371,8 +374,11 @@ export default {
                                 />
                             </div>
                         </div>
-                        <div class="ms-auto me-0 mt-3">
-                            <button class="btn red-btn" @click="dismissIcon()">
+                        <div>
+                            <button
+                                class="btn red-btn ms-auto me-0 mt-3"
+                                @click="dismissIcon()"
+                            >
                                 Revert &nbsp;&nbsp;
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -401,7 +407,7 @@ export default {
                 <div
                     @click="showSkillMasteryChange = !showSkillMasteryChange"
                     :class="[
-                        'mt-3',
+                        'mt-2',
                         showSkillMasteryChange
                             ? 'expand-arrow'
                             : 'minimize-arrow'
@@ -424,7 +430,7 @@ export default {
             </div>
             <Transition name="dropdown">
                 <div v-if="showSkillMasteryChange">
-                    <div class="ms-auto me-3 mt-3">
+                    <div class="ms-auto me-3 mt-3 explain-div">
                         <!-- Explain Label -->
                         <div
                             class="d-flex align-items-center w-fit justify-content-between gap-2"
@@ -519,7 +525,7 @@ export default {
         <!-- User Comment -->
         <div class="mt-5 w-lg-50 w-md-75 w-100 compare-container">
             <div class="d-flex flex-md-row flex-column gap-2">
-                <div class="compare-container-tile mb-3">Comment:</div>
+                <h2 class="compare-container-tile mb-3">Comment:</h2>
                 <div class="comment-text">
                     {{ skillEdit.comment }}
                 </div>
@@ -546,12 +552,15 @@ export default {
 
 .minor-text {
     color: #475569;
+    font-size: 18px;
     font-family: 'Poppins', sans-serif;
 }
 
 .banner-image {
     width: auto;
-    height: 80%;
+    height: auto;
+    max-width: 80%;
+    max-height: 80%;
     margin-top: auto;
     margin-bottom: auto;
 }
@@ -633,8 +642,12 @@ export default {
     color: black;
 }
 
+.explain-div {
+    width: fit-content;
+}
+
 .label-name {
-    color: rgb(154, 157, 160);
+    color: #707375;
     font-size: 16px;
 }
 
