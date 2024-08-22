@@ -12,14 +12,14 @@ const router = createRouter({
             path: '/vertical-tree',
             name: 'vertical-tree',
             component: () => import('../components/pages/TidyTreeView.vue'),
-            meta: { preventZoom: true, title: 'Vertical Tree' }
+            meta: { preventZoom: true, title: 'Skill tree' }
         },
         {
             path: '/student/:studentId/skill-tree',
             name: 'student-vertical-tree',
             component: () =>
                 import('../components/pages/StudentTidyTreeView.vue'),
-            meta: {title: 'Skill Tree'}
+            meta: { title: 'Skill tree' }
         },
         {
             path: '/',
@@ -30,7 +30,7 @@ const router = createRouter({
             path: '/radial-tree',
             name: 'radial-tree',
             component: () => import('../components/pages/RadialTreeView.vue'),
-            meta: { preventZoom: true, title: 'Radial Tree' }
+            meta: { preventZoom: true, title: 'Radial skill tree' }
         },
         {
             path: '/:id/skill-tree',
@@ -42,34 +42,34 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: () => import('../components/pages/LoginView.vue'),
-            meta: {title: 'Login'}
+            meta: { title: 'Login' }
         },
         {
             path: '/student-signup',
             name: 'student-signup',
             component: () =>
                 import('../components/pages/SignUpStudentAccountView.vue'),
-            meta: {title: 'Student Sign Up'}
+            meta: { title: 'Student sign up' }
         },
         {
             path: '/editor-signup',
             name: 'editor-signup',
             component: () =>
                 import('../components/pages/SignUpEditorAccountView.vue'),
-            meta: {title: 'Editor Sign Up'}
+            meta: { title: 'Editor sign up' }
         },
 
         {
             path: '/skills',
             name: 'skills',
             component: SkillsView,
-            meta: {title: 'Skills'}
+            meta: { title: 'Skills' }
         },
         {
             path: '/student/:studentId/skills',
             name: 'student-skills',
             component: SkillsView,
-            meta: {title: 'Student Skills'}
+            meta: { title: 'Student skills' }
         },
         {
             path: '/skills/:skillId',
@@ -241,7 +241,10 @@ const router = createRouter({
             name: 'check-student-question',
             component: () =>
                 import('../components/pages/CheckStudentQuestionView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor', 'instructor'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['admin', 'editor', 'instructor']
+            }
         },
         {
             path: '/tutor/add/:skillId',
@@ -360,17 +363,18 @@ router.afterEach((to, from, next) => {
 function setViewport() {
     let metaTag = document.querySelector('meta[name=viewport]');
     if (!metaTag) {
-      metaTag = document.createElement('meta');
-      metaTag.name = "viewport";
-      document.head.appendChild(metaTag);
+        metaTag = document.createElement('meta');
+        metaTag.name = 'viewport';
+        document.head.appendChild(metaTag);
     }
-    metaTag.content = "width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0";
+    metaTag.content =
+        'width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0';
 }
-  
+
 function resetViewport() {
     const metaTag = document.querySelector('meta[name=viewport]');
     if (metaTag) {
-      metaTag.content = "width=device-width, initial-scale=1.0"; // or your default value
+        metaTag.content = 'width=device-width, initial-scale=1.0'; // or your default value
     }
 }
 export default router;
