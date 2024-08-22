@@ -194,7 +194,7 @@ export default {
 
 <template>
     <div class="mt-4 mb-4">
-        <h1 class="page-title">Comparison</h1>
+        <h1 class="page-title">Skill Change Comparison</h1>
         <hr />
         <!-- General info of skills -->
         <div class="d-flex flex-column gap-2">
@@ -211,7 +211,7 @@ export default {
         <div v-if="changeBanner">
             <div class="compare-container">
                 <div class="d-flex align-items-center">
-                    <div class="compare-container-tile mb-3">Banner</div>
+                    <h2 class="compare-container-tile mb-3">Banner</h2>
                     <div
                         @click="showBannerChange = !showBannerChange"
                         :class="[
@@ -303,7 +303,7 @@ export default {
         <div v-if="changeIcon" class="mt-5">
             <div class="compare-container">
                 <div class="d-flex align-items-center">
-                    <div class="compare-container-tile mb-3">Skill Icon</div>
+                    <h2 class="compare-container-tile mb-3">Skill Icon</h2>
                     <div
                         @click="showIconChange = !showIconChange"
                         :class="[
@@ -397,7 +397,7 @@ export default {
             class="compare-container mt-5"
         >
             <div class="d-flex align-items-center">
-                <div class="compare-container-tile">Mastery Requirements</div>
+                <h2 class="compare-container-tile">Mastery Requirements</h2>
                 <div
                     @click="showSkillMasteryChange = !showSkillMasteryChange"
                     :class="[
@@ -480,9 +480,9 @@ export default {
         </div>
         <!-- Skill mastery edit with summernote -->
         <div v-else class="mt-5 compare-container">
-            <div class="compare-container-tile my-3">
+            <h2 class="compare-container-tile my-3">
                 Edit Mastery Requirement
-            </div>
+            </h2>
             <textarea
                 class="form-control"
                 id="summernote"

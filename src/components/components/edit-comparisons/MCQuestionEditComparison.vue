@@ -99,7 +99,9 @@ export default {
             };
 
             var url =
-                '/questions/mc/' + this.mcQuestionEdit.mc_question_id + '/approve-edits';
+                '/questions/mc/' +
+                this.mcQuestionEdit.mc_question_id +
+                '/approve-edits';
 
             fetch(url, requestOptions).then(() => {
                 this.$router.back();
@@ -126,7 +128,9 @@ export default {
 
 <template>
     <div class="container mt-4 mb-4">
-        <h1 class="page-title">Comparison</h1>
+        <h1 class="page-title">MC Question Change Comparison</h1>
+        <hr />
+        <div class=""></div>
         <div class="row">
             <div class="col">
                 <h2>Change</h2>
@@ -208,10 +212,26 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 .page-title {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
+}
+
+.compare-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 5px;
+    padding: 10px 15px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.compare-container-tile {
+    color: #a48be7;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
 }
 </style>
