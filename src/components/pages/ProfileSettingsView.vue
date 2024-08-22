@@ -5,7 +5,6 @@ import BulkQuestionsUpload from '../components/BulkQuestionsUpload.vue';
 import AutoGenerateSources from '../components/AutoGenerateSources.vue';
 // Import the store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { RouterLink } from 'vue-router';
 
 export default {
     setup() {
@@ -44,12 +43,13 @@ export default {
     <!-- Ability to bulk upload multiple choice questions --->
     <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
     <!-- AI Check MC Questions --->
+     <!-- Hidden from all users --->
     <section
         class="container mt-1 px-3 px-lg-0 mb-5"
-        v-if="userDetailsStore.role == 'admin'"
+        v-if="userDetailsStore.role == 'dev'"
     >
         <hr />
-        <h1>Check MC Questions</h1>
+        <h2>Check MC Questions</h2>
         <button class="btn green-btn mt-3" @click="CheckMCQuestions()">
             Check now
         </button>
@@ -64,7 +64,8 @@ export default {
         </p>
     </section>
     <!-- Ability to autogenerate sources for all skills. At the moment, has to be done by programmer --->
-    <AutoGenerateSources v-if="userDetailsStore.role == 'admin'" />
+     <!-- Hidden from all users --->
+    <AutoGenerateSources v-if="userDetailsStore.role == 'dev'" />
 </template>
 
 <style>
