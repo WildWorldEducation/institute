@@ -2,44 +2,21 @@
 export default {
     data() {
         return {
-            skillId: this.$route.params.id
+            skillId: this.$route.params.id,
+            essayAnswer: ''
         };
     },
     setup() {},
-    mounted: function () {
-        //  summernote config
-        $('#summernote').summernote({
-            placeholder: 'write down your answer here',
-            tabsize: 2,
-            height: 120,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            maximumImageFileSize: 2048 * 1024, // 2 MB
-            callbacks: {
-                onImageUploadError: function (msg) {
-                    alert('Max image size is 2MB.');
-                }
-            }
-        });
-    },
     methods: {
-        //methods will be called on parent component to manipulate summernote text
+        //methods will be called on parent component to manipulate text
         getAnswer() {
-            const code = $('#summernote').summernote('code');
-            return code;
+            return this.essayAnswer;
         },
         clearAnswer() {
-            $('#summernote').summernote('code', '');
+            this.essayAnswer = '';
         },
-        setAnswer(code) {
-            $('#summernote').summernote('code', code);
+        setAnswer(text) {
+            this.essayAnswer = text;
         }
     }
 };
@@ -49,7 +26,12 @@ export default {
     <div class="container mt-3">
         <div class="row">
             <div class="mb-3">
-                <textarea id="summernote" name="answerdata"></textarea>
+                <textarea
+                    v-model="essayAnswer"
+                    class="form-control"
+                    id="exampleFormControlTextarea1"
+                    rows="3"
+                ></textarea>
             </div>
         </div>
     </div>

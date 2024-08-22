@@ -344,7 +344,10 @@ export default {
             // If no essay questions, we return result.
             if (this.numEssayQuestions === 0) {
                 // Pass mark from settings store.
-                if ((this.score / this.numMCQuestions) * 100 >= this.settingsStore.passMark) {
+                if (
+                    (this.score / this.numMCQuestions) * 100 >=
+                    this.settingsStore.passMark
+                ) {
                     this.MakeMastered(this.skill);
                     this.isQuizPassed = true;
                     // show result page and hide assessment part
@@ -455,7 +458,10 @@ export default {
                             await this.AIMarkEssayQuestion(question, answer, i);
                         }
                     }
-                    if ((this.score / this.questions.length) * 100 >= this.settingsStore.passMark) {
+                    if (
+                        (this.score / this.questions.length) * 100 >=
+                        this.settingsStore.passMark
+                    ) {
                         this.MakeMastered(this.skill);
                         this.isQuizPassed = true;
                         // show result page and hide assessment part
@@ -539,10 +545,11 @@ export default {
     <!-- <button v-if="!isQuizPassed" @click="TestPass()" class="btn green-btn me-2">
         Test Pass
     </button> -->
+
     <!-- Loading screen -->
     <div v-if="loading == true">Loading...</div>
-    
-    <!-- AI Loading annimation -->
+
+    <!-- AI Essay Marking Loading Animation -->
     <div
         v-if="aiLoading"
         class="loading-animation d-flex justify-content-center align-items-center py-4"
@@ -553,7 +560,10 @@ export default {
     <!-- Assessment -->
     <div
         v-if="
-            loading == false && isQuizPassed == false && !needToSelectInstructor && !aiLoading
+            loading == false &&
+            isQuizPassed == false &&
+            !needToSelectInstructor &&
+            !aiLoading
         "
     >
         <!-- Show student a warning if their take this assessment before and still wait for marking -->
@@ -578,6 +588,8 @@ export default {
                 </div>
             </div>
         </div>
+
+        <!-- Questions -->
         <div class="pb-2 pb-md-0">
             <div
                 v-if="questions.length > 0"
@@ -674,6 +686,8 @@ export default {
                         <EssayAnswer ref="essayAnswer" />
                     </div>
                 </div>
+
+                <!-- Quiz Navigation Buttons -->
                 <div class="mt-3 d-flex justify-content-end">
                     <button
                         v-if="questionNumber > 0"
@@ -689,8 +703,6 @@ export default {
                     >
                         Next
                     </button>
-                    <!-- <button disabled v-if="this.questionNumber == questions.length - 1 && !isAllQuestionsAnswered" @click="Submit()"
-                    class="btn green-btn">Submit</button> -->
                     <button
                         v-if="questionNumber >= questions.length - 1"
                         @click="Submit()"

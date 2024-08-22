@@ -269,8 +269,9 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
-                                }`,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
                             contentId: req.params.id,
                             contentType: 'mc_question'
                         },
@@ -577,8 +578,9 @@ router.put('/essay/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
-                                }`,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
                             contentId: req.params.id,
                             contentType: 'essay_question'
                         },
@@ -928,13 +930,12 @@ router.get('/student-mc-questions/list', (req, res, next) => {
 });
 
 /**
- * List Student MC Questions full data 
+ * List Student MC Questions full data
  */
 router.get('/student-mc-questions/full-data-list', (req, res, next) => {
     if (req.session.userName) {
         // extra check for user role
-        if (req.session.role = 'instructor') {
-
+        if ((req.session.role = 'instructor')) {
             res.setHeader('Content-Type', 'application/json');
             let sqlQuery = `SELECT student_mc_questions.*, skills.name AS skillname, users.username AS student
                             FROM student_mc_questions JOIN users ON users.id = student_mc_questions.student_id 
@@ -1303,8 +1304,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                mcQuestions[index].id +
-                                ' complete'
+                                    mcQuestions[index].id +
+                                    ' complete'
                             );
                             // Check the next question.
                             index++;
