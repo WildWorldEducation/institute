@@ -445,16 +445,11 @@ export default {
                             });
                         });
                 } else {
+                    // Submit essay questions to AI for marking.
                     for (let i = 0; i < this.questions.length; i++) {
                         if (this.questions[i].questionType == 'essay') {
                             let question = this.questions[i].question;
-                            // Remove Summernote HTML tags.
-                            let regex = /(<([^>]+)>)/gi;
-                            this.questions[i].userAnswer = this.questions[
-                                i
-                            ].userAnswer?.replace(regex, '');
                             let answer = this.questions[i].userAnswer;
-
                             await this.AIMarkEssayQuestion(question, answer, i);
                         }
                     }
