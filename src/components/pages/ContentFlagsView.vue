@@ -465,7 +465,7 @@ export default {
     </div>
     <div class="container-md pb-5">
         <div class="mt-3">
-            <h1>Content Flags</h1>
+            <h1 class="page-title">Content Flags</h1>
         </div>
         <hr />
         <!-- Search Table Section -->
@@ -1934,6 +1934,12 @@ h1 {
     color: #8f7bd6;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
+}
+
+.page-title {
+    color: #9c7eec;
+    font-size: 30px;
+    font-weight: 600;
 }
 
 h2 {

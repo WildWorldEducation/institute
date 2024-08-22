@@ -1,6 +1,6 @@
 <script>
 import PageNav from '../components/todo/PageNav.vue';
-import CheckStudentQuestions from '../components/CheckStudentQuestions.vue';
+import CheckStudentQuestions from '../components/todo/student-question/CheckStudentQuestions.vue';
 import ContentEditsList from '../components/todo/content-edit/ContentEditsList.vue';
 import ContentFlagsView from './ContentFlagsView.vue';
 
@@ -51,7 +51,7 @@ export default {
 
 <style>
 .page-title {
-    color: #a48be7;
+    color: #9c7eec;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }

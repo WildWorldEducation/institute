@@ -1,10 +1,10 @@
 <script>
-import { useStudentMCQuestionsStore } from '../../stores/StudentMCQuestionsStore.js';
-import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
-import { useUsersStore } from '../../stores/UsersStore';
-import { useSkillsStore } from '../../stores/SkillsStore';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import StudentQuestionList from './todo/student-question/studentQuestionList.vue';
+import { useStudentMCQuestionsStore } from '../../../../stores/StudentMCQuestionsStore.js';
+import { useInstructorStudentsStore } from '../../../../stores/InstructorStudentsStore';
+import { useUsersStore } from '../../../../stores/UsersStore';
+import { useSkillsStore } from '../../../../stores/SkillsStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import StudentQuestionList from './studentQuestionList.vue';
 
 export default {
     setup() {
@@ -114,7 +114,7 @@ export default {
             <img src="/images/banners/general-banner.png" class="img-fluid" />
         </div>
         <!-- Page tile -->
-        <div class="ps-3 mt-2 page-tile">User Edit Content List</div>
+        <h1 class="ps-3 mt-2 page-title">Approve Student Added Questions</h1>
         <div class="container-fluid">
             <StudentQuestionList
                 :studentQuestion="questions"
@@ -125,6 +125,12 @@ export default {
 </template>
 
 <style>
+.page-title {
+    color: #9c7eec;
+    font-size: 30px;
+    font-weight: 600;
+}
+
 .assessment {
     border: 1px solid #dbd0f9;
     margin: 0px;
@@ -132,7 +138,7 @@ export default {
 }
 
 h2 {
-    color: #8f7bd6;
+    color: #9c7eec;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
@@ -220,11 +226,5 @@ h2 {
     align-items: center;
     max-width: fit-content;
     height: 44px;
-}
-
-.page-tile {
-    color: #9c7eec;
-    font-size: 30px;
-    font-weight: 600;
 }
 </style>

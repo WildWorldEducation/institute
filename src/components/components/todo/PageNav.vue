@@ -64,7 +64,7 @@ export default {
                 ]"
                 @click="changeActiveContent('editList')"
             >
-                Approval Edit Content
+                Approve Content Edits
                 <span
                     class="badge bg-danger"
                     b-on-hover
@@ -80,7 +80,7 @@ export default {
                 ]"
                 @click="changeActiveContent('studentQuestionList')"
             >
-                Approval Student Question Suggestion
+                Approve Student Added Questions
                 <span
                     b-on-hover
                     title="number of student question that needed to approve"
@@ -96,7 +96,7 @@ export default {
                 ]"
                 @click="changeActiveContent('flagList')"
             >
-                Checking Content Flag
+                Check Content Flags
                 <span
                     class="badge bg-danger"
                     b-on-hover
