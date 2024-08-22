@@ -5,8 +5,7 @@ import LastVisitedSkills from '../components/LastVisitedSkills.vue';
 import Notifications from '../components/Notifications.vue';
 import News from '../components/News.vue';
 import MarkAssessment from '../components/MarkAssessment.vue';
-import CheckStudentQuestions from '../components/CheckStudentQuestions.vue';
-import HubStudentQuestionList from '../components/todo/student-question/HubStudentQuestionList.vue';
+import HubStudentQuestionList from '../components/HubStudentQuestionList.vue';
 
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -28,7 +27,6 @@ export default {
         Notifications,
         StudentProgress,
         MarkAssessment,
-        CheckStudentQuestions,
         LastVisitedSkills,
         HubStudentQuestionList
     },

@@ -136,7 +136,7 @@ export default {
             <img src="/images/banners/general-banner.png" class="img-fluid" />
         </div>
         <!-- Page tile -->
-        <div class="ps-3 page-tile">User Edit Content List</div>
+        <h1 class="ps-3 mt-2 page-title">Approve Content Edits</h1>
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
             <div
@@ -161,7 +161,7 @@ export default {
                 ]"
                 @click="activeList = 'writtenQuestions'"
             >
-                Written Questions
+                Essay Questions
             </div>
         </div>
         <!-- ---- | Nav List On Mobile | ---- -->
@@ -196,19 +196,19 @@ export default {
                     class="custom-dropdown-option"
                     @click="handleDropDownNavChoose('skills')"
                 >
-                    skill
+                    Skills
                 </div>
                 <div
                     class="custom-dropdown-option"
                     @click="handleDropDownNavChoose('mcQuestions')"
                 >
-                    Multiple choice question
+                    Multiple Choice Questions
                 </div>
                 <div
                     class="custom-dropdown-option"
                     @click="handleDropDownNavChoose('writtenQuestions')"
                 >
-                    Written Question
+                    Essay Questions
                 </div>
             </div>
         </div>
@@ -228,7 +228,7 @@ export default {
                     :mcQuestionEditsLoading="mcQuestionEditsLoading"
                 />
             </div>
-            <!-- Written question edits list -->
+            <!-- Essay question edits list -->
             <div v-if="activeList === 'writtenQuestions'">
                 <WrittenQuestionEditsList
                     :writtenEditsList="essayQuestionEdits"
@@ -251,7 +251,7 @@ export default {
     overflow: auto;
 }
 
-.page-tile {
+.page-title {
     color: #9c7eec;
     font-size: 30px;
     font-weight: 600;
