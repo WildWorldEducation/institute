@@ -24,7 +24,7 @@ export default {
     components: {
         Vue3EasyDataTable
     },
-    props: ['studentQuestion'],
+    props: ['studentQuestion', 'loadingQuestion'],
     async mounted() {},
     methods: {
         goToComparePage(item) {
@@ -63,13 +63,13 @@ export default {
 </script>
 
 <template>
-    <div class="mt-3 pt-4 table-div h-100">
+    <div class="mt-3 table-div h-100">
         <!-- Desktop table -->
         <Vue3EasyDataTable
             :headers="headers"
             :items="studentQuestion"
             alternating
-            :loading="studentQuestion.length <= 0"
+            :loading="loadingQuestion"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"
@@ -92,7 +92,7 @@ export default {
             :headers="mobileHeaders"
             :items="studentQuestion"
             alternating
-            :loading="studentQuestion.length <= 0"
+            :loading="loadingQuestion"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"

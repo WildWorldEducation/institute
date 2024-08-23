@@ -12,13 +12,14 @@ const router = createRouter({
             path: '/vertical-tree',
             name: 'vertical-tree',
             component: () => import('../components/pages/TidyTreeView.vue'),
-            meta: { preventZoom: true }
+            meta: { preventZoom: true, title: 'Skill tree' }
         },
         {
             path: '/student/:studentId/skill-tree',
             name: 'student-vertical-tree',
             component: () =>
-                import('../components/pages/StudentTidyTreeView.vue')
+                import('../components/pages/StudentTidyTreeView.vue'),
+            meta: { title: 'Skill tree' }
         },
         {
             path: '/',
@@ -29,7 +30,7 @@ const router = createRouter({
             path: '/radial-tree',
             name: 'radial-tree',
             component: () => import('../components/pages/RadialTreeView.vue'),
-            meta: { preventZoom: true }
+            meta: { preventZoom: true, title: 'Radial skill tree' }
         },
         {
             path: '/:id/skill-tree',
@@ -40,30 +41,35 @@ const router = createRouter({
         {
             path: '/login',
             name: 'login',
-            component: () => import('../components/pages/LoginView.vue')
+            component: () => import('../components/pages/LoginView.vue'),
+            meta: { title: 'Login' }
         },
         {
             path: '/student-signup',
             name: 'student-signup',
             component: () =>
-                import('../components/pages/SignUpStudentAccountView.vue')
+                import('../components/pages/SignUpStudentAccountView.vue'),
+            meta: { title: 'Student sign up' }
         },
         {
             path: '/editor-signup',
             name: 'editor-signup',
             component: () =>
-                import('../components/pages/SignUpEditorAccountView.vue')
+                import('../components/pages/SignUpEditorAccountView.vue'),
+            meta: { title: 'Editor sign up' }
         },
 
         {
             path: '/skills',
             name: 'skills',
-            component: SkillsView
+            component: SkillsView,
+            meta: { title: 'Skills' }
         },
         {
             path: '/student/:studentId/skills',
             name: 'student-skills',
-            component: SkillsView
+            component: SkillsView,
+            meta: { title: 'Student skills' }
         },
         {
             path: '/skills/:skillId',
@@ -235,7 +241,10 @@ const router = createRouter({
             name: 'check-student-question',
             component: () =>
                 import('../components/pages/CheckStudentQuestionView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor', 'instructor'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['admin', 'editor', 'instructor']
+            }
         },
         {
             path: '/tutor/add/:skillId',
@@ -263,7 +272,12 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-
+    const baseTitle = 'The Collins Institute';
+    if (to.meta.title) {
+        document.title = `${to.meta.title} - ${baseTitle}`;
+    } else {
+        document.title = baseTitle; // Fallback to base title
+    }
     if (to.meta.preventZoom) {
         setViewport();
     } else {
@@ -292,6 +306,19 @@ router.beforeEach(async (to, from, next) => {
 
         if (currentSkill.is_accessible != 1 || currentSkill.is_mastered == 1) {
             next({ path: '/skills/' + to.params.id });
+            return;
+        }
+    }
+
+    if (to.name == 'show-skill') {
+        const userSkillsStore = useUserSkillsStore();
+
+        await userSkillsStore.getUnnestedList(userDetailsStore.userId);
+        const currentSkill = userSkillsStore.unnestedList.find(
+            (item) => item.id == to.params.skillId
+        );
+        if (currentSkill.type == 'domain') {
+            next({ path: '/skills' });
             return;
         }
     }
@@ -349,17 +376,18 @@ router.afterEach((to, from, next) => {
 function setViewport() {
     let metaTag = document.querySelector('meta[name=viewport]');
     if (!metaTag) {
-      metaTag = document.createElement('meta');
-      metaTag.name = "viewport";
-      document.head.appendChild(metaTag);
+        metaTag = document.createElement('meta');
+        metaTag.name = 'viewport';
+        document.head.appendChild(metaTag);
     }
-    metaTag.content = "width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0";
+    metaTag.content =
+        'width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0';
 }
-  
+
 function resetViewport() {
     const metaTag = document.querySelector('meta[name=viewport]');
     if (metaTag) {
-      metaTag.content = "width=device-width, initial-scale=1.0"; // or your default value
+        metaTag.content = 'width=device-width, initial-scale=1.0'; // or your default value
     }
 }
 export default router;

@@ -35,7 +35,7 @@ export default {
     <Transition name="navbar">
         <div v-if="showNavBar" class="nav-bar-container d-flex flex-column">
             <div class="d-flex justify-content-between pe-4">
-                <div class="todo-tile ps-2 pt-2">Todo List</div>
+                <h1 class="todo-title ps-2 pt-2">Todo List</h1>
                 <div
                     class="icon-div d-flex align-items-center px-3 py-2"
                     @click="showNavBar = false"
@@ -64,7 +64,7 @@ export default {
                 ]"
                 @click="changeActiveContent('editList')"
             >
-                Approval Edit Content
+                Approve Content Edits
                 <span
                     class="badge bg-danger"
                     b-on-hover
@@ -80,7 +80,7 @@ export default {
                 ]"
                 @click="changeActiveContent('studentQuestionList')"
             >
-                Approval Student Question Suggestion
+                Approve Student Added Questions
                 <span
                     b-on-hover
                     title="number of student question that needed to approve"
@@ -96,7 +96,7 @@ export default {
                 ]"
                 @click="changeActiveContent('flagList')"
             >
-                Checking Content Flag
+                Check Content Flags
                 <span
                     class="badge bg-danger"
                     b-on-hover
@@ -139,10 +139,11 @@ export default {
     height: 100%;
     background-color: #e8e2f9;
 }
-.todo-tile {
+.todo-title {
     font-size: 30px;
     font-weight: 600;
     color: #8666ca;
+    margin-bottom: 0px;
 }
 
 .icon-div {

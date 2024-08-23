@@ -88,7 +88,7 @@ export default {
         </section>
         <section class="mt-5">
             <hr />
-            <h1>Skill Filters</h1>
+            <h2>Skill Filters</h2>
             <div class="col">
                 <label
                     v-for="tag in tagsStore.tagsList"

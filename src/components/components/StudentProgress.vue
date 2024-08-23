@@ -40,7 +40,7 @@ export default {
     <!-- <h1 class="text-center text-md-start d-lg-none">My Progress</h1>
   <h2 class="text-center text-md-start d-lg-none">2023 - Active</h2> -->
     <div class="table-responsive"></div>
-    <div id="tile">Available Skills</div>
+    <h2 id="title">Available Skills</h2>
     <div id="skill-list">
         <div v-for="availableSkill in availableSkills">
             <router-link
@@ -68,7 +68,7 @@ export default {
     max-height: 300px;
 }
 
-#tile {
+#title {
     background-color: #e8e2f9;
     border-color: #dbd0f9;
     color: #ad9af3;
@@ -76,6 +76,7 @@ export default {
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
     font-size: 20px;
+    margin-bottom: 0px;
 }
 
 #skill-list div {
