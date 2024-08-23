@@ -310,6 +310,19 @@ router.beforeEach(async (to, from, next) => {
         }
     }
 
+    if (to.name == 'show-skill') {
+        const userSkillsStore = useUserSkillsStore();
+
+        await userSkillsStore.getUnnestedList(userDetailsStore.userId);
+        const currentSkill = userSkillsStore.unnestedList.find(
+            (item) => item.id == to.params.skillId
+        );
+        if (currentSkill.type == 'domain') {
+            next({ path: '/skills' });
+            return;
+        }
+    }
+
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&

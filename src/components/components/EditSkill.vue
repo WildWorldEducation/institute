@@ -79,6 +79,14 @@ export default {
                 inputText: '',
                 suggestSuperSkills: []
             },
+            clusterSecondParentInput: {
+                inputText: '',
+                suggestSuperSkills: []
+            },
+            clusterThirdParentInput: {
+                inputText: '',
+                suggestSuperSkills: []
+            },
             // Validate Object for validate purpose
             validate: {
                 violated: false,
@@ -165,9 +173,19 @@ export default {
                     // Optional 2nd and 3rd parents
                     if (this.skill.optional_parent_2 != null) {
                         this.isTwoParents = true;
+
+                        const parentResult2 = this.skills.find((element) => {
+                            return element.id === this.skill.optional_parent_2;
+                        });
+                        this.clusterSecondParentInput.inputText = parentResult2.name;
                     }
                     if (this.skill.optional_parent_3 != null) {
                         this.isThreeParents = true;
+
+                        const parentResult3 = this.skills.find((element) => {
+                            return element.id === this.skill.optional_parent_3;
+                        });
+                        this.clusterThirdParentInput.inputText = parentResult3.name;
                     }
 
                     this.getSkillFilters();
@@ -440,6 +458,18 @@ export default {
                 this.clusterParentInput.inputText = skill.name;
             }
         },
+        handleChooseSecondSuggestSkill(skill) {
+            // set form data
+            this.skill.optional_parent_2 = skill.id;
+            this.clusterSecondParentInput.inputText = skill.name;
+            this.clusterSecondParentInput.suggestSuperSkills = [];
+        },
+        handleChooseThirdSuggestSkill(skill) {
+            // set form data
+            this.skill.optional_parent_3 = skill.id;
+            this.clusterThirdParentInput.inputText = skill.name;
+            this.clusterThirdParentInput.suggestSuperSkills = [];
+        },
         // -----------------------------------------
         // 2 method for cluster outer skill type input
         getSuperSkillSuggestion() {
@@ -454,6 +484,38 @@ export default {
                             .toLowerCase()
                             .includes(
                                 this.clusterParentInput.inputText.toLowerCase()
+                            );
+                    });
+            }
+        },
+        getSecondSuperSkillSuggestion() {
+            // Only show the suggestion if the user type in 2 word
+            if (this.clusterSecondParentInput.inputText.length < 2) {
+                this.clusterSecondParentInput.suggestSuperSkills = [];
+            } else {
+                this.clusterSecondParentInput.suggestSuperSkills =
+                    this.skills.filter((skill) => {
+                        // Lower case so the result wont be case sensitive
+                        return skill.name
+                            .toLowerCase()
+                            .includes(
+                                this.clusterSecondParentInput.inputText.toLowerCase()
+                            );
+                    });
+            }
+        },
+        getThirdSuperSkillSuggestion() {
+            // Only show the suggestion if the user type in 2 word
+            if (this.clusterThirdParentInput.inputText.length < 2) {
+                this.clusterThirdParentInput.suggestSuperSkills = [];
+            } else {
+                this.clusterThirdParentInput.suggestSuperSkills =
+                    this.skills.filter((skill) => {
+                        // Lower case so the result wont be case sensitive
+                        return skill.name
+                            .toLowerCase()
+                            .includes(
+                                this.clusterThirdParentInput.inputText.toLowerCase()
                             );
                     });
             }
@@ -753,26 +815,32 @@ export default {
                 <div class="col col-md-8 col-lg-5 mt-2">
                     <!-- Extra Parents drop down -->
                     <label class="form-label">Second Parent</label>
-                    <select
-                        class="form-select"
-                        aria-label="Default select example"
-                        v-model="skill.optional_parent_2"
-                    >
-                        <option
-                            v-if="skill.type != 'sub'"
-                            v-for="parentSkill in skills"
-                            :value="parentSkill.id"
-                        >
-                            {{ parentSkill.name }}
-                        </option>
-                        <option
-                            v-else
-                            v-for="parentSkill in superSkills"
-                            :value="parentSkill.id"
-                        >
-                            {{ parentSkill.name }}
-                        </option>
-                    </select>
+                    <div class="row mt-3">
+                        <div class="col position-relative">
+                            <input
+                                id="skill-input"
+                                v-model="clusterSecondParentInput.inputText"
+                                @input="getSecondSuperSkillSuggestion"
+                                placeholder="type skill name"
+                            />
+                            <div
+                                v-if="
+                                    clusterSecondParentInput.suggestSuperSkills
+                                        .length > 0
+                                "
+                                id="suggest-skills"
+                                class="flex flex-column position-absolute"
+                            >
+                                <div
+                                    class="suggest-option"
+                                    v-for="skill in clusterSecondParentInput.suggestSuperSkills"
+                                    @click="handleChooseSecondSuggestSkill(skill)"
+                                >
+                                    {{ skill.name }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-check col-6 col-md-5 my-2">
                     <label class="control control-checkbox">
@@ -791,26 +859,32 @@ export default {
                     <div class="col col-md-8 col-lg-5 mt-2">
                         <!-- Extra Parents drop down -->
                         <label class="form-label">Third Parent</label>
-                        <select
-                            class="form-select"
-                            aria-label="Default select example"
-                            v-model="skill.optional_parent_3"
-                        >
-                            <option
-                                v-if="skill.type != 'sub'"
-                                v-for="parentSkill in skills"
-                                :value="parentSkill.id"
-                            >
-                                {{ parentSkill.name }}
-                            </option>
-                            <option
-                                v-else
-                                v-for="parentSkill in superSkills"
-                                :value="parentSkill.id"
-                            >
-                                {{ parentSkill.name }}
-                            </option>
-                        </select>
+                        <div class="row mt-3">
+                            <div class="col position-relative">
+                                <input
+                                    id="skill-input"
+                                    v-model="clusterThirdParentInput.inputText"
+                                    @input="getThirdSuperSkillSuggestion"
+                                    placeholder="type skill name"
+                                />
+                                <div
+                                    v-if="
+                                        clusterThirdParentInput.suggestSuperSkills
+                                            .length > 0
+                                    "
+                                    id="suggest-skills"
+                                    class="flex flex-column position-absolute"
+                                >
+                                    <div
+                                        class="suggest-option"
+                                        v-for="skill in clusterThirdParentInput.suggestSuperSkills"
+                                        @click="handleChooseThirdSuggestSkill(skill)"
+                                    >
+                                        {{ skill.name }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
