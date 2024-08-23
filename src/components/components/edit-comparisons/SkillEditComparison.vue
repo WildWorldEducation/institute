@@ -262,8 +262,8 @@ export default {
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 320 512"
                                 fill="#ac90e8"
-                                height="70"
-                                width="70"
+                                height="50"
+                                width="50"
                                 class="mx-auto my-2 d-lg-none"
                             >
                                 <path
@@ -357,8 +357,8 @@ export default {
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 320 512"
                                 fill="#ac90e8"
-                                height="70"
-                                width="70"
+                                height="50"
+                                width="50"
                                 class="mx-auto my-2 d-lg-none"
                             >
                                 <path
@@ -452,7 +452,9 @@ export default {
                         </div>
                     </div>
                     <div class="d-flex flex-lg-row flex-column mt-4">
-                        <div class="old-container skill-mastery-container">
+                        <div
+                            class="old-container skill-mastery-container d-none d-lg-block"
+                        >
                             <div class="container-tile">Original</div>
                             <div
                                 class="innerHTMLmastery"
@@ -472,6 +474,7 @@ export default {
                                 d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
                             />
                         </svg>
+
                         <div class="new-container skill-mastery-container">
                             <div class="container-tile">Changed</div>
                             <!-- HTML change content -->
@@ -766,6 +769,18 @@ export default {
         max-width: 100%;
         height: auto;
         margin: auto;
+    }
+
+    .skill-mastery-container {
+        width: 100%;
+    }
+}
+
+/* ************************* */
+/* Tablet Styling */
+@media (min-width: 577px) and (max-width: 1023px) {
+    .skill-mastery-container {
+        width: 100%;
     }
 }
 </style>
