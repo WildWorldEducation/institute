@@ -10,13 +10,16 @@ export default {
     methods: {
         //methods will be called on parent component to manipulate answer
         getAnswer() {
+            console.log('get answer');
             return this.imageAnswer;
         },
         clearAnswer() {
             this.imageAnswer = '';
         },
         setAnswer(image) {
+            console.log('set answer');
             this.imageAnswer = image;
+            this.image = image;
         },
         // For image upload.
         onFileChange(e) {
@@ -51,6 +54,16 @@ export default {
                 <div class="col-lg-4">
                     <div class="mb-3 row">
                         <div v-if="!imageAnswer">
+                            <label for="exampleFormControlInput1"
+                                >add a link:
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="exampleFormControlInput1"
+                                v-model="imageAnswer"
+                            />
+                            <p class="mt-3">or upload an image:</p>
                             <input
                                 id="choose-avatar"
                                 type="file"
