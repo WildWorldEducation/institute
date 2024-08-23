@@ -56,8 +56,9 @@ export default {
                 </div>
             </div>
             <hr />
-            <div
+            <h2
                 :class="[
+                    'nav-item-tile',
                     activeContent === 'editList'
                         ? 'active-item'
                         : 'nav-bar-item'
@@ -71,9 +72,10 @@ export default {
                     title="number of content edit that needed to approve"
                     >{{ contentEditCount }}</span
                 >
-            </div>
-            <div
+            </h2>
+            <h2
                 :class="[
+                    'nav-item-tile',
                     activeContent === 'studentQuestionList'
                         ? 'active-item'
                         : 'nav-bar-item'
@@ -87,9 +89,10 @@ export default {
                     class="badge bg-danger"
                     >{{ studentQuestionCount }}</span
                 >
-            </div>
-            <div
+            </h2>
+            <h2
                 :class="[
+                    'nav-item-tile',
                     activeContent === 'flagList'
                         ? 'active-item'
                         : 'nav-bar-item'
@@ -103,7 +106,7 @@ export default {
                     title="number of content flag that needed to check"
                     >{{ contentFlagCount }}</span
                 >
-            </div>
+            </h2>
         </div>
     </Transition>
     <Transition name="navbarMini">
@@ -144,6 +147,9 @@ export default {
     font-weight: 600;
     color: #8666ca;
     margin-bottom: 0px;
+}
+.nav-item-tile {
+    font-size: 18px;
 }
 
 .icon-div {
