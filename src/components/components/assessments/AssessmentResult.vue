@@ -1,8 +1,8 @@
 <script>
 // Import
 import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import FlagModals from './FlagModals.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import FlagModals from './../FlagModals.vue';
 
 export default {
     setup() {

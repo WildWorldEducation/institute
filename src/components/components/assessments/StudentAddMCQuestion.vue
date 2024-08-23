@@ -1,9 +1,9 @@
 <script>
-import router from '../../router';
+import router from '../../../router/index.js';
 import { RouterLink } from 'vue-router';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
-import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 
 export default {
     setup() {

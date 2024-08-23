@@ -1,16 +1,16 @@
 <script>
 // Import the store.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useSettingsStore } from '../../stores/SettingsStore.js';
-import { useSkillsStore } from '../../stores/SkillsStore.js';
-import { useAssessmentsStore } from '../../stores/AssessmentsStore';
-import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
-import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useSettingsStore } from '../../../stores/SettingsStore.js';
+import { useSkillsStore } from '../../../stores/SkillsStore.js';
+import { useAssessmentsStore } from '../../../stores/AssessmentsStore';
+import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 // Import custom component
 import EssayAnswer from './EssayAnswer.vue';
 import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
 import AssessmentResult from './AssessmentResult.vue';
-import FlagModals from './FlagModals.vue';
+import FlagModals from './../FlagModals.vue';
 
 export default {
     setup() {
@@ -67,29 +67,6 @@ export default {
             needToSelectInstructor: false,
             aiLoading: false
         };
-    },
-    mounted: function () {
-        //  Summer note config
-        $('.summernote').summernote({
-            placeholder: 'this is the summer note',
-            tabsize: 2,
-            height: 120,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            maximumImageFileSize: 2048 * 1024, // 2 MB
-            callbacks: {
-                onImageUploadError: function (msg) {
-                    alert('Max image size is 2MB.');
-                }
-            }
-        });
     },
     async created() {
         // Load the max quiz question number setting.
@@ -282,11 +259,11 @@ export default {
         Next() {
             // Handle essay answer with summernote
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer.getAnswer();
+                // Get the answer
+                const answer = this.$refs.essayAnswer.getAnswer();
                 // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = summerNote;
-                // Clear the summernote text
+                this.questions[this.questionNumber].userAnswer = answer;
+                // Clear the answer
                 this.$refs.essayAnswer.clearAnswer();
             }
             // Get next question data
@@ -303,14 +280,14 @@ export default {
         },
         Previous() {
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer.getAnswer();
+                // Get the answer
+                const answer = this.$refs.essayAnswer.getAnswer();
                 // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = summerNote;
+                this.questions[this.questionNumber].userAnswer = answer;
             }
             this.questionNumber--;
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Set the summernote to previous answer
+                // Set the answer to previous answer
                 this.$refs.essayAnswer.setAnswer(
                     this.questions[this.questionNumber].userAnswer
                 );
@@ -323,10 +300,10 @@ export default {
 
             // if the last answer is also an essay question we handle it just like with the next and previous
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer.getAnswer();
+                // Get the answer
+                const answer = this.$refs.essayAnswer.getAnswer();
                 // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = summerNote;
+                this.questions[this.questionNumber].userAnswer = answer;
             }
             // Mark the MC questions (if there are any).
             for (let i = 0; i < this.questions.length; i++) {
@@ -597,6 +574,7 @@ export default {
                         <div
                             class="col d-flex my-2 gap-2 justify-content-between flex-column flex-md-row"
                         >
+                            <!-- Question number and question -->
                             <div class="d-flex align-items-lg-center">
                                 <div id="question-number-div">
                                     {{ questionNum + 1 }}
@@ -627,7 +605,7 @@ export default {
                             </div>
                         </div>
 
-                        <!-- Multiple Choice Question -->
+                        <!-- Multiple Choice Question Answer Options-->
                         <div v-if="question.questionType == 'mc'">
                             <div
                                 v-for="(
@@ -669,7 +647,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <!-- Essay Question -->
+                <!-- Essay Question Answer Section -->
                 <div
                     :class="`${
                         questions[questionNumber].questionType == 'essay'
@@ -678,6 +656,7 @@ export default {
                     }`"
                 >
                     <div class="form-group">
+                        <EssayAnswer ref="essayAnswer" />
                         <EssayAnswer ref="essayAnswer" />
                     </div>
                 </div>

@@ -37,12 +37,4 @@ export default {
     </div>
 </template>
 
-<style>
-#summernote {
-    background-color: white !important;
-}
-
-.note-editable {
-    background-color: white !important;
-}
-</style>
+<style></style>
