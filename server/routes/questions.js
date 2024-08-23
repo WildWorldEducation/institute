@@ -818,7 +818,8 @@ router.post('/essay-questions/add', (req, res, next) => {
         data = {
             name: req.body.name,
             question: req.body.question,
-            skill_id: req.body.skill_id
+            skill_id: req.body.skill_id,
+            answer_type: req.body.answer_type
         };
 
         let sqlQuery = 'INSERT INTO essay_questions SET ?';
