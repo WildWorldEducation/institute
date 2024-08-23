@@ -165,12 +165,12 @@ export default {
     cursor: pointer;
     padding: 5px 10px;
     font-weight: 500;
-    color: #9f9da1;
+    color: #475569;
 }
 
 .nav-bar-item:hover {
-    background-color: #c0b3db;
-    color: white;
+    background-color: #b8a6db;
+    color: #f8fafc;
 }
 
 .active-item {
