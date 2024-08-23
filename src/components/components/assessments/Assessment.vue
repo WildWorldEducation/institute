@@ -8,6 +8,7 @@ import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 // Import custom component
 import EssayAnswer from './EssayAnswer.vue';
+import ImageAnswer from './ImageAnswer.vue';
 import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
 import AssessmentResult from './AssessmentResult.vue';
 import FlagModals from './../FlagModals.vue';
@@ -130,6 +131,7 @@ export default {
     },
     components: {
         EssayAnswer,
+        ImageAnswer,
         StudentAddMCQuestion,
         AssessmentResult,
         FlagModals
@@ -247,7 +249,6 @@ export default {
 
                     // Set the first question in questions array for display
                     this.question = this.questions[0];
-                    // console.log(this.question);
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
                     this.totalNumOfQuestions = this.questions.length;
@@ -427,7 +428,18 @@ export default {
                         if (this.questions[i].questionType == 'essay') {
                             let question = this.questions[i].question;
                             let answer = this.questions[i].userAnswer;
-                            await this.AIMarkEssayQuestion(question, answer, i);
+                            let answerType = this.questions[i].answer_type;
+
+                            if (answer == '') {
+                                answer = 'no image';
+                            }
+                            await this.AIMarkEssayQuestion(
+                                question,
+                                answerType,
+                                answer,
+                                i
+                            );
+                            0
                         }
                     }
                     if (
@@ -448,14 +460,21 @@ export default {
                 }
             }
         },
-        async AIMarkEssayQuestion(question, answer, i) {
+        async AIMarkEssayQuestion(question, answerType, answer, i) {
             this.aiLoading = true;
+            if (answerType == 'image' && answer == 'no image') {
+                this.questions[i].explanation =
+                    'This answer is incorrect because no photogrpah was uploaded.';
+                this.questions[i].isCorrect = false;
+                return;
+            }
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     question: question,
                     answer: answer,
+                    answerType: answerType,
                     level: this.skill.level
                 })
             };
@@ -656,8 +675,13 @@ export default {
                     }`"
                 >
                     <div class="form-group">
-                        <EssayAnswer ref="essayAnswer" />
-                        <EssayAnswer ref="essayAnswer" />
+                        <EssayAnswer
+                            v-if="
+                                questions[questionNumber].answer_type == 'text'
+                            "
+                            ref="essayAnswer"
+                        />
+                        <ImageAnswer v-else ref="essayAnswer" />
                     </div>
                 </div>
 

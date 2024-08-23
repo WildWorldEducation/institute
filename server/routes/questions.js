@@ -1134,13 +1134,24 @@ router.post('/mark-essay-question', async (req, res, next) => {
     if (req.session.userName) {
         let question = req.body.question;
         let answer = req.body.answer;
+        let answerType = req.body.answerType;
         // Remove underscores from the variables.
         let level = req.body.level.replace('_', ' ');
-        let teacherReview = await aiMarkEssayQuestionAnswer(
-            question,
-            answer,
-            level
-        );
+        let teacherReview;
+        if (answerType == 'text') {
+            teacherReview = await aiMarkEssayTextQuestionAnswer(
+                question,
+                answer,
+                level
+            );
+        } else {
+            teacherReview = await aiMarkEssayImageQuestionAnswer(
+                question,
+                answer,
+                level
+            );
+        }
+
         let result = {
             isCorrect: teacherReview.is_correct,
             explanation: teacherReview.explanation
@@ -1151,7 +1162,7 @@ router.post('/mark-essay-question', async (req, res, next) => {
     }
 });
 
-async function aiMarkEssayQuestionAnswer(question, answer, level) {
+async function aiMarkEssayTextQuestionAnswer(question, answer, level) {
     // Create prompt for ChatGPT.
     let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
 
@@ -1195,27 +1206,55 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
 /**
  * Mark images.
  */
-async function main() {
-    const response = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-            {
-                role: 'user',
-                content: [
-                    { type: 'text', text: 'What’s in this image?' },
-                    {
-                        type: 'image_url',
-                        image_url: {
-                            url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg'
+
+async function aiMarkEssayImageQuestionAnswer(question, answer, level) {
+    let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
+
+    Please imagine this answer comes from a student at a '${level}' level, and answer appropriately to that level.
+    If it does, please return the variable 'is_correct' as true, if not, please return it as false.
+    If the answer is not correct, please explain why, by returning the variable 'explanation', containing a string that explains this.
+    `;
+    // Prevent the app from crashing if anything goes wrong with the API call.
+    try {
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                {
+                    role: 'system',
+                    content:
+                        'You are a kind and patient teacher of someone at a ' +
+                        level +
+                        ' level.'
+                },
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'text',
+                            text: prompt + ` Please respond with a JSON object.`
+                        },
+                        {
+                            type: 'image_url',
+                            image_url: {
+                                url: answer
+                            }
                         }
-                    }
-                ]
-            }
-        ]
-    });
-    console.log(response.choices[0]);
+                    ]
+                }
+            ],
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
+        // Convert string to object.
+        var responseObj = JSON.parse(escapedResponseJSON);
+        return responseObj;
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+        return;
+    }
 }
-//main();
 
 async function checkQuestion(index, userId) {
     // Create prompt for ChatGPT.
