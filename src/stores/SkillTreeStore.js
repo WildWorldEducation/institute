@@ -19,7 +19,6 @@ export const useSkillTreeStore = defineStore('skillTree', {
             const result = await fetch('/user-skills/' + userDetails.userId);
 
             this.userSkills = await result.json();
-            console.log(this.userSkills);
         },
         async getUserSkillsNoSubSkills() {
             // API call for skill tree.

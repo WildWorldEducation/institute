@@ -14,7 +14,8 @@ export default {
                 violated: false,
                 name: false,
                 question: false
-            }
+            },
+            answerType: 'text'
         };
     },
     methods: {
@@ -42,7 +43,8 @@ export default {
                 body: JSON.stringify({
                     name: this.question.name,
                     question: this.question.question,
-                    skill_id: this.skillId
+                    skill_id: this.skillId,
+                    answer_type: this.answerType
                 })
             };
             var url = '/questions/essay-questions/add';
@@ -72,6 +74,34 @@ export default {
         <div class="main-content-container container-fluid p-4">
             <div class="row">
                 <div id="form-container" class="col-lg-6 p-4">
+                    <label for="last_name" class="form-label"
+                        >Answer type</label
+                    >
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            id="flexRadioDefault1"
+                            value="text"
+                            v-model="answerType"
+                            checked
+                        />
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            Text
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            id="flexRadioDefault2"
+                            value="image"
+                            v-model="answerType"
+                        />
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Image
+                        </label>
+                    </div>
                     <div class="mb-3">
                         <label for="first_name" class="form-label"
                             >Question Name</label

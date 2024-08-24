@@ -1,8 +1,8 @@
 <script>
 // Import
 import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import FlagModals from './FlagModals.vue';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import FlagModals from './../FlagModals.vue';
 
 export default {
     setup() {
@@ -287,9 +287,15 @@ export default {
                 </div>
                 <!-- For Essay Questions Only -->
                 <div v-else>
-                    <span class="explain-label">Your answer: </span>
-                    <div class="explain-text">
+                    <span class="explain-label">Your answer:</span>
+                    <div
+                        v-if="question.answer_type == 'text'"
+                        class="explain-text"
+                    >
                         {{ question.userAnswer }}
+                    </div>
+                    <div v-else class="explain-text">
+                        <img width="100" :src="question.userAnswer" />
                     </div>
                 </div>
                 <!-- Question explanation -->

@@ -1,16 +1,17 @@
 <script>
 // Import the store.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useSettingsStore } from '../../stores/SettingsStore.js';
-import { useSkillsStore } from '../../stores/SkillsStore.js';
-import { useAssessmentsStore } from '../../stores/AssessmentsStore';
-import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
-import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useSettingsStore } from '../../../stores/SettingsStore.js';
+import { useSkillsStore } from '../../../stores/SkillsStore.js';
+import { useAssessmentsStore } from '../../../stores/AssessmentsStore';
+import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore.js';
 // Import custom component
 import EssayAnswer from './EssayAnswer.vue';
+import ImageAnswer from './ImageAnswer.vue';
 import StudentAddMCQuestion from './StudentAddMCQuestion.vue';
 import AssessmentResult from './AssessmentResult.vue';
-import FlagModals from './FlagModals.vue';
+import FlagModals from './../FlagModals.vue';
 
 export default {
     setup() {
@@ -67,29 +68,6 @@ export default {
             needToSelectInstructor: false,
             aiLoading: false
         };
-    },
-    mounted: function () {
-        //  Summer note config
-        $('.summernote').summernote({
-            placeholder: 'this is the summer note',
-            tabsize: 2,
-            height: 120,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            maximumImageFileSize: 2048 * 1024, // 2 MB
-            callbacks: {
-                onImageUploadError: function (msg) {
-                    alert('Max image size is 2MB.');
-                }
-            }
-        });
     },
     async created() {
         // Load the max quiz question number setting.
@@ -153,6 +131,7 @@ export default {
     },
     components: {
         EssayAnswer,
+        ImageAnswer,
         StudentAddMCQuestion,
         AssessmentResult,
         FlagModals
@@ -270,7 +249,6 @@ export default {
 
                     // Set the first question in questions array for display
                     this.question = this.questions[0];
-                    // console.log(this.question);
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
                     this.totalNumOfQuestions = this.questions.length;
@@ -282,38 +260,81 @@ export default {
         Next() {
             // Handle essay answer with summernote
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer.getAnswer();
-                // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = summerNote;
-                // Clear the summernote text
-                this.$refs.essayAnswer.clearAnswer();
+                if (this.questions[this.questionNumber].answer_type == 'text') {
+                    // Get the answer
+                    const answer = this.$refs.essayTextAnswer.getAnswer();
+                    // Store user answer in questions array before move to next questions
+                    this.questions[this.questionNumber].userAnswer = answer;
+                    // Clear the answer
+                    this.$refs.essayTextAnswer.clearAnswer();
+                } else if (
+                    this.questions[this.questionNumber].answer_type == 'image'
+                ) {
+                    // Get the answer
+                    const answer = this.$refs.essayImageAnswer.getAnswer();
+                    // Store user answer in questions array before move to next questions
+                    this.questions[this.questionNumber].userAnswer = answer;
+                    // Clear the answer
+                    this.$refs.essayImageAnswer.clearAnswer();
+                }
             }
+
             // Get next question data
             this.questionNumber++;
             //  If the next question is essay question we have to handle with summernote
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Set the next answer content if there are any
                 if (this.questions[this.questionNumber].userAnswer) {
-                    this.$refs.essayAnswer.setAnswer(
-                        this.questions[this.questionNumber].userAnswer
-                    );
+                    if (
+                        this.questions[this.questionNumber].answer_type ==
+                        'text'
+                    ) {
+                        this.$refs.essayTextAnswer.setAnswer(
+                            this.questions[this.questionNumber].userAnswer
+                        );
+                    } else if (
+                        this.questions[this.questionNumber].answer_type ==
+                        'image'
+                    ) {
+                        this.$refs.essayImageAnswer.setAnswer(
+                            this.questions[this.questionNumber].userAnswer
+                        );
+                    }
                 }
             }
         },
         Previous() {
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer.getAnswer();
-                // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = summerNote;
+                if (this.questions[this.questionNumber].answer_type == 'text') {
+                    // Get the answer
+                    const answer = this.$refs.essayTextAnswer.getAnswer();
+                    // Store user answer in questions array before move to next questions
+                    this.questions[this.questionNumber].userAnswer = answer;
+                } else if (
+                    this.questions[this.questionNumber].answer_type == 'image'
+                ) {
+                    // Get the answer
+                    const answer = this.$refs.essayImageAnswer.getAnswer();
+                    // Store user answer in questions array before move to next questions
+                    this.questions[this.questionNumber].userAnswer = answer;
+                }
             }
             this.questionNumber--;
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Set the summernote to previous answer
-                this.$refs.essayAnswer.setAnswer(
-                    this.questions[this.questionNumber].userAnswer
-                );
+                if (this.questions[this.questionNumber].answer_type == 'text') {
+                    // Set the answer to previous answer
+                    this.$refs.essayTextAnswer.setAnswer(
+                        this.questions[this.questionNumber].userAnswer
+                    );
+                }
+                if (
+                    this.questions[this.questionNumber].answer_type == 'image'
+                ) {
+                    // Set the answer to previous answer
+                    this.$refs.essayImageAnswer.setAnswer(
+                        this.questions[this.questionNumber].userAnswer
+                    );
+                }
             }
         },
         // Async because essay questions are marked on server.
@@ -323,10 +344,17 @@ export default {
 
             // if the last answer is also an essay question we handle it just like with the next and previous
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Get the summernote answer code
-                const summerNote = this.$refs.essayAnswer.getAnswer();
+                // Get the answer
+                let answer;
+                if (this.questions[this.questionNumber].answer_type == 'text') {
+                    answer = this.$refs.essayTextAnswer.getAnswer();
+                } else if (
+                    this.questions[this.questionNumber].answer_type == 'image'
+                ) {
+                    answer = this.$refs.essayImageAnswer.getAnswer();
+                }
                 // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = summerNote;
+                this.questions[this.questionNumber].userAnswer = answer;
             }
             // Mark the MC questions (if there are any).
             for (let i = 0; i < this.questions.length; i++) {
@@ -344,7 +372,10 @@ export default {
             // If no essay questions, we return result.
             if (this.numEssayQuestions === 0) {
                 // Pass mark from settings store.
-                if ((this.score / this.numMCQuestions) * 100 >= this.settingsStore.passMark) {
+                if (
+                    (this.score / this.numMCQuestions) * 100 >=
+                    this.settingsStore.passMark
+                ) {
                     this.MakeMastered(this.skill);
                     this.isQuizPassed = true;
                     // show result page and hide assessment part
@@ -442,20 +473,28 @@ export default {
                             });
                         });
                 } else {
+                    // Submit essay questions to AI for marking.
                     for (let i = 0; i < this.questions.length; i++) {
                         if (this.questions[i].questionType == 'essay') {
                             let question = this.questions[i].question;
-                            // Remove Summernote HTML tags.
-                            let regex = /(<([^>]+)>)/gi;
-                            this.questions[i].userAnswer = this.questions[
-                                i
-                            ].userAnswer?.replace(regex, '');
                             let answer = this.questions[i].userAnswer;
+                            let answerType = this.questions[i].answer_type;
 
-                            await this.AIMarkEssayQuestion(question, answer, i);
+                            if (answer == '') {
+                                answer = 'no image';
+                            }
+                            await this.AIMarkEssayQuestion(
+                                question,
+                                answerType,
+                                answer,
+                                i
+                            );
                         }
                     }
-                    if ((this.score / this.questions.length) * 100 >= this.settingsStore.passMark) {
+                    if (
+                        (this.score / this.questions.length) * 100 >=
+                        this.settingsStore.passMark
+                    ) {
                         this.MakeMastered(this.skill);
                         this.isQuizPassed = true;
                         // show result page and hide assessment part
@@ -470,14 +509,21 @@ export default {
                 }
             }
         },
-        async AIMarkEssayQuestion(question, answer, i) {
+        async AIMarkEssayQuestion(question, answerType, answer, i) {
             this.aiLoading = true;
+            if (answerType == 'image' && answer == 'no image') {
+                this.questions[i].explanation =
+                    'This answer is incorrect because no photograph was uploaded.';
+                this.questions[i].isCorrect = false;
+                return;
+            }
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     question: question,
                     answer: answer,
+                    answerType: answerType,
                     level: this.skill.level
                 })
             };
@@ -539,10 +585,11 @@ export default {
     <!-- <button v-if="!isQuizPassed" @click="TestPass()" class="btn green-btn me-2">
         Test Pass
     </button> -->
+
     <!-- Loading screen -->
     <div v-if="loading == true">Loading...</div>
-    
-    <!-- AI Loading annimation -->
+
+    <!-- AI Essay Marking Loading Animation -->
     <div
         v-if="aiLoading"
         class="loading-animation d-flex justify-content-center align-items-center py-4"
@@ -553,7 +600,10 @@ export default {
     <!-- Assessment -->
     <div
         v-if="
-            loading == false && isQuizPassed == false && !needToSelectInstructor && !aiLoading
+            loading == false &&
+            isQuizPassed == false &&
+            !needToSelectInstructor &&
+            !aiLoading
         "
     >
         <!-- Show student a warning if their take this assessment before and still wait for marking -->
@@ -578,6 +628,8 @@ export default {
                 </div>
             </div>
         </div>
+
+        <!-- Questions -->
         <div class="pb-2 pb-md-0">
             <div
                 v-if="questions.length > 0"
@@ -590,6 +642,7 @@ export default {
                         <div
                             class="col d-flex my-2 gap-2 justify-content-between flex-column flex-md-row"
                         >
+                            <!-- Question number and question -->
                             <div class="d-flex align-items-lg-center">
                                 <div id="question-number-div">
                                     {{ questionNum + 1 }}
@@ -620,7 +673,7 @@ export default {
                             </div>
                         </div>
 
-                        <!-- Multiple Choice Question -->
+                        <!-- Multiple Choice Question Answer Options-->
                         <div v-if="question.questionType == 'mc'">
                             <div
                                 v-for="(
@@ -662,7 +715,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <!-- Essay Question -->
+                <!-- Essay Question Answer Section -->
                 <div
                     :class="`${
                         questions[questionNumber].questionType == 'essay'
@@ -671,9 +724,22 @@ export default {
                     }`"
                 >
                     <div class="form-group">
-                        <EssayAnswer ref="essayAnswer" />
+                        <EssayAnswer
+                            v-show="
+                                questions[questionNumber].answer_type == 'text'
+                            "
+                            ref="essayTextAnswer"
+                        />
+                        <ImageAnswer
+                            v-show="
+                                questions[questionNumber].answer_type == 'image'
+                            "
+                            ref="essayImageAnswer"
+                        />
                     </div>
                 </div>
+
+                <!-- Quiz Navigation Buttons -->
                 <div class="mt-3 d-flex justify-content-end">
                     <button
                         v-if="questionNumber > 0"
@@ -689,8 +755,6 @@ export default {
                     >
                         Next
                     </button>
-                    <!-- <button disabled v-if="this.questionNumber == questions.length - 1 && !isAllQuestionsAnswered" @click="Submit()"
-                    class="btn green-btn">Submit</button> -->
                     <button
                         v-if="questionNumber >= questions.length - 1"
                         @click="Submit()"
