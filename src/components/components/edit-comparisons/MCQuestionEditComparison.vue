@@ -1,4 +1,5 @@
 <script>
+import diff from 'fast-diff';
 export default {
     setup() {},
     data() {
@@ -8,12 +9,91 @@ export default {
             mcQuestion: {},
             mcQuestionEdit: {},
             comment: '',
-            isEditMode: false
+            isEditMode: false,
+            // an object to store all flag to indicate content has change or not
+            changed: {
+                question: false,
+                correct_answer: false,
+                incorrect_answer_1: false,
+                incorrect_answer_2: false,
+                incorrect_answer_3: false,
+                incorrect_answer_4: false,
+                explanation: false
+            }
         };
     },
     async created() {
         await this.getMCQuestionEdit();
         await this.getMCQuestion();
+
+        // --- Compare all aspect of two question --- //
+        if (this.mcQuestion.question !== this.mcQuestionEdit.question) {
+            // find the difference between two string
+            this.changed.question = diff(
+                this.mcQuestion.question,
+                this.mcQuestion.question
+            );
+        }
+        // Belows if use the same technic as above
+        if (
+            this.mcQuestion.correct_answer !==
+            this.mcQuestionEdit.correct_answer
+        ) {
+            this.changed.correct_answer = diff(
+                this.mcQuestion.correct_answer,
+                this.mcQuestionEdit.correct_answer
+            );
+        }
+
+        if (
+            this.mcQuestion.incorrect_answer_1 !==
+            this.mcQuestionEdit.incorrect_answer_1
+        ) {
+            this.changed.incorrect_answer_1 = diff(
+                this.mcQuestion.incorrect_answer_1,
+                this.mcQuestionEdit.incorrect_answer_1
+            );
+        }
+
+        if (
+            this.mcQuestion.incorrect_answer_2 !==
+            this.mcQuestionEdit.incorrect_answer_2
+        ) {
+            this.changed.correct_answer = diff(
+                this.mcQuestion.incorrect_answer_2,
+                this.mcQuestionEdit.incorrect_answer_2
+            );
+        }
+
+        if (
+            this.mcQuestion.incorrect_answer_3 !==
+            this.mcQuestionEdit.incorrect_answer_3
+        ) {
+            this.changed.incorrect_answer_3 = diff(
+                this.mcQuestion.incorrect_answer_3,
+                this.mcQuestionEdit.incorrect_answer_3
+            );
+        }
+
+        if (
+            this.mcQuestion.incorrect_answer_4 !==
+            this.mcQuestionEdit.incorrect_answer_4
+        ) {
+            this.changed.incorrect_answer_4 = diff(
+                this.mcQuestion.incorrect_answer_4,
+                this.mcQuestionEdit.incorrect_answer_4
+            );
+        }
+
+        if (this.mcQuestion.explanation !== this.mcQuestionEdit.explanation) {
+            this.changed.explanation = diff(
+                this.mcQuestion.explanation,
+                this.mcQuestionEdit.explanation
+            );
+        }
+
+        console.log('Changed object: ');
+        console.log(this.changed);
 
         // Auto size text area to show all text without scroll bar.
         const tx = document.getElementsByTagName('textarea');
