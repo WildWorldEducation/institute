@@ -7,23 +7,26 @@ export default {
         };
     },
     setup() {},
+    mounted() {},
+
     methods: {
         //methods will be called on parent component to manipulate answer
         getAnswer() {
-            console.log('get answer');
             return this.imageAnswer;
         },
         clearAnswer() {
             this.imageAnswer = '';
         },
-        setAnswer(image) {
-            console.log('set answer');
-            this.imageAnswer = image;
-            this.image = image;
+        setAnswer(answer) {
+            this.imageAnswer = answer;
         },
         // For image upload.
         onFileChange(e) {
             var files = e.target.files || e.dataTransfer.files;
+            if (files[0].size > 15728640) {
+                alert('image is too big');
+                return;
+            }
             if (!files.length) return;
             this.createImage(files[0]);
         },
@@ -54,20 +57,10 @@ export default {
                 <div class="col-lg-4">
                     <div class="mb-3 row">
                         <div v-if="!imageAnswer">
-                            <label for="exampleFormControlInput1"
-                                >add a link:
-                            </label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="exampleFormControlInput1"
-                                v-model="imageAnswer"
-                            />
-                            <p class="mt-3">or upload an image:</p>
                             <input
                                 id="choose-avatar"
                                 type="file"
-                                accept="image/*"
+                                accept="image/jpeg, image/png, image/jpg, image/webp"
                                 @change="onFileChange"
                                 hidden
                             />

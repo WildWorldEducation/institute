@@ -260,38 +260,81 @@ export default {
         Next() {
             // Handle essay answer with summernote
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Get the answer
-                const answer = this.$refs.essayAnswer.getAnswer();
-                // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = answer;
-                // Clear the answer
-                this.$refs.essayAnswer.clearAnswer();
+                if (this.questions[this.questionNumber].answer_type == 'text') {
+                    // Get the answer
+                    const answer = this.$refs.essayTextAnswer.getAnswer();
+                    // Store user answer in questions array before move to next questions
+                    this.questions[this.questionNumber].userAnswer = answer;
+                    // Clear the answer
+                    this.$refs.essayTextAnswer.clearAnswer();
+                } else if (
+                    this.questions[this.questionNumber].answer_type == 'image'
+                ) {
+                    // Get the answer
+                    const answer = this.$refs.essayImageAnswer.getAnswer();
+                    // Store user answer in questions array before move to next questions
+                    this.questions[this.questionNumber].userAnswer = answer;
+                    // Clear the answer
+                    this.$refs.essayImageAnswer.clearAnswer();
+                }
             }
+
             // Get next question data
             this.questionNumber++;
             //  If the next question is essay question we have to handle with summernote
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Set the next answer content if there are any
                 if (this.questions[this.questionNumber].userAnswer) {
-                    this.$refs.essayAnswer.setAnswer(
-                        this.questions[this.questionNumber].userAnswer
-                    );
+                    if (
+                        this.questions[this.questionNumber].answer_type ==
+                        'text'
+                    ) {
+                        this.$refs.essayTextAnswer.setAnswer(
+                            this.questions[this.questionNumber].userAnswer
+                        );
+                    } else if (
+                        this.questions[this.questionNumber].answer_type ==
+                        'image'
+                    ) {
+                        this.$refs.essayImageAnswer.setAnswer(
+                            this.questions[this.questionNumber].userAnswer
+                        );
+                    }
                 }
             }
         },
         Previous() {
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Get the answer
-                const answer = this.$refs.essayAnswer.getAnswer();
-                // Store user answer in questions array before move to next questions
-                this.questions[this.questionNumber].userAnswer = answer;
+                if (this.questions[this.questionNumber].answer_type == 'text') {
+                    // Get the answer
+                    const answer = this.$refs.essayTextAnswer.getAnswer();
+                    // Store user answer in questions array before move to next questions
+                    this.questions[this.questionNumber].userAnswer = answer;
+                } else if (
+                    this.questions[this.questionNumber].answer_type == 'image'
+                ) {
+                    // Get the answer
+                    const answer = this.$refs.essayImageAnswer.getAnswer();
+                    // Store user answer in questions array before move to next questions
+                    this.questions[this.questionNumber].userAnswer = answer;
+                }
             }
             this.questionNumber--;
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                // Set the answer to previous answer
-                this.$refs.essayAnswer.setAnswer(
-                    this.questions[this.questionNumber].userAnswer
-                );
+                if (this.questions[this.questionNumber].answer_type == 'text') {
+                    // Set the answer to previous answer
+                    this.$refs.essayTextAnswer.setAnswer(
+                        this.questions[this.questionNumber].userAnswer
+                    );
+                }
+                if (
+                    this.questions[this.questionNumber].answer_type == 'image'
+                ) {
+                    // Set the answer to previous answer
+                    this.$refs.essayImageAnswer.setAnswer(
+                        this.questions[this.questionNumber].userAnswer
+                    );
+                }
             }
         },
         // Async because essay questions are marked on server.
@@ -302,7 +345,14 @@ export default {
             // if the last answer is also an essay question we handle it just like with the next and previous
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Get the answer
-                const answer = this.$refs.essayAnswer.getAnswer();
+                let answer;
+                if (this.questions[this.questionNumber].answer_type == 'text') {
+                    answer = this.$refs.essayTextAnswer.getAnswer();
+                } else if (
+                    this.questions[this.questionNumber].answer_type == 'image'
+                ) {
+                    answer = this.$refs.essayImageAnswer.getAnswer();
+                }
                 // Store user answer in questions array before move to next questions
                 this.questions[this.questionNumber].userAnswer = answer;
             }
@@ -439,7 +489,6 @@ export default {
                                 answer,
                                 i
                             );
-                            0
                         }
                     }
                     if (
@@ -464,7 +513,7 @@ export default {
             this.aiLoading = true;
             if (answerType == 'image' && answer == 'no image') {
                 this.questions[i].explanation =
-                    'This answer is incorrect because no photogrpah was uploaded.';
+                    'This answer is incorrect because no photograph was uploaded.';
                 this.questions[i].isCorrect = false;
                 return;
             }
@@ -676,12 +725,17 @@ export default {
                 >
                     <div class="form-group">
                         <EssayAnswer
-                            v-if="
+                            v-show="
                                 questions[questionNumber].answer_type == 'text'
                             "
-                            ref="essayAnswer"
+                            ref="essayTextAnswer"
                         />
-                        <ImageAnswer v-else ref="essayAnswer" />
+                        <ImageAnswer
+                            v-show="
+                                questions[questionNumber].answer_type == 'image'
+                            "
+                            ref="essayImageAnswer"
+                        />
                     </div>
                 </div>
 
