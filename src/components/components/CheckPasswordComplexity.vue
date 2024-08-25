@@ -102,11 +102,21 @@ export default {
             return strengthScore;
         }
     },
+    // This is necessary to get a different oldVal and newVal in the watcher.
+    computed: {
+        computedObjectToBeWatched() {
+            return Object.assign({}, this.formData);
+        }
+    },
     watch: {
-        formData: {
-            handler(newVal, oldVal) {            
+        computedObjectToBeWatched: {
+            deep: true,
+            handler(newVal, oldVal) {
                 if (newVal.password) {
-                    if (newVal.password.length > 0) {
+                    if (
+                        newVal.password.length > 0 &&
+                        newVal.password != oldVal.password
+                    ) {
                         this.showCriteria = true;
                         const passwordStrengthScore = this.checkStrength(
                             newVal.password
