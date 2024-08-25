@@ -1,4 +1,5 @@
 <script>
+import diff from 'fast-diff';
 export default {
     setup() {},
     data() {
@@ -8,12 +9,91 @@ export default {
             mcQuestion: {},
             mcQuestionEdit: {},
             comment: '',
-            isEditMode: false
+            isEditMode: false,
+            // an object to store all flag to indicate content has change or not
+            changed: {
+                question: false,
+                correct_answer: false,
+                incorrect_answer_1: false,
+                incorrect_answer_2: false,
+                incorrect_answer_3: false,
+                incorrect_answer_4: false,
+                explanation: false
+            }
         };
     },
     async created() {
         await this.getMCQuestionEdit();
         await this.getMCQuestion();
+
+        // --- Compare all aspect of two question --- //
+        if (this.mcQuestion.question !== this.mcQuestionEdit.question) {
+            // find the difference between two string
+            this.changed.question = diff(
+                this.mcQuestion.question,
+                this.mcQuestion.question
+            );
+        }
+        // Belows if use the same technic as above
+        if (
+            this.mcQuestion.correct_answer !==
+            this.mcQuestionEdit.correct_answer
+        ) {
+            this.changed.correct_answer = diff(
+                this.mcQuestion.correct_answer,
+                this.mcQuestionEdit.correct_answer
+            );
+        }
+
+        if (
+            this.mcQuestion.incorrect_answer_1 !==
+            this.mcQuestionEdit.incorrect_answer_1
+        ) {
+            this.changed.incorrect_answer_1 = diff(
+                this.mcQuestion.incorrect_answer_1,
+                this.mcQuestionEdit.incorrect_answer_1
+            );
+        }
+
+        if (
+            this.mcQuestion.incorrect_answer_2 !==
+            this.mcQuestionEdit.incorrect_answer_2
+        ) {
+            this.changed.correct_answer = diff(
+                this.mcQuestion.incorrect_answer_2,
+                this.mcQuestionEdit.incorrect_answer_2
+            );
+        }
+
+        if (
+            this.mcQuestion.incorrect_answer_3 !==
+            this.mcQuestionEdit.incorrect_answer_3
+        ) {
+            this.changed.incorrect_answer_3 = diff(
+                this.mcQuestion.incorrect_answer_3,
+                this.mcQuestionEdit.incorrect_answer_3
+            );
+        }
+
+        if (
+            this.mcQuestion.incorrect_answer_4 !==
+            this.mcQuestionEdit.incorrect_answer_4
+        ) {
+            this.changed.incorrect_answer_4 = diff(
+                this.mcQuestion.incorrect_answer_4,
+                this.mcQuestionEdit.incorrect_answer_4
+            );
+        }
+
+        if (this.mcQuestion.explanation !== this.mcQuestionEdit.explanation) {
+            this.changed.explanation = diff(
+                this.mcQuestion.explanation,
+                this.mcQuestionEdit.explanation
+            );
+        }
+
+        console.log('Changed object: ');
+        console.log(this.changed);
 
         // Auto size text area to show all text without scroll bar.
         const tx = document.getElementsByTagName('textarea');
@@ -99,7 +179,9 @@ export default {
             };
 
             var url =
-                '/questions/mc/' + this.mcQuestionEdit.mc_question_id + '/approve-edits';
+                '/questions/mc/' +
+                this.mcQuestionEdit.mc_question_id +
+                '/approve-edits';
 
             fetch(url, requestOptions).then(() => {
                 this.$router.back();
@@ -126,7 +208,9 @@ export default {
 
 <template>
     <div class="container mt-4 mb-4">
-        <h1 class="page-title">Comparison</h1>
+        <h1 class="page-title">MC Question Change Comparison</h1>
+        <hr />
+        <div class=""></div>
         <div class="row">
             <div class="col">
                 <h2>Change</h2>
@@ -208,10 +292,26 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 .page-title {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
+}
+
+.compare-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 5px;
+    padding: 10px 15px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.compare-container-tile {
+    color: #a48be7;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
 }
 </style>

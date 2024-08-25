@@ -2034,7 +2034,7 @@ h2 {
 .flag-name {
     text-decoration: none;
     font-family: 'Poppins';
-    color: #8f7bd6;
+    color: #7c3aed;
     text-overflow: ellipsis;
     /* Needed to make the over flow work */
     overflow: hidden;
@@ -2158,7 +2158,7 @@ h2 {
 }
 
 .date-cell {
-    color: #888;
+    color: #475569;
     font-family: 'Poppins' sans-serif;
     font-size: 15px;
 }
@@ -2189,14 +2189,14 @@ h2 {
 
 .user-name {
     text-align: center;
-    color: #a48be6;
+    color: #7c3aed;
     /* text-decoration: underline; */
     /* cursor: pointer; */
     width: 100%;
 }
 
 .user-role {
-    color: #888;
+    color: #475569;
     font-size: 15px;
     text-align: center;
 }

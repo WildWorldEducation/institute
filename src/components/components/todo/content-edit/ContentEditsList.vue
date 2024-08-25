@@ -21,7 +21,8 @@ export default {
             // Flag to pass to child list for loading indicate
             skillEditsLoading: true,
             mcQuestionEditsLoading: true,
-            essayQuestionEditsLoading: true
+            essayQuestionEditsLoading: true,
+            mobileNavCurrentLabel: 'skills'
         };
     },
     components: {
@@ -119,10 +120,12 @@ export default {
             return userName;
         },
         handleDropDownNavChoose(value) {
+            // Prettify the value to show
             const result = value.replace(/([A-Z])/g, ' $1');
             const finalResult =
                 result.charAt(0).toUpperCase() + result.slice(1);
-            this.activeList = finalResult;
+            this.mobileNavCurrentLabel = finalResult;
+            this.activeList = value;
             this.showDropDown = false;
         }
     }
@@ -169,13 +172,14 @@ export default {
         <div class="d-flex d-lg-none flex-column mobile-nav-bar">
             <div
                 :class="[
+                    'text-capitalize',
                     showDropDown
                         ? 'custom-select-button-focus'
                         : 'custom-select-button'
                 ]"
                 @click="showDropDown = !showDropDown"
             >
-                {{ activeList }}
+                {{ mobileNavCurrentLabel }}
                 <span>
                     <svg
                         width="20"
