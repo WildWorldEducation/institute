@@ -29,7 +29,9 @@ export default {
 
     data() {
         return {
-            user: { role: 'student' },
+            user: {
+                role: 'student'
+            },
             image: '',
             // To make the first level skills mastered for a new user.
             firstLevelSkills: [],
@@ -467,6 +469,7 @@ export default {
                                 :type="passwordVisible ? 'text' : 'password'"
                                 placeholder="Password"
                                 class="form-control"
+                                id="password-input"
                                 required
                             />
                             <!-- Show and Hide Password Section -->

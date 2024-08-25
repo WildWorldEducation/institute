@@ -421,6 +421,7 @@ export default {
             <!-- User info section -->
             <div class="col-12 px-4 px-md-0 col-lg-4 px-0 px-md-4 px-lg-0">
                 <div class="d-flex gap-4">
+                    <!-- First Name -->
                     <div class="mb-3">
                         <label for="name" class="form-label">First Name</label>
                         <input
@@ -439,6 +440,7 @@ export default {
                             please enter a first name !
                         </div>
                     </div>
+                    <!-- Last Name -->
                     <div class="mb-3">
                         <label for="name" class="form-label">Last Name</label>
                         <input
@@ -458,6 +460,7 @@ export default {
                         </div>
                     </div>
                 </div>
+                <!-- Username -->
                 <div class="mb-3">
                     <label class="form-label">Username</label>
                     <input
@@ -502,6 +505,7 @@ export default {
                             :type="passwordVisible ? 'text' : 'password'"
                             placeholder="Password"
                             class="form-control"
+                            id="password-input"
                             required
                         />
                         <!-- Show and Hide Password Section -->

@@ -22,7 +22,7 @@ export default {
         };
     },
     mounted() {
-        // To make the password criteria text dissappear when not required.
+        // To make the password criteria text disappear when not required.
         var body = document.getElementsByTagName('body')[0];
         var except = document.getElementById('password-input');
         body.addEventListener(
@@ -32,13 +32,16 @@ export default {
             },
             false
         );
-        except.addEventListener(
-            'click',
-            function (ev) {
-                ev.stopPropagation();
-            },
-            false
-        );
+        // In case the id has not been added to the password input.
+        if (except != null) {
+            except.addEventListener(
+                'click',
+                function (ev) {
+                    ev.stopPropagation();
+                },
+                false
+            );
+        }
     },
     destroyed() {},
     methods: {
@@ -99,11 +102,21 @@ export default {
             return strengthScore;
         }
     },
+    // This is necessary to get a different oldVal and newVal in the watcher.
+    computed: {
+        computedObjectToBeWatched() {
+            return Object.assign({}, this.formData);
+        }
+    },
     watch: {
-        formData: {
+        computedObjectToBeWatched: {
+            deep: true,
             handler(newVal, oldVal) {
                 if (newVal.password) {
-                    if (newVal.password.length > 0) {
+                    if (
+                        newVal.password.length > 0 &&
+                        newVal.password != oldVal.password
+                    ) {
                         this.showCriteria = true;
                         const passwordStrengthScore = this.checkStrength(
                             newVal.password
