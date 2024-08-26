@@ -677,18 +677,17 @@ export default {
 
 /* ======== Style for skill mastery comparison ========  */
 :deep(ins) {
-    background-color: rgb(113, 167, 113);
-    padding: 2px;
-    color: white;
+    background-color: #81d5b9;
+    border-radius: 4px;
+    color: black;
     text-decoration: none;
-    margin: 5px;
 }
 
 :deep(del) {
-    background-color: rgb(214, 36, 36);
-    color: white;
+    background-color: #faa5a5;
+    color: black;
     padding: 2px;
-    margin: 5px;
+    border-radius: 4px;
 }
 
 /* Slide down animation */
@@ -711,6 +710,8 @@ export default {
     transform-origin: top center;
     animation: slide 0.2s reverse;
 }
+
+/* End of sliding animation */
 
 .expand-arrow {
     margin-left: 5px;
