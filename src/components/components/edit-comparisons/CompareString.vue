@@ -42,14 +42,14 @@ export default {
     background-color: #81d5b9;
     border-radius: 4px;
     color: black;
-    text-decoration: none;
+    height: 100%;
 }
 
 .remove {
     background-color: #faa5a5;
     color: black;
-    padding: 2px;
     border-radius: 4px;
+    height: 100%;
 }
 
 .small-change-text {
