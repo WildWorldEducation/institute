@@ -40,7 +40,10 @@ export default {
             },
             showQuestionChange: true,
             showCorrectAnswerChange: true,
-            showIncorrectAnswer1Change: true
+            showIncorrectAnswer1Change: true,
+            showIncorrectAnswer2Change: true,
+            showIncorrectAnswer3Change: true,
+            showIncorrectAnswer4Change: true
         };
     },
     components: {
@@ -117,12 +120,24 @@ export default {
             this.mcQuestion.incorrect_answer_2 !==
             this.mcQuestionEdit.incorrect_answer_2
         ) {
-            this.changed.correct_answer = diff(
+            this.changed.incorrect_answer_2 = diff(
                 this.mcQuestion.incorrect_answer_2,
                 this.mcQuestionEdit.incorrect_answer_2
             );
+
+            // counting add and remove token in string diff array
+            this.changeCount.incorrectAnswer2Add =
+                this.changed.incorrect_answer_2.filter((e) => {
+                    return e[0] === 1;
+                }).length;
+
+            this.changeCount.incorrectAnswer2Remove =
+                this.changed.incorrect_answer_2.filter((e) => {
+                    return e[0] === -1;
+                }).length;
         }
 
+        // --- Incorrect Answer 3
         if (
             this.mcQuestion.incorrect_answer_3 !==
             this.mcQuestionEdit.incorrect_answer_3
@@ -131,8 +146,19 @@ export default {
                 this.mcQuestion.incorrect_answer_3,
                 this.mcQuestionEdit.incorrect_answer_3
             );
+            // counting add and remove token in string diff array
+            this.changeCount.incorrectAnswer3Add =
+                this.changed.incorrect_answer_3.filter((e) => {
+                    return e[0] === 1;
+                }).length;
+
+            this.changeCount.incorrectAnswer3Remove =
+                this.changed.incorrect_answer_3.filter((e) => {
+                    return e[0] === -1;
+                }).length;
         }
 
+        // --- Incorrect Answer 4
         if (
             this.mcQuestion.incorrect_answer_4 !==
             this.mcQuestionEdit.incorrect_answer_4
@@ -141,6 +167,17 @@ export default {
                 this.mcQuestion.incorrect_answer_4,
                 this.mcQuestionEdit.incorrect_answer_4
             );
+
+            // counting add and remove token in string diff array
+            this.changeCount.incorrectAnswer4Add =
+                this.changed.incorrect_answer_4.filter((e) => {
+                    return e[0] === 1;
+                }).length;
+
+            this.changeCount.incorrectAnswer4Remove =
+                this.changed.incorrect_answer_4.filter((e) => {
+                    return e[0] === -1;
+                }).length;
         }
 
         if (this.mcQuestion.explanation !== this.mcQuestionEdit.explanation) {
@@ -379,6 +416,7 @@ export default {
         </div>
         <!-- ----| Answers Compare Container |---- -->
         <div class="compare-container mt-5">
+            <!-- --Correct answer-- -->
             <div class="d-flex flex-column">
                 <!-- --Correct answer-- -->
                 <div class="d-flex align-items-center">
@@ -499,8 +537,8 @@ export default {
             <div class="my-4">
                 <hr />
             </div>
+            <!-- --Incorrect Answer 1-- -->
             <div class="d-flex flex-column">
-                <!-- --Correct answer-- -->
                 <div class="d-flex align-items-center">
                     <h2 class="compare-container-tile mb-3">
                         Incorrect Answer 1
@@ -614,6 +652,390 @@ export default {
                                             v-if="changed.incorrect_answer_1"
                                             :diffString="
                                                 changed.incorrect_answer_1
+                                            "
+                                        />
+                                        <div v-else>No changed Happened</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
+            </div>
+            <div class="my-4">
+                <hr />
+            </div>
+            <!-- --Incorrect Answer 2-- -->
+            <div class="d-flex flex-column">
+                <div class="d-flex align-items-center">
+                    <h2 class="compare-container-tile mb-3">
+                        Incorrect Answer 2
+                    </h2>
+                    <div
+                        @click="
+                            showIncorrectAnswer2Change =
+                                !showIncorrectAnswer2Change
+                        "
+                        :class="[
+                            showIncorrectAnswer2Change
+                                ? 'expand-arrow'
+                                : 'minimize-arrow'
+                        ]"
+                        b-on-hover
+                        :title="
+                            showIncorrectAnswer2Change ? 'minimize' : 'expand'
+                        "
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="16"
+                            heigh="16"
+                            fill="#475569"
+                        >
+                            <path
+                                d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <Transition name="dropdown">
+                    <div v-if="showIncorrectAnswer2Change">
+                        <div class="d-flex flex-column">
+                            <div class="d-flex flex-row-reverse gap-4 mb-3">
+                                <div class="add-count">
+                                    <span class="plus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#1aa375"
+                                        >
+                                            <path
+                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.incorrectAnswer2Add }}
+                                    addition
+                                </div>
+                                <div class="remove-count">
+                                    <span class="minus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#ea6c6c"
+                                        >
+                                            <path
+                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.incorrectAnswer2Remove }}
+                                    removal
+                                </div>
+                            </div>
+                            <div class="d-flex flex-lg-row flex-column">
+                                <!-- Old Banner -->
+                                <div class="old-container general-container">
+                                    <div class="container-tile">Original</div>
+                                    <div class="container-content">
+                                        {{ mcQuestion.incorrect_answer_2 }}
+                                    </div>
+                                </div>
+                                <!-- Long arrow pointing right -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="50"
+                                    height="50"
+                                    fill="#ac90e8"
+                                    class="d-none d-lg-block my-auto mx-1"
+                                >
+                                    <path
+                                        d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
+                                    />
+                                </svg>
+                                <!-- Long arrow pointing down on tablet and mobile-->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 320 512"
+                                    fill="#ac90e8"
+                                    height="50"
+                                    width="50"
+                                    class="mx-auto my-2 d-lg-none"
+                                >
+                                    <path
+                                        d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
+                                    />
+                                </svg>
+                                <!-- New Banner -->
+                                <div class="new-container general-container">
+                                    <div class="container-tile">Changed</div>
+                                    <div class="container-content">
+                                        <CompareString
+                                            v-if="changed.incorrect_answer_2"
+                                            :diffString="
+                                                changed.incorrect_answer_2
+                                            "
+                                        />
+                                        <div v-else>No changed Happened</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
+            </div>
+            <div class="my-4">
+                <hr />
+            </div>
+            <!-- --Incorrect Answer 3-- -->
+            <div class="d-flex flex-column">
+                <div class="d-flex align-items-center">
+                    <h2 class="compare-container-tile mb-3">
+                        Incorrect Answer 3
+                    </h2>
+                    <div
+                        @click="
+                            showIncorrectAnswer3Change =
+                                !showIncorrectAnswer3Change
+                        "
+                        :class="[
+                            showIncorrectAnswer3Change
+                                ? 'expand-arrow'
+                                : 'minimize-arrow'
+                        ]"
+                        b-on-hover
+                        :title="
+                            showIncorrectAnswer3Change ? 'minimize' : 'expand'
+                        "
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="16"
+                            heigh="16"
+                            fill="#475569"
+                        >
+                            <path
+                                d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <Transition name="dropdown">
+                    <div v-if="showIncorrectAnswer3Change">
+                        <div class="d-flex flex-column">
+                            <div class="d-flex flex-row-reverse gap-4 mb-3">
+                                <div class="add-count">
+                                    <span class="plus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#1aa375"
+                                        >
+                                            <path
+                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.incorrectAnswer3Add }}
+                                    addition
+                                </div>
+                                <div class="remove-count">
+                                    <span class="minus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#ea6c6c"
+                                        >
+                                            <path
+                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.incorrectAnswer3Remove }}
+                                    removal
+                                </div>
+                            </div>
+                            <div class="d-flex flex-lg-row flex-column">
+                                <!-- Old Banner -->
+                                <div class="old-container general-container">
+                                    <div class="container-tile">Original</div>
+                                    <div class="container-content">
+                                        {{ mcQuestion.incorrect_answer_3 }}
+                                    </div>
+                                </div>
+                                <!-- Long arrow pointing right -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="50"
+                                    height="50"
+                                    fill="#ac90e8"
+                                    class="d-none d-lg-block my-auto mx-1"
+                                >
+                                    <path
+                                        d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
+                                    />
+                                </svg>
+                                <!-- Long arrow pointing down on tablet and mobile-->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 320 512"
+                                    fill="#ac90e8"
+                                    height="50"
+                                    width="50"
+                                    class="mx-auto my-2 d-lg-none"
+                                >
+                                    <path
+                                        d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
+                                    />
+                                </svg>
+                                <!-- New Banner -->
+                                <div class="new-container general-container">
+                                    <div class="container-tile">Changed</div>
+                                    <div class="container-content">
+                                        <CompareString
+                                            v-if="changed.incorrect_answer_3"
+                                            :diffString="
+                                                changed.incorrect_answer_3
+                                            "
+                                        />
+                                        <div v-else>No changed Happened</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
+            </div>
+            <div class="my-4">
+                <hr />
+            </div>
+            <!-- --Incorrect Answer 4-- -->
+            <div class="d-flex flex-column">
+                <div class="d-flex align-items-center">
+                    <h2 class="compare-container-tile mb-3">
+                        Incorrect Answer 4
+                    </h2>
+                    <div
+                        @click="
+                            showIncorrectAnswer4Change =
+                                !showIncorrectAnswer4Change
+                        "
+                        :class="[
+                            showIncorrectAnswer4Change
+                                ? 'expand-arrow'
+                                : 'minimize-arrow'
+                        ]"
+                        b-on-hover
+                        :title="
+                            showIncorrectAnswer4Change ? 'minimize' : 'expand'
+                        "
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="16"
+                            heigh="16"
+                            fill="#475569"
+                        >
+                            <path
+                                d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <Transition name="dropdown">
+                    <div v-if="showIncorrectAnswer4Change">
+                        <div class="d-flex flex-column">
+                            <div class="d-flex flex-row-reverse gap-4 mb-3">
+                                <div class="add-count">
+                                    <span class="plus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#1aa375"
+                                        >
+                                            <path
+                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.incorrectAnswer4Add }}
+                                    addition
+                                </div>
+                                <div class="remove-count">
+                                    <span class="minus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#ea6c6c"
+                                        >
+                                            <path
+                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.incorrectAnswer4Remove }}
+                                    removal
+                                </div>
+                            </div>
+                            <div class="d-flex flex-lg-row flex-column">
+                                <!-- Old Banner -->
+                                <div class="old-container general-container">
+                                    <div class="container-tile">Original</div>
+                                    <div class="container-content">
+                                        {{ mcQuestion.incorrect_answer_4 }}
+                                    </div>
+                                </div>
+                                <!-- Long arrow pointing right -->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="50"
+                                    height="50"
+                                    fill="#ac90e8"
+                                    class="d-none d-lg-block my-auto mx-1"
+                                >
+                                    <path
+                                        d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
+                                    />
+                                </svg>
+                                <!-- Long arrow pointing down on tablet and mobile-->
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 320 512"
+                                    fill="#ac90e8"
+                                    height="50"
+                                    width="50"
+                                    class="mx-auto my-2 d-lg-none"
+                                >
+                                    <path
+                                        d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
+                                    />
+                                </svg>
+                                <!-- New Banner -->
+                                <div class="new-container general-container">
+                                    <div class="container-tile">Changed</div>
+                                    <div class="container-content">
+                                        <CompareString
+                                            v-if="changed.incorrect_answer_4"
+                                            :diffString="
+                                                changed.incorrect_answer_4
                                             "
                                         />
                                         <div v-else>No changed Happened</div>
