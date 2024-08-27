@@ -56,6 +56,7 @@ export default {
     async created() {
         await this.getMCQuestionEdit();
         await this.getMCQuestion();
+        console.log(this.mcQuestion);
         this.compareEdit();
     },
     methods: {
@@ -176,10 +177,10 @@ export default {
             }
         },
         applyMcQuestionChange() {
+            this.compareEdit();
             this.isEditMode = false;
             this.$parent.disableBtn = false;
             this.mcQuestionEdit = this.tempMcQuestionEdit;
-            this.compareEdit();
         },
         cancelEditMcQuestion() {
             this.isEditMode = false;
@@ -188,7 +189,10 @@ export default {
         // --- Compare all aspect of two question --- //
         compareEdit() {
             // --- Question Content
-            if (this.mcQuestion.question !== this.mcQuestionEdit.question) {
+            if (
+                this.mcQuestion.question !== this.mcQuestionEdit.question ||
+                this.isEditMode
+            ) {
                 // find the difference between two string
                 this.changed.question = diff(
                     this.mcQuestion.question,
@@ -210,7 +214,8 @@ export default {
             // --- Correct Answer
             if (
                 this.mcQuestion.correct_answer !==
-                this.mcQuestionEdit.correct_answer
+                    this.mcQuestionEdit.correct_answer ||
+                this.isEditMode
             ) {
                 this.changed.correct_answer = diff(
                     this.mcQuestion.correct_answer,
@@ -232,7 +237,8 @@ export default {
             // --- Incorrect Answer 1
             if (
                 this.mcQuestion.incorrect_answer_1 !==
-                this.mcQuestionEdit.incorrect_answer_1
+                    this.mcQuestionEdit.incorrect_answer_1 ||
+                this.isEditMode
             ) {
                 this.changed.incorrect_answer_1 = diff(
                     this.mcQuestion.incorrect_answer_1,
@@ -253,7 +259,8 @@ export default {
             // --- Incorrect Answer 2
             if (
                 this.mcQuestion.incorrect_answer_2 !==
-                this.mcQuestionEdit.incorrect_answer_2
+                    this.mcQuestionEdit.incorrect_answer_2 ||
+                this.isEditMode
             ) {
                 this.changed.incorrect_answer_2 = diff(
                     this.mcQuestion.incorrect_answer_2,
@@ -275,7 +282,8 @@ export default {
             // --- Incorrect Answer 3
             if (
                 this.mcQuestion.incorrect_answer_3 !==
-                this.mcQuestionEdit.incorrect_answer_3
+                    this.mcQuestionEdit.incorrect_answer_3 ||
+                this.isEditMode
             ) {
                 this.changed.incorrect_answer_3 = diff(
                     this.mcQuestion.incorrect_answer_3,
@@ -296,7 +304,8 @@ export default {
             // --- Incorrect Answer 4
             if (
                 this.mcQuestion.incorrect_answer_4 !==
-                this.mcQuestionEdit.incorrect_answer_4
+                    this.mcQuestionEdit.incorrect_answer_4 ||
+                this.isEditMode
             ) {
                 this.changed.incorrect_answer_4 = diff(
                     this.mcQuestion.incorrect_answer_4,
@@ -317,7 +326,9 @@ export default {
 
             // --- Explanation
             if (
-                this.mcQuestion.explanation !== this.mcQuestionEdit.explanation
+                this.mcQuestion.explanation !==
+                    this.mcQuestionEdit.explanation ||
+                this.isEditMode
             ) {
                 this.changed.explanation = diff(
                     this.mcQuestion.explanation,
@@ -344,6 +355,17 @@ export default {
     <div class="container mt-4 mb-4">
         <h1 ref="pageTile" class="page-title">MC Question Change Comparison</h1>
         <hr />
+        <!-- ---General info of skills -->
+        <div class="d-flex flex-column gap-2 mb-3">
+            <div class="d-flex gap-2 align-items-center">
+                <div class="compare-container-tile">Skill:</div>
+                <div class="minor-text">{{ mcQuestion.skill_name }}</div>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <div class="compare-container-tile">Level:</div>
+                <div class="minor-text">{{ mcQuestion.skill_level }}</div>
+            </div>
+        </div>
         <div class="d-flex flex-row-reverse my-3">
             <div
                 class="btn green-btn d-flex align-items-center"

@@ -131,6 +131,12 @@ h2 {
     background-color: #31a797;
 }
 
+:depp(.minor-text) {
+    color: #475569;
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+}
+
 .disable-btn {
     background-color: #707281;
     color: white;

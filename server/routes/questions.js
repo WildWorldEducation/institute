@@ -94,7 +94,7 @@ router.delete('/essay/:id', (req, res, next) => {
 router.get('/mc/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM mc_questions WHERE id=' + req.params.id;
+        let sqlQuery = 'SELECT mc_questions.*, skills.name as skill_name, skills.level as skill_level FROM mc_questions JOIN skills ON mc_questions.skill_id = skills.id WHERE mc_questions.id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
