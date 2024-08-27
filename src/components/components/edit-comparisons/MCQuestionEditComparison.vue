@@ -1,6 +1,7 @@
 <script>
 import diff from 'fast-diff';
 import CompareString from './CompareString.vue';
+import { nextTick } from 'vue';
 
 export default {
     setup() {},
@@ -10,8 +11,10 @@ export default {
             userId: this.$route.params.userId,
             mcQuestion: {},
             mcQuestionEdit: {},
+            tempMcQuestionEdit: {},
             comment: '',
             isEditMode: false,
+            showHighLight: true,
             // an object to store all flag to indicate content has change or not
             changed: {
                 question: false,
@@ -53,168 +56,7 @@ export default {
     async created() {
         await this.getMCQuestionEdit();
         await this.getMCQuestion();
-
-        // --- Compare all aspect of two question --- //
-        // --- Question Content
-        if (this.mcQuestion.question !== this.mcQuestionEdit.question) {
-            // find the difference between two string
-            this.changed.question = diff(
-                this.mcQuestion.question,
-                this.mcQuestionEdit.question
-            );
-            // counting add and remove token in string diff array
-            this.changeCount.questionAdd = this.changed.question.filter((e) => {
-                return e[0] === 1;
-            }).length;
-
-            this.changeCount.questionRemove = this.changed.question.filter(
-                (e) => {
-                    return e[0] === -1;
-                }
-            ).length;
-        }
-        // --- Correct Answer
-        if (
-            this.mcQuestion.correct_answer !==
-            this.mcQuestionEdit.correct_answer
-        ) {
-            this.changed.correct_answer = diff(
-                this.mcQuestion.correct_answer,
-                this.mcQuestionEdit.correct_answer
-            );
-
-            // counting add and remove token in string diff array
-            this.changeCount.correctAnswerAdd =
-                this.changed.correct_answer.filter((e) => {
-                    return e[0] === 1;
-                }).length;
-
-            this.changeCount.correctAnswerRemove =
-                this.changed.correct_answer.filter((e) => {
-                    return e[0] === -1;
-                }).length;
-        }
-
-        // --- Incorrect Answer 1
-        if (
-            this.mcQuestion.incorrect_answer_1 !==
-            this.mcQuestionEdit.incorrect_answer_1
-        ) {
-            this.changed.incorrect_answer_1 = diff(
-                this.mcQuestion.incorrect_answer_1,
-                this.mcQuestionEdit.incorrect_answer_1
-            );
-            // counting add and remove token in string diff array
-            this.changeCount.incorrectAnswer1Add =
-                this.changed.incorrect_answer_1.filter((e) => {
-                    return e[0] === 1;
-                }).length;
-
-            this.changeCount.incorrectAnswer1Remove =
-                this.changed.incorrect_answer_1.filter((e) => {
-                    return e[0] === -1;
-                }).length;
-        }
-
-        // --- Incorrect Answer 2
-        if (
-            this.mcQuestion.incorrect_answer_2 !==
-            this.mcQuestionEdit.incorrect_answer_2
-        ) {
-            this.changed.incorrect_answer_2 = diff(
-                this.mcQuestion.incorrect_answer_2,
-                this.mcQuestionEdit.incorrect_answer_2
-            );
-
-            // counting add and remove token in string diff array
-            this.changeCount.incorrectAnswer2Add =
-                this.changed.incorrect_answer_2.filter((e) => {
-                    return e[0] === 1;
-                }).length;
-
-            this.changeCount.incorrectAnswer2Remove =
-                this.changed.incorrect_answer_2.filter((e) => {
-                    return e[0] === -1;
-                }).length;
-        }
-
-        // --- Incorrect Answer 3
-        if (
-            this.mcQuestion.incorrect_answer_3 !==
-            this.mcQuestionEdit.incorrect_answer_3
-        ) {
-            this.changed.incorrect_answer_3 = diff(
-                this.mcQuestion.incorrect_answer_3,
-                this.mcQuestionEdit.incorrect_answer_3
-            );
-            // counting add and remove token in string diff array
-            this.changeCount.incorrectAnswer3Add =
-                this.changed.incorrect_answer_3.filter((e) => {
-                    return e[0] === 1;
-                }).length;
-
-            this.changeCount.incorrectAnswer3Remove =
-                this.changed.incorrect_answer_3.filter((e) => {
-                    return e[0] === -1;
-                }).length;
-        }
-
-        // --- Incorrect Answer 4
-        if (
-            this.mcQuestion.incorrect_answer_4 !==
-            this.mcQuestionEdit.incorrect_answer_4
-        ) {
-            this.changed.incorrect_answer_4 = diff(
-                this.mcQuestion.incorrect_answer_4,
-                this.mcQuestionEdit.incorrect_answer_4
-            );
-
-            // counting add and remove token in string diff array
-            this.changeCount.incorrectAnswer4Add =
-                this.changed.incorrect_answer_4.filter((e) => {
-                    return e[0] === 1;
-                }).length;
-
-            this.changeCount.incorrectAnswer4Remove =
-                this.changed.incorrect_answer_4.filter((e) => {
-                    return e[0] === -1;
-                }).length;
-        }
-
-        // --- Explanation
-        if (this.mcQuestion.explanation !== this.mcQuestionEdit.explanation) {
-            this.changed.explanation = diff(
-                this.mcQuestion.explanation,
-                this.mcQuestionEdit.explanation
-            );
-
-            // counting add and remove token in string diff array
-            this.changeCount.explanationAdd = this.changed.explanation.filter(
-                (e) => {
-                    return e[0] === 1;
-                }
-            ).length;
-
-            this.changeCount.explanationRemove =
-                this.changed.explanation.filter((e) => {
-                    return e[0] === -1;
-                }).length;
-        }
-
-        // Auto size text area to show all text without scroll bar.
-        const tx = document.getElementsByTagName('textarea');
-        for (let i = 0; i < tx.length; i++) {
-            tx[i].setAttribute(
-                'style',
-                'height:' + tx[i].scrollHeight + 'px;overflow-y:hidden;'
-            );
-            tx[i].addEventListener('input', OnInput, false);
-        }
-
-        function OnInput() {
-            this.style.height = 'auto';
-            this.style.height = this.scrollHeight + 'px';
-        }
+        this.compareEdit();
     },
     methods: {
         async getMCQuestionEdit() {
@@ -264,7 +106,34 @@ export default {
             }
         },
         edit() {
+            // initiate a temp data of mc question edit
+            this.tempMcQuestionEdit = this.mcQuestionEdit;
             this.isEditMode = true;
+            this.$parent.disableBtn = true;
+            // Auto size text area to show all text without scroll bar in next tick where the text area will appear.
+            nextTick(() => {
+                const tx = document.getElementsByTagName('textarea');
+                for (let i = 0; i < tx.length; i++) {
+                    tx[i].setAttribute(
+                        'style',
+                        'height:' + tx[i].scrollHeight + 'px;overflow-y:hidden;'
+                    );
+                    tx[i].addEventListener('input', OnInput, false);
+                }
+
+                function OnInput() {
+                    this.style.height = 'auto';
+                    this.style.height = this.scrollHeight + 'px';
+                }
+            });
+
+            // Scroll to page tile header
+            const el = this.$refs.pageTile;
+
+            if (el) {
+                // Use el.scrollIntoView() to instantly scroll to the element
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
         },
         saveEdit() {
             const requestOptions = {
@@ -307,6 +176,167 @@ export default {
             if (result.error) {
                 console.log(result.error);
             }
+        },
+        applyMcQuestionChange() {
+            this.isEditMode = false;
+            this.$parent.disableBtn = false;
+            this.mcQuestionEdit = this.tempMcQuestionEdit;
+            this.compareEdit();
+        },
+        cancelEditMcQuestion() {
+            this.isEditMode = false;
+            this.$parent.disableBtn = false;
+        },
+        // --- Compare all aspect of two question --- //
+        compareEdit() {
+            // --- Question Content
+            if (this.mcQuestion.question !== this.mcQuestionEdit.question) {
+                // find the difference between two string
+                this.changed.question = diff(
+                    this.mcQuestion.question,
+                    this.mcQuestionEdit.question
+                );
+                // counting add and remove token in string diff array
+                this.changeCount.questionAdd = this.changed.question.filter(
+                    (e) => {
+                        return e[0] === 1;
+                    }
+                ).length;
+
+                this.changeCount.questionRemove = this.changed.question.filter(
+                    (e) => {
+                        return e[0] === -1;
+                    }
+                ).length;
+            }
+            // --- Correct Answer
+            if (
+                this.mcQuestion.correct_answer !==
+                this.mcQuestionEdit.correct_answer
+            ) {
+                this.changed.correct_answer = diff(
+                    this.mcQuestion.correct_answer,
+                    this.mcQuestionEdit.correct_answer
+                );
+
+                // counting add and remove token in string diff array
+                this.changeCount.correctAnswerAdd =
+                    this.changed.correct_answer.filter((e) => {
+                        return e[0] === 1;
+                    }).length;
+
+                this.changeCount.correctAnswerRemove =
+                    this.changed.correct_answer.filter((e) => {
+                        return e[0] === -1;
+                    }).length;
+            }
+
+            // --- Incorrect Answer 1
+            if (
+                this.mcQuestion.incorrect_answer_1 !==
+                this.mcQuestionEdit.incorrect_answer_1
+            ) {
+                this.changed.incorrect_answer_1 = diff(
+                    this.mcQuestion.incorrect_answer_1,
+                    this.mcQuestionEdit.incorrect_answer_1
+                );
+                // counting add and remove token in string diff array
+                this.changeCount.incorrectAnswer1Add =
+                    this.changed.incorrect_answer_1.filter((e) => {
+                        return e[0] === 1;
+                    }).length;
+
+                this.changeCount.incorrectAnswer1Remove =
+                    this.changed.incorrect_answer_1.filter((e) => {
+                        return e[0] === -1;
+                    }).length;
+            }
+
+            // --- Incorrect Answer 2
+            if (
+                this.mcQuestion.incorrect_answer_2 !==
+                this.mcQuestionEdit.incorrect_answer_2
+            ) {
+                this.changed.incorrect_answer_2 = diff(
+                    this.mcQuestion.incorrect_answer_2,
+                    this.mcQuestionEdit.incorrect_answer_2
+                );
+
+                // counting add and remove token in string diff array
+                this.changeCount.incorrectAnswer2Add =
+                    this.changed.incorrect_answer_2.filter((e) => {
+                        return e[0] === 1;
+                    }).length;
+
+                this.changeCount.incorrectAnswer2Remove =
+                    this.changed.incorrect_answer_2.filter((e) => {
+                        return e[0] === -1;
+                    }).length;
+            }
+
+            // --- Incorrect Answer 3
+            if (
+                this.mcQuestion.incorrect_answer_3 !==
+                this.mcQuestionEdit.incorrect_answer_3
+            ) {
+                this.changed.incorrect_answer_3 = diff(
+                    this.mcQuestion.incorrect_answer_3,
+                    this.mcQuestionEdit.incorrect_answer_3
+                );
+                // counting add and remove token in string diff array
+                this.changeCount.incorrectAnswer3Add =
+                    this.changed.incorrect_answer_3.filter((e) => {
+                        return e[0] === 1;
+                    }).length;
+
+                this.changeCount.incorrectAnswer3Remove =
+                    this.changed.incorrect_answer_3.filter((e) => {
+                        return e[0] === -1;
+                    }).length;
+            }
+
+            // --- Incorrect Answer 4
+            if (
+                this.mcQuestion.incorrect_answer_4 !==
+                this.mcQuestionEdit.incorrect_answer_4
+            ) {
+                this.changed.incorrect_answer_4 = diff(
+                    this.mcQuestion.incorrect_answer_4,
+                    this.mcQuestionEdit.incorrect_answer_4
+                );
+
+                // counting add and remove token in string diff array
+                this.changeCount.incorrectAnswer4Add =
+                    this.changed.incorrect_answer_4.filter((e) => {
+                        return e[0] === 1;
+                    }).length;
+
+                this.changeCount.incorrectAnswer4Remove =
+                    this.changed.incorrect_answer_4.filter((e) => {
+                        return e[0] === -1;
+                    }).length;
+            }
+
+            // --- Explanation
+            if (
+                this.mcQuestion.explanation !== this.mcQuestionEdit.explanation
+            ) {
+                this.changed.explanation = diff(
+                    this.mcQuestion.explanation,
+                    this.mcQuestionEdit.explanation
+                );
+
+                // counting add and remove token in string diff array
+                this.changeCount.explanationAdd =
+                    this.changed.explanation.filter((e) => {
+                        return e[0] === 1;
+                    }).length;
+
+                this.changeCount.explanationRemove =
+                    this.changed.explanation.filter((e) => {
+                        return e[0] === -1;
+                    }).length;
+            }
         }
     }
 };
@@ -314,8 +344,42 @@ export default {
 
 <template>
     <div class="container mt-4 mb-4">
-        <h1 class="page-title">MC Question Change Comparison</h1>
+        <h1 ref="pageTile" class="page-title">MC Question Change Comparison</h1>
         <hr />
+        <div class="d-flex flex-row-reverse my-3">
+            <div
+                class="btn green-btn d-flex align-items-center"
+                @click="showHighLight = !showHighLight"
+            >
+                {{ showHighLight ? 'Hide' : 'Show' }} Hight Light
+                <svg
+                    v-if="showHighLight"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 576 512"
+                    width="30"
+                    height="30"
+                    fill="white"
+                    class="ms-2"
+                >
+                    <path
+                        d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"
+                    />
+                </svg>
+                <svg
+                    v-else
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 512"
+                    width="30"
+                    height="30"
+                    fill="white"
+                    class="ms-2"
+                >
+                    <path
+                        d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm9.4 130.3C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5l-41.9-33zM192 256c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5z"
+                    />
+                </svg>
+            </div>
+        </div>
         <!-- ----| Question Compare Container |---- -->
         <div class="compare-container">
             <div class="d-flex align-items-center">
@@ -341,8 +405,9 @@ export default {
                     </svg>
                 </div>
             </div>
+            <!-- Compare Content -->
             <Transition name="dropdown">
-                <div v-if="showQuestionChange">
+                <div v-if="showQuestionChange && !isEditMode">
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-row-reverse gap-4 mb-3">
                             <div class="add-count">
@@ -412,18 +477,35 @@ export default {
                                     d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
                                 />
                             </svg>
-                            <!-- New Banner -->
                             <div class="new-container general-container">
                                 <div class="container-tile">Changed</div>
                                 <div class="container-content">
                                     <CompareString
-                                        v-if="changed.question"
+                                        v-if="changed.question && showHighLight"
                                         :diffString="changed.question"
                                     />
+                                    <div
+                                        v-else-if="
+                                            changed.question && !showHighLight
+                                        "
+                                    >
+                                        {{ mcQuestionEdit.question }}
+                                    </div>
                                     <div v-else>No changed Happened</div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </Transition>
+            <!-- Editable Text area -->
+            <Transition name="dropdown">
+                <div v-if="showQuestionChange && isEditMode">
+                    <div class="d-flex flex-column">
+                        <textarea
+                            class="editable-text-area"
+                            v-model="tempMcQuestionEdit.question"
+                        ></textarea>
                     </div>
                 </div>
             </Transition>
@@ -461,7 +543,7 @@ export default {
                     </div>
                 </div>
                 <Transition name="dropdown">
-                    <div v-if="showCorrectAnswerChange">
+                    <div v-if="showCorrectAnswerChange && !isEditMode">
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-row-reverse gap-4 mb-3">
                                 <div class="add-count">
@@ -499,7 +581,6 @@ export default {
                                 </div>
                             </div>
                             <div class="d-flex flex-lg-row flex-column">
-                                <!-- Old Banner -->
                                 <div class="old-container general-container">
                                     <div class="container-tile">Original</div>
                                     <div class="container-content">
@@ -532,18 +613,39 @@ export default {
                                         d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
                                     />
                                 </svg>
-                                <!-- New Banner -->
                                 <div class="new-container general-container">
                                     <div class="container-tile">Changed</div>
                                     <div class="container-content">
                                         <CompareString
-                                            v-if="changed.correct_answer"
+                                            v-if="
+                                                changed.correct_answer &&
+                                                showHighLight
+                                            "
                                             :diffString="changed.correct_answer"
                                         />
+                                        <div
+                                            v-else-if="
+                                                changed.question &&
+                                                !showHighLight
+                                            "
+                                        >
+                                            {{ mcQuestionEdit.correct_answer }}
+                                        </div>
                                         <div v-else>No changed Happened</div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </Transition>
+                <!-- Editable Text area -->
+                <Transition name="dropdown">
+                    <div v-if="showCorrectAnswerChange && isEditMode">
+                        <div class="d-flex flex-column">
+                            <textarea
+                                class="editable-text-area"
+                                v-model="tempMcQuestionEdit.correct_answer"
+                            ></textarea>
                         </div>
                     </div>
                 </Transition>
@@ -586,7 +688,7 @@ export default {
                     </div>
                 </div>
                 <Transition name="dropdown">
-                    <div v-if="showIncorrectAnswer1Change">
+                    <div v-if="showIncorrectAnswer1Change && !isEditMode">
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-row-reverse gap-4 mb-3">
                                 <div class="add-count">
@@ -663,15 +765,39 @@ export default {
                                     <div class="container-tile">Changed</div>
                                     <div class="container-content">
                                         <CompareString
-                                            v-if="changed.incorrect_answer_1"
+                                            v-if="
+                                                changed.incorrect_answer_1 &&
+                                                showHighLight
+                                            "
                                             :diffString="
                                                 changed.incorrect_answer_1
                                             "
                                         />
+                                        <div
+                                            v-else-if="
+                                                changed.question &&
+                                                !showHighLight
+                                            "
+                                        >
+                                            {{
+                                                mcQuestionEdit.incorrect_answer_1
+                                            }}
+                                        </div>
                                         <div v-else>No changed Happened</div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </Transition>
+                <!-- Editable Text area -->
+                <Transition name="dropdown">
+                    <div v-if="showIncorrectAnswer1Change && isEditMode">
+                        <div class="d-flex flex-column">
+                            <textarea
+                                class="editable-text-area"
+                                v-model="tempMcQuestionEdit.incorrect_answer_1"
+                            ></textarea>
                         </div>
                     </div>
                 </Transition>
@@ -714,7 +840,7 @@ export default {
                     </div>
                 </div>
                 <Transition name="dropdown">
-                    <div v-if="showIncorrectAnswer2Change">
+                    <div v-if="showIncorrectAnswer2Change && !isEditMode">
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-row-reverse gap-4 mb-3">
                                 <div class="add-count">
@@ -791,15 +917,39 @@ export default {
                                     <div class="container-tile">Changed</div>
                                     <div class="container-content">
                                         <CompareString
-                                            v-if="changed.incorrect_answer_2"
+                                            v-if="
+                                                changed.incorrect_answer_2 &&
+                                                showHighLight
+                                            "
                                             :diffString="
                                                 changed.incorrect_answer_2
                                             "
                                         />
+                                        <div
+                                            v-else-if="
+                                                changed.incorrect_answer_2 &&
+                                                !showHighLight
+                                            "
+                                        >
+                                            {{
+                                                mcQuestionEdit.incorrect_answer_2
+                                            }}
+                                        </div>
                                         <div v-else>No changed Happened</div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </Transition>
+                <!-- Editable Text area -->
+                <Transition name="dropdown">
+                    <div v-if="showIncorrectAnswer2Change && isEditMode">
+                        <div class="d-flex flex-column">
+                            <textarea
+                                class="editable-text-area"
+                                v-model="tempMcQuestionEdit.incorrect_answer_2"
+                            ></textarea>
                         </div>
                     </div>
                 </Transition>
@@ -842,7 +992,7 @@ export default {
                     </div>
                 </div>
                 <Transition name="dropdown">
-                    <div v-if="showIncorrectAnswer3Change">
+                    <div v-if="showIncorrectAnswer3Change && !isEditMode">
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-row-reverse gap-4 mb-3">
                                 <div class="add-count">
@@ -919,15 +1069,39 @@ export default {
                                     <div class="container-tile">Changed</div>
                                     <div class="container-content">
                                         <CompareString
-                                            v-if="changed.incorrect_answer_3"
+                                            v-if="
+                                                changed.incorrect_answer_3 &&
+                                                showHighLight
+                                            "
                                             :diffString="
                                                 changed.incorrect_answer_3
                                             "
                                         />
+                                        <div
+                                            v-else-if="
+                                                changed.incorrect_answer_3 &&
+                                                !showHighLight
+                                            "
+                                        >
+                                            {{
+                                                mcQuestionEdit.incorrect_answer_3
+                                            }}
+                                        </div>
                                         <div v-else>No changed Happened</div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </Transition>
+                <!-- Editable Text area -->
+                <Transition name="dropdown">
+                    <div v-if="showIncorrectAnswer3Change && isEditMode">
+                        <div class="d-flex flex-column">
+                            <textarea
+                                class="editable-text-area"
+                                v-model="tempMcQuestionEdit.incorrect_answer_3"
+                            ></textarea>
                         </div>
                     </div>
                 </Transition>
@@ -970,7 +1144,7 @@ export default {
                     </div>
                 </div>
                 <Transition name="dropdown">
-                    <div v-if="showIncorrectAnswer4Change">
+                    <div v-if="showIncorrectAnswer4Change && !isEditMode">
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-row-reverse gap-4 mb-3">
                                 <div class="add-count">
@@ -1047,15 +1221,39 @@ export default {
                                     <div class="container-tile">Changed</div>
                                     <div class="container-content">
                                         <CompareString
-                                            v-if="changed.incorrect_answer_4"
+                                            v-if="
+                                                changed.incorrect_answer_4 &&
+                                                showHighLight
+                                            "
                                             :diffString="
                                                 changed.incorrect_answer_4
                                             "
                                         />
+                                        <div
+                                            v-else-if="
+                                                changed.incorrect_answer_4 &&
+                                                !showHighLight
+                                            "
+                                        >
+                                            {{
+                                                mcQuestionEdit.incorrect_answer_4
+                                            }}
+                                        </div>
                                         <div v-else>No changed Happened</div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </Transition>
+                <!-- Editable Text area -->
+                <Transition name="dropdown">
+                    <div v-if="showIncorrectAnswer4Change && isEditMode">
+                        <div class="d-flex flex-column">
+                            <textarea
+                                class="editable-text-area"
+                                v-model="tempMcQuestionEdit.incorrect_answer_4"
+                            ></textarea>
                         </div>
                     </div>
                 </Transition>
@@ -1089,7 +1287,7 @@ export default {
                 </div>
             </div>
             <Transition name="dropdown">
-                <div v-if="showExplanationChange">
+                <div v-if="showExplanationChange && !isEditMode">
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-row-reverse gap-4 mb-3">
                             <div class="add-count">
@@ -1164,9 +1362,19 @@ export default {
                                 <div class="container-tile">Changed</div>
                                 <div class="container-content">
                                     <CompareString
-                                        v-if="changed.explanation"
+                                        v-if="
+                                            changed.explanation && showHighLight
+                                        "
                                         :diffString="changed.explanation"
                                     />
+                                    <div
+                                        v-else-if="
+                                            changed.explanation &&
+                                            !showHighLight
+                                        "
+                                    >
+                                        {{ mcQuestionEdit.explanation }}
+                                    </div>
                                     <div v-else>No changed Happened</div>
                                 </div>
                             </div>
@@ -1174,6 +1382,66 @@ export default {
                     </div>
                 </div>
             </Transition>
+            <!-- Editable Text area -->
+            <Transition name="dropdown">
+                <div v-if="showExplanationChange && isEditMode">
+                    <div class="d-flex flex-column">
+                        <textarea
+                            class="editable-text-area"
+                            v-model="tempMcQuestionEdit.explanation"
+                        ></textarea>
+                    </div>
+                </div>
+            </Transition>
+        </div>
+        <!-- ----| Buttons Only Shows when User Edit question |---- -->
+        <div v-if="isEditMode" class="d-flex flex-row-reverse gap-3">
+            <div
+                class="btn green-btn d-flex align-items-center my-3"
+                @click="applyMcQuestionChange"
+            >
+                Apply
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 576 512"
+                    width="22"
+                    heigh="22"
+                    fill="white"
+                    class="ms-2"
+                >
+                    <path
+                        d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 125.7-86.8 86.8c-10.3 10.3-17.5 23.1-21 37.2l-18.7 74.9c-2.3 9.2-1.8 18.8 1.3 27.5L64 512c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zM549.8 235.7l14.4 14.4c15.6 15.6 15.6 40.9 0 56.6l-29.4 29.4-71-71 29.4-29.4c15.6-15.6 40.9-15.6 56.6 0zM311.9 417L441.1 287.8l71 71L382.9 487.9c-4.1 4.1-9.2 7-14.9 8.4l-60.1 15c-5.5 1.4-11.2-.2-15.2-4.2s-5.6-9.7-4.2-15.2l15-60.1c1.4-5.6 4.3-10.8 8.4-14.9z"
+                    />
+                </svg>
+            </div>
+            <div
+                class="btn red-btn d-flex align-items-center my-3"
+                @click="cancelEditMcQuestion"
+            >
+                Cancel
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    width="22"
+                    heigh="22"
+                    fill="white"
+                    class="ms-2"
+                >
+                    <path
+                        d="M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l384 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l384 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zm175 79c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+                    />
+                </svg>
+            </div>
+        </div>
+        <!-- ----| User comment |---- -->
+        <!-- User Comment -->
+        <div class="mt-5 w-lg-50 w-md-75 w-100 compare-container">
+            <div class="d-flex flex-md-row flex-column gap-2">
+                <h2 class="compare-container-tile mb-3">Comment:</h2>
+                <div class="comment-text">
+                    {{ mcQuestionEdit.comment }}
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -1192,6 +1460,10 @@ export default {
     border-radius: 5px;
     padding: 10px 15px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.green-btn:hover {
+    background-color: #31a797 !important;
 }
 
 .compare-container-tile {
@@ -1345,6 +1617,16 @@ export default {
     padding: 0px 5px;
 }
 
+.editable-text-area {
+    border-radius: 5px;
+    border: 1px solid rgb(46, 126, 38);
+    padding: 5px 10px;
+}
+
+.editable-text-area:focus {
+    outline: none;
+}
+
 .minus-icon {
     background-color: #f9d2d2;
     border-radius: 50%;
@@ -1352,5 +1634,12 @@ export default {
     justify-content: center;
     align-items: center;
     padding: 0px 5px;
+}
+
+.comment-text {
+    background-color: #f1f5f9;
+    border-radius: 5px;
+    padding: 15px;
+    width: 100%;
 }
 </style>
