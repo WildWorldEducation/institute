@@ -153,13 +153,10 @@ router.post(
     isAuthenticated,
     isAdmin,
     async (req, res, next) => {
-        console.log(req.body.skillToBeCopied);
-        console.log(req.body.parentOfNewInstance);
-
         let skill;
-        // Not checking if user is logged in, as this is available for guest access.
+
         res.setHeader('Content-Type', 'application/json');
-        // Get skill.
+        // Get skill that is to be copied.
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${req.body.skillToBeCopied} AND skills.is_deleted = 0`;
@@ -170,24 +167,38 @@ router.post(
                 }
                 skill = results[0];
 
-                
-                console.log(skill);
+                data = {
+                    name: skill.name + ' copy',
+                    parent: req.body.parentOfNewInstance,
+                    description: skill.description,
+                    icon_image: skill.icon_image,
+                    banner_image: skill.banner_image,
+                    mastery_requirements: skill.mastery_requirements,
+                    type: skill.type,
+                    level: skill.level,
+                    is_filtered: skill.is_filtered,
+                    order: skill.order,
+                    is_copy_of_skill_id: req.body.skillToBeCopied,
+                    display_name: skill.name
+                };
+
+                // Create the copy with new parent.
+                let sqlQuery1 = `INSERT INTO skills SET ?;`;
+                let query = conn.query(sqlQuery1, data, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
             } catch (err) {
                 next(err);
             }
         });
-
-        // Insert the new skill.
-        // let sqlQuery1 = `INSERT INTO skills SET ?;`;
-        // let query = conn.query(sqlQuery1, data, (err, results) => {
-        //     try {
-        //         if (err) {
-        //             throw err;
-        //         }
-        //     } catch (err) {
-        //         next(err);
-        //     }
-        // });
     }
 );
 

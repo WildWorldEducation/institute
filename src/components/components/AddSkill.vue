@@ -225,9 +225,6 @@ export default {
                 });
         },
         async CreateNewInstance() {
-            console.log(this.skillToBeCopied);
-            console.log(this.parentOfNewInstance);
-
             var url = '/skills/add/new-instance';
             await fetch(url, {
                 method: 'POST',
