@@ -267,38 +267,6 @@ router.get('/filtered-nested-list', (req, res, next) => {
                 }
             }
 
-            // Optional second parent.
-            for (var i = 0; i < results.length; i++) {
-                if (
-                    results[i].optional_parent_2 != null &&
-                    results[i].optional_parent_2 != 0
-                ) {
-                    var parent2Id = results[i].optional_parent_2;
-                    // go through all rows again, add children
-                    for (let j = 0; j < results.length; j++) {
-                        if (results[j].id == parent2Id) {
-                            results[j].children.push(results[i]);
-                        }
-                    }
-                }
-            }
-
-            // Optional third parent.
-            for (var i = 0; i < results.length; i++) {
-                if (
-                    results[i].optional_parent_3 != null &&
-                    results[i].optional_parent_3 != 0
-                ) {
-                    var parent3Id = results[i].optional_parent_3;
-                    // go through all rows again, add children
-                    for (let j = 0; j < results.length; j++) {
-                        if (results[j].id == parent3Id) {
-                            results[j].children.push(results[i]);
-                        }
-                    }
-                }
-            }
-
             // Add first level of array.
             let filteredNestedSkills = [];
             for (var i = 0; i < results.length; i++) {
@@ -333,7 +301,26 @@ router.get('/show/:id', (req, res, next) => {
                 throw err;
             }
             skill = results[0];
-            res.json(skill);
+
+            if (skill.is_copy_of_skill_id != null) {
+                const sqlQueryForCopiedSkillNode = `SELECT *
+                FROM skills
+                WHERE skills.id = ${skill.is_copy_of_skill_id} AND skills.is_deleted = 0`;
+
+                conn.query(sqlQueryForCopiedSkillNode, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+                        skill = results[0];
+                        res.json(skill);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } else {
+                res.json(skill);
+            }
         } catch (err) {
             next(err);
         }
@@ -471,10 +458,6 @@ router.put(
                         req.body.name +
                         `', parent = '` +
                         req.body.parent +
-                        `', optional_parent_2 = ` +
-                        req.body.optional_parent_2 +
-                        `, optional_parent_3 = ` +
-                        req.body.optional_parent_3 +
                         `, description = '` +
                         req.body.description +
                         `', icon_image = '` +
