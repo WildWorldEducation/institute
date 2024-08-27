@@ -37,9 +37,7 @@ export default {
                 tags: [],
                 type: null,
                 level: null,
-                order: null,
-                optional_parent_2: '',
-                optional_parent_3: ''
+                order: null
             },
             filterChecked: false,
             iconImage: '',
@@ -79,14 +77,7 @@ export default {
                 inputText: '',
                 suggestSuperSkills: []
             },
-            clusterSecondParentInput: {
-                inputText: '',
-                suggestSuperSkills: []
-            },
-            clusterThirdParentInput: {
-                inputText: '',
-                suggestSuperSkills: []
-            },
+
             // Validate Object for validate purpose
             validate: {
                 violated: false,
@@ -105,11 +96,7 @@ export default {
             skillNameConfirm: '',
             step2Confirm: false,
             orderArray: Array.from({ length: 20 }, (_, i) => i + 1),
-            comment: '',
-            isTwoParents: false,
-            isThreeParents: false,
-            optional_parent_2: null,
-            optional_parent_3: null
+            comment: ''
         };
     },
     async mounted() {
@@ -168,24 +155,6 @@ export default {
                         });
                         this.parentInput.inputText = parentResult.name;
                         this.clusterParentInput.inputText = parentResult.name;
-                    }
-
-                    // Optional 2nd and 3rd parents
-                    if (this.skill.optional_parent_2 != null) {
-                        this.isTwoParents = true;
-
-                        const parentResult2 = this.skills.find((element) => {
-                            return element.id === this.skill.optional_parent_2;
-                        });
-                        this.clusterSecondParentInput.inputText = parentResult2.name;
-                    }
-                    if (this.skill.optional_parent_3 != null) {
-                        this.isThreeParents = true;
-
-                        const parentResult3 = this.skills.find((element) => {
-                            return element.id === this.skill.optional_parent_3;
-                        });
-                        this.clusterThirdParentInput.inputText = parentResult3.name;
                     }
 
                     this.getSkillFilters();
@@ -276,25 +245,6 @@ export default {
         },
         // If edit is from an admin or editor.
         Submit() {
-            if (this.isTwoParents == false) {
-                this.skill.optional_parent_2 = null;
-                this.skill.optional_parent_3 = null;
-            }
-            if (this.isThreeParents == false) {
-                this.skill.optional_parent_3 = null;
-            }
-            // Check parents are not the same skill, but allow for both
-            // optional parents to be null.
-            if (
-                (this.skill.parent == this.skill.optional_parent_2 ||
-                    this.skill.parent == this.skill.optional_parent_3 ||
-                    this.skill.optional_parent_3 ==
-                        this.skill.optional_parent_2) &&
-                this.skill.optional_parent_3 != null
-            ) {
-                alert('The same skill cannot be a parent more than once.');
-                return;
-            }
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
                 var hasSubSkills = false;
@@ -375,9 +325,7 @@ export default {
                     level: this.skill.level,
                     order: this.skill.order,
                     version_number: this.skill.version_number,
-                    comment: this.comment,
-                    optional_parent_2: this.skill.optional_parent_2,
-                    optional_parent_3: this.skill.optional_parent_3
+                    comment: this.comment
                 })
             };
 
@@ -388,9 +336,9 @@ export default {
                     this.SubmitFilters();
                 })
                 .then(() => {
-                    if(this.skill.type == "domain"){
+                    if (this.skill.type == 'domain') {
                         this.router.push('/skills');
-                    }else{
+                    } else {
                         this.$router.push(`/skills/${this.skillId}`);
                     }
                 });
@@ -458,18 +406,6 @@ export default {
                 this.clusterParentInput.inputText = skill.name;
             }
         },
-        handleChooseSecondSuggestSkill(skill) {
-            // set form data
-            this.skill.optional_parent_2 = skill.id;
-            this.clusterSecondParentInput.inputText = skill.name;
-            this.clusterSecondParentInput.suggestSuperSkills = [];
-        },
-        handleChooseThirdSuggestSkill(skill) {
-            // set form data
-            this.skill.optional_parent_3 = skill.id;
-            this.clusterThirdParentInput.inputText = skill.name;
-            this.clusterThirdParentInput.suggestSuperSkills = [];
-        },
         // -----------------------------------------
         // 2 method for cluster outer skill type input
         getSuperSkillSuggestion() {
@@ -484,38 +420,6 @@ export default {
                             .toLowerCase()
                             .includes(
                                 this.clusterParentInput.inputText.toLowerCase()
-                            );
-                    });
-            }
-        },
-        getSecondSuperSkillSuggestion() {
-            // Only show the suggestion if the user type in 2 word
-            if (this.clusterSecondParentInput.inputText.length < 2) {
-                this.clusterSecondParentInput.suggestSuperSkills = [];
-            } else {
-                this.clusterSecondParentInput.suggestSuperSkills =
-                    this.skills.filter((skill) => {
-                        // Lower case so the result wont be case sensitive
-                        return skill.name
-                            .toLowerCase()
-                            .includes(
-                                this.clusterSecondParentInput.inputText.toLowerCase()
-                            );
-                    });
-            }
-        },
-        getThirdSuperSkillSuggestion() {
-            // Only show the suggestion if the user type in 2 word
-            if (this.clusterThirdParentInput.inputText.length < 2) {
-                this.clusterThirdParentInput.suggestSuperSkills = [];
-            } else {
-                this.clusterThirdParentInput.suggestSuperSkills =
-                    this.skills.filter((skill) => {
-                        // Lower case so the result wont be case sensitive
-                        return skill.name
-                            .toLowerCase()
-                            .includes(
-                                this.clusterThirdParentInput.inputText.toLowerCase()
                             );
                     });
             }
@@ -787,98 +691,6 @@ export default {
                                         class="suggest-option"
                                         v-for="skill in clusterParentInput.suggestSuperSkills"
                                         @click="handleChooseSuggestSkill(skill)"
-                                    >
-                                        {{ skill.name }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Multiple Parents? -->
-            <!-- 2 Parents? -->
-            <div class="form-check col-6 col-md-5 my-2">
-                <label class="control control-checkbox">
-                    <span class="my-auto mx-2 me-4"
-                        >Does this skill need to appear 2 places?
-                    </span>
-                    <input
-                        type="checkbox"
-                        value="true"
-                        v-model="isTwoParents"
-                    />
-                    <div class="control_indicator"></div>
-                </label>
-            </div>
-            <div v-if="isTwoParents">
-                <div class="col col-md-8 col-lg-5 mt-2">
-                    <!-- Extra Parents drop down -->
-                    <label class="form-label">Second Parent</label>
-                    <div class="row mt-3">
-                        <div class="col position-relative">
-                            <input
-                                id="skill-input"
-                                v-model="clusterSecondParentInput.inputText"
-                                @input="getSecondSuperSkillSuggestion"
-                                placeholder="type skill name"
-                            />
-                            <div
-                                v-if="
-                                    clusterSecondParentInput.suggestSuperSkills
-                                        .length > 0
-                                "
-                                id="suggest-skills"
-                                class="flex flex-column position-absolute"
-                            >
-                                <div
-                                    class="suggest-option"
-                                    v-for="skill in clusterSecondParentInput.suggestSuperSkills"
-                                    @click="handleChooseSecondSuggestSkill(skill)"
-                                >
-                                    {{ skill.name }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-check col-6 col-md-5 my-2">
-                    <label class="control control-checkbox">
-                        <span class="my-auto mx-2 me-4"
-                            >Does this skill need to appear 3 places?
-                        </span>
-                        <input
-                            type="checkbox"
-                            value="true"
-                            v-model="isThreeParents"
-                        />
-                        <div class="control_indicator"></div>
-                    </label>
-                </div>
-                <div v-if="isThreeParents">
-                    <div class="col col-md-8 col-lg-5 mt-2">
-                        <!-- Extra Parents drop down -->
-                        <label class="form-label">Third Parent</label>
-                        <div class="row mt-3">
-                            <div class="col position-relative">
-                                <input
-                                    id="skill-input"
-                                    v-model="clusterThirdParentInput.inputText"
-                                    @input="getThirdSuperSkillSuggestion"
-                                    placeholder="type skill name"
-                                />
-                                <div
-                                    v-if="
-                                        clusterThirdParentInput.suggestSuperSkills
-                                            .length > 0
-                                    "
-                                    id="suggest-skills"
-                                    class="flex flex-column position-absolute"
-                                >
-                                    <div
-                                        class="suggest-option"
-                                        v-for="skill in clusterThirdParentInput.suggestSuperSkills"
-                                        @click="handleChooseThirdSuggestSkill(skill)"
                                     >
                                         {{ skill.name }}
                                     </div>
