@@ -369,6 +369,7 @@ router.get('/show/:id', (req, res, next) => {
                             throw err;
                         }
                         skill = results[0];
+                        skill.is_copy_of_skill_id = skill.id;
                         res.json(skill);
                     } catch (err) {
                         next(err);
