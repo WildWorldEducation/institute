@@ -72,14 +72,18 @@ export default {
                 description: false,
                 orphan: false
             },
-            isAnotherInstanceOfExistingSkill: false
+            isAnotherInstanceOfExistingSkill: false,
+            skillToBeCopied: null,
+            parentOfNewInstance: null
         };
     },
     computed: {
         skillsMinusDomains() {
-            let skillsMinusDomains = this.skills.filter(function (obj) {
-                return obj.type !== 'domain';
-            });
+            let skillsMinusDomains = this.skillsStore.skillsList.filter(
+                function (obj) {
+                    return obj.type !== 'domain';
+                }
+            );
             return skillsMinusDomains;
         }
     },
@@ -220,6 +224,10 @@ export default {
                     this.$router.push('/skills');
                 });
         },
+        async CreateNewInstance() {
+            console.log(this.skillToBeCopied);
+            console.log(this.parentOfNewInstance);
+        },
         // 2 Method that handle parent dropdown
         getReferenceSkill() {
             // Only show the suggestion if the user type in 2 word
@@ -293,6 +301,8 @@ export default {
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
+
+        <!-- If making another instance of an existing skill on the tree -->
         <div class="row">
             <div class="col-12 col-md-8 col-lg-5 mt-2">
                 <div class="row p-0 m-0">
@@ -312,10 +322,21 @@ export default {
                     </div>
                 </div>
                 <div v-if="isAnotherInstanceOfExistingSkill" class="mb-3">
-                    <label class="form-label">Original Skill</label>
                     <div class="row mt-3">
-                        <select name="cars" id="cars">
-                            <option v-for="skill in skillsMinusDomains">
+                        <label class="form-label">Original Skill</label>
+                        <select v-model="skillToBeCopied">
+                            <option
+                                v-for="skill in skillsMinusDomains"
+                                :value="skill.id"
+                            >
+                                {{ skill.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="row mt-3">
+                        <label class="form-label">Parent</label>
+                        <select v-model="parentOfNewInstance">
+                            <option v-for="skill in skills" :value="skill.id">
                                 {{ skill.name }}
                             </option>
                         </select>
@@ -324,6 +345,7 @@ export default {
             </div>
         </div>
 
+        <!-- If making a new skill -->
         <div v-if="!isAnotherInstanceOfExistingSkill">
             <!-- Skill Name -->
             <div class="row mt-2">
@@ -794,8 +816,19 @@ export default {
                     <router-link class="btn red-btn" to="/skills">
                         Cancel
                     </router-link>
-                    <button class="btn purple-btn" @click="Submit()">
+                    <button
+                        v-if="!isAnotherInstanceOfExistingSkill"
+                        class="btn purple-btn"
+                        @click="Submit()"
+                    >
                         Submit
+                    </button>
+                    <button
+                        v-else
+                        class="btn purple-btn"
+                        @click="CreateNewInstance()"
+                    >
+                        Create New Instance
                     </button>
                 </div>
             </div>
