@@ -70,7 +70,6 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     this.comment = data.comment;
                     this.mcQuestionEdit = data;
                 });
@@ -81,7 +80,6 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     this.mcQuestion = data;
                 });
         },
@@ -1460,10 +1458,6 @@ export default {
     border-radius: 5px;
     padding: 10px 15px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.green-btn:hover {
-    background-color: #31a797 !important;
 }
 
 .compare-container-tile {

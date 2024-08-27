@@ -128,7 +128,7 @@ h2 {
 }
 
 :deep(.green-btn:hover) {
-    background-color: #46f7df;
+    background-color: #31a797;
 }
 
 .disable-btn {
