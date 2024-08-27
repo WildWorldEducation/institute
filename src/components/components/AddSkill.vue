@@ -71,8 +71,17 @@ export default {
                 name: false,
                 description: false,
                 orphan: false
-            }
+            },
+            isAnotherInstanceOfExistingSkill: false
         };
+    },
+    computed: {
+        skillsMinusDomains() {
+            let skillsMinusDomains = this.skills.filter(function (obj) {
+                return obj.type !== 'domain';
+            });
+            return skillsMinusDomains;
+        }
     },
     async created() {
         if (this.skillsStore.skillsList.length == 0) {
@@ -275,7 +284,7 @@ export default {
 
 <template>
     <div class="container mt-4 pb-5 px-3 px-md-0">
-        <!-- Page Tile -->
+        <!-- Page Title -->
         <div class="row mt-5">
             <div
                 class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline justify-content-center justify-content-md-start gap-3 mt-3"
@@ -284,8 +293,38 @@ export default {
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
+        <div class="row">
+            <div class="col-12 col-md-8 col-lg-5 mt-2">
+                <div class="row p-0 m-0">
+                    <div class="form-check my-2">
+                        <label class="control control-checkbox">
+                            <span class="my-auto mx-2 me-2"
+                                >Is this an existing skill that needs to appear
+                                again in the tree?</span
+                            >
+                            <input
+                                type="checkbox"
+                                value="true"
+                                v-model="isAnotherInstanceOfExistingSkill"
+                            />
+                            <div class="control_indicator"></div>
+                        </label>
+                    </div>
+                </div>
+                <div v-if="isAnotherInstanceOfExistingSkill" class="mb-3">
+                    <label class="form-label">Original Skill</label>
+                    <div class="row mt-3">
+                        <select name="cars" id="cars">
+                            <option v-for="skill in skillsMinusDomains">
+                                {{ skill.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Skill Name -->
-        <div class="row mt-5">
+        <div class="row mt-2">
             <div class="col-12 col-md-8 col-lg-5 mt-2">
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
