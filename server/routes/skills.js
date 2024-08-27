@@ -146,6 +146,51 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
     });
 });
 
+// Create a new instance of an existing skill,
+// in order to have the skill show in more than one place in the tree.
+router.post(
+    '/add/new-instance',
+    isAuthenticated,
+    isAdmin,
+    async (req, res, next) => {
+        console.log(req.body.skillToBeCopied);
+        console.log(req.body.parentOfNewInstance);
+
+        let skill;
+        // Not checking if user is logged in, as this is available for guest access.
+        res.setHeader('Content-Type', 'application/json');
+        // Get skill.
+        const sqlQuery = `SELECT *
+                          FROM skills
+                          WHERE skills.id = ${req.body.skillToBeCopied} AND skills.is_deleted = 0`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                skill = results[0];
+
+                
+                console.log(skill);
+            } catch (err) {
+                next(err);
+            }
+        });
+
+        // Insert the new skill.
+        // let sqlQuery1 = `INSERT INTO skills SET ?;`;
+        // let query = conn.query(sqlQuery1, data, (err, results) => {
+        //     try {
+        //         if (err) {
+        //             throw err;
+        //         }
+        //     } catch (err) {
+        //         next(err);
+        //     }
+        // });
+    }
+);
+
 /**
  * Get All Items
  *
