@@ -78,13 +78,13 @@ export default {
         };
     },
     computed: {
-        skillsMinusDomains() {
-            let skillsMinusDomains = this.skillsStore.skillsList.filter(
+        skillsThatCanBeCopied() {
+            let skillsThatCanBeCopied = this.skillsStore.skillsList.filter(
                 function (obj) {
-                    return obj.type !== 'domain';
+                    return obj.type !== 'domain' && obj.type !== 'super';
                 }
             );
-            return skillsMinusDomains;
+            return skillsThatCanBeCopied;
         }
     },
     async created() {
@@ -338,7 +338,7 @@ export default {
                         <label class="form-label">Original Skill</label>
                         <select v-model="skillToBeCopied">
                             <option
-                                v-for="skill in skillsMinusDomains"
+                                v-for="skill in skillsThatCanBeCopied"
                                 :value="skill"
                             >
                                 {{ skill.name }}
