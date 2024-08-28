@@ -493,7 +493,7 @@ export default {
                         <router-link
                             v-if="skill.type != 'super'"
                             class="btn purple-btn mt-3 me-3"
-                            :to="skillId + '/question-bank'"
+                            :to="skill.id + '/question-bank'"
                             >Question Bank&nbsp;&nbsp;
                             <!-- Pencil icon -->
                             <svg
