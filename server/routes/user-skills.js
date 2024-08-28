@@ -494,13 +494,24 @@ router.post('/make-mastered/:userId', (req, res, next) => {
 
         // Get a list of all skills.
         let sqlQuery1 = 'SELECT * FROM skills;';
-        let query1 = conn.query(sqlQuery1, (err, results) => {
+        conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
                 let skills = results;
 
+                // Check if the skill that was mastered has any copies in the tree,
+                // that also need to be made mastered now.
+                let allSkillsToBeMadeMastered = [];
+                allSkillsToBeMadeMastered.push(skill);
+                for (let i = 0; i < skills.length; i++) {
+                    if (skills[i].is_copy_of_skill_id == skill.id) {
+                        allSkillsToBeMadeMastered.push(skills[i]);
+                    }
+                }
+
+                // Get user skills.
                 let sqlQuery2 =
                     `
                 SELECT skills.id, name, is_accessible, is_mastered, type
@@ -525,15 +536,24 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                     `)
                 ORDER BY id;`;
 
-                let query2 = conn.query(sqlQuery2, (err, results) => {
+                conn.query(sqlQuery2, (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         }
                         let unnestedList = results;
 
-                        // Recursive function.
-                        makeMastered(req.params.userId, skill);
+                        for (
+                            let i = 0;
+                            i < allSkillsToBeMadeMastered.length;
+                            i++
+                        ) {
+                            // Recursive function.
+                            makeMastered(
+                                req.params.userId,
+                                allSkillsToBeMadeMastered[i]
+                            );
+                        }
 
                         function makeMastered(userId, skill) {
                             let value;
@@ -557,8 +577,8 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                 value +
                                 `, is_accessible=1;
                             `;
-                            //
-                            let query = conn.query(sqlQuery, (err, results) => {
+
+                            conn.query(sqlQuery, (err, results) => {
                                 try {
                                     if (err) {
                                         throw err;
