@@ -599,6 +599,7 @@ export default {
                                 :type="passwordVisible ? 'text' : 'password'"
                                 placeholder="Password"
                                 class="form-control"
+                                id="password-input"
                                 required
                             />
                             <!-- Show and Hide Password Section -->

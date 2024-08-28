@@ -1,5 +1,5 @@
 <script>
-import Assessment from '../components/Assessment.vue';
+import Assessment from '../components/assessments/Assessment.vue';
 // Import the store.
 import { useSkillsStore } from '../../stores/SkillsStore';
 

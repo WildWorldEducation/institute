@@ -269,8 +269,9 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
-                                }`,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
                             contentId: req.params.id,
                             contentType: 'mc_question'
                         },
@@ -577,8 +578,9 @@ router.put('/essay/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
-                                }`,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
                             contentId: req.params.id,
                             contentType: 'essay_question'
                         },
@@ -816,7 +818,8 @@ router.post('/essay-questions/add', (req, res, next) => {
         data = {
             name: req.body.name,
             question: req.body.question,
-            skill_id: req.body.skill_id
+            skill_id: req.body.skill_id,
+            answer_type: req.body.answer_type
         };
 
         let sqlQuery = 'INSERT INTO essay_questions SET ?';
@@ -928,13 +931,12 @@ router.get('/student-mc-questions/list', (req, res, next) => {
 });
 
 /**
- * List Student MC Questions full data 
+ * List Student MC Questions full data
  */
 router.get('/student-mc-questions/full-data-list', (req, res, next) => {
     if (req.session.userName) {
         // extra check for user role
-        if (req.session.role = 'instructor') {
-
+        if ((req.session.role = 'instructor')) {
             res.setHeader('Content-Type', 'application/json');
             let sqlQuery = `SELECT student_mc_questions.*, skills.name AS skillname, users.username AS student
                             FROM student_mc_questions JOIN users ON users.id = student_mc_questions.student_id 
@@ -1132,13 +1134,24 @@ router.post('/mark-essay-question', async (req, res, next) => {
     if (req.session.userName) {
         let question = req.body.question;
         let answer = req.body.answer;
+        let answerType = req.body.answerType;
         // Remove underscores from the variables.
         let level = req.body.level.replace('_', ' ');
-        let teacherReview = await aiMarkEssayQuestionAnswer(
-            question,
-            answer,
-            level
-        );
+        let teacherReview;
+        if (answerType == 'text') {
+            teacherReview = await aiMarkEssayTextQuestionAnswer(
+                question,
+                answer,
+                level
+            );
+        } else {
+            teacherReview = await aiMarkEssayImageQuestionAnswer(
+                question,
+                answer,
+                level
+            );
+        }
+
         let result = {
             isCorrect: teacherReview.is_correct,
             explanation: teacherReview.explanation
@@ -1149,13 +1162,14 @@ router.post('/mark-essay-question', async (req, res, next) => {
     }
 });
 
-async function aiMarkEssayQuestionAnswer(question, answer, level) {
+async function aiMarkEssayTextQuestionAnswer(question, answer, level) {
     // Create prompt for ChatGPT.
     let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
 
     Please imagine this answer comes from a student at a '${level}' level, and answer appropriately to that level.
     If it does, please return the variable 'is_correct' as true, if not, please return it as false.
-    If the answer is not correct, please explain why, by returning the variable 'explanation', containing a string that explains this.`;
+    If the answer is not correct, please explain why, by returning the variable 'explanation', containing a string that explains this.
+    `;
 
     // Prevent the app from crashing if anything goes wrong with the API call.
     try {
@@ -1181,7 +1195,60 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
-        //console.log(responseObj.is_correct);
+        console.log(responseObj);
+        return responseObj;
+    } catch (err) {
+        console.log('Error with ChatGPT API call: ' + err);
+        return;
+    }
+}
+
+/**
+ * Mark images.
+ */
+
+async function aiMarkEssayImageQuestionAnswer(question, answer, level) {
+    let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
+
+    Please imagine this answer comes from a student at a '${level}' level, and answer appropriately to that level.
+    If it does, please return the variable 'is_correct' as true, if not, please return it as false.
+    If the answer is not correct, please explain why, by returning the variable 'explanation', containing a string that explains this.
+    `;
+    // Prevent the app from crashing if anything goes wrong with the API call.
+    try {
+        const completion = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                {
+                    role: 'system',
+                    content:
+                        'You are a kind and patient teacher of someone at a ' +
+                        level +
+                        ' level.'
+                },
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'text',
+                            text: prompt + ` Please respond with a JSON object.`
+                        },
+                        {
+                            type: 'image_url',
+                            image_url: {
+                                url: answer
+                            }
+                        }
+                    ]
+                }
+            ],
+            response_format: { type: 'json_object' }
+        });
+        let responseJSON = completion.choices[0].message.content;
+        // Escape newline characters in response.
+        escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
+        // Convert string to object.
+        var responseObj = JSON.parse(escapedResponseJSON);
         return responseObj;
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
@@ -1277,8 +1344,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                mcQuestions[index].id +
-                                ' complete'
+                                    mcQuestions[index].id +
+                                    ' complete'
                             );
                             // Check the next question.
                             index++;
