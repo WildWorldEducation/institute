@@ -185,7 +185,8 @@ export default {
                 this.question.incorrect_answer_3 !== this.originalQuestion.incorrect_answer_3 ||
                 this.question.incorrect_answer_4 !== this.originalQuestion.incorrect_answer_4 ||
                 this.question.explanation !== this.originalQuestion.explanation ||
-                this.question.comment !== this.originalQuestion.comment
+                this.question.comment !== this.originalQuestion.comment ||
+                this.comment != ""
             )
         }
     }
