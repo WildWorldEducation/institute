@@ -225,7 +225,7 @@ export default {
                     <!-- Edit skill -->
                     <router-link
                         v-if="sessionDetailsStore.isLoggedIn"
-                        :to="'/skills/edit/' + skillId"
+                        :to="'/skills/edit/' + skill.id"
                         class="btn green-btn"
                         :class="{
                             'mb-1': isMobileCheck > 576,
@@ -253,7 +253,7 @@ export default {
                             userDetailsStore.role == 'admin' ||
                             userDetailsStore.role == 'editor'
                         "
-                        :to="'/skills/history/' + this.skillId"
+                        :to="'/skills/history/' + this.skill.id"
                         class="btn purple-btn mb-1"
                         style="max-height: 37.6px"
                         ><span v-if="isMobileCheck > 576">History</span>
