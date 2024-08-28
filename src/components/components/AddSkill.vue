@@ -91,7 +91,6 @@ export default {
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList();
         }
-
         if (this.skills.length == 0) await this.getParentSkills();
     },
     async mounted() {
@@ -117,7 +116,7 @@ export default {
         });
     },
     methods: {
-        getParentSkills() {
+        async getParentSkills() {
             for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
                 if (this.skillsStore.skillsList[i].type == 'super') {
                     this.superSkills.push(this.skillsStore.skillsList[i]);
@@ -334,7 +333,7 @@ export default {
                         <select v-model="skillToBeCopied">
                             <option
                                 v-for="skill in skillsMinusDomains"
-                                :value="skill.id"
+                                :value="skill"
                             >
                                 {{ skill.name }}
                             </option>
@@ -343,7 +342,7 @@ export default {
                     <div class="row mt-3">
                         <label class="form-label">Parent</label>
                         <select v-model="parentOfNewInstance">
-                            <option v-for="skill in skills" :value="skill.id">
+                            <option v-for="skill in skills" :value="skill">
                                 {{ skill.name }}
                             </option>
                         </select>

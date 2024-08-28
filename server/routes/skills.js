@@ -159,7 +159,7 @@ router.post(
         // Get skill that is to be copied.
         const sqlQuery = `SELECT *
                           FROM skills
-                          WHERE skills.id = ${req.body.skillToBeCopied} AND skills.is_deleted = 0`;
+                          WHERE skills.id = ${req.body.skillToBeCopied.id} AND skills.is_deleted = 0`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -167,9 +167,18 @@ router.post(
                 }
                 skill = results[0];
 
+                // Deal with case when skill to be copied is a sub skill,
+                // and new parent is not a super skill.
+                if (
+                    skill.type == 'sub' &&
+                    req.body.parentOfNewInstance.type != 'super'
+                ) {
+                    skill.type = 'regular';
+                }
+
                 data = {
                     name: skill.name + ' copy',
-                    parent: req.body.parentOfNewInstance,
+                    parent: req.body.parentOfNewInstance.id,
                     description: skill.description,
                     icon_image: skill.icon_image,
                     banner_image: skill.banner_image,
@@ -178,7 +187,7 @@ router.post(
                     level: skill.level,
                     is_filtered: skill.is_filtered,
                     order: skill.order,
-                    is_copy_of_skill_id: req.body.skillToBeCopied,
+                    is_copy_of_skill_id: req.body.skillToBeCopied.id,
                     display_name: skill.name
                 };
 
@@ -212,11 +221,12 @@ router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM skills WHERE skills.is_deleted = 0';
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
+
                 res.json(results);
             } catch (err) {
                 next(err);

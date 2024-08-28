@@ -137,7 +137,6 @@ export default {
                     if (this.skill.is_copy_of_skill_id != null) {
                         this.isAnotherInstanceOfExistingSkill = true;
                     }
-                    console.log(this.skill);
                 })
                 .then(() => {
                     this.iconImage = this.skill.icon_image;
@@ -162,8 +161,6 @@ export default {
                         this.parentInput.inputText = parentResult.name;
                         this.clusterParentInput.inputText = parentResult.name;
                     }
-
-                    console.log(this.skill);
 
                     this.getSkillFilters();
                 });
