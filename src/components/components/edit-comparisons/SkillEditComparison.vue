@@ -700,14 +700,14 @@ export default {
 .added-block {
     height: 20px;
     width: 20px;
-    background-color: rgb(113, 167, 113);
+    background-color: #81d5b9;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .remove-block {
     height: 20px;
     width: 20px;
-    background-color: rgb(214, 36, 36);
+    background-color: #faa5a5;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
@@ -723,14 +723,16 @@ export default {
     background-color: #81d5b9;
     border-radius: 4px;
     color: black;
+
     text-decoration: none;
 }
 
 :deep(del) {
     background-color: #faa5a5;
     color: black;
-    padding: 2px;
+
     border-radius: 4px;
+    text-decoration-color: black;
 }
 
 /* Slide down animation */

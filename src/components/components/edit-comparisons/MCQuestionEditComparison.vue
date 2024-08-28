@@ -366,6 +366,7 @@ export default {
                 <div class="minor-text">{{ mcQuestion.skill_level }}</div>
             </div>
         </div>
+        <!-- ----Show and hide Hight light Button-->
         <div class="d-flex flex-row-reverse my-3">
             <div
                 class="btn green-btn d-flex align-items-center"
@@ -429,6 +430,7 @@ export default {
             <Transition name="dropdown">
                 <div v-if="showQuestionChange && !isEditMode">
                     <div class="d-flex flex-column">
+                        <!-- Addition and removal count section -->
                         <div class="d-flex flex-row-reverse gap-4 mb-3">
                             <div class="add-count">
                                 <span class="plus-icon">

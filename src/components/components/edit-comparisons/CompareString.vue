@@ -50,6 +50,7 @@ export default {
     color: black;
     border-radius: 4px;
     height: 100%;
+    text-decoration-line: line-through;
 }
 
 .small-change-text {
