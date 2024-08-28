@@ -368,25 +368,29 @@ router.get('/show/:id', (req, res, next) => {
             }
             skill = results[0];
 
-            if (skill.is_copy_of_skill_id != null) {
-                const sqlQueryForCopiedSkillNode = `SELECT *
+            if (typeof skill !== 'undefined' && skill) {
+                if (skill.is_copy_of_skill_id != null) {
+                    const sqlQueryForCopiedSkillNode = `SELECT *
                 FROM skills
                 WHERE skills.id = ${skill.is_copy_of_skill_id} AND skills.is_deleted = 0`;
 
-                conn.query(sqlQueryForCopiedSkillNode, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
+                    conn.query(sqlQueryForCopiedSkillNode, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            skill = results[0];
+                            skill.is_copy_of_skill_id = skill.id;
+                            res.json(skill);
+                        } catch (err) {
+                            next(err);
                         }
-                        skill = results[0];
-                        skill.is_copy_of_skill_id = skill.id;
-                        res.json(skill);
-                    } catch (err) {
-                        next(err);
-                    }
-                });
+                    });
+                } else {
+                    res.json(skill);
+                }
             } else {
-                res.json(skill);
+                res.end();
             }
         } catch (err) {
             next(err);
@@ -523,7 +527,7 @@ router.put(
                     let updateRecordSQLQuery =
                         `UPDATE skills SET name = '` +
                         req.body.name +
-                        `', parent = '` +
+                        `', parent = ` +
                         req.body.parent +
                         `, description = '` +
                         req.body.description +

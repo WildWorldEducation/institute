@@ -74,8 +74,6 @@ export default {
             const res = await fetch('/skills/show/' + this.skillId);
             this.skill = await res.json();
 
-            console.log(this.skill);
-
             // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
 
