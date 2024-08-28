@@ -1489,22 +1489,6 @@ export default {
     font-size: 22px;
 }
 
-.compare-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-radius: 5px;
-    padding: 10px 15px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.compare-container-tile {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 22px;
-}
-
 .old-container {
     position: relative;
     background-color: white;
