@@ -232,7 +232,13 @@ export default {
                     skillToBeCopied: this.skillToBeCopied,
                     parentOfNewInstance: this.parentOfNewInstance
                 })
-            });
+            })
+                .then(() => {
+                    this.skillsStore.getNestedSkillsList();
+                })
+                .then(() => {
+                    this.$router.push('/skills');
+                });
         },
         // 2 Method that handle parent dropdown
         getReferenceSkill() {
