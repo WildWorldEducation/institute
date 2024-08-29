@@ -113,7 +113,7 @@ router.get('/essay/show/:id', (req, res) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
-            'SELECT * FROM essay_questions WHERE id=' + req.params.id;
+            'SELECT essay_questions.*, skills.name as skill_name, skills.level as skill_level FROM essay_questions JOIN skills ON skills.id = essay_questions.skill_id WHERE essay_questions.id=' + req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

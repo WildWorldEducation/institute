@@ -19,7 +19,13 @@ export default {
         ContentFlagsView
     },
     computed: {},
-    async mounted() {},
+    async mounted() {
+        // Get navigation state from URL
+        const nav = this.$route.query.nav;
+        if (nav) {
+            this.activeContent = nav;
+        }
+    },
     methods: {
         hideNavBar() {
             this.showNavBar = false;

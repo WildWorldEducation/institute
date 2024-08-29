@@ -137,6 +137,13 @@ h2 {
     font-family: 'Poppins', sans-serif;
 }
 
+:deep(.compare-container-tile) {
+    color: #a48be7;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+}
+
 .disable-btn {
     background-color: #707281;
     color: white;

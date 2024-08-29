@@ -609,12 +609,6 @@ export default {
     font-weight: 600;
 }
 
-.minor-text {
-    color: #475569;
-    font-size: 18px;
-    font-family: 'Poppins', sans-serif;
-}
-
 .banner-image {
     width: auto;
     height: auto;
@@ -640,13 +634,6 @@ export default {
     border-radius: 5px;
     padding: 10px 15px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.compare-container-tile {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 22px;
 }
 
 .old-container {
@@ -713,14 +700,14 @@ export default {
 .added-block {
     height: 20px;
     width: 20px;
-    background-color: rgb(113, 167, 113);
+    background-color: #81d5b9;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .remove-block {
     height: 20px;
     width: 20px;
-    background-color: rgb(214, 36, 36);
+    background-color: #faa5a5;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
@@ -736,14 +723,15 @@ export default {
     background-color: #81d5b9;
     border-radius: 4px;
     color: black;
+
     text-decoration: none;
 }
 
 :deep(del) {
     background-color: #faa5a5;
     color: black;
-    padding: 2px;
     border-radius: 4px;
+    text-decoration-color: black;
 }
 
 /* Slide down animation */

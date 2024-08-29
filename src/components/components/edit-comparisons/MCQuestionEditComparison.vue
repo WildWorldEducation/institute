@@ -366,6 +366,7 @@ export default {
                 <div class="minor-text">{{ mcQuestion.skill_level }}</div>
             </div>
         </div>
+        <!-- ----Show and hide Hight light Button-->
         <div class="d-flex flex-row-reverse my-3">
             <div
                 class="btn green-btn d-flex align-items-center"
@@ -429,6 +430,7 @@ export default {
             <Transition name="dropdown">
                 <div v-if="showQuestionChange && !isEditMode">
                     <div class="d-flex flex-column">
+                        <!-- Addition and removal count section -->
                         <div class="d-flex flex-row-reverse gap-4 mb-3">
                             <div class="add-count">
                                 <span class="plus-icon">
@@ -1471,22 +1473,6 @@ export default {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
-}
-
-.compare-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-radius: 5px;
-    padding: 10px 15px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.compare-container-tile {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 22px;
 }
 
 .compare-container {

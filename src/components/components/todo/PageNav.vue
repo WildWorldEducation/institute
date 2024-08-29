@@ -14,6 +14,7 @@ export default {
     methods: {
         changeActiveContent(content) {
             this.$parent.activeContent = content;
+            this.$router.push({ query: { nav: content } });
         }
     },
     async mounted() {
