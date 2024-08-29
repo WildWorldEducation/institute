@@ -35,6 +35,10 @@ export default {
         await this.getSkillEditsSubmittedForReview();
         await this.getMCQuestionEditsSubmittedForReview();
         await this.getEssayQuestionEditsSubmittedForReview();
+        const list = this.$route.query.list;
+        if (list) {
+            this.activeList = list;
+        }
     },
     methods: {
         // Get the skill edits that have been submitted for review.
@@ -127,6 +131,7 @@ export default {
             this.mobileNavCurrentLabel = finalResult;
             this.activeList = value;
             this.showDropDown = false;
+            this.$router.push({ query: { list: value, nav: 'editList' } });
         }
     }
 };
@@ -144,7 +149,7 @@ export default {
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
             <div
                 :class="[activeList === 'skills' ? 'active-nav' : 'normal-nav']"
-                @click="activeList = 'skills'"
+                @click="handleDropDownNavChoose('skills')"
             >
                 Skills
             </div>
@@ -152,7 +157,7 @@ export default {
                 :class="[
                     activeList === 'mcQuestions' ? 'active-nav' : 'normal-nav'
                 ]"
-                @click="activeList = 'mcQuestions'"
+                @click="handleDropDownNavChoose('mcQuestions')"
             >
                 Multiple Choice Questions
             </div>
@@ -162,7 +167,7 @@ export default {
                         ? 'active-nav'
                         : 'normal-nav'
                 ]"
-                @click="activeList = 'writtenQuestions'"
+                @click="handleDropDownNavChoose('writtenQuestions')"
             >
                 Essay Questions
             </div>

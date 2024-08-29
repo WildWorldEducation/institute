@@ -730,7 +730,6 @@ export default {
 :deep(del) {
     background-color: #faa5a5;
     color: black;
-
     border-radius: 4px;
     text-decoration-color: black;
 }
