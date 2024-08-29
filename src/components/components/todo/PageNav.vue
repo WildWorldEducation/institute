@@ -165,6 +165,7 @@ export default {
 .icon-div {
     cursor: pointer;
     border: none;
+    background-color: inherit;
 }
 
 .icon-div:hover {
@@ -189,10 +190,20 @@ export default {
     color: #f8fafc;
 }
 
+.nav-bar-item:focus {
+    border: 2px solid white;
+    background-color: #b8a6db;
+    border: none;
+}
+
 .active-item {
     background-color: #a083da;
     padding: 5px 10px;
     color: white;
+}
+
+.active-item:focus {
+    border: 2px solid rgb(112, 39, 207);
 }
 
 /* Navbar slide Animation */
