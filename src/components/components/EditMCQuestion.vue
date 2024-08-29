@@ -23,7 +23,8 @@ export default {
                 incorrect_answer2: false,
                 incorrect_answer3: false,
                 incorrect_answer4: false,
-                explanation: false
+                explanation: false,
+                originalQuestion: {}
             },
             comment: ''
         };
@@ -37,7 +38,10 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => (this.question = data));
+                .then((data) => {
+                    this.question = data;
+                    this.originalQuestion = {...data}
+                });
         },
         // If edit is from an admin or editor.
         Submit() {
@@ -165,6 +169,25 @@ export default {
             } else if (submissionType == 'submissionForReview') {
                 this.SubmitForReview();
             }
+        },
+        setFormUpdated(){
+            this.formUpdated = true;
+        }
+    },
+    computed:{
+        isFormChanged(){
+            return (
+                this.question.name !== this.originalQuestion.name ||
+                this.question.question !== this.originalQuestion.question ||
+                this.question.correct_answer !== this.originalQuestion.correct_answer ||
+                this.question.incorrect_answer_1 !== this.originalQuestion.incorrect_answer_1 ||
+                this.question.incorrect_answer_2 !== this.originalQuestion.incorrect_answer_2 ||
+                this.question.incorrect_answer_3 !== this.originalQuestion.incorrect_answer_3 ||
+                this.question.incorrect_answer_4 !== this.originalQuestion.incorrect_answer_4 ||
+                this.question.explanation !== this.originalQuestion.explanation ||
+                this.question.comment !== this.originalQuestion.comment ||
+                this.comment != ""
+            )
         }
     }
 };
@@ -365,6 +388,7 @@ export default {
                             "
                             class="btn purple-btn"
                             @click="ValidateForm('submission')"
+                            :disabled="!isFormChanged"
                         >
                             Submit
                         </button>
@@ -375,6 +399,7 @@ export default {
                             "
                             class="btn purple-btn"
                             @click="ValidateForm('submissionForReview')"
+                            :disabled="!isFormChanged"
                         >
                             <div class="d-none d-md-block">
                                 Submit for review
