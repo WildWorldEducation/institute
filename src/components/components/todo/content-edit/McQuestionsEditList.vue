@@ -55,6 +55,15 @@ export default {
             <template #loading>
                 <img src="/images/loading.gif" alt="loading data" />
             </template>
+
+            <!-- --- Name Router Column --- -->
+            <template #item-name="{ name, mc_question_id, user_id }">
+                <RouterLink
+                    class="cell-link"
+                    :to="`/content-edit/${mc_question_id}/${user_id}/comparison?type=mcquestion`"
+                    >{{ name }}</RouterLink
+                >
+            </template>
         </Vue3EasyDataTable>
         <!-- Mobile Table -->
         <Vue3EasyDataTable
@@ -71,6 +80,14 @@ export default {
             <!-- --- Loading Part --- -->
             <template #loading>
                 <img src="/images/loading.gif" alt="loading data" />
+            </template>
+            <!-- --- Name Router Column --- -->
+            <template #item-name="{ name, mc_question_id, user_id }">
+                <RouterLink
+                    class="cell-link"
+                    :to="`/content-edit/${mc_question_id}/${user_id}/comparison?type=mcquestion`"
+                    >{{ name }}</RouterLink
+                >
             </template>
         </Vue3EasyDataTable>
     </div>
@@ -94,5 +111,16 @@ export default {
 
 .customize-table :deep(tbody tr:hover) {
     cursor: pointer;
+}
+
+.cell-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.cell-link:focus {
+    border: 1px #8f7bd6 solid;
+    border-color: #4523be !important;
+    border-radius: 5px;
 }
 </style>
