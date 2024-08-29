@@ -35,6 +35,7 @@ export default {
         await this.getSkillEditsSubmittedForReview();
         await this.getMCQuestionEditsSubmittedForReview();
         await this.getEssayQuestionEditsSubmittedForReview();
+        // Get navigation state from URL
         const list = this.$route.query.list;
         if (list) {
             this.activeList = list;

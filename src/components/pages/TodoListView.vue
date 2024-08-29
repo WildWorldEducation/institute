@@ -20,6 +20,7 @@ export default {
     },
     computed: {},
     async mounted() {
+        // Get navigation state from URL
         const nav = this.$route.query.nav;
         if (nav) {
             this.activeContent = nav;
