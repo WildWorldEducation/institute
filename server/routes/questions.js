@@ -1267,7 +1267,7 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
 /**
  * AI Mark image questions.
  */
-router.post('/mark-images-question', async (req, res, next) => {
+router.post('/mark-image-question', async (req, res, next) => {
     if (req.session.userName) {
         let question = req.body.question;
         let answer = req.body.answer;
@@ -1335,6 +1335,7 @@ async function aiMarkImageQuestionAnswer(question, answer, level) {
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
+        console.log(responseObj);
         return responseObj;
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
