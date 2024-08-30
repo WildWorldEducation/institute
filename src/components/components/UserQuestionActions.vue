@@ -26,6 +26,7 @@ export default {
             });
             const createTime = parseDate.toLocaleTimeString();
             this.rows.push({
+                question_name: contentObj.question_name,
                 skillName: contentObj.skill_name,
                 resourceId: question.content_id,
                 skillId: contentObj.skill_id,
@@ -80,11 +81,11 @@ export default {
                     - {{ question.action }}
                 </span>
                 <span v-if="question.type === 'mc_question'">
-                    mc_question in question bank of skill:
+                    {{' "'+question.question_name+'"'}} in question bank of skill:
                 </span>
 
                 <span v-if="question.type === 'essay_question'">
-                    essay question in question bank of skill:
+                    essay question {{' "'+question.question_name+'"'}} in question bank of skill:
                 </span>
                 <!-- Show link to skill if it is not deleted else show a warn modal-->
                 <span

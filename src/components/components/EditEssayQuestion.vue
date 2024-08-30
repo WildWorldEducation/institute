@@ -19,7 +19,8 @@ export default {
                 name: false,
                 question: false
             },
-            comment: ''
+            comment: '',
+            originalQuestion: {}
         };
     },
     created() {
@@ -31,7 +32,10 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => (this.question = data));
+                .then((data) => {
+                    this.question = data;
+                    this.originalQuestion = {...data}
+                });
         },
         // If edit is from an admin or editor.
         Submit() {
@@ -97,6 +101,15 @@ export default {
             } else if (submissionType == 'submissionForReview') {
                 this.SubmitForReview();
             }
+        }
+    },
+    computed:{
+        isFormChanged(){
+            return (
+                this.question.name !== this.originalQuestion.name ||
+                this.question.question !== this.originalQuestion.question ||
+                this.comment != ""
+            )
         }
     }
 };
@@ -182,6 +195,7 @@ export default {
                             "
                             @click="ValidateForm('submission')"
                             class="btn purple-btn"
+                            :disabled="!isFormChanged"
                         >
                             Submit
                         </button>
@@ -192,6 +206,7 @@ export default {
                             "
                             class="btn purple-btn"
                             @click="ValidateForm('submissionForReview')"
+                            :disabled="!isFormChanged"
                         >
                             <div class="d-none d-md-block">
                                 Submit for review
