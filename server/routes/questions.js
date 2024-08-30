@@ -718,6 +718,27 @@ router.get('/:skillId/essay', (req, res, next) => {
     }
 });
 
+// Load essay type questions.
+router.get('/:skillId/image', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT * 
+            FROM image_questions 
+            WHERE skill_id = ${req.params.skillId}
+            AND is_deleted = 0;`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Used to get flagged essay question AND in mark assessment Component
 // Load all essay type questions.
 router.get('/essay/list', (req, res, next) => {
@@ -1177,29 +1198,20 @@ const openai = new OpenAI({
 });
 
 /**
- * Mark essay questions.
+ * AI Mark essay questions.
  */
 router.post('/mark-essay-question', async (req, res, next) => {
     if (req.session.userName) {
         let question = req.body.question;
         let answer = req.body.answer;
-        let answerType = req.body.answerType;
         // Remove underscores from the variables.
         let level = req.body.level.replace('_', ' ');
         let teacherReview;
-        if (answerType == 'text') {
-            teacherReview = await aiMarkEssayTextQuestionAnswer(
-                question,
-                answer,
-                level
-            );
-        } else {
-            teacherReview = await aiMarkEssayImageQuestionAnswer(
-                question,
-                answer,
-                level
-            );
-        }
+        teacherReview = await aiMarkEssayQuestionAnswer(
+            question,
+            answer,
+            level
+        );
 
         let result = {
             isCorrect: teacherReview.is_correct,
@@ -1211,7 +1223,7 @@ router.post('/mark-essay-question', async (req, res, next) => {
     }
 });
 
-async function aiMarkEssayTextQuestionAnswer(question, answer, level) {
+async function aiMarkEssayQuestionAnswer(question, answer, level) {
     // Create prompt for ChatGPT.
     let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
 
@@ -1253,10 +1265,35 @@ async function aiMarkEssayTextQuestionAnswer(question, answer, level) {
 }
 
 /**
+ * AI Mark image questions.
+ */
+router.post('/mark-images-question', async (req, res, next) => {
+    if (req.session.userName) {
+        let question = req.body.question;
+        let answer = req.body.answer;
+        // Remove underscores from the variables.
+        let level = req.body.level.replace('_', ' ');
+        let teacherReview;
+        teacherReview = await aiMarkImageQuestionAnswer(
+            question,
+            answer,
+            level
+        );
+
+        let result = {
+            isCorrect: teacherReview.is_correct,
+            explanation: teacherReview.explanation
+        };
+        res.json(result);
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
  * Mark images.
  */
-
-async function aiMarkEssayImageQuestionAnswer(question, answer, level) {
+async function aiMarkImageQuestionAnswer(question, answer, level) {
     let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
 
     Please imagine this answer comes from a student at a '${level}' level, and answer appropriately to that level.

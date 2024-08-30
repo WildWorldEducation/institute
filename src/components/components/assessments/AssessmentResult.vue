@@ -288,14 +288,8 @@ export default {
                 <!-- For Essay Questions Only -->
                 <div v-else>
                     <span class="explain-label">Your answer:</span>
-                    <div
-                        v-if="question.answer_type == 'text'"
-                        class="explain-text"
-                    >
+                    <div class="explain-text">
                         {{ question.userAnswer }}
-                    </div>
-                    <div v-else class="explain-text">
-                        <img width="100" :src="question.userAnswer" />
                     </div>
                 </div>
                 <!-- Question explanation -->

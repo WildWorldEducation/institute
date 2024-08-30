@@ -58,11 +58,11 @@ router.get('/list/:assessmentId', (req, res, next) => {
 });
 
 /**
- * Add Item
+ * Add Unmarked Essay Answer
  *
  * @return response()
  */
-router.post('/add/:assessmentId', (req, res, next) => {
+router.post('/add/essay/:assessmentId', (req, res, next) => {
     if (req.session.userName) {
         // No need to escape single quotes for SQL to accept,
         // as using '?'.
@@ -74,7 +74,7 @@ router.post('/add/:assessmentId', (req, res, next) => {
             question_id: req.body.questionId
         };
         let sqlQuery = 'INSERT INTO unmarked_essay_answers SET ?';
-        let query = conn.query(sqlQuery, data, (err, results) => {
+        conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -89,6 +89,8 @@ router.post('/add/:assessmentId', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+
 
 /**
  * Delete Item
