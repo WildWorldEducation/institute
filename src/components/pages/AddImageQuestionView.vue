@@ -42,10 +42,10 @@ export default {
                     name: this.question.name,
                     question: this.question.question,
                     skill_id: this.skillId,
-                    num_images_required: this.numImagesRequired
+                    num_images_required: this.question.numImagesRequired
                 })
             };
-            var url = '/questions/essay-questions/add';
+            var url = '/questions/image-questions/add';
             fetch(url, requestOptions)
                 .then(() => {
                     alert('Question added');

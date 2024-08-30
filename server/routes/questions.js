@@ -94,7 +94,9 @@ router.delete('/essay/:id', (req, res, next) => {
 router.get('/mc/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT mc_questions.*, skills.name as skill_name, skills.level as skill_level FROM mc_questions JOIN skills ON mc_questions.skill_id = skills.id WHERE mc_questions.id=' + req.params.id;
+        let sqlQuery =
+            'SELECT mc_questions.*, skills.name as skill_name, skills.level as skill_level FROM mc_questions JOIN skills ON mc_questions.skill_id = skills.id WHERE mc_questions.id=' +
+            req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -113,7 +115,8 @@ router.get('/essay/show/:id', (req, res) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
-            'SELECT essay_questions.*, skills.name as skill_name, skills.level as skill_level FROM essay_questions JOIN skills ON skills.id = essay_questions.skill_id WHERE essay_questions.id=' + req.params.id;
+            'SELECT essay_questions.*, skills.name as skill_name, skills.level as skill_level FROM essay_questions JOIN skills ON skills.id = essay_questions.skill_id WHERE essay_questions.id=' +
+            req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -833,6 +836,52 @@ router.post('/essay-questions/add', (req, res, next) => {
                         action: 'create',
                         content_id: results.insertId,
                         content_type: 'essay_question',
+                        user_id: req.session.userId
+                    };
+                    const addActionQuery = `INSERT INTO user_actions SET?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Create a single New Essay Question Manually (not from CSV.)
+ *
+ * @return response()
+ */
+router.post('/image-questions/add', (req, res, next) => {
+    if (req.session.userName) {
+        // No need to escape single quotes for SQL to accept,
+        // as using '?'.
+        // Add data.
+        let data = {};
+        data = {
+            name: req.body.name,
+            question: req.body.question,
+            skill_id: req.body.skill_id,
+            num_images_required: req.body.num_images_required
+        };
+
+        let sqlQuery = 'INSERT INTO image_questions SET ?';
+        conn.query(sqlQuery, data, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // add create action into user_actions table
+                    const actionData = {
+                        action: 'create',
+                        content_id: results.insertId,
+                        content_type: 'image_question',
                         user_id: req.session.userId
                     };
                     const addActionQuery = `INSERT INTO user_actions SET?`;

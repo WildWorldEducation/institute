@@ -1,6 +1,18 @@
-<script setup>
+<script>
 import AddMCQuestion from '../components/AddMCQuestion.vue';
 import AddEssayQuestion from '../components/AddEssayQuestion.vue';
+
+export default {
+    data() {
+        return {
+            skillId: this.$route.params.id
+        };
+    },
+    components: {
+        AddMCQuestion,
+        AddEssayQuestion
+    }
+};
 </script>
 
 <template>
