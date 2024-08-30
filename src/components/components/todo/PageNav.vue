@@ -263,6 +263,7 @@ export default {
     outline: none;
     border: none;
     background-color: inherit;
+    padding: 0px;
 }
 
 .minimize-navbar:hover:focus .group {
