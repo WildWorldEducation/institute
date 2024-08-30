@@ -300,6 +300,10 @@ export default {
     padding: 5px 20px;
 }
 
+.active-nav:focus {
+    outline: solid 2px #4a3091;
+}
+
 /* Style For The Custom Select */
 .custom-select-button {
     width: 200px;
