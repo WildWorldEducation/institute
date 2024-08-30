@@ -132,6 +132,18 @@ const router = createRouter({
                 import('../components/pages/EditEssayQuestionView.vue')
         },
         {
+            path: '/image-questions/:skillId/add',
+            name: 'add-image-question',
+            component: () =>
+                import('../components/pages/AddImageQuestionView.vue')
+        },
+        {
+            path: '/image-questions/edit/:id',
+            name: 'edit-image-question',
+            component: () =>
+                import('../components/pages/EditImageQuestionView.vue')
+        },
+        {
             path: '/skills/:id/assessment',
             name: 'assessment',
             component: () => import('../components/pages/AssessmentView.vue')
