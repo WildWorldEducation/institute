@@ -112,15 +112,4 @@ export default {
 .customize-table :deep(tbody tr:hover) {
     cursor: pointer;
 }
-
-.cell-link {
-    text-decoration: none;
-    color: inherit;
-}
-
-.cell-link:focus {
-    border: 1px #8f7bd6 solid;
-    border-color: #4523be !important;
-    border-radius: 5px;
-}
 </style>

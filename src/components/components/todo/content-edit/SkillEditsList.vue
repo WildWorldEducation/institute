@@ -85,6 +85,14 @@ export default {
             <template #loading>
                 <img src="/images/loading.gif" alt="loading data" />
             </template>
+            <!-- --- Skill Name Router Column --- -->
+            <template #item-name="{ name, skill_id, user_id }">
+                <RouterLink
+                    class="cell-link"
+                    :to="`/content-edit/${skill_id}/${user_id}/comparison?type=skill`"
+                    >{{ name }}</RouterLink
+                >
+            </template>
         </Vue3EasyDataTable>
         <!-- Mobile table -->
         <Vue3EasyDataTable

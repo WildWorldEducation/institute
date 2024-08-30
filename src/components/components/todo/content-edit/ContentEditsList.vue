@@ -286,6 +286,11 @@ export default {
     border-radius: 8px;
 }
 
+.normal-nav:focus {
+    outline: none;
+    border: 1px solid #9c7eec;
+}
+
 .active-nav {
     background-color: #8666ca;
     border: 1px solid grey;
@@ -418,6 +423,18 @@ export default {
 .custom-dropdown-option:hover {
     cursor: pointer;
     background: #bca3ff1a;
+}
+
+:deep(.cell-link) {
+    text-decoration: none;
+    color: inherit;
+}
+
+:deep(.cell-link:focus) {
+    border: 1px #8f7bd6 solid;
+    border-color: #4523be !important;
+    border-radius: 5px;
+    outline: none;
 }
 
 /* End of CSS style for Custom Select */
