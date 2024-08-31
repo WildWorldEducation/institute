@@ -696,9 +696,11 @@ router.put('/image/:id/edit', (req, res, next) => {
             name +
             `', question = '` +
             question +
+            `', num_images_required = '` +
+            req.body.num_images_required +
             `' WHERE id = ` +
             req.params.id;
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;

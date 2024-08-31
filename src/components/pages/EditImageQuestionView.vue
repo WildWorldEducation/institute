@@ -44,7 +44,8 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: this.question.name,
-                    question: this.question.question
+                    question: this.question.question,
+                    num_images_required: this.question.num_images_required
                 })
             };
 
@@ -62,6 +63,7 @@ export default {
                     userId: this.userDetailsStore.userId,
                     name: this.question.name,
                     question: this.question.question,
+                    num_images_required: this.question.num_images_required,
                     comment: this.comment
                 })
             };
@@ -167,6 +169,21 @@ export default {
                         >
                             please enter question content !
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            >Number of Images Required
+                        </label>
+                        <select
+                            class="form-control"
+                            v-model="question.num_images_required"
+                        >
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
                     </div>
 
                     <!--Optional comment if this is a student/instructor submitting an edit for review --->
