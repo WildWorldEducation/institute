@@ -10,8 +10,8 @@ export default {
         return {
             headers: [
                 { text: 'User', value: 'userName' },
-                { text: 'Question Name', value: 'name' },
-                { text: 'Question Content', value: 'question' },
+                { text: 'Name', value: 'name' },
+                { text: 'Content', value: 'question' },
                 { text: 'Skill', value: 'skill_name' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }

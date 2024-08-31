@@ -34,7 +34,8 @@ export default {
                 })
                 .then((data) => {
                     this.question = data;
-                    this.originalQuestion = {...data}
+                    this.originalQuestion = { ...data };
+                    console.log(this.question);
                 });
         },
         // If edit is from an admin or editor.
@@ -62,7 +63,8 @@ export default {
                     userId: this.userDetailsStore.userId,
                     name: this.question.name,
                     question: this.question.question,
-                    comment: this.comment
+                    comment: this.comment,
+                    skillId: this.question.skill_id
                 })
             };
 
@@ -103,13 +105,13 @@ export default {
             }
         }
     },
-    computed:{
-        isFormChanged(){
+    computed: {
+        isFormChanged() {
             return (
                 this.question.name !== this.originalQuestion.name ||
                 this.question.question !== this.originalQuestion.question ||
-                this.comment != ""
-            )
+                this.comment != ''
+            );
         }
     }
 };
