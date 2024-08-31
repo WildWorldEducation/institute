@@ -728,6 +728,58 @@ router.put('/image/:id/edit', (req, res, next) => {
     }
 });
 
+/**
+ * Submit Image question edit for review.
+ */
+router.post('/image/:id/edit-for-review', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+        if (req.body.comment != null)
+            req.body.comment = req.body.comment.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery = `INSERT INTO image_questions_awaiting_approval (image_question_id, user_id, name, question, num_images_required, comment)
+                        VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}', '${req.body.num_images_required}','${req.body.comment}')
+
+                        ON DUPLICATE KEY
+                        UPDATE date = CURRENT_TIMESTAMP(), name = '${name}', question = '${question}', num_images_required = '${req.body.num_images_required}', comment = '${req.body.comment}';`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    recordUserAction(
+                        {
+                            userId: req.body.userId,
+                            userAction: 'submit_update_for_review',
+                            contentType: 'image_question',
+                            contentId: req.params.id
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
+                        }
+                    );
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Load all essay type questions.
 router.get('/essay/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
