@@ -20,6 +20,7 @@ export default {
             // So we will have two different modal
             showMCModal: false,
             showEssayModal: false,
+            showImageModal: false,
             // Flag to store question ID
             questionID: null
         };
@@ -80,6 +81,18 @@ export default {
             } else {
                 // Refresh the question list.
                 this.getEssayQuestions();
+            }
+        },
+        async deleteImageQuestion(id) {
+            const result = fetch('/questions/image/' + id, {
+                method: 'DELETE'
+            });
+
+            if (result.error) {
+                console.log(result.error);
+            } else {
+                // Refresh the question list.
+                this.getImageQuestions();
             }
         }
     }
@@ -245,7 +258,7 @@ export default {
                                 type="button"
                                 @click="
                                     questionID = question.id;
-                                    showEssayModal = true;
+                                    showImageModal = true;
                                 "
                                 class="btn red-btn p-2"
                                 :title="'Delete ' + question.name"
@@ -314,6 +327,33 @@ export default {
                             type="button"
                             class="btn green-btn"
                             @click="showEssayModal = false"
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="showImageModal">
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <p>Are you sure you want to delete this question ?</p>
+                    <div style="display: flex; gap: 10px; justify-content: end">
+                        <button
+                            type="button"
+                            class="btn red-btn"
+                            @click="
+                                showImageModal = false;
+                                deleteImageQuestion(questionID);
+                            "
+                        >
+                            Yes
+                        </button>
+                        <button
+                            type="button"
+                            class="btn green-btn"
+                            @click="showImageModal = false"
                         >
                             No
                         </button>

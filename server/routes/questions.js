@@ -85,6 +85,38 @@ router.delete('/essay/:id', (req, res, next) => {
     }
 });
 
+// Delete image question.
+router.delete('/image/:id', (req, res, next) => {
+    if (req.session.userName) {
+        // Delete Query using visibility flag
+        const deleteQuestion = `UPDATE image_questions SET is_deleted = 1 WHERE id=${req.params.id}`;
+        conn.query(deleteQuestion, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // add delete action into user_tables
+                    const actionData = {
+                        action: 'delete',
+                        content_id: req.params.id,
+                        content_type: 'image_question',
+                        user_id: req.session.userId
+                    };
+                    const addActionQuery = 'INSERT INTO user_actions SET ?';
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 /**
  * Show Item
  *
