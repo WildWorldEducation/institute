@@ -306,6 +306,8 @@ export default {
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
                     this.totalNumOfQuestions = this.questions.length;
+
+                    console.log(this.questions);
                 })
                 .then(() => {
                     this.loading = false;
@@ -804,7 +806,10 @@ export default {
                     }`"
                 >
                     <div class="form-group">
-                        <ImageAnswer ref="imageAnswer" />
+                        <ImageAnswer
+                            :numImagesRequired="question.num_images_required"
+                            ref="imageAnswer"
+                        />
                     </div>
                 </div>
 

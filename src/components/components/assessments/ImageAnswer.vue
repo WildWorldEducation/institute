@@ -6,6 +6,7 @@ export default {
             imageAnswer: ''
         };
     },
+    props: ['numImagesRequired'],
     setup() {},
     mounted() {},
 
