@@ -12,12 +12,14 @@ export default {
                 { text: 'User', value: 'userName' },
                 { text: 'Question Name', value: 'name' },
                 { text: 'Question Content', value: 'question' },
+                { text: 'Skill', value: 'skill_name' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
             ],
             mobileHeaders: [
                 { text: 'User', value: 'userName' },
                 { text: 'Comment', value: 'comment' },
+                { text: 'Skill', value: 'skill_name' },
                 { text: 'Date', value: 'date' }
             ]
         };
