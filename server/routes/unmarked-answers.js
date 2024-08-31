@@ -90,7 +90,38 @@ router.post('/add/essay/:assessmentId', (req, res, next) => {
     }
 });
 
-
+/**
+ * Add Unmarked Image Answer
+ *
+ * @return response()
+ */
+router.post('/add/image/:assessmentId', (req, res, next) => {
+    if (req.session.userName) {
+        // No need to escape single quotes for SQL to accept,
+        // as using '?'.
+        // Add data.
+        let data = {};
+        data = {
+            assessment_id: req.params.assessmentId,
+            answer: req.body.answer,
+            question_id: req.body.questionId
+        };
+        let sqlQuery = 'INSERT INTO unmarked_image_answers SET ?';
+        conn.query(sqlQuery, data, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
 
 /**
  * Delete Item

@@ -69,8 +69,6 @@ export default {
             <div class="row">
                 <div class="col-lg-4">
                     <div class="mb-3 row">
-                        <!-- <div v-if="!imageAnswer"> -->
-
                         <input
                             type="file"
                             id="file-input"
@@ -90,7 +88,13 @@ export default {
                     </div>
                 </div>
             </div>
-            <button @click="removeImages">Start again</button>
+            <button
+                class="btn red-btn mt-3"
+                v-if="imageAnswer.length > 0"
+                @click="removeImages"
+            >
+                Start again
+            </button>
         </div>
     </div>
 </template>
@@ -99,5 +103,23 @@ export default {
 .preview img {
     width: 300px;
     height: auto;
+}
+
+/* Button Styling */
+.red-btn {
+    background-color: #dd2822;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.red-btn:hover {
+    background-color: rgb(201, 18, 18);
 }
 </style>

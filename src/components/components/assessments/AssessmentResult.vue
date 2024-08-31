@@ -295,7 +295,12 @@ export default {
                 <!-- For Image Questions Only -->
                 <div v-else-if="question.questionType == 'image'">
                     <span class="explain-label">Your answer:</span>
-                    <img :src="question.userAnswer" width="80" />
+
+                    <img
+                        v-for="(answer, index) in question.userAnswer.length"
+                        :src="question.userAnswer[index]"
+                        width="80"
+                    />
                 </div>
                 <!-- Question explanation -->
                 <div

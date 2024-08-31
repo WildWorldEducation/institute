@@ -1457,6 +1457,21 @@ async function aiMarkImageQuestionAnswer(question, answer, level) {
     `;
     // Prevent the app from crashing if anything goes wrong with the API call.
     try {
+        let contentArray = [];
+        contentArray.push({
+            type: 'text',
+            text: prompt + ` Please respond with a JSON object.`
+        });
+        for (let i = 0; i < answer.length; i++) {
+            let contentObject = {
+                type: 'image_url',
+                image_url: {
+                    url: answer[i]
+                }
+            };
+            contentArray.push(contentObject);
+        }
+
         const completion = await openai.chat.completions.create({
             model: 'gpt-4o',
             messages: [
@@ -1469,18 +1484,7 @@ async function aiMarkImageQuestionAnswer(question, answer, level) {
                 },
                 {
                     role: 'user',
-                    content: [
-                        {
-                            type: 'text',
-                            text: prompt + ` Please respond with a JSON object.`
-                        },
-                        {
-                            type: 'image_url',
-                            image_url: {
-                                url: answer
-                            }
-                        }
-                    ]
+                    content: contentArray
                 }
             ],
             response_format: { type: 'json_object' }

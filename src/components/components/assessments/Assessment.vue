@@ -520,6 +520,31 @@ export default {
                                                 turnOnModal();
                                             }
                                         );
+                                    } else if (
+                                        this.questions[i].questionType ==
+                                        'image'
+                                    ) {
+                                        // create unmarked essay question records for each one.
+                                        const requestOptions = {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type':
+                                                    'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                answer: this.questions[i]
+                                                    .userAnswer,
+                                                questionId: this.questions[i].id
+                                            })
+                                        };
+                                        var url =
+                                            '/unmarked-answers/add/image/' +
+                                            this.assessmentId;
+                                        fetch(url, requestOptions).then(
+                                            function (response) {
+                                                turnOnModal();
+                                            }
+                                        );
                                     }
                                 }
                             });
