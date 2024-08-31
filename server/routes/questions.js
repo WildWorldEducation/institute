@@ -130,6 +130,28 @@ router.get('/essay/show/:id', (req, res) => {
     }
 });
 
+// Show image question.
+router.get('/image/show/:id', (req, res) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            `SELECT image_questions.*, skills.name as skill_name, skills.level as skill_level 
+            FROM image_questions 
+            JOIN skills ON skills.id = image_questions.skill_id 
+            WHERE image_questions.id=` + req.params.id;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  *
  * @return response()
@@ -647,6 +669,53 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
                             }
                         }
                     );
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+// Edit Image questions
+router.put('/image/:id/edit', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery =
+            `UPDATE image_questions 
+        SET name='` +
+            name +
+            `', question = '` +
+            question +
+            `' WHERE id = ` +
+            req.params.id;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // add edit essay question into user_actions
+                    const actionData = {
+                        action: 'update',
+                        content_type: 'image_question',
+                        content_id: req.params.id,
+                        user_id: req.session.userId
+                    };
+
+                    const addActionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
             } catch (err) {
                 next(err);
