@@ -1375,22 +1375,28 @@ const openai = new OpenAI({
  */
 router.post('/mark-essay-question', async (req, res, next) => {
     if (req.session.userName) {
-        let question = req.body.question;
-        let answer = req.body.answer;
-        // Remove underscores from the variables.
-        let level = req.body.level.replace('_', ' ');
-        let teacherReview;
-        teacherReview = await aiMarkEssayQuestionAnswer(
-            question,
-            answer,
-            level
-        );
+        // Error handling to prevent OpenAI from crashing the app
+        try {
+            let question = req.body.question;
+            let answer = req.body.answer;
+            // Remove underscores from the variables.
+            let level = req.body.level.replace('_', ' ');
+            let teacherReview;
+            teacherReview = await aiMarkEssayQuestionAnswer(
+                question,
+                answer,
+                level
+            );
 
-        let result = {
-            isCorrect: teacherReview.is_correct,
-            explanation: teacherReview.explanation
-        };
-        res.json(result);
+            let result = {
+                isCorrect: teacherReview.is_correct,
+                explanation: teacherReview.explanation
+            };
+            res.json(result);
+        } catch {
+            console.log('error with OpenAI call');
+            res.end();
+        }
     } else {
         res.redirect('/login');
     }
@@ -1442,22 +1448,28 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
  */
 router.post('/mark-image-question', async (req, res, next) => {
     if (req.session.userName) {
-        let question = req.body.question;
-        let answer = req.body.answer;
-        // Remove underscores from the variables.
-        let level = req.body.level.replace('_', ' ');
-        let teacherReview;
-        teacherReview = await aiMarkImageQuestionAnswer(
-            question,
-            answer,
-            level
-        );
+        // Error handling to prevent OpenAI from crashing the app
+        try {
+            let question = req.body.question;
+            let answer = req.body.answer;
+            // Remove underscores from the variables.
+            let level = req.body.level.replace('_', ' ');
+            let teacherReview;
+            teacherReview = await aiMarkImageQuestionAnswer(
+                question,
+                answer,
+                level
+            );
 
-        let result = {
-            isCorrect: teacherReview.is_correct,
-            explanation: teacherReview.explanation
-        };
-        res.json(result);
+            let result = {
+                isCorrect: teacherReview.is_correct,
+                explanation: teacherReview.explanation
+            };
+            res.json(result);
+        } catch {
+            console.log('error with OpenAI call');
+            res.end();
+        }
     } else {
         res.redirect('/login');
     }
