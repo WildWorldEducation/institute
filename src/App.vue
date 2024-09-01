@@ -81,13 +81,22 @@ export default {
 
                         <li
                             v-if="
-                                userDetailsStore.role == 'student' ||
-                                !sessionDetailsStore.isLoggedIn
+                                userDetailsStore.role == 'student'
                             "
                             class="nav-item"
                         >
                             <RouterLink to="/vertical-tree" class="nav-link"
                                 >Vertical Tree</RouterLink
+                            >
+                        </li>
+                        <li
+                            v-if="
+                                !sessionDetailsStore.isLoggedIn
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink to="/vertical-tree" class="nav-link"
+                                >You Can Not Interact With the Tree Until Logged in</RouterLink
                             >
                         </li>
                         <li
