@@ -21,7 +21,7 @@ Routes
  *
  * @return response()
  */
-router.get('/list', (req, res, next) => {
+router.get('/essay/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM `unmarked_essay_answers`';

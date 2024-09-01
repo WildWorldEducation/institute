@@ -39,7 +39,7 @@ export default {
     async created() {
         // Preparing the questions and answers array. -------------------
         // Get saved unmarked essay answers.
-        if (this.unmarkedAnswersStore.unmarkedAnswers.length == 0) {
+        if (this.unmarkedAnswersStore.unmarkedEssayAnswers.length == 0) {
             await this.unmarkedAnswersStore.getUnmarkedAnswers();
         }
 
@@ -51,14 +51,16 @@ export default {
         // Add only the questions for this assessment to the array.
         for (
             let i = 0;
-            i < this.unmarkedAnswersStore.unmarkedAnswers.length;
+            i < this.unmarkedAnswersStore.unmarkedEssayAnswers.length;
             i++
         ) {
             if (
-                this.unmarkedAnswersStore.unmarkedAnswers[i].assessment_id ==
-                this.assessmentId
+                this.unmarkedAnswersStore.unmarkedEssayAnswers[i]
+                    .assessment_id == this.assessmentId
             ) {
-                this.answers.push(this.unmarkedAnswersStore.unmarkedAnswers[i]);
+                this.answers.push(
+                    this.unmarkedAnswersStore.unmarkedEssayAnswers[i]
+                );
             }
         }
 
