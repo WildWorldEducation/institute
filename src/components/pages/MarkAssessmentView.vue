@@ -122,6 +122,7 @@ export default {
                 }
             }
         }
+        console.log(this.answers);
     },
     computed: {},
     methods: {
@@ -297,10 +298,18 @@ export default {
                     {{ this.answers[this.questionNumber].question }}
                 </div>
                 <div
-                    id="answer"
+                    v-if="this.answers[this.questionNumber].type == 'essay'"
+                    id="essay-answer"
                     class="mb-3"
                     v-html="this.answers[this.questionNumber].answer"
                 ></div>
+                <div v-else id="image-answer" class="mb-3">
+                    <img :src="this.answers[this.questionNumber].answer_1" />
+                    <img :src="this.answers[this.questionNumber].answer_2" />
+                    <img :src="this.answers[this.questionNumber].answer_3" />
+                    <img :src="this.answers[this.questionNumber].answer_4" />
+                    <img :src="this.answers[this.questionNumber].answer_5" />
+                </div>
             </div>
         </div>
         <div class="d-flex flex-column" v-else>
@@ -400,7 +409,7 @@ h2 {
     color: #667085;
 }
 
-#answer {
+#essay-answer {
     font-family: 'Poppins';
     font-size: 16px;
     font-weight: 100;
@@ -412,6 +421,11 @@ h2 {
     padding-bottom: 10px;
     background-color: white;
     border-radius: 15px;
+}
+
+#image-answer img {
+    border-radius: 15px;
+    width: 200px;
 }
 
 #page-tile {
