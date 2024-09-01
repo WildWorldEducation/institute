@@ -83,16 +83,29 @@ export const useUnmarkedAnswersStore = defineStore('unmarkedAnswers', {
 
             return this.$state;
         },
-        async deleteUnmarkedAnswer(answer) {
-            const result = await fetch('/unmarked-answers/' + answer.id, {
+        async deleteUnmarkedEssayAnswer(answer) {
+            const result = await fetch('/unmarked-answers/essay/' + answer.id, {
                 method: 'DELETE'
             });
 
+            console.log('deleteUnmarkedEssayAnswer');
+
             // Get number of unmarked answers remaining in the assessment this answer was in.
             const result2 = await fetch(
-                '/unmarked-answers/list/' + answer.assessment_id
+                '/unmarked-answers/essay/list/' + answer.assessment_id
             );
-            const numOfUnmarkedAnswersInAssessment = await result2.json();
+            const numOfUnmarkedEssayAnswersInAssessment = await result2.json();
+
+            const result3 = await fetch(
+                '/unmarked-answers/image/list/' + answer.assessment_id
+            );
+            const numOfUnmarkedImageAnswersInAssessment = await result3.json();
+
+            let numOfUnmarkedAnswersInAssessment =
+                numOfUnmarkedEssayAnswersInAssessment +
+                numOfUnmarkedImageAnswersInAssessment;
+
+            console.log(numOfUnmarkedAnswersInAssessment);
 
             if (numOfUnmarkedAnswersInAssessment == 0) {
                 // Delete the assessment.
@@ -104,7 +117,43 @@ export const useUnmarkedAnswersStore = defineStore('unmarkedAnswers', {
                 console.log(result.error);
             }
 
-            this.getUnmarkedAnswers();
+            this.getUnmarkedEssayAnswers();
+        },
+        async deleteUnmarkedImageAnswer(answer) {
+            const result = await fetch('/unmarked-answers/image/' + answer.id, {
+                method: 'DELETE'
+            });
+
+            console.log('deleteUnmarkedImageAnswer');
+
+            // Get number of unmarked answers remaining in the assessment this answer was in.
+            const result2 = await fetch(
+                '/unmarked-answers/essay/list/' + answer.assessment_id
+            );
+            const numOfUnmarkedEssayAnswersInAssessment = await result2.json();
+
+            const result3 = await fetch(
+                '/unmarked-answers/image/list/' + answer.assessment_id
+            );
+            const numOfUnmarkedImageAnswersInAssessment = await result3.json();
+
+            let numOfUnmarkedAnswersInAssessment =
+                numOfUnmarkedEssayAnswersInAssessment +
+                numOfUnmarkedImageAnswersInAssessment;
+
+            console.log(numOfUnmarkedAnswersInAssessment);
+
+            if (numOfUnmarkedAnswersInAssessment == 0) {
+                // Delete the assessment.
+                const assessmentsStore = useAssessmentsStore();
+                assessmentsStore.deleteAssessment(answer.assessment_id);
+            }
+
+            if (result.error) {
+                console.log(result.error);
+            }
+
+            this.getUnmarkedImageAnswers();
         }
     }
 });

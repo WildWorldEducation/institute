@@ -38,6 +38,25 @@ router.get('/essay/list', (req, res, next) => {
     }
 });
 
+router.get('/essay/list/:assessmentId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            'SELECT * FROM `unmarked_essay_answers` WHERE assessment_id = ' +
+            req.params.assessmentId;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results.length);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * Get Image Questions
  *
@@ -60,13 +79,13 @@ router.get('/image/list', (req, res, next) => {
     }
 });
 
-router.get('/list/:assessmentId', (req, res, next) => {
+router.get('/image/list/:assessmentId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
-            'SELECT * FROM `unmarked_essay_answers` WHERE assessment_id = ' +
+            'SELECT * FROM `unmarked_image_answers` WHERE assessment_id = ' +
             req.params.assessmentId;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -180,7 +199,7 @@ router.delete('/delete/:assessmentId', (req, res, next) => {
         let sqlQuery =
             'DELETE FROM unmarked_essay_answers WHERE assessment_id=' +
             req.params.assessmentId;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -195,11 +214,30 @@ router.delete('/delete/:assessmentId', (req, res, next) => {
     }
 });
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/essay/:id', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             'DELETE FROM unmarked_essay_answers WHERE id=' + req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+router.delete('/image/:id', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery =
+            'DELETE FROM unmarked_image_answers WHERE id=' + req.params.id;
+        conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;

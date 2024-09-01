@@ -121,8 +121,7 @@ export default {
                     this.skillName = this.skillsStore.skillsList[j].name;
                 }
             }
-        }
-        console.log(this.answers);
+        }        
     },
     computed: {},
     methods: {
@@ -192,12 +191,16 @@ export default {
                             this.showModal = true;
                             this.isFailed = true;
                         }
+
+                        //
                     }
                 }
             }
 
             // Delete from store and DB.
-            this.unmarkedAnswersStore.deleteUnmarkedAnswer(answer);
+            if (answer.type == 'essay')
+                this.unmarkedAnswersStore.deleteUnmarkedEssayAnswer(answer);
+            else this.unmarkedAnswersStore.deleteUnmarkedImageAnswer(answer);
 
             // Update assessmentsStore
 
@@ -247,7 +250,10 @@ export default {
                 }
             }
             // Delete from store and DB.
-            this.unmarkedAnswersStore.deleteUnmarkedAnswer(answer);
+            if (answer.type == 'essay')
+                this.unmarkedAnswersStore.deleteUnmarkedEssayAnswer(answer);
+            else this.unmarkedAnswersStore.deleteUnmarkedImageAnswer(answer);
+
             // Now remove this element from the array.
             this.answers.splice(this.questionNumber, 1);
 
