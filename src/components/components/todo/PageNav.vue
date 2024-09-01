@@ -37,7 +37,8 @@ export default {
         <div v-if="showNavBar" class="nav-bar-container d-flex flex-column">
             <div class="d-flex justify-content-between pe-4">
                 <h1 class="todo-title ps-2 pt-2">Todo List</h1>
-                <div
+                <button
+                    type="button"
                     class="icon-div d-flex align-items-center px-3 py-2"
                     @click="showNavBar = false"
                     b-on-hover
@@ -54,70 +55,72 @@ export default {
                             d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"
                         />
                     </svg>
-                </div>
+                </button>
             </div>
             <hr />
-            <h2
-                :class="[
-                    'nav-item-tile',
-                    activeContent === 'editList'
-                        ? 'active-item'
-                        : 'nav-bar-item'
-                ]"
-                @click="changeActiveContent('editList')"
-            >
-                Approve Content Edits
-                <span
-                    class="badge bg-danger"
-                    b-on-hover
-                    title="number of content edit that needed to approve"
-                    >{{ contentEditCount }}</span
+            <div class="d-flex flex-column gap-3">
+                <button
+                    :class="[
+                        'nav-item-tile',
+                        activeContent === 'editList'
+                            ? 'active-item'
+                            : 'nav-bar-item'
+                    ]"
+                    @click="changeActiveContent('editList')"
                 >
-            </h2>
-            <h2
-                :class="[
-                    'nav-item-tile',
-                    activeContent === 'studentQuestionList'
-                        ? 'active-item'
-                        : 'nav-bar-item'
-                ]"
-                @click="changeActiveContent('studentQuestionList')"
-            >
-                Approve Student Added Questions
-                <span
-                    b-on-hover
-                    title="number of student question that needed to approve"
-                    class="badge bg-danger"
-                    >{{ studentQuestionCount }}</span
+                    Approve Content Edits
+                    <span
+                        class="badge bg-danger"
+                        b-on-hover
+                        title="number of content edit that needed to approve"
+                        >{{ contentEditCount }}</span
+                    >
+                </button>
+                <button
+                    :class="[
+                        'nav-item-tile',
+                        activeContent === 'studentQuestionList'
+                            ? 'active-item'
+                            : 'nav-bar-item'
+                    ]"
+                    @click="changeActiveContent('studentQuestionList')"
                 >
-            </h2>
-            <h2
-                :class="[
-                    'nav-item-tile',
-                    activeContent === 'flagList'
-                        ? 'active-item'
-                        : 'nav-bar-item'
-                ]"
-                @click="changeActiveContent('flagList')"
-            >
-                Check Content Flags
-                <span
-                    class="badge bg-danger"
-                    b-on-hover
-                    title="number of content flag that needed to check"
-                    >{{ contentFlagCount }}</span
+                    Approve Student Added Questions
+                    <span
+                        b-on-hover
+                        title="number of student question that needed to approve"
+                        class="badge bg-danger"
+                        >{{ studentQuestionCount }}</span
+                    >
+                </button>
+                <button
+                    :class="[
+                        'nav-item-tile',
+                        activeContent === 'flagList'
+                            ? 'active-item'
+                            : 'nav-bar-item'
+                    ]"
+                    @click="changeActiveContent('flagList')"
                 >
-            </h2>
+                    Check Content Flags
+                    <span
+                        class="badge bg-danger"
+                        b-on-hover
+                        title="number of content flag that needed to check"
+                        >{{ contentFlagCount }}</span
+                    >
+                </button>
+            </div>
         </div>
     </Transition>
     <Transition name="navbarMini">
-        <div
+        <button
             v-if="!showNavBar"
             class="position-relative minimize-navbar"
             @click="showNavBar = true"
         >
             <div class="nav-col group"></div>
-            <div
+            <button
                 class="expand-icon-div group"
                 b-on-hover
                 title="Expand Nav Bar"
@@ -133,8 +136,8 @@ export default {
                         d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
                     />
                 </svg>
-            </div>
-        </div>
+            </button>
+        </button>
     </Transition>
 </template>
 
@@ -151,10 +154,18 @@ export default {
 }
 .nav-item-tile {
     font-size: 18px;
+    border: none;
+    text-align: start;
+}
+
+.nav-item-tile:focus {
+    outline: #a083da;
 }
 
 .icon-div {
     cursor: pointer;
+    border: none;
+    background-color: inherit;
 }
 
 .icon-div:hover {
@@ -162,11 +173,16 @@ export default {
     background-color: #d8d6dd;
 }
 
+.icon-div:focus {
+    outline-color: #a083da;
+}
+
 .nav-bar-item {
     cursor: pointer;
     padding: 5px 10px;
     font-weight: 500;
     color: #475569;
+    background-color: inherit;
 }
 
 .nav-bar-item:hover {
@@ -174,10 +190,20 @@ export default {
     color: #f8fafc;
 }
 
+.nav-bar-item:focus {
+    border: 2px solid white;
+    background-color: #b8a6db;
+    border: none;
+}
+
 .active-item {
     background-color: #a083da;
     padding: 5px 10px;
     color: white;
+}
+
+.active-item:focus {
+    border: 2px solid rgb(112, 39, 207);
 }
 
 /* Navbar slide Animation */
@@ -216,6 +242,11 @@ export default {
     height: 100%;
     background-color: #e8e2f9;
     border-right: solid 1px #9f9da1;
+    outline: none;
+}
+
+.nav-col:focus {
+    outline: #a083da;
 }
 
 .expand-icon-div {
@@ -228,9 +259,17 @@ export default {
     padding: 2px 7px;
 }
 
-.minimize-navbar:hover .group {
+.minimize-navbar {
+    outline: none;
+    border: none;
+    background-color: inherit;
+    padding: 0px;
+}
+
+.minimize-navbar:hover:focus .group {
     cursor: pointer;
     background-color: #e9e8ec;
+    outline: none;
 }
 
 /* View Specific On Phone */

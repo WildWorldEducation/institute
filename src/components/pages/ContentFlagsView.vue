@@ -800,19 +800,20 @@ export default {
                 <!-- Flag Type Header Filtering -->
                 <template #header-type="header">
                     <div class="filter-column">
-                        <div
+                        <button
                             @click.stop="
                                 closeAllFilter('type');
                                 showFlagTypeFilter = !showFlagTypeFilter;
                             "
                             b-tooltip.hover
                             :title="'filter this column'"
+                            class="header-btn"
                         >
-                            <span id="type-head-tile" class="me-1">
+                            <span class="me-1 header-text">
                                 {{ header.text }}
                             </span>
                             <svg
-                                class="filter-icon mb-1"
+                                class="filter-icon"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
                                 height="16"
@@ -823,7 +824,7 @@ export default {
                                     d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"
                                 />
                             </svg>
-                        </div>
+                        </button>
                         <Transition name="dropdown">
                             <div
                                 class="filter-menu flag-type-filter"
@@ -831,8 +832,9 @@ export default {
                             >
                                 <!-- Custom Dropdown -->
                                 <div class="d-flex flex-column">
-                                    <div
+                                    <button
                                         :class="[
+                                            'filter-btn',
                                             showFlagTypeDropDown
                                                 ? 'custom-select-button-focus'
                                                 : 'custom-select-button'
@@ -857,13 +859,13 @@ export default {
                                                 />
                                             </svg>
                                         </span>
-                                    </div>
+                                    </button>
                                     <Transition name="dropdownFilter">
                                         <div
                                             v-if="showFlagTypeDropDown"
                                             class="custom-dropdown-base"
                                         >
-                                            <div
+                                            <button
                                                 class="custom-dropdown-option"
                                                 @click="
                                                     flagTypeCriteria =
@@ -873,8 +875,8 @@ export default {
                                                 "
                                             >
                                                 tutor post
-                                            </div>
-                                            <div
+                                            </button>
+                                            <button
                                                 class="custom-dropdown-option"
                                                 @click="
                                                     flagTypeCriteria =
@@ -884,8 +886,8 @@ export default {
                                                 "
                                             >
                                                 essay question
-                                            </div>
-                                            <div
+                                            </button>
+                                            <button
                                                 class="custom-dropdown-option"
                                                 @click="
                                                     flagTypeCriteria =
@@ -895,8 +897,8 @@ export default {
                                                 "
                                             >
                                                 mc question
-                                            </div>
-                                            <div
+                                            </button>
+                                            <button
                                                 class="custom-dropdown-option"
                                                 @click="
                                                     flagTypeCriteria = 'skill';
@@ -905,8 +907,8 @@ export default {
                                                 "
                                             >
                                                 skill
-                                            </div>
-                                            <div
+                                            </button>
+                                            <button
                                                 class="custom-dropdown-option"
                                                 @click="
                                                     flagTypeCriteria = 'source';
@@ -915,8 +917,8 @@ export default {
                                                 "
                                             >
                                                 source
-                                            </div>
-                                            <div
+                                            </button>
+                                            <button
                                                 class="custom-dropdown-option"
                                                 @click="
                                                     flagTypeCriteria = 'all';
@@ -925,7 +927,7 @@ export default {
                                                 "
                                             >
                                                 all
-                                            </div>
+                                            </button>
                                         </div>
                                     </Transition>
                                 </div>
@@ -938,13 +940,14 @@ export default {
                 <!-- User Header (Name Searcher and Role filter) -->
                 <template #header-user="header">
                     <div class="filter-column user-header">
-                        <div
+                        <button
                             @click.stop="
                                 closeAllFilter('user');
                                 showUserFilter = !showUserFilter;
                             "
                             b-tooltip.hover
                             :title="'Search for user name'"
+                            class="header-btn"
                         >
                             <span id="type-head-tile" class="me-1">
                                 {{ header.text }}
@@ -961,7 +964,7 @@ export default {
                                     d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
                                 />
                             </svg>
-                        </div>
+                        </button>
                         <Transition name="dropdown">
                             <div
                                 class="filter-menu user-filter-menu"
@@ -993,8 +996,9 @@ export default {
                                     <div id="filter-label">User Role:</div>
                                     <!-- Custom Dropdown -->
                                     <div class="d-flex flex-column">
-                                        <div
+                                        <button
                                             :class="[
+                                                'filter-btn',
                                                 showUserRoleDropDown
                                                     ? 'custom-select-button-focus'
                                                     : 'custom-select-button'
@@ -1019,13 +1023,13 @@ export default {
                                                     />
                                                 </svg>
                                             </span>
-                                        </div>
+                                        </button>
                                         <Transition name="dropdownFilter">
                                             <div
                                                 v-if="showUserRoleDropDown"
                                                 class="custom-dropdown-base"
                                             >
-                                                <div
+                                                <button
                                                     class="custom-dropdown-option"
                                                     @click="
                                                         userRoleCriteria =
@@ -1034,8 +1038,8 @@ export default {
                                                     "
                                                 >
                                                     All
-                                                </div>
-                                                <div
+                                                </button>
+                                                <button
                                                     class="custom-dropdown-option"
                                                     @click="
                                                         userRoleCriteria =
@@ -1044,8 +1048,8 @@ export default {
                                                     "
                                                 >
                                                     Student
-                                                </div>
-                                                <div
+                                                </button>
+                                                <button
                                                     class="custom-dropdown-option"
                                                     @click="
                                                         userRoleCriteria =
@@ -1054,8 +1058,8 @@ export default {
                                                     "
                                                 >
                                                     Instructor
-                                                </div>
-                                                <div
+                                                </button>
+                                                <button
                                                     class="custom-dropdown-option"
                                                     @click="
                                                         userRoleCriteria =
@@ -1064,7 +1068,7 @@ export default {
                                                     "
                                                 >
                                                     Admin
-                                                </div>
+                                                </button>
                                             </div>
                                         </Transition>
                                     </div>
@@ -1078,13 +1082,14 @@ export default {
                 <!-- Date Header (Date filter and sorting) -->
                 <template #header-date="header">
                     <div class="filter-column user-header">
-                        <div
+                        <button
                             @click.stop="
                                 closeAllFilter('date');
                                 showDateFilter = !showDateFilter;
                             "
                             b-tooltip.hover
                             :title="'Date filtering and ordering'"
+                            class="header-btn"
                         >
                             <span id="type-head-tile" class="me-1">
                                 {{ header.text }}
@@ -1102,7 +1107,7 @@ export default {
                                     d="M128 0c17.7 0 32 14.3 32 32l0 32 128 0 0-32c0-17.7 14.3-32 32-32s32 14.3 32 32l0 32 48 0c26.5 0 48 21.5 48 48l0 48L0 160l0-48C0 85.5 21.5 64 48 64l48 0 0-32c0-17.7 14.3-32 32-32zM0 192l448 0 0 272c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 192zm80 64c-8.8 0-16 7.2-16 16l0 96c0 8.8 7.2 16 16 16l96 0c8.8 0 16-7.2 16-16l0-96c0-8.8-7.2-16-16-16l-96 0z"
                                 />
                             </svg>
-                        </div>
+                        </button>
                         <Transition name="dropdown">
                             <div
                                 class="filter-menu date-filter-menu"
@@ -1155,8 +1160,9 @@ export default {
                                             </div>
                                             <!-- Custom Dropdown -->
                                             <div class="d-flex flex-column">
-                                                <div
+                                                <button
                                                     :class="[
+                                                        'filter-btn',
                                                         showDateFilterDropDown
                                                             ? 'custom-select-button-focus'
                                                             : 'custom-select-button'
@@ -1181,7 +1187,7 @@ export default {
                                                             />
                                                         </svg>
                                                     </span>
-                                                </div>
+                                                </button>
                                                 <Transition
                                                     name="dropdownFilter"
                                                 >
@@ -1191,7 +1197,7 @@ export default {
                                                         "
                                                         class="custom-dropdown-base"
                                                     >
-                                                        <div
+                                                        <button
                                                             class="custom-dropdown-option"
                                                             @click="
                                                                 dateFilterCriteria =
@@ -1200,8 +1206,8 @@ export default {
                                                             "
                                                         >
                                                             All
-                                                        </div>
-                                                        <div
+                                                        </button>
+                                                        <button
                                                             class="custom-dropdown-option"
                                                             @click="
                                                                 dateFilterCriteria =
@@ -1210,8 +1216,8 @@ export default {
                                                             "
                                                         >
                                                             This month
-                                                        </div>
-                                                        <div
+                                                        </button>
+                                                        <button
                                                             class="custom-dropdown-option"
                                                             @click="
                                                                 dateFilterCriteria =
@@ -1220,8 +1226,8 @@ export default {
                                                             "
                                                         >
                                                             Last three months
-                                                        </div>
-                                                        <div
+                                                        </button>
+                                                        <button
                                                             class="custom-dropdown-option"
                                                             @click="
                                                                 dateFilterCriteria =
@@ -1230,8 +1236,8 @@ export default {
                                                             "
                                                         >
                                                             Last six months
-                                                        </div>
-                                                        <div
+                                                        </button>
+                                                        <button
                                                             class="custom-dropdown-option"
                                                             @click="
                                                                 dateFilterCriteria =
@@ -1240,7 +1246,7 @@ export default {
                                                             "
                                                         >
                                                             This year
-                                                        </div>
+                                                        </button>
                                                     </div>
                                                 </Transition>
                                             </div>
@@ -1828,7 +1834,7 @@ export default {
 
         <!-- Clear Filter Criteria Button -->
         <div class="d-flex flex-row-reverse">
-            <div
+            <button
                 class="btn red-btn"
                 @click="clearFilter"
                 b-tooltip.hover
@@ -1847,7 +1853,7 @@ export default {
                         d="M566.6 54.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192-34.7-34.7c-4.2-4.2-10-6.6-16-6.6c-12.5 0-22.6 10.1-22.6 22.6v29.1L364.3 320h29.1c12.5 0 22.6-10.1 22.6-22.6c0-6-2.4-11.8-6.6-16l-34.7-34.7 192-192zM341.1 353.4L222.6 234.9c-42.7-3.7-85.2 11.7-115.8 42.3l-8 8C76.5 307.5 64 337.7 64 369.2c0 6.8 7.1 11.2 13.2 8.2l51.1-25.5c5-2.5 9.5 4.1 5.4 7.9L7.3 473.4C2.7 477.6 0 483.6 0 489.9C0 502.1 9.9 512 22.1 512l173.3 0c38.8 0 75.9-15.4 103.4-42.8c30.6-30.6 45.9-73.1 42.3-115.8z"
                     />
                 </svg>
-            </div>
+            </button>
         </div>
     </div>
 
@@ -1925,7 +1931,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 div {
     font-family: 'Poppins', sans-serif !important;
 }
@@ -2031,6 +2037,18 @@ h2 {
     color: white;
 }
 
+.btn:focus {
+    outline: none;
+    border: 2px solid #7c3aed;
+    border-radius: 6px;
+    scale: 1.2;
+}
+
+.filter-btn:focus {
+    border: 1px solid #7e59cf;
+    outline: none;
+}
+
 .flag-name {
     text-decoration: none;
     font-family: 'Poppins';
@@ -2045,6 +2063,12 @@ h2 {
 .flag-name:hover {
     color: #7e59cf;
     text-decoration: underline;
+}
+
+.flag-name:focus {
+    outline: none;
+    border: #7e59cf 1px solid;
+    border-radius: 5px;
 }
 
 .expand-tile {
@@ -2203,6 +2227,19 @@ h2 {
 
 .filter-icon {
     cursor: pointer;
+}
+
+.header-btn {
+    background-color: inherit;
+    border: none;
+    outline: none;
+    color: inherit;
+    font-weight: inherit;
+}
+
+.header-btn:focus {
+    border: 1px solid #7e59cf;
+    border-radius: 8px;
 }
 
 /* Filter Header Styling */
@@ -2370,16 +2407,31 @@ h2 {
     width: 200px;
 }
 
+.custom-dropdown-base:focus {
+    border: 1px solid #7f56d9;
+}
+
 .custom-dropdown-option {
     padding: 10px 14px 10px 14px;
     gap: 8px;
     color: #344054;
     font-size: 14px;
     font-weight: 400;
+    background-color: inherit;
+    border: none;
+    width: 100%;
+    outline: none;
+    text-align: left;
 }
 
 .custom-dropdown-option:hover {
     cursor: pointer;
+    background: #bca3ff1a;
+}
+
+.custom-dropdown-option:focus {
+    border-radius: 6px;
+    border: 1px solid #7f56d9;
     background: #bca3ff1a;
 }
 
@@ -2421,6 +2473,10 @@ h2 {
 .control:hover input ~ .control_indicator,
 .control input:focus ~ .control_indicator {
     background: #e7ddf6;
+}
+
+.control input:focus ~ .control_indicator {
+    background: #826fa0;
 }
 
 .plus-svg:hover {
@@ -2482,6 +2538,7 @@ h2 {
 .control-checkbox input:checked + .control_indicator::before {
     animation-name: s-ripple-dup;
 }
+
 /* End of check box styling */
 
 /* View Specific On Phone */

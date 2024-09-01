@@ -55,6 +55,15 @@ export default {
             <template #loading>
                 <img src="/images/loading.gif" alt="loading data" />
             </template>
+
+            <!-- --- Question Name Router Column --- -->
+            <template #item-name="{ name, essay_question_id, user_id }">
+                <RouterLink
+                    class="cell-link"
+                    :to="`/content-edit/${essay_question_id}/${user_id}/comparison?type=mcquestion`"
+                    >{{ name }}</RouterLink
+                >
+            </template>
         </Vue3EasyDataTable>
         <!-- mobile table -->
         <Vue3EasyDataTable

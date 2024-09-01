@@ -48,7 +48,8 @@ export default {
             const pushObj = {
                 date: createTime + ` (${createDate})`,
                 action: contentFlag.action,
-                questionName: contentObj.question,
+                question: contentObj.question,
+                questionName: contentObj.question_name,
                 skillName: contentObj.name,
                 id: contentFlag.id,
                 skill_deleted: contentObj.skill_deleted
@@ -179,12 +180,12 @@ export default {
                     <span :class="actionColor(contentFlag.action)">
                         - {{ contentFlag.action }}
                     </span>
-                    flag on mc_question:
+                    flag on mc_question {{ '"'+contentFlag.questionName+'"' }}:
                     <router-link
                         class="question-link"
                         target="_blank"
                         :to="`/skills/${contentFlag.skillId}/question-bank`"
-                        >{{ contentFlag.questionName }}</router-link
+                        >{{ contentFlag.question }}</router-link
                     >
                     on skill:
                     <!-- Show link to skill if it is not deleted else show a warn modal-->
