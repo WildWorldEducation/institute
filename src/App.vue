@@ -141,7 +141,7 @@ export default {
                             </RouterLink>
                         </li>
                         <li class="nav-item me-2" v-else>
-                            <RouterLink to="/login" class="btn purple-btn">
+                            <RouterLink to="/login" class="btn purple-btn login-btn">
                                 Login
                             </RouterLink>
                         </li>
@@ -187,6 +187,10 @@ export default {
 }
 .router-view-padding {
     padding-top: 72px;
+}
+.login-btn{
+    max-width: 100px;
+    justify-content: center;
 }
 @media (max-width: 991px) {
     .router-view-padding {
