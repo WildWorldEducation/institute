@@ -931,6 +931,24 @@ router.get('/mc/list', (req, res, next) => {
     }
 });
 
+// Load all image type questions.
+router.get('/image/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM image_questions WHERE is_deleted = 0;';
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 /**
  * Create a single New MC Question Manually (not from CSV.)
  *

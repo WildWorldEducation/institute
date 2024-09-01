@@ -17,7 +17,7 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 /**
- * Get All Items
+ * Get Essay Questions
  *
  * @return response()
  */
@@ -25,6 +25,28 @@ router.get('/essay/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM `unmarked_essay_answers`';
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
+ * Get Image Questions
+ *
+ * @return response()
+ */
+router.get('/image/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM `unmarked_image_answers`';
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

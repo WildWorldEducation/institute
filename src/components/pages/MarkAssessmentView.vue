@@ -38,9 +38,13 @@ export default {
     },
     async created() {
         // Preparing the questions and answers array. -------------------
-        // Get saved unmarked essay answers.
+        // Get saved unmarked answers.
         if (this.unmarkedAnswersStore.unmarkedEssayAnswers.length == 0) {
-            await this.unmarkedAnswersStore.getUnmarkedAnswers();
+            await this.unmarkedAnswersStore.getUnmarkedEssayAnswers();
+        }
+
+        if (this.unmarkedAnswersStore.unmarkedImageAnswers.length == 0) {
+            await this.unmarkedAnswersStore.getUnmarkedImageAnswers();
         }
 
         // Get unmarked assessments.
@@ -58,9 +62,24 @@ export default {
                 this.unmarkedAnswersStore.unmarkedEssayAnswers[i]
                     .assessment_id == this.assessmentId
             ) {
-                this.answers.push(
-                    this.unmarkedAnswersStore.unmarkedEssayAnswers[i]
-                );
+                let answer = this.unmarkedAnswersStore.unmarkedEssayAnswers[i];
+                answer.type = 'essay';
+                this.answers.push(answer);
+            }
+        }
+
+        for (
+            let i = 0;
+            i < this.unmarkedAnswersStore.unmarkedImageAnswers.length;
+            i++
+        ) {
+            if (
+                this.unmarkedAnswersStore.unmarkedImageAnswers[i]
+                    .assessment_id == this.assessmentId
+            ) {
+                let answer = this.unmarkedAnswersStore.unmarkedImageAnswers[i];
+                answer.type = 'image';
+                this.answers.push(answer);
             }
         }
 
@@ -246,7 +265,7 @@ export default {
         <img src="/images/banners/general-banner.png" class="img-fluid" />
     </div>
     <div class="container mt-3 pb-4">
-        <div id="page-tile">Unmarked Essay Questions</div>
+        <div id="page-tile">Unmarked Questions</div>
         <div id="assessment-info">
             {{ this.studentName }} :
             {{ this.skillName }}

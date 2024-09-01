@@ -11,7 +11,7 @@ export const useUnmarkedAnswersStore = defineStore('unmarkedAnswers', {
         };
     },
     actions: {
-        async getUnmarkedAnswers() {
+        async getUnmarkedEssayAnswers() {
             // Get all unmarked answers.
             const result = await fetch('/unmarked-answers/essay/list');
             const essayAnswers = await result.json();
@@ -44,6 +44,42 @@ export const useUnmarkedAnswersStore = defineStore('unmarkedAnswers', {
             }
 
             this.unmarkedEssayAnswers = essayAnswers;
+
+            return this.$state;
+        },
+        async getUnmarkedImageAnswers() {
+            // Get all unmarked answers.
+            const result = await fetch('/unmarked-answers/image/list');
+            const imageAnswers = await result.json();
+
+            // Get all questions.
+            const result2 = await fetch('/questions/image/list');
+            const imageQuestions = await result2.json();
+
+            // Add the question.
+            for (let i = 0; i < imageAnswers.length; i++) {
+                for (let j = 0; j < imageQuestions.length; j++) {
+                    if (imageAnswers[i].question_id == imageQuestions[j].id) {
+                        imageAnswers[i].question = imageQuestions[j].question;
+                    }
+                }
+            }
+
+            // Get all assessments.
+            const result3 = await fetch('/assessments/list');
+            const assessments = await result3.json();
+
+            // Add the assessment details.
+            for (let i = 0; i < imageAnswers.length; i++) {
+                for (let j = 0; j < assessments.length; j++) {
+                    if (imageAnswers[i].assessment_id == assessments[j].id) {
+                        imageAnswers[i].studentId = assessments[j].student_id;
+                        imageAnswers[i].skillId = assessments[j].skill_id;
+                    }
+                }
+            }
+
+            this.unmarkedImageAnswers = imageAnswers;
 
             return this.$state;
         },
