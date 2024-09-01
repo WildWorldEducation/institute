@@ -81,13 +81,22 @@ export default {
 
                         <li
                             v-if="
-                                userDetailsStore.role == 'student' ||
-                                !sessionDetailsStore.isLoggedIn
+                                userDetailsStore.role == 'student'
                             "
                             class="nav-item"
                         >
                             <RouterLink to="/vertical-tree" class="nav-link"
                                 >Vertical Tree</RouterLink
+                            >
+                        </li>
+                        <li
+                            v-if="
+                                !sessionDetailsStore.isLoggedIn
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink to="/vertical-tree" class="nav-link"
+                                >You Can Not Interact With the Tree Until Logged in</RouterLink
                             >
                         </li>
                         <li
@@ -132,12 +141,8 @@ export default {
                             </RouterLink>
                         </li>
                         <li class="nav-item me-2" v-else>
-                            <RouterLink to="/login" class="nav-link">
-                                <img
-                                    id="user-avatar"
-                                    src="/images/source-avatars/source-default-avatar.png"
-                                    alt="login"
-                                />
+                            <RouterLink to="/login" class="btn purple-btn">
+                                Login
                             </RouterLink>
                         </li>
                     </ul>
