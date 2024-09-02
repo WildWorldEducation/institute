@@ -63,8 +63,7 @@ export default {
                     userId: this.userDetailsStore.userId,
                     name: this.question.name,
                     question: this.question.question,
-                    comment: this.comment,
-                    skillId: this.question.skill_id
+                    comment: this.comment
                 })
             };
 

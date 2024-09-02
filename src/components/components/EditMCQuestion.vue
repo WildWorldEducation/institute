@@ -83,7 +83,6 @@ export default {
                     incorrect_answer_4: this.question.incorrect_answer_4,
                     correct_answer: this.question.correct_answer,
                     explanation: this.question.explanation,
-                    skill_id: this.question.skill_id,
                     comment: this.comment
                 })
             };

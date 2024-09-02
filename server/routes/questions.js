@@ -384,9 +384,9 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
 
         // Add data.
         let sqlQuery = `INSERT INTO mc_questions_awaiting_approval (mc_question_id, user_id, name, question, correct_answer,
-            incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, incorrect_answer_4, explanation, comment, skill_id)
+            incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, incorrect_answer_4, explanation, comment)
             VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}', '${correctAnswer}', '${incorrectAnswer1}', '${incorrectAnswer2}', 
-            '${incorrectAnswer3}', '${incorrectAnswer4}', '${explanation}', '${req.body.comment}', '${req.body.skill_id}')
+            '${incorrectAnswer3}', '${incorrectAnswer4}', '${explanation}', '${req.body.comment}')
             
             ON DUPLICATE KEY
             UPDATE name = '${name}', date = CURRENT_TIMESTAMP(), question = '${question}', correct_answer = '${correctAnswer}', incorrect_answer_1 = '${incorrectAnswer1}',
@@ -546,7 +546,15 @@ router.delete(
 router.get('/mc/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT mc_questions_awaiting_approval.*, skills.name AS skill_name FROM mc_questions_awaiting_approval JOIN skills ON mc_questions_awaiting_approval.skill_id = skills.id';
+        let sqlQuery =
+            `
+            SELECT mc_questions_awaiting_approval.*, skills.name AS skill_name
+            FROM mc_questions_awaiting_approval
+            JOIN mc_questions
+            ON mc_questions_awaiting_approval.mc_question_id = mc_questions.id
+            JOIN skills
+            ON mc_questions.skill_id = skills.id
+        `;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -674,8 +682,8 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
             req.body.comment = req.body.comment.replace(/'/g, "\\'");
 
         // Add data.
-        let sqlQuery = `INSERT INTO essay_questions_awaiting_approval (essay_question_id, user_id, name, question, comment, skill_id)
-                        VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}','${req.body.comment}', '${req.body.skillId}')
+        let sqlQuery = `INSERT INTO essay_questions_awaiting_approval (essay_question_id, user_id, name, question, comment)
+                        VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}','${req.body.comment}')
 
                         ON DUPLICATE KEY
                         UPDATE date = CURRENT_TIMESTAMP(), name = '${name}', question = '${question}', comment = '${req.body.comment}';`;
@@ -815,7 +823,15 @@ router.post('/image/:id/edit-for-review', (req, res, next) => {
 router.get('/essay/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT essay_questions_awaiting_approval.*, skills.name AS skill_name FROM essay_questions_awaiting_approval JOIN skills ON skills.id = essay_questions_awaiting_approval.skill_id;';
+        let sqlQuery =
+            `
+            SELECT essay_questions_awaiting_approval.*, skills.name AS skill_name
+            FROM essay_questions_awaiting_approval
+            JOIN essay_questions
+            ON essay_questions_awaiting_approval.essay_question_id = essay_questions.id
+            JOIN skills
+            ON essay_questions.skill_id = skills.id
+        `
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
