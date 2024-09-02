@@ -1427,7 +1427,7 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
                     content: prompt + ` Please respond with a JSON object.`
                 }
             ],
-            model: 'gpt-4o',
+            model: 'gpt-4o-mini',
             response_format: { type: 'json_object' }
         });
         let responseJSON = completion.choices[0].message.content;
@@ -1503,7 +1503,7 @@ async function aiMarkImageQuestionAnswer(question, answer, level) {
         }
 
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4o',
+            model: 'gpt-4o-mini',
             messages: [
                 {
                     role: 'system',
