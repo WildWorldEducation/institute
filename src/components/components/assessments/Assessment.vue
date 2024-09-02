@@ -302,6 +302,12 @@ export default {
 
                     // Set the first question in questions array for display
                     this.question = this.questions[0];
+
+                    // Set number of images required for first question.
+                    if (this.question.questionType == 'image') {
+                        this.numOfImagesRequired =
+                            this.question.num_images_required;
+                    }
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
                     this.totalNumOfQuestions = this.questions.length;
