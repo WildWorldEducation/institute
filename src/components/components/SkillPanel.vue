@@ -83,6 +83,7 @@ export default {
     },
     mounted() {
         document.addEventListener('click', () => {
+            console.log('CLICK ME ME ME ME');
             this.adjustClamping();
         });
     }
@@ -156,7 +157,6 @@ export default {
     z-index: 1;
     background-color: #fff;
     /* Disable horizontal scroll */
-    overflow-x: hidden;
     /* 0.5 second transition effect to slide in the sidepanel */
     transition: 0.5s;
     background: #e4ecf4;
@@ -233,6 +233,7 @@ h1 {
         height: 0;
         width: 100%;
         bottom: 0;
+        top: 0;
     }
     .skill-info-panel-top,
     .skill-info-panel-bottom {
