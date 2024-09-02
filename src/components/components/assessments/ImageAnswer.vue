@@ -4,7 +4,7 @@ export default {
         return {
             skillId: this.$route.params.id,
             imageAnswer: [],
-            answerType: 'upload'
+            answerType: 'link'
         };
     },
     props: ['numImagesRequired'],
@@ -68,7 +68,7 @@ export default {
     <div class="mb-3">
         <!-- Choose answer type -->
         <div>
-            <p>
+            <p v-if="numImagesRequired == 1">
                 <input
                     type="radio"
                     id="upload"
