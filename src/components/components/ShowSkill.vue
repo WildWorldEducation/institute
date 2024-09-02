@@ -73,6 +73,8 @@ export default {
             // Load the skill data
             const res = await fetch('/skills/show/' + this.skillId);
             this.skill = await res.json();
+
+            // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
 
             //Load skill filters
@@ -114,7 +116,7 @@ export default {
             const data = await res.json();
             this.userSkills = data;
             for (let i = 0; i < this.userSkills.length; i++) {
-                if (this.userSkills[i].id == this.skillId) {
+                if (this.userSkills[i].id == this.skill.id) {
                     if (this.userSkills[i].is_mastered == 1) {
                         this.isMastered = true;
                     }
@@ -223,7 +225,7 @@ export default {
                     <!-- Edit skill -->
                     <router-link
                         v-if="sessionDetailsStore.isLoggedIn"
-                        :to="'/skills/edit/' + skillId"
+                        :to="'/skills/edit/' + skill.id"
                         class="btn green-btn"
                         :class="{
                             'mb-1': isMobileCheck > 576,
@@ -251,7 +253,7 @@ export default {
                             userDetailsStore.role == 'admin' ||
                             userDetailsStore.role == 'editor'
                         "
-                        :to="'/skills/history/' + this.skillId"
+                        :to="'/skills/history/' + this.skill.id"
                         class="btn purple-btn mb-1"
                         style="max-height: 37.6px"
                         ><span v-if="isMobileCheck > 576">History</span>
@@ -318,7 +320,7 @@ export default {
                             <router-link
                                 v-if="isUnlocked && !isMastered"
                                 class="btn purple-btn assessment-btn"
-                                :to="skillId + '/assessment'"
+                                :to="skill.id + '/assessment'"
                             >
                                 <svg
                                     fill="#ffffff"
@@ -491,7 +493,7 @@ export default {
                         <router-link
                             v-if="skill.type != 'super'"
                             class="btn purple-btn mt-3 me-3"
-                            :to="skillId + '/question-bank'"
+                            :to="skill.id + '/question-bank'"
                             >Question Bank&nbsp;&nbsp;
                             <!-- Pencil icon -->
                             <svg
@@ -525,7 +527,7 @@ export default {
         </div>
         <div v-if="skill.type != 'domain'">
             <div class="row mt-3 mb-3">
-                <Forum />
+                <Forum :skillId="skill.id" />
             </div>
         </div>
         <p>&nbsp;</p>

@@ -38,9 +38,13 @@ export default {
     },
     async created() {
         // Preparing the questions and answers array. -------------------
-        // Get saved unmarked essay answers.
-        if (this.unmarkedAnswersStore.unmarkedAnswers.length == 0) {
-            await this.unmarkedAnswersStore.getUnmarkedAnswers();
+        // Get saved unmarked answers.
+        if (this.unmarkedAnswersStore.unmarkedEssayAnswers.length == 0) {
+            await this.unmarkedAnswersStore.getUnmarkedEssayAnswers();
+        }
+
+        if (this.unmarkedAnswersStore.unmarkedImageAnswers.length == 0) {
+            await this.unmarkedAnswersStore.getUnmarkedImageAnswers();
         }
 
         // Get unmarked assessments.
@@ -51,14 +55,31 @@ export default {
         // Add only the questions for this assessment to the array.
         for (
             let i = 0;
-            i < this.unmarkedAnswersStore.unmarkedAnswers.length;
+            i < this.unmarkedAnswersStore.unmarkedEssayAnswers.length;
             i++
         ) {
             if (
-                this.unmarkedAnswersStore.unmarkedAnswers[i].assessment_id ==
-                this.assessmentId
+                this.unmarkedAnswersStore.unmarkedEssayAnswers[i]
+                    .assessment_id == this.assessmentId
             ) {
-                this.answers.push(this.unmarkedAnswersStore.unmarkedAnswers[i]);
+                let answer = this.unmarkedAnswersStore.unmarkedEssayAnswers[i];
+                answer.type = 'essay';
+                this.answers.push(answer);
+            }
+        }
+
+        for (
+            let i = 0;
+            i < this.unmarkedAnswersStore.unmarkedImageAnswers.length;
+            i++
+        ) {
+            if (
+                this.unmarkedAnswersStore.unmarkedImageAnswers[i]
+                    .assessment_id == this.assessmentId
+            ) {
+                let answer = this.unmarkedAnswersStore.unmarkedImageAnswers[i];
+                answer.type = 'image';
+                this.answers.push(answer);
             }
         }
 
@@ -100,7 +121,7 @@ export default {
                     this.skillName = this.skillsStore.skillsList[j].name;
                 }
             }
-        }
+        }        
     },
     computed: {},
     methods: {
@@ -170,12 +191,16 @@ export default {
                             this.showModal = true;
                             this.isFailed = true;
                         }
+
+                        //
                     }
                 }
             }
 
             // Delete from store and DB.
-            this.unmarkedAnswersStore.deleteUnmarkedAnswer(answer);
+            if (answer.type == 'essay')
+                this.unmarkedAnswersStore.deleteUnmarkedEssayAnswer(answer);
+            else this.unmarkedAnswersStore.deleteUnmarkedImageAnswer(answer);
 
             // Update assessmentsStore
 
@@ -225,7 +250,10 @@ export default {
                 }
             }
             // Delete from store and DB.
-            this.unmarkedAnswersStore.deleteUnmarkedAnswer(answer);
+            if (answer.type == 'essay')
+                this.unmarkedAnswersStore.deleteUnmarkedEssayAnswer(answer);
+            else this.unmarkedAnswersStore.deleteUnmarkedImageAnswer(answer);
+
             // Now remove this element from the array.
             this.answers.splice(this.questionNumber, 1);
 
@@ -244,7 +272,7 @@ export default {
         <img src="/images/banners/general-banner.png" class="img-fluid" />
     </div>
     <div class="container mt-3 pb-4">
-        <div id="page-tile">Unmarked Essay Questions</div>
+        <div id="page-tile">Unmarked Questions</div>
         <div id="assessment-info">
             {{ this.studentName }} :
             {{ this.skillName }}
@@ -276,10 +304,18 @@ export default {
                     {{ this.answers[this.questionNumber].question }}
                 </div>
                 <div
-                    id="answer"
+                    v-if="this.answers[this.questionNumber].type == 'essay'"
+                    id="essay-answer"
                     class="mb-3"
                     v-html="this.answers[this.questionNumber].answer"
                 ></div>
+                <div v-else id="image-answer" class="mb-3">
+                    <img :src="this.answers[this.questionNumber].answer_1" />
+                    <img :src="this.answers[this.questionNumber].answer_2" />
+                    <img :src="this.answers[this.questionNumber].answer_3" />
+                    <img :src="this.answers[this.questionNumber].answer_4" />
+                    <img :src="this.answers[this.questionNumber].answer_5" />
+                </div>
             </div>
         </div>
         <div class="d-flex flex-column" v-else>
@@ -379,7 +415,7 @@ h2 {
     color: #667085;
 }
 
-#answer {
+#essay-answer {
     font-family: 'Poppins';
     font-size: 16px;
     font-weight: 100;
@@ -391,6 +427,11 @@ h2 {
     padding-bottom: 10px;
     background-color: white;
     border-radius: 15px;
+}
+
+#image-answer img {
+    border-radius: 15px;
+    width: 200px;
 }
 
 #page-tile {

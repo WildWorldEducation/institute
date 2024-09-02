@@ -286,24 +286,27 @@ export default {
                     </label>
                 </div>
                 <!-- For Essay Questions Only -->
-                <div v-else>
+                <div v-else-if="question.questionType == 'essay'">
                     <span class="explain-label">Your answer:</span>
-                    <div
-                        v-if="question.answer_type == 'text'"
-                        class="explain-text"
-                    >
+                    <div class="explain-text">
                         {{ question.userAnswer }}
                     </div>
-                    <div v-else class="explain-text">
-                        <img width="100" :src="question.userAnswer" />
-                    </div>
+                </div>
+                <!-- For Image Questions Only -->
+                <div v-else-if="question.questionType == 'image'">
+                    <span class="explain-label">Your answer:</span>
+
+                    <img
+                        v-for="(answer, index) in question.userAnswer.length"
+                        :src="question.userAnswer[index]"
+                        width="80"
+                    />
                 </div>
                 <!-- Question explanation -->
                 <div
                     v-if="
                         question.questionType == 'mc' ||
-                        (question.questionType == 'essay' &&
-                            question.isCorrect == false)
+                        question.isCorrect == false
                     "
                     class="explain-answer"
                 >

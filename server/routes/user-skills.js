@@ -25,7 +25,7 @@ router.get('/:id', (req, res, next) => {
 
         let sqlQuery =
             `
-    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, optional_parent_2, optional_parent_3
+    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -34,7 +34,7 @@ router.get('/:id', (req, res, next) => {
             ` AND is_filtered = 'available' AND is_deleted = 0
 
     UNION
-    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, optional_parent_2, optional_parent_3
+    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -58,47 +58,33 @@ router.get('/:id', (req, res, next) => {
                     results[i].children = [];
                 }
 
+                // Deal with skills that have multiple parents.
+                // These skills have secret copies in the table.
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].display_name != null) {
+                        results[i].skill_name = results[i].display_name;
+
+                        for (var j = 0; j < results.length; j++) {
+                            if (
+                                results[i].is_copy_of_skill_id == results[j].id
+                            ) {
+                                results[i].is_accessible =
+                                    results[j].is_accessible;
+                                results[i].is_mastered = results[j].is_mastered;
+                            }
+                        }
+                    }
+                }
+
                 // Assign children to parent skills.
                 for (var i = 0; i < results.length; i++) {
                     // Regular parent.
                     if (results[i].parent != null && results[i].parent != 0) {
                         var parentId = results[i].parent;
 
-                        // go through all rows again, add children
+                        // Go through all rows again, add children
                         for (let j = 0; j < results.length; j++) {
                             if (results[j].id == parentId) {
-                                // bug
-                                results[j].children.push(results[i]);
-                            }
-                        }
-                    }
-
-                    // Optional second parent.
-                    if (
-                        results[i].optional_parent_2 != null &&
-                        results[i].optional_parent_2 != 0
-                    ) {
-                        var parent2Id = results[i].optional_parent_2;
-
-                        // go through all rows again, add children
-                        for (let j = 0; j < results.length; j++) {
-                            if (results[j].id == parent2Id) {
-                                // bug
-                                results[j].children.push(results[i]);
-                            }
-                        }
-                    }
-
-                    // Optional third parent.
-                    if (
-                        results[i].optional_parent_3 != null &&
-                        results[i].optional_parent_3 != 0
-                    ) {
-                        var parent3Id = results[i].optional_parent_3;
-
-                        // go through all rows again, add children
-                        for (let j = 0; j < results.length; j++) {
-                            if (results[j].id == parent3Id) {
                                 // bug
                                 results[j].children.push(results[i]);
                             }
@@ -129,7 +115,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
 
         let sqlQuery =
             `
-    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, optional_parent_2, optional_parent_3
+    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -508,13 +494,24 @@ router.post('/make-mastered/:userId', (req, res, next) => {
 
         // Get a list of all skills.
         let sqlQuery1 = 'SELECT * FROM skills;';
-        let query1 = conn.query(sqlQuery1, (err, results) => {
+        conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
                 let skills = results;
 
+                // Check if the skill that was mastered has any copies in the tree,
+                // that also need to be made mastered now.
+                let allSkillsToBeMadeMastered = [];
+                allSkillsToBeMadeMastered.push(skill);
+                for (let i = 0; i < skills.length; i++) {
+                    if (skills[i].is_copy_of_skill_id == skill.id) {
+                        allSkillsToBeMadeMastered.push(skills[i]);
+                    }
+                }
+
+                // Get user skills.
                 let sqlQuery2 =
                     `
                 SELECT skills.id, name, is_accessible, is_mastered, type
@@ -539,15 +536,24 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                     `)
                 ORDER BY id;`;
 
-                let query2 = conn.query(sqlQuery2, (err, results) => {
+                conn.query(sqlQuery2, (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         }
                         let unnestedList = results;
 
-                        // Recursive function.
-                        makeMastered(req.params.userId, skill);
+                        for (
+                            let i = 0;
+                            i < allSkillsToBeMadeMastered.length;
+                            i++
+                        ) {
+                            // Recursive function.
+                            makeMastered(
+                                req.params.userId,
+                                allSkillsToBeMadeMastered[i]
+                            );
+                        }
 
                         function makeMastered(userId, skill) {
                             let value;
@@ -571,8 +577,8 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                 value +
                                 `, is_accessible=1;
                             `;
-                            //
-                            let query = conn.query(sqlQuery, (err, results) => {
+
+                            conn.query(sqlQuery, (err, results) => {
                                 try {
                                     if (err) {
                                         throw err;

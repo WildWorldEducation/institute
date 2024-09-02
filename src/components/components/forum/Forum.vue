@@ -16,9 +16,9 @@ export default {
             userDetailsStore
         };
     },
+    props: ['skillId'],
     data() {
-        return {
-            skillId: this.$route.params.skillId,
+        return {         
             sourcePosts: [],
             tutorPosts: [],
             isAlreadyTutoring: false,

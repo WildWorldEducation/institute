@@ -40,6 +40,7 @@ export default {
             // list of mc question and user answer of that question
             mcQuestionsAnswer: [],
             essayQuestions: [],
+            imageQuestions: [],
             questions: [],
             question: {},
             questionNumber: 0,
@@ -47,6 +48,7 @@ export default {
             assessmentId: null,
             numMCQuestions: 0,
             numEssayQuestions: 0,
+            numImageQuestions: 0,
             totalNumOfQuestions: 0,
             isAllQuestionsAnswered: false,
             waitForMarkModal: false,
@@ -66,7 +68,8 @@ export default {
             haveEssayQuestion: false,
             finishTime: null,
             needToSelectInstructor: false,
-            aiLoading: false
+            aiLoading: false,
+            numOfImagesRequired: 1
         };
     },
     async created() {
@@ -233,6 +236,56 @@ export default {
                         this.mcQuestions
                     );
 
+                    // // Shuffle array to create random set of questions for each user
+                    // this.questions = this.questions.sort(
+                    //     (a, b) => 0.5 - Math.random()
+                    // );
+
+                    // // Ensure that the number fo questions is at or below the setting.
+                    // if (
+                    //     this.questions.length >
+                    //     this.settingsStore.quizMaxQuestions
+                    // ) {
+                    //     this.questions.length =
+                    //         this.settingsStore.quizMaxQuestions;
+                    // }
+
+                    // // Set the first question in questions array for display
+                    // this.question = this.questions[0];
+                    // // Calculate the total num of questions.
+                    // // At the moment, each question is 1 mark, so we get the total score from this.
+                    // this.totalNumOfQuestions = this.questions.length;
+                })
+                .then(() => {
+                    this.fetchImageQuestions(skillId);
+                });
+        },
+        async fetchImageQuestions(skillId) {
+            fetch('/questions/' + skillId + '/image')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    if (
+                        data.length > 0 &&
+                        !this.userDetailsStore.instructor.id
+                    ) {
+                        if (this.settingsStore.isManualEssayMarking == 1)
+                            this.needToSelectInstructor = true;
+                    }
+                    // Add the new questions to the existing questions.
+                    this.imageQuestions = this.imageQuestions.concat(data);
+                })
+                .then(() => {
+                    // Add field to elements, for the user's answer.
+                    for (let i = 0; i < this.imageQuestions.length; i++) {
+                        this.imageQuestions[i].userAnswer = null;
+                        this.imageQuestions[i].questionType = 'image';
+                    }
+                })
+                .then(() => {
+                    this.questions = this.imageQuestions.concat(this.questions);
+
                     // Shuffle array to create random set of questions for each user
                     this.questions = this.questions.sort(
                         (a, b) => 0.5 - Math.random()
@@ -249,6 +302,12 @@ export default {
 
                     // Set the first question in questions array for display
                     this.question = this.questions[0];
+
+                    // Set number of images required for first question.
+                    if (this.question.questionType == 'image') {
+                        this.numOfImagesRequired =
+                            this.question.num_images_required;
+                    }
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
                     this.totalNumOfQuestions = this.questions.length;
@@ -258,83 +317,78 @@ export default {
                 });
         },
         Next() {
-            // Handle essay answer with summernote
+            // Handle essay answer
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                if (this.questions[this.questionNumber].answer_type == 'text') {
-                    // Get the answer
-                    const answer = this.$refs.essayTextAnswer.getAnswer();
-                    // Store user answer in questions array before move to next questions
-                    this.questions[this.questionNumber].userAnswer = answer;
-                    // Clear the answer
-                    this.$refs.essayTextAnswer.clearAnswer();
-                } else if (
-                    this.questions[this.questionNumber].answer_type == 'image'
-                ) {
-                    // Get the answer
-                    const answer = this.$refs.essayImageAnswer.getAnswer();
-                    // Store user answer in questions array before move to next questions
-                    this.questions[this.questionNumber].userAnswer = answer;
-                    // Clear the answer
-                    this.$refs.essayImageAnswer.clearAnswer();
-                }
+                // Get the answer
+                const answer = this.$refs.essayAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = answer;
+                // Clear the answer
+                this.$refs.essayAnswer.clearAnswer();
+            } else if (
+                this.questions[this.questionNumber].questionType == 'image'
+            ) {
+                // Get the answer
+                const answer = this.$refs.imageAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = answer;
+                // Clear the answer
+                this.$refs.imageAnswer.clearAnswer();
             }
-
             // Get next question data
             this.questionNumber++;
-            //  If the next question is essay question we have to handle with summernote
+            //  If the next question is essay question
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Set the next answer content if there are any
                 if (this.questions[this.questionNumber].userAnswer) {
-                    if (
-                        this.questions[this.questionNumber].answer_type ==
-                        'text'
-                    ) {
-                        this.$refs.essayTextAnswer.setAnswer(
-                            this.questions[this.questionNumber].userAnswer
-                        );
-                    } else if (
-                        this.questions[this.questionNumber].answer_type ==
-                        'image'
-                    ) {
-                        this.$refs.essayImageAnswer.setAnswer(
-                            this.questions[this.questionNumber].userAnswer
-                        );
-                    }
+                    this.$refs.essayAnswer.setAnswer(
+                        this.questions[this.questionNumber].userAnswer
+                    );
                 }
+            } else if (
+                this.questions[this.questionNumber].questionType == 'image'
+            ) {
+                // Set the next answer content if there are any
+                if (this.questions[this.questionNumber].userAnswer) {
+                    this.$refs.imageAnswer.setAnswer(
+                        this.questions[this.questionNumber].userAnswer
+                    );
+                }
+                // Set the number of images required.
+                this.numOfImagesRequired =
+                    this.questions[this.questionNumber].num_images_required;
             }
         },
         Previous() {
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                if (this.questions[this.questionNumber].answer_type == 'text') {
-                    // Get the answer
-                    const answer = this.$refs.essayTextAnswer.getAnswer();
-                    // Store user answer in questions array before move to next questions
-                    this.questions[this.questionNumber].userAnswer = answer;
-                } else if (
-                    this.questions[this.questionNumber].answer_type == 'image'
-                ) {
-                    // Get the answer
-                    const answer = this.$refs.essayImageAnswer.getAnswer();
-                    // Store user answer in questions array before move to next questions
-                    this.questions[this.questionNumber].userAnswer = answer;
-                }
+                // Get the answer
+                const answer = this.$refs.essayAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = answer;
+            } else if (
+                this.questions[this.questionNumber].questionType == 'image'
+            ) {
+                // Get the answer
+                const answer = this.$refs.imageAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = answer;
             }
             this.questionNumber--;
             if (this.questions[this.questionNumber].questionType == 'essay') {
-                if (this.questions[this.questionNumber].answer_type == 'text') {
-                    // Set the answer to previous answer
-                    this.$refs.essayTextAnswer.setAnswer(
-                        this.questions[this.questionNumber].userAnswer
-                    );
-                }
-                if (
-                    this.questions[this.questionNumber].answer_type == 'image'
-                ) {
-                    // Set the answer to previous answer
-                    this.$refs.essayImageAnswer.setAnswer(
-                        this.questions[this.questionNumber].userAnswer
-                    );
-                }
+                // Set the answer to previous answer
+                this.$refs.essayAnswer.setAnswer(
+                    this.questions[this.questionNumber].userAnswer
+                );
+            } else if (
+                this.questions[this.questionNumber].questionType == 'image'
+            ) {
+                // Set the answer to previous answer
+                this.$refs.imageAnswer.setAnswer(
+                    this.questions[this.questionNumber].userAnswer
+                );
+                // Set the number of images required.
+                this.numOfImagesRequired =
+                    this.questions[this.questionNumber].num_images_required;
             }
         },
         // Async because essay questions are marked on server.
@@ -346,13 +400,15 @@ export default {
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Get the answer
                 let answer;
-                if (this.questions[this.questionNumber].answer_type == 'text') {
-                    answer = this.$refs.essayTextAnswer.getAnswer();
-                } else if (
-                    this.questions[this.questionNumber].answer_type == 'image'
-                ) {
-                    answer = this.$refs.essayImageAnswer.getAnswer();
-                }
+                answer = this.$refs.essayAnswer.getAnswer();
+                // Store user answer in questions array before move to next questions
+                this.questions[this.questionNumber].userAnswer = answer;
+            } else if (
+                this.questions[this.questionNumber].questionType == 'image'
+            ) {
+                // Get the answer
+                let answer;
+                answer = this.$refs.imageAnswer.getAnswer();
                 // Store user answer in questions array before move to next questions
                 this.questions[this.questionNumber].userAnswer = answer;
             }
@@ -364,13 +420,15 @@ export default {
                     if (this.questions[i].userAnswer == 1) {
                         this.score++;
                     }
-                } else {
+                } else if (this.questions[i].questionType == 'essay') {
                     this.numEssayQuestions++;
+                } else {
+                    this.numImageQuestions++;
                 }
             }
 
             // If no essay questions, we return result.
-            if (this.numEssayQuestions === 0) {
+            if (this.numEssayQuestions === 0 && this.numImageQuestions === 0) {
                 // Pass mark from settings store.
                 if (
                     (this.score / this.numMCQuestions) * 100 >=
@@ -389,7 +447,7 @@ export default {
                 }
             }
 
-            // If there are essay questions.
+            // If there are essay or image questions.
             else {
                 if (this.settingsStore.isManualEssayMarking == 1) {
                     // Deal with the essay questions.
@@ -399,6 +457,9 @@ export default {
                         fetchMethod = 'PUT';
                     }
 
+                    let numUnmarkedQuestions =
+                        this.numEssayQuestions + this.numImageQuestions;
+
                     // create an unmarked assessment record
                     const requestOptions = {
                         method: fetchMethod,
@@ -406,7 +467,7 @@ export default {
                         body: JSON.stringify({
                             totalScore: this.totalNumOfQuestions,
                             currentScore: this.score,
-                            numUnmarkedQuestions: this.numEssayQuestions
+                            numUnmarkedQuestions: numUnmarkedQuestions
                         })
                     };
                     var url =
@@ -421,7 +482,7 @@ export default {
                         this.isQuizPassed = true;
                         this.showResult = true;
                         this.assessmentStatus =
-                            'wait for essay answers to be mark';
+                            'please wait for answers to be marked';
                     };
 
                     fetch(url, requestOptions)
@@ -461,7 +522,32 @@ export default {
                                             })
                                         };
                                         var url =
-                                            '/unmarked-answers/add/' +
+                                            '/unmarked-answers/add/essay/' +
+                                            this.assessmentId;
+                                        fetch(url, requestOptions).then(
+                                            function (response) {
+                                                turnOnModal();
+                                            }
+                                        );
+                                    } else if (
+                                        this.questions[i].questionType ==
+                                        'image'
+                                    ) {
+                                        // create unmarked essay question records for each one.
+                                        const requestOptions = {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type':
+                                                    'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                answer: this.questions[i]
+                                                    .userAnswer,
+                                                questionId: this.questions[i].id
+                                            })
+                                        };
+                                        var url =
+                                            '/unmarked-answers/add/image/' +
                                             this.assessmentId;
                                         fetch(url, requestOptions).then(
                                             function (response) {
@@ -478,17 +564,13 @@ export default {
                         if (this.questions[i].questionType == 'essay') {
                             let question = this.questions[i].question;
                             let answer = this.questions[i].userAnswer;
-                            let answerType = this.questions[i].answer_type;
 
-                            if (answer == '') {
-                                answer = 'no image';
-                            }
-                            await this.AIMarkEssayQuestion(
-                                question,
-                                answerType,
-                                answer,
-                                i
-                            );
+                            await this.AIMarkEssayQuestion(question, answer, i);
+                        } else if (this.questions[i].questionType == 'image') {
+                            let question = this.questions[i].question;
+                            let answer = this.questions[i].userAnswer;
+
+                            await this.AIMarkImageQuestion(question, answer, i);
                         }
                     }
                     if (
@@ -509,25 +591,47 @@ export default {
                 }
             }
         },
-        async AIMarkEssayQuestion(question, answerType, answer, i) {
+        async AIMarkEssayQuestion(question, answer, i) {
             this.aiLoading = true;
-            if (answerType == 'image' && answer == 'no image') {
-                this.questions[i].explanation =
-                    'This answer is incorrect because no photograph was uploaded.';
-                this.questions[i].isCorrect = false;
-                return;
-            }
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     question: question,
                     answer: answer,
-                    answerType: answerType,
                     level: this.skill.level
                 })
             };
             let url = '/questions/mark-essay-question';
+            await fetch(url, requestOptions)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((result) => {
+                    if (result.isCorrect == true) {
+                        this.score++;
+                        this.questions[i].isCorrect = true;
+                    } else {
+                        this.questions[i].explanation = result.explanation;
+                        this.questions[i].isCorrect = false;
+                    }
+                })
+                .finally(() => {
+                    this.aiLoading = false;
+                });
+        },
+        async AIMarkImageQuestion(question, answer, i) {
+            this.aiLoading = true;
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question: question,
+                    answer: answer,
+                    level: this.skill.level
+                })
+            };
+            let url = '/questions/mark-image-question';
             await fetch(url, requestOptions)
                 .then(function (response) {
                     return response.json();
@@ -724,17 +828,21 @@ export default {
                     }`"
                 >
                     <div class="form-group">
-                        <EssayAnswer
-                            v-show="
-                                questions[questionNumber].answer_type == 'text'
-                            "
-                            ref="essayTextAnswer"
-                        />
+                        <EssayAnswer ref="essayAnswer" />
+                    </div>
+                </div>
+                <!-- Image Question Answer Section -->
+                <div
+                    :class="`${
+                        questions[questionNumber].questionType == 'image'
+                            ? 'd-block'
+                            : 'd-none'
+                    }`"
+                >
+                    <div class="form-group">
                         <ImageAnswer
-                            v-show="
-                                questions[questionNumber].answer_type == 'image'
-                            "
-                            ref="essayImageAnswer"
+                            :numImagesRequired="numOfImagesRequired"
+                            ref="imageAnswer"
                         />
                     </div>
                 </div>
