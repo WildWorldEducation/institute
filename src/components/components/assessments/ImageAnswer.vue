@@ -35,7 +35,7 @@ export default {
 
             for (let i = 0; i < files.length; i++) {
                 console.log(files[i].size);
-                if (files[i].size > 15728640) {
+                if (files[i].size > 700000) {
                     alert('image is too big');
                     return;
                 }
@@ -99,7 +99,7 @@ export default {
                         />
 
                         <p style="font-size: 14px">
-                            <em>Maximum file size 15mb</em>
+                            <em>Maximum file size 700kb</em>
                         </p>
                     </div>
                     <div v-else>
