@@ -3,7 +3,8 @@ export default {
     data() {
         return {
             skillId: this.$route.params.id,
-            imageAnswer: []
+            imageAnswer: [],
+            answerType: 'upload'
         };
     },
     props: ['numImagesRequired'],
@@ -65,10 +66,31 @@ export default {
 
 <template>
     <div class="mb-3">
+        <!-- Choose answer type -->
+        <div>
+            <p>
+                <input
+                    type="radio"
+                    id="upload"
+                    value="upload"
+                    v-model="answerType"
+                />
+                <label for="upload">upload</label>
+                <br />
+                <input
+                    type="radio"
+                    id="link"
+                    value="link"
+                    v-model="answerType"
+                />
+                <label for="link">link</label>
+            </p>
+        </div>
         <div class="main-content-container container-fluid">
             <div class="row">
                 <div class="col-lg-4">
-                    <div class="mb-3 row">
+                    <!-- Upload -->
+                    <div class="mb-3 row" v-if="answerType == 'upload'">
                         <input
                             type="file"
                             id="file-input"
@@ -80,6 +102,15 @@ export default {
                             <em>Maximum file size 15mb</em>
                         </p>
                     </div>
+                    <div v-else>
+                        <input
+                            class="form-control mb-2"
+                            v-for="(image, index) in numImagesRequired"
+                            v-model="imageAnswer[index]"
+                            placeholder="add image link"
+                        />
+                    </div>
+                    <!-- Images previews -->
                     <div
                         class="preview"
                         v-for="(image, index) in imageAnswer.length"
