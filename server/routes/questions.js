@@ -1394,8 +1394,9 @@ router.post('/mark-essay-question', async (req, res, next) => {
             };
             res.json(result);
         } catch {
+            // Handle OpenAI crash.
             console.log('error with OpenAI call');
-            res.end();
+            res.redirect('/');
         }
     } else {
         res.redirect('/login');
