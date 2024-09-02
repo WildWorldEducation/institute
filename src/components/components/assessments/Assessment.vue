@@ -68,7 +68,8 @@ export default {
             haveEssayQuestion: false,
             finishTime: null,
             needToSelectInstructor: false,
-            aiLoading: false
+            aiLoading: false,
+            numOfImagesRequired: 1
         };
     },
     async created() {
@@ -235,8 +236,6 @@ export default {
                         this.mcQuestions
                     );
 
-                    console.log(this.questions);
-
                     // // Shuffle array to create random set of questions for each user
                     // this.questions = this.questions.sort(
                     //     (a, b) => 0.5 - Math.random()
@@ -306,8 +305,6 @@ export default {
                     // Calculate the total num of questions.
                     // At the moment, each question is 1 mark, so we get the total score from this.
                     this.totalNumOfQuestions = this.questions.length;
-
-                    console.log(this.questions);
                 })
                 .then(() => {
                     this.loading = false;
@@ -351,6 +348,9 @@ export default {
                         this.questions[this.questionNumber].userAnswer
                     );
                 }
+                // Set the number of images required.
+                this.numOfImagesRequired =
+                    this.questions[this.questionNumber].num_images_required;
             }
         },
         Previous() {
@@ -380,6 +380,9 @@ export default {
                 this.$refs.imageAnswer.setAnswer(
                     this.questions[this.questionNumber].userAnswer
                 );
+                // Set the number of images required.
+                this.numOfImagesRequired =
+                    this.questions[this.questionNumber].num_images_required;
             }
         },
         // Async because essay questions are marked on server.
@@ -832,7 +835,7 @@ export default {
                 >
                     <div class="form-group">
                         <ImageAnswer
-                            :numImagesRequired="question.num_images_required"
+                            :numImagesRequired="numOfImagesRequired"
                             ref="imageAnswer"
                         />
                     </div>
