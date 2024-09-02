@@ -51,15 +51,15 @@ export default {
                 const skillInfoPanelBottom = this.$refs.skillInfoPanelBottom;
                 const container = this.$refs.truncateContainer;
                 const content = this.$refs.truncateContent;
-                
-                if(!container) return
-                
+
+                if (!container) return;
+
                 if (screen.width > 800) {
                     container.style.height =
                         skillInfoPanel.clientHeight -
                         skillInfoPanelBottom.clientHeight -
                         skillInfoPanelTop.clientHeight -
-                        250 +
+                        100 +
                         'px';
                 } else {
                     container.style.height =
