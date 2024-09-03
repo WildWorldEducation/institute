@@ -83,7 +83,6 @@ export default {
     },
     mounted() {
         document.addEventListener('click', () => {
-            console.log('CLICK ME ME ME ME');
             this.adjustClamping();
         });
     }

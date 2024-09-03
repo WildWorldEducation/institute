@@ -3,6 +3,7 @@
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
+import NewSkillPanel from '../NewSkillPanel.vue';
 import SliderControl from './SliderControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
@@ -52,13 +53,15 @@ export default {
             isLoading: true,
             xPos: 0,
             yPos: 0,
-            showAnimation: false
+            showAnimation: false,
+            showSkillPanel: false
         };
     },
     components: {
         SkillPanel,
         SliderControl,
-        JoystickControl
+        JoystickControl,
+        NewSkillPanel
     },
     async mounted() {
         if (this.skillTreeStore.userSkills.length == 0) {
@@ -133,7 +136,9 @@ export default {
                 );
                 const masteryRequirements = await result.json();
                 this.skill.masteryRequirements = masteryRequirements;
-                this.showInfoPanel();
+                //this.showInfoPanel();
+                console.log('Clicked');
+                this.showSkillPanel = true;
             }
         });
 
@@ -750,12 +755,13 @@ export default {
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div v-show="isLoading == false" id="wrapper">
-        <SkillPanel :skill="skill" />
+        <!-- <SkillPanel :skill="skill" /> -->
+        <NewSkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
         <div
             v-if="showAnimation"
             :style="{ top: `${yPos}px`, left: `${xPos}px` }"
             class="click-animation"
-            ></div>
+        ></div>
         <canvas
             id="canvas"
             width="1500"
@@ -884,28 +890,28 @@ input[type='button'] {
     display: flex;
     flex-direction: row;
 }
-canvas{
+canvas {
     cursor: pointer;
 }
 .click-animation {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: #7a46ff; /* Color of the animation */
-  border-radius: 50%;
-  transform: translate(-50%, -50%); /* Center the circle on click */
-  animation: clickEffect 0.7s infinite ease-out ;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #7a46ff; /* Color of the animation */
+    border-radius: 50%;
+    transform: translate(-50%, -50%); /* Center the circle on click */
+    animation: clickEffect 0.7s infinite ease-out;
 }
 
 @keyframes clickEffect {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(3);
-    opacity: 0;
-  }
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(3);
+        opacity: 0;
+    }
 }
 @media (max-width: 820px) {
     .flex-container {
