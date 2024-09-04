@@ -85,6 +85,38 @@ router.delete('/essay/:id', (req, res, next) => {
     }
 });
 
+// Delete image question.
+router.delete('/image/:id', (req, res, next) => {
+    if (req.session.userName) {
+        // Delete Query using visibility flag
+        const deleteQuestion = `UPDATE image_questions SET is_deleted = 1 WHERE id=${req.params.id}`;
+        conn.query(deleteQuestion, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // add delete action into user_tables
+                    const actionData = {
+                        action: 'delete',
+                        content_id: req.params.id,
+                        content_type: 'image_question',
+                        user_id: req.session.userId
+                    };
+                    const addActionQuery = 'INSERT INTO user_actions SET ?';
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 /**
  * Show Item
  *
@@ -94,7 +126,9 @@ router.delete('/essay/:id', (req, res, next) => {
 router.get('/mc/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT mc_questions.*, skills.name as skill_name, skills.level as skill_level FROM mc_questions JOIN skills ON mc_questions.skill_id = skills.id WHERE mc_questions.id=' + req.params.id;
+        let sqlQuery =
+            'SELECT mc_questions.*, skills.name as skill_name, skills.level as skill_level FROM mc_questions JOIN skills ON mc_questions.skill_id = skills.id WHERE mc_questions.id=' +
+            req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -113,8 +147,31 @@ router.get('/essay/show/:id', (req, res) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
-            'SELECT essay_questions.*, skills.name as skill_name, skills.level as skill_level FROM essay_questions JOIN skills ON skills.id = essay_questions.skill_id WHERE essay_questions.id=' + req.params.id;
+            'SELECT essay_questions.*, skills.name as skill_name, skills.level as skill_level FROM essay_questions JOIN skills ON skills.id = essay_questions.skill_id WHERE essay_questions.id=' +
+            req.params.id;
         let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// Show image question.
+router.get('/image/show/:id', (req, res) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            `SELECT image_questions.*, skills.name as skill_name, skills.level as skill_level 
+            FROM image_questions 
+            JOIN skills ON skills.id = image_questions.skill_id 
+            WHERE image_questions.id=` + req.params.id;
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -269,9 +326,8 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${
-                                req.body.edit ? 'edit_and_approve' : 'approve'
-                            }`,
+                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
+                                }`,
                             contentId: req.params.id,
                             contentType: 'mc_question'
                         },
@@ -306,6 +362,7 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
         let incorrectAnswer3;
         let incorrectAnswer4;
         let explanation;
+
         // Escape single quotes for SQL to accept.
         if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
         if (req.body.question != null)
@@ -489,7 +546,15 @@ router.delete(
 router.get('/mc/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM mc_questions_awaiting_approval;';
+        let sqlQuery =
+            `
+            SELECT mc_questions_awaiting_approval.*, skills.name AS skill_name
+            FROM mc_questions_awaiting_approval
+            JOIN mc_questions
+            ON mc_questions_awaiting_approval.mc_question_id = mc_questions.id
+            JOIN skills
+            ON mc_questions.skill_id = skills.id
+        `;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -578,9 +643,8 @@ router.put('/essay/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${
-                                req.body.edit ? 'edit_and_approve' : 'approve'
-                            }`,
+                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
+                                }`,
                             contentId: req.params.id,
                             contentType: 'essay_question'
                         },
@@ -654,11 +718,120 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
     }
 });
 
+// Edit Image questions
+router.put('/image/:id/edit', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery =
+            `UPDATE image_questions 
+        SET name='` +
+            name +
+            `', question = '` +
+            question +
+            `', num_images_required = '` +
+            req.body.num_images_required +
+            `' WHERE id = ` +
+            req.params.id;
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // add edit essay question into user_actions
+                    const actionData = {
+                        action: 'update',
+                        content_type: 'image_question',
+                        content_id: req.params.id,
+                        user_id: req.session.userId
+                    };
+
+                    const addActionQuery = `INSERT INTO user_actions SET ?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Submit Image question edit for review.
+ */
+router.post('/image/:id/edit-for-review', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+        if (req.body.comment != null)
+            req.body.comment = req.body.comment.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery = `INSERT INTO image_questions_awaiting_approval (image_question_id, user_id, name, question, num_images_required, comment)
+                        VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}', '${req.body.num_images_required}','${req.body.comment}')
+
+                        ON DUPLICATE KEY
+                        UPDATE date = CURRENT_TIMESTAMP(), name = '${name}', question = '${question}', num_images_required = '${req.body.num_images_required}', comment = '${req.body.comment}';`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    recordUserAction(
+                        {
+                            userId: req.body.userId,
+                            userAction: 'submit_update_for_review',
+                            contentType: 'image_question',
+                            contentId: req.params.id
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
+                        }
+                    );
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Load all essay type questions.
 router.get('/essay/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM essay_questions_awaiting_approval;';
+        let sqlQuery =
+            `
+            SELECT essay_questions_awaiting_approval.*, skills.name AS skill_name
+            FROM essay_questions_awaiting_approval
+            JOIN essay_questions
+            ON essay_questions_awaiting_approval.essay_question_id = essay_questions.id
+            JOIN skills
+            ON essay_questions.skill_id = skills.id
+        `
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -715,13 +888,34 @@ router.get('/:skillId/essay', (req, res, next) => {
     }
 });
 
+// Load essay type questions.
+router.get('/:skillId/image', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT * 
+            FROM image_questions 
+            WHERE skill_id = ${req.params.skillId}
+            AND is_deleted = 0;`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Used to get flagged essay question AND in mark assessment Component
 // Load all essay type questions.
 router.get('/essay/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM essay_questions WHERE is_deleted = 0;';
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -739,6 +933,24 @@ router.get('/mc/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM mc_questions WHERE is_deleted = 0;';
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// Load all image type questions.
+router.get('/image/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT * FROM image_questions WHERE is_deleted = 0;';
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -833,6 +1045,52 @@ router.post('/essay-questions/add', (req, res, next) => {
                         action: 'create',
                         content_id: results.insertId,
                         content_type: 'essay_question',
+                        user_id: req.session.userId
+                    };
+                    const addActionQuery = `INSERT INTO user_actions SET?`;
+                    conn.query(addActionQuery, actionData, (err) => {
+                        if (err) throw err;
+                        else res.end();
+                    });
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Create a single New Essay Question Manually (not from CSV.)
+ *
+ * @return response()
+ */
+router.post('/image-questions/add', (req, res, next) => {
+    if (req.session.userName) {
+        // No need to escape single quotes for SQL to accept,
+        // as using '?'.
+        // Add data.
+        let data = {};
+        data = {
+            name: req.body.name,
+            question: req.body.question,
+            skill_id: req.body.skill_id,
+            num_images_required: req.body.num_images_required
+        };
+
+        let sqlQuery = 'INSERT INTO image_questions SET ?';
+        conn.query(sqlQuery, data, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // add create action into user_actions table
+                    const actionData = {
+                        action: 'create',
+                        content_id: results.insertId,
+                        content_type: 'image_question',
                         user_id: req.session.userId
                     };
                     const addActionQuery = `INSERT INTO user_actions SET?`;
@@ -1128,41 +1386,39 @@ const openai = new OpenAI({
 });
 
 /**
- * Mark essay questions.
+ * AI Mark essay questions.
  */
 router.post('/mark-essay-question', async (req, res, next) => {
     if (req.session.userName) {
-        let question = req.body.question;
-        let answer = req.body.answer;
-        let answerType = req.body.answerType;
-        // Remove underscores from the variables.
-        let level = req.body.level.replace('_', ' ');
-        let teacherReview;
-        if (answerType == 'text') {
-            teacherReview = await aiMarkEssayTextQuestionAnswer(
+        // Error handling to prevent OpenAI from crashing the app
+        try {
+            let question = req.body.question;
+            let answer = req.body.answer;
+            // Remove underscores from the variables.
+            let level = req.body.level.replace('_', ' ');
+            let teacherReview;
+            teacherReview = await aiMarkEssayQuestionAnswer(
                 question,
                 answer,
                 level
             );
-        } else {
-            teacherReview = await aiMarkEssayImageQuestionAnswer(
-                question,
-                answer,
-                level
-            );
-        }
 
-        let result = {
-            isCorrect: teacherReview.is_correct,
-            explanation: teacherReview.explanation
-        };
-        res.json(result);
+            let result = {
+                isCorrect: teacherReview.is_correct,
+                explanation: teacherReview.explanation
+            };
+            res.json(result);
+        } catch {
+            // Handle OpenAI crash.
+            console.log('error with OpenAI call');
+            res.redirect('/');
+        }
     } else {
         res.redirect('/login');
     }
 });
 
-async function aiMarkEssayTextQuestionAnswer(question, answer, level) {
+async function aiMarkEssayQuestionAnswer(question, answer, level) {
     // Create prompt for ChatGPT.
     let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
 
@@ -1187,7 +1443,7 @@ async function aiMarkEssayTextQuestionAnswer(question, answer, level) {
                     content: prompt + ` Please respond with a JSON object.`
                 }
             ],
-            model: 'gpt-4o',
+            model: 'gpt-4o-mini',
             response_format: { type: 'json_object' }
         });
         let responseJSON = completion.choices[0].message.content;
@@ -1204,10 +1460,41 @@ async function aiMarkEssayTextQuestionAnswer(question, answer, level) {
 }
 
 /**
+ * AI Mark image questions.
+ */
+router.post('/mark-image-question', async (req, res, next) => {
+    if (req.session.userName) {
+        // Error handling to prevent OpenAI from crashing the app
+        try {
+            let question = req.body.question;
+            let answer = req.body.answer;
+            // Remove underscores from the variables.
+            let level = req.body.level.replace('_', ' ');
+            let teacherReview;
+            teacherReview = await aiMarkImageQuestionAnswer(
+                question,
+                answer,
+                level
+            );
+
+            let result = {
+                isCorrect: teacherReview.is_correct,
+                explanation: teacherReview.explanation
+            };
+            res.json(result);
+        } catch {
+            console.log('error with OpenAI call');
+            res.end();
+        }
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
  * Mark images.
  */
-
-async function aiMarkEssayImageQuestionAnswer(question, answer, level) {
+async function aiMarkImageQuestionAnswer(question, answer, level) {
     let prompt = `Please check if '${answer}' answers the question '${question}' correctly.
 
     Please imagine this answer comes from a student at a '${level}' level, and answer appropriately to that level.
@@ -1216,8 +1503,23 @@ async function aiMarkEssayImageQuestionAnswer(question, answer, level) {
     `;
     // Prevent the app from crashing if anything goes wrong with the API call.
     try {
+        let contentArray = [];
+        contentArray.push({
+            type: 'text',
+            text: prompt + ` Please respond with a JSON object.`
+        });
+        for (let i = 0; i < answer.length; i++) {
+            let contentObject = {
+                type: 'image_url',
+                image_url: {
+                    url: answer[i]
+                }
+            };
+            contentArray.push(contentObject);
+        }
+
         const completion = await openai.chat.completions.create({
-            model: 'gpt-4o',
+            model: 'gpt-4o-mini',
             messages: [
                 {
                     role: 'system',
@@ -1228,18 +1530,7 @@ async function aiMarkEssayImageQuestionAnswer(question, answer, level) {
                 },
                 {
                     role: 'user',
-                    content: [
-                        {
-                            type: 'text',
-                            text: prompt + ` Please respond with a JSON object.`
-                        },
-                        {
-                            type: 'image_url',
-                            image_url: {
-                                url: answer
-                            }
-                        }
-                    ]
+                    content: contentArray
                 }
             ],
             response_format: { type: 'json_object' }
@@ -1249,6 +1540,7 @@ async function aiMarkEssayImageQuestionAnswer(question, answer, level) {
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
+        console.log(responseObj);
         return responseObj;
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);
@@ -1344,8 +1636,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                    mcQuestions[index].id +
-                                    ' complete'
+                                mcQuestions[index].id +
+                                ' complete'
                             );
                             // Check the next question.
                             index++;

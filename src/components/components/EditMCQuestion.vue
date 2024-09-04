@@ -40,7 +40,7 @@ export default {
                 })
                 .then((data) => {
                     this.question = data;
-                    this.originalQuestion = {...data}
+                    this.originalQuestion = { ...data };
                 });
         },
         // If edit is from an admin or editor.
@@ -170,24 +170,30 @@ export default {
                 this.SubmitForReview();
             }
         },
-        setFormUpdated(){
+        setFormUpdated() {
             this.formUpdated = true;
         }
     },
-    computed:{
-        isFormChanged(){
+    computed: {
+        isFormChanged() {
             return (
                 this.question.name !== this.originalQuestion.name ||
                 this.question.question !== this.originalQuestion.question ||
-                this.question.correct_answer !== this.originalQuestion.correct_answer ||
-                this.question.incorrect_answer_1 !== this.originalQuestion.incorrect_answer_1 ||
-                this.question.incorrect_answer_2 !== this.originalQuestion.incorrect_answer_2 ||
-                this.question.incorrect_answer_3 !== this.originalQuestion.incorrect_answer_3 ||
-                this.question.incorrect_answer_4 !== this.originalQuestion.incorrect_answer_4 ||
-                this.question.explanation !== this.originalQuestion.explanation ||
+                this.question.correct_answer !==
+                    this.originalQuestion.correct_answer ||
+                this.question.incorrect_answer_1 !==
+                    this.originalQuestion.incorrect_answer_1 ||
+                this.question.incorrect_answer_2 !==
+                    this.originalQuestion.incorrect_answer_2 ||
+                this.question.incorrect_answer_3 !==
+                    this.originalQuestion.incorrect_answer_3 ||
+                this.question.incorrect_answer_4 !==
+                    this.originalQuestion.incorrect_answer_4 ||
+                this.question.explanation !==
+                    this.originalQuestion.explanation ||
                 this.question.comment !== this.originalQuestion.comment ||
-                this.comment != ""
-            )
+                this.comment != ''
+            );
         }
     }
 };

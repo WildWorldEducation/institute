@@ -107,7 +107,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                                                             skillId +
                                                             `, ` +
                                                             req.body.filters[
-                                                            i
+                                                                i
                                                             ] +
                                                             `);`;
                                                         let query = conn.query(
@@ -146,6 +146,71 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
     });
 });
 
+// Create a new instance of an existing skill,
+// in order to have the skill show in more than one place in the tree.
+router.post(
+    '/add/new-instance',
+    isAuthenticated,
+    isAdmin,
+    async (req, res, next) => {
+        let skill;
+
+        res.setHeader('Content-Type', 'application/json');
+        // Get skill that is to be copied.
+        const sqlQuery = `SELECT *
+                          FROM skills
+                          WHERE skills.id = ${req.body.skillToBeCopied.id} AND skills.is_deleted = 0`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                skill = results[0];
+
+                // Deal with case when skill to be copied is a sub skill,
+                // and new parent is not a super skill.
+                if (
+                    skill.type == 'sub' &&
+                    req.body.parentOfNewInstance.type != 'super'
+                ) {
+                    skill.type = 'regular';
+                }
+
+                data = {
+                    name: skill.name + ' copy',
+                    parent: req.body.parentOfNewInstance.id,
+                    description: skill.description,
+                    icon_image: skill.icon_image,
+                    banner_image: skill.banner_image,
+                    mastery_requirements: skill.mastery_requirements,
+                    type: skill.type,
+                    level: skill.level,
+                    is_filtered: skill.is_filtered,
+                    order: skill.order,
+                    is_copy_of_skill_id: req.body.skillToBeCopied.id,
+                    display_name: skill.name
+                };
+
+                // Create the copy with new parent.
+                let sqlQuery1 = `INSERT INTO skills SET ?;`;
+                let query = conn.query(sqlQuery1, data, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
 /**
  * Get All Items
  *
@@ -156,11 +221,12 @@ router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM skills WHERE skills.is_deleted = 0';
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
+
                 res.json(results);
             } catch (err) {
                 next(err);
@@ -174,7 +240,7 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT id, name, parent, type, level, is_filtered, skills.order as skillorder, optional_parent_2, optional_parent_3
+    SELECT id, name, parent, type, level, is_filtered, skills.order as skillorder, display_name
     FROM skills
     WHERE is_deleted = 0
     ORDER BY skillorder;`;
@@ -189,6 +255,14 @@ router.get('/nested-list', (req, res, next) => {
                     results[i].children = [];
                 }
 
+                // Deal with skills that have multiple parents.
+                // These skills have secret copies in the table.
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].display_name != null) {
+                        results[i].name = results[i].display_name;
+                    }
+                }
+
                 // Add children to the parents.
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].parent != null && results[i].parent != 0) {
@@ -196,38 +270,6 @@ router.get('/nested-list', (req, res, next) => {
                         // go through all rows again, add children
                         for (let j = 0; j < results.length; j++) {
                             if (results[j].id == parentId) {
-                                results[j].children.push(results[i]);
-                            }
-                        }
-                    }
-                }
-
-                // Add children to the optional second parents.
-                for (var i = 0; i < results.length; i++) {
-                    if (
-                        results[i].optional_parent_2 != null &&
-                        results[i].optional_parent_2 != 0
-                    ) {
-                        var parent2Id = results[i].optional_parent_2;
-                        // go through all rows again, add children
-                        for (let j = 0; j < results.length; j++) {
-                            if (results[j].id == parent2Id) {
-                                results[j].children.push(results[i]);
-                            }
-                        }
-                    }
-                }
-
-                // Add children to the optional third parents.
-                for (var i = 0; i < results.length; i++) {
-                    if (
-                        results[i].optional_parent_3 != null &&
-                        results[i].optional_parent_3 != 0
-                    ) {
-                        var parent3Id = results[i].optional_parent_3;
-                        // go through all rows again, add children
-                        for (let j = 0; j < results.length; j++) {
-                            if (results[j].id == parent3Id) {
                                 results[j].children.push(results[i]);
                             }
                         }
@@ -255,7 +297,7 @@ router.get('/filtered-nested-list', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `
-    SELECT id, name, parent, type, level, skills.order as skillorder, optional_parent_2, optional_parent_3
+    SELECT id, name, parent, type, level, skills.order as skillorder, display_name
     FROM skills
     WHERE is_filtered = 'available' AND is_deleted = 0
     ORDER BY skillorder;`;
@@ -270,6 +312,14 @@ router.get('/filtered-nested-list', (req, res, next) => {
                 results[i].children = [];
             }
 
+            // Deal with skills that have multiple parents.
+            // These skills have secret copies in the table.
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].display_name != null) {
+                    results[i].name = results[i].display_name;
+                }
+            }
+
             // First parent.
             for (var i = 0; i < results.length; i++) {
                 if (results[i].parent != null && results[i].parent != 0) {
@@ -277,38 +327,6 @@ router.get('/filtered-nested-list', (req, res, next) => {
                     // go through all rows again, add children
                     for (let j = 0; j < results.length; j++) {
                         if (results[j].id == parentId) {
-                            results[j].children.push(results[i]);
-                        }
-                    }
-                }
-            }
-
-            // Optional second parent.
-            for (var i = 0; i < results.length; i++) {
-                if (
-                    results[i].optional_parent_2 != null &&
-                    results[i].optional_parent_2 != 0
-                ) {
-                    var parent2Id = results[i].optional_parent_2;
-                    // go through all rows again, add children
-                    for (let j = 0; j < results.length; j++) {
-                        if (results[j].id == parent2Id) {
-                            results[j].children.push(results[i]);
-                        }
-                    }
-                }
-            }
-
-            // Optional third parent.
-            for (var i = 0; i < results.length; i++) {
-                if (
-                    results[i].optional_parent_3 != null &&
-                    results[i].optional_parent_3 != 0
-                ) {
-                    var parent3Id = results[i].optional_parent_3;
-                    // go through all rows again, add children
-                    for (let j = 0; j < results.length; j++) {
-                        if (results[j].id == parent3Id) {
                             results[j].children.push(results[i]);
                         }
                     }
@@ -349,7 +367,31 @@ router.get('/show/:id', (req, res, next) => {
                 throw err;
             }
             skill = results[0];
-            res.json(skill);
+
+            if (typeof skill !== 'undefined' && skill) {
+                if (skill.is_copy_of_skill_id != null) {
+                    const sqlQueryForCopiedSkillNode = `SELECT *
+                FROM skills
+                WHERE skills.id = ${skill.is_copy_of_skill_id} AND skills.is_deleted = 0`;
+
+                    conn.query(sqlQueryForCopiedSkillNode, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            skill = results[0];
+                            skill.is_copy_of_skill_id = skill.id;
+                            res.json(skill);
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                } else {
+                    res.json(skill);
+                }
+            } else {
+                res.end();
+            }
         } catch (err) {
             next(err);
         }
@@ -485,12 +527,8 @@ router.put(
                     let updateRecordSQLQuery =
                         `UPDATE skills SET name = '` +
                         req.body.name +
-                        `', parent = '` +
+                        `', parent = ` +
                         req.body.parent +
-                        `', optional_parent_2 = ` +
-                        req.body.optional_parent_2 +
-                        `, optional_parent_3 = ` +
-                        req.body.optional_parent_3 +
                         `, description = '` +
                         req.body.description +
                         `', icon_image = '` +
@@ -696,10 +734,11 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${req.body.edit
-                                                    ? 'edit_and_approve'
-                                                    : 'approve'
-                                                    }`,
+                                                userAction: `${
+                                                    req.body.edit
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
+                                                }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -739,7 +778,8 @@ router.put(
 router.get('/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM skills_awaiting_approval JOIN skills ON skills_awaiting_approval.skill_id = skills.id';
+        let sqlQuery =
+            'SELECT * FROM skills_awaiting_approval JOIN skills ON skills_awaiting_approval.skill_id = skills.id';
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -888,6 +928,23 @@ router.get('/:id/essay-questions/list', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT * FROM essay_questions WHERE skill_id = ${req.params.id} AND is_deleted = 0`;
         let query = conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+router.get('/:id/image-questions/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT * FROM image_questions WHERE skill_id = ${req.params.id} AND is_deleted = 0`;
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;

@@ -10,14 +10,16 @@ export default {
         return {
             headers: [
                 { text: 'User', value: 'userName' },
-                { text: 'Question Name', value: 'name' },
-                { text: 'Question Content', value: 'question' },
+                { text: 'Name', value: 'name' },
+                { text: 'Content', value: 'question' },
+                { text: 'Skill', value: 'skill_name' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
             ],
             mobileHeaders: [
                 { text: 'User', value: 'userName' },
                 { text: 'Comment', value: 'comment' },
+                { text: 'Skill', value: 'skill_name' },
                 { text: 'Date', value: 'date' }
             ]
         };
@@ -55,6 +57,15 @@ export default {
             <template #loading>
                 <img src="/images/loading.gif" alt="loading data" />
             </template>
+
+            <!-- --- Name Router Column --- -->
+            <template #item-name="{ name, mc_question_id, user_id }">
+                <RouterLink
+                    class="cell-link"
+                    :to="`/content-edit/${mc_question_id}/${user_id}/comparison?type=mcquestion`"
+                    >{{ name }}</RouterLink
+                >
+            </template>
         </Vue3EasyDataTable>
         <!-- Mobile Table -->
         <Vue3EasyDataTable
@@ -71,6 +82,14 @@ export default {
             <!-- --- Loading Part --- -->
             <template #loading>
                 <img src="/images/loading.gif" alt="loading data" />
+            </template>
+            <!-- --- Name Router Column --- -->
+            <template #item-name="{ name, mc_question_id, user_id }">
+                <RouterLink
+                    class="cell-link"
+                    :to="`/content-edit/${mc_question_id}/${user_id}/comparison?type=mcquestion`"
+                    >{{ name }}</RouterLink
+                >
             </template>
         </Vue3EasyDataTable>
     </div>

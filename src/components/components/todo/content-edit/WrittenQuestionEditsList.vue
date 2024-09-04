@@ -10,13 +10,15 @@ export default {
         return {
             headers: [
                 { text: 'User', value: 'userName' },
-                { text: 'Question Name', value: 'name' },
-                { text: 'Question Content', value: 'question' },
+                { text: 'Name', value: 'name' },
+                { text: 'Content', value: 'question' },
+                { text: 'Skill', value: 'skill_name' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
             ],
             mobileHeaders: [
                 { text: 'User', value: 'userName' },
+                { text: 'Skill', value: 'skill_name' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
             ]
@@ -54,6 +56,15 @@ export default {
             <!-- --- Loading Part --- -->
             <template #loading>
                 <img src="/images/loading.gif" alt="loading data" />
+            </template>
+
+            <!-- --- Question Name Router Column --- -->
+            <template #item-name="{ name, essay_question_id, user_id }">
+                <RouterLink
+                    class="cell-link"
+                    :to="`/content-edit/${essay_question_id}/${user_id}/comparison?type=mcquestion`"
+                    >{{ name }}</RouterLink
+                >
             </template>
         </Vue3EasyDataTable>
         <!-- mobile table -->

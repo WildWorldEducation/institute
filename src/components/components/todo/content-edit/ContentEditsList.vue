@@ -148,21 +148,21 @@ export default {
         <h2 class="ps-3 mt-2 page-title">Approve Content Edits</h2>
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
-            <div
+            <button
                 :class="[activeList === 'skills' ? 'active-nav' : 'normal-nav']"
                 @click="handleDropDownNavChoose('skills')"
             >
                 Skills
-            </div>
-            <div
+            </button>
+            <button
                 :class="[
                     activeList === 'mcQuestions' ? 'active-nav' : 'normal-nav'
                 ]"
                 @click="handleDropDownNavChoose('mcQuestions')"
             >
                 Multiple Choice Questions
-            </div>
-            <div
+            </button>
+            <button
                 :class="[
                     activeList === 'writtenQuestions'
                         ? 'active-nav'
@@ -171,7 +171,7 @@ export default {
                 @click="handleDropDownNavChoose('writtenQuestions')"
             >
                 Essay Questions
-            </div>
+            </button>
         </div>
         <!-- ---- | Nav List On Mobile | ---- -->
         <!-- Custom Dropdown -->
@@ -282,6 +282,13 @@ export default {
     cursor: pointer;
     font-weight: 600;
     color: grey;
+    border: none;
+    border-radius: 8px;
+}
+
+.normal-nav:focus {
+    outline: none;
+    border: 1px solid #9c7eec;
 }
 
 .active-nav {
@@ -291,6 +298,10 @@ export default {
     color: white;
     font-weight: 600;
     padding: 5px 20px;
+}
+
+.active-nav:focus {
+    outline: solid 2px #4a3091;
 }
 
 /* Style For The Custom Select */
@@ -416,6 +427,18 @@ export default {
 .custom-dropdown-option:hover {
     cursor: pointer;
     background: #bca3ff1a;
+}
+
+:deep(.cell-link) {
+    text-decoration: none;
+    color: inherit;
+}
+
+:deep(.cell-link:focus) {
+    border: 1px #8f7bd6 solid;
+    border-color: #4523be !important;
+    border-radius: 5px;
+    outline: none;
 }
 
 /* End of CSS style for Custom Select */

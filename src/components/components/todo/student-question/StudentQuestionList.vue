@@ -11,12 +11,12 @@ export default {
             headers: [
                 { text: 'Student', value: 'studentName' },
                 { text: 'Question', value: 'question' },
-                { text: 'Skill', value: 'skillName' },
+                { text: 'Skill Name', value: 'skillName' },
                 { text: 'Date', value: 'date' }
             ],
             mobileHeaders: [
                 { text: 'User', value: 'userName' },
-                { text: 'Skill Name', value: 'name' },
+                { text: 'Question', value: 'question' },
                 { text: 'Comment', value: 'comment' }
             ]
         };
@@ -25,7 +25,9 @@ export default {
         Vue3EasyDataTable
     },
     props: ['studentQuestion', 'loadingQuestion'],
-    async mounted() {},
+    async mounted() {
+        console.log(this.studentQuestion);
+    },
     methods: {
         goToComparePage(item) {
             this.$router.push(`/check-student-question/${item.id}`);
@@ -86,6 +88,14 @@ export default {
                     {{ formatDate(create_date) }}
                 </div>
             </template>
+            <!-- --- Name Router Column --- -->
+            <template #item-question="{ question, id }">
+                <RouterLink
+                    class="cell-link"
+                    :to="`/check-student-question/${id}`"
+                    >{{ question }}</RouterLink
+                >
+            </template>
         </Vue3EasyDataTable>
         <!-- Mobile table -->
         <Vue3EasyDataTable
@@ -125,5 +135,17 @@ export default {
 
 .customize-table :deep(tbody tr:hover) {
     cursor: pointer;
+}
+
+.cell-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.cell-link:focus {
+    border: 1px #8f7bd6 solid;
+    border-color: #4523be !important;
+    border-radius: 5px;
+    outline: none;
 }
 </style>
