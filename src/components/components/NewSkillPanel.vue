@@ -91,7 +91,7 @@ export default {
     top: 0px;
     right: 0px;
     width: 30%;
-    height: 94%;
+    height: calc(100% - 55.2px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -191,11 +191,6 @@ export default {
 
 /* View Specific On Phone */
 @media (min-width: 320px) and (max-width: 576px) {
-    .skill-panel-container {
-        width: 100%;
-        height: 83%;
-    }
-
     /* Slide down animation */
     @keyframes slideY {
         0% {
@@ -215,6 +210,22 @@ export default {
     .skillPanel-leave-active {
         transform-origin: bottom;
         animation: slideY 0.5s reverse;
+    }
+}
+
+/* Tablets */
+@media (max-width: 987px) {
+    .skill-panel-container {
+        width: 100%;
+        height: calc(100% - 65.6px);
+    }
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 800px) {
+    .skill-panel-container {
+        width: 100%;
+        height: calc(100% - 137.6px);
     }
 }
 

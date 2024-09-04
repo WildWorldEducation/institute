@@ -17,8 +17,8 @@ export default {
     created() {},
     components: { TidyTree, TidyTreeNoAccount },
     methods: {
-        resetPos(){
-            this.$refs.childComponent.resetPos()
+        resetPos() {
+            this.$refs.childComponent.resetPos();
         }
         // // Toggle info bar.
         // ToggleInfobar() {
@@ -148,7 +148,7 @@ export default {
     width: 100%;
 }
 
-/* X-Small devices (portrait phones, less than 576px) */
+/* Small devices (portrait phones) */
 @media (max-width: 800px) {
     #mobile-legend {
         display: block;
