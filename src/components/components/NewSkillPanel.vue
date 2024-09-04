@@ -16,33 +16,35 @@ export default {
 </script>
 
 <template>
-    <div v-if="showSkillPanel">
-        <div class="skill-panel-container">
-            <div class="closeButtonContainer">
-                <button
-                    class="closebtn"
-                    @click="hideInfoPanel"
-                    b-on-hover
-                    title="Close Panel "
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                        fill="#888"
-                        width="20"
-                        height="20"
+    <Transition name="skillPanel">
+        <div v-if="showSkillPanel" class="skill-panel-container">
+            <div class="skill-info-panel-top">
+                <div class="closeButtonContainer">
+                    <button
+                        class="closebtn"
+                        @click="hideInfoPanel"
+                        b-on-hover
+                        title="Close Panel "
                     >
-                        <path
-                            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                        />
-                    </svg>
-                </button>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            fill="#888"
+                            width="20"
+                            height="20"
+                        >
+                            <path
+                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+                <h1 class="skill-name">{{ skill?.name }}</h1>
+                <div
+                    class="skill-mastery-requirement"
+                    v-html="skill.masteryRequirements"
+                ></div>
             </div>
-            <h1 class="skill-name">{{ skill?.name }}</h1>
-            <div
-                class="skill-mastery-requirement"
-                v-html="skill.masteryRequirements"
-            ></div>
             <div class="skill-info-panel-bottom">
                 <hr v-if="skill.type != 'domain'" />
                 <router-link
@@ -77,7 +79,7 @@ export default {
                 </div>
             </div>
         </div>
-    </div>
+    </Transition>
 </template>
 
 <style scoped>
@@ -93,6 +95,12 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.skill-info-panel-top {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 .closeButtonContainer {
@@ -159,11 +167,54 @@ export default {
     background-color: #2ca695;
     color: white;
 }
+
+/* Slide left animation */
+@keyframes slideY {
+    0% {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+.skillPanel-enter-active {
+    transform-origin: right center;
+    animation: slideY 0.5s;
+}
+.skillPanel-leave-active {
+    transform-origin: right center;
+    animation: slideY 0.5s reverse;
+}
+
 /* View Specific On Phone */
 @media (min-width: 320px) and (max-width: 576px) {
     .skill-panel-container {
         width: 100%;
         height: 83%;
+    }
+
+    /* Slide down animation */
+    @keyframes slideY {
+        0% {
+            opacity: 0;
+            transform: scaleY(0);
+        }
+
+        100% {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+    }
+    .skillPanel-enter-active {
+        transform-origin: bottom;
+        animation: slideY 0.5s;
+    }
+    .skillPanel-leave-active {
+        transform-origin: bottom;
+        animation: slideY 0.5s reverse;
     }
 }
 
