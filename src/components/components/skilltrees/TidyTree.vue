@@ -136,8 +136,8 @@ export default {
                 );
                 const masteryRequirements = await result.json();
                 this.skill.masteryRequirements = masteryRequirements;
+                // *** Preserve in case client want clamp instead of scroll
                 //this.showInfoPanel();
-                console.log('Clicked');
                 this.showSkillPanel = true;
             }
         });

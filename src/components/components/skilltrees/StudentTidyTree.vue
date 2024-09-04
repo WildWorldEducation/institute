@@ -3,8 +3,10 @@
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
+import NewSkillPanel from '../NewSkillPanel.vue';
 import SliderControl from './SliderControl.vue';
 import JoystickControl from './JoystickControl.vue';
+
 // Algorithm.
 import * as d3 from 'd3';
 
@@ -48,12 +50,14 @@ export default {
             // We store the d3 zoom call so the slider can call it
             d3Zoom: null,
             // For the loading animation.
-            isLoading: true
+            isLoading: true,
+            showSkillPanel: false
         };
     },
     props: ['studentId'],
     components: {
         SkillPanel,
+        NewSkillPanel,
         SliderControl,
         JoystickControl
     },
@@ -112,7 +116,9 @@ export default {
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
                 this.skill.masteryRequirements = node.data.mastery_requirements;
-                this.showInfoPanel();
+                // *** Preserve in case client want clamp instead of scroll
+                //this.showInfoPanel();
+                this.showSkillPanel = true;
             }
         });
 
@@ -735,7 +741,8 @@ export default {
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div v-show="isLoading == false" id="wrapper">
-        <SkillPanel :skill="skill" />
+        <!-- <SkillPanel :skill="skill" /> -->
+        <NewSkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
         <canvas
             id="canvas"
             width="1500"
