@@ -124,7 +124,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
             ` AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, optional_parent_2, optional_parent_3
+    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -156,48 +156,6 @@ router.get('/separate-subskills/:id', (req, res, next) => {
                         // go through all rows again, add children
                         for (let j = 0; j < results.length; j++) {
                             if (results[j].id == parentId) {
-                                if (results[i].type == 'sub') {
-                                    results[j].subskills.push(results[i]);
-                                } else {
-                                    results[j].children.push(results[i]);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Add children for optional second parent.
-                for (var i = 0; i < results.length; i++) {
-                    if (
-                        results[i].optional_parent_2 != null &&
-                        results[i].optional_parent_2 != 0
-                    ) {
-                        var parent2Id = results[i].optional_parent_2;
-
-                        // go through all rows again, add children
-                        for (let j = 0; j < results.length; j++) {
-                            if (results[j].id == parent2Id) {
-                                if (results[i].type == 'sub') {
-                                    results[j].subskills.push(results[i]);
-                                } else {
-                                    results[j].children.push(results[i]);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Add children for optional third parent.
-                for (var i = 0; i < results.length; i++) {
-                    if (
-                        results[i].optional_parent_3 != null &&
-                        results[i].optional_parent_3 != 0
-                    ) {
-                        var parent3Id = results[i].optional_parent_3;
-
-                        // go through all rows again, add children
-                        for (let j = 0; j < results.length; j++) {
-                            if (results[j].id == parent3Id) {
                                 if (results[i].type == 'sub') {
                                     results[j].subskills.push(results[i]);
                                 } else {
