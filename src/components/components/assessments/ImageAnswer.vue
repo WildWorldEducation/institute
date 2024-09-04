@@ -3,13 +3,10 @@ export default {
     data() {
         return {
             skillId: this.$route.params.id,
-            imageAnswer: [],
-            answerType: 'link'
+            imageAnswer: []
         };
     },
     props: ['numImagesRequired'],
-    setup() {},
-    mounted() {},
 
     methods: {
         //methods will be called on parent component to manipulate answer
@@ -34,7 +31,7 @@ export default {
             if (!files.length) return;
 
             for (let i = 0; i < files.length; i++) {
-                console.log(files[i].size);
+                // console.log(files[i].size);
                 if (files[i].size > 700000) {
                     alert('image is too big');
                     return;
@@ -51,14 +48,12 @@ export default {
                 vm.image = e.target.result;
                 this.imageAnswer.push(e.target.result);
                 imageFile.src = e.target.result;
-                console.log(this.imageAnswer);
             };
 
             reader.readAsDataURL(file);
         },
         removeImages: function (e) {
             this.imageAnswer = [];
-            console.log(this.imageAnswer);
         }
     }
 };
@@ -66,43 +61,10 @@ export default {
 
 <template>
     <div class="mb-3">
-        <!-- Choose answer type -->
-        <div>
-            <p v-if="numImagesRequired == 1">
-                <input
-                    type="radio"
-                    id="upload"
-                    value="upload"
-                    v-model="answerType"
-                />
-                <label for="upload">upload</label>
-                <br />
-                <input
-                    type="radio"
-                    id="link"
-                    value="link"
-                    v-model="answerType"
-                />
-                <label for="link">link</label>
-            </p>
-        </div>
         <div class="main-content-container container-fluid">
             <div class="row">
                 <div class="col-lg-4">
-                    <!-- Upload -->
-                    <div class="mb-3 row" v-if="answerType == 'upload'">
-                        <input
-                            type="file"
-                            id="file-input"
-                            accept="image/jpeg, image/png, image/jpg, image/webp"
-                            @change="onFileChange"
-                        />
-
-                        <p style="font-size: 14px">
-                            <em>Maximum file size 700kb</em>
-                        </p>
-                    </div>
-                    <div v-else>
+                    <div>
                         <input
                             class="form-control mb-2"
                             v-for="(image, index) in numImagesRequired"
