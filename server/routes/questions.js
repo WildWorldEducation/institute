@@ -845,6 +845,32 @@ router.get('/essay/submitted-for-review/list', (req, res, next) => {
     }
 });
 
+// Load all image questions type
+router.get('/image-question/submitted-for-review/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            `
+            SELECT image_questions_awaiting_approval.*, skills.name AS skill_name
+            FROM image_questions_awaiting_approval
+            JOIN image_questions
+            ON image_questions_awaiting_approval.image_question_id = image_questions.id
+            JOIN skills
+            ON image_questions.skill_id = skills.id
+        `
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Dynamically create assessments / question banks.
 // Load multiple choice type questions.
 router.get('/:skillId/multiple-choice', (req, res, next) => {

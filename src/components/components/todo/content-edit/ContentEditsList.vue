@@ -16,12 +16,14 @@ export default {
             skillEdits: [],
             mcQuestionEdits: [],
             essayQuestionEdits: [],
+            imageQuestionEdits: [],
             activeList: 'skills',
             showDropDown: false,
             // Flag to pass to child list for loading indicate
             skillEditsLoading: true,
             mcQuestionEditsLoading: true,
             essayQuestionEditsLoading: true,
+            imageQuestionEditsLoading: true,
             mobileNavCurrentLabel: 'skills'
         };
     },
@@ -35,6 +37,7 @@ export default {
         await this.getSkillEditsSubmittedForReview();
         await this.getMCQuestionEditsSubmittedForReview();
         await this.getEssayQuestionEditsSubmittedForReview();
+        await this.getImageQuestionsSubmittedForReview();
         // Get navigation state from URL
         const list = this.$route.query.list;
         if (list) {
@@ -87,6 +90,24 @@ export default {
                     this.essayQuestionEditsLoading = false;
                 });
         },
+
+        // Get image question edits that have been submitted for review
+        async getImageQuestionsSubmittedForReview() {
+            await fetch('/questions/image-question/submitted-for-review/list')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].date = this.formatDate(data[i].date);
+                        data[i].userName = this.findUserName(data[i].user_id);
+                        this.imageQuestionEdits.push(data[i]);
+                    }
+
+                    this.imageQuestionEditsLoading = false;
+                });
+        },
+
         formatDate(unformattedDate) {
             // Prep the date and time data ---------------
             // Split timestamp into [ Y, M, D, h, m, s ]
@@ -172,6 +193,16 @@ export default {
             >
                 Essay Questions
             </button>
+            <button
+                :class="[
+                    activeList === 'imageQuestions'
+                        ? 'active-nav'
+                        : 'normal-nav'
+                ]"
+                @click="handleDropDownNavChoose('imageQuestions')"
+            >
+                Image Questions
+            </button>
         </div>
         <!-- ---- | Nav List On Mobile | ---- -->
         <!-- Custom Dropdown -->
@@ -220,6 +251,12 @@ export default {
                 >
                     Essay Questions
                 </div>
+                <div
+                    class="custom-dropdown-option"
+                    @click="handleDropDownNavChoose('imageQuestions')"
+                >
+                    Image Questions
+                </div>
             </div>
         </div>
         <!-- End of custom dropdown -->
@@ -245,6 +282,8 @@ export default {
                     :essayQuestionEditsLoading="essayQuestionEditsLoading"
                 />
             </div>
+            <!-- Image question edits list -->
+            <div v-if="activeList === 'imageQuestions'">Image Question</div>
         </div>
     </div>
 </template>
