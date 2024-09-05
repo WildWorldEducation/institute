@@ -225,7 +225,7 @@ export default {
                     <!-- Edit skill -->
                     <router-link
                         v-if="sessionDetailsStore.isLoggedIn"
-                        :to="'/skills/edit/' + skill.id"
+                        :to="'/skills/edit/' + skillId"
                         class="btn green-btn"
                         :class="{
                             'mb-1': isMobileCheck > 576,
