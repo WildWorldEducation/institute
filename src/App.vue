@@ -80,9 +80,7 @@ export default {
                         </li>
 
                         <li
-                            v-if="
-                                userDetailsStore.role == 'student'
-                            "
+                            v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
                             <RouterLink to="/vertical-tree" class="nav-link"
@@ -90,13 +88,12 @@ export default {
                             >
                         </li>
                         <li
-                            v-if="
-                                !sessionDetailsStore.isLoggedIn
-                            "
+                            v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
                             <RouterLink to="/vertical-tree" class="nav-link"
-                                >You Can Not Interact With the Tree Until Logged in</RouterLink
+                                >You Can Not Interact With the Tree Until Logged
+                                in</RouterLink
                             >
                         </li>
                         <li
@@ -104,7 +101,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink to="/radial-tree" class="nav-link"
-                                >Radial Tree</RouterLink
+                                >Radial Tree Alpha Version</RouterLink
                             >
                         </li>
                         <li
@@ -141,7 +138,10 @@ export default {
                             </RouterLink>
                         </li>
                         <li class="nav-item me-2" v-else>
-                            <RouterLink to="/login" class="btn purple-btn login-btn">
+                            <RouterLink
+                                to="/login"
+                                class="btn purple-btn login-btn"
+                            >
                                 Login
                             </RouterLink>
                         </li>
@@ -188,7 +188,7 @@ export default {
 .router-view-padding {
     padding-top: 72px;
 }
-.login-btn{
+.login-btn {
     max-width: 100px;
     justify-content: center;
 }
