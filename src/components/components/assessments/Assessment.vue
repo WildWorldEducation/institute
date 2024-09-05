@@ -640,7 +640,7 @@ export default {
                     if (result.isError == true) {
                         this.questions[i].isCorrect = false;
                         this.questions[i].explanation =
-                            'There was an error grading this image. The file size may be too big.';
+                            'There was an error grading this question. The file size(s) may be too big.';
                     } else if (result.isCorrect == true) {
                         this.score++;
                         this.questions[i].isCorrect = true;
