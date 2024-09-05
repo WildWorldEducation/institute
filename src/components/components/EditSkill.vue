@@ -595,7 +595,10 @@ export default {
                                 <div class="control_indicator"></div>
                             </label>
                         </div>
-                        <div class="form-check col-6 col-md-5 my-2">
+                        <div
+                            class="form-check col-6 col-md-5 my-2"
+                            v-if="!isAnotherInstanceOfExistingSkill"
+                        >
                             <label class="control control-checkbox">
                                 <span class="my-auto mx-2 me-4">Category</span>
                                 <input
@@ -608,7 +611,10 @@ export default {
                                 <div class="control_indicator"></div>
                             </label>
                         </div>
-                        <div class="form-check col-6 col-md-5 my-2">
+                        <div
+                            v-if="!isAnotherInstanceOfExistingSkill"
+                            class="form-check col-6 col-md-5 my-2"
+                        >
                             <label class="control control-checkbox">
                                 <span class="my-auto mx-2 me-4"
                                     >Cluster node center</span
