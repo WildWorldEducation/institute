@@ -101,7 +101,7 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink to="/radial-tree" class="nav-link"
-                                >Radial Tree Alpha Version</RouterLink
+                                >Radial Tree (Alpha Version)</RouterLink
                             >
                         </li>
                         <li
