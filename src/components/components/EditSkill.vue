@@ -299,7 +299,10 @@ export default {
                 }
             }
 
-            if (this.skill.type != 'domain') {
+            if (
+                this.skill.type != 'domain' &&
+                this.is_copy_of_skill_id != null
+            ) {
                 // Update the skill.
                 this.skill.mastery_requirements =
                     $('#summernote').summernote('code');

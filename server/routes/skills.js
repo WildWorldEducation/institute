@@ -383,6 +383,7 @@ router.get('/show/:id', (req, res, next) => {
                             skill2.is_copy_of_skill_id = skill2.id;
                             skill2.type = skill.type;
                             skill2.parent = skill.parent;
+                            skill2.version_number = skill.version_number;
                             res.json(skill2);
                         } catch (err) {
                             next(err);
