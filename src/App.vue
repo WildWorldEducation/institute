@@ -123,6 +123,17 @@ export default {
                                 >
                             </RouterLink>
                         </li>
+                        <li
+                            v-if="
+                                userDetailsStore.role == 'instructor' ||
+                                userDetailsStore.role == 'admin'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink to="/cohorts" class="nav-link">
+                                <span>Cohorts</span>
+                            </RouterLink>
+                        </li>
                     </ul>
                     <ul class="navbar-nav d-flex">
                         <li

@@ -279,6 +279,12 @@ const router = createRouter({
             name: 'todo-list',
             component: () => import('../components/pages/TodoListView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+        },
+        {
+            path: '/cohorts',
+            name: 'cohorts',
+            component: () => import('../components/pages/CohortsListView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         }
     ]
 });
