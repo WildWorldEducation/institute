@@ -3,6 +3,7 @@ import { useUsersStore } from '../../../../stores/UsersStore';
 import McQuestionsEditList from './McQuestionsEditList.vue';
 import SkillEditsList from './SkillEditsList.vue';
 import WrittenQuestionEditsList from './WrittenQuestionEditsList.vue';
+import ImageQuestionEditsList from './ImageQuestionEditsList.vue';
 
 export default {
     setup() {
@@ -30,7 +31,8 @@ export default {
     components: {
         McQuestionsEditList,
         SkillEditsList,
-        WrittenQuestionEditsList
+        WrittenQuestionEditsList,
+        ImageQuestionEditsList
     },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
@@ -283,7 +285,12 @@ export default {
                 />
             </div>
             <!-- Image question edits list -->
-            <div v-if="activeList === 'imageQuestions'">Image Question</div>
+            <div v-if="activeList === 'imageQuestions'">
+                <ImageQuestionEditsList
+                    :imageQuestionEditsList="imageQuestionEdits"
+                    :imageQuestionEditsLoading="imageQuestionEditsLoading"
+                />
+            </div>
         </div>
     </div>
 </template>
