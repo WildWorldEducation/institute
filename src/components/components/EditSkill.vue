@@ -299,7 +299,10 @@ export default {
                 }
             }
 
-            if (this.skill.type != 'domain') {
+            if (
+                this.skill.type != 'domain' &&
+                this.is_copy_of_skill_id != null
+            ) {
                 // Update the skill.
                 this.skill.mastery_requirements =
                     $('#summernote').summernote('code');
@@ -453,16 +456,16 @@ export default {
 
 <template>
     <div class="container mt-4 pb-5 px-3 px-md-0">
-        <div v-if="!isAnotherInstanceOfExistingSkill">
-            <!-- Page Title -->
-            <div class="row mt-5">
-                <div
-                    class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
-                >
-                    <h1 id="page-tile">Edit Skill</h1>
-                    <img src="/images/recurso-69.png" id="header-icon" />
-                </div>
+        <!-- Page Title -->
+        <div class="row mt-5">
+            <div
+                class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
+            >
+                <h1 id="page-tile">Edit Skill</h1>
+                <img src="/images/recurso-69.png" id="header-icon" />
             </div>
+        </div>
+        <div v-if="!isAnotherInstanceOfExistingSkill">
             <div
                 v-if="
                     userDetailsStore.role == 'admin' ||
@@ -566,154 +569,155 @@ export default {
                         </div>
                     </div>
                 </div>
-                <!-- Skills Types Radio choose -->
-                <div class="row">
-                    <div class="col-12 col-md-8 col-lg-5 mt-2">
-                        <label class="form-label">Node Type</label>
-                        <div class="row p-0 m-0">
-                            <div class="form-check col-6 col-md-5 my-2">
-                                <label class="control control-checkbox">
-                                    <span class="my-auto mx-2 me-4"
-                                        >Regular</span
-                                    >
-                                    <input
-                                        type="radio"
-                                        name="nodeType"
-                                        id="regularSkillRadio"
-                                        value="regular"
-                                        v-model="skill.type"
-                                    />
-                                    <div class="control_indicator"></div>
-                                </label>
-                            </div>
-                            <div class="form-check col-6 col-md-5 my-2">
-                                <label class="control control-checkbox">
-                                    <span class="my-auto mx-2 me-4"
-                                        >Category</span
-                                    >
-                                    <input
-                                        type="radio"
-                                        name="nodeType"
-                                        id="domainSkillRadio"
-                                        value="domain"
-                                        v-model="skill.type"
-                                    />
-                                    <div class="control_indicator"></div>
-                                </label>
-                            </div>
-                            <div class="form-check col-6 col-md-5 my-2">
-                                <label class="control control-checkbox">
-                                    <span class="my-auto mx-2 me-4"
-                                        >Cluster node center</span
-                                    >
-                                    <input
-                                        type="radio"
-                                        name="nodeType"
-                                        id="superSkillRadio"
-                                        value="super"
-                                        v-model="skill.type"
-                                    />
-                                    <div class="control_indicator"></div>
-                                </label>
-                            </div>
-                            <div class="form-check col-6 col-md-5 my-2">
-                                <label class="control control-checkbox">
-                                    <span class="my-auto mx-2 me-4"
-                                        >Cluster node outer</span
-                                    >
-                                    <input
-                                        type="radio"
-                                        name="nodeType"
-                                        id="regularSkillRadio"
-                                        value="sub"
-                                        v-model="skill.type"
-                                    />
-                                    <div class="control_indicator"></div>
-                                </label>
-                            </div>
+            </div>
+        </div>
+        <div
+            v-if="
+                userDetailsStore.role == 'admin' ||
+                userDetailsStore.role == 'editor'
+            "
+        >
+            <!-- Skills Types Radio choose -->
+            <div class="row">
+                <div class="col-12 col-md-8 col-lg-5 mt-2">
+                    <label class="form-label">Node Type</label>
+                    <div class="row p-0 m-0">
+                        <div class="form-check col-6 col-md-5 my-2">
+                            <label class="control control-checkbox">
+                                <span class="my-auto mx-2 me-4">Regular</span>
+                                <input
+                                    type="radio"
+                                    name="nodeType"
+                                    id="regularSkillRadio"
+                                    value="regular"
+                                    v-model="skill.type"
+                                />
+                                <div class="control_indicator"></div>
+                            </label>
                         </div>
                         <div
-                            v-if="
-                                validate.orphan &&
-                                this.skill.type == 'sub' &&
-                                this.skill.parent == 0
-                            "
-                            class="form-validate"
+                            class="form-check col-6 col-md-5 my-2"
+                            v-if="!isAnotherInstanceOfExistingSkill"
                         >
-                            please choose a parent for this skill
+                            <label class="control control-checkbox">
+                                <span class="my-auto mx-2 me-4">Category</span>
+                                <input
+                                    type="radio"
+                                    name="nodeType"
+                                    id="domainSkillRadio"
+                                    value="domain"
+                                    v-model="skill.type"
+                                />
+                                <div class="control_indicator"></div>
+                            </label>
                         </div>
                         <div
-                            v-if="validate.noChild && this.skill.type == 'sub'"
-                            class="form-validate"
+                            v-if="!isAnotherInstanceOfExistingSkill"
+                            class="form-check col-6 col-md-5 my-2"
                         >
-                            please delete this node's child skills, before
-                            changing it to a cluster child skill
+                            <label class="control control-checkbox">
+                                <span class="my-auto mx-2 me-4"
+                                    >Cluster node center</span
+                                >
+                                <input
+                                    type="radio"
+                                    name="nodeType"
+                                    id="superSkillRadio"
+                                    value="super"
+                                    v-model="skill.type"
+                                />
+                                <div class="control_indicator"></div>
+                            </label>
+                        </div>
+                        <div class="form-check col-6 col-md-5 my-2">
+                            <label class="control control-checkbox">
+                                <span class="my-auto mx-2 me-4"
+                                    >Cluster node outer</span
+                                >
+                                <input
+                                    type="radio"
+                                    name="nodeType"
+                                    id="regularSkillRadio"
+                                    value="sub"
+                                    v-model="skill.type"
+                                />
+                                <div class="control_indicator"></div>
+                            </label>
                         </div>
                     </div>
+                    <div
+                        v-if="
+                            validate.orphan &&
+                            this.skill.type == 'sub' &&
+                            this.skill.parent == 0
+                        "
+                        class="form-validate"
+                    >
+                        please choose a parent for this skill
+                    </div>
+                    <div
+                        v-if="validate.noChild && this.skill.type == 'sub'"
+                        class="form-validate"
+                    >
+                        please delete this node's child skills, before changing
+                        it to a cluster child skill
+                    </div>
                 </div>
-                <!-- Parent Typing Dropdown -->
-                <div class="row">
-                    <div class="col-12 col-md-8 col-lg-5 mt-2">
-                        <div v-if="skill.type != 'sub'" class="mb-3">
-                            <label class="form-label">Parent</label>
-                            <div class="row mt-3">
-                                <div class="col position-relative">
-                                    <input
-                                        id="skill-input"
-                                        v-model="parentInput.inputText"
-                                        @input="getReferenceSkill"
-                                        placeholder="type skill name"
-                                    />
+            </div>
+            <!-- Parent Typing Dropdown -->
+            <div class="row">
+                <div class="col-12 col-md-8 col-lg-5 mt-2">
+                    <div v-if="skill.type != 'sub'" class="mb-3">
+                        <label class="form-label">Parent</label>
+                        <div class="row mt-3">
+                            <div class="col position-relative">
+                                <input
+                                    id="skill-input"
+                                    v-model="parentInput.inputText"
+                                    @input="getReferenceSkill"
+                                    placeholder="type skill name"
+                                />
+                                <div
+                                    v-if="parentInput.suggestSkills.length > 0"
+                                    id="suggest-skills"
+                                    class="flex flex-column position-absolute"
+                                >
                                     <div
-                                        v-if="
-                                            parentInput.suggestSkills.length > 0
-                                        "
-                                        id="suggest-skills"
-                                        class="flex flex-column position-absolute"
+                                        class="suggest-option"
+                                        v-for="skill in parentInput.suggestSkills"
+                                        @click="handleChooseSuggestSkill(skill)"
                                     >
-                                        <div
-                                            class="suggest-option"
-                                            v-for="skill in parentInput.suggestSkills"
-                                            @click="
-                                                handleChooseSuggestSkill(skill)
-                                            "
-                                        >
-                                            {{ skill.name }}
-                                        </div>
+                                        {{ skill.name }}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- -------------------------------------------------- -->
-                        <div v-else class="mb-3">
-                            <label class="form-label"
-                                >Cluster node center</label
-                            >
-                            <div class="row mt-3">
-                                <div class="col position-relative">
-                                    <input
-                                        id="skill-input"
-                                        v-model="clusterParentInput.inputText"
-                                        @input="getSuperSkillSuggestion"
-                                        placeholder="type skill name"
-                                    />
+                    </div>
+                    <!-- -------------------------------------------------- -->
+                    <div v-else class="mb-3">
+                        <label class="form-label">Cluster node center</label>
+                        <div class="row mt-3">
+                            <div class="col position-relative">
+                                <input
+                                    id="skill-input"
+                                    v-model="clusterParentInput.inputText"
+                                    @input="getSuperSkillSuggestion"
+                                    placeholder="type skill name"
+                                />
+                                <div
+                                    v-if="
+                                        clusterParentInput.suggestSuperSkills
+                                            .length > 0
+                                    "
+                                    id="suggest-skills"
+                                    class="flex flex-column position-absolute"
+                                >
                                     <div
-                                        v-if="
-                                            clusterParentInput
-                                                .suggestSuperSkills.length > 0
-                                        "
-                                        id="suggest-skills"
-                                        class="flex flex-column position-absolute"
+                                        class="suggest-option"
+                                        v-for="skill in clusterParentInput.suggestSuperSkills"
+                                        @click="handleChooseSuggestSkill(skill)"
                                     >
-                                        <div
-                                            class="suggest-option"
-                                            v-for="skill in clusterParentInput.suggestSuperSkills"
-                                            @click="
-                                                handleChooseSuggestSkill(skill)
-                                            "
-                                        >
-                                            {{ skill.name }}
-                                        </div>
+                                        {{ skill.name }}
                                     </div>
                                 </div>
                             </div>
@@ -721,6 +725,9 @@ export default {
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div v-if="!isAnotherInstanceOfExistingSkill">
             <!-- Icon and Banner -->
             <div class="row">
                 <!-- Icon chooser -->
@@ -1014,7 +1021,9 @@ export default {
                 </div>
             </div>
         </div>
-        <div v-else>Please edit the original instance of this skill</div>
+        <div v-else>
+            For other edits, please edit the original instance of this skill
+        </div>
 
         <!-- Submit, Delete and cancel button -->
         <div class="row">
@@ -1061,7 +1070,6 @@ export default {
 
                 <!-- Cancel and Submit Action Buttons -->
                 <div
-                    v-if="!isAnotherInstanceOfExistingSkill"
                     class="d-flex justify-content-end gap-md-4 gap-1 align-items-end"
                 >
                     <router-link class="btn red-btn" to="/skills">
