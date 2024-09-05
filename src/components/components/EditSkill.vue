@@ -1061,7 +1061,6 @@ export default {
 
                 <!-- Cancel and Submit Action Buttons -->
                 <div
-                    v-if="!isAnotherInstanceOfExistingSkill"
                     class="d-flex justify-content-end gap-md-4 gap-1 align-items-end"
                 >
                     <router-link class="btn red-btn" to="/skills">
