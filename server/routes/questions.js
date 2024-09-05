@@ -326,8 +326,9 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
-                                }`,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
                             contentId: req.params.id,
                             contentType: 'mc_question'
                         },
@@ -546,8 +547,7 @@ router.delete(
 router.get('/mc/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            `
+        let sqlQuery = `
             SELECT mc_questions_awaiting_approval.*, skills.name AS skill_name
             FROM mc_questions_awaiting_approval
             JOIN mc_questions
@@ -643,8 +643,9 @@ router.put('/essay/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
-                                }`,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
                             contentId: req.params.id,
                             contentType: 'essay_question'
                         },
@@ -823,15 +824,14 @@ router.post('/image/:id/edit-for-review', (req, res, next) => {
 router.get('/essay/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            `
+        let sqlQuery = `
             SELECT essay_questions_awaiting_approval.*, skills.name AS skill_name
             FROM essay_questions_awaiting_approval
             JOIN essay_questions
             ON essay_questions_awaiting_approval.essay_question_id = essay_questions.id
             JOIN skills
             ON essay_questions.skill_id = skills.id
-        `
+        `;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -1465,6 +1465,7 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
 router.post('/mark-image-question', async (req, res, next) => {
     if (req.session.userName) {
         // Error handling to prevent OpenAI from crashing the app
+        let result;
         try {
             let question = req.body.question;
             let answer = req.body.answer;
@@ -1477,15 +1478,18 @@ router.post('/mark-image-question', async (req, res, next) => {
                 level
             );
 
-            let result = {
+            result = {
                 isCorrect: teacherReview.is_correct,
                 explanation: teacherReview.explanation
             };
-            res.json(result);
         } catch {
             console.log('error with OpenAI call');
-            res.end();
+            result = {
+                isError: true
+            };
         }
+        console.log(result);
+        res.json(result);
     } else {
         res.redirect('/login');
     }
@@ -1636,8 +1640,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                mcQuestions[index].id +
-                                ' complete'
+                                    mcQuestions[index].id +
+                                    ' complete'
                             );
                             // Check the next question.
                             index++;
