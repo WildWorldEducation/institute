@@ -1,5 +1,6 @@
 <script>
-import { useCohortsStore } from '../../stores/CohortsStore.js';
+import { RouterLink } from 'vue-router';
+import { useCohortsStore } from '../../../stores/CohortsStore.js';
 
 export default {
     setup() {
@@ -44,7 +45,11 @@ export default {
         </svg>
     </router-link>
     <ul>
-        <li v-for="cohort in cohortsStore.cohorts">{{ cohort.name }}</li>
+        <li v-for="cohort in cohortsStore.cohorts">
+            <RouterLink :to="'/cohort/' + cohort.id">{{
+                cohort.name
+            }}</RouterLink>
+        </li>
     </ul>
 </template>
 

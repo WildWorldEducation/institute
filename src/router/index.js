@@ -283,7 +283,15 @@ const router = createRouter({
         {
             path: '/cohorts',
             name: 'cohorts',
-            component: () => import('../components/pages/CohortsListView.vue'),
+            component: () =>
+                import('../components/pages/cohorts/CohortsListView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+        },
+        {
+            path: '/cohort/:cohortId',
+            name: 'cohort',
+            component: () =>
+                import('../components/pages/cohorts/CohortView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         }
     ]

@@ -39,5 +39,29 @@ router.get('/list', (req, res, next) => {
     }
 });
 
+/**
+ * Get One Item
+ *
+ * @return response()
+ */
+router.get('/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT * FROM cohorts
+        WHERE id = ${req.params.id}`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
