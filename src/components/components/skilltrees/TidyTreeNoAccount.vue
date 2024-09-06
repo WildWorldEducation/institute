@@ -135,8 +135,6 @@ export default {
                 );
                 const masteryRequirements = await result.json();
                 this.skill.masteryRequirements = masteryRequirements;
-                // *** Preserve in case client want clamp instead of scroll
-                //this.showInfoPanel();
                 this.showSkillPanel = true;
             }
         });
@@ -446,24 +444,6 @@ export default {
             var col = 'rgb(' + ret.join(',') + ')';
             return col;
         },
-        showInfoPanel() {
-            // If panel is not showing.
-            if (!this.isSkillInfoPanelShown) {
-                this.isSkillInfoPanelShown = true;
-                // To display the panel.
-                // Responsive.
-                // Laptop etc.
-                if (screen.width > 800) {
-                    document.getElementById('skillInfoPanel').style.width =
-                        '474px';
-                }
-                // Mobile device.
-                else {
-                    document.getElementById('skillInfoPanel').style.height =
-                        '474px';
-                }
-            }
-        },
         hideInfoPanel() {
             // If panel is showing.
             if (this.isSkillInfoPanelShown) {
@@ -727,8 +707,7 @@ export default {
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div v-show="isLoading == false" id="wrapper">
-        <!-- <SkillPanel :skill="skill" /> -->
-        <NewSkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
+        <SkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
         <div
             v-if="showAnimation"
             :style="{ top: `${yPos}px`, left: `${xPos}px` }"

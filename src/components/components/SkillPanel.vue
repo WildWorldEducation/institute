@@ -1,127 +1,60 @@
 <script>
 export default {
     setup() {},
+    props: ['skill', 'showSkillPanel'],
     data() {
         return {};
     },
-    props: ['skill'],
-    computed: {
-        removeStyles() {
-            // Remove style tags
-            let withoutStyleTags = this.skill.masteryRequirements?.replace(
-                /<style[^>]*>[\s\S]*?<\/style>/gi,
-                ''
-            );
-
-            // Remove inline style attributes
-            let withoutInlineStyles = withoutStyleTags?.replace(
-                / style=["'][^"']*["']/gi,
-                ''
-            );
-
-            return withoutInlineStyles;
-        }
-    },
+    mounted() {},
+    computed: {},
     methods: {
         hideInfoPanel() {
-            // If panel is showing.
-            if (this.$parent.isSkillInfoPanelShown) {
-                // Responsive.
-                // Laptop etc.
-                if (screen.width > 800) {
-                    document.getElementById('skillInfoPanel').style.width =
-                        '0px';
-                }
-                // Mobile device.
-                else {
-                    document.getElementById('skillInfoPanel').style.height =
-                        '0px';
-                }
-                // Hide the background.
-                document.getElementById('sidepanel-backdrop').style.display =
-                    'none';
-
-                this.$parent.isSkillInfoPanelShown = false;
-            }
-        },
-        adjustClamping() {
-            this.$nextTick(() => {
-                const skillInfoPanel = this.$refs.skillInfoPanel;
-                const skillInfoPanelTop = this.$refs.skillInfoPanelTop;
-                const skillInfoPanelBottom = this.$refs.skillInfoPanelBottom;
-                const container = this.$refs.truncateContainer;
-                const content = this.$refs.truncateContent;
-
-                if (!container) return;
-
-                if (screen.width > 800) {
-                    container.style.height =
-                        skillInfoPanel.clientHeight -
-                        skillInfoPanelBottom.clientHeight -
-                        skillInfoPanelTop.clientHeight -
-                        100 +
-                        'px';
-                } else {
-                    container.style.height =
-                        434 -
-                        skillInfoPanelBottom.clientHeight -
-                        skillInfoPanelTop.clientHeight -
-                        290 +
-                        'px';
-                }
-                const containerHeight = container.clientHeight;
-                const lineHeight = parseInt(
-                    window.getComputedStyle(container).lineHeight
-                );
-                const numLines =
-                    Math.trunc(containerHeight / lineHeight) -
-                    (screen.width > 800 ? 2 : 0);
-                content.style.clampedLines = numLines;
-                content.style.webkitLineClamp = numLines;
-            });
+            this.$parent.showSkillPanel = false;
         }
-    },
-    mounted() {
-        document.addEventListener('click', () => {
-            this.adjustClamping();
-        });
     }
 };
 </script>
 
 <template>
-    <div id="skillInfoPanel" class="skillInfoPanel">
-        <div class="closeButtonContainer">
-            <a
-                href="javascript:void(0)"
-                class="closebtn"
-                @click="this.hideInfoPanel()"
-                >&times;</a
-            >
-        </div>
-        <div id="skillInfoPanelContainer" ref="skillInfoPanel">
-            <div class="skill-info-panel-top" ref="skillInfoPanelTop">
-                <h1>{{ skill?.name }}</h1>
-            </div>
-            <div
-                v-if="skill?.type != 'domain'"
-                ref="truncateContainer"
-                class="mt-2 preview"
-            >
+    <Transition name="skillPanel">
+        <div v-if="showSkillPanel" class="skill-panel-container">
+            <div class="skill-info-panel-top">
+                <div class="closeButtonContainer">
+                    <button
+                        class="closebtn"
+                        @click="hideInfoPanel"
+                        b-on-hover
+                        title="Close Panel "
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            fill="#888"
+                            width="20"
+                            height="20"
+                        >
+                            <path
+                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                            />
+                        </svg>
+                    </button>
+                </div>
+                <h1 class="skill-name">{{ skill?.name }}</h1>
                 <div
-                    class="truncate-overflow"
-                    ref="truncateContent"
-                    v-html="removeStyles"
+                    class="skill-mastery-requirement"
+                    v-html="skill.masteryRequirements"
                 ></div>
             </div>
-            <div class="skill-info-panel-bottom" ref="skillInfoPanelBottom">
+            <div class="skill-info-panel-bottom">
                 <hr v-if="skill.type != 'domain'" />
                 <router-link
                     v-if="skill.type != 'domain'"
-                    class="btn green-btn"
+                    class="btn green-btn ms-auto me-2"
                     target="_blank"
                     id="skillLink"
                     :to="'/skills/' + skill.id"
+                    b-on-hover
+                    title="To Skill Details Page"
                     >See More&nbsp;
                     <!-- Plus sign -->
                     <svg
@@ -146,98 +79,28 @@ export default {
                 </div>
             </div>
         </div>
-    </div>
+    </Transition>
 </template>
 
 <style scoped>
-/* The sidepanel menu */
-.skillInfoPanel {
-    position: absolute;
-    z-index: 1;
-    background-color: #fff;
-    /* Disable horizontal scroll */
-    /* 0.5 second transition effect to slide in the sidepanel */
-    transition: 0.5s;
-    background: #e4ecf4;
-    /* So it is above the darkened background. */
+.skill-panel-container {
+    background-color: #e4ecf4;
+    color: #888;
     z-index: 1072;
-}
-
-/* The sidepanel header */
-#skillHeading {
-    color: #9c7eec;
-    font-size: 32px;
-    font-weight: 600;
-}
-
-h1 {
-    color: #8f7bd6;
-    font-family: Poppins, sans-serif;
-    font-weight: 900;
-}
-
-#skillDescription {
-    color: #bca3ff;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-/* The sidepanel container */
-#skillInfoPanelContainer {
-    padding: 20px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 30%;
+    height: calc(100% - 55.2px);
     display: flex;
     flex-direction: column;
-    height: calc(100% - 40px);
-}
-.preview {
-    flex-grow: 0;
-    flex-shrink: 0;
-    overflow: hidden;
+    justify-content: space-between;
 }
 
-.skillInfoPanel img {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-}
-.skill-info-panel-top,
-.skill-info-panel-bottom {
-    width: 474px;
-}
-
-@media (min-width: 801px) {
-    .skillInfoPanel {
-        height: 100%;
-        /* This will be changed with JavaScript */
-        width: 0;
-        top: 0;
-        right: 0;
-    }
-}
-
-@media (max-width: 800px) {
-    .skillInfoPanel {
-        /* This will be changed with JavaScript */
-        height: 0;
-        width: 100%;
-        bottom: 0;
-        top: 0;
-    }
-    .skill-info-panel-top,
-    .skill-info-panel-bottom {
-        width: initial;
-    }
+.skill-info-panel-top {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 .closeButtonContainer {
@@ -266,23 +129,110 @@ h1 {
     background-color: #edf5fd;
 }
 
-/* To truncate the Mastery Requirements section to 3 lines */
-.truncate-overflow {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 3; /* number of lines to show */
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
+.closebtn:hover {
+    background-color: #dce1eb;
 }
-.truncate-overflow * {
-    list-style: none;
-    padding-left: 0px;
+
+.skill-name {
+    color: #a48be5;
+    font-weight: 600;
+    font-size: 33px;
+    margin-left: 20px;
 }
-/* Mastery Requirements header */
-h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-    font-size: x-large;
+
+.skill-mastery-requirement {
+    margin-left: 20px;
+    margin-right: 5px;
+    overflow-y: auto;
+}
+
+.skill-info-panel-bottom {
+    margin-bottom: 10px;
+}
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.green-btn:hover {
+    background-color: #2ca695;
+    color: white;
+}
+
+/* Slide left animation */
+@keyframes slideY {
+    0% {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+.skillPanel-enter-active {
+    transform-origin: right center;
+    animation: slideY 0.5s;
+}
+.skillPanel-leave-active {
+    transform-origin: right center;
+    animation: slideY 0.5s reverse;
+}
+
+/* View Specific On Phone */
+@media (min-width: 320px) and (max-width: 576px) {
+    /* Slide down animation */
+    @keyframes slideY {
+        0% {
+            opacity: 0;
+            transform: scaleY(0);
+        }
+
+        100% {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+    }
+    .skillPanel-enter-active {
+        transform-origin: bottom;
+        animation: slideY 0.5s;
+    }
+    .skillPanel-leave-active {
+        transform-origin: bottom;
+        animation: slideY 0.5s reverse;
+    }
+}
+
+/* Tablets */
+@media (max-width: 987px) {
+    .skill-panel-container {
+        width: 100%;
+        height: calc(100% - 65.6px);
+    }
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 800px) {
+    .skill-panel-container {
+        width: 100%;
+        height: calc(100% - 137.6px);
+    }
+}
+
+/* View Specific On Tablet */
+@media (min-width: 577px) and (max-width: 1020px) {
+    .skill-panel-container {
+        width: 55%;
+    }
 }
 </style>
