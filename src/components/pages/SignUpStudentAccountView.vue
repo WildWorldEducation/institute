@@ -299,11 +299,24 @@ export default {
             <div class="modal-content">
                 <button
                     type="button"
-                    class="close"
+                    class="closeBtn btn red-btn"
                     data-dismiss="modal"
                     aria-label="Close"
                 >
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="25"
+                            height="25"
+                        >
+                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <path
+                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                                fill="white"
+                            />
+                        </svg>
+                    </span>
                 </button>
 
                 <div
@@ -326,12 +339,25 @@ export default {
 </template>
 
 <style>
-.close {
-    width: 25px;
+.closeBtn {
     position: absolute;
-    top: 0px;
-    right: 0px;
+    top: -19.655px;
+    right: -25.3px;
 }
+
+.red-btn {
+    background-color: #da7033 !important;
+    color: white;
+    border: 1px solid #7f56d9;
+    align-items: center;
+    max-width: fit-content;
+    display: flex;
+}
+
+.red-btn:hover {
+    background-color: rgb(209, 96, 15);
+}
+
 /* The Warning Modal */
 .modal {
     display: block;
