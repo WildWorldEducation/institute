@@ -4,7 +4,8 @@ export default {
     data() {
         return {
             cohortId: this.$route.params.cohortId,
-            cohort: {}
+            cohort: {},
+            members: []
         };
     },
     async created() {
@@ -28,8 +29,7 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
-                    this.cohort = data;
+                    this.members = data;
                 });
         }
     }
@@ -41,6 +41,9 @@ export default {
         <h1>Cohorts: {{ cohort.name }}</h1>
         <h2>Filters</h2>
         <h2>Members</h2>
+        <ul>
+            <li v-for="member in members">{{ member.username }}</li>
+        </ul>
     </div>
 </template>
 
