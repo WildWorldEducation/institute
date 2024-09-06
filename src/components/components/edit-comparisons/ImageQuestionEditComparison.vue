@@ -143,15 +143,17 @@ export default {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: this.essayQuestionEdit.name,
-                    question: this.essayQuestionEdit.question,
+                    name: this.imageQuestionEdit.name,
+                    question: this.imageQuestionEdit.question,
+                    num_images_required:
+                        this.imageQuestionEdit.num_images_required,
                     edit: this.isEditMode
                 })
             };
 
             var url =
                 '/questions/image/' +
-                this.essayQuestionEdit.essay_question_id +
+                this.imageQuestionEdit.image_question_id +
                 '/approve-edits';
             fetch(url, requestOptions).then(() => {
                 this.$router.back();
