@@ -2355,23 +2355,6 @@ h2 {
     transform: translate3d(0, 0, 0);
 }
 
-.form-validate {
-    font-size: 0.75rem;
-    color: red;
-    font-weight: 300;
-}
-
-.filter-label {
-    color: #888;
-    font-size: 16px;
-    font-weight: 400;
-    margin-top: 15px;
-}
-
-.date-label {
-    width: 120px;
-}
-
 /* The animation key frame */
 @keyframes rotation {
     from {
@@ -2436,7 +2419,22 @@ h2 {
 }
 
 /* End of CSS style for Custom Select */
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
+}
 
+.filter-label {
+    color: #888;
+    font-size: 16px;
+    font-weight: 400;
+    margin-top: 15px;
+}
+
+.date-label {
+    width: 120px;
+}
 /**-------------------------------------  */
 /* A lot of CSS to styling two check box */
 .control {

@@ -26,7 +26,8 @@ export default {
                 nameAdd: 0,
                 nameRemove: 0
             },
-            tempQuestionEdit: null
+            tempQuestionEdit: null,
+            showImageNumberDropdown: false
         };
     },
     components: { CompareString },
@@ -420,7 +421,7 @@ export default {
                     <div class="d-flex flex-column">
                         <textarea
                             class="editable-text-area"
-                            v-model="tempEssayEdit.name"
+                            v-model="tempImageEdit.name"
                         ></textarea>
                     </div>
                 </div>
@@ -656,10 +657,91 @@ export default {
             <Transition name="dropdown">
                 <div v-if="showQuestionChange && isEditMode">
                     <div class="d-flex flex-column">
-                        <textarea
-                            class="editable-text-area"
-                            v-model="tempImageEdit.question"
-                        ></textarea>
+                        <div class="mb-3">
+                            <!-- Custom Dropdown -->
+                            <div class="d-flex flex-column">
+                                <div
+                                    :class="[
+                                        showImageNumberDropdown
+                                            ? 'custom-select-button-focus'
+                                            : 'custom-select-button'
+                                    ]"
+                                    @click="
+                                        showImageNumberDropdown =
+                                            !showImageNumberDropdown
+                                    "
+                                >
+                                    {{ tempImageEdit.num_images_required }}
+                                    <span>
+                                        <svg
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 20 20"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                                fill="#344054"
+                                            />
+                                        </svg>
+                                    </span>
+                                </div>
+                                <Transition name="dropdownFilter">
+                                    <div
+                                        v-if="showImageNumberDropdown"
+                                        class="custom-dropdown-base"
+                                    >
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                tempImageEdit.num_images_required = 1;
+                                                showImageNumberDropdown = false;
+                                            "
+                                        >
+                                            1
+                                        </div>
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                tempImageEdit.num_images_required = 2;
+                                                showImageNumberDropdown = false;
+                                            "
+                                        >
+                                            2
+                                        </div>
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                tempImageEdit.num_images_required = 3;
+                                                showImageNumberDropdown = false;
+                                            "
+                                        >
+                                            3
+                                        </div>
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                tempImageEdit.num_images_required = 4;
+                                                showImageNumberDropdown = false;
+                                            "
+                                        >
+                                            4
+                                        </div>
+                                        <div
+                                            class="custom-dropdown-option"
+                                            @click="
+                                                tempImageEdit.num_images_required = 4;
+                                                showImageNumberDropdown = false;
+                                            "
+                                        >
+                                            5
+                                        </div>
+                                    </div>
+                                </Transition>
+                            </div>
+                            <!-- End of custom dropdown -->
+                        </div>
                     </div>
                 </div>
             </Transition>
@@ -910,4 +992,127 @@ export default {
     padding: 5px 8px;
     border-radius: 4px;
 }
+
+/* Style For The Custom Select */
+.custom-select-button {
+    width: 200px;
+    height: auto;
+    padding: 6px 14px 6px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #f2f4f7;
+    box-shadow: 0px 1px 2px 0px #1018280d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button-focus {
+    width: 200px;
+    height: auto;
+    padding: 6px 14px 6px 14px;
+    border-radius: 8px;
+    gap: 8px;
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        linear-gradient(0deg, #f2f4f7, #f2f4f7);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 0px 0px 4px #bca3ff4d;
+    font-family: 'Poppins' sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.03em;
+    text-align: left;
+    display: flex;
+}
+
+.custom-select-button:hover {
+    cursor: pointer;
+    border: 1px solid #9c7eec;
+}
+
+.custom-select-button > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.custom-select-button-focus > span {
+    margin-right: 2px;
+    margin-left: auto;
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+/* The animation key frame */
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+.custom-select-button-focus:hover {
+    cursor: pointer;
+}
+
+.custom-dropdown-base {
+    border-radius: 8px;
+    border: 1px;
+    background: linear-gradient(0deg, #ffffff, #ffffff);
+    border: 1px solid #9c7eec;
+    box-shadow: 0px 4px 6px -2px #10182808;
+    box-shadow: 0px 12px 16px -4px #10182814;
+    width: 200px;
+}
+
+.custom-dropdown-base:focus {
+    border: 1px solid #7f56d9;
+}
+
+.custom-dropdown-option {
+    padding: 10px 14px 10px 14px;
+    gap: 8px;
+    color: #344054;
+    font-size: 14px;
+    font-weight: 400;
+    background-color: inherit;
+    border: none;
+    width: 100%;
+    outline: none;
+    text-align: left;
+}
+
+.custom-dropdown-option:hover {
+    cursor: pointer;
+    background: #bca3ff1a;
+}
+
+.custom-dropdown-option:focus {
+    border-radius: 6px;
+    border: 1px solid #7f56d9;
+    background: #bca3ff1a;
+}
+
+/* End of CSS style for Custom Select */
 </style>
