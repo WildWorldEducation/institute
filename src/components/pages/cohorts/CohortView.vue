@@ -1,13 +1,12 @@
 <script>
-import { useSkillsStore } from '../../../stores/SkillsStore.js';
+// import { useSkillsStore } from '../../../stores/SkillsStore.js';
 
 export default {
     setup() {
-        const skillsStore = useSkillsStore();
-
-        return {
-            skillsStore
-        };
+        // const skillsStore = useSkillsStore();
+        // return {
+        //     skillsStore
+        // };
     },
     data() {
         return {
