@@ -2,7 +2,7 @@
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 export default {
-    props: ['isMultipleChoice', 'isEssay'],
+    props: ['isMultipleChoice', 'isEssay', 'isImage'],
     setup() {
         const userDetailsStore = useUserDetailsStore();
 
@@ -225,7 +225,7 @@ export default {
         <div class="row">
             <div class="col-12 col-md-10 col-lg-6 ps-0 pe-0 pe-lg-4">
                 <h2 class="question-type">Image</h2>
-                <table v-if="isEssay" class="skilltree-table table-bordered">
+                <table v-if="isImage" class="skilltree-table table-bordered">
                     <tr v-for="question in imageQuestions">
                         <td>
                             {{ question.name }}
