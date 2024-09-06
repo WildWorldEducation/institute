@@ -1,6 +1,14 @@
 <script>
+import { useSkillsStore } from '../../../stores/SkillsStore.js';
+
 export default {
-    setup() {},
+    setup() {
+        const skillsStore = useSkillsStore();
+
+        return {
+            skillsStore
+        };
+    },
     data() {
         return {
             cohortId: this.$route.params.cohortId,
@@ -11,6 +19,14 @@ export default {
     async created() {
         await this.getCohort();
         await this.getCohortMembers();
+        if (this.skillsStore.nestedSkillsList.length == 0) {
+            await this.skillsStore.getNestedSkillsList();
+        }
+        console.log(this.skillsStore.nestedSkillsList);
+        this.renderList(
+            document.getElementById('nested-skills'),
+            this.skillsStore.nestedSkillsList
+        );
     },
     methods: {
         async getCohort() {
@@ -19,7 +35,6 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     this.cohort = data;
                 });
         },
@@ -31,6 +46,20 @@ export default {
                 .then((data) => {
                     this.members = data;
                 });
+        },
+        renderList(parent, array) {
+            array.forEach((skill) => {
+                var li = document.createElement('li'),
+                    ul;
+
+                li.textContent = skill.name;
+                parent.appendChild(li);
+                if (skill.children) {
+                    ul = document.createElement('ul');
+                    li.appendChild(ul);
+                    this.renderList(ul, skill.children);
+                }
+            });
         }
     }
 };
@@ -44,6 +73,7 @@ export default {
         <ul>
             <li v-for="member in members">{{ member.username }}</li>
         </ul>
+        <ul id="nested-skills"></ul>
     </div>
 </template>
 
