@@ -200,8 +200,8 @@ export default {
             ) {
                 // find the difference between two string
                 this.changed.question = diff(
-                    this.essayQuestion.question,
-                    this.essayQuestionEdit.question
+                    this.imageQuestion.question,
+                    this.imageQuestionEdit.question
                 );
                 // counting add and remove token in string diff array
                 this.changeCount.questionAdd = this.changed.question.filter(
@@ -405,7 +405,7 @@ export default {
                                             changed.name && !showHighLight
                                         "
                                     >
-                                        {{ essayQuestionEdit.name }}
+                                        {{ imageQuestionEdit.name }}
                                     </div>
                                     <div v-else>No changed Happened</div>
                                 </div>
@@ -640,11 +640,7 @@ export default {
                             <div class="new-container general-container">
                                 <div class="container-tile">Changed</div>
                                 <div class="container-content">
-                                    <div
-                                        v-if="
-                                            changed.imageNumber && showHighLight
-                                        "
-                                    >
+                                    <div v-if="changed.imageNumber">
                                         {{
                                             imageQuestionEdit.num_images_required
                                         }}
