@@ -19,14 +19,14 @@ export default {
     async created() {
         await this.getCohort();
         await this.getCohortMembers();
-        if (this.skillsStore.nestedSkillsList.length == 0) {
-            await this.skillsStore.getNestedSkillsList();
-        }
-        console.log(this.skillsStore.nestedSkillsList);
-        this.renderList(
-            document.getElementById('nested-skills'),
-            this.skillsStore.nestedSkillsList
-        );
+        // if (this.skillsStore.nestedSkillsList.length == 0) {
+        //     await this.skillsStore.getNestedSkillsList();
+        // }
+        // console.log(this.skillsStore.nestedSkillsList);
+        // this.renderList(
+        //     document.getElementById('nested-skills'),
+        //     this.skillsStore.nestedSkillsList
+        // );
     },
     methods: {
         async getCohort() {
@@ -46,21 +46,21 @@ export default {
                 .then((data) => {
                     this.members = data;
                 });
-        },
-        renderList(parent, array) {
-            array.forEach((skill) => {
-                var li = document.createElement('li'),
-                    ul;
-
-                li.textContent = skill.name;
-                parent.appendChild(li);
-                if (skill.children) {
-                    ul = document.createElement('ul');
-                    li.appendChild(ul);
-                    this.renderList(ul, skill.children);
-                }
-            });
         }
+        // renderList(parent, array) {
+        //     array.forEach((skill) => {
+        //         var li = document.createElement('li'),
+        //             ul;
+
+        //         li.textContent = skill.name;
+        //         parent.appendChild(li);
+        //         if (skill.children) {
+        //             ul = document.createElement('ul');
+        //             li.appendChild(ul);
+        //             this.renderList(ul, skill.children);
+        //         }
+        //     });
+        // }
     }
 };
 </script>
