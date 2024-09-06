@@ -73,12 +73,14 @@ export default {
                         />
                     </div>
                     <!-- Images previews -->
-                    <div
-                        class="preview"
-                        v-for="(image, index) in imageAnswer.length"
-                    >
-                        <img :src="imageAnswer[index]" />
-                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div
+                    class="preview col-xl-3 col-lg-4 col-6 my-2"
+                    v-for="(image, index) in imageAnswer.length"
+                >
+                    <img :src="imageAnswer[index]" />
                 </div>
             </div>
             <button
@@ -94,8 +96,9 @@ export default {
 
 <style>
 .preview img {
-    width: 300px;
+    width: 100%;
     height: auto;
+    border-radius: 10px;
 }
 
 /* Button Styling */
