@@ -32,7 +32,7 @@ export default {
     methods: {
         goToComparePage(item) {
             this.$router.push(
-                `/content-edit/${item.essay_question_id}/${item.user_id}/comparison?type=imagequestion`
+                `/content-edit/${item.image_question_id}/${item.user_id}/comparison?type=imagequestion`
             );
         }
     }

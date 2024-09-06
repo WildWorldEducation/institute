@@ -485,6 +485,37 @@ router.get(
 );
 
 /**
+ * Get one image question submitted for review.
+ *
+ * @return response()
+ */
+router.get(
+    '/image/submitted-for-review/:imageQuestionId/:userId',
+    (req, res, next) => {
+        let imageQuestion;
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            // Get skill.
+            const sqlQuery = `SELECT *
+                              FROM image_questions_awaiting_approval
+                              WHERE image_question_id = ${req.params.imageQuestionId}
+                              AND user_id = ${req.params.userId}`;
+            conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    essayQuestion = results[0];
+                    res.json(essayQuestion);
+                } catch (err) {
+                    next(err);
+                }
+            });
+        }
+    }
+);
+
+/**
  * Delete mc question submitted for review.
  *
  * @return response()
@@ -541,6 +572,37 @@ router.delete(
         }
     }
 );
+
+/**
+ * Delete image question submitted for review.
+ *
+ * @return response()
+ */
+router.delete(
+    '/image/submitted-for-review/:imageQuestionId/:userId',
+    (req, res, next) => {
+        if (req.session.userName) {
+            const deleteQuery = `DELETE 
+                             FROM image_questions_awaiting_approval
+                             WHERE image_question_id = ${req.params.QuestionId}
+                             AND user_id  = ${req.params.userId};`;
+            conn.query(deleteQuery, (err) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.end();
+                } catch (err) {
+                    next(err);
+                }
+            });
+        } else {
+            res.redirect('/login');
+        }
+    }
+);
+
+
 
 // Load all mc type questions.
 router.get('/mc/submitted-for-review/list', (req, res, next) => {
@@ -615,7 +677,9 @@ router.put('/essay/:id/edit', (req, res, next) => {
     }
 });
 
-// Edit Essay questions
+/** 
+ * update essay question
+*/
 router.put('/essay/:id/approve-edits', (req, res, next) => {
     if (req.session.userName) {
         let name;
@@ -715,6 +779,32 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
         });
     } else {
         res.redirect('/login');
+    }
+});
+
+// Load all essay type questions.
+router.get('/essay/submitted-for-review/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery =
+            `
+            SELECT essay_questions_awaiting_approval.*, skills.name AS skill_name
+            FROM essay_questions_awaiting_approval
+            JOIN essay_questions
+            ON essay_questions_awaiting_approval.essay_question_id = essay_questions.id
+            JOIN skills
+            ON essay_questions.skill_id = skills.id
+        `
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
     }
 });
 
@@ -819,31 +909,7 @@ router.post('/image/:id/edit-for-review', (req, res, next) => {
     }
 });
 
-// Load all essay type questions.
-router.get('/essay/submitted-for-review/list', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            `
-            SELECT essay_questions_awaiting_approval.*, skills.name AS skill_name
-            FROM essay_questions_awaiting_approval
-            JOIN essay_questions
-            ON essay_questions_awaiting_approval.essay_question_id = essay_questions.id
-            JOIN skills
-            ON essay_questions.skill_id = skills.id
-        `
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.json(results);
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-});
+
 
 // Load all image questions type
 router.get('/image-question/submitted-for-review/list', (req, res, next) => {
@@ -890,6 +956,59 @@ router.get('/:skillId/multiple-choice', (req, res, next) => {
                 next(err);
             }
         });
+    }
+});
+
+/** 
+ * update image question
+*/
+router.put('/image/:id/approve-edits', (req, res, next) => {
+    if (req.session.userName) {
+        let name;
+        let question;
+        // Escape single quotes for SQL to accept.
+        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
+        if (req.body.question != null)
+            question = req.body.question.replace(/'/g, "\\'");
+
+        // Add data.
+        let sqlQuery =
+            `UPDATE image_questions 
+        SET name='` +
+            name +
+            `', question = '` +
+            question +
+            `' WHERE id = ` +
+            req.params.id;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    // add approve image question action into user_actions table
+                    recordUserAction(
+                        {
+                            userId: req.session.userId,
+                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
+                                }`,
+                            contentId: req.params.id,
+                            contentType: 'image_question'
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end();
+                            }
+                        }
+                    );
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
     }
 });
 
