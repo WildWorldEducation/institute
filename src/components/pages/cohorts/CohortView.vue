@@ -1,5 +1,6 @@
 <script>
 // import { useSkillsStore } from '../../../stores/SkillsStore.js';
+import FilterParent from '../../components/filter-system/FilterParent.vue';
 
 export default {
     setup() {
@@ -26,6 +27,9 @@ export default {
         //     document.getElementById('nested-skills'),
         //     this.skillsStore.nestedSkillsList
         // );
+    },
+    components: {
+        FilterParent
     },
     methods: {
         async getCohort() {
@@ -72,6 +76,7 @@ export default {
         <ul>
             <li v-for="member in members">{{ member.username }}</li>
         </ul>
+        <FilterParent />
         <ul id="nested-skills"></ul>
     </div>
 </template>
