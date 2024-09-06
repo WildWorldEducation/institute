@@ -1,10 +1,11 @@
 <script>
 export default {
     setup() {},
-    props: ['id', 'children', 'name', 'type', 'level', 'depth'],
+    props: ['id', 'children', 'name', 'type', 'level', 'depth', 'is_filtered'],
     data() {
         return {
-            showChildren: false
+            showChildren: false,
+            parentIsFiltered: false
         };
     },
     computed: {
@@ -36,7 +37,11 @@ export default {
             }
         }
     },
-    async created() {},
+    async created() {
+        if (this.$parent.is_filtered) {
+            this.parentIsFiltered = true;
+        }
+    },
     methods: {
         toggleChildSkills() {
             this.showChildren = !this.showChildren;
@@ -53,9 +58,10 @@ export default {
     <button
         :style="indent"
         class="skill-button d-flex justify-content-between align-items-center"
+        :class="{ 'is-filtered': is_filtered == '1' || parentIsFiltered }"
         @click="toggleChildSkills()"
     >
-        <span>{{ name }}</span>
+        <span> {{ name }}</span>
         <div>
             <!-- Filter Button -->
             <button class="btn" @click.stop="filter">
@@ -114,6 +120,7 @@ export default {
         v-for="child in children"
         v-if="showChildren"
         :id="child.id"
+        :is_filtered="child.is_filtered"
         :children="child.children"
         :type="child.type"
         :level="child.level"
@@ -131,11 +138,15 @@ export default {
     border-style: solid;
     border-width: 2px;
     border-radius: 8px;
-    width: 300px;
+    width: 400px;
     height: 40px;
     color: #53389e;
     font-size: 16px;
     font-weight: 500;
     background-color: #f2edff;
+}
+
+.is-filtered {
+    background-color: orange;
 }
 </style>

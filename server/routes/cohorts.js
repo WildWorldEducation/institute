@@ -94,5 +94,76 @@ WHERE cohorts.id = ${req.params.id}
     }
 });
 
+/**
+ * Get Cohort Skill Filters
+ *
+ * @return response()
+ */
+router.get('/:id/skill-filters', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `        
+    SELECT skills.id, name, parent, type, level, skills.order as skillorder, cohort_skill_filters.is_filtered
+    FROM skills
+    LEFT OUTER JOIN cohort_skill_filters
+    ON skills.id = cohort_skill_filters.skill_id
+    WHERE cohort_skill_filters.cohort_id = ${req.params.id}            
+	AND is_deleted = 0
+
+    UNION
+    SELECT skills.id, name, parent, type, level, skills.order as skillorder, ''
+    FROM skills
+    WHERE skills.id NOT IN 
+
+    (SELECT skills.id
+    FROM skills
+    LEFT OUTER JOIN cohort_skill_filters
+    ON skills.id = cohort_skill_filters.skill_id
+    WHERE cohort_skill_filters.cohort_id = ${req.params.id}            ) 
+    AND is_deleted = 0
+    ORDER BY skillorder, id;
+        `;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                // Give each object a 'children' element.
+                for (var i = 0; i < results.length; i++) {
+                    results[i].children = [];
+                }
+
+                // Assign children to parent skills.
+                for (var i = 0; i < results.length; i++) {
+                    // Regular parent.
+                    if (results[i].parent != null && results[i].parent != 0) {
+                        var parentId = results[i].parent;
+
+                        // Go through all rows again, add children
+                        for (let j = 0; j < results.length; j++) {
+                            if (results[j].id == parentId) {
+                                // bug
+                                results[j].children.push(results[i]);
+                            }
+                        }
+                    }
+                }
+
+                let cohortSkills = [];
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].parent == null || results[i].parent == 0) {
+                        cohortSkills.push(results[i]);
+                    }
+                }
+
+                res.json(cohortSkills);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

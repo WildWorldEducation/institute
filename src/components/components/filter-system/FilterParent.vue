@@ -1,23 +1,27 @@
 <script>
 // Import the stores.
-import { useSkillsStore } from '../../../stores/SkillsStore.js';
+import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import FilterChild from './FilterChild.vue';
 
 export default {
     setup() {
-        const skillsStore = useSkillsStore();
+        const cohortsStore = useCohortsStore();
 
         return {
-            skillsStore
+            cohortsStore
         };
     },
 
     data() {
-        return {};
+        return {
+            cohortId: this.$route.params.cohortId
+        };
     },
     computed: {},
     async created() {
-        await this.skillsStore.getNestedSkillsList();
+        await this.cohortsStore.getCohortSkillFilters(this.cohortId);
+
+        console.log(this.cohortsStore.cohortSkills);
     },
     methods: {},
     components: {
@@ -28,15 +32,15 @@ export default {
 
 <template>
     <FilterChild
-        v-for="skill in this.skillsStore.nestedSkillsList"
+        v-for="skill in this.cohortsStore.cohortSkills"
         :id="skill.id"
         :children="skill.children"
         :depth="1"
         :name="skill.name"
         :type="skill.type"
+        :is_filtered="skill.is_filtered"
     >
-        test</FilterChild
-    >
+    </FilterChild>
 </template>
 
 <style scoped>
