@@ -25,7 +25,8 @@ export default {
             },
             passwordVisible: false,
             // For Google sign up absolute API url.
-            isProduction: import.meta.env.PROD
+            isProduction: import.meta.env.PROD,
+            showVideoModal: true
         };
     },
     async created() {},
@@ -35,6 +36,15 @@ export default {
         script.setAttribute('src', 'https://accounts.google.com/gsi/client');
         script.setAttribute('defer', '');
         document.head.appendChild(script);
+
+        if (window.innerWidth < 800) {
+            this.showVideoModal = false;
+        }
+
+        // Close modal
+        document.addEventListener('click', () => {
+            this.toggleModal();
+        });
     },
     methods: {
         ValidateForm() {
@@ -98,6 +108,9 @@ export default {
                         alert(data.account);
                     }
                 });
+        },
+        toggleModal() {
+            this.showVideoModal = false;
         }
     }
 };
@@ -105,8 +118,22 @@ export default {
 
 <template>
     <div class="signup-page">
-        <div class="form-signin">
-            <div class="text-center">
+        <div
+            v-if="!showVideoModal"
+            class="embed-responsive embed-responsive-16by9"
+        >
+            <iframe
+                class="intro-video"
+                src="https://www.youtube.com/embed/hu_hjfLLwY0?si=TyvLiAgxcQgmY92q"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+            ></iframe>
+        </div>
+        <div class="form-signin mt-3">
+            <div v-if="showVideoModal" class="text-center">
                 <img
                     class="mb-4"
                     src="/images/logo-red.png"
@@ -264,15 +291,109 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Video Modal -->
+    <div v-if="showVideoModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <div
+                    id="modal-iframe"
+                    class="embed-responsive embed-responsive-16by9"
+                >
+                    <iframe
+                        class="intro-video"
+                        src="https://www.youtube.com/embed/hu_hjfLLwY0?si=TyvLiAgxcQgmY92q"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen
+                    ></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style>
+.close {
+    width: 25px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: hidden;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 600px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+.intro-video {
+    display: block;
+    border-radius: 5%;
+    aspect-ratio: 16 / 9;
+    margin: auto;
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 800px) {
+    .intro-video {
+        width: 100%;
+    }
+}
+
+/* Bigger devices */
+
+#modal-iframe .intro-video {
+    width: 560px;
+}
+
 .signup-page {
     height: 100%;
     padding: 10px;
     background-repeat: no-repeat;
     width: 100%;
     font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
 }
 
 .welcome-message {

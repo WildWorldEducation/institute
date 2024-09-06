@@ -124,7 +124,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
             ` AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder
+    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -137,7 +137,7 @@ router.get('/separate-subskills/:id', (req, res, next) => {
             `) AND is_filtered = 'available'
     ORDER BY skillorder, id;`;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;

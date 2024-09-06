@@ -608,8 +608,7 @@ router.delete(
 router.get('/mc/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            `
+        let sqlQuery = `
             SELECT mc_questions_awaiting_approval.*, skills.name AS skill_name
             FROM mc_questions_awaiting_approval
             JOIN mc_questions
@@ -1610,6 +1609,7 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
 router.post('/mark-image-question', async (req, res, next) => {
     if (req.session.userName) {
         // Error handling to prevent OpenAI from crashing the app
+        let result;
         try {
             let question = req.body.question;
             let answer = req.body.answer;
@@ -1622,15 +1622,18 @@ router.post('/mark-image-question', async (req, res, next) => {
                 level
             );
 
-            let result = {
+            result = {
                 isCorrect: teacherReview.is_correct,
                 explanation: teacherReview.explanation
             };
-            res.json(result);
         } catch {
             console.log('error with OpenAI call');
-            res.end();
+            result = {
+                isError: true
+            };
         }
+        console.log(result);
+        res.json(result);
     } else {
         res.redirect('/login');
     }
