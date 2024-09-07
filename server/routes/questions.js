@@ -584,7 +584,7 @@ router.delete(
         if (req.session.userName) {
             const deleteQuery = `DELETE 
                              FROM image_questions_awaiting_approval
-                             WHERE image_question_id = ${req.params.QuestionId}
+                             WHERE image_question_id = ${req.params.imageQuestionId}
                              AND user_id  = ${req.params.userId};`;
             conn.query(deleteQuery, (err) => {
                 try {

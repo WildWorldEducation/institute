@@ -70,7 +70,6 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     this.imageQuestionEdit = data;
                     this.comment = data.comment;
                 });
@@ -81,7 +80,6 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     this.imageQuestion = data;
                 });
         },
@@ -91,7 +89,7 @@ export default {
             this.isEditMode = true;
             this.$parent.disableBtn = true;
             // Auto size text area to show all text without scroll bar in next tick where the text area will appear.
-            nextTick(() => {
+            this.$nextTick(() => {
                 const tx = document.getElementsByTagName('textarea');
                 for (let i = 0; i < tx.length; i++) {
                     tx[i].setAttribute(
@@ -162,7 +160,7 @@ export default {
             // Delete awaiting submitted question afterwards.
             const result = fetch(
                 '/questions/image/submitted-for-review/' +
-                    this.essayQuestionEdit.essay_question_id +
+                    this.imageQuestionEdit.image_question_id +
                     '/' +
                     this.userId,
                 {
