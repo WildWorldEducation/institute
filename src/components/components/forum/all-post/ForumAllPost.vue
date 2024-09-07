@@ -31,21 +31,6 @@ export default {
     mounted() {},
     computed: {
         orderedAndNamedPosts() {
-            // Getting the student's name.
-            for (let j = 0; j < this.posts.length; j++) {
-                for (let k = 0; k < this.$parent.users.length; k++) {
-                    if (this.posts[j].user_id == this.$parent.users[k].id) {
-                        this.posts[j].studentName =
-                            this.$parent.users[k].first_name +
-                            ' ' +
-                            this.$parent.users[k].last_name;
-                        this.posts[j].email = this.$parent.users[k].email;
-                        // I think we should get the user avatar too
-                        this.posts[j].userAvatar = this.$parent.users[k].avatar;
-                    }
-                }
-            }
-
             // Ordering by vote.
             var sortedPosts = this.posts.sort((a, b) => {
                 if (b.voteCount === a.voteCount) {

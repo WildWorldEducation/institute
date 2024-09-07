@@ -112,7 +112,7 @@ export default {
                     <div class="user-avatar">
                         <img
                             v-if="sessionDetailsStore.isLoggedIn"
-                            :src="post.userAvatar"
+                            :src="post.avatar"
                             class="user-avatar-img"
                             alt="user avatar"
                         />
@@ -127,7 +127,7 @@ export default {
                         class="user-name-div d-flex justify-content-between w-100"
                     >
                         <span class="user-name-text">
-                            {{ post.studentName }}
+                            {{ post.username }}
                         </span>
                     </div>
                 </div>
