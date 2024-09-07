@@ -17,7 +17,8 @@ export default {
             skillId: this.$route.params.id,
             skillName: null,
             isMultipleChoice: true,
-            isEssay: true
+            isEssay: true,
+            isImage: true
         };
     },
     async created() {
@@ -95,7 +96,7 @@ export default {
         </div>
         <!-- question type checker row -->
         <div class="row mt-5 pt-3 pb-3">
-            <div class="col-6">
+            <div class="col-4">
                 <label class="control control-checkbox">
                     <span class="my-auto mx-2 me-4">Multiple Choice</span>
                     <input
@@ -108,7 +109,7 @@ export default {
                     <div class="control_indicator"></div>
                 </label>
             </div>
-            <div class="col-6 ps-0 ps-lg-4">
+            <div class="col-4 ps-0 ps-lg-4">
                 <label class="control control-checkbox">
                     <span class="my-auto mx-2">Essay</span>
                     <input
@@ -121,6 +122,19 @@ export default {
                     <div class="control_indicator"></div>
                 </label>
             </div>
+            <div class="col-4 ps-0 ps-lg-4">
+                <label class="control control-checkbox">
+                    <span class="my-auto mx-2">Image</span>
+                    <input
+                        type="checkbox"
+                        name="nodeType"
+                        id="superRadio"
+                        value="super"
+                        v-model="isImage"
+                    />
+                    <div class="control_indicator"></div>
+                </label>
+            </div>
         </div>
         <!-- Question content row -->
         <div class="row mt-4">
@@ -128,6 +142,7 @@ export default {
                 <QuestionsBankQuestionList
                     :isMultipleChoice="isMultipleChoice"
                     :isEssay="isEssay"
+                    :isImage="isImage"
                 />
             </div>
         </div>
