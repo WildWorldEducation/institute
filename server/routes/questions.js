@@ -965,11 +965,12 @@ router.put('/image/:id/approve-edits', (req, res, next) => {
     if (req.session.userName) {
         let name;
         let question;
+        let numOfImages
         // Escape single quotes for SQL to accept.
         if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
         if (req.body.question != null)
             question = req.body.question.replace(/'/g, "\\'");
-
+        numOfImages = req.body.num_images_required;
         // Add data.
         let sqlQuery =
             `UPDATE image_questions 
@@ -977,6 +978,8 @@ router.put('/image/:id/approve-edits', (req, res, next) => {
             name +
             `', question = '` +
             question +
+            `', num_images_required = '` +
+            numOfImages +
             `' WHERE id = ` +
             req.params.id;
         conn.query(sqlQuery, (err, results) => {

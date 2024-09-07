@@ -234,6 +234,7 @@ export default {
             this.isEditMode = false;
             this.$parent.disableBtn = false;
             this.imageQuestionEdit = this.tempImageEdit;
+            console.log(this.imageQuestionEdit);
         },
         cancelEditChange() {
             this.isEditMode = false;
