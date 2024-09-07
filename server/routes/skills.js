@@ -218,21 +218,20 @@ router.post(
  */
 // Used for choosing parent skill when adding a new skill.
 router.get('/list', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM skills WHERE skills.is_deleted = 0';
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-
-                res.json(results);
-            } catch (err) {
-                next(err);
+    // Route is accessible for guest users.
+    res.setHeader('Content-Type', 'application/json');
+    let sqlQuery = 'SELECT * FROM skills WHERE skills.is_deleted = 0';
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
             }
-        });
-    }
+
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 // Nested List - for "Admin Role"
