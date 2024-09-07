@@ -94,7 +94,16 @@ router.get('/list', async (req, res, next) => {
                                     throw err;
                                 }
                                 resData = resData.concat(results);
-                                res.json(resData);
+                                let sqlImageQuery = `SELECT content_flags.*, users.id as userId, users.username, users.role as userRole, json_object('question', image_questions.question, 'name', image_questions.name, 'skillName', skills.name, 'skillId', skills.id, 'level', skills.level) as contentData 
+                                    FROM (content_flags JOIN image_questions ON content_flags.content_id = image_questions.id JOIN skills ON skills.id = image_questions.skill_id) JOIN users ON users.id = content_flags.user_id 
+                                    WHERE content_flags.content_type = 'image_question'  AND image_questions.is_deleted = 0 ;`;
+                                conn.query(sqlImageQuery, (err, results) => {
+                                    if(err){
+                                        throw err;
+                                    }
+                                    resData = resData.concat(results);
+                                    res.json(resData);
+                                })
                             })
                         });
                     });
