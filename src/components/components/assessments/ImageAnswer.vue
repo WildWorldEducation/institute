@@ -77,7 +77,7 @@ export default {
             </div>
             <div class="row">
                 <div
-                    class="preview col-xl-3 col-lg-4 col-6 my-2"
+                    class="preview col-xl-3 col-lg-4 col-md-6 my-2"
                     v-for="(image, index) in imageAnswer.length"
                 >
                     <img :src="imageAnswer[index]" />
