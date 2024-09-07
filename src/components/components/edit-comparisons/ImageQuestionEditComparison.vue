@@ -117,7 +117,7 @@ export default {
             if (confirm('Delete this edit?')) {
                 const result = fetch(
                     '/questions/image/submitted-for-review/' +
-                        this.essayQuestionId +
+                        this.imageQuestionId +
                         '/' +
                         this.userId,
                     {
