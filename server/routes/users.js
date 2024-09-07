@@ -582,7 +582,7 @@ router.get('/showId/:username', (req, res, next) => {
 });
 
 /**
- * Delete User NEW using binary flag
+ * Delete User using binary flag
  *
  * @return response()
  */
