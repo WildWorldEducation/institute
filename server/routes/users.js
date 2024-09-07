@@ -478,8 +478,10 @@ router.post(
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM users WHERE is_deleted = 0';
-        let query = conn.query(sqlQuery, (err, results) => {
+        let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role, is_deleted
+        FROM users;`;
+
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
