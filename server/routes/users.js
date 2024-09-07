@@ -520,7 +520,7 @@ router.get('/show/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Select user and their instructor (if they have one).
         let sqlQuery = `
-        SELECT users.id, first_name, last_name, username, avatar, email, role, users.is_deleted, 
+    SELECT users.id, users.first_name, users.last_name, users.username, users.avatar, users.email, users.role, users.is_deleted, 
             instructor.username AS instructor_username,
             instructor.id AS instructor_id,
             instructor.first_name AS instructor_first_name,
