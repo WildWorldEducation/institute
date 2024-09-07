@@ -113,32 +113,57 @@ router.get('/:userId/flag', (req, res, next) => {
                             // Get Delete actions because deleted content_id cant join with others table.
                             let sqlQuery4 = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
                                               FROM user_actions 
-                                              WHERE user_actions.action = 'delete' AND user_actions.content_type = 'content_flag' AND user_actions.user_id=${req.params.userId}`;;
+                                              WHERE user_actions.action = 'delete' AND user_actions.content_type = 'content_flag' AND user_actions.user_id=${req.params.userId}`;
                             conn.query(sqlQuery4, (err, results) => {
                                 if (err) throw err;
                                 else {
                                     resResults = resResults.concat(results);
-                                    let sqlQuery6 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('question_name', image_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', image_questions.question,'question_id', image_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj  
+
+                                    let sqlQuery5 = `SELECT user_actions.*, content_flags.content_type AS flag_type,
+                                    json_object('question_name', essay_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', essay_questions.question,'question_id', essay_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj 
+                                    FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN essay_questions ON essay_questions.id = content_flags.content_id JOIN skills ON skills.id = essay_questions.skill_id
+                                    WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'essay_question';`;
+
+                                    conn.query(sqlQuery5, (err, results) => {
+                                        resResults = resResults.concat(results);
+
+                                        if (err) throw err;
+                                        else {
+                                            let sqlQuery6 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('question_name', image_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', image_questions.question,'question_id', image_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj  
                                                 FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN image_questions ON image_questions.id = content_flags.content_id JOIN skills ON skills.id = image_questions.skill_id  
                                                 WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'image_question'`;
 
-                                    conn.query(sqlQuery6, (err, results) => {
-                                        if (err) throw err;
-                                        else {
-                                            resResults =
-                                                resResults.concat(results);
-                                            // re-Sort by date because we made two query and mess up the order of the results array
-                                            resResults.sort(function (x, y) {
-                                                const date1 = new Date(
-                                                    x.create_date
-                                                );
-                                                const date2 = new Date(
-                                                    y.create_date
-                                                );
-                                                return date1 - date2;
-                                            });
+                                            conn.query(
+                                                sqlQuery6,
+                                                (err, results) => {
+                                                    if (err) throw err;
+                                                    else {
+                                                        resResults =
+                                                            resResults.concat(
+                                                                results
+                                                            );
+                                                        // re-Sort by date because we made two query and mess up the order of the results array
+                                                        resResults.sort(
+                                                            function (x, y) {
+                                                                const date1 =
+                                                                    new Date(
+                                                                        x.create_date
+                                                                    );
+                                                                const date2 =
+                                                                    new Date(
+                                                                        y.create_date
+                                                                    );
+                                                                return (
+                                                                    date1 -
+                                                                    date2
+                                                                );
+                                                            }
+                                                        );
 
-                                            res.json(resResults);
+                                                        res.json(resResults);
+                                                    }
+                                                }
+                                            );
                                         }
                                     });
                                 }
