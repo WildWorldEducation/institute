@@ -46,6 +46,8 @@ export default {
         async getMcQuestionsLog() {
             const res = await fetch(`/user-actions/${this.userId}/question`);
             this.questionsData = await res.json();
+            console.log('QUESTION ACTION: ');
+            console.log(this.questionsData);
         },
         handleNoneLinkClick(logAction, questionName, questionDeleted) {
             if (logAction === 'delete' || questionDeleted) {
@@ -63,6 +65,8 @@ export default {
                     return 'update-action';
                 case 'bulk-create':
                     return 'bulk-create-action';
+                case 'submit_update_for_review':
+                    return 'submit_update_for_review';
                 default:
                     return 'delete-action';
             }
@@ -78,14 +82,22 @@ export default {
             <div v-for="question in rows">
                 {{ question.time }} ({{ question.date }})
                 <span :class="actionColor(question.action)">
-                    - {{ question.action }}
+                    - {{ question.action.replace(/_/g, ' ') }}
                 </span>
+                <!-- Text for mc question action -->
                 <span v-if="question.type === 'mc_question'">
-                    {{' "'+question.question_name+'"'}} in question bank of skill:
+                    {{ ' "' + question.question_name + '"' }} in question bank
+                    of skill:
                 </span>
-
+                <!-- Text for essay question action -->
                 <span v-if="question.type === 'essay_question'">
-                    essay question {{' "'+question.question_name+'"'}} in question bank of skill:
+                    essay question {{ ' "' + question.question_name + '"' }} in
+                    question bank of skill:
+                </span>
+                <!-- Text for image question action -->
+                <span v-if="question.type === 'image_question'">
+                    image question {{ ' "' + question.question_name + '"' }} in
+                    question bank of skill:
                 </span>
                 <!-- Show link to skill if it is not deleted else show a warn modal-->
                 <span

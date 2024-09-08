@@ -214,7 +214,7 @@ router.get('/:userId/student_mc_question', (req, res, next) => {
 });
 
 /**
- * List Actions with type mc_question and essay_question of a specific user
+ * List Actions of a specific user on questions relate data
  *
  * @return response()
  */
@@ -240,15 +240,24 @@ router.get('/:userId/question', (req, res, next) => {
                             throw err;
                         } else {
                             resResults = resResults.concat(results);
-                            // we have to get delete essay question action separately
-
-                            // re-Sort by date because we made two query and mess up the order of the results array  
-                            resResults.sort(function (x, y) {
-                                const date1 = new Date(x.create_date);
-                                const date2 = new Date(y.create_date);
-                                return date1 - date2;
+                            //  get image question action
+                            const imageQuestionQuery = `SELECT user_actions.*, JSON_OBJECT('question_name', image_questions.name, 'skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username, 'skill_deleted' , skills.is_deleted, 'question_deleted', image_questions.is_deleted ) AS content_obj 
+                                                        FROM user_actions JOIN image_questions ON image_questions.id = user_actions.content_id JOIN skills ON skills.id = image_questions.skill_id  JOIN users ON users.id = user_actions.user_id
+                                                        WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'image_question'`;
+                            conn.query(imageQuestionQuery, (err, results) => {
+                                if (err) {
+                                    throw err;
+                                } else {
+                                    resResults = resResults.concat(results)
+                                    // re-Sort by date because we made multiple query and mess up the order of the results array  
+                                    resResults.sort(function (x, y) {
+                                        const date1 = new Date(x.create_date);
+                                        const date2 = new Date(y.create_date);
+                                        return date1 - date2;
+                                    })
+                                    res.json(resResults);
+                                }
                             })
-                            res.json(resResults);
                         }
                     })
                 }

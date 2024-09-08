@@ -496,6 +496,10 @@ export default {
     color: #5b7dcc;
 }
 
+.submit_update_for_review {
+    color: #71630a;
+}
+
 /* The Warning Modal */
 .modal {
     display: block;
