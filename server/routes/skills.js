@@ -220,7 +220,7 @@ router.post(
 router.get('/list', (req, res, next) => {
     // Route is accessible for guest users.
     res.setHeader('Content-Type', 'application/json');
-    let sqlQuery = 'SELECT * FROM skills WHERE skills.is_deleted = 0';
+    let sqlQuery = "SELECT id, name, parent, type, level FROM skills WHERE skills.is_deleted = 0";
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
