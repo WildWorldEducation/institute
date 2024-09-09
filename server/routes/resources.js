@@ -251,12 +251,36 @@ router.get('/show/:id', (req, res) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT * FROM resources WHERE id=${req.params.id} AND is_deleted = 0`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
                 res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// Includes deleted sources.
+router.get('/user-activity-report/show/:id', (req, res) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT * FROM resources WHERE id=${req.params.id}`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                let result = {};
+                if (typeof results[0] !== 'undefined' && results[0]) {
+                    result.source = results[0];
+                } else {
+                    result.source = 'not found';
+                }
+                res.json(result);
             } catch (err) {
                 next(err);
             }
