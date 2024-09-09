@@ -68,6 +68,15 @@ export default {
                     pushObj.type = 'skill';
                     pushObj.skillId = contentObj.skill_id;
                     break;
+                case 'essay_question': 
+                    pushObj.type = 'essay_question';
+                    pushObj.skillId = contentObj.skill_id;
+                    break;
+                case 'image_question':
+                    pushObj.type = 'image_question';
+                    pushObj.questionId = contentObj.question_id;
+                    pushObj.skillId = contentObj.skill_id;
+                    break;
                 default:
                     pushObj.type = 'delete';
                     break;
@@ -181,6 +190,80 @@ export default {
                         - {{ contentFlag.action }}
                     </span>
                     flag on mc_question {{ '"'+contentFlag.questionName+'"' }}:
+                    <router-link
+                        class="question-link"
+                        target="_blank"
+                        :to="`/skills/${contentFlag.skillId}/question-bank`"
+                        >{{ contentFlag.question }}</router-link
+                    >
+                    on skill:
+                    <!-- Show link to skill if it is not deleted else show a warn modal-->
+                    <span
+                        v-if="
+                            contentFlag.action === 'delete' ||
+                            contentFlag.skill_deleted === 1
+                        "
+                        class="skill-link"
+                        @click="
+                            handleNoneLinkClick(
+                                contentFlag.action,
+                                contentFlag.skillName
+                            )
+                        "
+                    >
+                        {{ contentFlag.skillName }}
+                    </span>
+                    <router-link
+                        v-else
+                        class="skill-link"
+                        target="_blank"
+                        :to="`/skills/${contentFlag.skillId}`"
+                        >{{ contentFlag.skillName }}</router-link
+                    >
+                </span>
+
+                <!-- flag type essay_question -->
+                <span v-if="contentFlag.type === 'essay_question'">
+                    <span :class="actionColor(contentFlag.action)">
+                        - {{ contentFlag.action }}
+                    </span>
+                    flag on essay question {{ '"'+contentFlag.questionName+'"' }}:
+                    <router-link
+                        class="question-link"
+                        target="_blank"
+                        :to="`/skills/${contentFlag.skillId}/question-bank`"
+                        >{{ contentFlag.question }}</router-link
+                    >
+                    on skill:
+                    <!-- Show link to skill if it is not deleted else show a warn modal-->
+                    <span
+                        v-if="
+                            contentFlag.action === 'delete' ||
+                            contentFlag.skill_deleted === 1
+                        "
+                        class="skill-link"
+                        @click="
+                            handleNoneLinkClick(
+                                contentFlag.action,
+                                contentFlag.skillName
+                            )
+                        "
+                    >
+                        {{ contentFlag.skillName }}
+                    </span>
+                    <router-link
+                        v-else
+                        class="skill-link"
+                        target="_blank"
+                        :to="`/skills/${contentFlag.skillId}`"
+                        >{{ contentFlag.skillName }}</router-link
+                    >
+                </span>
+                <span v-if="contentFlag.type === 'image_question'">
+                    <span :class="actionColor(contentFlag.action)">
+                        - {{ contentFlag.action }}
+                    </span>
+                    flag on image question {{ '"'+contentFlag.questionName+'"' }}:
                     <router-link
                         class="question-link"
                         target="_blank"

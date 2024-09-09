@@ -67,7 +67,9 @@ export default {
     async created() {
         await this.getSkill();
         this.isSkillLoaded = true;
-        await this.getUserSkills();
+        if (this.sessionDetailsStore.isLoggedIn) {
+            await this.getUserSkills();
+        }
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
     },
     methods: {
