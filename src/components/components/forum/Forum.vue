@@ -18,12 +18,11 @@ export default {
     },
     props: ['skillId'],
     data() {
-        return {         
+        return {
             sourcePosts: [],
             tutorPosts: [],
             isAlreadyTutoring: false,
             posts: [],
-            users: [],
             user: {},
             showModal: false,
             resourceId: null,
@@ -45,10 +44,7 @@ export default {
     computed: {},
     async created() {
         this.getUserId();
-        // Dont show the users if guest account.
-        if (this.$parent.sessionDetailsStore.isLoggedIn == true) {
-            await this.getUsers();
-        }
+
         // Get all sources for this skill.
         await this.getSourcePosts(this.skillId);
 
@@ -182,14 +178,6 @@ export default {
                         }
                     }
                 });
-        },
-        // Get all users to map the post user ID to the user's name.
-        async getUsers() {
-            await fetch('/users/list')
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => (this.users = data));
         },
         deletePost(source) {
             // Close the modal.

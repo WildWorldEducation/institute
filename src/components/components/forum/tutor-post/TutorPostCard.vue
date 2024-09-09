@@ -106,7 +106,7 @@ export default {
             class="d-flex justify-content-center ms-3 ms-md-0 tutor-avatar-div"
         >
             <img
-                :src="post.userAvatar"
+                :src="post.avatar"
                 class="tutor-img rounded"
                 alt="user avatar"
             />
@@ -114,7 +114,7 @@ export default {
         <div class="d-flex flex-column w-100">
             <div class="d-flex flex-row justify-content-between">
                 <div class="tutor-user-name text-capitalize">
-                    {{ post.studentName }}
+                    {{ post.username }}
                 </div>
                 <div
                     b-on-hover

@@ -670,11 +670,18 @@ export default {
         },
         handleClickFlagIcon() {
             // because we have difference name use in content-flag table
-            if (this.questions[this.questionNumber].questionType === 'mc') {
-                this.flagContentType = 'mc_question';
-            } else {
-                this.flagContentType = 'essay_question';
+            switch (this.questions[this.questionNumber].questionType) {
+                case 'mc':
+                    this.flagContentType = 'mc_question';
+                    break;
+                case 'essay':
+                    this.flagContentType = 'essay_question';
+                case 'image':
+                    this.flagContentType = 'image_question';
+                default:
+                    break;
             }
+
             this.showFlaggingModal = true;
         },
         async MakeMastered(skill) {
