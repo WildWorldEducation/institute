@@ -3,11 +3,11 @@
 import { useUsersStore } from '../../stores/UsersStore';
 
 // Components
-import UserFlagActions from '../components/UserFlagActions.vue';
-import UserResourceActions from '../components/UserResourceActions.vue';
-import UserQuestionActions from '../components/UserQuestionActions.vue';
-import UserSkillActions from '../components/UserSkillActions.vue';
-import UserStudentMcQuestionActions from '../components/UserStudentMcQuestionActions.vue';
+import UserFlagActions from '../components/user-activity-report/UserFlagActions.vue';
+import UserResourceActions from '../components/user-activity-report/UserResourceActions.vue';
+import UserQuestionActions from '../components/user-activity-report/UserQuestionActions.vue';
+import UserSkillActions from '../components/user-activity-report/UserSkillActions.vue';
+import UserStudentMcQuestionActions from '../components/user-activity-report/UserStudentMcQuestionActions.vue';
 
 export default {
     setup() {

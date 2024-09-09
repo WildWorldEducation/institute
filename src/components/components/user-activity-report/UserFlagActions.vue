@@ -1,8 +1,8 @@
 <script>
-import { useSkillsStore } from '../../stores/SkillsStore.js';
-import { useResourcesStore } from '../../stores/ResourcesStore.js';
-import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
-import { useEssayQuestionsStore } from '../../stores/EssayQuestionsStore.js';
+import { useSkillsStore } from '../../../stores/SkillsStore.js';
+import { useResourcesStore } from '../../../stores/ResourcesStore.js';
+import { useMCQuestionsStore } from '../../../stores/MCQuestionsStore.js';
+import { useEssayQuestionsStore } from '../../../stores/EssayQuestionsStore.js';
 
 export default {
     props: ['userId'],
@@ -68,7 +68,7 @@ export default {
                     pushObj.type = 'skill';
                     pushObj.skillId = contentObj.skill_id;
                     break;
-                case 'essay_question': 
+                case 'essay_question':
                     pushObj.type = 'essay_question';
                     pushObj.skillId = contentObj.skill_id;
                     break;
@@ -189,7 +189,8 @@ export default {
                     <span :class="actionColor(contentFlag.action)">
                         - {{ contentFlag.action }}
                     </span>
-                    flag on mc_question {{ '"'+contentFlag.questionName+'"' }}:
+                    flag on mc_question
+                    {{ '"' + contentFlag.questionName + '"' }}:
                     <router-link
                         class="question-link"
                         target="_blank"
@@ -227,7 +228,8 @@ export default {
                     <span :class="actionColor(contentFlag.action)">
                         - {{ contentFlag.action }}
                     </span>
-                    flag on essay question {{ '"'+contentFlag.questionName+'"' }}:
+                    flag on essay question
+                    {{ '"' + contentFlag.questionName + '"' }}:
                     <router-link
                         class="question-link"
                         target="_blank"
@@ -263,7 +265,8 @@ export default {
                     <span :class="actionColor(contentFlag.action)">
                         - {{ contentFlag.action }}
                     </span>
-                    flag on image question {{ '"'+contentFlag.questionName+'"' }}:
+                    flag on image question
+                    {{ '"' + contentFlag.questionName + '"' }}:
                     <router-link
                         class="question-link"
                         target="_blank"
