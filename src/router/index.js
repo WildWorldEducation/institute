@@ -196,7 +196,10 @@ const router = createRouter({
             path: '/users',
             name: 'users',
             component: () => import('../components/pages/UsersView.vue'),
-            meta: { requiresAuth: true, roles: ['instructor', 'admin'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin', 'editor']
+            }
         },
         {
             path: '/users/add',

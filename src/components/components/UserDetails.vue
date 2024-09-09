@@ -50,6 +50,7 @@ export default {
         <div class="row">
             <div class="col-12 col-md-5 col-lg-4 d-flex flex-column">
                 <img id="user-avatar" :src="this.$parent.user.avatar" />
+                <!-- Edit button -->
                 <div
                     id="user-function-btns-row"
                     class="d-flex justify-content-center mt-3"
@@ -84,6 +85,7 @@ export default {
                     ><span v-if="userDetailsStore.role == 'admin'"
                         >&nbsp;&nbsp;</span
                     >
+                    <!-- Delete button -->
                     <button
                         v-if="userDetailsStore.role == 'admin'"
                         class="btn red-btn"
@@ -105,7 +107,7 @@ export default {
                         </svg>
                     </button>
                 </div>
-
+                <!-- Skill Tree -->
                 <router-link
                     v-if="userRole == 'student'"
                     :to="`/student/${this.$parent.user.id}/skill-tree`"
@@ -126,6 +128,7 @@ export default {
                         />
                     </svg>
                 </router-link>
+                <!-- Skills List -->
                 <router-link
                     v-if="userRole == 'student'"
                     :to="'/student/' + this.$parent.user.id + '/skills'"
@@ -135,7 +138,10 @@ export default {
                 </router-link>
                 <div class="d-flex justify-content-center mt-2">
                     <router-link
-                        v-if="userDetailsStore.role == 'admin'"
+                        v-if="
+                            userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'editor'
+                        "
                         target="_blank"
                         :to="'/users/activity-report/' + this.$parent.user.id"
                         class="btn purple-btn"
