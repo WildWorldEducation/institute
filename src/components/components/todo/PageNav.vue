@@ -27,7 +27,8 @@ export default {
         this.contentEditCount =
             parseInt(this.todoCount.skill_edit_count) +
             parseInt(this.todoCount.mc_question_edit_count) +
-            parseInt(this.todoCount.essay_question_edit_count);
+            parseInt(this.todoCount.essay_question_edit_count) +
+            parseInt(this.todoCount.image_question_edit_count);
     }
 };
 </script>

@@ -25,7 +25,8 @@ export default {
             },
             passwordVisible: false,
             // For Google sign up absolute API url.
-            isProduction: import.meta.env.PROD
+            isProduction: import.meta.env.PROD,
+            showVideoModal: true
         };
     },
     async created() {},
@@ -35,6 +36,15 @@ export default {
         script.setAttribute('src', 'https://accounts.google.com/gsi/client');
         script.setAttribute('defer', '');
         document.head.appendChild(script);
+
+        if (window.innerWidth < 800) {
+            this.showVideoModal = false;
+        }
+
+        // Close modal
+        document.addEventListener('click', () => {
+            this.toggleModal();
+        });
     },
     methods: {
         ValidateForm() {
@@ -98,6 +108,9 @@ export default {
                         alert(data.account);
                     }
                 });
+        },
+        toggleModal() {
+            this.showVideoModal = false;
         }
     }
 };
@@ -105,8 +118,22 @@ export default {
 
 <template>
     <div class="signup-page">
-        <div class="form-signin">
-            <div class="text-center">
+        <div
+            v-if="!showVideoModal"
+            class="embed-responsive embed-responsive-16by9"
+        >
+            <iframe
+                class="intro-video"
+                src="https://www.youtube.com/embed/hu_hjfLLwY0?si=TyvLiAgxcQgmY92q"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+            ></iframe>
+        </div>
+        <div class="form-signin mt-3">
+            <div v-if="showVideoModal" class="text-center">
                 <img
                     class="mb-4"
                     src="/images/logo-red.png"
@@ -264,15 +291,135 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Video Modal -->
+    <div v-if="showVideoModal">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <button
+                    type="button"
+                    class="closeBtn btn red-btn"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                >
+                    <span aria-hidden="true">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="25"
+                            height="25"
+                        >
+                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <path
+                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                                fill="white"
+                            />
+                        </svg>
+                    </span>
+                </button>
+
+                <div
+                    id="modal-iframe"
+                    class="embed-responsive embed-responsive-16by9"
+                >
+                    <iframe
+                        class="intro-video"
+                        src="https://www.youtube.com/embed/hu_hjfLLwY0?si=TyvLiAgxcQgmY92q"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen
+                    ></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style>
+.closeBtn {
+    position: absolute;
+    top: -19.655px;
+    right: -25.3px;
+}
+
+.red-btn {
+    background-color: #da7033 !important;
+    color: white;
+    border: 1px solid #7f56d9;
+    align-items: center;
+    max-width: fit-content;
+    display: flex;
+}
+
+.red-btn:hover {
+    background-color: rgb(209, 96, 15);
+}
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: hidden;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 600px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+.intro-video {
+    display: block;
+    border-radius: 5%;
+    aspect-ratio: 16 / 9;
+    margin: auto;
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 800px) {
+    .intro-video {
+        width: 100%;
+    }
+}
+
+/* Bigger devices */
+
+#modal-iframe .intro-video {
+    width: 560px;
+}
+
 .signup-page {
     height: 100%;
     padding: 10px;
     background-repeat: no-repeat;
     width: 100%;
     font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
 }
 
 .welcome-message {

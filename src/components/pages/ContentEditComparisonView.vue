@@ -2,6 +2,7 @@
 import SkillEditComparison from '../components/edit-comparisons/SkillEditComparison.vue';
 import MCQuestionEditComparison from '../components/edit-comparisons/MCQuestionEditComparison.vue';
 import EssayQuestionEditComparison from '../components/edit-comparisons/EssayQuestionEditComparison.vue';
+import ImageQuestionEditComparison from '../components/edit-comparisons/ImageQuestionEditComparison.vue';
 
 export default {
     setup() {},
@@ -14,7 +15,8 @@ export default {
     components: {
         SkillEditComparison,
         MCQuestionEditComparison,
-        EssayQuestionEditComparison
+        EssayQuestionEditComparison,
+        ImageQuestionEditComparison
     },
     async created() {
         // Show the correct component.
@@ -35,6 +37,10 @@ export default {
         <EssayQuestionEditComparison
             ref="child"
             v-if="type == 'essayquestion'"
+        />
+        <ImageQuestionEditComparison
+            ref="child"
+            v-if="type == 'imagequestion'"
         />
         <div class="d-flex justify-content-end gap-3">
             <button

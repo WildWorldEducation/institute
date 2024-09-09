@@ -58,7 +58,8 @@ export default {
             isLoading: true,
             xPos: 0,
             yPos: 0,
-            showAnimation: false
+            showAnimation: false,
+            showSkillPanel: false
         };
     },
     components: {
@@ -147,8 +148,9 @@ export default {
                 );
                 const masteryRequirements = await result.json();
                 this.skill.masteryRequirements = masteryRequirements;
-
-                this.showInfoPanel();
+                // *** Preserve in case client want clamp instead of scroll
+                //this.showInfoPanel();
+                this.showSkillPanel = true;
             }
         });
 
@@ -490,45 +492,7 @@ export default {
             this.hiddenCanvasContext.fill();
             this.hiddenCanvasContext.restore();
         },
-        showInfoPanel() {
-            // If panel is not showing.
-            if (!this.isSkillInfoPanelShown) {
-                this.isSkillInfoPanelShown = true;
-                // To display the panel.
-                // Responsive.
-                // Laptop etc.
-                if (screen.width > 800) {
-                    document.getElementById('skillInfoPanel').style.width =
-                        '474px';
-                }
-                // Mobile device.
-                else {
-                    document.getElementById('skillInfoPanel').style.height =
-                        '474px';
-                }
-            }
-        },
-        hideInfoPanel() {
-            // If panel is showing.
-            if (this.isSkillInfoPanelShown) {
-                // Responsive.
-                // Laptop etc.
-                if (screen.width > 800) {
-                    document.getElementById('skillInfoPanel').style.width =
-                        '0px';
-                }
-                // Mobile device.
-                else {
-                    document.getElementById('skillInfoPanel').style.height =
-                        '0px';
-                }
-                // Hide the background.
-                document.getElementById('sidepanel-backdrop').style.display =
-                    'none';
 
-                this.isSkillInfoPanelShown = false;
-            }
-        },
         async printPDF() {
             // Get the data for the print version (different to the digital version).
             await this.getPrintAlgorithm();
@@ -825,12 +789,12 @@ export default {
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
     <div v-show="isLoading == false" id="wrapper">
-        <SkillPanel :skill="skill" />
+        <SkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
         <div
             v-if="showAnimation"
             :style="{ top: `${yPos}px`, left: `${xPos}px` }"
             class="click-animation"
-            ></div>
+        ></div>
         <canvas id="canvas" width="1500" height="1500"></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
@@ -928,28 +892,28 @@ input[type='button'] {
     display: flex;
     flex-direction: row;
 }
-canvas{
+canvas {
     cursor: pointer;
 }
 .click-animation {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: #ffffff; /* Color of the animation */
-  border-radius: 50%;
-  transform: translate(-50%, -50%); /* Center the circle on click */
-  animation: clickEffect 0.7s infinite ease-out ;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff; /* Color of the animation */
+    border-radius: 50%;
+    transform: translate(-50%, -50%); /* Center the circle on click */
+    animation: clickEffect 0.7s infinite ease-out;
 }
 
 @keyframes clickEffect {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(3);
-    opacity: 0;
-  }
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(3);
+        opacity: 0;
+    }
 }
 @media (max-width: 820px) {
     .flex-container {

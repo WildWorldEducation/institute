@@ -74,10 +74,11 @@ router.get('/:userId/flag', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         /** NOTE
-         * we get all the flag and it relate content data using promise
+         * we get all the flag and its related content data using promise
          * this will likely become a call back hell if there are a lot type of flag
          */
         let resResults = [];
+        // Skills Flags.
         let sqlQuery1 = `
             SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted) AS content_obj 
             FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN skills ON skills.id = content_flags.content_id  
@@ -87,8 +88,9 @@ router.get('/:userId/flag', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-
                 resResults = resResults.concat(results);
+
+                // Sources Flags.
                 let sqlQuery2 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted) AS content_obj  
                     FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN resources ON resources.id = content_flags.content_id JOIN skills ON skills.id = resources.skill_id  
                     WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'resource'`;
@@ -96,8 +98,9 @@ router.get('/:userId/flag', (req, res, next) => {
                     if (err) {
                         throw err;
                     }
-
                     resResults = resResults.concat(results);
+
+                    // MC Questions Flags.
                     let sqlQuery3 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('question_name', mc_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', mc_questions.question,'question_id', mc_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj  
                         FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN mc_questions ON mc_questions.id = content_flags.content_id JOIN skills ON skills.id = mc_questions.skill_id  
                         WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'mc_question'`;
@@ -105,30 +108,67 @@ router.get('/:userId/flag', (req, res, next) => {
                         if (err) {
                             throw err;
                         } else {
-
                             resResults = resResults.concat(results);
-                            // Get Delete actions because deleted content_id cant join with others table
+
+                            // Get Delete actions because deleted content_id cant join with others table.
                             let sqlQuery4 = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
                                               FROM user_actions 
-                                              WHERE user_actions.action = 'delete' AND user_actions.content_type = 'content_flag' AND user_actions.user_id=${req.params.userId}`
+                                              WHERE user_actions.action = 'delete' AND user_actions.content_type = 'content_flag' AND user_actions.user_id=${req.params.userId}`;
                             conn.query(sqlQuery4, (err, results) => {
-                                if (err)
-                                    throw err;
+                                if (err) throw err;
                                 else {
                                     resResults = resResults.concat(results);
-                                    // re-Sort by date because we made two query and mess up the order of the results array  
-                                    resResults.sort(function (x, y) {
-                                        const date1 = new Date(x.create_date);
-                                        const date2 = new Date(y.create_date);
-                                        return date1 - date2;
-                                    })
 
-                                    res.json(resResults);
+                                    let sqlQuery5 = `SELECT user_actions.*, content_flags.content_type AS flag_type,
+                                    json_object('question_name', essay_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', essay_questions.question,'question_id', essay_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj 
+                                    FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN essay_questions ON essay_questions.id = content_flags.content_id JOIN skills ON skills.id = essay_questions.skill_id
+                                    WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'essay_question';`;
+
+                                    conn.query(sqlQuery5, (err, results) => {
+                                        resResults = resResults.concat(results);
+
+                                        if (err) throw err;
+                                        else {
+                                            let sqlQuery6 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('question_name', image_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', image_questions.question,'question_id', image_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj  
+                                                FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN image_questions ON image_questions.id = content_flags.content_id JOIN skills ON skills.id = image_questions.skill_id  
+                                                WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'image_question'`;
+
+                                            conn.query(
+                                                sqlQuery6,
+                                                (err, results) => {
+                                                    if (err) throw err;
+                                                    else {
+                                                        resResults =
+                                                            resResults.concat(
+                                                                results
+                                                            );
+                                                        // re-Sort by date because we made two query and mess up the order of the results array
+                                                        resResults.sort(
+                                                            function (x, y) {
+                                                                const date1 =
+                                                                    new Date(
+                                                                        x.create_date
+                                                                    );
+                                                                const date2 =
+                                                                    new Date(
+                                                                        y.create_date
+                                                                    );
+                                                                return (
+                                                                    date1 -
+                                                                    date2
+                                                                );
+                                                            }
+                                                        );
+
+                                                        res.json(resResults);
+                                                    }
+                                                }
+                                            );
+                                        }
+                                    });
                                 }
-                            })
+                            });
                         }
-
-
                     });
                 });
             } catch (err) {
@@ -184,25 +224,25 @@ router.get('/:userId/student_mc_question', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    resResults = resResults.concat(results)
+                    resResults = resResults.concat(results);
                     // we have to get the delete action separately because it cant join with other table with a non exists id
                     let deleteActionQuery = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
                                              FROM user_actions 
-                                             WHERE user_actions.action = 'delete' AND user_actions.content_type = 'student_mc_question' AND user_id=${req.params.userId}`
+                                             WHERE user_actions.action = 'delete' AND user_actions.content_type = 'student_mc_question' AND user_id=${req.params.userId}`;
                     conn.query(deleteActionQuery, (err, results) => {
                         if (err) {
                             throw err;
                         } else {
                             resResults = resResults.concat(results);
-                            // re-Sort by date because we made two query and mess up the order of the results array  
+                            // re-Sort by date because we made two query and mess up the order of the results array
                             resResults.sort(function (x, y) {
                                 const date1 = new Date(x.create_date);
                                 const date2 = new Date(y.create_date);
                                 return date1 - date2;
-                            })
+                            });
                             res.json(resResults);
                         }
-                    })
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -214,7 +254,7 @@ router.get('/:userId/student_mc_question', (req, res, next) => {
 });
 
 /**
- * List Actions with type mc_question and essay_question of a specific user
+ * List Actions of a specific user on questions relate data
  *
  * @return response()
  */
@@ -240,17 +280,26 @@ router.get('/:userId/question', (req, res, next) => {
                             throw err;
                         } else {
                             resResults = resResults.concat(results);
-                            // we have to get delete essay question action separately
-
-                            // re-Sort by date because we made two query and mess up the order of the results array  
-                            resResults.sort(function (x, y) {
-                                const date1 = new Date(x.create_date);
-                                const date2 = new Date(y.create_date);
-                                return date1 - date2;
+                            //  get image question action
+                            const imageQuestionQuery = `SELECT user_actions.*, JSON_OBJECT('question_name', image_questions.name, 'skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username, 'skill_deleted' , skills.is_deleted, 'question_deleted', image_questions.is_deleted ) AS content_obj 
+                                                        FROM user_actions JOIN image_questions ON image_questions.id = user_actions.content_id JOIN skills ON skills.id = image_questions.skill_id  JOIN users ON users.id = user_actions.user_id
+                                                        WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'image_question'`;
+                            conn.query(imageQuestionQuery, (err, results) => {
+                                if (err) {
+                                    throw err;
+                                } else {
+                                    resResults = resResults.concat(results)
+                                    // re-Sort by date because we made multiple query and mess up the order of the results array  
+                                    resResults.sort(function (x, y) {
+                                        const date1 = new Date(x.create_date);
+                                        const date2 = new Date(y.create_date);
+                                        return date1 - date2;
+                                    })
+                                    res.json(resResults);
+                                }
                             })
-                            res.json(resResults);
                         }
-                    })
+                    });
                 }
             } catch (err) {
                 next(err);
@@ -260,8 +309,6 @@ router.get('/:userId/question', (req, res, next) => {
         res.redirect('/login');
     }
 });
-
-
 
 /**
  * List Actions with type skill of a specific user
@@ -290,7 +337,6 @@ router.get('/:userId/skill', (req, res, next) => {
         res.redirect('/login');
     }
 });
-
 
 // Export the router for app to use.
 module.exports = router;

@@ -55,7 +55,8 @@ export default {
             accessibleSkills: [],
             showAncestorLink: false,
             isMobileCheck: window.innerWidth,
-            showConfirmModal: false
+            showConfirmModal: false,
+            isSkillLoaded: false
         };
     },
     components: {
@@ -65,7 +66,10 @@ export default {
 
     async created() {
         await this.getSkill();
-        await this.getUserSkills();
+        this.isSkillLoaded = true;
+        if (this.sessionDetailsStore.isLoggedIn) {
+            await this.getUserSkills();
+        }
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
     },
     methods: {
@@ -527,7 +531,7 @@ export default {
         </div>
         <div v-if="skill.type != 'domain'">
             <div class="row mt-3 mb-3">
-                <Forum :skillId="skill.id" />
+                <Forum v-if="isSkillLoaded" :skillId="skill.id" />
             </div>
         </div>
         <p>&nbsp;</p>

@@ -4,6 +4,7 @@ import SkillsView from '../components/pages/SkillsView.vue';
 import { useSessionDetailsStore } from '../stores/SessionDetailsStore';
 import { useUserDetailsStore } from '../stores/UserDetailsStore';
 import { useUserSkillsStore } from '../stores/UserSkillsStore.js';
+import { useSkillsStore } from '../stores/SkillsStore.js';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -337,10 +338,13 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (to.name == 'show-skill') {
-        const userSkillsStore = useUserSkillsStore();
+        const skillsStore = useSkillsStore();
 
-        await userSkillsStore.getUnnestedList(userDetailsStore.userId);
-        const currentSkill = userSkillsStore.unnestedList.find(
+        if (skillsStore.skillsList.length == 0) {
+            await skillsStore.getSkillsList();
+        }
+
+        const currentSkill = skillsStore.skillsList.find(
             (item) => item.id == to.params.skillId
         );
         if (currentSkill.type == 'domain') {

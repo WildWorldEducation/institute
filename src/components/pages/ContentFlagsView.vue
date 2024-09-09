@@ -142,6 +142,22 @@ export default {
                                     role: flag.userRole
                                 };
                                 break;
+                            // Handle for image question flag
+                            case 'image_question':
+                                flagRow.contentId = flag.content_id;
+                                flagRow.type = 'image question';
+                                flagRow.name = `${contentObj.name} ${contentObj.question}`;
+
+                                flagRow.nameUrl = `skills/${contentObj.skillId}/question-bank`;
+                                flagRow.flagId = flag.id;
+                                flagRow.editUrl = `/image-questions/edit/${flag.content_id}`;
+                                flagRow.expandContent = contentObj;
+                                flagRow.user = {
+                                    username: flag.username,
+                                    id: flag.userId,
+                                    role: flag.userRole
+                                };
+                                break;
                             // handle for skill flag
                             case 'skill':
                                 flagRow.contentId = flag.content_id;
@@ -695,6 +711,35 @@ export default {
                         </div>
                         <!-- _+_+_+_+_+_+_+_  Essay Expand content _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'essay question'">
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Belongs to skill:</div>
+                                <div>
+                                    <router-link
+                                        :to="'skills/' + expandContent.skillId"
+                                        target="_blank"
+                                        b-tooltip.hover
+                                        :style="{ color: '#8f7bd6' }"
+                                        :title="'Go To Skill'"
+                                        >{{
+                                            expandContent.skillName
+                                        }}</router-link
+                                    >
+                                </div>
+                            </div>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Level:</div>
+                                {{ expandContent.level }}
+                            </div>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Name:</div>
+                                {{ expandContent.name }}
+                            </div>
+                            <div class="d-flex mb-2">
+                                <div class="expand-tile">Question:</div>
+                                {{ expandContent.question }}
+                            </div>
+                        </div>
+                        <div v-if="type == 'image question'">
                             <div class="d-flex mb-2">
                                 <div class="expand-tile">Belongs to skill:</div>
                                 <div>
@@ -2355,23 +2400,6 @@ h2 {
     transform: translate3d(0, 0, 0);
 }
 
-.form-validate {
-    font-size: 0.75rem;
-    color: red;
-    font-weight: 300;
-}
-
-.filter-label {
-    color: #888;
-    font-size: 16px;
-    font-weight: 400;
-    margin-top: 15px;
-}
-
-.date-label {
-    width: 120px;
-}
-
 /* The animation key frame */
 @keyframes rotation {
     from {
@@ -2436,7 +2464,22 @@ h2 {
 }
 
 /* End of CSS style for Custom Select */
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
+}
 
+.filter-label {
+    color: #888;
+    font-size: 16px;
+    font-weight: 400;
+    margin-top: 15px;
+}
+
+.date-label {
+    width: 120px;
+}
 /**-------------------------------------  */
 /* A lot of CSS to styling two check box */
 .control {

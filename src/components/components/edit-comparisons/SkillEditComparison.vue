@@ -12,6 +12,7 @@ export default {
             skillEdit: {},
             comment: '',
             isEditMode: false,
+            edited: false,
             changeIcon: false,
             changeBanner: false,
             changeMasteryText: false,
@@ -118,7 +119,7 @@ export default {
             this.$parent.disableBtn = false;
             this.skillEdit.mastery_requirements =
                 $('#summernote').summernote('code');
-
+            this.edited = true;
             // re-compare ordinal html with newly apply html
             this.diffHtml = HtmlDiff.execute(
                 this.skill.mastery_requirements,
@@ -164,7 +165,7 @@ export default {
                     icon_image: this.skillEdit.icon_image,
                     banner_image: this.skillEdit.banner_image,
                     comment: this.comment,
-                    edit: this.isEditMode
+                    edit: this.edited
                 })
             };
 

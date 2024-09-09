@@ -11,6 +11,7 @@ export default {
             essayQuestionEdit: {},
             comment: '',
             isEditMode: false,
+            edited: false,
             showHighLight: true,
             showQuestionChange: true,
             showNameChange: true,
@@ -142,7 +143,7 @@ export default {
                 body: JSON.stringify({
                     name: this.essayQuestionEdit.name,
                     question: this.essayQuestionEdit.question,
-                    edit: this.isEditMode
+                    edit: this.edited
                 })
             };
 
@@ -219,6 +220,7 @@ export default {
             this.compareEdit();
             this.isEditMode = false;
             this.$parent.disableBtn = false;
+            this.edited = true;
             this.essayQuestionEdit = this.tempEssayEdit;
         },
         cancelEditChange() {
