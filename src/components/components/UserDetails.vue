@@ -5,7 +5,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 export default {
     props: ['userId', 'userRole'],
-    setup(props) {
+    setup() {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
 
@@ -21,7 +21,6 @@ export default {
             showModal: false
         };
     },
-    computed: {},
     methods: {}
 };
 </script>

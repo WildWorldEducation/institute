@@ -1,6 +1,6 @@
 <script>
 import UsersList from '../components/UsersList.vue';
-import UserDetails from '../components/userdetails.vue';
+import UserDetails from '../components/UserDetails.vue';
 
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
@@ -69,7 +69,6 @@ export default {
     methods: {
         // This method will always get call by child element to restore current user to the first one
         changeUserToDefault() {
-            //  console.log('CALL CHANGE TO DEFAULT');
             this.user.id = this.usersStore.users[0].id;
             this.user.firstName = this.usersStore.users[0].first_name;
             this.user.lastName = this.usersStore.users[0].last_name;
@@ -90,7 +89,6 @@ export default {
             this.showDetails = true;
             if (this.user.role == 'student') this.getInstructor();
         },
-        turnOffDetailsPopup() {},
         getInstructor() {
             // Get the instructor's user id.
             var instructorId;
@@ -151,6 +149,7 @@ export default {
             class="w-100 img-fluid"
         />
     </div>
+    <!-- Add user button -->
     <div
         v-if="userDetailsStore.role == 'admin'"
         id="first-content-row"
