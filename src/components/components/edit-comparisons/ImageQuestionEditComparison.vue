@@ -11,6 +11,7 @@ export default {
             imageQuestionEdit: {},
             comment: '',
             isEditMode: false,
+            edited: false,
             showHighLight: true,
             showQuestionChange: true,
             showNameChange: true,
@@ -145,9 +146,12 @@ export default {
                     question: this.imageQuestionEdit.question,
                     num_images_required:
                         this.imageQuestionEdit.num_images_required,
-                    edit: this.isEditMode
+                    edit: this.edited
                 })
             };
+
+            console.log('THING TO SEND TO SEVER');
+            console.log(requestOptions);
 
             var url =
                 '/questions/image/' +
@@ -230,11 +234,15 @@ export default {
             }
         },
         applyEditChange() {
-            this.compareEdit();
             this.isEditMode = false;
             this.$parent.disableBtn = false;
-            this.imageQuestionEdit = this.tempImageEdit;
+
+            // Check if user actually edit anything
+            console.log(this.tempImageEdit);
             console.log(this.imageQuestionEdit);
+            this.edited = true;
+            this.imageQuestionEdit = this.tempImageEdit;
+            this.compareEdit();
         },
         cancelEditChange() {
             this.isEditMode = false;

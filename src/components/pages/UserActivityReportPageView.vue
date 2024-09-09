@@ -496,6 +496,14 @@ export default {
     color: #5b7dcc;
 }
 
+.edit-and-approve-action {
+    color: rgb(5, 59, 5);
+}
+
+.approve-action {
+    color: #0e5e53;
+}
+
 .submit_update_for_review {
     color: #71630a;
 }

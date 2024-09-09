@@ -14,6 +14,7 @@ export default {
             tempMcQuestionEdit: {},
             comment: '',
             isEditMode: false,
+            edited: false,
             showHighLight: true,
             // an object to store all flag to indicate content has change or not
             changed: {
@@ -148,7 +149,7 @@ export default {
                     incorrect_answer_4: this.mcQuestionEdit.incorrect_answer_4,
                     correct_answer: this.mcQuestionEdit.correct_answer,
                     explanation: this.mcQuestionEdit.explanation,
-                    edit: this.isEditMode
+                    edit: this.edited
                 })
             };
 
@@ -178,6 +179,7 @@ export default {
         },
         applyMcQuestionChange() {
             this.compareEdit();
+            this.edited = true;
             this.isEditMode = false;
             this.$parent.disableBtn = false;
             this.mcQuestionEdit = this.tempMcQuestionEdit;

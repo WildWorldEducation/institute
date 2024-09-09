@@ -67,6 +67,10 @@ export default {
                     return 'bulk-create-action';
                 case 'submit_update_for_review':
                     return 'submit_update_for_review';
+                case 'approve':
+                    return 'approve-action';
+                case 'edit_and_approve':
+                    return 'edit-and-approve-action';
                 default:
                     return 'delete-action';
             }
