@@ -34,7 +34,8 @@ export default {
             showDetails: false,
             students: [],
             // Flag to decide whether to show the details panel. Will be false if there are no users,
-            showUserInfo: true
+            showUserInfo: true,
+            isLoading: true
         };
     },
     components: {
@@ -43,7 +44,11 @@ export default {
     },
     async created() {
         // Set up the first user in the array to be selected on the page initially.
-        if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
+        if (this.usersStore.users.length < 1) {
+            await this.usersStore.getUsers();
+            // For the loading animation.
+            this.isLoading = false;
+        }
         // Alway refetch for the student instruction list because the edit and add user may change the list
         await this.instructorStudentsStore.getInstructorStudentsList();
 
@@ -189,7 +194,14 @@ export default {
             </svg>
         </router-link>
     </div>
-    <div id="user-container" class="container-fluid">
+    <!-- Loading animation -->
+    <div
+        v-if="isLoading == true"
+        class="loading-animation d-flex justify-content-center align-items-center py-4"
+    >
+        <span class="loader"></span>
+    </div>
+    <div v-else id="user-container" class="container-fluid">
         <div class="row position-relative">
             <div class="col-lg-4 col-md-5">
                 <UsersList @changeUserId="changeUserId($event)" />
@@ -301,5 +313,15 @@ export default {
     .user-form-data-row {
         margin-right: 0px;
     }
+}
+
+/* Loading animation */
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 </style>
