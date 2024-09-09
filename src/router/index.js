@@ -229,7 +229,8 @@ const router = createRouter({
             path: '/users/:userId/activity-report/source/:sourceId',
             name: 'user-activity-report-source',
             component: () =>
-                import('../components/pages/UserActivityReportSourceView.vue')
+                import('../components/pages/UserActivityReportSourceView.vue'),
+            meta: { requiresAuth: true, roles: ['editor', 'admin'] }
         },
         {
             path: '/profile-settings',
