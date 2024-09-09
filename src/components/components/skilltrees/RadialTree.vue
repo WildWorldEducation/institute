@@ -492,45 +492,7 @@ export default {
             this.hiddenCanvasContext.fill();
             this.hiddenCanvasContext.restore();
         },
-        showInfoPanel() {
-            // If panel is not showing.
-            if (!this.isSkillInfoPanelShown) {
-                this.isSkillInfoPanelShown = true;
-                // To display the panel.
-                // Responsive.
-                // Laptop etc.
-                if (screen.width > 800) {
-                    document.getElementById('skillInfoPanel').style.width =
-                        '474px';
-                }
-                // Mobile device.
-                else {
-                    document.getElementById('skillInfoPanel').style.height =
-                        '474px';
-                }
-            }
-        },
-        hideInfoPanel() {
-            // If panel is showing.
-            if (this.isSkillInfoPanelShown) {
-                // Responsive.
-                // Laptop etc.
-                if (screen.width > 800) {
-                    document.getElementById('skillInfoPanel').style.width =
-                        '0px';
-                }
-                // Mobile device.
-                else {
-                    document.getElementById('skillInfoPanel').style.height =
-                        '0px';
-                }
-                // Hide the background.
-                document.getElementById('sidepanel-backdrop').style.display =
-                    'none';
 
-                this.isSkillInfoPanelShown = false;
-            }
-        },
         async printPDF() {
             // Get the data for the print version (different to the digital version).
             await this.getPrintAlgorithm();

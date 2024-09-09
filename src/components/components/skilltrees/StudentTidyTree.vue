@@ -449,27 +449,6 @@ export default {
             var col = 'rgb(' + ret.join(',') + ')';
             return col;
         },
-        hideInfoPanel() {
-            // If panel is showing.
-            if (this.isSkillInfoPanelShown) {
-                // Responsive.
-                // Laptop etc.
-                if (screen.width > 800) {
-                    document.getElementById('skillInfoPanel').style.width =
-                        '0px';
-                }
-                // Mobile device.
-                else {
-                    document.getElementById('skillInfoPanel').style.height =
-                        '0px';
-                }
-                // Hide the background.
-                document.getElementById('sidepanel-backdrop').style.display =
-                    'none';
-
-                this.isSkillInfoPanelShown = false;
-            }
-        },
         async printPDF() {
             // Build the SVG tree.
             await this.createSVGTree();
