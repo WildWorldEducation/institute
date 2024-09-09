@@ -328,6 +328,16 @@ export default {
     animation: rotation 1s linear infinite;
 }
 
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
+
 .loading-animation {
     min-height: 100%;
     position: fixed;
