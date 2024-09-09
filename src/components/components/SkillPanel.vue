@@ -1,11 +1,18 @@
 <script>
+import { useRoute } from 'vue-router';
+
 export default {
     setup() {},
     props: ['skill', 'showSkillPanel'],
     data() {
-        return {};
+        return {
+            treeType: ''
+        };
     },
-    mounted() {},
+    mounted() {
+        const route = useRoute();
+        this.treeType = route.name;
+    },
     computed: {},
     methods: {
         hideInfoPanel() {
@@ -17,7 +24,13 @@ export default {
 
 <template>
     <Transition name="skillPanel">
-        <div v-if="showSkillPanel" class="skill-panel-container">
+        <div
+            v-if="showSkillPanel"
+            :class="[
+                'skill-panel-container',
+                treeType === 'radial-tree' && 'radial-skill-panel'
+            ]"
+        >
             <div class="skill-info-panel-top">
                 <div class="closeButtonContainer">
                     <button
@@ -95,6 +108,10 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.radial-skill-panel {
+    height: 100%;
 }
 
 .skill-info-panel-top {
@@ -213,26 +230,23 @@ export default {
     }
 }
 
-/* Tablets */
-@media (max-width: 987px) {
-    .skill-panel-container {
-        width: 100%;
-        height: calc(100% - 65.6px);
-    }
-}
-
 /* Small devices (portrait phones) */
 @media (max-width: 800px) {
     .skill-panel-container {
         width: 100%;
         height: calc(100% - 137.6px);
     }
+
+    .radial-skill-panel {
+        height: calc(100% - 70.6px);
+    }
 }
 
 /* View Specific On Tablet */
 @media (min-width: 577px) and (max-width: 1020px) {
     .skill-panel-container {
-        width: 55%;
+        width: 80%;
+        height: calc(100% - 65.6px);
     }
 }
 </style>
