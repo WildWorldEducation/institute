@@ -478,8 +478,9 @@ router.post(
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role, is_deleted
-        FROM users;`;
+        let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
+        FROM users
+        WHERE is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {

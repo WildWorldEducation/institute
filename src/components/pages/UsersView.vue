@@ -1,6 +1,6 @@
 <script>
 import UsersList from '../components/UsersList.vue';
-import UserDetails from '../components/userdetails.vue';
+import UserDetails from '../components/UserDetails.vue';
 
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
@@ -64,12 +64,28 @@ export default {
             this.user.username = this.students[0].username;
             this.user.email = this.students[0].email;
             this.user.avatar = this.students[0].avatar;
+        } else if (this.userDetailsStore.role == 'editor') {
+            this.user.id = this.editors[0].id;
+            this.user.firstName = this.editors[0].first_name;
+            this.user.lastName = this.editors[0].last_name;
+            this.user.username = this.editors[0].username;
+            this.user.email = this.editors[0].email;
+            this.user.avatar = this.editors[0].avatar;
+        }
+    },
+    computed: {
+        // List of editors, for all editor accounts to see.
+        editors() {
+            let editors = [];
+            editors = this.usersStore.users.filter(
+                (val) => val.role == 'editor'
+            );
+            return editors;
         }
     },
     methods: {
         // This method will always get call by child element to restore current user to the first one
         changeUserToDefault() {
-            //  console.log('CALL CHANGE TO DEFAULT');
             this.user.id = this.usersStore.users[0].id;
             this.user.firstName = this.usersStore.users[0].first_name;
             this.user.lastName = this.usersStore.users[0].last_name;
@@ -90,7 +106,6 @@ export default {
             this.showDetails = true;
             if (this.user.role == 'student') this.getInstructor();
         },
-        turnOffDetailsPopup() {},
         getInstructor() {
             // Get the instructor's user id.
             var instructorId;
@@ -151,6 +166,7 @@ export default {
             class="w-100 img-fluid"
         />
     </div>
+    <!-- Add user button -->
     <div
         v-if="userDetailsStore.role == 'admin'"
         id="first-content-row"
@@ -185,13 +201,26 @@ export default {
                         v-if="
                             userDetailsStore.role == 'admin' ||
                             (userDetailsStore.role == 'instructor' &&
-                                students.length > 0)
+                                students.length > 0) ||
+                            (userDetailsStore.role == 'editor' &&
+                                editors.length > 0)
                         "
                         :userId="user.id"
                         :userRole="user.role"
                     />
                     <div v-else>
-                        <h1 class="text-muted py-5">You have no students</h1>
+                        <h1
+                            v-if="userDetailsStore.role == 'instructor'"
+                            class="text-muted py-5"
+                        >
+                            You have no students
+                        </h1>
+                        <h1
+                            v-else-if="userDetailsStore.role == 'editor'"
+                            class="text-muted py-5"
+                        >
+                            There are no other editors currently
+                        </h1>
                     </div>
                 </div>
             </div>
