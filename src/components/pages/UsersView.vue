@@ -44,13 +44,23 @@ export default {
     },
     async created() {
         // Set up the first user in the array to be selected on the page initially.
+
         if (this.usersStore.users.length < 1) {
-            await this.usersStore.getUsers();
+            if (
+                this.userDetailsStore.role == 'admin' ||
+                this.userDetailsStore.role == 'instructor'
+            ) {
+                await this.usersStore.getUsers();
+            } else if (this.userDetailsStore.role == 'editor') {
+                await this.usersStore.getEditors();
+            }
             // For the loading animation.
             this.isLoading = false;
         }
-        // Alway refetch for the student instruction list because the edit and add user may change the list
-        await this.instructorStudentsStore.getInstructorStudentsList();
+        if (this.userDetailsStore.role != 'editor') {
+            // Always refresh for the student instruction list because the edit and add user may change the list
+            await this.instructorStudentsStore.getInstructorStudentsList();
+        }
 
         // TODO: May be better refactored using computed proprty for users/students.
         if (this.userDetailsStore.role == 'admin') {
@@ -70,24 +80,15 @@ export default {
             this.user.email = this.students[0].email;
             this.user.avatar = this.students[0].avatar;
         } else if (this.userDetailsStore.role == 'editor') {
-            this.user.id = this.editors[0].id;
-            this.user.firstName = this.editors[0].first_name;
-            this.user.lastName = this.editors[0].last_name;
-            this.user.username = this.editors[0].username;
-            this.user.email = this.editors[0].email;
-            this.user.avatar = this.editors[0].avatar;
+            this.user.id = this.usersStore.editors[0].id;
+            this.user.firstName = this.usersStore.editors[0].first_name;
+            this.user.lastName = this.usersStore.editors[0].last_name;
+            this.user.username = this.usersStore.editors[0].username;
+            this.user.email = this.usersStore.editors[0].email;
+            this.user.avatar = this.usersStore.editors[0].avatar;
         }
     },
-    computed: {
-        // List of editors, for all editor accounts to see.
-        editors() {
-            let editors = [];
-            editors = this.usersStore.users.filter(
-                (val) => val.role == 'editor'
-            );
-            return editors;
-        }
-    },
+    computed: {},
     methods: {
         // This method will always get call by child element to restore current user to the first one
         changeUserToDefault() {
@@ -215,7 +216,7 @@ export default {
                             (userDetailsStore.role == 'instructor' &&
                                 students.length > 0) ||
                             (userDetailsStore.role == 'editor' &&
-                                editors.length > 0)
+                                usersStore.editors.length > 0)
                         "
                         :userId="user.id"
                         :userRole="user.role"

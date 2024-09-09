@@ -92,7 +92,7 @@ export default {
         </RouterLink>
         <div
             v-if="userDetailsStore.role == 'editor'"
-            v-for="editor in $parent.editors"
+            v-for="editor in $parent.usersStore.editors"
         >
             <div class="d-flex">
                 <img
