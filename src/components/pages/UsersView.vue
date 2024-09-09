@@ -45,22 +45,25 @@ export default {
     async created() {
         // Set up the first user in the array to be selected on the page initially.
 
-        if (this.usersStore.users.length < 1) {
-            if (
-                this.userDetailsStore.role == 'admin' ||
-                this.userDetailsStore.role == 'instructor'
-            ) {
+        if (
+            this.userDetailsStore.role == 'admin' ||
+            this.userDetailsStore.role == 'instructor'
+        ) {
+            if (this.usersStore.users.length < 1) {
                 await this.usersStore.getUsers();
-            } else if (this.userDetailsStore.role == 'editor') {
+            }
+        } else if (this.userDetailsStore.role == 'editor') {
+            if (this.usersStore.editors.length < 1) {
                 await this.usersStore.getEditors();
             }
-            // For the loading animation.
-            this.isLoading = false;
         }
+
         if (this.userDetailsStore.role != 'editor') {
             // Always refresh for the student instruction list because the edit and add user may change the list
             await this.instructorStudentsStore.getInstructorStudentsList();
         }
+
+        this.isLoading = false;
 
         // TODO: May be better refactored using computed proprty for users/students.
         if (this.userDetailsStore.role == 'admin') {
