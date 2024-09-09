@@ -290,33 +290,6 @@ export default {
             </div>
             <hr class="mt-5 mb-3" />
         </div>
-
-        <!-- Skills -->
-        <!-- <div class="row">
-            <button type="button" @click="showSkills = !showSkills">
-                <h2>Skills</h2>
-            </button>
-            <div :class="{ 'd-none': !showSkills }">
-                <ul>
-                    <li v-for="skillEdit in skillEdits">
-                        <span v-if="skillEdit.type == 'edit'">Edited </span>
-                        <span v-else-if="skillEdit.type == 'delete'"
-                            >Deleted
-                        </span>
-                        <span v-else-if="skillEdit.type == 'create'"
-                            >Created
-                        </span>
-                        <RouterLink
-                            :to="'/skills/' + skillEdit.skill_id"
-                            target="_blank"
-                        >
-                            {{ skillEdit.skill_name }}
-                        </RouterLink>
-                        , {{ skillEdit.date }}
-                    </li>
-                </ul>
-            </div>
-        </div> -->
     </div>
 </template>
 
