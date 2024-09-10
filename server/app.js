@@ -332,6 +332,8 @@ app.get('/login-status', (req, res) => {
 });
 
 // Log in with username and password.
+// For password decryption.
+const bcrypt = require('bcrypt');
 app.post('/login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Escape single quotes for SQL to accept.
@@ -340,50 +342,49 @@ app.post('/login-attempt', (req, res, next) => {
     if (req.body.password != null)
         req.body.password = req.body.password.replace(/'/g, "\\'");
 
-    // Execute SQL query that'll select the account from the database based on the specified
-    const sqlQuery1 = `SELECT * 
+    // Look for user.
+    const loginQuery = `SELECT id, first_name, last_name, role, password 
                        FROM skill_tree.users 
                        WHERE skill_tree.users.username = '${req.body.username}' 
-                             AND skill_tree.users.password = '${req.body.password}' 
-                             AND skill_tree.users.is_deleted = 0;`;
-    let query1 = conn.query(sqlQuery1, (err, results) => {
+                       AND skill_tree.users.is_deleted = 0;`;
+
+    conn.query(loginQuery, (err, results) => {
         try {
             if (err) {
                 console.log(err);
                 throw err;
             }
-            // Create session object.
-            else if (results.length > 0) {
-                req.session.userId = results[0].id;
-                req.session.userName = req.body.username;
-                req.session.firstName = results[0].first_name;
-                req.session.lastName = results[0].last_name;
-                //req.session.skillTreeTheme = results[0].skilltree_theme;
-                req.session.role = results[0].role;
-                res.json({ account: 'authorized', role: req.session.role });
-            } else {
-                // If both the username and password are not correct, check if the account exists.
-                let sqlQuery2 =
-                    "SELECT * FROM users WHERE users.username = '" +
-                    req.body.username +
-                    "';";
-                let query2 = conn.query(sqlQuery2, (err, results) => {
-                    try {
+
+            // If username is found in DB.
+            if (results.length > 0) {
+                // Check password.
+                bcrypt.compare(
+                    req.body.password,
+                    results[0].password,
+                    (err, response) => {
                         if (err) {
-                            throw err;
                         }
-                        // Tell user their password is incorrect.
-                        else if (results.length > 0) {
-                            res.json({ account: 'wrong-password' });
+                        // If password matches.
+                        if (response) {
+                            // Populate user session data.
+                            req.session.userId = results[0].id;
+                            req.session.userName = req.body.username;
+                            req.session.firstName = results[0].first_name;
+                            req.session.lastName = results[0].last_name;
+                            req.session.role = results[0].role;
+                            // Send response to front end.
+                            return res.json({
+                                account: 'authorized',
+                                role: req.session.role
+                            });
                         }
-                        // If neither the username or password are correct, let user know.
-                        else {
-                            res.json({ account: 'no-account' });
-                        }
-                    } catch (err) {
-                        next(err);
+
+                        // If password doesnt match.
+                        return res.json({ account: 'wrong-password' });
                     }
-                });
+                );
+            } else {
+                return res.json({ account: 'no-account' });
             }
         } catch (err) {
             next(err);
