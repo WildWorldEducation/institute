@@ -1,11 +1,14 @@
 <script>
+// import store
+import { useSettingsStore } from '../../../../stores/SettingsStore';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
 export default {
     setup() {
+        const settingStore = useSettingsStore();
         return {
-            isLoading: true
+            settingStore
         };
     },
     data() {
@@ -21,14 +24,43 @@ export default {
                 { text: 'User', value: 'userName' },
                 { text: 'Skill Name', value: 'name' },
                 { text: 'Comment', value: 'comment' }
-            ]
+            ],
+            dataTableRef: null,
+            isLoading: true
         };
     },
     components: {
         Vue3EasyDataTable
     },
     props: ['skillsEditList', 'skillEditsLoading'],
-    async created() {},
+    async mounted() {
+        this.dataTableRef = this.$refs.dataTable;
+        this.isLoading = true;
+        // fetch setting data if we dont have pagination data yet
+        if (
+            this.settingStore.todoContentFlagTableRows === 0 ||
+            this.settingStore.todoEssayQuestionTableRows === 0 ||
+            this.settingStore.todoImageQuestionTableRows === 0 ||
+            this.settingStore.todoImageQuestionTableRows === 0 ||
+            this.settingStore.todoMcQuestionTableRows === 0 ||
+            this.settingStore.todoSkillTableRows === 0
+        ) {
+            await this.settingStore.getSettings();
+            this.dataTableRef.updateRowsPerPageActiveOption(
+                parseInt(this.settingStore.todoSkillTableRows)
+            );
+            this.isLoading = false;
+        } else {
+            this.isLoading = false;
+        }
+    },
+    computed: {
+        rowsPerPage() {
+            console.log('ROW CHANGE: ');
+            console.log(this.dataTableRef?.rowsPerPageActiveOption);
+            return this.dataTableRef?.rowsPerPageActiveOption;
+        }
+    },
     methods: {
         goToComparePage(item) {
             this.$router.push(
@@ -71,6 +103,7 @@ export default {
     <div class="mt-3 pt-4 table-div h-100">
         <!-- Desktop table -->
         <Vue3EasyDataTable
+            ref="dataTable"
             :headers="headers"
             :items="skillsEditList"
             alternating
@@ -94,6 +127,8 @@ export default {
                 >
             </template>
         </Vue3EasyDataTable>
+        <!-- an ugly hack to watch row per page change   -->
+        <div class="d-none">{{ rowsPerPage }}</div>
         <!-- Mobile table -->
         <Vue3EasyDataTable
             :headers="mobileHeaders"

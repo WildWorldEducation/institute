@@ -8,10 +8,12 @@ import ImageQuestionEditsList from './ImageQuestionEditsList.vue';
 export default {
     setup() {
         const usersStore = useUsersStore();
+
         return {
             usersStore
         };
     },
+    props: ['settingStore'],
     data() {
         return {
             skillEdits: [],
@@ -268,6 +270,7 @@ export default {
                 <SkillEditsList
                     :skillsEditList="skillEdits"
                     :skillEditsLoading="skillEditsLoading"
+                    :settingStore="settingStore"
                 />
             </div>
             <!-- MC question edits list -->
@@ -275,6 +278,7 @@ export default {
                 <McQuestionsEditList
                     :mcQuestionList="mcQuestionEdits"
                     :mcQuestionEditsLoading="mcQuestionEditsLoading"
+                    :settingStore="settingStore"
                 />
             </div>
             <!-- Essay question edits list -->
@@ -282,6 +286,7 @@ export default {
                 <WrittenQuestionEditsList
                     :writtenEditsList="essayQuestionEdits"
                     :essayQuestionEditsLoading="essayQuestionEditsLoading"
+                    :settingStore="settingStore"
                 />
             </div>
             <!-- Image question edits list -->
@@ -289,6 +294,7 @@ export default {
                 <ImageQuestionEditsList
                     :imageQuestionEditsList="imageQuestionEdits"
                     :imageQuestionEditsLoading="imageQuestionEditsLoading"
+                    :settingStore="settingStore"
                 />
             </div>
         </div>

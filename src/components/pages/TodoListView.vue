@@ -1,11 +1,17 @@
 <script>
 import PageNav from '../components/todo/PageNav.vue';
+// import store
+import { useSettingsStore } from '../../stores/SettingsStore';
+// import child component
 import CheckStudentQuestions from '../components/todo/student-question/CheckStudentQuestions.vue';
 import ContentEditsList from '../components/todo/content-edit/ContentEditsList.vue';
 import ContentFlagsView from './ContentFlagsView.vue';
 
 export default {
-    setup() {},
+    setup() {
+        const settingStore = useSettingsStore();
+        return { settingStore };
+    },
     data() {
         return {
             activeContent: 'editList'
@@ -20,6 +26,20 @@ export default {
     },
     computed: {},
     async mounted() {
+        // fetch setting data if we dont have pagination data yet
+        if (
+            this.settingStore.todoContentFlagTableRows === 0 ||
+            this.settingStore.todoEssayQuestionTableRows === 0 ||
+            this.settingStore.todoImageQuestionTableRows === 0 ||
+            this.settingStore.todoImageQuestionTableRows === 0 ||
+            this.settingStore.todoMcQuestionTableRows === 0 ||
+            this.settingStore.todoSkillTableRows === 0
+        ) {
+            await this.settingStore.getSettings();
+        }
+        // Get Setting state and fetch one if there are none
+        console.log('Setting data Here');
+        console.log(this.settingStore.todoContentFlagTableRows);
         // Get navigation state from URL
         const nav = this.$route.query.nav;
         if (nav) {
