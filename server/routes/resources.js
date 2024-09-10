@@ -881,7 +881,6 @@ router.get('/list-whitelisted-domains', (req, res, next) => {
  * Unblock Blocked Root Domain
  */
 router.delete('/remove-domain-from-whitelist/:domainId', (req, res, next) => {
-    console.log('test');
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
