@@ -622,7 +622,7 @@ async function hashPasswords(index) {
     });
 }
 
-hashPasswords(index);
+//hashPasswords(index);
 
 const environment = process.env.NODE_ENV;
 
