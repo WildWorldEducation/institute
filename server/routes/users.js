@@ -25,6 +25,10 @@ Routes
 // For password encryption.
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+
+// For primary keys for users table.
+const { v7: uuidv7 } = require('uuid');
+
 /*
  * Student Self Sign Up
  */
@@ -111,6 +115,9 @@ router.post('/new-student/add', (req, res, next) => {
                                         /\\/g,
                                         ''
                                     );
+                                    // Set the primary key.
+                                    data.id = uuidv7();
+
                                     // If not, add to database.
                                     let sqlQuery3 = 'INSERT INTO users SET ?';
                                     conn.query(
