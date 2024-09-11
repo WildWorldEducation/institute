@@ -439,25 +439,14 @@ app.get('/settings', (req, res, next) => {
 // Edit app settings.
 app.put('/settings/edit', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
-        UPDATE settings 
-        SET skill_degradation_days = ` +
-            req.body.skill_degradation_days +
-            `, quiz_max_questions = ` +
-            req.body.quiz_max_questions +
-            `, is_manual_essay_marking = ` +
-            req.body.is_manual_essay_marking +
-            `, pass_mark = ` +
-            req.body.pass_mark +
-            `;`;
-
-        conn.query(sqlQuery, (err, results) => {
+        let sqlQuery = `UPDATE settings SET ? WHERE id = 1`
+        const data = req.body;
+        console.log(data)
+        conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-
                 res.end();
             } catch (err) {
                 next(err);
@@ -515,15 +504,15 @@ app.get('/sitemap.xml', (req, res) => {
 
         // Create the XML structure
         let sitemap = xmlbuilder.create('urlset', { encoding: 'UTF-8' })
-                                .att('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+            .att('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
         // Add URLs to the sitemap
         routes.forEach(route => {
             sitemap.ele('url')
-               .ele('loc', `${rootUrl}${route.path}`).up()  // Ensured no extra slash added
-               .ele('lastmod', today).up()
-               .ele('changefreq', 'weekly').up()
-               .ele('priority', route.priority).up();  // Use route.priority as a number
+                .ele('loc', `${rootUrl}${route.path}`).up()  // Ensured no extra slash added
+                .ele('lastmod', today).up()
+                .ele('changefreq', 'weekly').up()
+                .ele('priority', route.priority).up();  // Use route.priority as a number
         });
 
         // Send the XML sitemap as the response

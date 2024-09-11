@@ -55,9 +55,10 @@ export default {
         }
     },
     computed: {
-        rowsPerPage() {
-            console.log('ROW CHANGE: ');
-            console.log(this.dataTableRef?.rowsPerPageActiveOption);
+        async rowsPerPage() {
+            this.settingStore.todoSkillTableRows =
+                this.dataTableRef?.rowsPerPageActiveOption;
+            await this.settingStore.saveSettings();
             return this.dataTableRef?.rowsPerPageActiveOption;
         }
     },
