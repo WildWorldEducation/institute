@@ -357,6 +357,9 @@ app.post('/login-attempt', (req, res, next) => {
 
             // If username is found in DB.
             if (results.length > 0) {
+
+
+                
                 // Check password.
                 bcrypt.compare(
                     req.body.password,

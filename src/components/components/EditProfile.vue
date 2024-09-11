@@ -31,7 +31,7 @@ export default {
             image: this.userDetailsStore.avatar,
             firstName: this.userDetailsStore.firstName,
             lastName: this.userDetailsStore.lastName,
-            instructorID: this.userDetailsStore.instructor.id || '',
+            instructorID: this.userDetailsStore.instructorId,
             // get current instructor username for custom dropdown
             instructorName: this.userDetailsStore.instructorUsername,
             validate: {
