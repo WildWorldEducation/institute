@@ -26,7 +26,9 @@ export default {
                 { text: 'Comment', value: 'comment' }
             ],
             dataTableRef: null,
-            isLoading: true
+            isLoading: true,
+            // make sure the table is mounted so we can compute the rows per page in peace
+            isMounted: false
         };
     },
     components: {
@@ -46,19 +48,29 @@ export default {
             this.settingStore.todoSkillTableRows === 0
         ) {
             await this.settingStore.getSettings();
-            this.dataTableRef.updateRowsPerPageActiveOption(
-                parseInt(this.settingStore.todoSkillTableRows)
-            );
             this.isLoading = false;
         } else {
             this.isLoading = false;
         }
+        this.dataTableRef.updateRowsPerPageActiveOption(
+            parseInt(this.settingStore.todoSkillTableRows)
+        );
+        // tell the compute function that we are ready to listen to rows per page change
+        this.isMounted = true;
     },
     computed: {
         async rowsPerPage() {
-            this.settingStore.todoSkillTableRows =
-                this.dataTableRef?.rowsPerPageActiveOption;
-            await this.settingStore.saveSettings();
+            //await this.settingStore.saveSettings();
+            if (this.isMounted) {
+                if (
+                    this.settingStore.todoSkillTableRows !==
+                    this.dataTableRef?.rowsPerPageActiveOption
+                ) {
+                    this.settingStore.todoSkillTableRows =
+                        this.dataTableRef?.rowsPerPageActiveOption;
+                }
+                this.settingStore.saveSettings();
+            }
             return this.dataTableRef?.rowsPerPageActiveOption;
         }
     },
