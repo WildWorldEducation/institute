@@ -29,9 +29,9 @@ router.get('/:id', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = ` +
+    WHERE user_skills.user_id = '` +
             req.params.id +
-            ` AND is_filtered = 'available' AND is_deleted = 0
+            `' AND is_filtered = 'available' AND is_deleted = 0
 
     UNION
     SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id
@@ -42,9 +42,9 @@ router.get('/:id', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id =` +
+    WHERE user_skills.user_id ='` +
             req.params.id +
-            `) AND is_filtered = 'available' AND is_deleted = 0
+            `') AND is_filtered = 'available' AND is_deleted = 0
     ORDER BY skillorder, id;`;
 
         let query = conn.query(sqlQuery, (err, results) => {
@@ -119,9 +119,9 @@ router.get('/separate-subskills/:id', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = ` +
+    WHERE user_skills.user_id = '` +
             req.params.id +
-            ` AND is_filtered = 'available'
+            `' AND is_filtered = 'available'
 
     UNION
     SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name
@@ -132,9 +132,9 @@ router.get('/separate-subskills/:id', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id =` +
+    WHERE user_skills.user_id ='` +
             req.params.id +
-            `) AND is_filtered = 'available'
+            `') AND is_filtered = 'available'
     ORDER BY skillorder, id;`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -260,9 +260,9 @@ router.get('/unnested-list/:id', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = ` +
+    WHERE user_skills.user_id = '` +
             req.params.id +
-            `
+            `'
 
     UNION
     SELECT skills.id, name, "", "", type
@@ -273,12 +273,12 @@ router.get('/unnested-list/:id', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id =` +
+    WHERE user_skills.user_id ='` +
             req.params.id +
-            `)
+            `')
     ORDER BY id;`;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;

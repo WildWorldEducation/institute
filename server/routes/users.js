@@ -128,8 +128,7 @@ router.post('/new-student/add', (req, res, next) => {
                                                 if (err) {
                                                     throw err;
                                                 } else {
-                                                    let newStudentId =
-                                                        results.insertId;
+                                                    let newStudentId = data.id;
                                                     // Create session to log the user in.
                                                     req.session.userId =
                                                         newStudentId;
@@ -559,7 +558,7 @@ router.get('/show/:id', (req, res, next) => {
         let sqlQuery = `
     SELECT id, first_name, last_name, username, avatar, email, role, is_deleted             
     FROM users        
-    WHERE id = ${req.params.id} AND is_deleted = 0
+    WHERE id = '${req.params.id}' AND is_deleted = 0
     LIMIT 1`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -587,7 +586,7 @@ router.get('/instructor/:studentId', (req, res, next) => {
     FROM users
     LEFT JOIN instructor_students 
     ON users.id = instructor_students.instructor_id
-    WHERE instructor_students.student_id = ${req.params.studentId};`;
+    WHERE instructor_students.student_id = '${req.params.studentId}';`;
 
         conn.query(sqlQuery, (err, results) => {
             try {

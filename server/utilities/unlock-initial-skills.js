@@ -44,7 +44,7 @@ function unlockInitialSkills(userId) {
                     `, is_accessible=1;
                                 `;
                 //
-                let query = conn.query(sqlQuery, (err, results) => {
+                conn.query(sqlQuery, (err, results) => {
                     try {
                         if (err) {
                             throw err;

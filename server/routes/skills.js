@@ -220,7 +220,8 @@ router.post(
 router.get('/list', (req, res, next) => {
     // Route is accessible for guest users.
     res.setHeader('Content-Type', 'application/json');
-    let sqlQuery = "SELECT id, name, parent, type, level FROM skills WHERE skills.is_deleted = 0";
+    let sqlQuery =
+        'SELECT id, name, parent, type, level FROM skills WHERE skills.is_deleted = 0';
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -453,13 +454,13 @@ router.get('/last-visited', (req, res, next) => {
             SELECT skills.id, name
             FROM user_visited_skills
             INNER JOIN skills ON skills.id = user_visited_skills.skill_id
-            WHERE user_id = ${req.session.userId}
+            WHERE user_id = '${req.session.userId}'
             AND skills.is_deleted = 0
             ORDER BY visited_at DESC
             LIMIT 5;
         `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
