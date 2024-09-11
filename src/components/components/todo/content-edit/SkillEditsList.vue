@@ -37,6 +37,7 @@ export default {
     props: ['skillsEditList', 'skillEditsLoading'],
     async mounted() {
         this.dataTableRef = this.$refs.dataTable;
+        this.dataTableRefM = this.$refs.dataTableM;
         this.isLoading = true;
         // fetch setting data if we dont have pagination data yet
         if (
@@ -55,6 +56,9 @@ export default {
         this.dataTableRef.updateRowsPerPageActiveOption(
             parseInt(this.settingStore.todoSkillTableRows)
         );
+        this.dataTableRefM.updateRowsPerPageActiveOption(
+            parseInt(this.settingStore.todoSkillTableRows)
+        );
         // tell the compute function that we are ready to listen to rows per page change
         this.isMounted = true;
     },
@@ -68,6 +72,21 @@ export default {
                 ) {
                     this.settingStore.todoSkillTableRows =
                         this.dataTableRef?.rowsPerPageActiveOption;
+                }
+                this.settingStore.saveSettings();
+            }
+            return this.dataTableRef?.rowsPerPageActiveOption;
+        },
+        async rowsPerPageM() {
+            //await this.settingStore.saveSettings();
+            if (this.isMounted) {
+                if (
+                    this.settingStore.todoSkillTableRows !==
+                    this.dataTableRefM?.rowsPerPageActiveOption
+                ) {
+                    console.log('MOBILE CALL');
+                    this.settingStore.todoSkillTableRows =
+                        this.dataTableRefM?.rowsPerPageActiveOption;
                 }
                 this.settingStore.saveSettings();
             }
@@ -144,6 +163,7 @@ export default {
         <div class="d-none">{{ rowsPerPage }}</div>
         <!-- Mobile table -->
         <Vue3EasyDataTable
+            ref="dataTableM"
             :headers="mobileHeaders"
             :items="skillsEditList"
             alternating
