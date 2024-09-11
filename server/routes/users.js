@@ -555,38 +555,47 @@ router.get('/instructors/list', (req, res, next) => {
 router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        // Select user and their instructor (if they have one).
+        // Select user.
         let sqlQuery = `
-    SELECT users.id, users.first_name, users.last_name, users.username, users.avatar, users.email, users.role, users.is_deleted, 
-            instructor.username AS instructor_username,
-            instructor.id AS instructor_id,
-            instructor.first_name AS instructor_first_name,
-            instructor.last_name AS instructor_last_name
-        FROM 
-            users
-        LEFT JOIN 
-            instructor_students ON users.id = instructor_students.student_id
-        LEFT JOIN 
-            users AS instructor ON instructor.id = instructor_students.instructor_id
-        WHERE 
-            skill_tree.users.id = ${req.params.id} AND users.is_deleted = 0
-        LIMIT 1`;
+    SELECT id, first_name, last_name, username, avatar, email, role, is_deleted             
+    FROM users        
+    WHERE id = ${req.params.id} AND is_deleted = 0
+    LIMIT 1`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-                let data = {
-                    ...results[0],
-                    instructor: {
-                        id: results[0].instructor_id,
-                        first_name: results[0].instructor_first_name,
-                        last_name: results[0].instructor_last_name,
-                        username: results[0].instructor_username
-                    }
-                };
-                res.json(data);
+                res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+// Instructor for one specific student.
+router.get('/instructor/:studentId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        // Select user.
+        let sqlQuery = `
+    SELECT users.id, username, first_name, last_name
+    FROM users
+    LEFT JOIN instructor_students 
+    ON users.id = instructor_students.instructor_id
+    WHERE instructor_students.student_id = ${req.params.studentId};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
             } catch (err) {
                 next(err);
             }
