@@ -10,6 +10,7 @@ export const useSettingsStore = defineStore('settings', {
         todoMcQuestionTableRows: 0,
         todoEssayQuestionTableRows: 0,
         todoImageQuestionTableRows: 0,
+        todoStudentQuestionTableRows: 0,
         todoContentFlagTableRows: 0,
     }),
     actions: {
@@ -25,6 +26,7 @@ export const useSettingsStore = defineStore('settings', {
             this.todoEssayQuestionTableRows = data[0].todo_essay_question_table_rows;
             this.todoImageQuestionTableRows = data[0].todo_image_question_table_rows;
             this.todoContentFlagTableRows = data[0].todo_content_flag_table_rows;
+            this.todoStudentQuestionTableRows = data[0].todo_student_question_table_rows;
         },
 
         async saveSettings() {
@@ -41,7 +43,8 @@ export const useSettingsStore = defineStore('settings', {
                         todo_mc_question_table_rows: this.todoMcQuestionTableRows,
                         todo_essay_question_table_rows: this.todoEssayQuestionTableRows,
                         todo_image_question_table_rows: this.todoImageQuestionTableRows,
-                        todo_content_flag_table_rows: this.todoContentFlagTableRows
+                        todo_content_flag_table_rows: this.todoContentFlagTableRows,
+                        todo_student_question_table_rows: this.todoStudentQuestionTableRows,
                     }
                 )
             };

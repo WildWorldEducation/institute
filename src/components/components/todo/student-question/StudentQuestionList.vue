@@ -1,10 +1,13 @@
 <script>
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
-
+import { useSettingsStore } from '../../../../stores/SettingsStore';
 export default {
     setup() {
-        return {};
+        const settingStore = useSettingsStore();
+        return {
+            settingStore
+        };
     },
     data() {
         return {
@@ -18,7 +21,14 @@ export default {
                 { text: 'User', value: 'userName' },
                 { text: 'Question', value: 'question' },
                 { text: 'Comment', value: 'comment' }
-            ]
+            ],
+            dataTableRef: null,
+            dataTableRefM: null,
+            isLoading: true,
+            // make sure the table is mounted so we can compute the rows per page in peace
+            isMounted: false,
+            // we need this to determine if the web is in mobile mode
+            windowWidth: Infinity
         };
     },
     components: {
@@ -26,7 +36,32 @@ export default {
     },
     props: ['studentQuestion', 'loadingQuestion'],
     async mounted() {
-        console.log(this.studentQuestion);
+        this.dataTableRef = this.$refs.dataTable;
+        this.dataTableRefM = this.$refs.dataTableM;
+        this.isLoading = true;
+        // fetch setting data if we dont have pagination data yet
+        if (
+            this.settingStore.todoContentFlagTableRows === 0 ||
+            this.settingStore.todoEssayQuestionTableRows === 0 ||
+            this.settingStore.todoImageQuestionTableRows === 0 ||
+            this.settingStore.todoStudentQuestionTableRows === 0 ||
+            this.settingStore.todoMcQuestionTableRows === 0 ||
+            this.settingStore.todoSkillTableRows === 0
+        ) {
+            await this.settingStore.getSettings();
+            this.isLoading = false;
+        } else {
+            this.isLoading = false;
+        }
+        this.dataTableRef.updateRowsPerPageActiveOption(
+            parseInt(this.settingStore.todoStudentQuestionTableRows)
+        );
+        this.dataTableRefM.updateRowsPerPageActiveOption(
+            parseInt(this.settingStore.todoStudentQuestionTableRows)
+        );
+        // tell the compute function that we are ready to listen to rows per page change
+        this.isMounted = true;
+        this.windowWidth = window.innerWidth;
     },
     methods: {
         goToComparePage(item) {
@@ -60,6 +95,34 @@ export default {
             finalDate = finalDate.toLocaleDateString('en-US', options);
             return finalDate;
         }
+    },
+    computed: {
+        rowsPerPage() {
+            if (this.isMounted) {
+                if (
+                    parseInt(this.settingStore.todoStudentQuestionTableRows) !==
+                    parseInt(this.dataTableRef?.rowsPerPageActiveOption)
+                ) {
+                    this.settingStore.todoStudentQuestionTableRows =
+                        this.dataTableRef?.rowsPerPageActiveOption;
+                    this.settingStore.saveSettings();
+                }
+            }
+            return this.dataTableRef?.rowsPerPageActiveOption;
+        },
+        rowsPerPageM() {
+            if (this.isMounted && parseInt(this.windowWidth) <= 575) {
+                if (
+                    parseInt(this.settingStore.todoStudentQuestionTableRows) !==
+                    parseInt(this.dataTableRefM?.rowsPerPageActiveOption)
+                ) {
+                    this.settingStore.todoStudentQuestionTableRows =
+                        this.dataTableRefM?.rowsPerPageActiveOption;
+                    this.settingStore.saveSettings();
+                }
+            }
+            return this.dataTableRef?.rowsPerPageActiveOption;
+        }
     }
 };
 </script>
@@ -68,6 +131,7 @@ export default {
     <div class="mt-3 table-div h-100">
         <!-- Desktop table -->
         <Vue3EasyDataTable
+            ref="dataTable"
             :headers="headers"
             :items="studentQuestion"
             alternating
@@ -99,6 +163,7 @@ export default {
         </Vue3EasyDataTable>
         <!-- Mobile table -->
         <Vue3EasyDataTable
+            ref="dataTableM"
             :headers="mobileHeaders"
             :items="studentQuestion"
             alternating
@@ -114,6 +179,7 @@ export default {
                 <img src="/images/loading.gif" alt="loading data" />
             </template>
         </Vue3EasyDataTable>
+        <div class="d-none">{{ rowsPerPage }} {{ rowsPerPageM }}</div>
     </div>
 </template>
 
