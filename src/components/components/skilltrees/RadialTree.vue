@@ -480,10 +480,10 @@ export default {
                 this.width,
                 this.height
             );
-            this.context.translate(transform.x, transform.y);
+            this.context.translate(transform.x - this.width/2, transform.y - this.height/2);
             this.context.scale(transform.k, transform.k);
 
-            this.hiddenCanvasContext.translate(transform.x, transform.y);
+            this.hiddenCanvasContext.translate(transform.x - this.width/2, transform.y - this.height/2);
             this.hiddenCanvasContext.scale(transform.k, transform.k);
 
             this.drawTree();
@@ -769,7 +769,7 @@ export default {
                 .duration(300)
                 .call(
                     this.d3Zoom.transform,
-                    d3.zoomIdentity.translate(0, 0).scale(0.08)
+                    d3.zoomIdentity.translate(this.width / 2, this.height / 2).scale(0.08)
                 );
         }
     }
