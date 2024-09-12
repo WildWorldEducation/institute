@@ -30,7 +30,9 @@ export default {
             dataTableRefM: null,
             isLoading: true,
             // make sure the table is mounted so we can compute the rows per page in peace
-            isMounted: false
+            isMounted: false,
+            // we need this to determine if the web is in mobile mode
+            windowWidth: Infinity
         };
     },
     components: {
@@ -63,6 +65,7 @@ export default {
         );
         // tell the compute function that we are ready to listen to rows per page change
         this.isMounted = true;
+        this.windowWidth = window.innerWidth;
     },
     methods: {
         goToComparePage(item) {
@@ -72,33 +75,33 @@ export default {
         }
     },
     computed: {
-        async rowsPerPage() {
+        rowsPerPage() {
             if (this.isMounted) {
-                console.log('MC QUESTION REF: ');
-                console.log(this.dataTableRef?.rowsPerPageActiveOption);
                 if (
-                    this.settingStore.todoMcQuestionTableRows !==
-                    this.dataTableRef?.rowsPerPageActiveOption
+                    parseInt(this.settingStore.todoMcQuestionTableRows) !==
+                    parseInt(this.dataTableRef?.rowsPerPageActiveOption)
                 ) {
                     this.settingStore.todoMcQuestionTableRows =
                         this.dataTableRef?.rowsPerPageActiveOption;
+                    this.settingStore.saveSettings();
                 }
-                await this.settingStore.saveSettings();
             }
             return this.dataTableRef?.rowsPerPageActiveOption;
         },
-        async rowsPerPageM() {
-            if (this.isMounted) {
+        rowsPerPageM() {
+            if (this.isMounted && parseInt(this.windowWidth) <= 575) {
                 if (
-                    this.settingStore.todoMcQuestionTableRows !==
-                    this.dataTableRefM?.rowsPerPageActiveOption
+                    parseInt(this.settingStore.todoMcQuestionTableRows) !==
+                    parseInt(this.dataTableRefM?.rowsPerPageActiveOption)
                 ) {
+                    console.log('MOBILE CALL');
+                    console.log(this.settingStore.todoMcQuestionTableRows);
                     this.settingStore.todoMcQuestionTableRows =
                         this.dataTableRefM?.rowsPerPageActiveOption;
+                    this.settingStore.saveSettings();
                 }
-                await this.settingStore.saveSettings();
             }
-            return this.dataTableRefM?.rowsPerPageActiveOption;
+            return this.dataTableRef?.rowsPerPageActiveOption;
         }
     }
 };
@@ -133,10 +136,10 @@ export default {
                 >
             </template>
         </Vue3EasyDataTable>
-        <!-- <div class="d-none">
+        <div class="d-none">
             {{ rowsPerPage }}
             {{ rowsPerPageM }}
-        </div> -->
+        </div>
         <!-- Mobile Table -->
         <Vue3EasyDataTable
             ref="dataTableMCM"
