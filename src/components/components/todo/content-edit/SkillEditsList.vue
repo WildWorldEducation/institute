@@ -28,7 +28,9 @@ export default {
             dataTableRef: null,
             isLoading: true,
             // make sure the table is mounted so we can compute the rows per page in peace
-            isMounted: false
+            isMounted: false,
+            // we need this to determine if the web is in mobile mode
+            windowWidth: Infinity
         };
     },
     components: {
@@ -61,34 +63,34 @@ export default {
         );
         // tell the compute function that we are ready to listen to rows per page change
         this.isMounted = true;
+        this.windowWidth = window.innerWidth;
     },
     computed: {
-        async rowsPerPage() {
-            //await this.settingStore.saveSettings();
+        rowsPerPage() {
             if (this.isMounted) {
                 if (
-                    this.settingStore.todoSkillTableRows !==
-                    this.dataTableRef?.rowsPerPageActiveOption
+                    parseInt(this.settingStore.todoSkillTableRows) !==
+                    parseInt(this.dataTableRef?.rowsPerPageActiveOption)
                 ) {
                     this.settingStore.todoSkillTableRows =
                         this.dataTableRef?.rowsPerPageActiveOption;
+                    this.settingStore.saveSettings();
                 }
-                this.settingStore.saveSettings();
             }
             return this.dataTableRef?.rowsPerPageActiveOption;
         },
-        async rowsPerPageM() {
-            //await this.settingStore.saveSettings();
-            if (this.isMounted) {
+        rowsPerPageM() {
+            if (this.isMounted && parseInt(this.windowWidth) <= 575) {
                 if (
-                    this.settingStore.todoSkillTableRows !==
-                    this.dataTableRefM?.rowsPerPageActiveOption
+                    parseInt(this.settingStore.todoSkillTableRows) !==
+                    parseInt(this.dataTableRefM?.rowsPerPageActiveOption)
                 ) {
                     console.log('MOBILE CALL');
+                    console.log(this.settingStore.todoSkillTableRows);
                     this.settingStore.todoSkillTableRows =
                         this.dataTableRefM?.rowsPerPageActiveOption;
+                    this.settingStore.saveSettings();
                 }
-                this.settingStore.saveSettings();
             }
             return this.dataTableRef?.rowsPerPageActiveOption;
         }
@@ -160,8 +162,9 @@ export default {
             </template>
         </Vue3EasyDataTable>
         <!-- an ugly hack to watch row per page change   -->
-        <div class="d-none">{{ rowsPerPage }}</div>
+        <div class="d-none">{{ rowsPerPage }} {{ rowsPerPageM }}</div>
         <!-- Mobile table -->
+
         <Vue3EasyDataTable
             ref="dataTableM"
             :headers="mobileHeaders"
