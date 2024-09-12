@@ -18,9 +18,9 @@ export default {
                 { text: 'Date', value: 'date' }
             ],
             mobileHeaders: [
-                { text: 'User', value: 'userName' },
+                { text: 'Student', value: 'studentName' },
                 { text: 'Question', value: 'question' },
-                { text: 'Comment', value: 'comment' }
+                { text: 'Date', value: 'date' }
             ],
             dataTableRef: null,
             dataTableRefM: null,
@@ -36,6 +36,7 @@ export default {
     },
     props: ['studentQuestion', 'loadingQuestion'],
     async mounted() {
+        console.log(this.studentQuestion);
         this.dataTableRef = this.$refs.dataTable;
         this.dataTableRefM = this.$refs.dataTableM;
         this.isLoading = true;
@@ -178,6 +179,12 @@ export default {
             <template #loading>
                 <img src="/images/loading.gif" alt="loading data" />
             </template>
+            <!-- Format date -->
+            <template #item-date="{ create_date }">
+                <div>
+                    {{ formatDate(create_date) }}
+                </div>
+            </template>
         </Vue3EasyDataTable>
         <div class="d-none">{{ rowsPerPage }} {{ rowsPerPageM }}</div>
     </div>
@@ -213,5 +220,11 @@ export default {
     border-color: #4523be !important;
     border-radius: 5px;
     outline: none;
+}
+
+@media (max-width: 801px) {
+    .table-div {
+        padding: 0px;
+    }
 }
 </style>
