@@ -85,8 +85,6 @@ export default {
                     parseInt(this.settingStore.todoSkillTableRows) !==
                     parseInt(this.dataTableRefM?.rowsPerPageActiveOption)
                 ) {
-                    console.log('MOBILE CALL');
-                    console.log(this.settingStore.todoSkillTableRows);
                     this.settingStore.todoSkillTableRows =
                         this.dataTableRefM?.rowsPerPageActiveOption;
                     this.settingStore.saveSettings();
