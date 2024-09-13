@@ -761,6 +761,38 @@ router.put(
             req.body.username = req.body.username.replace(/'/g, "\\'");
         if (req.body.email != null)
             req.body.email = req.body.email.replace(/'/g, "\\'");
+
+        let sqlQuery =
+            'UPDATE users SET username="' +
+            req.body.username +
+            '", avatar ="' +
+            req.body.avatar +
+            '" ,first_name ="' +
+            req.body.firstName +
+            '", last_name="' +
+            req.body.lastName +
+            '",email="' +
+            req.body.email +
+            '" WHERE id=' +
+            req.params.id;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+router.put(
+    '/profile/:id/edit-password',
+    isAuthenticated,
+    editUserPermission,
+    (req, res, next) => {
         if (req.body.password != null)
             req.body.password = req.body.password.replace(/'/g, "\\'");
 
@@ -775,17 +807,7 @@ router.put(
 
                 // Add data.
                 let sqlQuery =
-                    'UPDATE users SET username="' +
-                    req.body.username +
-                    '", avatar ="' +
-                    req.body.avatar +
-                    '" ,first_name ="' +
-                    req.body.firstName +
-                    '", last_name="' +
-                    req.body.lastName +
-                    '",email="' +
-                    req.body.email +
-                    '", password="' +
+                    'UPDATE users SET password="' +
                     hashedPassword +
                     '" WHERE id=' +
                     req.params.id;
