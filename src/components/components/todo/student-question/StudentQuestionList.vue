@@ -36,7 +36,6 @@ export default {
     },
     props: ['studentQuestion', 'loadingQuestion'],
     async mounted() {
-        console.log(this.studentQuestion);
         this.dataTableRef = this.$refs.dataTable;
         this.dataTableRefM = this.$refs.dataTableM;
         this.isLoading = true;

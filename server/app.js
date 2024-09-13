@@ -441,7 +441,6 @@ app.put('/settings/edit', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `UPDATE settings SET ? WHERE id = 1`
         const data = req.body;
-        console.log(data)
         conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {

@@ -615,6 +615,7 @@ router.get('/mc/submitted-for-review/list', (req, res, next) => {
             ON mc_questions_awaiting_approval.mc_question_id = mc_questions.id
             JOIN skills
             ON mc_questions.skill_id = skills.id
+            ORDER BY mc_questions_awaiting_approval.date DESC
         `;
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -793,6 +794,7 @@ router.get('/essay/submitted-for-review/list', (req, res, next) => {
             ON essay_questions_awaiting_approval.essay_question_id = essay_questions.id
             JOIN skills
             ON essay_questions.skill_id = skills.id
+            ORDER BY essay_questions_awaiting_approval.date DESC
         `
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -1321,7 +1323,11 @@ router.post('/mc-questions/bulk-add', (req, res, next) => {
 router.get('/student-mc-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM student_mc_questions;';
+        let sqlQuery = `
+        SELECT *
+        FROM student_mc_questions
+        ORDER BY student_mc_questions.create_date DESC
+        `;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

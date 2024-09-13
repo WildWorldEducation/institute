@@ -107,7 +107,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                                                             skillId +
                                                             `, ` +
                                                             req.body.filters[
-                                                                i
+                                                            i
                                                             ] +
                                                             `);`;
                                                         let query = conn.query(
@@ -736,11 +736,10 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${
-                                                    req.body.edit
+                                                userAction: `${req.body.edit
                                                         ? 'edit_and_approve'
                                                         : 'approve'
-                                                }`,
+                                                    }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -781,7 +780,10 @@ router.get('/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
-            'SELECT * FROM skills_awaiting_approval JOIN skills ON skills_awaiting_approval.skill_id = skills.id';
+            `SELECT * 
+             FROM skills_awaiting_approval JOIN skills ON skills_awaiting_approval.skill_id = skills.id
+             ORDER BY skills_awaiting_approval.date DESC
+             `;
         let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
