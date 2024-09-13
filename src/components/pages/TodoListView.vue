@@ -37,9 +37,6 @@ export default {
         ) {
             await this.settingStore.getSettings();
         }
-        // Get Setting state and fetch one if there are none
-        console.log('Setting data Here');
-        console.log(this.settingStore.todoContentFlagTableRows);
         // Get navigation state from URL
         const nav = this.$route.query.nav;
         if (nav) {

@@ -164,7 +164,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
+    <div class="w-100">
         <!-- Banner -->
         <div id="banner">
             <img src="/images/banners/general-banner.png" class="img-fluid" />

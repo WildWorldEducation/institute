@@ -185,6 +185,7 @@ export default {
                 </div>
             </template>
         </Vue3EasyDataTable>
+        <!-- An Ugly hack to listen to row per page change -->
         <div class="d-none">{{ rowsPerPage }} {{ rowsPerPageM }}</div>
     </div>
 </template>
