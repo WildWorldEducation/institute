@@ -532,6 +532,24 @@ router.delete(
                 try {
                     if (err) {
                         throw err;
+                    } else {
+                        // Add dismiss actions
+                        const actionData = {
+                            action: 'dismiss-edit',
+                            content_id: req.params.mcQuestionId,
+                            user_id: req.session.userId,
+                            content_type: 'mc_question'
+                        };
+
+                        const addActionQuery = `INSERT INTO user_actions SET ?`;
+                        conn.query(
+                            addActionQuery,
+                            actionData,
+                            (err) => {
+                                if (err) throw err;
+                                res.end();
+                            }
+                        );
                     }
                     res.end();
                 } catch (err) {
@@ -561,6 +579,24 @@ router.delete(
                 try {
                     if (err) {
                         throw err;
+                    } else {
+                        // Add dismiss actions
+                        const actionData = {
+                            action: 'dismiss-edit',
+                            content_id: req.params.essayQuestionId,
+                            user_id: req.session.userId,
+                            content_type: 'essay_question'
+                        };
+
+                        const addActionQuery = `INSERT INTO user_actions SET ?`;
+                        conn.query(
+                            addActionQuery,
+                            actionData,
+                            (err) => {
+                                if (err) throw err;
+                                res.end();
+                            }
+                        );
                     }
                     res.end();
                 } catch (err) {
@@ -590,6 +626,24 @@ router.delete(
                 try {
                     if (err) {
                         throw err;
+                    } else {
+                        // Add dismiss actions
+                        const actionData = {
+                            action: 'dismiss-edit',
+                            content_id: req.params.imageQuestionId,
+                            user_id: req.session.userId,
+                            content_type: 'image_question'
+                        };
+
+                        const addActionQuery = `INSERT INTO user_actions SET ?`;
+                        conn.query(
+                            addActionQuery,
+                            actionData,
+                            (err) => {
+                                if (err) throw err;
+                                res.end();
+                            }
+                        );
                     }
                     res.end();
                 } catch (err) {

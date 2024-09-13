@@ -737,8 +737,8 @@ router.put(
                                             {
                                                 userId: req.session.userId,
                                                 userAction: `${req.body.edit
-                                                        ? 'edit_and_approve'
-                                                        : 'approve'
+                                                    ? 'edit_and_approve'
+                                                    : 'approve'
                                                     }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
@@ -841,6 +841,23 @@ router.delete('/submitted-for-review/:skillId/:userId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+                // Add dismiss actions
+                const actionData = {
+                    action: 'dismiss-edit',
+                    content_id: req.params.skillId,
+                    user_id: req.session.userId,
+                    content_type: 'skill'
+                };
+
+                const addActionQuery = `INSERT INTO user_actions SET ?`;
+                conn.query(
+                    addActionQuery,
+                    actionData,
+                    (err) => {
+                        if (err) throw err;
+                        res.end();
+                    }
+                );
                 res.end();
             } catch (err) {
                 next(err);
