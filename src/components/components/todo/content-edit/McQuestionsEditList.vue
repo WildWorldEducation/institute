@@ -188,4 +188,23 @@ export default {
 .customize-table :deep(tbody tr:hover) {
     cursor: pointer;
 }
+
+/* Style Specific On Phone  */
+@media (max-width: 801px) {
+    .table-div {
+        padding: 0px;
+    }
+
+    .customize-table {
+        --easy-table-header-font-size: 14px;
+        --easy-table-body-row-font-size: 12px;
+    }
+}
+
+/* View Specific on Tablet */
+@media (min-width: 577px) and (max-width: 1380px) {
+    .table-div {
+        padding: 0px;
+    }
+}
 </style>

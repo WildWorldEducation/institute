@@ -83,7 +83,7 @@ export default {
 }
 
 #contentDiv {
-    overflow: auto;
+    overflow-y: auto;
     width: 100%;
 }
 
@@ -91,7 +91,7 @@ export default {
 @media (min-width: 0px) and (max-width: 576px) {
     #contentDiv {
         width: fit-content;
-        overflow: auto;
+        overflow-y: auto;
     }
 }
 </style>

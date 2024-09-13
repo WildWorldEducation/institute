@@ -182,7 +182,6 @@ export default {
                                 flagRow.contentId = flag.content_id;
                                 flagRow.type = 'image question';
                                 flagRow.name = `${contentObj.name} ${contentObj.question}`;
-
                                 flagRow.nameUrl = `skills/${contentObj.skillId}/question-bank`;
                                 flagRow.flagId = flag.id;
                                 flagRow.editUrl = `/image-questions/edit/${flag.content_id}`;
@@ -542,7 +541,7 @@ export default {
             class="img-fluid"
         />
     </div>
-    <div class="container-md pb-5">
+    <div class="container-fluid pb-5">
         <div class="mt-3">
             <h2 class="page-title">Content Flags</h2>
         </div>

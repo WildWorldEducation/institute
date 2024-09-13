@@ -164,7 +164,7 @@ export default {
 </script>
 
 <template>
-    <div class="content-edit-page">
+    <div class="container-fluid">
         <!-- Banner -->
         <div id="banner">
             <img src="/images/banners/general-banner.png" class="img-fluid" />
@@ -305,12 +305,6 @@ export default {
 #banner {
     width: 100%;
     height: fit-content;
-}
-
-.content-edit-page {
-    min-width: 700px;
-    min-height: 100vh;
-    overflow: auto;
 }
 
 .page-title {
