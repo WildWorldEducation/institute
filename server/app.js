@@ -95,7 +95,6 @@ app.use('/skill-history', skillHistory);
 const todoCount = require('./routes/todo-count');
 app.use('/todo-count', todoCount);
 
-
 app.locals.title = 'Skill Tree';
 
 if (process.env.NODE_ENV === 'production') {
@@ -122,7 +121,7 @@ app.get('/google-login-attempt', (req, res) => {
     let sqlQuery = `SELECT * FROM users 
         WHERE email = '${googleUserDetails.email}'
         AND is_deleted = 0;`;
-    let query = conn.query(sqlQuery, (err, results) => {
+    conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
                 throw err;
@@ -167,7 +166,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
     // Check if user already exists.
     let sqlQuery1 =
         "SELECT * FROM users WHERE email = '" + googleUserDetails.email + "';";
-    let query1 = conn.query(sqlQuery1, (err, results) => {
+    conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
                 throw err;
@@ -211,7 +210,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 };
 
                 let sqlQuery2 = 'INSERT INTO users SET ?';
-                let query2 = conn.query(sqlQuery2, data, (err, results) => {
+                conn.query(sqlQuery2, data, (err, results) => {
                     try {
                         if (err) {
                             throw err;
@@ -333,6 +332,8 @@ app.get('/login-status', (req, res) => {
 });
 
 // Log in with username and password.
+// For password decryption.
+const bcrypt = require('bcrypt');
 app.post('/login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Escape single quotes for SQL to accept.
@@ -341,50 +342,52 @@ app.post('/login-attempt', (req, res, next) => {
     if (req.body.password != null)
         req.body.password = req.body.password.replace(/'/g, "\\'");
 
-    // Execute SQL query that'll select the account from the database based on the specified
-    const sqlQuery1 = `SELECT * 
+    // Look for user.
+    const loginQuery = `SELECT id, first_name, last_name, role, password 
                        FROM skill_tree.users 
                        WHERE skill_tree.users.username = '${req.body.username}' 
-                             AND skill_tree.users.password = '${req.body.password}' 
-                             AND skill_tree.users.is_deleted = 0;`;
-    let query1 = conn.query(sqlQuery1, (err, results) => {
+                       AND skill_tree.users.is_deleted = 0;`;
+
+    conn.query(loginQuery, (err, results) => {
         try {
             if (err) {
                 console.log(err);
                 throw err;
             }
-            // Create session object.
-            else if (results.length > 0) {
-                req.session.userId = results[0].id;
-                req.session.userName = req.body.username;
-                req.session.firstName = results[0].first_name;
-                req.session.lastName = results[0].last_name;
-                //req.session.skillTreeTheme = results[0].skilltree_theme;
-                req.session.role = results[0].role;
-                res.json({ account: 'authorized', role: req.session.role });
-            } else {
-                // If both the username and password are not correct, check if the account exists.
-                let sqlQuery2 =
-                    "SELECT * FROM users WHERE users.username = '" +
-                    req.body.username +
-                    "';";
-                let query2 = conn.query(sqlQuery2, (err, results) => {
-                    try {
+
+            // If username is found in DB.
+            if (results.length > 0) {
+
+
+
+                // Check password.
+                bcrypt.compare(
+                    req.body.password,
+                    results[0].password,
+                    (err, response) => {
                         if (err) {
-                            throw err;
                         }
-                        // Tell user their password is incorrect.
-                        else if (results.length > 0) {
-                            res.json({ account: 'wrong-password' });
+                        // If password matches.
+                        if (response) {
+                            // Populate user session data.
+                            req.session.userId = results[0].id;
+                            req.session.userName = req.body.username;
+                            req.session.firstName = results[0].first_name;
+                            req.session.lastName = results[0].last_name;
+                            req.session.role = results[0].role;
+                            // Send response to front end.
+                            return res.json({
+                                account: 'authorized',
+                                role: req.session.role
+                            });
                         }
-                        // If neither the username or password are correct, let user know.
-                        else {
-                            res.json({ account: 'no-account' });
-                        }
-                    } catch (err) {
-                        next(err);
+
+                        // If password doesnt match.
+                        return res.json({ account: 'wrong-password' });
                     }
-                });
+                );
+            } else {
+                return res.json({ account: 'no-account' });
             }
         } catch (err) {
             next(err);
@@ -485,16 +488,17 @@ app.get('/sitemap.xml', (req, res) => {
         {
             path: '/skills',
             priority: 0.8
-        },
+        }
     ];
 
-    const sqlQuery = 'SELECT * FROM skills WHERE skills.is_deleted = 0 AND ( type = "regular" OR type = "super" )';
+    const sqlQuery =
+        'SELECT * FROM skills WHERE skills.is_deleted = 0 AND ( type = "regular" OR type = "super" )';
     conn.query(sqlQuery, (err, results) => {
         if (err) {
             return res.status(500).send('Internal Server Error');
         }
 
-        results.forEach(element => {
+        results.forEach((element) => {
             routes.push({
                 path: `/skills/${element.name.replace(/ /g, '_')}`,
                 priority: 1.0
@@ -502,16 +506,22 @@ app.get('/sitemap.xml', (req, res) => {
         });
 
         // Create the XML structure
-        let sitemap = xmlbuilder.create('urlset', { encoding: 'UTF-8' })
+        let sitemap = xmlbuilder
+            .create('urlset', { encoding: 'UTF-8' })
             .att('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
         // Add URLs to the sitemap
-        routes.forEach(route => {
-            sitemap.ele('url')
-                .ele('loc', `${rootUrl}${route.path}`).up()  // Ensured no extra slash added
-                .ele('lastmod', today).up()
-                .ele('changefreq', 'weekly').up()
-                .ele('priority', route.priority).up();  // Use route.priority as a number
+        routes.forEach((route) => {
+            sitemap
+                .ele('url')
+                .ele('loc', `${rootUrl}${route.path}`)
+                .up() // Ensured no extra slash added
+                .ele('lastmod', today)
+                .up()
+                .ele('changefreq', 'weekly')
+                .up()
+                .ele('priority', route.priority)
+                .up(); // Use route.priority as a number
         });
 
         // Send the XML sitemap as the response
@@ -519,7 +529,6 @@ app.get('/sitemap.xml', (req, res) => {
         res.send(sitemap.end({ pretty: true }));
     });
 });
-
 
 const environment = process.env.NODE_ENV;
 
