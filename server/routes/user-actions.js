@@ -80,7 +80,7 @@ router.get('/:userId/flag', (req, res, next) => {
         let resResults = [];
         // Skills Flags.
         let sqlQuery1 = `
-            SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted) AS content_obj 
+            SELECT user_actions.*, content_flags.is_deleted, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted) AS content_obj 
             FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN skills ON skills.id = content_flags.content_id  
             WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'skill'`;
         conn.query(sqlQuery1, (err, results) => {
@@ -91,7 +91,7 @@ router.get('/:userId/flag', (req, res, next) => {
                 resResults = resResults.concat(results);
 
                 // Sources Flags.
-                let sqlQuery2 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted) AS content_obj  
+                let sqlQuery2 = `SELECT user_actions.*, content_flags.is_deleted, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted) AS content_obj  
                     FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN resources ON resources.id = content_flags.content_id JOIN skills ON skills.id = resources.skill_id  
                     WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'resource'`;
                 conn.query(sqlQuery2, (err, results) => {
@@ -101,7 +101,7 @@ router.get('/:userId/flag', (req, res, next) => {
                     resResults = resResults.concat(results);
 
                     // MC Questions Flags.
-                    let sqlQuery3 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('question_name', mc_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', mc_questions.question,'question_id', mc_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj  
+                    let sqlQuery3 = `SELECT user_actions.*, content_flags.is_deleted, content_flags.content_type AS flag_type, json_object('question_name', mc_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', mc_questions.question,'question_id', mc_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj  
                         FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN mc_questions ON mc_questions.id = content_flags.content_id JOIN skills ON skills.id = mc_questions.skill_id  
                         WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'mc_question'`;
                     conn.query(sqlQuery3, (err, results) => {
@@ -119,7 +119,7 @@ router.get('/:userId/flag', (req, res, next) => {
                                 else {
                                     resResults = resResults.concat(results);
 
-                                    let sqlQuery5 = `SELECT user_actions.*, content_flags.content_type AS flag_type,
+                                    let sqlQuery5 = `SELECT user_actions.*, content_flags.is_deleted, content_flags.content_type AS flag_type,
                                     json_object('question_name', essay_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', essay_questions.question,'question_id', essay_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj 
                                     FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN essay_questions ON essay_questions.id = content_flags.content_id JOIN skills ON skills.id = essay_questions.skill_id
                                     WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'essay_question';`;
@@ -129,7 +129,7 @@ router.get('/:userId/flag', (req, res, next) => {
 
                                         if (err) throw err;
                                         else {
-                                            let sqlQuery6 = `SELECT user_actions.*, content_flags.content_type AS flag_type, json_object('question_name', image_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', image_questions.question,'question_id', image_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj  
+                                            let sqlQuery6 = `SELECT user_actions.*, content_flags.is_deleted, content_flags.content_type AS flag_type, json_object('question_name', image_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', image_questions.question,'question_id', image_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj  
                                                 FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN image_questions ON image_questions.id = content_flags.content_id JOIN skills ON skills.id = image_questions.skill_id  
                                                 WHERE user_actions.user_id = ${req.params.userId} AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'image_question'`;
 
