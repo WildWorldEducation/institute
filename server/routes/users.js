@@ -269,8 +269,7 @@ router.post('/new-editor/add', (req, res, next) => {
                                                         newEditorId;
                                                     req.session.userName =
                                                         req.body.username;
-                                                    req.session.role =
-                                                        results[0].role;
+                                                    req.session.role = 'editor';
 
                                                     // Unlock skills here
                                                     unlockInitialSkills(
