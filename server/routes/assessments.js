@@ -26,7 +26,7 @@ router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM unmarked_assessments';
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -53,9 +53,7 @@ router.post('/:studentId/:skillId', (req, res, next) => {
         let sqlQuery =
             `
         INSERT INTO unmarked_assessments (student_id, skill_id, total_score, current_score, num_unmarked_questions_remaining, date) 
-        VALUES(` +
-            req.params.studentId +
-            `, ` +
+        VALUES('${req.params.studentId}', ` +
             req.params.skillId +
             `, ` +
             req.body.totalScore +
@@ -71,7 +69,7 @@ router.post('/:studentId/:skillId', (req, res, next) => {
         current_score = VALUES(current_score), 
         date = VALUES(date);`;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -79,14 +77,12 @@ router.post('/:studentId/:skillId', (req, res, next) => {
                     // If both the username and password are not correct, check if the account exists.
                     let sqlQuery2 =
                         `SELECT id FROM unmarked_assessments
-                     WHERE unmarked_assessments.student_id = ` +
-                        req.params.studentId +
-                        `
+                     WHERE unmarked_assessments.student_id = '${req.params.studentId}'
                         AND unmarked_assessments.skill_id = ` +
                         req.params.skillId +
                         `;`;
 
-                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                    conn.query(sqlQuery2, (err, results) => {
                         try {
                             if (err) {
                                 throw err;
@@ -119,7 +115,7 @@ router.put('/:id/increase-grade', (req, res, next) => {
             `UPDATE unmarked_assessments SET current_score = current_score + 1, num_unmarked_questions_remaining = num_unmarked_questions_remaining - 1 WHERE id = ` +
             req.params.id;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -140,7 +136,7 @@ router.put('/:id/decrease-grade', (req, res, next) => {
         sqlQuery =
             `UPDATE unmarked_assessments SET num_unmarked_questions_remaining = num_unmarked_questions_remaining - 1 WHERE id = ` +
             req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -164,7 +160,7 @@ router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             'DELETE FROM unmarked_assessments WHERE id=' + req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -194,7 +190,7 @@ router.put('/:studentId/:skillId', (req, res, next) => {
         WHERE student_id = '${req.params.studentId}' AND skill_id = '${req.params.skillId}'
         `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -202,14 +198,12 @@ router.put('/:studentId/:skillId', (req, res, next) => {
                     // If both the username and password are not correct, check if the account exists.
                     let sqlQuery2 =
                         `SELECT id FROM unmarked_assessments
-                     WHERE unmarked_assessments.student_id = ` +
-                        req.params.studentId +
-                        `
+                     WHERE unmarked_assessments.student_id = '${req.params.studentId}'
                         AND unmarked_assessments.skill_id = ` +
                         req.params.skillId +
                         `;`;
 
-                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                    conn.query(sqlQuery2, (err, results) => {
                         try {
                             if (err) {
                                 throw err;

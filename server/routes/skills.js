@@ -45,14 +45,14 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
 
     // Insert the new skill.
     let sqlQuery1 = `INSERT INTO skills SET ?;`;
-    let query = conn.query(sqlQuery1, data, (err, results) => {
+    conn.query(sqlQuery1, data, (err, results) => {
         try {
             if (err) {
                 throw err;
             } else {
                 // Get its id.
                 let sqlQuery2 = `SELECT LAST_INSERT_ID();`;
-                let query = conn.query(sqlQuery2, data, (err, results) => {
+                conn.query(sqlQuery2, data, (err, results) => {
                     const skillId = Object.values(results[0])[0];
                     try {
                         if (err) {
@@ -65,7 +65,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                             VALUES
                             (${skillId},
                             1,
-                            ${req.session.userId},
+                            '${req.session.userId}',
                             '${req.body.name}',                           
                             '${req.body.description}',
                             '${req.body.icon_image}',
@@ -110,7 +110,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                                                             i
                                                             ] +
                                                             `);`;
-                                                        let query = conn.query(
+                                                        conn.query(
                                                             sqlQuery3,
                                                             (err, results) => {
                                                                 try {
@@ -193,7 +193,7 @@ router.post(
 
                 // Create the copy with new parent.
                 let sqlQuery1 = `INSERT INTO skills SET ?;`;
-                let query = conn.query(sqlQuery1, data, (err, results) => {
+                conn.query(sqlQuery1, data, (err, results) => {
                     try {
                         if (err) {
                             throw err;
@@ -220,7 +220,8 @@ router.post(
 router.get('/list', (req, res, next) => {
     // Route is accessible for guest users.
     res.setHeader('Content-Type', 'application/json');
-    let sqlQuery = "SELECT id, name, parent, type, level FROM skills WHERE skills.is_deleted = 0";
+    let sqlQuery =
+        'SELECT id, name, parent, type, level FROM skills WHERE skills.is_deleted = 0';
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -243,7 +244,7 @@ router.get('/nested-list', (req, res, next) => {
     FROM skills
     WHERE is_deleted = 0
     ORDER BY skillorder;`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -300,7 +301,7 @@ router.get('/filtered-nested-list', (req, res, next) => {
     FROM skills
     WHERE is_filtered = 'available' AND is_deleted = 0
     ORDER BY skillorder;`;
-    let query = conn.query(sqlQuery, (err, results) => {
+    conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
                 throw err;
@@ -410,7 +411,7 @@ router.get('/mastery-requirements/:id', (req, res, next) => {
     const sqlQuery = `SELECT mastery_requirements
                           FROM skills
                           WHERE skills.id = ${req.params.id} AND skills.is_deleted = 0`;
-    let query = conn.query(sqlQuery, (err, results) => {
+    conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
                 throw err;
@@ -430,10 +431,10 @@ router.get('/record-visit/:id', (req, res, next) => {
         //Register visit datetime.
         let visitSqlQuery = `
  INSERT INTO user_visited_skills (user_id, skill_id, visited_at)
- VALUES (${req.session.userId}, ${req.params.id}, NOW())
+ VALUES ('${req.session.userId}', ${req.params.id}, NOW())
  ON DUPLICATE KEY UPDATE visited_at = NOW();
 `;
-        let visitQuery = conn.query(visitSqlQuery, (err) => {
+        conn.query(visitSqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;
@@ -453,13 +454,13 @@ router.get('/last-visited', (req, res, next) => {
             SELECT skills.id, name
             FROM user_visited_skills
             INNER JOIN skills ON skills.id = user_visited_skills.skill_id
-            WHERE user_id = ${req.session.userId}
+            WHERE user_id = '${req.session.userId}'
             AND skills.is_deleted = 0
             ORDER BY visited_at DESC
             LIMIT 5;
         `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -509,7 +510,7 @@ router.put(
                     VALUES
                     (${req.params.id},
                     ${versionNumber},
-                    ${req.session.userId},
+                    '${req.session.userId}',
                     '${req.body.name}',                    
                     '${req.body.description}',
                     '${req.body.icon_image}',
@@ -605,7 +606,7 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
 
         // Add data.
         let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, banner_image, comment)
-         VALUES (${req.params.id}, ${req.body.userId}, '${req.body.mastery_requirements}', '${req.body.icon_image}', '${req.body.banner_image}', 
+         VALUES (${req.params.id}, '${req.body.userId}', '${req.body.mastery_requirements}', '${req.body.icon_image}', '${req.body.banner_image}', 
          '${req.body.comment}')
          
          ON DUPLICATE KEY
@@ -698,7 +699,7 @@ router.put(
                     VALUES
                     (${previousId},
                     ${versionNumber},
-                    ${req.session.userId},
+                    '${req.session.userId}',
                     '${previousName}',                    
                     '${previousDescription}',
                     '${req.body.icon_image}',
@@ -810,8 +811,8 @@ router.get('/submitted-for-review/:skillId/:userId', (req, res, next) => {
         const sqlQuery = `SELECT *
                           FROM skills_awaiting_approval
                           WHERE skill_id = ${req.params.skillId}
-                          AND user_id = ${req.params.userId}`;
-        let query = conn.query(sqlQuery, (err, results) => {
+                          AND user_id = '${req.params.userId}';`;
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -835,7 +836,7 @@ router.delete('/submitted-for-review/:skillId/:userId', (req, res, next) => {
         const deleteQuery = `DELETE 
                              FROM skills_awaiting_approval
                              WHERE skill_id = ${req.params.skillId}
-                             AND user_id  = ${req.params.userId};`;
+                             AND user_id  = '${req.params.userId}';`;
         conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
@@ -937,7 +938,7 @@ router.get('/:id/mc-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT * FROM mc_questions WHERE skill_id = ${req.params.id} AND is_deleted = 0`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -954,7 +955,7 @@ router.get('/:id/essay-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT * FROM essay_questions WHERE skill_id = ${req.params.id} AND is_deleted = 0`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -1015,7 +1016,7 @@ router.post('/:id/mc-questions/add', (req, res, next) => {
                 skill_id: req.params.id
             };
             let sqlQuery = 'INSERT INTO mc_questions SET ?';
-            let query = conn.query(sqlQuery, data, (err, results) => {
+            conn.query(sqlQuery, data, (err, results) => {
                 try {
                     if (err) {
                         throw err;
