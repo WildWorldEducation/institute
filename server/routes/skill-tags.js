@@ -26,7 +26,7 @@ router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM skill_tags';
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -56,7 +56,7 @@ router.post('/add/:skillId', (req, res, next) => {
                 req.body.filters[i] +
                 `);`;
 
-            let query1 = conn.query(sqlQuery1, (err, results) => {
+            conn.query(sqlQuery1, (err, results) => {
                 try {
                     if (err) {
                         throw err;
@@ -71,7 +71,7 @@ router.post('/add/:skillId', (req, res, next) => {
                         req.body.filters[i] +
                         `;`;
 
-                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                    conn.query(sqlQuery2, (err, results) => {
                         try {
                             if (err) {
                                 throw err;
@@ -89,18 +89,15 @@ router.post('/add/:skillId', (req, res, next) => {
                                     req.params.skillId +
                                     `;`;
 
-                                let query3 = conn.query(
-                                    sqlQuery3,
-                                    (err, results) => {
-                                        try {
-                                            if (err) {
-                                                throw err;
-                                            }
-                                        } catch (err) {
-                                            next(err);
+                                conn.query(sqlQuery3, (err, results) => {
+                                    try {
+                                        if (err) {
+                                            throw err;
                                         }
+                                    } catch (err) {
+                                        next(err);
                                     }
-                                );
+                                });
 
                                 res.end();
                             } else {
@@ -165,7 +162,7 @@ router.delete('/remove/:skillId', (req, res, next) => {
             req.params.skillId +
             `;`;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -179,7 +176,7 @@ router.delete('/remove/:skillId', (req, res, next) => {
                     req.params.skillId +
                     `;`;
 
-                let query2 = conn.query(sqlQuery2, (err, results) => {
+                conn.query(sqlQuery2, (err, results) => {
                     try {
                         if (err) {
                             throw err;
