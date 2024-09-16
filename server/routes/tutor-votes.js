@@ -29,7 +29,7 @@ router.get('/:id', (req, res, next) => {
     SELECT * FROM tutor_votes
     WHERE tutor_post_id =` + req.params.id;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -52,15 +52,13 @@ router.put('/:userId/:tutorPostId/edit/up', (req, res, next) => {
         let sqlQuery =
             `
         INSERT INTO tutor_votes (user_id, tutor_post_id, vote) 
-        VALUES(` +
-            req.params.userId +
-            `, ` +
+        VALUES('${req.params.userId}', ` +
             req.params.tutorPostId +
             `, 1) 
         ON DUPLICATE KEY UPDATE vote=1;
         `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -73,20 +71,19 @@ router.put('/:userId/:tutorPostId/edit/up', (req, res, next) => {
     }
 });
 
+// Vote down.
 router.put('/:userId/:tutorPostId/edit/down', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             `
         INSERT INTO tutor_votes (user_id, tutor_post_id, vote) 
-        VALUES(` +
-            req.params.userId +
-            `, ` +
+        VALUES('${req.params.userId}', ` +
             req.params.tutorPostId +
             `, -1) 
         ON DUPLICATE KEY UPDATE vote=-1;
         `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -105,15 +102,13 @@ router.put('/:userId/:tutorPostId/edit/cancel', (req, res, next) => {
         let sqlQuery =
             `
         INSERT INTO tutor_votes (user_id, tutor_post_id, vote) 
-        VALUES(` +
-            req.params.userId +
-            `, ` +
+        VALUES('${req.params.userId}', ` +
             req.params.tutorPostId +
             `, 0) 
         ON DUPLICATE KEY UPDATE vote=0;
         `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;

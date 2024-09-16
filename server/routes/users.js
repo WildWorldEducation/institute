@@ -25,6 +25,10 @@ Routes
 // For password encryption.
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+
+// For primary keys for users table.
+const { v7: uuidv7 } = require('uuid');
+
 /*
  * Student Self Sign Up
  */
@@ -111,6 +115,9 @@ router.post('/new-student/add', (req, res, next) => {
                                         /\\/g,
                                         ''
                                     );
+                                    // Set the primary key.
+                                    data.id = uuidv7();
+
                                     // If not, add to database.
                                     let sqlQuery3 = 'INSERT INTO users SET ?';
                                     conn.query(
@@ -121,8 +128,7 @@ router.post('/new-student/add', (req, res, next) => {
                                                 if (err) {
                                                     throw err;
                                                 } else {
-                                                    let newStudentId =
-                                                        results.insertId;
+                                                    let newStudentId = data.id;
                                                     // Create session to log the user in.
                                                     req.session.userId =
                                                         newStudentId;
@@ -245,6 +251,8 @@ router.post('/new-editor/add', (req, res, next) => {
                                         /\\/g,
                                         ''
                                     );
+                                    // Set the primary key.
+                                    data.id = uuidv7();
                                     // If not, add to database.
                                     let sqlQuery3 = 'INSERT INTO users SET ?';
                                     conn.query(
@@ -255,48 +263,23 @@ router.post('/new-editor/add', (req, res, next) => {
                                                 if (err) {
                                                     throw err;
                                                 } else {
-                                                    // After creating the user, get their id number and send to the front end.
-                                                    // Using teir email, which is unique.
-                                                    let sqlQuery4 =
-                                                        `
-                                            SELECT id
-                                            FROM users
-                                            WHERE users.email = '` +
-                                                        req.body.email +
-                                                        `';`;
-                                                    conn.query(
-                                                        sqlQuery4,
-                                                        (err, results) => {
-                                                            try {
-                                                                if (err) {
-                                                                    throw err;
-                                                                }
-                                                                // Create session to log the user in.
-                                                                req.session.userId =
-                                                                    results[0].id;
-                                                                req.session.userName =
-                                                                    req.body.username;
-                                                                req.session.role =
-                                                                    results[0].role;
+                                                    let newEditorId = data.id;
+                                                    // Create session to log the user in.
+                                                    req.session.userId =
+                                                        newEditorId;
+                                                    req.session.userName =
+                                                        req.body.username;
+                                                    req.session.role = 'editor';
 
-                                                                // Unlock skills here
-                                                                unlockInitialSkills(
-                                                                    req.session
-                                                                        .userId
-                                                                );
-
-                                                                res.json({
-                                                                    account:
-                                                                        'authorized',
-                                                                    role: req
-                                                                        .session
-                                                                        .role
-                                                                });
-                                                            } catch (err) {
-                                                                next(err);
-                                                            }
-                                                        }
+                                                    // Unlock skills here
+                                                    unlockInitialSkills(
+                                                        req.session.userId
                                                     );
+
+                                                    res.json({
+                                                        account: 'authorized',
+                                                        role: req.session.role
+                                                    });
                                                 }
                                             } catch (err) {
                                                 next(err);
@@ -399,6 +382,8 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                         /\\/g,
                                         ''
                                     );
+                                    // Set the primary key.
+                                    data.id = uuidv7();
                                     // If not, add to database.
                                     let sqlQuery3 = 'INSERT INTO users SET ?';
                                     conn.query(
@@ -409,33 +394,12 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                                 if (err) {
                                                     throw err;
                                                 } else {
-                                                    // After creating the user, get their id number and send to the front end.
-                                                    // Using teir email, which is unique.
-                                                    let sqlQuery4 =
-                                                        `
-                                            SELECT id
-                                            FROM users
-                                            WHERE users.email = '` +
-                                                        req.body.email +
-                                                        `';`;
-                                                    conn.query(
-                                                        sqlQuery4,
-                                                        (err, results) => {
-                                                            try {
-                                                                if (err) {
-                                                                    throw err;
-                                                                }
-                                                                res.json({
-                                                                    account:
-                                                                        'account created',
-                                                                    id: results[0]
-                                                                        .id
-                                                                });
-                                                            } catch (err) {
-                                                                next(err);
-                                                            }
-                                                        }
-                                                    );
+                                                    let newUserId = data.id;
+                                                    res.json({
+                                                        account:
+                                                            'account created',
+                                                        id: newUserId
+                                                    });
                                                 }
                                             } catch (err) {
                                                 next(err);
@@ -552,7 +516,7 @@ router.get('/show/:id', (req, res, next) => {
         let sqlQuery = `
     SELECT id, first_name, last_name, username, avatar, email, role, is_deleted             
     FROM users        
-    WHERE id = ${req.params.id} AND is_deleted = 0
+    WHERE id = '${req.params.id}' AND is_deleted = 0
     LIMIT 1`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -580,7 +544,7 @@ router.get('/instructor/:studentId', (req, res, next) => {
     FROM users
     LEFT JOIN instructor_students 
     ON users.id = instructor_students.instructor_id
-    WHERE instructor_students.student_id = ${req.params.studentId};`;
+    WHERE instructor_students.student_id = '${req.params.studentId}';`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -626,7 +590,7 @@ router.get('/showId/:username', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        const deleteQuery = `UPDATE users SET is_deleted = 1 WHERE id = ${req.params.id}`;
+        const deleteQuery = `UPDATE users SET is_deleted = 1 WHERE id = '${req.params.id}';`;
         conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
@@ -688,10 +652,11 @@ router.put(
                 avatar +
                 "', role = '" +
                 req.body.role +
-                "' WHERE id=" +
-                req.params.id;
+                "' WHERE id='" +
+                req.params.id +
+                "';";
 
-            let query = conn.query(sqlQuery, (err, results) => {
+            conn.query(sqlQuery, (err, results) => {
                 try {
                     if (err) {
                         throw err;
@@ -714,10 +679,10 @@ router.put(
     (req, res, next) => {
         let sqlQuery = `
         DELETE FROM instructor_students
-        WHERE student_id = ${req.params.id};
+        WHERE student_id = '${req.params.id}';
     `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -730,10 +695,10 @@ router.put(
 
         sqlQuery = `
         INSERT INTO instructor_students (instructor_id, student_id) 
-        VALUES (${req.body.instructor_id}, ${req.params.id});
+        VALUES ('${req.body.instructor_id}', '${req.params.id}');
     `;
 
-        let insertQuery = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -787,8 +752,9 @@ router.put(
                     req.body.email +
                     '", password="' +
                     hashedPassword +
-                    '" WHERE id=' +
-                    req.params.id;
+                    '" WHERE id="' +
+                    req.params.id +
+                    '";';
                 conn.query(sqlQuery, (err, results) => {
                     try {
                         if (err) {
