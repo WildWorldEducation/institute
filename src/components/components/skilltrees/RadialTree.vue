@@ -59,7 +59,8 @@ export default {
             xPos: 0,
             yPos: 0,
             showAnimation: false,
-            showSkillPanel: false
+            showSkillPanel: false,
+            userAvatarImg: null
         };
     },
     components: {
@@ -81,18 +82,23 @@ export default {
             children: this.skillTreeStore.userSkillsSubSkillsSeparate
         };
 
-        this.getAlgorithm();
+        this.userAvatarImg = new Image();
+        this.userAvatarImg.src = this.userDetailsStore.avatar;
+        this.userAvatarImg.onload = () => {
+            this.getAlgorithm();
 
-        // Zoom and pan.
-        // store the d3 zoom object so it can be use for programmatic zoom later on
-        this.d3Zoom = d3
-            .zoom()
-            .scaleExtent([0.05, 8])
-            .on('zoom', ({ transform }) => this.zoomed(transform));
-        d3.select(this.context.canvas).call(this.d3Zoom);
+            // Zoom and pan.
+            // store the d3 zoom object so it can be use for programmatic zoom later on
+            this.d3Zoom = d3
+                .zoom()
+                .scaleExtent([0.05, 8])
+                .on('zoom', ({ transform }) => this.zoomed(transform));
+            d3.select(this.context.canvas).call(this.d3Zoom);
 
-        // Zoom and move the tree to it initial position
-        this.defaultPosition();
+            // Zoom and move the tree to it initial position
+            this.defaultPosition();
+        }
+        
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', async (e) => {
@@ -258,45 +264,17 @@ export default {
                 this.drawNode(node);
             }
 
-            // Draw center node.
+            // Draw user avatar in center.
+            this.context.fillStyle = 'transparent';
+            this.context.save();
             this.context.beginPath();
             this.context.moveTo(0, 0);
             this.context.arc(0, 0, 20, 0, 2 * Math.PI);
-            this.context.fillStyle = 'lightgreen';
-            this.context.fill();
-
-            //smiley
-            this.context.fillStyle = 'LawnGreen';
-            this.context.strokeStyle = 'black';
-            this.context.lineWidth = 5;
-            this.context.beginPath();
-            this.context.arc(0, 0, 50, 0, 2 * Math.PI);
-            this.context.fill();
             this.context.stroke();
-            this.context.closePath();
+            this.context.clip();
+            this.context.drawImage(this.userAvatarImg, -20, -20, 40, 40);
+            this.context.restore();
 
-            //eyes
-            this.context.fillStyle = 'cyan';
-            this.context.beginPath();
-            this.context.arc(-12.5, -16.5, 7.5, 0, 2 * Math.PI);
-            this.context.fill();
-            this.context.stroke();
-            this.context.closePath();
-
-            this.context.beginPath();
-            this.context.arc(12.5, -16.5, 7.5, 0, 2 * Math.PI);
-            this.context.fill();
-            this.context.stroke();
-            this.context.closePath();
-
-            //mouth
-            this.context.fillStyle = 'LawnGreen';
-            this.context.strokeStyle = 'black';
-            this.context.lineWidth = 5;
-            this.context.beginPath();
-            this.context.arc(0, 0, 37.5, 0, -1 * Math.PI);
-            this.context.stroke();
-            this.context.closePath();
         },
         drawNode(node) {
             let ctx1 = this.context;
@@ -480,10 +458,10 @@ export default {
                 this.width,
                 this.height
             );
-            this.context.translate(transform.x, transform.y);
+            this.context.translate(transform.x - this.width/2, transform.y - this.height/2);
             this.context.scale(transform.k, transform.k);
 
-            this.hiddenCanvasContext.translate(transform.x, transform.y);
+            this.hiddenCanvasContext.translate(transform.x - this.width/2, transform.y - this.height/2);
             this.hiddenCanvasContext.scale(transform.k, transform.k);
 
             this.drawTree();
@@ -769,7 +747,7 @@ export default {
                 .duration(300)
                 .call(
                     this.d3Zoom.transform,
-                    d3.zoomIdentity.translate(0, 0).scale(0.08)
+                    d3.zoomIdentity.translate(this.width / 2, this.height / 2).scale(0.08)
                 );
         }
     }
