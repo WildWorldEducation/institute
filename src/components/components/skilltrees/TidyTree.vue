@@ -700,6 +700,12 @@ export default {
                 default:
                     break;
             }
+        },
+        // Find node with name include
+        findNodeWithName(searchString) {
+            this.root.each(function (node) {
+                console.log(node);
+            });
         }
     }
 };

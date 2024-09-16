@@ -146,6 +146,7 @@ export default {
         },
 
         HandleClickSubmit() {
+            alert('GO TO HERE');
             // Only show the modal when user choose an instructor
             if (this.instructorName && !this.haveInstructor) {
                 this.showWarnModal = true;
@@ -425,7 +426,7 @@ export default {
                     <div class="mb-3">
                         <label for="name" class="form-label">First Name</label>
                         <input
-                            id="name"
+                            id="first-name"
                             v-model="firstName"
                             type="text"
                             class="form-control"
@@ -444,7 +445,7 @@ export default {
                     <div class="mb-3">
                         <label for="name" class="form-label">Last Name</label>
                         <input
-                            id="name"
+                            id="last-name"
                             v-model="lastName"
                             type="text"
                             class="form-control"

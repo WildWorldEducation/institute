@@ -12,7 +12,9 @@ export default {
         };
     },
     data() {
-        return {};
+        return {
+            searchText: ''
+        };
     },
     created() {},
     components: { TidyTree, TidyTreeNoAccount },
@@ -28,6 +30,12 @@ export default {
         //         document.getElementById('legend').style.display = 'none';
         //     }
         // }
+    },
+    computed: {
+        findNodeResults() {
+            this.$refs.childComponent.findNodeWithName(this.searchText);
+            return 'ha ha';
+        }
     }
 };
 </script>
@@ -81,8 +89,37 @@ export default {
                 </div>
                 <div class="col"><span class="college"></span> College</div>
                 <div class="col"><span class="phd"></span> PHD</div>
-
-                <div class="col d-flex justify-content-end">
+                <div class="col">{{ searchText }}</div>
+                <div
+                    class="col d-flex justify-content-end align-items-center gap-2"
+                >
+                    <!-- Search Feature -->
+                    <div class="d-flex flex-column position-relative">
+                        <div class="search-bar">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="15"
+                                height="15"
+                                fill="#5f6368"
+                                class="me-2"
+                            >
+                                <path
+                                    d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                                />
+                            </svg>
+                            <input
+                                id="skill-tree-search-text"
+                                type="text"
+                                class="skill-tree-input"
+                                placeholder="Skill Name"
+                                v-model="searchText"
+                            />
+                        </div>
+                        <div v-if="searchText.length > 0" class="search-result">
+                            {{ findNodeResults }}
+                        </div>
+                    </div>
                     <button
                         v-if="sessionDetailsStore.isLoggedIn"
                         id="print-btn"
@@ -146,6 +183,20 @@ export default {
 
 .collapsible-tree-legend {
     width: 100%;
+}
+
+.search-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid #dce2f2;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.skill-tree-input {
+    outline: none;
+    border: 0px;
 }
 
 /* Small devices (portrait phones) */
