@@ -632,7 +632,7 @@ router.get('/showId/:username', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        const deleteQuery = `UPDATE users SET is_deleted = 1 WHERE id = ${req.params.id}`;
+        const deleteQuery = `UPDATE users SET is_deleted = 1 WHERE id = '${req.params.id}';`;
         conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
@@ -694,10 +694,11 @@ router.put(
                 avatar +
                 "', role = '" +
                 req.body.role +
-                "' WHERE id=" +
-                req.params.id;
+                "' WHERE id='" +
+                req.params.id +
+                "';";
 
-            let query = conn.query(sqlQuery, (err, results) => {
+            conn.query(sqlQuery, (err, results) => {
                 try {
                     if (err) {
                         throw err;
@@ -720,10 +721,10 @@ router.put(
     (req, res, next) => {
         let sqlQuery = `
         DELETE FROM instructor_students
-        WHERE student_id = ${req.params.id};
+        WHERE student_id = '${req.params.id}';
     `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -736,10 +737,10 @@ router.put(
 
         sqlQuery = `
         INSERT INTO instructor_students (instructor_id, student_id) 
-        VALUES (${req.body.instructor_id}, ${req.params.id});
+        VALUES ('${req.body.instructor_id}', '${req.params.id}');
     `;
 
-        let insertQuery = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -793,8 +794,9 @@ router.put(
                     req.body.email +
                     '", password="' +
                     hashedPassword +
-                    '" WHERE id=' +
-                    req.params.id;
+                    '" WHERE id="' +
+                    req.params.id +
+                    '";';
                 conn.query(sqlQuery, (err, results) => {
                     try {
                         if (err) {
