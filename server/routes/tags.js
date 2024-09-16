@@ -25,7 +25,7 @@ router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM tags';
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -51,7 +51,7 @@ router.post('/add', (req, res, next) => {
         let data = {};
         data = { name: req.body.name };
         let sqlQuery = 'INSERT INTO tags SET ?';
-        let query = conn.query(sqlQuery, data, (err, results) => {
+        conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -75,7 +75,7 @@ router.post('/add', (req, res, next) => {
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = 'DELETE FROM tags WHERE id=' + req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -114,7 +114,7 @@ router.put('/select', (req, res, next) => {
                 req.body.tags[i].id +
                 `;`;
 
-            let query1 = conn.query(sqlQuery1, (err, results) => {
+            conn.query(sqlQuery1, (err, results) => {
                 try {
                     if (err) {
                         throw err;
@@ -130,7 +130,7 @@ router.put('/select', (req, res, next) => {
                         req.body.tags[i].id +
                         `;`;
 
-                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                    conn.query(sqlQuery2, (err, results) => {
                         try {
                             if (err) {
                                 throw err;
@@ -148,18 +148,15 @@ router.put('/select', (req, res, next) => {
                                     relevantSkills[j].skill_id +
                                     `;`;
 
-                                let query3 = conn.query(
-                                    sqlQuery3,
-                                    (err, results) => {
-                                        try {
-                                            if (err) {
-                                                throw err;
-                                            }
-                                        } catch (err) {
-                                            next(err);
+                                conn.query(sqlQuery3, (err, results) => {
+                                    try {
+                                        if (err) {
+                                            throw err;
                                         }
+                                    } catch (err) {
+                                        next(err);
                                     }
-                                );
+                                });
                             }
                         } catch (err) {
                             next(err);

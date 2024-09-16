@@ -24,7 +24,7 @@ router.get('/:id', (req, res, next) => {
     SELECT * FROM user_votes
     WHERE resource_id =` + req.params.id;
 
-    let query = conn.query(sqlQuery, (err, results) => {
+    conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
                 throw err;
@@ -46,15 +46,13 @@ router.put('/:userId/:resourceId/edit/up', (req, res, next) => {
         let sqlQuery =
             `
         INSERT INTO user_votes (user_id, resource_id, vote) 
-        VALUES(` +
-            req.params.userId +
-            `, ` +
+        VALUES('${req.params.userId}', ` +
             req.params.resourceId +
             `, 1) 
         ON DUPLICATE KEY UPDATE vote=1;
         `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -72,15 +70,13 @@ router.put('/:userId/:resourceId/edit/down', (req, res, next) => {
         let sqlQuery =
             `
         INSERT INTO user_votes (user_id, resource_id, vote) 
-        VALUES(` +
-            req.params.userId +
-            `, ` +
+        VALUES('${req.params.userId}', ` +
             req.params.resourceId +
             `, -1) 
         ON DUPLICATE KEY UPDATE vote=-1;
         `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -99,15 +95,13 @@ router.put('/:userId/:resourceId/edit/cancel', (req, res, next) => {
         let sqlQuery =
             `
         INSERT INTO user_votes (user_id, resource_id, vote) 
-        VALUES(` +
-            req.params.userId +
-            `, ` +
+        VALUES('${req.params.userId}', ` +
             req.params.resourceId +
             `, 0) 
         ON DUPLICATE KEY UPDATE vote=0;
         `;
 
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;

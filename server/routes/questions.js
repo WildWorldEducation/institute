@@ -129,7 +129,7 @@ router.get('/mc/show/:id', (req, res, next) => {
         let sqlQuery =
             'SELECT mc_questions.*, skills.name as skill_name, skills.level as skill_level FROM mc_questions JOIN skills ON mc_questions.skill_id = skills.id WHERE mc_questions.id=' +
             req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -149,7 +149,7 @@ router.get('/essay/show/:id', (req, res) => {
         let sqlQuery =
             'SELECT essay_questions.*, skills.name as skill_name, skills.level as skill_level FROM essay_questions JOIN skills ON skills.id = essay_questions.skill_id WHERE essay_questions.id=' +
             req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -326,8 +326,9 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
-                                }`,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
                             contentId: req.params.id,
                             contentType: 'mc_question'
                         },
@@ -385,7 +386,7 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
         // Add data.
         let sqlQuery = `INSERT INTO mc_questions_awaiting_approval (mc_question_id, user_id, name, question, correct_answer,
             incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, incorrect_answer_4, explanation, comment)
-            VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}', '${correctAnswer}', '${incorrectAnswer1}', '${incorrectAnswer2}', 
+            VALUES (${req.params.id}, '${req.body.userId}', '${name}', '${question}', '${correctAnswer}', '${incorrectAnswer1}', '${incorrectAnswer2}', 
             '${incorrectAnswer3}', '${incorrectAnswer4}', '${explanation}', '${req.body.comment}')
             
             ON DUPLICATE KEY
@@ -437,8 +438,8 @@ router.get(
             const sqlQuery = `SELECT *
                           FROM mc_questions_awaiting_approval
                           WHERE mc_question_id = ${req.params.mcQuestionId}
-                          AND user_id = ${req.params.userId}`;
-            let query = conn.query(sqlQuery, (err, results) => {
+                          AND user_id = '${req.params.userId}';`;
+            conn.query(sqlQuery, (err, results) => {
                 try {
                     if (err) {
                         throw err;
@@ -468,8 +469,8 @@ router.get(
             const sqlQuery = `SELECT *
                           FROM essay_questions_awaiting_approval
                           WHERE essay_question_id = ${req.params.essayQuestionId}
-                          AND user_id = ${req.params.userId}`;
-            let query = conn.query(sqlQuery, (err, results) => {
+                          AND user_id = '${req.params.userId}';`;
+            conn.query(sqlQuery, (err, results) => {
                 try {
                     if (err) {
                         throw err;
@@ -499,14 +500,14 @@ router.get(
             const sqlQuery = `SELECT *
                               FROM image_questions_awaiting_approval
                               WHERE image_question_id = ${req.params.imageQuestionId}
-                              AND user_id = ${req.params.userId}`;
+                              AND user_id = '${req.params.userId}';`;
             conn.query(sqlQuery, (err, results) => {
                 try {
                     if (err) {
                         throw err;
                     }
-                    essayQuestion = results[0];
-                    res.json(essayQuestion);
+                    imageQuestion = results[0];
+                    res.json(imageQuestion);
                 } catch (err) {
                     next(err);
                 }
@@ -527,7 +528,7 @@ router.delete(
             const deleteQuery = `DELETE 
                              FROM mc_questions_awaiting_approval
                              WHERE mc_question_id = ${req.params.mcQuestionId}
-                             AND user_id  = ${req.params.userId};`;
+                             AND user_id  = '${req.params.userId}';`;
             conn.query(deleteQuery, (err) => {
                 try {
                     if (err) {
@@ -556,7 +557,7 @@ router.delete(
             const deleteQuery = `DELETE 
                              FROM essay_questions_awaiting_approval
                              WHERE essay_question_id = ${req.params.essayQuestionId}
-                             AND user_id  = ${req.params.userId};`;
+                             AND user_id  = '${req.params.userId}';`;
             conn.query(deleteQuery, (err) => {
                 try {
                     if (err) {
@@ -585,7 +586,7 @@ router.delete(
             const deleteQuery = `DELETE 
                              FROM image_questions_awaiting_approval
                              WHERE image_question_id = ${req.params.imageQuestionId}
-                             AND user_id  = ${req.params.userId};`;
+                             AND user_id = '${req.params.userId}';`;
             conn.query(deleteQuery, (err) => {
                 try {
                     if (err) {
@@ -601,8 +602,6 @@ router.delete(
         }
     }
 );
-
-
 
 // Load all mc type questions.
 router.get('/mc/submitted-for-review/list', (req, res, next) => {
@@ -648,7 +647,7 @@ router.put('/essay/:id/edit', (req, res, next) => {
             question +
             `' WHERE id = ` +
             req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -676,9 +675,9 @@ router.put('/essay/:id/edit', (req, res, next) => {
     }
 });
 
-/** 
+/**
  * update essay question
-*/
+ */
 router.put('/essay/:id/approve-edits', (req, res, next) => {
     if (req.session.userName) {
         let name;
@@ -697,7 +696,7 @@ router.put('/essay/:id/approve-edits', (req, res, next) => {
             question +
             `' WHERE id = ` +
             req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -706,8 +705,9 @@ router.put('/essay/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
-                                }`,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
                             contentId: req.params.id,
                             contentType: 'essay_question'
                         },
@@ -746,7 +746,7 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
 
         // Add data.
         let sqlQuery = `INSERT INTO essay_questions_awaiting_approval (essay_question_id, user_id, name, question, comment)
-                        VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}','${req.body.comment}')
+                        VALUES (${req.params.id}, '${req.body.userId}', '${name}', '${question}','${req.body.comment}')
 
                         ON DUPLICATE KEY
                         UPDATE date = CURRENT_TIMESTAMP(), name = '${name}', question = '${question}', comment = '${req.body.comment}';`;
@@ -785,15 +785,14 @@ router.post('/essay/:id/edit-for-review', (req, res, next) => {
 router.get('/essay/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            `
+        let sqlQuery = `
             SELECT essay_questions_awaiting_approval.*, skills.name AS skill_name
             FROM essay_questions_awaiting_approval
             JOIN essay_questions
             ON essay_questions_awaiting_approval.essay_question_id = essay_questions.id
             JOIN skills
             ON essay_questions.skill_id = skills.id
-        `
+        `;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -873,7 +872,7 @@ router.post('/image/:id/edit-for-review', (req, res, next) => {
 
         // Add data.
         let sqlQuery = `INSERT INTO image_questions_awaiting_approval (image_question_id, user_id, name, question, num_images_required, comment)
-                        VALUES (${req.params.id}, ${req.body.userId}, '${name}', '${question}', '${req.body.num_images_required}','${req.body.comment}')
+                        VALUES (${req.params.id}, '${req.body.userId}', '${name}', '${question}', '${req.body.num_images_required}','${req.body.comment}')
 
                         ON DUPLICATE KEY
                         UPDATE date = CURRENT_TIMESTAMP(), name = '${name}', question = '${question}', num_images_required = '${req.body.num_images_required}', comment = '${req.body.comment}';`;
@@ -908,21 +907,18 @@ router.post('/image/:id/edit-for-review', (req, res, next) => {
     }
 });
 
-
-
 // Load all image questions type
 router.get('/image-question/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            `
+        let sqlQuery = `
             SELECT image_questions_awaiting_approval.*, skills.name AS skill_name
             FROM image_questions_awaiting_approval
             JOIN image_questions
             ON image_questions_awaiting_approval.image_question_id = image_questions.id
             JOIN skills
             ON image_questions.skill_id = skills.id
-        `
+        `;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -945,7 +941,7 @@ router.get('/:skillId/multiple-choice', (req, res, next) => {
             FROM mc_questions 
             WHERE skill_id = ${req.params.skillId}
             AND is_deleted = 0;`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -958,14 +954,14 @@ router.get('/:skillId/multiple-choice', (req, res, next) => {
     }
 });
 
-/** 
+/**
  * update image question
-*/
+ */
 router.put('/image/:id/approve-edits', (req, res, next) => {
     if (req.session.userName) {
         let name;
         let question;
-        let numOfImages
+        let numOfImages;
         // Escape single quotes for SQL to accept.
         if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
         if (req.body.question != null)
@@ -991,8 +987,9 @@ router.put('/image/:id/approve-edits', (req, res, next) => {
                     recordUserAction(
                         {
                             userId: req.session.userId,
-                            userAction: `${req.body.edit ? 'edit_and_approve' : 'approve'
-                                }`,
+                            userAction: `${
+                                req.body.edit ? 'edit_and_approve' : 'approve'
+                            }`,
                             contentId: req.params.id,
                             contentType: 'image_question'
                         },
@@ -1022,7 +1019,7 @@ router.get('/:skillId/essay', (req, res, next) => {
             FROM essay_questions 
             WHERE skill_id = ${req.params.skillId}
             AND is_deleted = 0;`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -1182,7 +1179,7 @@ router.post('/essay-questions/add', (req, res, next) => {
         };
 
         let sqlQuery = 'INSERT INTO essay_questions SET ?';
-        let query = conn.query(sqlQuery, data, (err, results) => {
+        conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -1322,7 +1319,7 @@ router.get('/student-mc-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM student_mc_questions;';
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -1347,8 +1344,8 @@ router.get('/student-mc-questions/full-data-list', (req, res, next) => {
                             FROM student_mc_questions JOIN users ON users.id = student_mc_questions.student_id 
                             JOIN skills ON student_mc_questions.skill_id = skills.id 
                             JOIN instructor_students ON instructor_students.student_id = student_mc_questions.student_id 
-                            WHERE instructor_students.instructor_id = ${req.session.userId}`;
-            let query = conn.query(sqlQuery, (err, results) => {
+                            WHERE instructor_students.instructor_id = '${req.session.userId}'`;
+            conn.query(sqlQuery, (err, results) => {
                 try {
                     if (err) {
                         throw err;
@@ -1384,7 +1381,7 @@ router.post('/student-mc-questions/add', (req, res, next) => {
         };
 
         let sqlQuery = 'INSERT INTO student_mc_questions SET ?';
-        let query = conn.query(sqlQuery, data, (err, result) => {
+        conn.query(sqlQuery, data, (err, result) => {
             try {
                 if (err) {
                     throw err;
@@ -1421,7 +1418,7 @@ router.delete('/student-mc-questions/:id', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery =
             'DELETE FROM student_mc_questions WHERE id=' + req.params.id;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -1469,7 +1466,7 @@ router.get('/check-questions', (req, res, next) => {
         AND skill_id > 1591
         AND skill_id < 1598      
         ORDER BY skill_id`;
-        let query1 = conn.query(sqlQuery1, (err, results) => {
+        conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -1787,8 +1784,8 @@ async function checkQuestion(index, userId) {
                             }
                             console.log(
                                 'MC question ' +
-                                mcQuestions[index].id +
-                                ' complete'
+                                    mcQuestions[index].id +
+                                    ' complete'
                             );
                             // Check the next question.
                             index++;
