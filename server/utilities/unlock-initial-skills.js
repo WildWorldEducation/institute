@@ -16,7 +16,7 @@ function unlockInitialSkills(userId) {
                     firstLevelSkills.push(skills[i]);
                 }
             }
-            // console.log(firstLevelSkills);
+
             for (let i = 0; i < firstLevelSkills.length; i++) {
                 // Recursive function.
                 makeMastered(userId, firstLevelSkills[i]);

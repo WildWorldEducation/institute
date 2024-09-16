@@ -251,6 +251,8 @@ router.post('/new-editor/add', (req, res, next) => {
                                         /\\/g,
                                         ''
                                     );
+                                    // Set the primary key.
+                                    data.id = uuidv7();
                                     // If not, add to database.
                                     let sqlQuery3 = 'INSERT INTO users SET ?';
                                     conn.query(
@@ -261,48 +263,24 @@ router.post('/new-editor/add', (req, res, next) => {
                                                 if (err) {
                                                     throw err;
                                                 } else {
-                                                    // After creating the user, get their id number and send to the front end.
-                                                    // Using teir email, which is unique.
-                                                    let sqlQuery4 =
-                                                        `
-                                            SELECT id
-                                            FROM users
-                                            WHERE users.email = '` +
-                                                        req.body.email +
-                                                        `';`;
-                                                    conn.query(
-                                                        sqlQuery4,
-                                                        (err, results) => {
-                                                            try {
-                                                                if (err) {
-                                                                    throw err;
-                                                                }
-                                                                // Create session to log the user in.
-                                                                req.session.userId =
-                                                                    results[0].id;
-                                                                req.session.userName =
-                                                                    req.body.username;
-                                                                req.session.role =
-                                                                    results[0].role;
+                                                    let newEditorId = data.id;
+                                                    // Create session to log the user in.
+                                                    req.session.userId =
+                                                        newEditorId;
+                                                    req.session.userName =
+                                                        req.body.username;
+                                                    req.session.role =
+                                                        results[0].role;
 
-                                                                // Unlock skills here
-                                                                unlockInitialSkills(
-                                                                    req.session
-                                                                        .userId
-                                                                );
-
-                                                                res.json({
-                                                                    account:
-                                                                        'authorized',
-                                                                    role: req
-                                                                        .session
-                                                                        .role
-                                                                });
-                                                            } catch (err) {
-                                                                next(err);
-                                                            }
-                                                        }
+                                                    // Unlock skills here
+                                                    unlockInitialSkills(
+                                                        req.session.userId
                                                     );
+
+                                                    res.json({
+                                                        account: 'authorized',
+                                                        role: req.session.role
+                                                    });
                                                 }
                                             } catch (err) {
                                                 next(err);
@@ -405,6 +383,8 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                         /\\/g,
                                         ''
                                     );
+                                    // Set the primary key.
+                                    data.id = uuidv7();
                                     // If not, add to database.
                                     let sqlQuery3 = 'INSERT INTO users SET ?';
                                     conn.query(
@@ -415,33 +395,12 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                                 if (err) {
                                                     throw err;
                                                 } else {
-                                                    // After creating the user, get their id number and send to the front end.
-                                                    // Using teir email, which is unique.
-                                                    let sqlQuery4 =
-                                                        `
-                                            SELECT id
-                                            FROM users
-                                            WHERE users.email = '` +
-                                                        req.body.email +
-                                                        `';`;
-                                                    conn.query(
-                                                        sqlQuery4,
-                                                        (err, results) => {
-                                                            try {
-                                                                if (err) {
-                                                                    throw err;
-                                                                }
-                                                                res.json({
-                                                                    account:
-                                                                        'account created',
-                                                                    id: results[0]
-                                                                        .id
-                                                                });
-                                                            } catch (err) {
-                                                                next(err);
-                                                            }
-                                                        }
-                                                    );
+                                                    let newUserId = data.id;
+                                                    res.json({
+                                                        account:
+                                                            'account created',
+                                                        id: newUserId
+                                                    });
                                                 }
                                             } catch (err) {
                                                 next(err);

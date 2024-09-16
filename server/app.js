@@ -49,6 +49,9 @@ app.use(
     })
 );
 
+// For primary key for users table, for Google signup.
+const { v7: uuidv7 } = require('uuid');
+
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -215,7 +218,8 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                         if (err) {
                             throw err;
                         } else {
-                            let newStudentId = results.insertId;
+                            // Set the primary key.
+                            let newStudentId = uuidv7();
                             // Create session to log the user in.
                             req.session.userId = newStudentId;
                             req.session.userName = data.username;
@@ -249,7 +253,7 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
     // Check if user already exists.
     let sqlQuery1 =
         "SELECT * FROM users WHERE email = '" + googleUserDetails.email + "';";
-    let query1 = conn.query(sqlQuery1, (err, results) => {
+    conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
                 throw err;
@@ -294,21 +298,22 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
                 };
 
                 let sqlQuery2 = 'INSERT INTO users SET ?';
-                let query2 = conn.query(sqlQuery2, data, (err, results) => {
+                conn.query(sqlQuery2, data, (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         } else {
-                            let newUserId = results.insertId;
+                            // Set the primary key.
+                            let newEditorId = uuidv7();
                             // Create session to log the user in.
-                            req.session.userId = newUserId;
+                            req.session.userId = newEditorId;
                             req.session.userName = data.username;
                             req.session.firstName = data.first_name;
                             req.session.lastName = data.last_name;
                             req.session.role = data.role;
 
                             // Unlock skills here
-                            unlockInitialSkills(newUserId);
+                            unlockInitialSkills(newEditorId);
 
                             res.redirect('/');
                         }
@@ -357,9 +362,6 @@ app.post('/login-attempt', (req, res, next) => {
 
             // If username is found in DB.
             if (results.length > 0) {
-
-
-                
                 // Check password.
                 bcrypt.compare(
                     req.body.password,
@@ -426,7 +428,7 @@ app.get('/settings', (req, res, next) => {
         let sqlQuery = `
         SELECT *
         FROM settings;`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
