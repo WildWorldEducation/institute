@@ -703,9 +703,24 @@ export default {
         },
         // Find node with name include
         findNodeWithName(searchString) {
+            let results = [];
+            // D3
+            //let breakLoop = false;
             this.root.each(function (node) {
-                console.log(node);
+                // if (breakLoop) return;
+                if (
+                    node.data.skill_name
+                        .toLowerCase()
+                        .substring(0, searchString.length) === searchString
+                ) {
+                    results.push(node);
+                }
+                // if (results.length > 8 && searchString.length < 4) {
+                //     breakLoop = true;
+                // }
             });
+
+            return results;
         }
     }
 };
