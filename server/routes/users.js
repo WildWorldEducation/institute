@@ -738,8 +738,9 @@ router.put(
             req.body.lastName +
             '",email="' +
             req.body.email +
-            '" WHERE id=' +
-            req.params.id;
+            '" WHERE id="' +
+            req.params.id +
+            '";';
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
