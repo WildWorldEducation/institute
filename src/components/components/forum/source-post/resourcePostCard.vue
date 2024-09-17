@@ -235,7 +235,7 @@ export default {
                         class="position-relative"
                     >
                         <!-- Button to toggle the action dropdown -->
-                        <div
+                        <button
                             class="toggle-actions-bnt"
                             @click="handleClickActionBtns(post.id)"
                             b-tooltip.hover
@@ -251,7 +251,7 @@ export default {
                                     d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"
                                 />
                             </svg>
-                        </div>
+                        </button>
                         <!-- The Drop Down Div Contains action relate to the resource (use transition for animation) -->
                         <Transition name="dropdown">
                             <div
@@ -399,7 +399,7 @@ export default {
     border-radius: 5px;
     background-color: white;
 }
-.vote-btn{
+.vote-btn {
     background-color: transparent;
     border: none;
 }

@@ -496,6 +496,7 @@ h2 {
     padding-left: 4px;
     margin-top: -5px;
     margin-left: 5px;
+    border: none;
 }
 
 :deep(.toggle-actions-bnt:hover) {
