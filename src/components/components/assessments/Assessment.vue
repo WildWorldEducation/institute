@@ -676,8 +676,10 @@ export default {
                     break;
                 case 'essay':
                     this.flagContentType = 'essay_question';
+                    break;
                 case 'image':
                     this.flagContentType = 'image_question';
+                    break;
                 default:
                     break;
             }

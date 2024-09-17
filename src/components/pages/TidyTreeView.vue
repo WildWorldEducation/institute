@@ -20,14 +20,6 @@ export default {
         resetPos() {
             this.$refs.childComponent.resetPos();
         }
-        // // Toggle info bar.
-        // ToggleInfobar() {
-        //     if (document.getElementById('legend').style.display == 'none') {
-        //         document.getElementById('legend').style.display = 'block';
-        //     } else {
-        //         document.getElementById('legend').style.display = 'none';
-        //     }
-        // }
     }
 };
 </script>

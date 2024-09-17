@@ -36,7 +36,7 @@ router.get('/:skillId/list', (req, res, next) => {
             WHERE id = ` +
             req.params.skillId +
             ` ORDER BY edited_date DESC`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -65,7 +65,7 @@ router.get('/:skillId/:versionNumber', (req, res, next) => {
             ` AND version_number = ` +
             req.params.versionNumber +
             ';';
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;

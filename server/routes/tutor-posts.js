@@ -82,11 +82,11 @@ router.post('/add/:skillId', (req, res, next) => {
 router.delete('/delete/:tutorSourceId', (req, res, next) => {
     if (req.session.userName) {
         // Check if the user has the right to delete the learning resource.
-        var tutorUserId;
+
         let sqlQuery1 =
             'SELECT user_id FROM tutor_posts WHERE id=' +
             req.params.tutorSourceId;
-        let query1 = conn.query(sqlQuery1, (err, results) => {
+        conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -100,7 +100,7 @@ router.delete('/delete/:tutorSourceId', (req, res, next) => {
                         let sqlQuery2 =
                             'DELETE FROM tutor_posts WHERE id=' +
                             req.params.tutorSourceId;
-                        let query2 = conn.query(sqlQuery2, (err, results) => {
+                        conn.query(sqlQuery2, (err, results) => {
                             try {
                                 if (err) {
                                     throw err;
@@ -133,7 +133,7 @@ router.get('/show/:tutorPostId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
             'SELECT * FROM tutor_posts WHERE id=' + req.params.tutorPostId;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
