@@ -1,11 +1,14 @@
 <script>
+// import store
+import { useSettingsStore } from '../../../../stores/SettingsStore';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
 export default {
     setup() {
+        const settingStore = useSettingsStore();
         return {
-            isLoading: true
+            settingStore
         };
     },
     data() {
@@ -21,14 +24,75 @@ export default {
                 { text: 'User', value: 'userName' },
                 { text: 'Skill Name', value: 'name' },
                 { text: 'Comment', value: 'comment' }
-            ]
+            ],
+            dataTableRef: null,
+            isLoading: true,
+            // make sure the table is mounted so we can compute the rows per page in peace
+            isMounted: false,
+            // we need this to determine if the web is in mobile mode
+            windowWidth: Infinity
         };
     },
     components: {
         Vue3EasyDataTable
     },
     props: ['skillsEditList', 'skillEditsLoading'],
-    async created() {},
+    async mounted() {
+        this.dataTableRef = this.$refs.dataTable;
+        this.dataTableRefM = this.$refs.dataTableM;
+        this.isLoading = true;
+        // fetch setting data if we dont have pagination data yet
+        if (
+            this.settingStore.todoContentFlagTableRows === 0 ||
+            this.settingStore.todoEssayQuestionTableRows === 0 ||
+            this.settingStore.todoImageQuestionTableRows === 0 ||
+            this.settingStore.todoImageQuestionTableRows === 0 ||
+            this.settingStore.todoMcQuestionTableRows === 0 ||
+            this.settingStore.todoSkillTableRows === 0
+        ) {
+            await this.settingStore.getSettings();
+            this.isLoading = false;
+        } else {
+            this.isLoading = false;
+        }
+        this.dataTableRef.updateRowsPerPageActiveOption(
+            parseInt(this.settingStore.todoSkillTableRows)
+        );
+        this.dataTableRefM.updateRowsPerPageActiveOption(
+            parseInt(this.settingStore.todoSkillTableRows)
+        );
+        // tell the compute function that we are ready to listen to rows per page change
+        this.isMounted = true;
+        this.windowWidth = window.innerWidth;
+    },
+    computed: {
+        rowsPerPage() {
+            if (this.isMounted) {
+                if (
+                    parseInt(this.settingStore.todoSkillTableRows) !==
+                    parseInt(this.dataTableRef?.rowsPerPageActiveOption)
+                ) {
+                    this.settingStore.todoSkillTableRows =
+                        this.dataTableRef?.rowsPerPageActiveOption;
+                    this.settingStore.saveSettings();
+                }
+            }
+            return this.dataTableRef?.rowsPerPageActiveOption;
+        },
+        rowsPerPageM() {
+            if (this.isMounted && parseInt(this.windowWidth) <= 575) {
+                if (
+                    parseInt(this.settingStore.todoSkillTableRows) !==
+                    parseInt(this.dataTableRefM?.rowsPerPageActiveOption)
+                ) {
+                    this.settingStore.todoSkillTableRows =
+                        this.dataTableRefM?.rowsPerPageActiveOption;
+                    this.settingStore.saveSettings();
+                }
+            }
+            return this.dataTableRef?.rowsPerPageActiveOption;
+        }
+    },
     methods: {
         goToComparePage(item) {
             this.$router.push(
@@ -71,6 +135,7 @@ export default {
     <div class="mt-3 pt-4 table-div h-100">
         <!-- Desktop table -->
         <Vue3EasyDataTable
+            ref="dataTable"
             :headers="headers"
             :items="skillsEditList"
             alternating
@@ -94,8 +159,12 @@ export default {
                 >
             </template>
         </Vue3EasyDataTable>
+        <!-- an ugly hack to watch row per page change   -->
+        <div class="d-none">{{ rowsPerPage }} {{ rowsPerPageM }}</div>
         <!-- Mobile table -->
+
         <Vue3EasyDataTable
+            ref="dataTableM"
             :headers="mobileHeaders"
             :items="skillsEditList"
             alternating
@@ -132,5 +201,24 @@ export default {
 
 .customize-table :deep(tbody tr:hover) {
     cursor: pointer;
+}
+
+/* Style Specific On Phone  */
+@media (max-width: 801px) {
+    .table-div {
+        padding: 0px;
+    }
+
+    .customize-table {
+        --easy-table-header-font-size: 14px;
+        --easy-table-body-row-font-size: 12px;
+    }
+}
+
+/* View Specific on Tablet */
+@media (min-width: 577px) and (max-width: 1380px) {
+    .table-div {
+        padding: 0px;
+    }
 }
 </style>
