@@ -1,11 +1,17 @@
 <script>
 import PageNav from '../components/todo/PageNav.vue';
+// import store
+import { useSettingsStore } from '../../stores/SettingsStore';
+// import child component
 import CheckStudentQuestions from '../components/todo/student-question/CheckStudentQuestions.vue';
 import ContentEditsList from '../components/todo/content-edit/ContentEditsList.vue';
 import ContentFlagsView from './ContentFlagsView.vue';
 
 export default {
-    setup() {},
+    setup() {
+        const settingStore = useSettingsStore();
+        return { settingStore };
+    },
     data() {
         return {
             activeContent: 'editList'
@@ -20,6 +26,17 @@ export default {
     },
     computed: {},
     async mounted() {
+        // fetch setting data if we dont have pagination data yet
+        if (
+            this.settingStore.todoContentFlagTableRows === 0 ||
+            this.settingStore.todoEssayQuestionTableRows === 0 ||
+            this.settingStore.todoImageQuestionTableRows === 0 ||
+            this.settingStore.todoImageQuestionTableRows === 0 ||
+            this.settingStore.todoMcQuestionTableRows === 0 ||
+            this.settingStore.todoSkillTableRows === 0
+        ) {
+            await this.settingStore.getSettings();
+        }
         // Get navigation state from URL
         const nav = this.$route.query.nav;
         if (nav) {
@@ -63,7 +80,7 @@ export default {
 }
 
 #contentDiv {
-    overflow: auto;
+    overflow-y: auto;
     width: 100%;
 }
 
@@ -71,7 +88,7 @@ export default {
 @media (min-width: 0px) and (max-width: 576px) {
     #contentDiv {
         width: fit-content;
-        overflow: auto;
+        overflow-y: auto;
     }
 }
 </style>
