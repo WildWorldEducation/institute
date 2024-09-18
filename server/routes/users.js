@@ -727,10 +727,10 @@ router.put(
         if (req.body.email != null)
             req.body.email = req.body.email.replace(/'/g, "\\'");
 
-        let sqlQuery =
-            'UPDATE users SET username="' +
-            req.body.username +
-            '", avatar ="' +
+        let username = req.body.username;
+
+        let sqlQuery = 'UPDATE users SET username="' + conn.escape(username);
+        +'", avatar ="' +
             req.body.avatar +
             '" ,first_name ="' +
             req.body.firstName +
