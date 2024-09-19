@@ -732,13 +732,24 @@ export default {
             //let breakLoop = false;
             this.root.each(function (node) {
                 // if (breakLoop) return;
-                if (
-                    node.data.skill_name
-                        .toLowerCase()
-                        .substring(0, searchString.length) === searchString
-                ) {
-                    results.push(node);
+                if (searchString.length < 2) {
+                    if (
+                        node.data.skill_name
+                            .toLowerCase()
+                            .substring(0, searchString.length) === searchString
+                    ) {
+                        results.push(node);
+                    }
+                } else {
+                    if (
+                        node.data.skill_name
+                            .toLowerCase()
+                            .includes(searchString)
+                    ) {
+                        results.push(node);
+                    }
                 }
+
                 // if (results.length > 8 && searchString.length < 4) {
                 //     breakLoop = true;
                 // }
