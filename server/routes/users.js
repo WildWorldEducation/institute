@@ -717,31 +717,16 @@ router.put(
     isAuthenticated,
     editUserPermission,
     (req, res, next) => {
-        // Escape single quotes for SQL to accept.
-        if (req.body.firstName != null)
-            req.body.firstName = req.body.firstName.replace(/'/g, "\\'");
-        if (req.body.lastName != null)
-            req.body.lastName = req.body.lastName.replace(/'/g, "\\'");
-        if (req.body.username != null)
-            req.body.username = req.body.username.replace(/'/g, "\\'");
-        if (req.body.email != null)
-            req.body.email = req.body.email.replace(/'/g, "\\'");
+        let sqlQuery = `UPDATE users
+            SET username = 
+            ${conn.escape(req.body.username)},
+            avatar = ${conn.escape(req.body.avatar)},
+            first_name = ${conn.escape(req.body.firstName)},
+            last_name = ${conn.escape(req.body.lastName)},
+            email = ${conn.escape(req.body.email)}
+            WHERE id = ${conn.escape(req.params.id)};`;
 
-        let username = req.body.username;
-
-        let sqlQuery = 'UPDATE users SET username="' + conn.escape(username);
-        +'", avatar ="' +
-            req.body.avatar +
-            '" ,first_name ="' +
-            req.body.firstName +
-            '", last_name="' +
-            req.body.lastName +
-            '",email="' +
-            req.body.email +
-            '" WHERE id="' +
-            req.params.id +
-            '";';
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;
