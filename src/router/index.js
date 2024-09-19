@@ -196,7 +196,10 @@ const router = createRouter({
             path: '/users',
             name: 'users',
             component: () => import('../components/pages/UsersView.vue'),
-            meta: { requiresAuth: true, roles: ['instructor', 'admin'] }
+            meta: {
+                requiresAuth: true,
+                roles: ['instructor', 'admin', 'editor']
+            }
         },
         {
             path: '/users/add',
@@ -221,6 +224,13 @@ const router = createRouter({
             name: 'user-activity-report',
             component: () =>
                 import('../components/pages/UserActivityReportPageView.vue')
+        },
+        {
+            path: '/users/:userId/activity-report/source/:sourceId',
+            name: 'user-activity-report-source',
+            component: () =>
+                import('../components/pages/UserActivityReportSourceView.vue'),
+            meta: { requiresAuth: true, roles: ['editor', 'admin'] }
         },
         {
             path: '/profile-settings',

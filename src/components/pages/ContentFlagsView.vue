@@ -3,6 +3,8 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useResourcesStore } from '../../stores/ResourcesStore.js';
 import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
 import { useEssayQuestionsStore } from '../../stores/EssayQuestionsStore.js';
+import { useSettingsStore } from '../../stores/SettingsStore';
+
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
@@ -12,12 +14,13 @@ export default {
         const resourcesStore = useResourcesStore();
         const mcQuestionsStore = useMCQuestionsStore();
         const essayQuestionsStore = useEssayQuestionsStore();
-
+        const settingStore = useSettingsStore();
         return {
             skillsStore,
             resourcesStore,
             mcQuestionsStore,
-            essayQuestionsStore
+            essayQuestionsStore,
+            settingStore
         };
     },
     data() {
@@ -64,7 +67,14 @@ export default {
             showDateFilterDropDown: false,
             dateMonthCriteria: '',
             dateYearCriteria: '',
-            dateDayCriteria: ''
+            dateDayCriteria: '',
+            dataTableRef: null,
+            dataTableRefM: null,
+            isLoading: true,
+            // make sure the table is mounted so we can compute the rows per page in peace
+            isMounted: false,
+            // we need this to determine if the web is in mobile mode
+            windowWidth: Infinity
         };
     },
     components: {
@@ -72,10 +82,35 @@ export default {
     },
     async created() {},
     async mounted() {
-        // call to content flags route
+        // fetch data from sever
         await this.getContentFlags();
-        // initial data for date criteria
-        const today = new Date();
+
+        this.dataTableRef = this.$refs.dataTable;
+        this.dataTableRefM = this.$refs.dataTableM;
+        this.isLoading = true;
+        // fetch setting data if we dont have pagination data yet
+        if (
+            this.settingStore.todoContentFlagTableRows === 0 ||
+            this.settingStore.todoEssayQuestionTableRows === 0 ||
+            this.settingStore.todoImageQuestionTableRows === 0 ||
+            this.settingStore.todoStudentQuestionTableRows === 0 ||
+            this.settingStore.todoMcQuestionTableRows === 0 ||
+            this.settingStore.todoSkillTableRows === 0
+        ) {
+            await this.settingStore.getSettings();
+            this.isLoading = false;
+        } else {
+            this.isLoading = false;
+        }
+        this.dataTableRef.updateRowsPerPageActiveOption(
+            parseInt(this.settingStore.todoContentFlagTableRows)
+        );
+        this.dataTableRefM.updateRowsPerPageActiveOption(
+            parseInt(this.settingStore.todoContentFlagTableRows)
+        );
+        // tell the compute function that we are ready to listen to rows per page change
+        this.isMounted = true;
+        this.windowWidth = window.innerWidth;
     },
     methods: {
         async getContentFlags() {
@@ -147,7 +182,6 @@ export default {
                                 flagRow.contentId = flag.content_id;
                                 flagRow.type = 'image question';
                                 flagRow.name = `${contentObj.name} ${contentObj.question}`;
-
                                 flagRow.nameUrl = `skills/${contentObj.skillId}/question-bank`;
                                 flagRow.flagId = flag.id;
                                 flagRow.editUrl = `/image-questions/edit/${flag.content_id}`;
@@ -450,6 +484,34 @@ export default {
             );
         }
     },
+    computed: {
+        rowsPerPage() {
+            if (this.isMounted) {
+                if (
+                    parseInt(this.settingStore.todoContentFlagTableRows) !==
+                    parseInt(this.dataTableRef?.rowsPerPageActiveOption)
+                ) {
+                    this.settingStore.todoContentFlagTableRows =
+                        this.dataTableRef?.rowsPerPageActiveOption;
+                    this.settingStore.saveSettings();
+                }
+            }
+            return this.dataTableRef?.rowsPerPageActiveOption;
+        },
+        rowsPerPageM() {
+            if (this.isMounted && parseInt(this.windowWidth) <= 575) {
+                if (
+                    parseInt(this.settingStore.todoContentFlagTableRows) !==
+                    parseInt(this.dataTableRefM?.rowsPerPageActiveOption)
+                ) {
+                    this.settingStore.todoContentFlagTableRows =
+                        this.dataTableRefM?.rowsPerPageActiveOption;
+                    this.settingStore.saveSettings();
+                }
+            }
+            return this.dataTableRef?.rowsPerPageActiveOption;
+        }
+    },
     watch: {
         dateOrder: {
             handler(newVal, oldVal) {
@@ -479,7 +541,7 @@ export default {
             class="img-fluid"
         />
     </div>
-    <div class="container-md pb-5">
+    <div class="container-fluid pb-5">
         <div class="mt-3">
             <h2 class="page-title">Content Flags</h2>
         </div>
@@ -506,6 +568,7 @@ export default {
         <!-- Vue Data Table Desktop  -->
         <div class="mt-5 pb-5 d-none d-md-block table-div">
             <Vue3EasyDataTable
+                ref="dataTable"
                 :headers="headers"
                 :items="rows"
                 alternating
@@ -1363,6 +1426,7 @@ export default {
         <!-- Vue Data Table Phone -->
         <div class="mt-5 pb-5 d-md-none">
             <Vue3EasyDataTable
+                ref="dataTableM"
                 :headers="headersPhone"
                 :items="rows"
                 alternating
@@ -1900,6 +1964,8 @@ export default {
                 </svg>
             </button>
         </div>
+
+        <div class="d-none">{{ rowsPerPage }} {{ rowsPerPageM }}</div>
     </div>
 
     <!-- Modal of dismiss flagging content -->

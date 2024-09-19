@@ -214,7 +214,7 @@ export default {
                 .then((data) => {
                     if (
                         data.length > 0 &&
-                        !this.userDetailsStore.instructor.id
+                        !this.userDetailsStore.instructorId
                     ) {
                         if (this.settingsStore.isManualEssayMarking == 1)
                             this.needToSelectInstructor = true;
@@ -268,7 +268,7 @@ export default {
                 .then((data) => {
                     if (
                         data.length > 0 &&
-                        !this.userDetailsStore.instructor.id
+                        !this.userDetailsStore.instructorId
                     ) {
                         if (this.settingsStore.isManualEssayMarking == 1)
                             this.needToSelectInstructor = true;
@@ -676,8 +676,10 @@ export default {
                     break;
                 case 'essay':
                     this.flagContentType = 'essay_question';
+                    break;
                 case 'image':
                     this.flagContentType = 'image_question';
+                    break;
                 default:
                     break;
             }

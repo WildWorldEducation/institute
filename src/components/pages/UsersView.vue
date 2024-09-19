@@ -1,6 +1,6 @@
 <script>
 import UsersList from '../components/UsersList.vue';
-import UserDetails from '../components/userdetails.vue';
+import UserDetails from '../components/UserDetails.vue';
 
 // Import the stores.
 import { useUsersStore } from '../../stores/UsersStore';
@@ -34,7 +34,8 @@ export default {
             showDetails: false,
             students: [],
             // Flag to decide whether to show the details panel. Will be false if there are no users,
-            showUserInfo: true
+            showUserInfo: true,
+            isLoading: true
         };
     },
     components: {
@@ -43,9 +44,26 @@ export default {
     },
     async created() {
         // Set up the first user in the array to be selected on the page initially.
-        if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
-        // Alway refetch for the student instruction list because the edit and add user may change the list
-        await this.instructorStudentsStore.getInstructorStudentsList();
+
+        if (
+            this.userDetailsStore.role == 'admin' ||
+            this.userDetailsStore.role == 'instructor'
+        ) {
+            if (this.usersStore.users.length < 1) {
+                await this.usersStore.getUsers();
+            }
+        } else if (this.userDetailsStore.role == 'editor') {
+            if (this.usersStore.editors.length < 1) {
+                await this.usersStore.getEditors();
+            }
+        }
+
+        if (this.userDetailsStore.role != 'editor') {
+            // Always refresh for the student instruction list because the edit and add user may change the list
+            await this.instructorStudentsStore.getInstructorStudentsList();
+        }
+
+        this.isLoading = false;
 
         // TODO: May be better refactored using computed proprty for users/students.
         if (this.userDetailsStore.role == 'admin') {
@@ -64,12 +82,19 @@ export default {
             this.user.username = this.students[0].username;
             this.user.email = this.students[0].email;
             this.user.avatar = this.students[0].avatar;
+        } else if (this.userDetailsStore.role == 'editor') {
+            this.user.id = this.usersStore.editors[0].id;
+            this.user.firstName = this.usersStore.editors[0].first_name;
+            this.user.lastName = this.usersStore.editors[0].last_name;
+            this.user.username = this.usersStore.editors[0].username;
+            this.user.email = this.usersStore.editors[0].email;
+            this.user.avatar = this.usersStore.editors[0].avatar;
         }
     },
+    computed: {},
     methods: {
         // This method will always get call by child element to restore current user to the first one
         changeUserToDefault() {
-            //  console.log('CALL CHANGE TO DEFAULT');
             this.user.id = this.usersStore.users[0].id;
             this.user.firstName = this.usersStore.users[0].first_name;
             this.user.lastName = this.usersStore.users[0].last_name;
@@ -90,7 +115,6 @@ export default {
             this.showDetails = true;
             if (this.user.role == 'student') this.getInstructor();
         },
-        turnOffDetailsPopup() {},
         getInstructor() {
             // Get the instructor's user id.
             var instructorId;
@@ -151,6 +175,7 @@ export default {
             class="w-100 img-fluid"
         />
     </div>
+    <!-- Add user button -->
     <div
         v-if="userDetailsStore.role == 'admin'"
         id="first-content-row"
@@ -173,7 +198,14 @@ export default {
             </svg>
         </router-link>
     </div>
-    <div id="user-container" class="container-fluid">
+    <!-- Loading animation -->
+    <div
+        v-if="isLoading == true"
+        class="loading-animation d-flex justify-content-center align-items-center py-4"
+    >
+        <span class="loader"></span>
+    </div>
+    <div v-else id="user-container" class="container-fluid">
         <div class="row position-relative">
             <div class="col-lg-4 col-md-5">
                 <UsersList @changeUserId="changeUserId($event)" />
@@ -185,13 +217,26 @@ export default {
                         v-if="
                             userDetailsStore.role == 'admin' ||
                             (userDetailsStore.role == 'instructor' &&
-                                students.length > 0)
+                                students.length > 0) ||
+                            (userDetailsStore.role == 'editor' &&
+                                usersStore.editors.length > 0)
                         "
                         :userId="user.id"
                         :userRole="user.role"
                     />
                     <div v-else>
-                        <h1 class="text-muted py-5">You have no students</h1>
+                        <h1
+                            v-if="userDetailsStore.role == 'instructor'"
+                            class="text-muted py-5"
+                        >
+                            You have no students
+                        </h1>
+                        <h1
+                            v-else-if="userDetailsStore.role == 'editor'"
+                            class="text-muted py-5"
+                        >
+                            There are no other editors currently
+                        </h1>
                     </div>
                 </div>
             </div>
@@ -272,5 +317,36 @@ export default {
     .user-form-data-row {
         margin-right: 0px;
     }
+}
+
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #a48be5;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
+
+.loading-animation {
+    min-height: 100%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 }
 </style>

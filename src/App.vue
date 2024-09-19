@@ -107,7 +107,8 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'admin'
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
                             "
                             class="nav-item"
                         >
@@ -120,6 +121,12 @@ export default {
                                         userDetailsStore.role == 'instructor'
                                     "
                                     >Students</span
+                                >
+                                <span
+                                    v-else-if="
+                                        userDetailsStore.role == 'editor'
+                                    "
+                                    >Editors</span
                                 >
                             </RouterLink>
                         </li>

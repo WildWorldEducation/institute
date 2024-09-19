@@ -3,11 +3,11 @@
 import { useUsersStore } from '../../stores/UsersStore';
 
 // Components
-import UserFlagActions from '../components/UserFlagActions.vue';
-import UserResourceActions from '../components/UserResourceActions.vue';
-import UserQuestionActions from '../components/UserQuestionActions.vue';
-import UserSkillActions from '../components/UserSkillActions.vue';
-import UserStudentMcQuestionActions from '../components/UserStudentMcQuestionActions.vue';
+import UserFlagActions from '../components/user-activity-report/UserFlagActions.vue';
+import UserResourceActions from '../components/user-activity-report/UserResourceActions.vue';
+import UserQuestionActions from '../components/user-activity-report/UserQuestionActions.vue';
+import UserSkillActions from '../components/user-activity-report/UserSkillActions.vue';
+import UserStudentMcQuestionActions from '../components/user-activity-report/UserStudentMcQuestionActions.vue';
 
 export default {
     setup() {
@@ -290,33 +290,6 @@ export default {
             </div>
             <hr class="mt-5 mb-3" />
         </div>
-
-        <!-- Skills -->
-        <!-- <div class="row">
-            <button type="button" @click="showSkills = !showSkills">
-                <h2>Skills</h2>
-            </button>
-            <div :class="{ 'd-none': !showSkills }">
-                <ul>
-                    <li v-for="skillEdit in skillEdits">
-                        <span v-if="skillEdit.type == 'edit'">Edited </span>
-                        <span v-else-if="skillEdit.type == 'delete'"
-                            >Deleted
-                        </span>
-                        <span v-else-if="skillEdit.type == 'create'"
-                            >Created
-                        </span>
-                        <RouterLink
-                            :to="'/skills/' + skillEdit.skill_id"
-                            target="_blank"
-                        >
-                            {{ skillEdit.skill_name }}
-                        </RouterLink>
-                        , {{ skillEdit.date }}
-                    </li>
-                </ul>
-            </div>
-        </div> -->
     </div>
 </template>
 

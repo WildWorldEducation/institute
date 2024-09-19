@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "broken-link-checker": "^0.7.8",
     "connect-history-api-fallback": "^2.0.0",
@@ -34,6 +35,7 @@
     "pinia": "^2.0.32",
     "svg-to-pdfkit": "^0.1.8",
     "url-exist": "^3.0.1",
+    "uuid": "^10.0.0",
     "vue": "^3.2.47",
     "vue-advanced-cropper": "^2.8.8",
     "vue-multiselect": "^3.0.0-beta.3",

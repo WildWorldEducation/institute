@@ -83,13 +83,39 @@ export default {
             <!-- divide line for phone view specific -->
             <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
         </div>
-        <RouterLink 
-            v-if="userDetailsStore.role == 'instructor'" 
-            to="/users/add-student" 
+        <RouterLink
+            v-if="userDetailsStore.role == 'instructor'"
+            to="/users/add-student"
             class="d-block mb-4 btn purple-btn"
         >
             Add Student
         </RouterLink>
+        <div
+            v-if="userDetailsStore.role == 'editor'"
+            v-for="editor in $parent.usersStore.editors"
+        >
+            <div class="d-flex">
+                <img
+                    class="user-avatars"
+                    v-if="editor.avatar != null"
+                    :src="editor.avatar"
+                />
+                <button
+                    :class="
+                        editor.id == currentUserId
+                            ? 'isCurrentlyChoose'
+                            : 'user-buttons'
+                    "
+                    @click="changeUserId(editor)"
+                >
+                    {{ editor.username }}
+                </button>
+            </div>
+            <!-- divide line for pc and tablet view -->
+            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <!-- divide line for phone view specific -->
+            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+        </div>
     </div>
 </template>
 

@@ -181,7 +181,7 @@ export default {
                         type="text"
                         class="form-control"
                         readonly
-                        :value="`${userDetailsStore.instructor.username || ''}`"
+                        :value="userDetailsStore.instructorUsername"
                     />
                 </div>
             </div>

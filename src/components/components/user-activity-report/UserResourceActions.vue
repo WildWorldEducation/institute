@@ -77,9 +77,22 @@ export default {
             <div v-for="resource in rows">
                 {{ resource.time }} ({{ resource.date }}) -
                 <span :class="actionColor(resource.action)">
-                    {{ resource.action }}
+                    {{ resource.action }} </span
+                >&nbsp;
+                <span>
+                    <router-link
+                        class="skill-link"
+                        target="_blank"
+                        :to="
+                            '/users/' +
+                            userId +
+                            '/activity-report/source/' +
+                            resource.id
+                        "
+                        >source</router-link
+                    >
+                    in forum of skill:
                 </span>
-                <span> source in forum of skill: </span>
                 <!-- Show link to skill if it is not deleted else show a warn modal-->
                 <span
                     v-if="

@@ -25,7 +25,7 @@ router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT notification_1, notification_2 FROM notifications`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -65,7 +65,7 @@ router.put('/edit', (req, res, next) => {
             `', notification_2 = '` +
             req.body.notification2 +
             `';`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;

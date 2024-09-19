@@ -22,7 +22,7 @@ export default {
             sourcePosts: [],
             tutorPosts: [],
             isAlreadyTutoring: false,
-            posts: [],
+            // posts: [],
             user: {},
             showModal: false,
             resourceId: null,
@@ -41,7 +41,13 @@ export default {
         ForumTutorPost,
         ForumAllPost
     },
-    computed: {},
+    computed: {
+        posts() {
+            let posts = this.sourcePosts;
+            posts = posts.concat(this.tutorPosts);
+            return posts;
+        }
+    },
     async created() {
         this.getUserId();
 
@@ -53,9 +59,6 @@ export default {
             await this.getSourceVotes(this.sourcePosts[i].id);
         }
 
-        // Add to posts.
-        this.posts = this.sourcePosts;
-
         // Dont show the tutors if guest account.
         if (this.$parent.sessionDetailsStore.isLoggedIn == true) {
             // Get all tutor posts for this skill.
@@ -65,9 +68,6 @@ export default {
             for (let i = 0; i < this.tutorPosts.length; i++) {
                 await this.getTutorPostVotes(this.tutorPosts[i].id);
             }
-
-            // Add to posts.
-            this.posts = this.posts.concat(this.tutorPosts);
         }
     },
     methods: {
@@ -200,9 +200,11 @@ export default {
                     fetch('/resources/delete/' + source.id, {
                         method: 'DELETE'
                     });
+
                     this.sourcePosts = this.sourcePosts.filter((post) => {
                         return post.id !== source.id;
                     });
+
                     break;
             }
         },
@@ -496,6 +498,7 @@ h2 {
     padding-left: 4px;
     margin-top: -5px;
     margin-left: 5px;
+    border: none;
 }
 
 :deep(.toggle-actions-bnt:hover) {

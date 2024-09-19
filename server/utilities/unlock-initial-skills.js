@@ -4,7 +4,7 @@ const conn = require('../config/db');
 function unlockInitialSkills(userId) {
     // Get a list of all skills.
     let sqlQuery1 = 'SELECT * FROM skills;';
-    let query1 = conn.query(sqlQuery1, (err, results) => {
+    conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
                 throw err;
@@ -16,7 +16,7 @@ function unlockInitialSkills(userId) {
                     firstLevelSkills.push(skills[i]);
                 }
             }
-            // console.log(firstLevelSkills);
+
             for (let i = 0; i < firstLevelSkills.length; i++) {
                 // Recursive function.
                 makeMastered(userId, firstLevelSkills[i]);
@@ -32,9 +32,7 @@ function unlockInitialSkills(userId) {
                 let sqlQuery =
                     `
                                 INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
-                                VALUES(` +
-                    userId +
-                    `, ` +
+                                VALUES('${userId}', ` +
                     skill.id +
                     `, ` +
                     value +
@@ -44,7 +42,7 @@ function unlockInitialSkills(userId) {
                     `, is_accessible=1;
                                 `;
                 //
-                let query = conn.query(sqlQuery, (err, results) => {
+                conn.query(sqlQuery, (err, results) => {
                     try {
                         if (err) {
                             throw err;
@@ -110,14 +108,12 @@ function unlockInitialSkills(userId) {
                 let sqlQuery3 =
                     `
         INSERT INTO user_skills (user_id, skill_id, is_accessible) 
-        VALUES(` +
-                    userId +
-                    `, ` +
+        VALUES('${userId}', ` +
                     skillId +
                     `, 1) 
         ON DUPLICATE KEY UPDATE is_accessible=1;
         `;
-                let query3 = conn.query(sqlQuery3, (err, results) => {
+                conn.query(sqlQuery3, (err, results) => {
                     try {
                         if (err) {
                             throw err;
