@@ -14,7 +14,8 @@ export default {
     data() {
         return {
             searchText: '',
-            lastChooseResult: ''
+            lastChooseResult: '',
+            showResult: false
         };
     },
     created() {},
@@ -26,6 +27,10 @@ export default {
         handleChooseResult(node) {
             this.searchText = node.data.skill_name;
             this.lastChooseResult = node.data.skill_name;
+            // go to the skill position
+            this.$refs.childComponent.goToLocation(node);
+            // also open the skill requirement mastery div
+            this.$refs.childComponent.showSkillPanelComponent(node);
         }
         // // Toggle info bar.
         // ToggleInfobar() {
@@ -41,10 +46,22 @@ export default {
             if (this.lastChooseResult === this.searchText) {
                 return [];
             }
+            // close the mastery requirement panel when showing search result
+            this.$refs.childComponent.showSkillPanel = false;
             const results = this.$refs.childComponent.findNodeWithName(
                 this.searchText.toLocaleLowerCase()
             );
             return results;
+        }
+    },
+    watch: {
+        searchText: {
+            handler(newVal) {
+                if (newVal === '') {
+                    this.$refs.childComponent.showSkillPanel = false;
+                    this.$refs.childComponent.resetPos();
+                }
+            }
         }
     }
 };
@@ -138,7 +155,7 @@ export default {
                             </div>
                             <div class="position-relative">
                                 <div
-                                    v-if="searchText.length > 0"
+                                    v-if="searchText.length"
                                     class="search-results"
                                 >
                                     <div
