@@ -38,7 +38,7 @@ const sessions = require('express-session');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // For Vue Router.
-var history = require('connect-history-api-fallback');
+//var history = require('connect-history-api-fallback');
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(
     sessions({
