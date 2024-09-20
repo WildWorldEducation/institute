@@ -217,7 +217,7 @@ router.put('/mc/:id/edit', (req, res, next) => {
         )},            
         incorrect_answer_3 = ${conn.escape(req.body.incorrect_answer_3)}, 
         incorrect_answer_4 = ${conn.escape(req.body.incorrect_answer_4)},
-        explanation = ${conn.escape(req.body.explanation)},
+        explanation = ${conn.escape(req.body.explanation)}
         WHERE id = ${conn.escape(req.params.id)};`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -265,7 +265,7 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
         )},            
         incorrect_answer_3 = ${conn.escape(req.body.incorrect_answer_3)}, 
         incorrect_answer_4 = ${conn.escape(req.body.incorrect_answer_4)},
-        explanation = ${conn.escape(req.body.explanation)},
+        explanation = ${conn.escape(req.body.explanation)}
         WHERE id = ${conn.escape(req.params.id)};`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -715,22 +715,19 @@ router.put('/essay/:id/approve-edits', (req, res, next) => {
  */
 router.post('/essay/:id/edit-for-review', (req, res, next) => {
     if (req.session.userName) {
-        let name;
-        let question;
-
-        // Escape single quotes for SQL to accept.
-        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
-        if (req.body.question != null)
-            question = req.body.question.replace(/'/g, "\\'");
-        if (req.body.comment != null)
-            req.body.comment = req.body.comment.replace(/'/g, "\\'");
-
         // Add data.
         let sqlQuery = `INSERT INTO essay_questions_awaiting_approval (essay_question_id, user_id, name, question, comment)
-                        VALUES (${req.params.id}, '${req.body.userId}', '${name}', '${question}','${req.body.comment}')
+        VALUES (${conn.escape(req.params.id)}, 
+        ${conn.escape(req.body.userId)}, 
+        ${conn.escape(req.body.name)}, 
+        ${conn.escape(req.body.question)},
+        ${conn.escape(req.body.comment)})
 
-                        ON DUPLICATE KEY
-                        UPDATE date = CURRENT_TIMESTAMP(), name = '${name}', question = '${question}', comment = '${req.body.comment}';`;
+        ON DUPLICATE KEY
+        UPDATE date = CURRENT_TIMESTAMP(), 
+        name = ${conn.escape(req.body.name)}, 
+        question = ${conn.escape(req.body.question)}, 
+        comment = ${conn.escape(req.body.comment)};`;
 
         conn.query(sqlQuery, (err) => {
             try {
@@ -791,24 +788,13 @@ router.get('/essay/submitted-for-review/list', (req, res, next) => {
 // Edit Image questions
 router.put('/image/:id/edit', (req, res, next) => {
     if (req.session.userName) {
-        let name;
-        let question;
-        // Escape single quotes for SQL to accept.
-        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
-        if (req.body.question != null)
-            question = req.body.question.replace(/'/g, "\\'");
-
         // Add data.
-        let sqlQuery =
-            `UPDATE image_questions 
-        SET name='` +
-            name +
-            `', question = '` +
-            question +
-            `', num_images_required = '` +
-            req.body.num_images_required +
-            `' WHERE id = ` +
-            req.params.id;
+        let sqlQuery = `UPDATE image_questions 
+        SET name= ${conn.escape(req.body.name)}, 
+        question = ${conn.escape(req.body.question)}, 
+        num_images_required = ${conn.escape(req.body.num_images_required)}
+        WHERE id = ${conn.escape(req.params.id)};`;
+
         conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
@@ -842,22 +828,21 @@ router.put('/image/:id/edit', (req, res, next) => {
  */
 router.post('/image/:id/edit-for-review', (req, res, next) => {
     if (req.session.userName) {
-        let name;
-        let question;
-
-        // Escape single quotes for SQL to accept.
-        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
-        if (req.body.question != null)
-            question = req.body.question.replace(/'/g, "\\'");
-        if (req.body.comment != null)
-            req.body.comment = req.body.comment.replace(/'/g, "\\'");
-
         // Add data.
         let sqlQuery = `INSERT INTO image_questions_awaiting_approval (image_question_id, user_id, name, question, num_images_required, comment)
-                        VALUES (${req.params.id}, '${req.body.userId}', '${name}', '${question}', '${req.body.num_images_required}','${req.body.comment}')
+        VALUES (${conn.escape(req.params.id)},
+        ${conn.escape(req.body.userId)},
+        ${conn.escape(req.body.name)},
+        ${conn.escape(req.body.question)},
+        ${conn.escape(req.body.num_images_required)},
+        ${conn.escape(req.body.comment)})
 
-                        ON DUPLICATE KEY
-                        UPDATE date = CURRENT_TIMESTAMP(), name = '${name}', question = '${question}', num_images_required = '${req.body.num_images_required}', comment = '${req.body.comment}';`;
+        ON DUPLICATE KEY
+        UPDATE date = CURRENT_TIMESTAMP(), 
+        name = ${conn.escape(req.body.name)}, 
+        question = ${conn.escape(req.body.question)}, 
+        num_images_required = ${conn.escape(req.body.num_images_required)}, 
+        comment = ${conn.escape(req.body.comment)};`;
 
         conn.query(sqlQuery, (err) => {
             try {
@@ -921,7 +906,7 @@ router.get('/:skillId/multiple-choice', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT * 
             FROM mc_questions 
-            WHERE skill_id = ${req.params.skillId}
+            WHERE skill_id = ${conn.escape(req.params.skillId)}
             AND is_deleted = 0;`;
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -941,25 +926,13 @@ router.get('/:skillId/multiple-choice', (req, res, next) => {
  */
 router.put('/image/:id/approve-edits', (req, res, next) => {
     if (req.session.userName) {
-        let name;
-        let question;
-        let numOfImages;
-        // Escape single quotes for SQL to accept.
-        if (req.body.name != null) name = req.body.name.replace(/'/g, "\\'");
-        if (req.body.question != null)
-            question = req.body.question.replace(/'/g, "\\'");
-        numOfImages = req.body.num_images_required;
         // Add data.
-        let sqlQuery =
-            `UPDATE image_questions 
-        SET name='` +
-            name +
-            `', question = '` +
-            question +
-            `', num_images_required = '` +
-            numOfImages +
-            `' WHERE id = ` +
-            req.params.id;
+        let sqlQuery = `UPDATE image_questions 
+        SET name= ${conn.escape(req.body.name)}, 
+        question = ${conn.escape(req.body.question)}, 
+        num_images_required = ${conn.escape(req.body.num_images_required)}
+        WHERE id = ${conn.escape(req.params.id)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -999,7 +972,7 @@ router.get('/:skillId/essay', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT * 
             FROM essay_questions 
-            WHERE skill_id = ${req.params.skillId}
+            WHERE skill_id = ${conn.escape(req.params.skillId)}
             AND is_deleted = 0;`;
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -1020,7 +993,7 @@ router.get('/:skillId/image', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT * 
             FROM image_questions 
-            WHERE skill_id = ${req.params.skillId}
+            WHERE skill_id = ${conn.escape(req.params.skillId)}
             AND is_deleted = 0;`;
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -1305,7 +1278,7 @@ router.get('/student-mc-questions/list', (req, res, next) => {
         FROM student_mc_questions
         ORDER BY student_mc_questions.create_date DESC
         `;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -1330,7 +1303,10 @@ router.get('/student-mc-questions/full-data-list', (req, res, next) => {
                             FROM student_mc_questions JOIN users ON users.id = student_mc_questions.student_id 
                             JOIN skills ON student_mc_questions.skill_id = skills.id 
                             JOIN instructor_students ON instructor_students.student_id = student_mc_questions.student_id 
-                            WHERE instructor_students.instructor_id = '${req.session.userId}'`;
+                            WHERE instructor_students.instructor_id = ${conn.escape(
+                                req.session.userId
+                            )};`;
+
             conn.query(sqlQuery, (err, results) => {
                 try {
                     if (err) {
@@ -1402,8 +1378,10 @@ router.post('/student-mc-questions/add', (req, res, next) => {
  */
 router.delete('/student-mc-questions/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            'DELETE FROM student_mc_questions WHERE id=' + req.params.id;
+        let sqlQuery = `DELETE FROM student_mc_questions WHERE id= ${conn.escape(
+            req.params.id
+        )};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
