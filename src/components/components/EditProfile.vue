@@ -85,8 +85,13 @@ export default {
                 this.validate.username = true;
             } else if (this.email == '' || this.email == null) {
                 this.validate.email = true;
-            } else if (this.validate.passwordComplex) {
+            }else{
                 this.HandleClickSubmit();
+            }
+        },
+        ValidatePassword(){
+            if (this.validate.passwordComplex) {
+                this.HandlePasswordUpdate();
             }
         },
 
@@ -99,7 +104,21 @@ export default {
                 this.validate.emailFormat = true;
             }
         },
+        HandlePasswordUpdate(){
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    password: this.password
+                })
+            };
 
+            var url = '/users/profile/' + this.id + '/edit-password';
+            fetch(url, requestOptions).then(() => {
+                this.userDetailsStore.getUserDetails();
+                this.$router.push('/profile-settings');
+            });
+        },
         Submit() {
             const requestOptions = {
                 method: 'PUT',
@@ -110,7 +129,6 @@ export default {
                     username: this.userName,
                     email: this.email,
                     avatar: this.avatar,
-                    password: this.password,
                     instructorID: this.instructorID
                 })
             };
@@ -497,7 +515,70 @@ export default {
                         please enter a valid email !
                     </div>
                 </div>
+                <div v-if="userDetailsStore.role == 'student'" class="mb-3">
+                    <label class="form-label">Instructor</label>
+                    <!-- Student can only choose an instructor if they don`t have one -->
+                    <div v-if="haveInstructor" class="custom-select-button">
+                        {{ instructorName }}
+                    </div>
+                    <!-- Custom Dropdown -->
+                    <div v-else class="d-flex flex-column">
+                        <div
+                            :class="[
+                                showDropDown
+                                    ? 'custom-select-button-focus'
+                                    : 'custom-select-button'
+                            ]"
+                            @click="showDropDown = !showDropDown"
+                        >
+                            {{
+                                instructorName
+                                    ? instructorName
+                                    : 'Please choose an instructor'
+                            }}
+                            <span>
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                >
+                                    <path
+                                        d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
+                                        fill="#344054"
+                                    />
+                                </svg>
+                            </span>
+                        </div>
+                        <div v-if="showDropDown" class="custom-dropdown-base">
+                            <div
+                                v-for="instructor in userStore.instructors"
+                                class="custom-dropdown-option"
+                                @click="
+                                    instructorID = instructor.id;
+                                    instructorName = instructor.username;
+                                    showDropDown = false;
+                                "
+                            >
+                                {{ instructor.username }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of custom dropdown -->
+                </div>
+                <div class="d-flex justify-content-between mb-3 mt-5">
+                    <router-link class="btn red-btn" to="/profile-settings">
+                        Cancel
+                    </router-link>
+                    <button class="btn purple-btn" @click="ValidateForm()">
+                        Submit
+                    </button>
+                </div>
+
+                <hr class="mt-5 mb-5" />
                 <!-- Password Section -->
+                 <h2>Update Password</h2>
                 <div class="mb-3">
                     <label class="form-label">Password</label>
                     <div class="password-div">
@@ -567,64 +648,9 @@ export default {
                         }"
                     />
                 </div>
-                <div v-if="userDetailsStore.role == 'student'" class="mb-3">
-                    <label class="form-label">Instructor</label>
-                    <!-- Student can only choose an instructor if they don`t have one -->
-                    <div v-if="haveInstructor" class="custom-select-button">
-                        {{ instructorName }}
-                    </div>
-                    <!-- Custom Dropdown -->
-                    <div v-else class="d-flex flex-column">
-                        <div
-                            :class="[
-                                showDropDown
-                                    ? 'custom-select-button-focus'
-                                    : 'custom-select-button'
-                            ]"
-                            @click="showDropDown = !showDropDown"
-                        >
-                            {{
-                                instructorName
-                                    ? instructorName
-                                    : 'Please choose an instructor'
-                            }}
-                            <span>
-                                <svg
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 20 20"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
-                                        fill="#344054"
-                                    />
-                                </svg>
-                            </span>
-                        </div>
-                        <div v-if="showDropDown" class="custom-dropdown-base">
-                            <div
-                                v-for="instructor in userStore.instructors"
-                                class="custom-dropdown-option"
-                                @click="
-                                    instructorID = instructor.id;
-                                    instructorName = instructor.username;
-                                    showDropDown = false;
-                                "
-                            >
-                                {{ instructor.username }}
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End of custom dropdown -->
-                </div>
                 <div class="d-flex justify-content-between mb-3 mt-5">
-                    <router-link class="btn red-btn" to="/profile-settings">
-                        Cancel
-                    </router-link>
-                    <button class="btn purple-btn" @click="ValidateForm()">
-                        Submit
+                    <button class="btn purple-btn" @click="ValidatePassword()">
+                        Update
                     </button>
                 </div>
             </div>

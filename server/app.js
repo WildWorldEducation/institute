@@ -446,25 +446,13 @@ app.get('/settings', (req, res, next) => {
 // Edit app settings.
 app.put('/settings/edit', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
-        UPDATE settings 
-        SET skill_degradation_days = ` +
-            req.body.skill_degradation_days +
-            `, quiz_max_questions = ` +
-            req.body.quiz_max_questions +
-            `, is_manual_essay_marking = ` +
-            req.body.is_manual_essay_marking +
-            `, pass_mark = ` +
-            req.body.pass_mark +
-            `;`;
-
-        conn.query(sqlQuery, (err, results) => {
+        let sqlQuery = `UPDATE settings SET ? WHERE id = 1`;
+        const data = req.body;
+        conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
-
                 res.end();
             } catch (err) {
                 next(err);

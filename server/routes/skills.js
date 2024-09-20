@@ -107,7 +107,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                                                             skillId +
                                                             `, ` +
                                                             req.body.filters[
-                                                                i
+                                                            i
                                                             ] +
                                                             `);`;
                                                         conn.query(
@@ -737,11 +737,10 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${
-                                                    req.body.edit
-                                                        ? 'edit_and_approve'
-                                                        : 'approve'
-                                                }`,
+                                                userAction: `${req.body.edit
+                                                    ? 'edit_and_approve'
+                                                    : 'approve'
+                                                    }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -782,8 +781,11 @@ router.get('/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery =
-            'SELECT * FROM skills_awaiting_approval JOIN skills ON skills_awaiting_approval.skill_id = skills.id';
-        conn.query(sqlQuery, (err, results) => {
+            `SELECT * 
+             FROM skills_awaiting_approval JOIN skills ON skills_awaiting_approval.skill_id = skills.id
+             ORDER BY skills_awaiting_approval.date DESC
+             `;
+        let query = conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -840,6 +842,23 @@ router.delete('/submitted-for-review/:skillId/:userId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+                // Add dismiss actions
+                const actionData = {
+                    action: 'dismiss-edit',
+                    content_id: req.params.skillId,
+                    user_id: req.session.userId,
+                    content_type: 'skill'
+                };
+
+                const addActionQuery = `INSERT INTO user_actions SET ?`;
+                conn.query(
+                    addActionQuery,
+                    actionData,
+                    (err) => {
+                        if (err) throw err;
+                        res.end();
+                    }
+                );
                 res.end();
             } catch (err) {
                 next(err);
