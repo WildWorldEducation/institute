@@ -85,11 +85,11 @@ export default {
                 this.validate.username = true;
             } else if (this.email == '' || this.email == null) {
                 this.validate.email = true;
-            }else{
+            } else {
                 this.HandleClickSubmit();
             }
         },
-        ValidatePassword(){
+        ValidatePassword() {
             if (this.validate.passwordComplex) {
                 this.HandlePasswordUpdate();
             }
@@ -104,7 +104,7 @@ export default {
                 this.validate.emailFormat = true;
             }
         },
-        HandlePasswordUpdate(){
+        HandlePasswordUpdate() {
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -164,7 +164,6 @@ export default {
         },
 
         HandleClickSubmit() {
-            alert('GO TO HERE');
             // Only show the modal when user choose an instructor
             if (this.instructorName && !this.haveInstructor) {
                 this.showWarnModal = true;
@@ -578,7 +577,7 @@ export default {
 
                 <hr class="mt-5 mb-5" />
                 <!-- Password Section -->
-                 <h2>Update Password</h2>
+                <h2>Update Password</h2>
                 <div class="mb-3">
                     <label class="form-label">Password</label>
                     <div class="password-div">

@@ -32,14 +32,6 @@ export default {
             // also open the skill requirement mastery div
             this.$refs.childComponent.showSkillPanelComponent(node);
         }
-        // // Toggle info bar.
-        // ToggleInfobar() {
-        //     if (document.getElementById('legend').style.display == 'none') {
-        //         document.getElementById('legend').style.display = 'block';
-        //     } else {
-        //         document.getElementById('legend').style.display = 'none';
-        //     }
-        // }
     },
     computed: {
         findNodeResults() {
