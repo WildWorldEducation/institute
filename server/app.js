@@ -38,7 +38,7 @@ const sessions = require('express-session');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // For Vue Router.
-var history = require('connect-history-api-fallback');
+//var history = require('connect-history-api-fallback');
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(
     sessions({
@@ -351,9 +351,9 @@ app.post('/login-attempt', (req, res, next) => {
 
     // Look for user.
     const loginQuery = `SELECT id, first_name, last_name, role, password 
-                       FROM skill_tree.users 
-                       WHERE skill_tree.users.username = '${req.body.username}' 
-                       AND skill_tree.users.is_deleted = 0;`;
+                       FROM users 
+                       WHERE users.username = '${req.body.username}' 
+                       AND users.is_deleted = 0;`;
 
     conn.query(loginQuery, (err, results) => {
         try {
@@ -379,6 +379,7 @@ app.post('/login-attempt', (req, res, next) => {
                             req.session.firstName = results[0].first_name;
                             req.session.lastName = results[0].last_name;
                             req.session.role = results[0].role;
+
                             // Send response to front end.
                             return res.json({
                                 account: 'authorized',
