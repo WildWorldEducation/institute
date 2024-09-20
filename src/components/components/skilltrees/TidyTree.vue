@@ -54,7 +54,8 @@ export default {
             xPos: 0,
             yPos: 0,
             showAnimation: false,
-            showSkillPanel: false
+            showSkillPanel: false,
+            resultNode: null
         };
     },
     components: {
@@ -99,7 +100,6 @@ export default {
 
             this.xPos = mouseX;
             this.yPos = mouseY;
-
             this.showAnimation = true;
             // Hide animation after 0.5 seconds (adjust as needed)
             setTimeout(() => {
@@ -116,6 +116,8 @@ export default {
             //Our map uses these rgb strings as keys to nodes.
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
+
+            // WILL GET DELETE
 
             if (node && node.data.id) {
                 // We clicked on something, lets set the color of the node
@@ -148,6 +150,9 @@ export default {
             .zoom()
             .scaleExtent([0.1, 5])
             .on('zoom', ({ transform }) => {
+                this.debugScale = transform.k;
+                this.transformX = transform.x;
+                this.transformY = transform.y;
                 this.drawTree(transform);
                 // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
                 this.$refs.sliderControl.changeGradientBG();
@@ -343,7 +348,9 @@ export default {
         drawNode(node) {
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
-
+            // A flag to determine if this node was searched by user
+            const isSearched =
+                node.data.skill_name === this.resultNode?.data.skill_name;
             // Visible context.
             // If not a domain, make node a circle.
             // console.log(node.data.is_mastered);
@@ -382,31 +389,28 @@ export default {
                     ctx1.beginPath();
                     ctx1.strokeStyle = '#FFF';
                     ctx1.lineWidth = 4;
-                    ctx1.fillStyle = '#000';
-                    ctx1.font = 'normal';
+                    // Hight light the text if user search for it
+                    ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+                    ctx1.font = isSearched ? 'bold' : 'normal';
                     ctx1.direction = 'ltr';
-                    ctx1.strokeText(
-                        node.data.skill_name,
-                        node.y + 15,
-                        node.x + 2
-                    );
-                    ctx1.fillText(
-                        node.data.skill_name,
-                        node.y + 15,
-                        node.x + 2
-                    );
+
+                    //  also added a triangle to the end of skill name
+                    const showName = isSearched
+                        ? `${node.data.skill_name} ◀`
+                        : node.data.skill_name;
+                    ctx1.strokeText(showName, node.y + 15, node.x + 2);
+                    ctx1.fillText(showName, node.y + 15, node.x + 2);
                 } else {
                     ctx1.beginPath();
                     ctx1.strokeStyle = '#FFF';
                     ctx1.lineWidth = 4;
-                    ctx1.fillStyle = '#849cab';
+                    ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
                     ctx1.direction = 'rtl';
-                    ctx1.strokeText(
-                        node.data.skill_name,
-                        node.y - 5,
-                        node.x + 2
-                    );
-                    ctx1.fillText(node.data.skill_name, node.y - 5, node.x + 2);
+                    const showName = isSearched
+                        ? `${node.data.skill_name} ▶`
+                        : node.data.skill_name;
+                    ctx1.strokeText(showName, node.y - 5, node.x + 2);
+                    ctx1.fillText(showName, node.y - 5, node.x + 2);
                 }
             }
 
@@ -643,7 +647,7 @@ export default {
         resetPos() {
             d3.select(this.context.canvas)
                 .transition()
-                .duration(700)
+                .duration(1700)
                 .call(
                     this.d3Zoom.transform,
                     d3.zoomIdentity.translate(0, 0).scale(0.3)
@@ -657,6 +661,26 @@ export default {
                 d3.zoomIdentity.translate(panX, panY).scale(scale)
             );
             this.$refs.sliderControl.showScaleLabel();
+        },
+        // zoom and pan to a node
+        goToLocation(node) {
+            this.resultNode = node;
+            const translateX =
+                -node.y * this.scale +
+                (window.innerWidth / (2 * this.scale)) * this.scale;
+            const translateY =
+                -node.x * this.scale +
+                (window.innerHeight / (2 * this.scale)) * this.scale;
+
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(2000)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity
+                        .translate(translateX, translateY)
+                        .scale(this.scale)
+                );
         },
         // Pan with arrow keys and joystick.
         panInD3() {
@@ -700,6 +724,56 @@ export default {
                 default:
                     break;
             }
+        },
+        // Find node with name include
+        findNodeWithName(searchString) {
+            let results = [];
+            // D3
+            //let breakLoop = false;
+            this.root.each(function (node) {
+                if (searchString.length < 2) {
+                    if (
+                        node.data.skill_name
+                            .toLowerCase()
+                            .substring(0, searchString.length) === searchString
+                    ) {
+                        results.push(node);
+                    }
+                } else {
+                    if (
+                        node.data.skill_name
+                            .toLowerCase()
+                            .includes(searchString)
+                    ) {
+                        results.push(node);
+                    }
+                }
+            });
+
+            return results;
+        },
+
+        async showSkillPanelComponent(node) {
+            // We clicked on something, lets set the color of the node
+            // we also have access to the data associated with it, which in
+            // this case is just its original index in the data array.
+            node.renderCol = node.__pickColor;
+
+            //Update the display with some data
+            this.skill.name = node.data.skill_name;
+            this.skill.id = node.data.id;
+            this.skill.type = node.data.type;
+
+            // Get the mastery requirements data separately.
+            // Because this is so much data, we do not send it with the rest of the skill tree,
+            // or it will slow the load down too much.
+            const result = await fetch(
+                '/skills/mastery-requirements/' + this.skill.id
+            );
+            const masteryRequirements = await result.json();
+            this.skill.masteryRequirements = masteryRequirements;
+            // *** Preserve in case client want clamp instead of scroll
+            this.showSkillPanel = true;
         }
     }
 };

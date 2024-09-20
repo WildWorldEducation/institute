@@ -85,11 +85,11 @@ export default {
                 this.validate.username = true;
             } else if (this.email == '' || this.email == null) {
                 this.validate.email = true;
-            }else{
+            } else {
                 this.HandleClickSubmit();
             }
         },
-        ValidatePassword(){
+        ValidatePassword() {
             if (this.validate.passwordComplex) {
                 this.HandlePasswordUpdate();
             }
@@ -104,7 +104,7 @@ export default {
                 this.validate.emailFormat = true;
             }
         },
-        HandlePasswordUpdate(){
+        HandlePasswordUpdate() {
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -443,7 +443,7 @@ export default {
                     <div class="mb-3">
                         <label for="name" class="form-label">First Name</label>
                         <input
-                            id="name"
+                            id="first-name"
                             v-model="firstName"
                             type="text"
                             class="form-control"
@@ -462,7 +462,7 @@ export default {
                     <div class="mb-3">
                         <label for="name" class="form-label">Last Name</label>
                         <input
-                            id="name"
+                            id="last-name"
                             v-model="lastName"
                             type="text"
                             class="form-control"
@@ -577,7 +577,7 @@ export default {
 
                 <hr class="mt-5 mb-5" />
                 <!-- Password Section -->
-                 <h2>Update Password</h2>
+                <h2>Update Password</h2>
                 <div class="mb-3">
                     <label class="form-label">Password</label>
                     <div class="password-div">
