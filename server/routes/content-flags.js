@@ -88,7 +88,7 @@ router.get('/list', async (req, res, next) => {
                                     users AS post_users ON tutor_posts.user_id = post_users.id 
                                 WHERE 
                                     content_flags.content_type = 'tutor_post'  AND content_flags.is_deleted = 0;
-                            `
+                            `;
                             conn.query(sqlTutorQuerry, (err, results) => {
                                 if (err) {
                                     throw err;
@@ -103,8 +103,8 @@ router.get('/list', async (req, res, next) => {
                                     }
                                     resData = resData.concat(results);
                                     res.json(resData);
-                                })
-                            })
+                                });
+                            });
                         });
                     });
                 });
@@ -127,7 +127,6 @@ router.post('/add', (req, res, next) => {
             reason: req.body.reason
         };
 
-
         let sqlQuery = 'INSERT IGNORE INTO content_flags SET ?';
         conn.query(sqlQuery, data, (err, result) => {
             try {
@@ -139,8 +138,7 @@ router.post('/add', (req, res, next) => {
                         action: 'create',
                         content_id: result.insertId,
                         user_id: data.user_id,
-                        content_type: 'content_flag',
-
+                        content_type: 'content_flag'
                     };
 
                     let userActionQuery =
@@ -169,27 +167,27 @@ router.post('/add', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        const sqlQuery = 'UPDATE content_flags SET is_deleted = 1 WHERE id=' + req.params.id;
+        const sqlQuery = `UPDATE content_flags SET is_deleted = 1 WHERE id = ${conn.escape(
+            req.params.id
+        )};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
-                }
-                else {
+                } else {
                     // add delete action into user_actions
                     const actionData = {
                         action: 'delete',
                         content_type: 'content_flag',
                         content_id: req.params.id,
-                        user_id: req.session.userId,
-                    }
+                        user_id: req.session.userId
+                    };
                     const deleteActionQuery = 'INSERT INTO user_actions SET ?';
                     conn.query(deleteActionQuery, actionData, (err) => {
-                        if (err)
-                            throw err;
-                        else
-                            res.end();
-                    })
+                        if (err) throw err;
+                        else res.end();
+                    });
                 }
             } catch (err) {
                 next(err);
