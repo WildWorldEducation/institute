@@ -662,7 +662,7 @@ export default {
             );
             this.$refs.sliderControl.showScaleLabel();
         },
-
+        // zoom and pan to a node
         goToLocation(node) {
             this.resultNode = node;
             const translateX =
@@ -731,7 +731,6 @@ export default {
             // D3
             //let breakLoop = false;
             this.root.each(function (node) {
-                // if (breakLoop) return;
                 if (searchString.length < 2) {
                     if (
                         node.data.skill_name
@@ -749,10 +748,6 @@ export default {
                         results.push(node);
                     }
                 }
-
-                // if (results.length > 8 && searchString.length < 4) {
-                //     breakLoop = true;
-                // }
             });
 
             return results;
