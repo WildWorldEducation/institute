@@ -24,10 +24,9 @@ router.get('/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
-        let sqlQuery =
-            `
-    SELECT * FROM tutor_votes
-    WHERE tutor_post_id =` + req.params.id;
+        let sqlQuery = `SELECT *
+             FROM tutor_votes
+            WHERE tutor_post_id = ${conn.escape(req.params.id)};`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -43,18 +42,17 @@ router.get('/:id', (req, res, next) => {
 });
 
 /**
- * Create or Update Item
+ * Vote up
  *
  * @return response()
  */
 router.put('/:userId/:tutorPostId/edit/up', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
+        let sqlQuery = `
         INSERT INTO tutor_votes (user_id, tutor_post_id, vote) 
-        VALUES('${req.params.userId}', ` +
-            req.params.tutorPostId +
-            `, 1) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.tutorPostId
+        )}, 1) 
         ON DUPLICATE KEY UPDATE vote=1;
         `;
 
@@ -74,12 +72,10 @@ router.put('/:userId/:tutorPostId/edit/up', (req, res, next) => {
 // Vote down.
 router.put('/:userId/:tutorPostId/edit/down', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
+        let sqlQuery = `
         INSERT INTO tutor_votes (user_id, tutor_post_id, vote) 
-        VALUES('${req.params.userId}', ` +
-            req.params.tutorPostId +
-            `, -1) 
+        VALUES(${conn.escape(req.params.userId)},
+        ${conn.escape(req.params.tutorPostId)}, -1) 
         ON DUPLICATE KEY UPDATE vote=-1;
         `;
 
@@ -99,12 +95,10 @@ router.put('/:userId/:tutorPostId/edit/down', (req, res, next) => {
 // To cancel vote.
 router.put('/:userId/:tutorPostId/edit/cancel', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
+        let sqlQuery = `
         INSERT INTO tutor_votes (user_id, tutor_post_id, vote) 
-        VALUES('${req.params.userId}', ` +
-            req.params.tutorPostId +
-            `, 0) 
+        VALUES(${conn.escape(req.params.userId)},
+        ${conn.escape(req.params.tutorPostId)}, 0) 
         ON DUPLICATE KEY UPDATE vote=0;
         `;
 

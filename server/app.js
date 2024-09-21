@@ -122,7 +122,7 @@ app.get('/google-login-attempt', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     // Get user id based on Google email, if it exists.
     let sqlQuery = `SELECT * FROM users 
-        WHERE email = '${googleUserDetails.email}'
+        WHERE email = ${conn.escape(googleUserDetails.email)}
         AND is_deleted = 0;`;
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -167,8 +167,9 @@ const { unlockInitialSkills } = require('./utilities/unlock-initial-skills');
 app.get('/google-student-signup-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Check if user already exists.
-    let sqlQuery1 =
-        "SELECT * FROM users WHERE email = '" + googleUserDetails.email + "';";
+    let sqlQuery1 = `SELECT * 
+        FROM users 
+        WHERE email = ${conn.escape(googleUserDetails.email)};`;
     conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
@@ -252,8 +253,9 @@ app.post('/google-editor-signup-attempt', (req, res) => {
 app.get('/google-editor-signup-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Check if user already exists.
-    let sqlQuery1 =
-        "SELECT * FROM users WHERE email = '" + googleUserDetails.email + "';";
+    let sqlQuery1 = `SELECT * 
+    FROM users 
+    WHERE email = ${conn.escape(googleUserDetails.email)};`;
     conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
@@ -343,16 +345,10 @@ app.get('/login-status', (req, res) => {
 const bcrypt = require('bcrypt');
 app.post('/login-attempt', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
-    // Escape single quotes for SQL to accept.
-    if (req.body.username != null)
-        req.body.username = req.body.username.replace(/'/g, "\\'");
-    if (req.body.password != null)
-        req.body.password = req.body.password.replace(/'/g, "\\'");
-
     // Look for user.
     const loginQuery = `SELECT id, first_name, last_name, role, password 
                        FROM users 
-                       WHERE users.username = '${req.body.username}' 
+                       WHERE users.username = ${conn.escape(req.body.username)} 
                        AND users.is_deleted = 0;`;
 
     conn.query(loginQuery, (err, results) => {
