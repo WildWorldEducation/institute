@@ -23,10 +23,10 @@ router.get('/:skillId/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT tutor_posts.id, tutor_posts.user_id, tutor_posts.skill_id, tutor_posts.description,
-tutor_posts.created_at, users.username, users.avatar, users.email
-FROM tutor_posts
-JOIN users ON tutor_posts.user_id = users.id
-WHERE skill_id = ${req.params.skillId};`;
+        tutor_posts.created_at, users.username, users.avatar, users.email
+        FROM tutor_posts
+        JOIN users ON tutor_posts.user_id = users.id
+        WHERE skill_id = ${conn.escape(req.params.skillId)};`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -82,10 +82,10 @@ router.post('/add/:skillId', (req, res, next) => {
 router.delete('/delete/:tutorSourceId', (req, res, next) => {
     if (req.session.userName) {
         // Check if the user has the right to delete the learning resource.
+        let sqlQuery1 = `SELECT user_id 
+            FROM tutor_posts 
+            WHERE id= ${conn.escape(req.params.tutorSourceId)};`;
 
-        let sqlQuery1 =
-            'SELECT user_id FROM tutor_posts WHERE id=' +
-            req.params.tutorSourceId;
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -97,9 +97,11 @@ router.delete('/delete/:tutorSourceId', (req, res, next) => {
                         req.session.role == 'admin'
                     ) {
                         // Delete the post.
-                        let sqlQuery2 =
-                            'DELETE FROM tutor_posts WHERE id=' +
-                            req.params.tutorSourceId;
+                        let sqlQuery2 = `DELETE FROM tutor_posts 
+                            WHERE id= ${conn.escape(
+                                req.params.tutorSourceId
+                            )};`;
+
                         conn.query(sqlQuery2, (err, results) => {
                             try {
                                 if (err) {
@@ -131,8 +133,10 @@ router.delete('/delete/:tutorSourceId', (req, res, next) => {
 router.get('/show/:tutorPostId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            'SELECT * FROM tutor_posts WHERE id=' + req.params.tutorPostId;
+        let sqlQuery = `SELECT * 
+            FROM tutor_posts 
+            WHERE id= ${conn.escape(req.params.tutorPostId)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -159,8 +163,10 @@ router.put('/edit/:id', (req, res, next) => {
 
         //Extra backend security check that the user is allowed to edit the post.
         let postUserId;
-        const sqlQuery1 =
-            'SELECT user_id FROM tutor_posts WHERE id=' + req.params.id;
+        const sqlQuery1 = `SELECT user_id 
+            FROM tutor_posts 
+            WHERE id= ${conn.escape(req.params.id)};`;
+
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -173,11 +179,12 @@ router.put('/edit/:id', (req, res, next) => {
                         req.session.role == 'editor'
                     ) {
                         // Edit the post.
-                        let sqlQuery2 =
-                            "UPDATE tutor_posts SET description='" +
-                            req.body.description +
-                            "' WHERE id=" +
-                            req.params.id;
+                        let sqlQuery2 = `UPDATE tutor_posts 
+                            SET description= ${conn.escape(
+                                req.body.description
+                            )}
+                            WHERE id= ${conn.escape(req.params.id)};`;
+
                         conn.query(sqlQuery2, (err) => {
                             if (err) throw err;
 

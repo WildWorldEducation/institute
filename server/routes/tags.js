@@ -74,7 +74,9 @@ router.post('/add', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = 'DELETE FROM tags WHERE id=' + req.params.id;
+        let sqlQuery = `DELETE FROM tags WHERE id=${conn.escape(
+            req.params.id
+        )};`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -105,14 +107,9 @@ router.put('/select', (req, res, next) => {
                 skillFilteredStatus = 'available';
             }
 
-            let sqlQuery1 =
-                `UPDATE tags
-                    SET is_active = '` +
-                req.body.tags[i].is_active +
-                `'
-                    WHERE id = ` +
-                req.body.tags[i].id +
-                `;`;
+            let sqlQuery1 = `UPDATE tags
+                SET is_active = ${conn.escape(req.body.tags[i].is_active)}
+                WHERE id = ${conn.escape(req.body.tags[i].id)};`;
 
             conn.query(sqlQuery1, (err, results) => {
                 try {
@@ -123,12 +120,9 @@ router.put('/select', (req, res, next) => {
                     // for all the relevant skills
 
                     // 1 Find all the relevant skills.
-                    let sqlQuery2 =
-                        `SELECT skill_id
-                                FROM skill_tags
-                                WHERE tag_id = ` +
-                        req.body.tags[i].id +
-                        `;`;
+                    let sqlQuery2 = `SELECT skill_id
+                        FROM skill_tags
+                        WHERE tag_id = ${conn.escape(req.body.tags[i].id)};`;
 
                     conn.query(sqlQuery2, (err, results) => {
                         try {
@@ -139,14 +133,13 @@ router.put('/select', (req, res, next) => {
                             // Update the relevant skills.
                             let relevantSkills = results;
                             for (let j = 0; j < relevantSkills.length; j++) {
-                                let sqlQuery3 =
-                                    `UPDATE skills
-                                        SET is_filtered = '` +
-                                    skillFilteredStatus +
-                                    `'
-                                        WHERE id = ` +
-                                    relevantSkills[j].skill_id +
-                                    `;`;
+                                let sqlQuery3 = `UPDATE skills
+                                SET is_filtered = ${conn.escape(
+                                    skillFilteredStatus
+                                )}
+                                WHERE id = ${conn.escape(
+                                    relevantSkills[j].skill_id
+                                )};`;
 
                                 conn.query(sqlQuery3, (err, results) => {
                                     try {

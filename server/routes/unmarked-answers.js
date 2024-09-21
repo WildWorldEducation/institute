@@ -41,9 +41,10 @@ router.get('/essay/list', (req, res, next) => {
 router.get('/essay/list/:assessmentId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            'SELECT * FROM `unmarked_essay_answers` WHERE assessment_id = ' +
-            req.params.assessmentId;
+        let sqlQuery = `SELECT * 
+            FROM unmarked_essay_answers 
+            WHERE assessment_id = ${conn.escape(req.params.assessmentId)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -82,9 +83,10 @@ router.get('/image/list', (req, res, next) => {
 router.get('/image/list/:assessmentId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            'SELECT * FROM `unmarked_image_answers` WHERE assessment_id = ' +
-            req.params.assessmentId;
+        let sqlQuery = `SELECT * 
+            FROM unmarked_image_answers 
+            WHERE assessment_id = ${conn.escape(req.params.assessmentId)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -171,7 +173,13 @@ router.post('/add/image/:assessmentId', (req, res, next) => {
 
         let sqlQuery = `INSERT INTO unmarked_image_answers 
         (assessment_id, answer_1, answer_2, answer_3, answer_4, answer_5, question_id)
-        VALUES (${assessmentId}, '${answer_1}', '${answer_2}', '${answer_3}' ,'${answer_4}' ,'${answer_5}' , ${questionId});`;
+        VALUES (${conn.escape(assessmentId)}, 
+        ${conn.escape(answer_1)}, 
+        ${conn.escape(answer_2)}, 
+        ${conn.escape(answer_3)},
+        ${conn.escape(answer_4)},
+        ${conn.escape(answer_5)}, 
+        ${conn.escape(questionId)});`;
 
         conn.query(sqlQuery, (err) => {
             try {
@@ -196,9 +204,9 @@ router.post('/add/image/:assessmentId', (req, res, next) => {
  */
 router.delete('/delete/:assessmentId', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            'DELETE FROM unmarked_essay_answers WHERE assessment_id=' +
-            req.params.assessmentId;
+        let sqlQuery = `DELETE FROM unmarked_essay_answers 
+            WHERE assessment_id= ${conn.escape(req.params.assessmentId)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -216,8 +224,9 @@ router.delete('/delete/:assessmentId', (req, res, next) => {
 
 router.delete('/essay/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            'DELETE FROM unmarked_essay_answers WHERE id=' + req.params.id;
+        let sqlQuery = `DELETE FROM unmarked_essay_answers WHERE id= ${conn.escape(
+            req.params.id
+        )};`;
         conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
@@ -235,8 +244,9 @@ router.delete('/essay/:id', (req, res, next) => {
 
 router.delete('/image/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            'DELETE FROM unmarked_image_answers WHERE id=' + req.params.id;
+        let sqlQuery = `DELETE FROM unmarked_image_answers WHERE id= ${conn.escape(
+            req.params.id
+        )};`;
         conn.query(sqlQuery, (err) => {
             try {
                 if (err) {

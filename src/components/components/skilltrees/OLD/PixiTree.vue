@@ -70,10 +70,6 @@ export default {
     },
     async mounted() {
         // Get the data from the API.
-        // if (this.skillTreeStore.userSkillsNoSubSkills.length == 0) {
-        //     await this.skillTreeStore.getUserSkillsNoSubSkills()
-        // }
-        // Delete the record in the store and the API call for the abve? Not used now.
 
         document
             .getElementById('reset-button')
