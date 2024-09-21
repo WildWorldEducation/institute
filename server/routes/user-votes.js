@@ -15,14 +15,13 @@ const conn = require('../config/db');
 Routes
 --------------------------------------------
 --------------------------------------------*/
-// Sum of votes per skill.
+// Sum of votes per source.
 router.get('/:id', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
-    let sqlQuery =
-        `
+    let sqlQuery = `
     SELECT * FROM user_votes
-    WHERE resource_id =` + req.params.id;
+    WHERE resource_id = ${conn.escape(req.params.id)};`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -37,18 +36,16 @@ router.get('/:id', (req, res, next) => {
 });
 
 /**
- * Create or Update Item
+ * Upvote source.
  *
  * @return response()
  */
 router.put('/:userId/:resourceId/edit/up', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
+        let sqlQuery = `
         INSERT INTO user_votes (user_id, resource_id, vote) 
-        VALUES('${req.params.userId}', ` +
-            req.params.resourceId +
-            `, 1) 
+        VALUES(${conn.escape(req.params.userId)},
+        ${conn.escape(req.params.resourceId)}, 1) 
         ON DUPLICATE KEY UPDATE vote=1;
         `;
 
@@ -57,7 +54,7 @@ router.put('/:userId/:resourceId/edit/up', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                res.send('test');
+                res.end();
             } catch (err) {
                 next(err);
             }
@@ -65,14 +62,14 @@ router.put('/:userId/:resourceId/edit/up', (req, res, next) => {
     }
 });
 
+// Vote source down.
 router.put('/:userId/:resourceId/edit/down', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
+        let sqlQuery = `
         INSERT INTO user_votes (user_id, resource_id, vote) 
-        VALUES('${req.params.userId}', ` +
-            req.params.resourceId +
-            `, -1) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.resourceId
+        )}, -1) 
         ON DUPLICATE KEY UPDATE vote=-1;
         `;
 
@@ -81,7 +78,7 @@ router.put('/:userId/:resourceId/edit/down', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                res.send('test');
+                res.end();
             } catch (err) {
                 next(err);
             }
@@ -92,12 +89,11 @@ router.put('/:userId/:resourceId/edit/down', (req, res, next) => {
 // To cancel vote.
 router.put('/:userId/:resourceId/edit/cancel', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
+        let sqlQuery = `
         INSERT INTO user_votes (user_id, resource_id, vote) 
-        VALUES('${req.params.userId}', ` +
-            req.params.resourceId +
-            `, 0) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.resourceId
+        )}, 0) 
         ON DUPLICATE KEY UPDATE vote=0;
         `;
 
@@ -106,7 +102,7 @@ router.put('/:userId/:resourceId/edit/cancel', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                res.send('test');
+                res.end();
             } catch (err) {
                 next(err);
             }

@@ -29,18 +29,17 @@ function unlockInitialSkills(userId) {
                     value = 1;
                 }
 
-                let sqlQuery =
-                    `
-                                INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
-                                VALUES('${userId}', ` +
-                    skill.id +
-                    `, ` +
-                    value +
-                    `, 1) 
-                                ON DUPLICATE KEY UPDATE is_mastered=` +
-                    value +
-                    `, is_accessible=1;
-                                `;
+                let sqlQuery = `
+                    INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
+                    VALUES(${conn.escape(userId)},
+                    ${conn.escape(skill.id)},
+                    ${conn.escape(value)},
+                    1) 
+                    ON DUPLICATE KEY UPDATE is_mastered = ${conn.escape(
+                        value
+                    )}, 
+                    is_accessible = 1;`;
+
                 //
                 conn.query(sqlQuery, (err, results) => {
                     try {
@@ -108,9 +107,9 @@ function unlockInitialSkills(userId) {
                 let sqlQuery3 =
                     `
         INSERT INTO user_skills (user_id, skill_id, is_accessible) 
-        VALUES('${userId}', ` +
-                    skillId +
-                    `, 1) 
+        VALUES(${conn.escape(userId)}, 
+        ${conn.escape(skillId)},
+        1) 
         ON DUPLICATE KEY UPDATE is_accessible=1;
         `;
                 conn.query(sqlQuery3, (err, results) => {

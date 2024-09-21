@@ -64,12 +64,6 @@ export default {
     async mounted() {
         // TODO: cleanup this file, there is unused code.
 
-        // Get the data from the API.
-        // if (this.skillTreeStore.userSkillsNoSubSkills.length == 0) {
-        //     await this.skillTreeStore.getUserSkillsNoSubSkills()
-        // }
-        // Delete the record in the store and the API call for the abve? Not used now.
-
         if (this.skillTreeStore.userSkills.length == 0) {
             await this.skillTreeStore.getUserSkills();
         }

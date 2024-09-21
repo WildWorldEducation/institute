@@ -25,7 +25,7 @@ Routes
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * FROM news`;
+        let sqlQuery = `SELECT * FROM news;`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -46,28 +46,12 @@ router.get('/list', (req, res, next) => {
  */
 router.put('/edit', (req, res, next) => {
     if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.news1 != null)
-            req.body.news1 = req.body.news1.replace(/'/g, "\\'");
-        if (req.body.news2 != null)
-            req.body.news2 = req.body.news2.replace(/'/g, "\\'");
-        if (req.body.news3 != null)
-            req.body.news3 = req.body.news3.replace(/'/g, "\\'");
-        if (req.body.news4 != null)
-            req.body.news4 = req.body.news4.replace(/'/g, "\\'");
-
         // Add data.
-        let sqlQuery =
-            `UPDATE news 
-        SET news_1='` +
-            req.body.news1 +
-            `', news_2 = '` +
-            req.body.news2 +
-            `', news_3 = '` +
-            req.body.news3 +
-            `', news_4 = '` +
-            req.body.news4 +
-            `';`;
+        let sqlQuery = `UPDATE news 
+        SET news_1 = ${conn.escape(req.body.news1)}, 
+        news_2 = ${conn.escape(req.body.news2)},
+        news_3 = ${conn.escape(req.body.news3)}, 
+        news_4 = ${conn.escape(req.body.news4)};`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
