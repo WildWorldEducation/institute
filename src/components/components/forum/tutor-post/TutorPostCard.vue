@@ -83,7 +83,7 @@ export default {
             }
         },
         handleOpenFlagModal(postId) {
-            this.$parent.handleOpenFlagModal(postId, 'tutorPost');
+            this.$parent.handleOpenFlagModal(postId, 'tutor_post');
         },
 
         deleteTutorPost(source) {
