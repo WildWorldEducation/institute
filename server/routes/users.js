@@ -15,6 +15,7 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 const createUserPermission = require('../middlewares/users/createUserMiddleware');
 const addInstructorPermission = require('../middlewares/users/addInstructorMiddleware');
 const editUserPermission = require('../middlewares/users/editUserMiddleware');
+const isAdmin = require('../middlewares/adminMiddleware');
 
 /*------------------------------------------
 --------------------------------------------
@@ -33,6 +34,8 @@ const { v7: uuidv7 } = require('uuid');
  * Student Self Sign Up
  */
 const { unlockInitialSkills } = require('../utilities/unlock-initial-skills');
+const checkRoleHierarchy = require('../middlewares/roleMiddleware');
+const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
 router.post('/new-student/add', (req, res, next) => {
     // Escape username, as it is used in the SELECT query.
     if (req.body.username != null)
@@ -446,7 +449,7 @@ router.post(
 );
 
 // All users.
-router.get('/list', (req, res, next) => {
+router.get('/list', isAuthenticated, isAdmin, (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
@@ -467,7 +470,7 @@ router.get('/list', (req, res, next) => {
 });
 
 // All users.
-router.get('/editors/list', (req, res, next) => {
+router.get('/editors/list', isAuthenticated, checkRoleHierarchy('editor'), (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
@@ -588,7 +591,7 @@ router.get('/showId/:username', (req, res, next) => {
  *
  * @return response()
  */
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', isAuthenticated, isAdmin, (req, res, next) => {
     if (req.session.userName) {
         const deleteQuery = `UPDATE users SET is_deleted = 1 WHERE id = '${req.params.id}';`;
         conn.query(deleteQuery, (err) => {
@@ -715,7 +718,7 @@ router.put(
 router.put(
     '/profile/:id/edit',
     isAuthenticated,
-    editUserPermission,
+    editSelfPermission,
     (req, res, next) => {
         // Escape single quotes for SQL to accept.
         if (req.body.firstName != null)
@@ -757,7 +760,7 @@ router.put(
 router.put(
     '/profile/:id/edit-password',
     isAuthenticated,
-    editUserPermission,
+    editSelfPermission,
     (req, res, next) => {
         if (req.body.password != null)
             req.body.password = req.body.password.replace(/'/g, "\\'");
@@ -794,7 +797,7 @@ router.put(
 );
 
 // To see the user profile, and edit the app settings (if user is an admin).
-router.get('/:id/profile-settings', (req, res) => {
+router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
     if (req.session.userName) {
         res.render('profile-and-settings', { userId: req.params.id });
     } else {
