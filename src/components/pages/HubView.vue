@@ -48,9 +48,6 @@ export default {
         <img src="/images/banners/general-banner.png" class="" />
     </div>
     <div class="container post-login-container min-vh-100">
-        <div class="row text-center text-md-start">
-            <h1 id="user-name">{{ name }}</h1>
-        </div>
         <div class="row content-row">
             <div class="col-lg-4 col-md-5 mb-4 pb-4 column mx-0">
                 <!-- Avatar image -->
