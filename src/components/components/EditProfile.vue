@@ -133,7 +133,8 @@ export default {
             fetch(url, requestOptions).then(() => {
                 if (
                     this.userDetailsStore.role == 'student' &&
-                    this.instructorID != ''
+                    this.instructorID != '' &&
+                    this.instructorID != null
                 ) {
                     const requestOptions = {
                         method: 'PUT',
