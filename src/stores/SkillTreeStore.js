@@ -20,16 +20,6 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             this.userSkills = await result.json();
         },
-        async getUserSkillsNoSubSkills() {
-            // API call for skill tree.
-            const userDetailsStore = useUserDetailsStore();
-            const userDetails = await userDetailsStore.getUserDetails();
-
-            const result = await fetch(
-                '/user-skills/no-sub-skills/' + userDetails.userId
-            );
-            this.userSkillsNoSubSkills = await result.json();
-        },
         async getUserSkillsSubSkillsSeparate() {
             // API call for skill tree.
             const userDetailsStore = useUserDetailsStore();
