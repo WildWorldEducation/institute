@@ -77,11 +77,7 @@ export default {
     },
     methods: {
         ValidateForm() {
-            if (this.firstName == '' || this.firstName == null) {
-                this.validate.firstName = true;
-            } else if (this.lastName == '' || this.lastName == null) {
-                this.validate.lastName = true;
-            } else if (this.userName == '' || this.userName == null) {
+            if (this.userName == '' || this.userName == null) {
                 this.validate.username = true;
             } else if (this.email == '' || this.email == null) {
                 this.validate.email = true;
@@ -137,7 +133,8 @@ export default {
             fetch(url, requestOptions).then(() => {
                 if (
                     this.userDetailsStore.role == 'student' &&
-                    this.instructorID != ''
+                    this.instructorID != '' &&
+                    this.instructorID != null
                 ) {
                     const requestOptions = {
                         method: 'PUT',
@@ -448,15 +445,6 @@ export default {
                             type="text"
                             class="form-control"
                         />
-                        <div
-                            v-if="
-                                validate.firstName &&
-                                (firstName == '' || firstName == null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter a first name !
-                        </div>
                     </div>
                     <!-- Last Name -->
                     <div class="mb-3">
@@ -467,15 +455,6 @@ export default {
                             type="text"
                             class="form-control"
                         />
-                        <div
-                            v-if="
-                                validate.lastName &&
-                                (lastName == '' || lastName == null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter a last name !
-                        </div>
                     </div>
                 </div>
                 <!-- Username -->
