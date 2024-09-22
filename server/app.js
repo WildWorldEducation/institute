@@ -11,6 +11,8 @@ const path = require('path');
 const fs = require('fs').promises;
 const publicPath = path.join(path.resolve(), 'public');
 const distPath = path.join(path.resolve(), 'dist');
+const isAdmin = require('./middlewares/adminMiddleware');
+const isAuthenticated = require('./middlewares/authMiddleware');
 // Database Connection
 const conn = require('./config/db');
 const xmlbuilder = require('xmlbuilder');
@@ -441,7 +443,7 @@ app.get('/settings', (req, res, next) => {
 });
 
 // Edit app settings.
-app.put('/settings/edit', (req, res, next) => {
+app.put('/settings/edit', isAuthenticated, isAdmin, (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `UPDATE settings SET ? WHERE id = 1`;
         const data = req.body;
