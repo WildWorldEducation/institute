@@ -60,7 +60,8 @@ export default {
             yPos: 0,
             showAnimation: false,
             showSkillPanel: false,
-            userAvatarImg: null
+            userAvatarImg: null,
+            currentZoom: 1
         };
     },
     components: {
@@ -92,7 +93,10 @@ export default {
             this.d3Zoom = d3
                 .zoom()
                 .scaleExtent([0.05, 8])
-                .on('zoom', ({ transform }) => this.zoomed(transform));
+                .on('zoom', ({ transform }) => {
+                    this.currentZoom = transform.k;
+                    this.zoomed(transform);
+                });
             d3.select(this.context.canvas).call(this.d3Zoom);
 
             // Zoom and move the tree to it initial position
@@ -417,9 +421,9 @@ export default {
             // If skill is mastered.
             let color = '#71717a';
             if (link.target.data.is_mastered == 1) {
-                this.context.lineWidth = 4;
+                this.context.lineWidth = 4 + parseInt(3 * (1 / this.currentZoom));
                 color = '#ffffff';
-            } else this.context.lineWidth = 1;
+            } else this.context.lineWidth = parseInt(3 * (1 / this.currentZoom));
 
             this.context.beginPath();
             linkGenerator(link);
