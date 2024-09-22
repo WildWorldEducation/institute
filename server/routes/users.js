@@ -449,7 +449,7 @@ router.post(
 );
 
 // All users.
-router.get('/list', isAuthenticated, isAdmin, (req, res, next) => {
+router.get('/list', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
@@ -470,26 +470,31 @@ router.get('/list', isAuthenticated, isAdmin, (req, res, next) => {
 });
 
 // All users.
-router.get('/editors/list', isAuthenticated, checkRoleHierarchy('editor'), (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
+router.get(
+    '/editors/list',
+    isAuthenticated,
+    checkRoleHierarchy('editor'),
+    (req, res, next) => {
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
         FROM users
         WHERE role = 'editor'
         AND is_deleted = 0;`;
 
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
+            conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.json(results);
+                } catch (err) {
+                    next(err);
                 }
-                res.json(results);
-            } catch (err) {
-                next(err);
-            }
-        });
+            });
+        }
     }
-});
+);
 
 // List all instructors.
 // This method is run on the Account Sign Up page, hence we
