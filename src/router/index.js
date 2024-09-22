@@ -20,7 +20,7 @@ const router = createRouter({
             name: 'student-vertical-tree',
             component: () =>
                 import('../components/pages/StudentTidyTreeView.vue'),
-            meta: { title: 'Skill tree' }
+            meta: { title: 'Skill tree', requiresAuth: true, roles: ['instructor', 'admin'] }
         },
         {
             path: '/',
@@ -70,7 +70,7 @@ const router = createRouter({
             path: '/student/:studentId/skills',
             name: 'student-skills',
             component: SkillsView,
-            meta: { title: 'Student skills' }
+            meta: { title: 'Student skills', requiresAuth: true, roles: ['instructor', 'admin'] }
         },
         {
             path: '/skills/:skillId',
@@ -223,7 +223,8 @@ const router = createRouter({
             path: '/users/activity-report/:id',
             name: 'user-activity-report',
             component: () =>
-                import('../components/pages/UserActivityReportPageView.vue')
+                import('../components/pages/UserActivityReportPageView.vue'),
+            meta: { requiresAuth: true, roles: ['admin'] }
         },
         {
             path: '/users/:userId/activity-report/source/:sourceId',
@@ -246,12 +247,8 @@ const router = createRouter({
         {
             path: '/settings/edit',
             name: 'edit-settings',
-            component: () => import('../components/pages/EditSettingsView.vue')
-        },
-        {
-            path: '/settings/edit',
-            name: 'edit-settings',
-            component: () => import('../components/pages/EditSettingsView.vue')
+            component: () => import('../components/pages/EditSettingsView.vue'),
+            meta: { requiresAuth: true, roles: ['admin'] }
         },
         {
             path: '/content-flags',

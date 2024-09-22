@@ -15,6 +15,7 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 const createUserPermission = require('../middlewares/users/createUserMiddleware');
 const addInstructorPermission = require('../middlewares/users/addInstructorMiddleware');
 const editUserPermission = require('../middlewares/users/editUserMiddleware');
+const isAdmin = require('../middlewares/adminMiddleware');
 
 /*------------------------------------------
 --------------------------------------------
@@ -33,6 +34,8 @@ const { v7: uuidv7 } = require('uuid');
  * Student Self Sign Up
  */
 const { unlockInitialSkills } = require('../utilities/unlock-initial-skills');
+const checkRoleHierarchy = require('../middlewares/roleMiddleware');
+const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
 router.post('/new-student/add', (req, res, next) => {
     // Providing default avatar.
     // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
@@ -450,7 +453,7 @@ router.post(
 );
 
 // All users.
-router.get('/list', (req, res, next) => {
+router.get('/list', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
@@ -471,26 +474,31 @@ router.get('/list', (req, res, next) => {
 });
 
 // All editors.
-router.get('/editors/list', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
+router.get(
+    '/editors/list',
+    isAuthenticated,
+    checkRoleHierarchy('editor'),
+    (req, res, next) => {
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
         FROM users
         WHERE role = 'editor'
         AND is_deleted = 0;`;
 
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
+            conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.json(results);
+                } catch (err) {
+                    next(err);
                 }
-                res.json(results);
-            } catch (err) {
-                next(err);
-            }
-        });
+            });
+        }
     }
-});
+);
 
 // List all instructors.
 // This method is run on the Account Sign Up page, hence we
@@ -597,7 +605,7 @@ router.get('/instructor/:studentId', (req, res, next) => {
  *
  * @return response()
  */
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', isAuthenticated, isAdmin, (req, res, next) => {
     if (req.session.userName) {
         const deleteQuery = `UPDATE users 
         SET is_deleted = 1 
@@ -708,7 +716,7 @@ router.put(
 router.put(
     '/profile/:id/edit',
     isAuthenticated,
-    editUserPermission,
+    editSelfPermission,
     (req, res, next) => {
         let sqlQuery = `UPDATE users
             SET username = 
@@ -735,7 +743,7 @@ router.put(
 router.put(
     '/profile/:id/edit-password',
     isAuthenticated,
-    editUserPermission,
+    editSelfPermission,
     (req, res, next) => {
         // Hash the password.
         bcrypt.hash(
@@ -767,7 +775,7 @@ router.put(
 );
 
 // To see the user profile, and edit the app settings (if user is an admin).
-router.get('/:id/profile-settings', (req, res) => {
+router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
     if (req.session.userName) {
         res.render('profile-and-settings', { userId: req.params.id });
     } else {
