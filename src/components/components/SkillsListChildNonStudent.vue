@@ -52,6 +52,11 @@ export default {
                     }px)`
                 };
             }
+        },
+        skillURL() {
+            // Format the skill name as a URL, based on the Wikipedia style.
+            let urlFormattedSkillName = this.name?.replace(/ /g, '_');
+            return urlFormattedSkillName;
         }
     },
     async created() {
@@ -93,7 +98,7 @@ export default {
     methods: {
         mainButtonPress() {
             if (this.type != 'domain') {
-                window.open('/skills/' + this.id, '_blank');
+                window.open('/skills/' + this.skillURL, '_blank');
             } else this.toggleChildren();
         },
         openEdit(id) {
