@@ -20,7 +20,11 @@ const router = createRouter({
             name: 'student-vertical-tree',
             component: () =>
                 import('../components/pages/StudentTidyTreeView.vue'),
-            meta: { title: 'Skill tree', requiresAuth: true, roles: ['instructor', 'admin'] }
+            meta: {
+                title: 'Skill tree',
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
         },
         {
             path: '/',
@@ -70,10 +74,14 @@ const router = createRouter({
             path: '/student/:studentId/skills',
             name: 'student-skills',
             component: SkillsView,
-            meta: { title: 'Student skills', requiresAuth: true, roles: ['instructor', 'admin'] }
+            meta: {
+                title: 'Student skills',
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
         },
         {
-            path: '/skills/:skillId',
+            path: '/skills/:skillName',
             name: 'show-skill',
             component: () => import('../components/pages/ShowSkillView.vue')
         },
@@ -337,9 +345,12 @@ router.beforeEach(async (to, from, next) => {
             await skillsStore.getSkillsList();
         }
 
+        // Replace the underscores in the URL with spaces, to match the real name.
+        let skillName = to.params.skillName.replace(/_/g, ' ');
         const currentSkill = skillsStore.skillsList.find(
-            (item) => item.id == to.params.skillId
+            (item) => item.name == skillName
         );
+
         if (currentSkill.type == 'domain') {
             next({ path: '/skills' });
             return;

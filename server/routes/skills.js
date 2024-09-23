@@ -403,6 +403,30 @@ router.get('/show/:id', (req, res, next) => {
     });
 });
 
+router.get('/name/:skillName', (req, res, next) => {
+    let skill;
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    // Get skill.
+    const sqlQuery = `SELECT *
+                          FROM skills
+                          WHERE skill_tree.skills.name = ${conn.escape(
+                              req.params.skillName
+                          )} AND is_deleted = 0`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            skill = results[0];
+            res.json(skill);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 // For sending the mastery requirements data separately to the skill tree skill panels.
 // We send it separately because otherwise, if we send it with the other data, it slows
 // down the page load of the skill trees.

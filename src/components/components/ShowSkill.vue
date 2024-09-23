@@ -43,7 +43,8 @@ export default {
     },
     data() {
         return {
-            skillId: this.$route.params.skillId,
+            skillName: this.$route.params.skillName,
+            skillId: null,
             skill: {},
             userSkills: [],
             isMastered: false,
@@ -75,8 +76,9 @@ export default {
     methods: {
         async getSkill() {
             // Load the skill data
-            const res = await fetch('/skills/show/' + this.skillId);
+            const res = await fetch('/skills/name/' + this.skillName);
             this.skill = await res.json();
+            this.skillId = this.skill.id;
 
             // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
