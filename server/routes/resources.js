@@ -122,8 +122,10 @@ router.delete('/delete/:resourceId', (req, res, next) => {
     if (req.session.userName) {
         // Check if the user has the right to delete the learning resource.
         var postUserId;
-        let sqlQuery1 =
-            'SELECT user_id FROM resources WHERE id=' + req.params.resourceId;
+        let sqlQuery1 = `SELECT user_id FROM resources WHERE id= ${conn.escape(
+            req.params.resourceId
+        )};`;
+
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -137,7 +139,11 @@ router.delete('/delete/:resourceId', (req, res, next) => {
                     ) {
                         // Delete the post.
                         // new query using visibility flag
-                        const deleteResourceQuery = `UPDATE resources SET is_deleted = 1 WHERE resources.id = ${req.params.resourceId}`;
+                        const deleteResourceQuery = `UPDATE resources 
+                        SET is_deleted = 1 
+                        WHERE resources.id = ${conn.escape(
+                            req.params.resourceId
+                        )};`;
 
                         conn.query(deleteResourceQuery, (err) => {
                             try {
@@ -186,14 +192,12 @@ router.delete('/delete/:resourceId', (req, res, next) => {
  */
 router.put('/edit/:id', (req, res, next) => {
     if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.editordata != null)
-            req.body.editordata = req.body.editordata.replace(/'/g, "\\'");
-
         //Extra backend security check that the user is allowed to edit the post.
         let postUserId;
-        const sqlQuery1 =
-            'SELECT user_id FROM resources WHERE id=' + req.params.id;
+        const sqlQuery1 = `SELECT user_id FROM resources WHERE id=${conn.escape(
+            req.params.id
+        )};`;
+
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -206,11 +210,10 @@ router.put('/edit/:id', (req, res, next) => {
                         req.session.role == 'editor'
                     ) {
                         // Edit the post.
-                        let sqlQuery2 =
-                            "UPDATE resources SET content='" +
-                            req.body.editordata +
-                            "' WHERE id=" +
-                            req.params.id;
+                        let sqlQuery2 = `UPDATE resources 
+                            SET content= ${conn.escape(req.body.editordata)}
+                            WHERE id= ${conn.escape(req.params.id)};`;
+
                         conn.query(sqlQuery2, (err) => {
                             if (err) throw err;
                             else {
@@ -250,7 +253,10 @@ router.put('/edit/:id', (req, res, next) => {
 router.get('/show/:id', (req, res) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * FROM resources WHERE id=${req.params.id} AND is_deleted = 0`;
+        let sqlQuery = `SELECT * FROM resources 
+        WHERE id=${conn.escape(req.params.id)} 
+        AND is_deleted = 0`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -268,7 +274,10 @@ router.get('/show/:id', (req, res) => {
 router.get('/user-activity-report/show/:id', (req, res) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * FROM resources WHERE id=${req.params.id}`;
+        let sqlQuery = `SELECT * FROM resources WHERE id=${conn.escape(
+            req.params.id
+        )};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -699,7 +708,7 @@ async function addSource(
     console.log(responseObj.url);
 
     let sqlQuery = 'INSERT INTO resources SET ?';
-    let query = conn.query(sqlQuery, data, (err, results, next) => {
+    conn.query(sqlQuery, data, (err, results, next) => {
         try {
             if (err) {
                 throw err;
@@ -746,14 +755,14 @@ async function addSource(
 // Note these should be totally deleted, as they dont need to be able to be undeleted.
 router.post('/delete-domain', (req, res, next) => {
     if (req.session.userName) {
-        let rootDomain = req.body.blockedRootDomain;
+        let rootDomain = conn.escape(req.body.blockedRootDomain);
 
         let sqlQuery1 =
             `DELETE FROM resources
         WHERE content LIKE '%` +
             rootDomain +
             `%'`;
-        let query1 = conn.query(sqlQuery1, (err, results) => {
+        conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -764,7 +773,7 @@ router.post('/delete-domain', (req, res, next) => {
         VALUES ('` +
                         rootDomain +
                         `')`;
-                    let query2 = conn.query(sqlQuery2, (err, results) => {
+                    conn.query(sqlQuery2, (err, results) => {
                         try {
                             if (err) {
                                 throw err;
@@ -794,7 +803,7 @@ router.get('/list-blocked-domains', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = 'SELECT * FROM `blacklisted_sources`';
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -814,9 +823,10 @@ router.get('/list-blocked-domains', (req, res, next) => {
 router.delete('/unblock-domain/:domainId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            'DELETE FROM blacklisted_sources WHERE id=' + req.params.domainId;
-        let query = conn.query(sqlQuery, (err, results) => {
+        let sqlQuery = `DELETE FROM blacklisted_sources 
+        WHERE id= ${conn.escape(req.params.domainId)};`;
+
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -832,14 +842,14 @@ router.delete('/unblock-domain/:domainId', (req, res, next) => {
 // Add root domain to whitelist for sources.
 router.post('/add-domain-to-whitelist', (req, res, next) => {
     if (req.session.userName) {
-        let rootDomain = req.body.whiteListedRootDomain;
-
+        let rootDomain = conn.escape(req.body.whiteListedRootDomain);
         let sqlQuery =
             `INSERT IGNORE INTO whitelisted_sources (root_domain)
         VALUES ('` +
             rootDomain +
             `')`;
-        let query = conn.query(sqlQuery, (err, results) => {
+
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -883,9 +893,10 @@ router.get('/list-whitelisted-domains', (req, res, next) => {
 router.delete('/remove-domain-from-whitelist/:domainId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            'DELETE FROM whitelisted_sources WHERE id=' + req.params.domainId;
-        let query = conn.query(sqlQuery, (err, results) => {
+        let sqlQuery = `DELETE FROM whitelisted_sources 
+        WHERE id= ${conn.escape(req.params.domainId)};`;
+
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -905,7 +916,7 @@ function deleteDuplicateSources() {
     console.log('Searching for and deleting duplicate sources.');
     // Get all sources.
     let sqlQuery1 = `SELECT * FROM resources ORDER BY id`;
-    let query1 = conn.query(sqlQuery1, (err, results) => {
+    conn.query(sqlQuery1, (err, results) => {
         try {
             if (err) {
                 throw err;
@@ -947,7 +958,7 @@ function deleteDuplicateSources() {
                     `DELETE from resources WHERE id IN (` +
                     duplicateSources +
                     `);`;
-                let query2 = conn.query(sqlQuery2, (err, results) => {
+                conn.query(sqlQuery2, (err, results) => {
                     try {
                         if (err) {
                             throw err;

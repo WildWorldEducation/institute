@@ -47,14 +47,10 @@ router.get('/list', (req, res, next) => {
 router.post('/add/:skillId', (req, res, next) => {
     if (req.session.userName) {
         for (let i = 0; i < req.body.filters.length; i++) {
-            let sqlQuery1 =
-                `
+            let sqlQuery1 = `
         INSERT INTO skill_tags (skill_id, tag_id)
-        VALUES(` +
-                req.params.skillId +
-                `, ` +
-                req.body.filters[i] +
-                `);`;
+        VALUES(${conn.escape(req.params.skillId)},        
+        ${conn.escape(req.body.filters[i])});`;
 
             conn.query(sqlQuery1, (err, results) => {
                 try {
@@ -63,13 +59,9 @@ router.post('/add/:skillId', (req, res, next) => {
                     }
 
                     // Check if the relevant filter has been applied on the app settings.
-                    let sqlQuery2 =
-                        `
-            SELECT is_active
-            FROM tags
-            WHERE id = ` +
-                        req.body.filters[i] +
-                        `;`;
+                    let sqlQuery2 = `SELECT is_active
+                    FROM tags
+                    WHERE id = ${conn.escape(req.body.filters[i])};`;
 
                     conn.query(sqlQuery2, (err, results) => {
                         try {
@@ -81,13 +73,9 @@ router.post('/add/:skillId', (req, res, next) => {
                                 // Update the field in the skill table.
                                 // Note I am aware this is slightly redundant, but have added the
                                 // 'is_filtered' field to the skills table to improve processing speed.
-                                let sqlQuery3 =
-                                    `
-            UPDATE skills 
-            SET is_filtered = 'filtered'
-            WHERE id = ` +
-                                    req.params.skillId +
-                                    `;`;
+                                let sqlQuery3 = `UPDATE skills 
+                                SET is_filtered = 'filtered'
+                                WHERE id = ${conn.escape(req.params.skillId)};`;
 
                                 conn.query(sqlQuery3, (err, results) => {
                                     try {
@@ -155,12 +143,9 @@ router.post('/add/:skillId', (req, res, next) => {
  */
 router.delete('/remove/:skillId', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
+        let sqlQuery = `
         DELETE FROM skill_tags 
-        WHERE skill_id =` +
-            req.params.skillId +
-            `;`;
+        WHERE skill_id = ${conn.escape(req.params.skillId)};`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -168,13 +153,9 @@ router.delete('/remove/:skillId', (req, res, next) => {
                     throw err;
                 }
 
-                let sqlQuery2 =
-                    `
-    UPDATE skills 
-    SET is_filtered = 'available'
-    WHERE id = ` +
-                    req.params.skillId +
-                    `;`;
+                let sqlQuery2 = `UPDATE skills 
+                    SET is_filtered = 'available'
+                    WHERE id = ${conn.escape(req.params.skillId)};`;
 
                 conn.query(sqlQuery2, (err, results) => {
                     try {

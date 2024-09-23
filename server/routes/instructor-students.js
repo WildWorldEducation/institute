@@ -25,7 +25,7 @@ Routes
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM `instructor_students`';
+        let sqlQuery = 'SELECT * FROM `instructor_students`;';
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

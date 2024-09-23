@@ -10,19 +10,31 @@ export default {
         this.getTutorPost();
     },
     methods: {
-        getTutorPost() {
-            fetch('/tutor-posts/show/' + this.tutorPostId)
+        async getTutorPost() {
+            await fetch('/tutor-posts/show/' + this.tutorPostId)
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => (this.tutorPost = data));
+
+                $('#summernote').summernote(
+                    {
+                        maximumImageFileSize: 2048 * 1024, // 2 MB
+                        callbacks: {
+                            onImageUploadError: function (msg) {
+                                alert("Max image size is 2MB.")
+                            }
+                        }
+                    }
+                ).summernote('code', this.tutorPost.description);
         },
         Submit() {
+            var resourceData = $('#summernote').summernote("code");
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    description: this.tutorPost.description
+                    description: resourceData
                 })
             };
 
@@ -40,12 +52,7 @@ export default {
         <h2>Edit Tutor Post</h2>
         <div class="row">
             <div class="mb-3">
-                <textarea
-                    v-model="tutorPost.description"
-                    rows="3"
-                    class="form-control"
-                >
-                </textarea>
+                <textarea id="summernote" name="editordata"></textarea>
             </div>
             <div class="mb-3 d-flex justify-content-end gap-4">
                 <a class="btn red-btn" @click="$router.go(-1)"> Cancel </a>

@@ -77,19 +77,15 @@ export default {
     },
     methods: {
         ValidateForm() {
-            if (this.firstName == '' || this.firstName == null) {
-                this.validate.firstName = true;
-            } else if (this.lastName == '' || this.lastName == null) {
-                this.validate.lastName = true;
-            } else if (this.userName == '' || this.userName == null) {
+            if (this.userName == '' || this.userName == null) {
                 this.validate.username = true;
             } else if (this.email == '' || this.email == null) {
                 this.validate.email = true;
-            }else{
+            } else {
                 this.HandleClickSubmit();
             }
         },
-        ValidatePassword(){
+        ValidatePassword() {
             if (this.validate.passwordComplex) {
                 this.HandlePasswordUpdate();
             }
@@ -104,7 +100,7 @@ export default {
                 this.validate.emailFormat = true;
             }
         },
-        HandlePasswordUpdate(){
+        HandlePasswordUpdate() {
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -137,7 +133,8 @@ export default {
             fetch(url, requestOptions).then(() => {
                 if (
                     this.userDetailsStore.role == 'student' &&
-                    this.instructorID != ''
+                    this.instructorID != '' &&
+                    this.instructorID != null
                 ) {
                     const requestOptions = {
                         method: 'PUT',
@@ -164,7 +161,6 @@ export default {
         },
 
         HandleClickSubmit() {
-            alert('GO TO HERE');
             // Only show the modal when user choose an instructor
             if (this.instructorName && !this.haveInstructor) {
                 this.showWarnModal = true;
@@ -449,15 +445,6 @@ export default {
                             type="text"
                             class="form-control"
                         />
-                        <div
-                            v-if="
-                                validate.firstName &&
-                                (firstName == '' || firstName == null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter a first name !
-                        </div>
                     </div>
                     <!-- Last Name -->
                     <div class="mb-3">
@@ -468,15 +455,6 @@ export default {
                             type="text"
                             class="form-control"
                         />
-                        <div
-                            v-if="
-                                validate.lastName &&
-                                (lastName == '' || lastName == null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter a last name !
-                        </div>
                     </div>
                 </div>
                 <!-- Username -->
@@ -578,7 +556,7 @@ export default {
 
                 <hr class="mt-5 mb-5" />
                 <!-- Password Section -->
-                 <h2>Update Password</h2>
+                <h2>Update Password</h2>
                 <div class="mb-3">
                     <label class="form-label">Password</label>
                     <div class="password-div">

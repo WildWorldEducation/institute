@@ -15,6 +15,7 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 const createUserPermission = require('../middlewares/users/createUserMiddleware');
 const addInstructorPermission = require('../middlewares/users/addInstructorMiddleware');
 const editUserPermission = require('../middlewares/users/editUserMiddleware');
+const isAdmin = require('../middlewares/adminMiddleware');
 
 /*------------------------------------------
 --------------------------------------------
@@ -33,11 +34,9 @@ const { v7: uuidv7 } = require('uuid');
  * Student Self Sign Up
  */
 const { unlockInitialSkills } = require('../utilities/unlock-initial-skills');
+const checkRoleHierarchy = require('../middlewares/roleMiddleware');
+const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
 router.post('/new-student/add', (req, res, next) => {
-    // Escape username, as it is used in the SELECT query.
-    if (req.body.username != null)
-        req.body.username = req.body.username.replace(/'/g, "\\'");
-
     // Providing default avatar.
     // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
     if (typeof req.body.avatar == 'undefined' || !req.body.avatar) {
@@ -58,7 +57,12 @@ router.post('/new-student/add', (req, res, next) => {
         };
 
         // Check if username or email address already exist.
-        let sqlQuery1 = `SELECT * FROM users WHERE username = '${req.body.username}' AND NOT(email = '${req.body.email}' AND is_deleted = 1) ;`;
+        let sqlQuery1 = `SELECT * 
+        FROM users 
+        WHERE username = ${conn.escape(req.body.username)} 
+        AND NOT(email = ${conn.escape(req.body.email)} 
+        AND is_deleted = 1);`;
+
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -67,10 +71,10 @@ router.post('/new-student/add', (req, res, next) => {
                 if (results.length > 0) {
                     res.json({ account: 'username already taken' });
                 } else {
-                    let sqlQuery2 =
-                        "SELECT * FROM users WHERE email = '" +
-                        req.body.email +
-                        "';";
+                    let sqlQuery2 = `SELECT * 
+                    FROM users 
+                    WHERE email = ${conn.escape(req.body.email)};`;
+
                     conn.query(sqlQuery2, data, (err, results) => {
                         try {
                             if (err) {
@@ -78,8 +82,8 @@ router.post('/new-student/add', (req, res, next) => {
                             } else {
                                 if (results.length > 0) {
                                     if (results[0].is_deleted) {
-                                        let restoreSql =
-                                            'UPDATE users SET ? , is_deleted = 0 WHERE email = ?';
+                                        let restoreSql = `UPDATE users SET ? , is_deleted = 0 WHERE email = ?`;
+
                                         conn.query(
                                             restoreSql,
                                             [data, data.email],
@@ -169,10 +173,6 @@ router.post('/new-student/add', (req, res, next) => {
  * Editor Self Sign Up
  */
 router.post('/new-editor/add', (req, res, next) => {
-    // Escape username, as it is used in the SELECT query.
-    if (req.body.username != null)
-        req.body.username = req.body.username.replace(/'/g, "\\'");
-
     // Providing default avatar.
     // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
     if (typeof req.body.avatar == 'undefined' || !req.body.avatar) {
@@ -193,7 +193,12 @@ router.post('/new-editor/add', (req, res, next) => {
         };
 
         // Check if username or email address already exist.
-        let sqlQuery1 = `SELECT * FROM users WHERE username = '${req.body.username}' AND NOT(email = '${req.body.email}' AND is_deleted = 1) ;`;
+        let sqlQuery1 = `SELECT * 
+        FROM users 
+        WHERE username = ${conn.escape(req.body.username)} 
+        AND NOT(email = ${conn.escape(req.body.email)} 
+        AND is_deleted = 1);`;
+
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -202,10 +207,10 @@ router.post('/new-editor/add', (req, res, next) => {
                 if (results.length > 0) {
                     res.json({ account: 'username already taken' });
                 } else {
-                    let sqlQuery2 =
-                        "SELECT * FROM users WHERE email = '" +
-                        req.body.email +
-                        "';";
+                    let sqlQuery2 = `SELECT * 
+                        FROM users 
+                        WHERE email = ${conn.escape(req.body.email)};`;
+
                     conn.query(sqlQuery2, data, (err, results) => {
                         try {
                             if (err) {
@@ -213,8 +218,8 @@ router.post('/new-editor/add', (req, res, next) => {
                             } else {
                                 if (results.length > 0) {
                                     if (results[0].is_deleted) {
-                                        let restoreSql =
-                                            'UPDATE users SET ? , is_deleted = 0 WHERE email = ?';
+                                        let restoreSql = `UPDATE users SET ? , is_deleted = 0 WHERE email = ?`;
+
                                         conn.query(
                                             restoreSql,
                                             [data, data.email],
@@ -306,10 +311,6 @@ router.post('/new-editor/add', (req, res, next) => {
  * @return response()
  */
 router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
-    // Escape username, as it is used in the SELECT query.
-    if (req.body.username != null)
-        req.body.username = req.body.username.replace(/'/g, "\\'");
-
     // Providing default avatar.
     // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
     if (typeof req.body.avatar == 'undefined' || !req.body.avatar) {
@@ -333,7 +334,12 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
         };
 
         // Check if username or email address already exist.
-        let sqlQuery1 = `SELECT * FROM users WHERE username = '${req.body.username}' AND NOT(email = '${req.body.email}' AND is_deleted = 1) ;`;
+        let sqlQuery1 = `SELECT * 
+        FROM users 
+        WHERE username = ${conn.escape(req.body.username)}
+        AND NOT(email = ${conn.escape(req.body.email)} 
+        AND is_deleted = 1);`;
+
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -342,10 +348,10 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                 if (results.length > 0) {
                     res.json({ account: 'username already taken' });
                 } else {
-                    let sqlQuery2 =
-                        "SELECT * FROM users WHERE email = '" +
-                        req.body.email +
-                        "';";
+                    let sqlQuery2 = `SELECT * 
+                        FROM users 
+                        WHERE email = ${conn.escape(req.body.email)};`;
+
                     conn.query(sqlQuery2, data, (err, results) => {
                         try {
                             if (err) {
@@ -355,6 +361,7 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                     if (results[0].is_deleted) {
                                         let restoreSql =
                                             'UPDATE users SET ? , is_deleted = 0 WHERE email = ?';
+
                                         conn.query(
                                             restoreSql,
                                             [data, data.email],
@@ -446,7 +453,7 @@ router.post(
 );
 
 // All users.
-router.get('/list', (req, res, next) => {
+router.get('/list', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
@@ -466,36 +473,42 @@ router.get('/list', (req, res, next) => {
     }
 });
 
-// All users.
-router.get('/editors/list', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
+// All editors.
+router.get(
+    '/editors/list',
+    isAuthenticated,
+    checkRoleHierarchy('editor'),
+    (req, res, next) => {
+        if (req.session.userName) {
+            res.setHeader('Content-Type', 'application/json');
+            let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
         FROM users
         WHERE role = 'editor'
         AND is_deleted = 0;`;
 
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
+            conn.query(sqlQuery, (err, results) => {
+                try {
+                    if (err) {
+                        throw err;
+                    }
+                    res.json(results);
+                } catch (err) {
+                    next(err);
                 }
-                res.json(results);
-            } catch (err) {
-                next(err);
-            }
-        });
+            });
+        }
     }
-});
+);
 
 // List all instructors.
 // This method is run on the Account Sign Up page, hence we
-// do not check for the rpesence of an account, in the session.
+// do not check for the presence of an account, in the session.
 router.get('/instructors/list', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `SELECT id, username FROM users
         WHERE role = 'instructor'
         AND is_deleted = 0;`;
+
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -516,7 +529,8 @@ router.get('/show/:id', (req, res, next) => {
         let sqlQuery = `
     SELECT id, first_name, last_name, username, avatar, email, role, is_deleted             
     FROM users        
-    WHERE id = '${req.params.id}' AND is_deleted = 0
+    WHERE id = ${conn.escape(req.params.id)} 
+    AND is_deleted = 0
     LIMIT 1`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -544,7 +558,9 @@ router.get('/instructor/:studentId', (req, res, next) => {
     FROM users
     LEFT JOIN instructor_students 
     ON users.id = instructor_students.instructor_id
-    WHERE instructor_students.student_id = '${req.params.studentId}';`;
+    WHERE instructor_students.student_id = ${conn.escape(
+        req.params.studentId
+    )};`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -562,35 +578,39 @@ router.get('/instructor/:studentId', (req, res, next) => {
     }
 });
 
+// TODO: delete this.
 // Get the user id from the username (used in the skill tree routes).
-router.get('/showId/:username', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            "SELECT id FROM users WHERE username = '" +
-            req.params.username +
-            "'";
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.json(results[0].id);
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-});
+// router.get('/showId/:username', (req, res, next) => {
+//     if (req.session.userName) {
+//         res.setHeader('Content-Type', 'application/json');
+//         let sqlQuery = `SELECT id
+//             FROM users
+//             WHERE username = ${conn.escape(req.params.username)};`;
+
+//         conn.query(sqlQuery, (err, results) => {
+//             try {
+//                 if (err) {
+//                     throw err;
+//                 }
+//                 res.json(results[0].id);
+//             } catch (err) {
+//                 next(err);
+//             }
+//         });
+//     }
+// });
 
 /**
  * Delete User using binary flag
  *
  * @return response()
  */
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', isAuthenticated, isAdmin, (req, res, next) => {
     if (req.session.userName) {
-        const deleteQuery = `UPDATE users SET is_deleted = 1 WHERE id = '${req.params.id}';`;
+        const deleteQuery = `UPDATE users 
+        SET is_deleted = 1 
+        WHERE id = ${conn.escape(req.params.id)};`;
+
         conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
@@ -619,42 +639,21 @@ router.put(
     editUserPermission,
     (req, res, next) => {
         if (req.session.userName) {
-            // Escape single quotes for SQL to accept.
-            if (req.body.firstname != null)
-                req.body.firstname = req.body.firstname.replace(/'/g, "\\'");
-            if (req.body.lastname != null)
-                req.body.lastname = req.body.lastname.replace(/'/g, "\\'");
-            if (req.body.username != null)
-                req.body.username = req.body.username.replace(/'/g, "\\'");
-            if (req.body.email != null)
-                req.body.email = req.body.email.replace(/'/g, "\\'");
-            if (req.body.password != null)
-                req.body.password = req.body.password.replace(/'/g, "\\'");
-
             // Check if avatar field is empty.
             let avatar = '';
             if (req.body.avatar != null) {
                 avatar = req.body.avatar;
             }
 
-            let sqlQuery =
-                "UPDATE users SET first_name='" +
-                req.body.firstname +
-                "', last_name = '" +
-                req.body.lastname +
-                "', username = '" +
-                req.body.username +
-                "', email = '" +
-                req.body.email +
-                "', password = '" +
-                req.body.password +
-                "', avatar = '" +
-                avatar +
-                "', role = '" +
-                req.body.role +
-                "' WHERE id='" +
-                req.params.id +
-                "';";
+            let sqlQuery = `UPDATE users 
+            SET first_name = ${conn.escape(req.body.firstname)}, 
+            last_name = ${conn.escape(req.body.lastname)}, 
+            username = ${conn.escape(req.body.username)}, 
+            email = ${conn.escape(req.body.email)}, 
+            password = ${conn.escape(req.body.password)}, 
+            avatar = ${conn.escape(avatar)}, 
+            role = ${conn.escape(req.body.role)} 
+            WHERE id = ${conn.escape(req.params.id)};`;
 
             conn.query(sqlQuery, (err, results) => {
                 try {
@@ -672,6 +671,7 @@ router.put(
     }
 );
 
+// Change student's instructor.
 router.put(
     '/:id/edit/instructor',
     isAuthenticated,
@@ -679,8 +679,7 @@ router.put(
     (req, res, next) => {
         let sqlQuery = `
         DELETE FROM instructor_students
-        WHERE student_id = '${req.params.id}';
-    `;
+        WHERE student_id = ${conn.escape(req.params.id)};`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -695,7 +694,9 @@ router.put(
 
         sqlQuery = `
         INSERT INTO instructor_students (instructor_id, student_id) 
-        VALUES ('${req.body.instructor_id}', '${req.params.id}');
+        VALUES (${conn.escape(req.body.instructor_id)}, ${conn.escape(
+            req.params.id
+        )});
     `;
 
         conn.query(sqlQuery, (err, results) => {
@@ -715,33 +716,18 @@ router.put(
 router.put(
     '/profile/:id/edit',
     isAuthenticated,
-    editUserPermission,
+    editSelfPermission,
     (req, res, next) => {
-        // Escape single quotes for SQL to accept.
-        if (req.body.firstName != null)
-            req.body.firstName = req.body.firstName.replace(/'/g, "\\'");
-        if (req.body.lastName != null)
-            req.body.lastName = req.body.lastName.replace(/'/g, "\\'");
-        if (req.body.username != null)
-            req.body.username = req.body.username.replace(/'/g, "\\'");
-        if (req.body.email != null)
-            req.body.email = req.body.email.replace(/'/g, "\\'");
+        let sqlQuery = `UPDATE users
+            SET username = 
+            ${conn.escape(req.body.username)},
+            avatar = ${conn.escape(req.body.avatar)},
+            first_name = ${conn.escape(req.body.firstName)},
+            last_name = ${conn.escape(req.body.lastName)},
+            email = ${conn.escape(req.body.email)}
+            WHERE id = ${conn.escape(req.params.id)};`;
 
-        let username = req.body.username;
-
-        let sqlQuery = 'UPDATE users SET username="' + conn.escape(username);
-        +'", avatar ="' +
-            req.body.avatar +
-            '" ,first_name ="' +
-            req.body.firstName +
-            '", last_name="' +
-            req.body.lastName +
-            '",email="' +
-            req.body.email +
-            '" WHERE id="' +
-            req.params.id +
-            '";';
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;
@@ -757,11 +743,8 @@ router.put(
 router.put(
     '/profile/:id/edit-password',
     isAuthenticated,
-    editUserPermission,
+    editSelfPermission,
     (req, res, next) => {
-        if (req.body.password != null)
-            req.body.password = req.body.password.replace(/'/g, "\\'");
-
         // Hash the password.
         bcrypt.hash(
             req.body.password,
@@ -772,12 +755,10 @@ router.put(
                 }
 
                 // Add data.
-                let sqlQuery =
-                    'UPDATE users SET password="' +
-                    hashedPassword +
-                    '" WHERE id="' +
-                    req.params.id +
-                    '";';
+                let sqlQuery = `UPDATE users 
+                    SET password = ${conn.escape(hashedPassword)} 
+                    WHERE id = ${conn.escape(req.params.id)};`;
+
                 conn.query(sqlQuery, (err, results) => {
                     try {
                         if (err) {
@@ -794,7 +775,7 @@ router.put(
 );
 
 // To see the user profile, and edit the app settings (if user is an admin).
-router.get('/:id/profile-settings', (req, res) => {
+router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
     if (req.session.userName) {
         res.render('profile-and-settings', { userId: req.params.id });
     } else {

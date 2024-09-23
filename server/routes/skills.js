@@ -63,15 +63,17 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                             (id, version_number, user_id, name, description, icon_image, banner_image,
                             mastery_requirements, level)
                             VALUES
-                            (${skillId},
+                            (${conn.escape(skillId)},
                             1,
-                            '${req.session.userId}',
-                            '${req.body.name}',                           
-                            '${req.body.description}',
-                            '${req.body.icon_image}',
-                            '${req.body.banner_image}',
-                            '${req.body.mastery_requirements}',
-                            '${req.body.level}');`;
+                            ${conn.escape(req.session.userId)},
+                            ${conn.escape(
+                                req.body.name
+                            )},                           
+                            ${conn.escape(req.body.description)},
+                            ${conn.escape(req.body.icon_image)},
+                            ${conn.escape(req.body.banner_image)},
+                            ${conn.escape(req.body.mastery_requirements)},
+                            ${conn.escape(req.body.level)});`;
 
                             conn.query(revisionHistoryQuery, data, (err) => {
                                 try {
@@ -100,16 +102,11 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                                                         req.body.filters.length;
                                                         i++
                                                     ) {
-                                                        let sqlQuery3 =
-                                                            `
+                                                        let sqlQuery3 = `
                             INSERT INTO skill_tags (skill_id, tag_id)
-                            VALUES(` +
-                                                            skillId +
-                                                            `, ` +
-                                                            req.body.filters[
-                                                            i
-                                                            ] +
-                                                            `);`;
+                            VALUES(${conn.escape(skillId)},
+                            ${conn.escape(req.body.filters[i])});`;
+
                                                         conn.query(
                                                             sqlQuery3,
                                                             (err, results) => {
@@ -159,7 +156,10 @@ router.post(
         // Get skill that is to be copied.
         const sqlQuery = `SELECT *
                           FROM skills
-                          WHERE skills.id = ${req.body.skillToBeCopied.id} AND skills.is_deleted = 0`;
+                          WHERE skills.id = ${conn.escape(
+                              req.body.skillToBeCopied.id
+                          )} AND skills.is_deleted = 0;`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -358,9 +358,10 @@ router.get('/show/:id', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT *
-                          FROM skills
-                          WHERE skills.id = ${req.params.id} AND skills.is_deleted = 0`;
+    const sqlQuery = `SELECT * FROM skills
+    WHERE skills.id = ${conn.escape(req.params.id)} 
+    AND skills.is_deleted = 0`;
+
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -372,7 +373,8 @@ router.get('/show/:id', (req, res, next) => {
                 if (skill.is_copy_of_skill_id != null) {
                     const sqlQueryForCopiedSkillNode = `SELECT *
                 FROM skills
-                WHERE skills.id = ${skill.is_copy_of_skill_id} AND skills.is_deleted = 0`;
+                WHERE skills.id = ${conn.escape(skill.is_copy_of_skill_id)}
+                AND skills.is_deleted = 0;`;
 
                     conn.query(sqlQueryForCopiedSkillNode, (err, results) => {
                         try {
@@ -409,8 +411,10 @@ router.get('/mastery-requirements/:id', (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
     const sqlQuery = `SELECT mastery_requirements
-                          FROM skills
-                          WHERE skills.id = ${req.params.id} AND skills.is_deleted = 0`;
+    FROM skills
+    WHERE skills.id = ${conn.escape(req.params.id)}
+     AND skills.is_deleted = 0;`;
+
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -431,7 +435,9 @@ router.get('/record-visit/:id', (req, res, next) => {
         //Register visit datetime.
         let visitSqlQuery = `
  INSERT INTO user_visited_skills (user_id, skill_id, visited_at)
- VALUES ('${req.session.userId}', ${req.params.id}, NOW())
+ VALUES (${conn.escape(req.session.userId)}, ${conn.escape(
+            req.params.id
+        )}, NOW())
  ON DUPLICATE KEY UPDATE visited_at = NOW();
 `;
         conn.query(visitSqlQuery, (err) => {
@@ -454,7 +460,7 @@ router.get('/last-visited', (req, res, next) => {
             SELECT skills.id, name
             FROM user_visited_skills
             INNER JOIN skills ON skills.id = user_visited_skills.skill_id
-            WHERE user_id = '${req.session.userId}'
+            WHERE user_id = ${conn.escape(req.session.userId)}
             AND skills.is_deleted = 0
             ORDER BY visited_at DESC
             LIMIT 5;
@@ -474,7 +480,7 @@ router.get('/last-visited', (req, res, next) => {
 });
 
 /**
- * Edit Item
+ * Edit Skill
  *
  * @return response()
  */
@@ -484,23 +490,7 @@ router.put(
     checkRoleHierarchy('editor'),
     (req, res, next) => {
         if (req.session.userName) {
-            // Prep data.
-            // Escape single quotes for SQL to accept.
-            if (req.body.name != null)
-                req.body.name = req.body.name.replace(/'/g, "\\'");
-            if (req.body.description != null)
-                req.body.description = req.body.description.replace(
-                    /'/g,
-                    "\\'"
-                );
-            if (req.body.mastery_requirements != null)
-                req.body.mastery_requirements =
-                    req.body.mastery_requirements.replace(/'/g, "\\'");
-            if (req.body.comment != null)
-                req.body.comment = req.body.comment.replace(/'/g, "\\'");
-
             // Add new record to the skills_versions table.
-
             let versionNumber = req.body.version_number + 1;
 
             let addVersionHistoryInsertSQLQuery = `
@@ -508,17 +498,19 @@ router.put(
                     (id, version_number, user_id, name, description, icon_image, banner_image,
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
-                    (${req.params.id},
-                    ${versionNumber},
-                    '${req.session.userId}',
-                    '${req.body.name}',                    
-                    '${req.body.description}',
-                    '${req.body.icon_image}',
-                    '${req.body.banner_image}',
-                    '${req.body.mastery_requirements}',                    
-                    '${req.body.level}',                    
-                    ${req.body.order},
-                    '${req.body.comment}');`;
+                    (${conn.escape(req.params.id)},
+                    ${conn.escape(versionNumber)},
+                    ${conn.escape(req.session.userId)},
+                    ${conn.escape(req.body.name)},                    
+                    ${conn.escape(req.body.description)},
+                    ${conn.escape(req.body.icon_image)},
+                    ${conn.escape(req.body.banner_image)},
+                    ${conn.escape(
+                        req.body.mastery_requirements
+                    )},                    
+                    ${conn.escape(req.body.level)},                    
+                    ${conn.escape(req.body.order)},
+                    ${conn.escape(req.body.comment)});`;
 
             conn.query(addVersionHistoryInsertSQLQuery, (err) => {
                 try {
@@ -527,30 +519,21 @@ router.put(
                     }
 
                     // Update record in skill table.
-                    let updateRecordSQLQuery =
-                        `UPDATE skills SET name = '` +
-                        req.body.name +
-                        `', parent = ` +
-                        req.body.parent +
-                        `, description = '` +
-                        req.body.description +
-                        `', icon_image = '` +
-                        req.body.icon_image +
-                        `', banner_image = '` +
-                        req.body.banner_image +
-                        `', mastery_requirements = '` +
-                        req.body.mastery_requirements +
-                        `', type = '` +
-                        req.body.type +
-                        `', level = '` +
-                        req.body.level +
-                        `', skills.order = ` +
-                        req.body.order +
-                        `, version_number = ${versionNumber}
-                                , edited_date = current_timestamp
-                                WHERE id = ` +
-                        req.params.id +
-                        `;`;
+                    let updateRecordSQLQuery = `UPDATE skills 
+                        SET name = ${conn.escape(req.body.name)}, 
+                        parent = ${conn.escape(req.body.parent)},
+                        description = ${conn.escape(req.body.description)}, 
+                        icon_image = ${conn.escape(req.body.icon_image)}, 
+                        banner_image = ${conn.escape(req.body.banner_image)}, 
+                        mastery_requirements = ${conn.escape(
+                            req.body.mastery_requirements
+                        )}, 
+                        type = ${conn.escape(req.body.type)}, 
+                        level = ${conn.escape(req.body.level)}, 
+                        skills.order = ${conn.escape(req.body.order)}, 
+                        version_number = ${conn.escape(versionNumber)}, 
+                        edited_date = current_timestamp
+                        WHERE id = ${conn.escape(req.params.id)};`;
 
                     conn.query(updateRecordSQLQuery, (err, results) => {
                         try {
@@ -606,11 +589,21 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
 
         // Add data.
         let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, banner_image, comment)
-         VALUES (${req.params.id}, '${req.body.userId}', '${req.body.mastery_requirements}', '${req.body.icon_image}', '${req.body.banner_image}', 
-         '${req.body.comment}')
+         VALUES (${conn.escape(req.params.id)}, 
+         ${conn.escape(req.body.userId)}, 
+         ${conn.escape(req.body.mastery_requirements)}, 
+         ${conn.escape(req.body.icon_image)}, 
+         ${conn.escape(req.body.banner_image)}, 
+         ${conn.escape(req.body.comment)})
          
          ON DUPLICATE KEY
-         UPDATE mastery_requirements = '${req.body.mastery_requirements}', date = CURRENT_TIMESTAMP(), icon_image = '${req.body.icon_image}', banner_image = '${req.body.banner_image}', comment = '${req.body.comment}';`;
+         UPDATE mastery_requirements = ${conn.escape(
+             req.body.mastery_requirements
+         )}, 
+         date = CURRENT_TIMESTAMP(), 
+         icon_image = ${conn.escape(req.body.icon_image)}, 
+         banner_image = ${conn.escape(req.body.banner_image)}, 
+         comment = ${conn.escape(req.body.comment)};`;
 
         // Update record in skill table.
 
@@ -645,7 +638,7 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
 });
 
 /**
- * Save item submitted for review.
+ * Accept skill submitted for review.
  *
  * @return response()
  */
@@ -655,19 +648,12 @@ router.put(
     checkRoleHierarchy('editor'),
     (req, res, next) => {
         if (req.session.userName) {
-            // Prep data.
-            // Escape single quotes for SQL to accept.
-            if (req.body.mastery_requirements != null)
-                req.body.mastery_requirements =
-                    req.body.mastery_requirements.replace(/'/g, "\\'");
-            if (req.body.comment != null)
-                req.body.comment = req.body.comment.replace(/'/g, "\\'");
-
             // Add old record to the skills_versions table.
             // insert the above into the skills_version table,
             // along with the new fields
-            let getPreviousRecordSQLQuery =
-                `SELECT * FROM skills where id = ` + req.params.id;
+            let getPreviousRecordSQLQuery = `SELECT * FROM skills where id = ${conn.escape(
+                req.params.id
+            )};`;
 
             conn.query(getPreviousRecordSQLQuery, (err, results) => {
                 try {
@@ -697,17 +683,19 @@ router.put(
                     (id, version_number, user_id, name, description, icon_image, banner_image,
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
-                    (${previousId},
-                    ${versionNumber},
-                    '${req.session.userId}',
-                    '${previousName}',                    
-                    '${previousDescription}',
-                    '${req.body.icon_image}',
-                    '${req.body.banner_image}',
-                    '${req.body.mastery_requirements}',                    
-                    '${previousLevel}',                    
-                    ${previousOrder},
-                    '${req.body.comment}');`;
+                    (${conn.escape(previousId)},
+                    ${conn.escape(versionNumber)},
+                    ${conn.escape(req.session.userId)},
+                    ${conn.escape(previousName)},                    
+                    ${conn.escape(previousDescription)},
+                    ${conn.escape(req.body.icon_image)},
+                    ${conn.escape(req.body.banner_image)},
+                    ${conn.escape(
+                        req.body.mastery_requirements
+                    )},                    
+                    ${conn.escape(previousLevel)},                    
+                    ${conn.escape(previousOrder)},
+                    ${conn.escape(req.body.comment)});`;
 
                     conn.query(addVersionHistoryInsertSQLQuery, (err) => {
                         try {
@@ -716,18 +704,18 @@ router.put(
                             }
 
                             // Update record in skill table.
-                            let updateRecordSQLQuery =
-                                `UPDATE skills SET 
-                                mastery_requirements = '` +
-                                req.body.mastery_requirements +
-                                `', icon_image = '` +
-                                req.body.icon_image +
-                                `', banner_image = '` +
-                                req.body.banner_image +
-                                `', version_number = ${versionNumber}                               
-                                WHERE id = ` +
-                                req.params.id +
-                                `;`;
+                            let updateRecordSQLQuery = `UPDATE skills SET 
+                            mastery_requirements = ${conn.escape(
+                                req.body.mastery_requirements
+                            )}, 
+                            icon_image = ${conn.escape(req.body.icon_image)}, 
+                            banner_image = ${conn.escape(
+                                req.body.banner_image
+                            )}, 
+                            version_number = ${conn.escape(
+                                versionNumber
+                            )}                               
+                            WHERE id = ${conn.escape(req.params.id)};`;
 
                             conn.query(updateRecordSQLQuery, (err) => {
                                 try {
@@ -737,10 +725,11 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${req.body.edit
-                                                    ? 'edit_and_approve'
-                                                    : 'approve'
-                                                    }`,
+                                                userAction: `${
+                                                    req.body.edit
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
+                                                }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -772,7 +761,7 @@ router.put(
 );
 
 /**
- * Get all skill mastery requirements submitted for review.
+ * Get all skills submitted for review.
  *
  * @return response()
  */
@@ -780,12 +769,11 @@ router.put(
 router.get('/submitted-for-review/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery =
-            `SELECT * 
+        let sqlQuery = `SELECT * 
              FROM skills_awaiting_approval JOIN skills ON skills_awaiting_approval.skill_id = skills.id
              ORDER BY skills_awaiting_approval.date DESC
              `;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -799,7 +787,7 @@ router.get('/submitted-for-review/list', (req, res, next) => {
 });
 
 /**
- * Get one skill mastery requirement submitted for review.
+ * Get one skill submitted for review.
  *
  * @return response()
  */
@@ -810,8 +798,9 @@ router.get('/submitted-for-review/:skillId/:userId', (req, res, next) => {
         // Get skill.
         const sqlQuery = `SELECT *
                           FROM skills_awaiting_approval
-                          WHERE skill_id = ${req.params.skillId}
-                          AND user_id = '${req.params.userId}';`;
+                          WHERE skill_id = ${conn.escape(req.params.skillId)}
+                          AND user_id = ${conn.escape(req.params.userId)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -827,7 +816,7 @@ router.get('/submitted-for-review/:skillId/:userId', (req, res, next) => {
 });
 
 /**
- * Delete skill mastery requirement submitted for review.
+ * Delete skill submitted for review.
  *
  * @return response()
  */
@@ -835,8 +824,9 @@ router.delete('/submitted-for-review/:skillId/:userId', (req, res, next) => {
     if (req.session.userName) {
         const deleteQuery = `DELETE 
                              FROM skills_awaiting_approval
-                             WHERE skill_id = ${req.params.skillId}
-                             AND user_id  = '${req.params.userId}';`;
+                             WHERE skill_id = ${conn.escape(req.params.skillId)}
+                             AND user_id  = ${conn.escape(req.params.userId)};`;
+
         conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
@@ -851,14 +841,10 @@ router.delete('/submitted-for-review/:skillId/:userId', (req, res, next) => {
                 };
 
                 const addActionQuery = `INSERT INTO user_actions SET ?`;
-                conn.query(
-                    addActionQuery,
-                    actionData,
-                    (err) => {
-                        if (err) throw err;
-                        res.end();
-                    }
-                );
+                conn.query(addActionQuery, actionData, (err) => {
+                    if (err) throw err;
+                    res.end();
+                });
                 res.end();
             } catch (err) {
                 next(err);
@@ -876,7 +862,9 @@ router.delete('/submitted-for-review/:skillId/:userId', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        const deleteQuery = `UPDATE skills SET is_deleted = 1 WHERE skills.id=${req.params.id}`;
+        const deleteQuery = `UPDATE skills SET is_deleted = 1 WHERE skills.id=${conn.escape(
+            req.params.id
+        )};`;
         conn.query(deleteQuery, (err) => {
             try {
                 if (err) {
@@ -913,7 +901,7 @@ router.get('/:id/resources', (req, res, next) => {
 resources.created_at, users.username, users.avatar  
 FROM resources
 JOIN users ON resources.user_id = users.id
-WHERE skill_id= ${req.params.id}
+WHERE skill_id= ${conn.escape(req.params.id)}
 AND resources.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
@@ -937,7 +925,10 @@ AND resources.is_deleted = 0`;
 router.get('/:id/mc-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * FROM mc_questions WHERE skill_id = ${req.params.id} AND is_deleted = 0`;
+        let sqlQuery = `SELECT * 
+        FROM mc_questions 
+        WHERE skill_id = ${conn.escape(req.params.id)} 
+        AND is_deleted = 0`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -954,7 +945,11 @@ router.get('/:id/mc-questions/list', (req, res, next) => {
 router.get('/:id/essay-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * FROM essay_questions WHERE skill_id = ${req.params.id} AND is_deleted = 0`;
+        let sqlQuery = `SELECT * 
+        FROM essay_questions 
+        WHERE skill_id = ${conn.escape(req.params.id)} 
+        AND is_deleted = 0`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -971,7 +966,10 @@ router.get('/:id/essay-questions/list', (req, res, next) => {
 router.get('/:id/image-questions/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * FROM image_questions WHERE skill_id = ${req.params.id} AND is_deleted = 0`;
+        let sqlQuery = `SELECT * 
+        FROM image_questions 
+        WHERE skill_id = ${conn.escape(req.params.id)} 
+        AND is_deleted = 0`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

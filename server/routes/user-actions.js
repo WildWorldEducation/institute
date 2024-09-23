@@ -49,7 +49,10 @@ router.post('/', (req, res, next) => {
 router.get('/:userId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT * FROM user_actions WHERE user_id = '${req.params.userId}';`;
+        let sqlQuery = `SELECT * 
+        FROM user_actions 
+        WHERE user_id = ${conn.escape(req.params.userId)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -81,8 +84,15 @@ router.get('/:userId/flag', (req, res, next) => {
         // Skills Flags.
         let sqlQuery1 = `
             SELECT user_actions.*, content_flags.is_deleted, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted) AS content_obj 
-            FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN skills ON skills.id = content_flags.content_id  
-            WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'skill'`;
+            FROM user_actions 
+            JOIN content_flags 
+            ON user_actions.content_id = content_flags.id 
+            JOIN skills 
+            ON skills.id = content_flags.content_id  
+            WHERE user_actions.user_id = ${conn.escape(req.params.userId)} 
+            AND user_actions.content_type = 'content_flag' 
+            AND content_flags.content_type = 'skill';`;
+
         conn.query(sqlQuery1, (err, results) => {
             try {
                 if (err) {
@@ -92,8 +102,19 @@ router.get('/:userId/flag', (req, res, next) => {
 
                 // Sources Flags.
                 let sqlQuery2 = `SELECT user_actions.*, content_flags.is_deleted, content_flags.content_type AS flag_type, json_object('name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted) AS content_obj  
-                    FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN resources ON resources.id = content_flags.content_id JOIN skills ON skills.id = resources.skill_id  
-                    WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'resource'`;
+                    FROM user_actions 
+                    JOIN content_flags 
+                    ON user_actions.content_id = content_flags.id 
+                    JOIN resources 
+                    ON resources.id = content_flags.content_id 
+                    JOIN skills 
+                    ON skills.id = resources.skill_id  
+                    WHERE user_actions.user_id = ${conn.escape(
+                        req.params.userId
+                    )} 
+                    AND user_actions.content_type = 'content_flag' 
+                    AND content_flags.content_type = 'resource';`;
+
                 conn.query(sqlQuery2, (err, results) => {
                     if (err) {
                         throw err;
@@ -102,8 +123,19 @@ router.get('/:userId/flag', (req, res, next) => {
 
                     // MC Questions Flags.
                     let sqlQuery3 = `SELECT user_actions.*, content_flags.is_deleted, content_flags.content_type AS flag_type, json_object('question_name', mc_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', mc_questions.question,'question_id', mc_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj  
-                        FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN mc_questions ON mc_questions.id = content_flags.content_id JOIN skills ON skills.id = mc_questions.skill_id  
-                        WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'mc_question'`;
+                        FROM user_actions 
+                        JOIN content_flags 
+                        ON user_actions.content_id = content_flags.id 
+                        JOIN mc_questions 
+                        ON mc_questions.id = content_flags.content_id 
+                        JOIN skills 
+                        ON skills.id = mc_questions.skill_id  
+                        WHERE user_actions.user_id = ${conn.escape(
+                            req.params.userId
+                        )} 
+                        AND user_actions.content_type = 'content_flag' 
+                        AND content_flags.content_type = 'mc_question';`;
+
                     conn.query(sqlQuery3, (err, results) => {
                         if (err) {
                             throw err;
@@ -112,8 +144,13 @@ router.get('/:userId/flag', (req, res, next) => {
 
                             // Get Delete actions because deleted content_id cant join with others table.
                             let sqlQuery4 = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
-                                              FROM user_actions 
-                                              WHERE user_actions.action = 'delete' AND user_actions.content_type = 'content_flag' AND user_actions.user_id='${req.params.userId}';`;
+                                            FROM user_actions 
+                                            WHERE user_actions.action = 'delete' 
+                                            AND user_actions.content_type = 'content_flag' 
+                                            AND user_actions.user_id=${conn.escape(
+                                                req.params.userId
+                                            )};`;
+
                             conn.query(sqlQuery4, (err, results) => {
                                 if (err) throw err;
                                 else {
@@ -121,8 +158,18 @@ router.get('/:userId/flag', (req, res, next) => {
 
                                     let sqlQuery5 = `SELECT user_actions.*, content_flags.is_deleted, content_flags.content_type AS flag_type,
                                     json_object('question_name', essay_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', essay_questions.question,'question_id', essay_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj 
-                                    FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN essay_questions ON essay_questions.id = content_flags.content_id JOIN skills ON skills.id = essay_questions.skill_id
-                                    WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'essay_question';`;
+                                    FROM user_actions 
+                                    JOIN content_flags 
+                                    ON user_actions.content_id = content_flags.id 
+                                    JOIN essay_questions 
+                                    ON essay_questions.id = content_flags.content_id 
+                                    JOIN skills 
+                                    ON skills.id = essay_questions.skill_id
+                                    WHERE user_actions.user_id = ${conn.escape(
+                                        req.params.userId
+                                    )} 
+                                    AND user_actions.content_type = 'content_flag' 
+                                    AND content_flags.content_type = 'essay_question';`;
 
                                     conn.query(sqlQuery5, (err, results) => {
                                         resResults = resResults.concat(results);
@@ -130,8 +177,18 @@ router.get('/:userId/flag', (req, res, next) => {
                                         if (err) throw err;
                                         else {
                                             let sqlQuery6 = `SELECT user_actions.*, content_flags.is_deleted, content_flags.content_type AS flag_type, json_object('question_name', image_questions.name, 'name', skills.name, 'skill_id', skills.id, 'question', image_questions.question,'question_id', image_questions.id, 'skill_deleted', skills.is_deleted) AS content_obj  
-                                                FROM user_actions JOIN content_flags ON user_actions.content_id = content_flags.id JOIN image_questions ON image_questions.id = content_flags.content_id JOIN skills ON skills.id = image_questions.skill_id  
-                                                WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'content_flag' AND content_flags.content_type = 'image_question'`;
+                                                FROM user_actions 
+                                                JOIN content_flags 
+                                                ON user_actions.content_id = content_flags.id 
+                                                JOIN image_questions 
+                                                ON image_questions.id = content_flags.content_id 
+                                                JOIN skills 
+                                                ON skills.id = image_questions.skill_id  
+                                                WHERE user_actions.user_id = ${conn.escape(
+                                                    req.params.userId
+                                                )} 
+                                                AND user_actions.content_type = 'content_flag' 
+                                                AND content_flags.content_type = 'image_question'`;
 
                                             conn.query(
                                                 sqlQuery6,
@@ -186,12 +243,19 @@ router.get('/:userId/flag', (req, res, next) => {
  * @return response()
  */
 router.get('/:userId/resource', (req, res, next) => {
-    let resResults = [];
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         const sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'skill_deleted', skills.is_deleted, 'resource_deleted', resources.is_deleted) AS content_obj 
-                          FROM user_actions JOIN resources ON resources.id = user_actions.content_id JOIN skills ON skills.id = resources.skill_id   
-                          WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'resource'`;
+                          FROM user_actions 
+                          JOIN resources 
+                          ON resources.id = user_actions.content_id 
+                          JOIN skills 
+                          ON skills.id = resources.skill_id   
+                          WHERE user_actions.user_id = ${conn.escape(
+                              req.params.userId
+                          )} 
+                          AND user_actions.content_type = 'resource';`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -217,18 +281,34 @@ router.get('/:userId/student_mc_question', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'student_id', student.id, 'student_name', student.username, 'skill_deleted', skills.is_deleted ) AS content_obj 
-                        FROM user_actions JOIN student_mc_questions ON student_mc_questions.id = user_actions.content_id JOIN skills ON skills.id = student_mc_questions.skill_id  JOIN users as student ON student.id = student_mc_questions.student_id 
-                        WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'student_mc_question'`;
+                        FROM user_actions 
+                        JOIN student_mc_questions 
+                        ON student_mc_questions.id = user_actions.content_id 
+                        JOIN skills 
+                        ON skills.id = student_mc_questions.skill_id 
+                        JOIN users as student 
+                        ON student.id = student_mc_questions.student_id 
+                        WHERE user_actions.user_id = ${conn.escape(
+                            req.params.userId
+                        )} 
+                        AND user_actions.content_type = 'student_mc_question';`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 } else {
                     resResults = resResults.concat(results);
-                    // we have to get the delete action separately because it cant join with other table with a non exists id
+
+                    // We have to get the delete action separately because it cant join with other table with a non exists id
                     let deleteActionQuery = `SELECT user_actions.*, JSON_OBJECT() AS content_obj 
                                              FROM user_actions 
-                                             WHERE user_actions.action = 'delete' AND user_actions.content_type = 'student_mc_question' AND user_id='${req.params.userId}';`;
+                                             WHERE user_actions.action = 'delete' 
+                                             AND user_actions.content_type = 'student_mc_question' 
+                                             AND user_id=${conn.escape(
+                                                 req.params.userId
+                                             )};`;
+
                     conn.query(deleteActionQuery, (err, results) => {
                         if (err) {
                             throw err;
@@ -254,7 +334,7 @@ router.get('/:userId/student_mc_question', (req, res, next) => {
 });
 
 /**
- * List Actions of a specific user on questions relate data
+ * List Actions of a specific user on question related data
  *
  * @return response()
  */
@@ -262,28 +342,62 @@ router.get('/:userId/question', (req, res, next) => {
     let resResults = [];
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
+
+        // Mc questions.
         let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('question_name', mc_questions.name, 'skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username, 'skill_deleted', skills.is_deleted, 'question_deleted', mc_questions.is_deleted ) AS content_obj 
-                        FROM user_actions JOIN mc_questions ON mc_questions.id = user_actions.content_id JOIN skills ON skills.id = mc_questions.skill_id  JOIN users ON users.id = user_actions.user_id 
-                        WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'mc_question'`;
+                        FROM user_actions 
+                        JOIN mc_questions 
+                        ON mc_questions.id = user_actions.content_id 
+                        JOIN skills 
+                        ON skills.id = mc_questions.skill_id 
+                        JOIN users 
+                        ON users.id = user_actions.user_id 
+                        WHERE user_actions.user_id = ${conn.escape(
+                            req.params.userId
+                        )} 
+                        AND user_actions.content_type = 'mc_question'`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 } else {
                     resResults = resResults.concat(results);
-                    // WE also get the essay question actions here
+
+                    // Essay questions
                     const essayQuestionQuery = `SELECT user_actions.*, JSON_OBJECT('question_name', essay_questions.name, 'skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username, 'skill_deleted' , skills.is_deleted, 'question_deleted', essay_questions.is_deleted ) AS content_obj 
-                                                        FROM user_actions JOIN essay_questions ON essay_questions.id = user_actions.content_id JOIN skills ON skills.id = essay_questions.skill_id  JOIN users ON users.id = user_actions.user_id 
-                                                        WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'essay_question'`;
+                                                        FROM user_actions 
+                                                        JOIN essay_questions 
+                                                        ON essay_questions.id = user_actions.content_id 
+                                                        JOIN skills 
+                                                        ON skills.id = essay_questions.skill_id 
+                                                        JOIN users 
+                                                        ON users.id = user_actions.user_id 
+                                                        WHERE user_actions.user_id = ${conn.escape(
+                                                            req.params.userId
+                                                        )} 
+                                                        AND user_actions.content_type = 'essay_question'`;
+
                     conn.query(essayQuestionQuery, (err, results) => {
                         if (err) {
                             throw err;
                         } else {
                             resResults = resResults.concat(results);
-                            //  get image question action
+
+                            //  Image questions
                             const imageQuestionQuery = `SELECT user_actions.*, JSON_OBJECT('question_name', image_questions.name, 'skill_name', skills.name, 'skill_id', skills.id, 'user_name', users.username, 'skill_deleted' , skills.is_deleted, 'question_deleted', image_questions.is_deleted ) AS content_obj 
-                                                        FROM user_actions JOIN image_questions ON image_questions.id = user_actions.content_id JOIN skills ON skills.id = image_questions.skill_id  JOIN users ON users.id = user_actions.user_id
-                                                        WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'image_question'`;
+                                                        FROM user_actions 
+                                                        JOIN image_questions 
+                                                        ON image_questions.id = user_actions.content_id 
+                                                        JOIN skills 
+                                                        ON skills.id = image_questions.skill_id 
+                                                        JOIN users 
+                                                        ON users.id = user_actions.user_id
+                                                        WHERE user_actions.user_id = ${conn.escape(
+                                                            req.params.userId
+                                                        )} 
+                                                        AND user_actions.content_type = 'image_question'`;
+
                             conn.query(imageQuestionQuery, (err, results) => {
                                 if (err) {
                                     throw err;
@@ -316,12 +430,17 @@ router.get('/:userId/question', (req, res, next) => {
  * @return response()
  */
 router.get('/:userId/skill', (req, res, next) => {
-    let resResults = [];
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT user_actions.*, JSON_OBJECT('skill_name', skills.name, 'skill_id', skills.id, 'is_deleted', skills.is_deleted) AS content_obj 
-                        FROM user_actions JOIN skills ON user_actions.content_id = skills.id 
-                        WHERE user_actions.user_id = '${req.params.userId}' AND user_actions.content_type = 'skill'`;
+                        FROM user_actions 
+                        JOIN skills 
+                        ON user_actions.content_id = skills.id 
+                        WHERE user_actions.user_id = ${conn.escape(
+                            req.params.userId
+                        )} 
+                        AND user_actions.content_type = 'skill';`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
