@@ -1098,4 +1098,19 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
 //     res.redirect('/');
 // });
 
+// Full text search skills table
+router.get('/full-text-search', (req, res, next) => {
+    const searchText = req.query.searchText;
+    const query = `SELECT skills.name FROM skills WHERE MATCH(name, description, mastery_requirements) AGAINST ('${searchText}')`
+    conn.query(query, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    })
+})
 module.exports = router;

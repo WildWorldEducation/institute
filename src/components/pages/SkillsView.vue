@@ -13,7 +13,9 @@ export default {
     },
     data() {
         return {
-            isInstructorMode: false
+            isInstructorMode: false,
+            searchText: '',
+            resultsSkills: []
         };
     },
     components: {
@@ -22,6 +24,27 @@ export default {
     created() {
         // Check if the view is in instructor mode (a student's skills being viewed by an instructor or admin)
         this.isInstructorMode = typeof this.$route.params.studentId == 'string';
+    },
+    methods: {
+        async getFullTextResult() {
+            const url = `/skills/full-text-search?searchText=${this.searchText}`;
+            const res = await fetch(url);
+            const results = await res.json();
+            this.resultsSkills = results;
+        },
+        handleChooseResult(result) {
+            this.resultsSkills = [];
+        }
+    },
+    watch: {
+        // We use watcher instead of compute because we made API call
+        searchText: {
+            handler(newVal) {
+                if (newVal.length > 3) {
+                    this.getFullTextResult();
+                }
+            }
+        }
     }
 };
 </script>
@@ -54,9 +77,11 @@ export default {
                 />
             </svg>
         </router-link>
-        <router-link class="btn purple-btn" to="/tags"
-            >Skill Filters</router-link
-        >
+        <div class="d-flex gap-2">
+            <router-link class="btn purple-btn" to="/tags"
+                >Skill Filters</router-link
+            >
+        </div>
     </div>
     <div class="collapsible-tree-legend container-fluid p-2">
         <div class="legend row">
@@ -75,10 +100,52 @@ export default {
             <div class="col-md col-6"><span class="phd"></span> PHD</div>
         </div>
     </div>
+    <div class="d-flex flex-row-reverse me-3">
+        <!-- Search Feature -->
+        <div
+            :class="['search-bar', resultsSkills.length > 0 && 'have-results']"
+        >
+            <div class="d-flex align-items-center p-1">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    width="15"
+                    height="15"
+                    fill="#5f6368"
+                    class="me-2"
+                >
+                    <path
+                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                    />
+                </svg>
+                <input
+                    id="skill-tree-search-text"
+                    type="text"
+                    class="skill-tree-input"
+                    placeholder="Skill Name"
+                    v-model="searchText"
+                />
+            </div>
+            <div class="position-relative">
+                <div v-if="resultsSkills.length" class="search-results">
+                    <div
+                        @click="handleChooseResult(result)"
+                        class="result-row"
+                        v-for="result in resultsSkills"
+                    >
+                        {{ result.name }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <SkillsListParent />
 </template>
 
-<style>
+<style scoped>
+.topnav {
+    padding: 5px 10px;
+}
 /* Grade level legend */
 
 .collapsible-tree-legend {
@@ -145,5 +212,52 @@ export default {
     position: absolute;
     margin-top: 10px;
     right: 10px;
+}
+
+.search-bar {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #989ba1;
+    border-radius: 8px;
+    background-color: white;
+    width: 15%;
+}
+
+.have-results {
+    border-bottom: 0px !important ;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.skill-tree-input {
+    outline: none;
+    border: 0px;
+}
+
+.search-results {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: -1px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom: 1px solid #989ba1;
+    border-right: 1px solid #989ba1;
+    border-left: 1px solid #989ba1;
+    background-color: white;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    width: 101%;
+}
+
+.result-row {
+    padding: 4px;
+    cursor: pointer;
+}
+
+.result-row:hover {
+    background-color: #f3f5f6;
 }
 </style>

@@ -38,7 +38,7 @@ export default {
     },
     computed: {},
     async created() {
-        // Check if regualr or instructor mode.
+        // Check if regular or instructor mode.
         if (typeof this.studentId == 'string') {
             this.instructorMode = true;
         }
@@ -75,6 +75,7 @@ export default {
             this.studentUserSkills = this.skillTreeStore.studentSkills;
         }
 
+        console.log(this.skillsStore.nestedSkillsList);
         // For the loading animation.
         this.isLoading = false;
     },
