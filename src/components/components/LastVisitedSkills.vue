@@ -13,7 +13,16 @@ export default {
         if (this.visitedSkills.length > 0) {
             this.noSkills = false;
         }
-    }
+
+        for (let i = 0; i < this.visitedSkills.length; i++) {
+            // Format the skill name as a URL, based on the Wikipedia style.
+            this.visitedSkills[i].url = this.visitedSkills[i].name?.replace(
+                / /g,
+                '_'
+            );
+        }
+    },
+    computed: {}
 };
 </script>
 
@@ -24,7 +33,7 @@ export default {
         <div v-for="skill in visitedSkills">
             <router-link
                 class="skill-link"
-                :to="`/skills/${skill.id}`"
+                :to="`/skills/${skill.url}`"
                 target="_blank"
             >
                 {{ skill.name }}

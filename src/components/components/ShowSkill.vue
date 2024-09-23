@@ -75,7 +75,7 @@ export default {
     },
     methods: {
         async getSkill() {
-            // Load the skill data
+            // Load the skill data           
             const res = await fetch('/skills/name/' + this.skillName);
             this.skill = await res.json();
             this.skillId = this.skill.id;
