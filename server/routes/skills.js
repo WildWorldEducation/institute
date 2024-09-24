@@ -1121,44 +1121,6 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
     }
 });
 
-function populateSkillURLS() {
-    let sqlQuery =
-        'SELECT id, name, parent, type, level FROM skills WHERE skills.is_deleted = 0';
-    conn.query(sqlQuery, (err, results) => {
-        try {
-            if (err) {
-                throw err;
-            }
-            let skills = results;
-
-            function addURL(skills, index) {
-                let url = skills[index].name.replace(/\//g, 'or');
-                url = url.replace(/ /g, '_');
-
-                let sqlQuery2 = `UPDATE skills
-                SET url = ${conn.escape(url)}
-                WHERE id = ${conn.escape(skills[index].id)}`;
-
-                conn.query(sqlQuery2, (err, results) => {
-                    try {
-                        if (err) {
-                            throw err;
-                        }
-                        console.log(index);
-                        console.log(url);
-                        index++;
-                        addURL(skills, index);
-                    } catch (err) {}
-                });
-            }
-
-            addURL(skills, 0);
-        } catch (err) {}
-    });
-}
-
-populateSkillURLS();
-
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });
