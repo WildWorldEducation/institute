@@ -51,6 +51,7 @@ export default {
                 question: contentObj.question,
                 questionName: contentObj.question_name,
                 skillName: contentObj.name,
+                skillUrl: contentObj.skill_url,
                 id: contentFlag.id,
                 skill_deleted: contentObj.skill_deleted,
                 is_deleted: contentFlag.is_deleted
@@ -60,23 +61,28 @@ export default {
                     pushObj.type = 'mc_question';
                     pushObj.questionId = contentObj.question_id;
                     pushObj.skillId = contentObj.skill_id;
+                    pushObj.skillUrl = contentObj.skill_url;
                     break;
                 case 'resource':
                     pushObj.type = 'resource';
                     pushObj.skillId = contentObj.skill_id;
+                    pushObj.skillUrl = contentObj.skill_url;
                     break;
                 case 'skill':
                     pushObj.type = 'skill';
                     pushObj.skillId = contentObj.skill_id;
+                    pushObj.skillUrl = contentObj.skill_url;
                     break;
                 case 'essay_question':
                     pushObj.type = 'essay_question';
                     pushObj.skillId = contentObj.skill_id;
+                    pushObj.skillUrl = contentObj.skill_url;
                     break;
                 case 'image_question':
                     pushObj.type = 'image_question';
                     pushObj.questionId = contentObj.question_id;
                     pushObj.skillId = contentObj.skill_id;
+                    pushObj.skillUrl = contentObj.skill_url;
                     break;
                 default:
                     pushObj.type = 'delete';
@@ -150,10 +156,12 @@ export default {
                         v-else
                         class="skill-link"
                         target="_blank"
-                        :to="`/skills/${contentFlag.skillId}`"
+                        :to="`/skills/${contentFlag.skillUrl}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
-                    <span class="text-danger" v-if="contentFlag.is_deleted">[Flag deleted]</span>
+                    <span class="text-danger" v-if="contentFlag.is_deleted"
+                        >[Flag deleted]</span
+                    >
                 </span>
                 <!-- flag type resource -->
                 <span v-if="contentFlag.type === 'resource'">
@@ -182,10 +190,12 @@ export default {
                         v-else
                         class="skill-link"
                         target="_blank"
-                        :to="`/skills/${contentFlag.skillId}`"
+                        :to="`/skills/${contentFlag.skillUrl}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
-                    <span class="text-danger" v-if="contentFlag.is_deleted">[Flag deleted]</span>
+                    <span class="text-danger" v-if="contentFlag.is_deleted"
+                        >[Flag deleted]</span
+                    >
                 </span>
                 <!-- flag type mc_question -->
                 <span v-if="contentFlag.type === 'mc_question'">
@@ -221,10 +231,12 @@ export default {
                         v-else
                         class="skill-link"
                         target="_blank"
-                        :to="`/skills/${contentFlag.skillId}`"
+                        :to="`/skills/${contentFlag.skillUrl}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
-                    <span class="text-danger" v-if="contentFlag.is_deleted">[Flag deleted]</span>
+                    <span class="text-danger" v-if="contentFlag.is_deleted"
+                        >[Flag deleted]</span
+                    >
                 </span>
 
                 <!-- flag type essay_question -->
@@ -261,10 +273,12 @@ export default {
                         v-else
                         class="skill-link"
                         target="_blank"
-                        :to="`/skills/${contentFlag.skillId}`"
+                        :to="`/skills/${contentFlag.skillUrl}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
-                    <span class="text-danger" v-if="contentFlag.is_deleted">[Flag deleted]</span>
+                    <span class="text-danger" v-if="contentFlag.is_deleted"
+                        >[Flag deleted]</span
+                    >
                 </span>
                 <span v-if="contentFlag.type === 'image_question'">
                     <span :class="actionColor(contentFlag.action)">
@@ -299,10 +313,12 @@ export default {
                         v-else
                         class="skill-link"
                         target="_blank"
-                        :to="`/skills/${contentFlag.skillId}`"
+                        :to="`/skills/${contentFlag.skillUrl}`"
                         >{{ contentFlag.skillName }}</router-link
                     >
-                    <span class="text-danger" v-if="contentFlag.is_deleted">[Flag deleted]</span>
+                    <span class="text-danger" v-if="contentFlag.is_deleted"
+                        >[Flag deleted]</span
+                    >
                 </span>
                 <!-- Handle delete type flag action -->
                 <span v-if="contentFlag.type === 'delete'">
@@ -310,7 +326,9 @@ export default {
                         - {{ contentFlag.action }}
                     </span>
                     flag with id {{ contentFlag.id }}
-                    <span class="text-danger" v-if="contentFlag.is_deleted">[Flag deleted]</span>
+                    <span class="text-danger" v-if="contentFlag.is_deleted"
+                        >[Flag deleted]</span
+                    >
                 </span>
             </div>
         </div>
