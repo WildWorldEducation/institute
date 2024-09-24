@@ -232,7 +232,7 @@ const router = createRouter({
             name: 'user-activity-report',
             component: () =>
                 import('../components/pages/UserActivityReportPageView.vue'),
-            meta: { requiresAuth: true, roles: ['admin'] }
+            meta: { requiresAuth: true, roles: ['editor', 'admin'] }
         },
         {
             path: '/users/:userId/activity-report/source/:sourceId',
