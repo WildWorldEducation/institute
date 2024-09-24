@@ -484,9 +484,10 @@ router.get('/last-visited', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         //Get last visited.
         let sqlQuery = `
-            SELECT skills.id, name
+            SELECT skills.id, name, skills.url
             FROM user_visited_skills
-            INNER JOIN skills ON skills.id = user_visited_skills.skill_id
+            INNER JOIN skills 
+            ON skills.id = user_visited_skills.skill_id
             WHERE user_id = ${conn.escape(req.session.userId)}
             AND skills.is_deleted = 0
             ORDER BY visited_at DESC

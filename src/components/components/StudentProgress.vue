@@ -26,7 +26,7 @@ export default {
                     availableSkills.push({
                         name: this.userSkills[i].name,
                         id: this.userSkills[i].id,
-                        url: url
+                        url: this.userSkills[i].url
                     });
                 }
             }
