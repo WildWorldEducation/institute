@@ -1144,7 +1144,8 @@ function populateSkillURLS() {
                         if (err) {
                             throw err;
                         }
-
+                        console.log(index);
+                        console.log(url);
                         index++;
                         addURL(skills, index);
                     } catch (err) {}
