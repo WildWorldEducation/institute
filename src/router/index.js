@@ -20,7 +20,11 @@ const router = createRouter({
             name: 'student-vertical-tree',
             component: () =>
                 import('../components/pages/StudentTidyTreeView.vue'),
-            meta: { title: 'Skill tree', requiresAuth: true, roles: ['instructor', 'admin'] }
+            meta: {
+                title: 'Skill tree',
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
         },
         {
             path: '/',
@@ -70,7 +74,11 @@ const router = createRouter({
             path: '/student/:studentId/skills',
             name: 'student-skills',
             component: SkillsView,
-            meta: { title: 'Student skills', requiresAuth: true, roles: ['instructor', 'admin'] }
+            meta: {
+                title: 'Student skills',
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
         },
         {
             path: '/skills/:skillId',
@@ -224,7 +232,7 @@ const router = createRouter({
             name: 'user-activity-report',
             component: () =>
                 import('../components/pages/UserActivityReportPageView.vue'),
-            meta: { requiresAuth: true, roles: ['admin'] }
+            meta: { requiresAuth: true, roles: ['editor', 'admin'] }
         },
         {
             path: '/users/:userId/activity-report/source/:sourceId',
