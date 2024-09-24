@@ -43,7 +43,7 @@ export default {
     },
     data() {
         return {
-            skillName: this.$route.params.skillName,
+            skillUrl: this.$route.params.skillUrl,
             skillId: null,
             skill: {},
             userSkills: [],
@@ -75,8 +75,8 @@ export default {
     },
     methods: {
         async getSkill() {
-            // Load the skill data           
-            const res = await fetch('/skills/name/' + this.skillName);
+            // Load the skill data
+            const res = await fetch('/skills/url/' + this.skillUrl);
             this.skill = await res.json();
             this.skillId = this.skill.id;
 

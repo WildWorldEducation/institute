@@ -403,17 +403,15 @@ router.get('/show/:id', (req, res, next) => {
     });
 });
 
-router.get('/name/:skillName', (req, res, next) => {
-    // Replace underscores with spaces.
-    req.params.skillName = req.params.skillName.replace(/_/g, ' ');
+router.get('/url/:skillUrl', (req, res, next) => {
     let skill;
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
     const sqlQuery = `SELECT *
                           FROM skills
-                          WHERE skills.name = ${conn.escape(
-                              req.params.skillName
+                          WHERE skills.url = ${conn.escape(
+                              req.params.skillUrl
                           )} AND is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {

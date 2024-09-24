@@ -81,7 +81,7 @@ const router = createRouter({
             }
         },
         {
-            path: '/skills/:skillName',
+            path: '/skills/:skillUrl',
             name: 'show-skill',
             component: () => import('../components/pages/ShowSkillView.vue')
         },
@@ -345,10 +345,8 @@ router.beforeEach(async (to, from, next) => {
             await skillsStore.getSkillsList();
         }
 
-        // Replace the underscores in the URL with spaces, to match the real name.
-        let skillName = to.params.skillName.replace(/_/g, ' ');
         const currentSkill = skillsStore.skillsList.find(
-            (item) => item.name == skillName
+            (item) => item.name == to.params.skillUrl
         );
 
         if (currentSkill.type == 'domain') {
