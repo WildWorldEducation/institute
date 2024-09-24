@@ -423,7 +423,35 @@ router.get('/url/:skillUrl', (req, res, next) => {
                 throw err;
             }
             skill = results[0];
-            res.json(skill);
+
+            if (typeof skill !== 'undefined' && skill) {
+                if (skill.is_copy_of_skill_id != null) {
+                    const sqlQueryForCopiedSkillNode = `SELECT *
+                FROM skills
+                WHERE skills.id = ${conn.escape(skill.is_copy_of_skill_id)}
+                AND skills.is_deleted = 0;`;
+
+                    conn.query(sqlQueryForCopiedSkillNode, (err, results) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            }
+                            let skill2 = results[0];
+                            skill2.is_copy_of_skill_id = skill2.id;
+                            skill2.type = skill.type;
+                            skill2.parent = skill.parent;
+                            skill2.version_number = skill.version_number;
+                            res.json(skill2);
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+                } else {
+                    res.json(skill);
+                }
+            } else {
+                res.end();
+            }
         } catch (err) {
             next(err);
         }
