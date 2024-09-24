@@ -163,14 +163,14 @@ export default {
                         <button
                             v-if="sessionDetailsStore.isLoggedIn"
                             id="print-btn"
-                            class="btn btn-info me-3"
+                            class="btn btn-info me-1"
                             @click="$refs.childComponent.printPDF()"
                         >
                             Print
                         </button>
                         <button
                             id="reset-btn"
-                            class="btn btn-primary"
+                            class="btn btn-primary me-3"
                             @click="resetPos()"
                         >
                             Reset
