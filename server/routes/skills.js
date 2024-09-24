@@ -221,7 +221,7 @@ router.get('/list', (req, res, next) => {
     // Route is accessible for guest users.
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery =
-        'SELECT id, name, parent, type, level FROM skills WHERE skills.is_deleted = 0';
+        'SELECT id, name, parent, type, level, url FROM skills WHERE skills.is_deleted = 0';
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -434,7 +434,7 @@ router.get('/mastery-requirements/:id', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT mastery_requirements
+    const sqlQuery = `SELECT mastery_requirements, url
     FROM skills
     WHERE skills.id = ${conn.escape(req.params.id)}
      AND skills.is_deleted = 0;`;
@@ -444,8 +444,8 @@ router.get('/mastery-requirements/:id', (req, res, next) => {
             if (err) {
                 throw err;
             }
-            masteryRequirements = results[0].mastery_requirements;
-            res.json(masteryRequirements);
+
+            res.json(results[0]);
         } catch (err) {
             next(err);
         }

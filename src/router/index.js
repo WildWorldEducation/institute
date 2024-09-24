@@ -346,7 +346,7 @@ router.beforeEach(async (to, from, next) => {
         }
 
         const currentSkill = skillsStore.skillsList.find(
-            (item) => item.name == to.params.skillUrl
+            (item) => item.url == to.params.skillUrl
         );
 
         if (currentSkill.type == 'domain') {

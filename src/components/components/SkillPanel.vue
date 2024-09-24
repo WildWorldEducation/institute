@@ -13,13 +13,7 @@ export default {
         const route = useRoute();
         this.treeType = route.name;
     },
-    computed: {
-        skillURL() {
-            // Format the skill name as a URL, based on the Wikipedia style.
-            let urlFormattedSkillName = this.skill.name?.replace(/ /g, '_');
-            return urlFormattedSkillName;
-        }
-    },
+    computed: {},
     methods: {
         hideInfoPanel() {
             this.$parent.showSkillPanel = false;
@@ -71,7 +65,7 @@ export default {
                     class="btn green-btn ms-auto me-2"
                     target="_blank"
                     id="skillLink"
-                    :to="'/skills/' + skillURL"
+                    :to="'/skills/' + skill.url"
                     b-on-hover
                     title="To Skill Details Page"
                     >See More&nbsp;
