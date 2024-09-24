@@ -240,7 +240,7 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT id, name, parent, type, level, is_filtered, skills.order as skillorder, display_name
+    SELECT id, name, parent, type, level, is_filtered, skills.order as skillorder, display_name, url
     FROM skills
     WHERE is_deleted = 0
     ORDER BY skillorder;`;
@@ -297,7 +297,7 @@ router.get('/filtered-nested-list', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `
-    SELECT id, name, parent, type, level, skills.order as skillorder, display_name
+    SELECT id, name, parent, type, level, skills.order as skillorder, display_name, url
     FROM skills
     WHERE is_filtered = 'available' AND is_deleted = 0
     ORDER BY skillorder;`;
@@ -403,7 +403,7 @@ router.get('/show/:id', (req, res, next) => {
     });
 });
 
-router.get('/name/:skillName', (req, res, next) => {     
+router.get('/name/:skillName', (req, res, next) => {
     // Replace underscores with spaces.
     req.params.skillName = req.params.skillName.replace(/_/g, ' ');
     let skill;
@@ -420,7 +420,7 @@ router.get('/name/:skillName', (req, res, next) => {
         try {
             if (err) {
                 throw err;
-            }           
+            }
             skill = results[0];
             res.json(skill);
         } catch (err) {

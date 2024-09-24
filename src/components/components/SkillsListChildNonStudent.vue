@@ -18,6 +18,7 @@ export default {
         'id',
         'children',
         'name',
+        'url',
         'type',
         'level',
         'depth',
@@ -52,11 +53,6 @@ export default {
                     }px)`
                 };
             }
-        },
-        skillURL() {
-            // Format the skill name as a URL, based on the Wikipedia style.
-            let urlFormattedSkillName = this.name?.replace(/ /g, '_');
-            return urlFormattedSkillName;
         }
     },
     async created() {
@@ -98,7 +94,7 @@ export default {
     methods: {
         mainButtonPress() {
             if (this.type != 'domain') {
-                window.open('/skills/' + this.skillURL, '_blank');
+                window.open('/skills/' + this.url, '_blank');
             } else this.toggleChildren();
         },
         openEdit(id) {
@@ -321,6 +317,7 @@ export default {
         :type="subSkill.type"
         :level="subSkill.level"
         :name="subSkill.name"
+        :url="subSkill.url"
         :role="role"
         :depth="depth + 1"
     >
@@ -334,6 +331,7 @@ export default {
         :type="subSkill.type"
         :level="subSkill.level"
         :name="subSkill.name"
+        :url="subSkill.url"
         :role="role"
         :isFiltered="isFiltered"
         :DeleteSkill="DeleteSkill"
@@ -348,6 +346,7 @@ export default {
         :type="subSkill.type"
         :level="subSkill.level"
         :name="subSkill.name"
+        :url="subSkill.url"
         :role="role"
         :isFiltered="subSkill.is_filtered"
         :DeleteSkill="DeleteSkill"
@@ -369,6 +368,7 @@ export default {
         :type="child.type"
         :level="child.level"
         :name="child.name"
+        :url="child.url"
         :role="role"
         :depth="depth + 1"
     >
@@ -382,6 +382,7 @@ export default {
         :type="child.type"
         :level="child.level"
         :name="child.name"
+        :url="child.url"
         :role="role"
         :isFiltered="isFiltered"
         :DeleteSkill="DeleteSkill"
@@ -396,6 +397,7 @@ export default {
         :type="child.type"
         :level="child.level"
         :name="child.name"
+        :url="child.url"
         :role="role"
         :isFiltered="child.is_filtered"
         :DeleteSkill="DeleteSkill"
