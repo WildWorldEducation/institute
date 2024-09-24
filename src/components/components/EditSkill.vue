@@ -133,7 +133,6 @@ export default {
                 })
                 .then((data) => {
                     this.skill = data;
-
                     if (this.skill.is_copy_of_skill_id != null) {
                         this.isAnotherInstanceOfExistingSkill = true;
                     }
@@ -347,7 +346,7 @@ export default {
                     if (this.skill.type == 'domain') {
                         this.router.push('/skills');
                     } else {
-                        this.$router.push(`/skills/${this.skillId}`);
+                        this.$router.push(`/skills/${this.skill.url}`);
                     }
                 });
         },
