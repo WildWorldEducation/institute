@@ -159,7 +159,7 @@ export default {
 
             // stop when the first ancestor node that is unlocked for the student
             if (inAccessibleList) {
-                this.ancestor = node.id;
+                this.ancestor = node.url;
                 // show the button to go to the skill when the link is ready
                 this.showAncestorLink = true;
                 return;
@@ -179,7 +179,7 @@ export default {
                 }
             }
             if (subskills.length > 0) {
-                this.ancestor = subskills[0].id;
+                this.ancestor = subskills[0].url;
                 // show the button to go to the skill when the link is ready
                 this.showAncestorLink = true;
                 return;
@@ -206,7 +206,7 @@ export default {
     watch: {
         async $route(to, from) {
             // react to route changes...
-            this.skillId = to.params.skillId;
+            this.skillUrl = to.params.skillUrl;
             await this.getSkill();
             await this.getUserSkills();
         }
