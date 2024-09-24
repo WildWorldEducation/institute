@@ -197,7 +197,7 @@ export default {
                                 flagRow.contentId = flag.content_id;
                                 flagRow.type = 'skill';
                                 flagRow.name = contentObj.name;
-                                flagRow.nameUrl = `skills/${flag.content_id}`;
+                                flagRow.nameUrl = `skills/${contentObj.url}`;
                                 flagRow.flagId = flag.id;
                                 flagRow.editUrl = `/skills/edit/${flag.content_id}`;
                                 (flagRow.expandContent = contentObj),
@@ -212,7 +212,7 @@ export default {
                                 flagRow.contentId = flag.content_id;
                                 flagRow.type = 'source';
                                 flagRow.name = `Commented by user: ${contentObj.user} in skill: ${contentObj.skill} forum`;
-                                flagRow.nameUrl = `skills/${contentObj.skillId}`;
+                                flagRow.nameUrl = `skills/${contentObj.url}`;
                                 flagRow.flagId = flag.id;
                                 flagRow.editUrl = `/resources/edit/${flag.content_id}`;
                                 flagRow.expandContent = contentObj;
@@ -702,7 +702,7 @@ export default {
                                 <div class="expand-tile">Belongs to skill:</div>
                                 <div>
                                     <router-link
-                                        :to="'skills/' + expandContent.skillId"
+                                        :to="'skills/' + expandContent.url"
                                         target="_blank"
                                         b-tooltip.hover
                                         :style="{ color: '#8f7bd6' }"
@@ -778,7 +778,7 @@ export default {
                                 <div class="expand-tile">Belongs to skill:</div>
                                 <div>
                                     <router-link
-                                        :to="'skills/' + expandContent.skillId"
+                                        :to="'skills/' + expandContent.url"
                                         target="_blank"
                                         b-tooltip.hover
                                         :style="{ color: '#8f7bd6' }"
@@ -802,12 +802,13 @@ export default {
                                 {{ expandContent.question }}
                             </div>
                         </div>
+                        <!-- _+_+_+_+_+_+_+_  Image Expand content _+_+_+_+_+_+_+_  -->
                         <div v-if="type == 'image question'">
                             <div class="d-flex mb-2">
                                 <div class="expand-tile">Belongs to skill:</div>
                                 <div>
                                     <router-link
-                                        :to="'skills/' + expandContent.skillId"
+                                        :to="'skills/' + expandContent.url"
                                         target="_blank"
                                         b-tooltip.hover
                                         :style="{ color: '#8f7bd6' }"
@@ -1534,7 +1535,7 @@ export default {
                                 <div class="expand-tile">Belongs to skill:</div>
                                 <div>
                                     <router-link
-                                        :to="'skills/' + expandContent.skillId"
+                                        :to="'skills/' + expandContent.url"
                                         target="_blank"
                                         b-tooltip.hover
                                         :style="{ color: '#8f7bd6' }"
@@ -1610,7 +1611,7 @@ export default {
                                 <div class="expand-tile">Belong to skill:</div>
                                 <div>
                                     <router-link
-                                        :to="'skills/' + expandContent.skillId"
+                                        :to="'skills/' + expandContent.url"
                                         target="_blank"
                                         b-tooltip.hover
                                         :style="{ color: '#8f7bd6' }"
