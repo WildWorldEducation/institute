@@ -81,7 +81,7 @@ const router = createRouter({
             }
         },
         {
-            path: '/skills/:skillId',
+            path: '/skills/:skillUrl',
             name: 'show-skill',
             component: () => import('../components/pages/ShowSkillView.vue')
         },
@@ -341,13 +341,12 @@ router.beforeEach(async (to, from, next) => {
     if (to.name == 'show-skill') {
         const skillsStore = useSkillsStore();
 
-        if (skillsStore.skillsList.length == 0) {
-            await skillsStore.getSkillsList();
-        }
+        await skillsStore.getSkillsList();
 
         const currentSkill = skillsStore.skillsList.find(
-            (item) => item.id == to.params.skillId
+            (item) => item.url == to.params.skillUrl
         );
+
         if (currentSkill.type == 'domain') {
             next({ path: '/skills' });
             return;

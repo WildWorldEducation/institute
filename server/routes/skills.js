@@ -21,7 +21,6 @@ const { recordUserAction } = require('../utilities/record-user-action');
 Routes
 --------------------------------------------
 --------------------------------------------*/
-
 /**
  * Create New Item
  *
@@ -42,6 +41,9 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
         type: req.body.type,
         level: req.body.level
     };
+
+    data.url = data.name.replace(/\//g, 'or');
+    data.url = data.url.replace(/ /g, '_');
 
     // Insert the new skill.
     let sqlQuery1 = `INSERT INTO skills SET ?;`;
@@ -188,7 +190,8 @@ router.post(
                     is_filtered: skill.is_filtered,
                     order: skill.order,
                     is_copy_of_skill_id: req.body.skillToBeCopied.id,
-                    display_name: skill.name
+                    display_name: skill.name,
+                    url: skill.url
                 };
 
                 // Create the copy with new parent.
@@ -221,7 +224,7 @@ router.get('/list', (req, res, next) => {
     // Route is accessible for guest users.
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery =
-        'SELECT id, name, parent, type, level FROM skills WHERE skills.is_deleted = 0';
+        'SELECT id, name, parent, type, level, url FROM skills WHERE skills.is_deleted = 0';
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -240,7 +243,7 @@ router.get('/nested-list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `
-    SELECT id, name, parent, type, level, is_filtered, skills.order as skillorder, display_name
+    SELECT id, name, parent, type, level, is_filtered, skills.order as skillorder, display_name, url
     FROM skills
     WHERE is_deleted = 0
     ORDER BY skillorder;`;
@@ -297,7 +300,7 @@ router.get('/filtered-nested-list', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `
-    SELECT id, name, parent, type, level, skills.order as skillorder, display_name
+    SELECT id, name, parent, type, level, skills.order as skillorder, display_name, url
     FROM skills
     WHERE is_filtered = 'available' AND is_deleted = 0
     ORDER BY skillorder;`;
@@ -403,14 +406,38 @@ router.get('/show/:id', (req, res, next) => {
     });
 });
 
-// For sending the mastery requirements data separately to the skill tree skill panels.
-// We send it separately because otherwise, if we send it with the other data, it slows
-// down the page load of the skill trees.
-router.get('/mastery-requirements/:id', (req, res, next) => {
+router.get('/url/:skillUrl', (req, res, next) => {
+    let skill;
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT mastery_requirements
+    const sqlQuery = `SELECT *
+                          FROM skills
+                          WHERE skills.url = ${conn.escape(
+                              req.params.skillUrl
+                          )} AND is_deleted = 0`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            skill = results[0];
+            res.json(skill);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
+// For sending the mastery requirements data separately to the skill tree skill panels.
+// We send it separately because otherwise, if we send it with the other data, it slows
+// down the page load of the skill trees.
+router.get('/mastery-requirements-and-url/:id', (req, res, next) => {
+    // Not checking if user is logged in, as this is available for guest access.
+    res.setHeader('Content-Type', 'application/json');
+    // Get skill.
+    const sqlQuery = `SELECT mastery_requirements, url
     FROM skills
     WHERE skills.id = ${conn.escape(req.params.id)}
      AND skills.is_deleted = 0;`;
@@ -420,8 +447,8 @@ router.get('/mastery-requirements/:id', (req, res, next) => {
             if (err) {
                 throw err;
             }
-            masteryRequirements = results[0].mastery_requirements;
-            res.json(masteryRequirements);
+
+            res.json(results[0]);
         } catch (err) {
             next(err);
         }
@@ -457,9 +484,10 @@ router.get('/last-visited', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         //Get last visited.
         let sqlQuery = `
-            SELECT skills.id, name
+            SELECT skills.id, name, skills.url
             FROM user_visited_skills
-            INNER JOIN skills ON skills.id = user_visited_skills.skill_id
+            INNER JOIN skills 
+            ON skills.id = user_visited_skills.skill_id
             WHERE user_id = ${conn.escape(req.session.userId)}
             AND skills.is_deleted = 0
             ORDER BY visited_at DESC
@@ -520,7 +548,8 @@ router.put(
 
                     // Update record in skill table.
                     let updateRecordSQLQuery = `UPDATE skills 
-                        SET name = ${conn.escape(req.body.name)}, 
+                        SET name = ${conn.escape(req.body.name)},
+                        url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(req.body.description)}, 
                         icon_image = ${conn.escape(req.body.icon_image)}, 

@@ -28,11 +28,11 @@ export default {
             this.rows.push({
                 skillName: contentObj.skill_name,
                 resourceId: skill.content_id,
-                skillId: contentObj.skill_id,
                 action: skill.action,
                 date: createDate,
                 time: createTime,
                 id: skill.id,
+                skillUrl: contentObj.skill_url,
                 is_deleted: contentObj.is_deleted
             });
         });
@@ -81,7 +81,7 @@ export default {
                     v-else
                     class="skill-link"
                     target="_blank"
-                    :to="`/skills/${skill.skillId}`"
+                    :to="`/skills/${skill.skillUrl}`"
                     >{{ skill.skillName }}</router-link
                 >
             </div>

@@ -27,7 +27,7 @@ router.get('/list', async (req, res, next) => {
         let resData = [];
         res.setHeader('Content-Type', 'application/json');
         // Get data for mc_question type Flag (extremely long raw sql query)
-        let sqlMCQuery = `SELECT content_flags.*, users.id as userId, users.username, users.role as userRole,  json_object('question', mc_questions.question, 'name', mc_questions.name, 'incorrectAnswer1', mc_questions.incorrect_answer_1, 'incorrectAnswer2', mc_questions.incorrect_answer_2, 'incorrectAnswer3', mc_questions.incorrect_answer_3, 'incorrectAnswer4', mc_questions.incorrect_answer_4, 'correctAnswer', mc_questions.correct_answer, 'explanation', mc_questions.explanation, 'skillName', skills.name, 'skillId', skills.id, 'level', skills.level) as contentData 
+        let sqlMCQuery = `SELECT content_flags.*, users.id as userId, users.username, users.role as userRole,  json_object('question', mc_questions.question, 'name', mc_questions.name, 'incorrectAnswer1', mc_questions.incorrect_answer_1, 'incorrectAnswer2', mc_questions.incorrect_answer_2, 'incorrectAnswer3', mc_questions.incorrect_answer_3, 'incorrectAnswer4', mc_questions.incorrect_answer_4, 'correctAnswer', mc_questions.correct_answer, 'explanation', mc_questions.explanation, 'skillName', skills.name, 'skillId', skills.id, 'level', skills.level, 'url', skills.url) as contentData 
             FROM (content_flags JOIN mc_questions ON content_flags.content_id = mc_questions.id JOIN skills ON skills.id = mc_questions.skill_id ) JOIN users ON content_flags.user_id = users.id 
             WHERE content_flags.content_type = 'mc_question'  AND mc_questions.is_deleted = 0  AND content_flags.is_deleted = 0 ;`;
         conn.query(sqlMCQuery, (err, results) => {
@@ -37,7 +37,7 @@ router.get('/list', async (req, res, next) => {
                 }
                 resData = resData.concat(results);
                 // Get data for essay_question type flag
-                let sqlEssayQuery = `SELECT content_flags.*, users.id as userId, users.username, users.role as userRole, json_object('question', essay_questions.question, 'name', essay_questions.name, 'skillName', skills.name, 'skillId', skills.id, 'level', skills.level) as contentData 
+                let sqlEssayQuery = `SELECT content_flags.*, users.id as userId, users.username, users.role as userRole, json_object('question', essay_questions.question, 'name', essay_questions.name, 'skillName', skills.name, 'skillId', skills.id, 'level', skills.level, 'url', skills.url) as contentData 
                     FROM (content_flags JOIN essay_questions ON content_flags.content_id = essay_questions.id JOIN skills ON skills.id = essay_questions.skill_id) JOIN users ON users.id = content_flags.user_id 
                     WHERE content_flags.content_type = 'essay_question'  AND essay_questions.is_deleted = 0  AND content_flags.is_deleted = 0 ;`;
                 conn.query(sqlEssayQuery, (err, results) => {
@@ -46,7 +46,7 @@ router.get('/list', async (req, res, next) => {
                     }
                     resData = resData.concat(results);
                     // Get data for skill type flag
-                    let sqlSkillQuery = `SELECT content_flags.*, users.id as userId, users.username, users.role as userRole, json_object('name', skills.name, 'description', skills.description, 'masteryRequirements', skills.mastery_requirements, 'level', skills.level) as contentData 
+                    let sqlSkillQuery = `SELECT content_flags.*, users.id as userId, users.username, users.role as userRole, json_object('name', skills.name, 'description', skills.description, 'masteryRequirements', skills.mastery_requirements, 'level', skills.level, 'url', skills.url) as contentData 
                         FROM (content_flags JOIN skills ON content_flags.content_id = skills.id) JOIN users ON users.id = content_flags.user_id 
                         WHERE content_flags.content_type = 'skill'  AND content_flags.is_deleted = 0;`;
                     conn.query(sqlSkillQuery, (err, results) => {
@@ -55,7 +55,7 @@ router.get('/list', async (req, res, next) => {
                         }
                         resData = resData.concat(results);
                         // Get Data for resource type flag
-                        let sqlResourceQuery = `SELECT content_flags.*, flagging_user.id as userId, flagging_user.username, flagging_user.role as userRole, json_object('content', resources.content, 'skill', skills.name, 'skillId', skills.id, 'user', users.username) as contentData 
+                        let sqlResourceQuery = `SELECT content_flags.*, flagging_user.id as userId, flagging_user.username, flagging_user.role as userRole, json_object('content', resources.content, 'skill', skills.name, 'skillId', skills.id, 'user', users.username, 'url', skills.url) as contentData 
                             FROM (content_flags JOIN resources ON content_flags.content_id = resources.id JOIN skills ON skills.id = resources.skill_id JOIN users ON users.id = resources.user_id) JOIN users as flagging_user ON content_flags.user_id = flagging_user.id 
                             WHERE content_flags.content_type = 'resource' AND resources.is_deleted = 0  AND content_flags.is_deleted = 0 ;`;
                         conn.query(sqlResourceQuery, (err, results) => {
@@ -94,7 +94,7 @@ router.get('/list', async (req, res, next) => {
                                     throw err;
                                 }
                                 resData = resData.concat(results);
-                                let sqlImageQuery = `SELECT content_flags.*, users.id as userId, users.username, users.role as userRole, json_object('question', image_questions.question, 'name', image_questions.name, 'skillName', skills.name, 'skillId', skills.id, 'level', skills.level) as contentData 
+                                let sqlImageQuery = `SELECT content_flags.*, users.id as userId, users.username, users.role as userRole, json_object('question', image_questions.question, 'name', image_questions.name, 'skillName', skills.name, 'skillId', skills.id, 'level', skills.level, 'url', skills.url) as contentData 
                                     FROM (content_flags JOIN image_questions ON content_flags.content_id = image_questions.id JOIN skills ON skills.id = image_questions.skill_id) JOIN users ON users.id = content_flags.user_id 
                                     WHERE content_flags.content_type = 'image_question'  AND image_questions.is_deleted = 0  AND content_flags.is_deleted = 0 ;`;
                                 conn.query(sqlImageQuery, (err, results) => {

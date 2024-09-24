@@ -23,7 +23,7 @@ router.get('/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id
+    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -32,7 +32,7 @@ router.get('/:userId', (req, res, next) => {
     AND is_deleted = 0
 
     UNION
-    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id
+    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -184,14 +184,14 @@ router.get('/unnested-list/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name, is_accessible, is_mastered, type
+    SELECT skills.id, name, is_accessible, is_mastered, type, url
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
     WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
 
     UNION
-    SELECT skills.id, name, "", "", type
+    SELECT skills.id, name, "", "", type, url
     FROM skills
     WHERE skills.id NOT IN 
 
