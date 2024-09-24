@@ -21,7 +21,6 @@ const { recordUserAction } = require('../utilities/record-user-action');
 Routes
 --------------------------------------------
 --------------------------------------------*/
-
 /**
  * Create New Item
  *
@@ -42,6 +41,9 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
         type: req.body.type,
         level: req.body.level
     };
+
+    data.url = data.name.replace(/\//g, 'or');
+    data.url = data.url.replace(/ /g, '_');
 
     // Insert the new skill.
     let sqlQuery1 = `INSERT INTO skills SET ?;`;
@@ -188,7 +190,8 @@ router.post(
                     is_filtered: skill.is_filtered,
                     order: skill.order,
                     is_copy_of_skill_id: req.body.skillToBeCopied.id,
-                    display_name: skill.name
+                    display_name: skill.name,
+                    url: skill.url
                 };
 
                 // Create the copy with new parent.
@@ -544,7 +547,8 @@ router.put(
 
                     // Update record in skill table.
                     let updateRecordSQLQuery = `UPDATE skills 
-                        SET name = ${conn.escape(req.body.name)}, 
+                        SET name = ${conn.escape(req.body.name)},
+                        url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(req.body.description)}, 
                         icon_image = ${conn.escape(req.body.icon_image)}, 

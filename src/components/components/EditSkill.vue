@@ -37,7 +37,8 @@ export default {
                 tags: [],
                 type: null,
                 level: null,
-                order: null
+                order: null,
+                url: ''
             },
             filterChecked: false,
             iconImage: '',
@@ -318,6 +319,9 @@ export default {
                 return;
             }
 
+            this.skill.url = this.skill.name.replace(/\//g, 'or');
+            this.skill.url = this.skill.url.replace(/ /g, '_');
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -332,7 +336,8 @@ export default {
                     level: this.skill.level,
                     order: this.skill.order,
                     version_number: this.skill.version_number,
-                    comment: this.comment
+                    comment: this.comment,
+                    url: this.skill.url
                 })
             };
 
@@ -346,7 +351,7 @@ export default {
                     if (this.skill.type == 'domain') {
                         this.router.push('/skills');
                     } else {
-                        this.$router.push(`/skills/${this.skill.url}`);
+                        this.$router.push('/skills/' + this.skill.url);
                     }
                 });
         },
