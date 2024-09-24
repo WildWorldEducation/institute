@@ -135,12 +135,11 @@ export default {
                 // Because this is so much data, we do not send it with the rest of the skill tree,
                 // or it will slow the load down too much.
                 const result = await fetch(
-                    '/skills/mastery-requirements/' + this.skill.id
+                    '/skills/mastery-requirements-and-url/' + this.skill.id
                 );
                 const result2 = await result.json();
                 this.skill.masteryRequirements = result2.mastery_requirements;
                 this.skill.url = result2.url;
-                // *** Preserve in case client want clamp instead of scroll
                 this.showSkillPanel = true;
             }
         });
