@@ -25,8 +25,8 @@ export default {
             const createTime = parseDate.toLocaleTimeString();
             this.rows.push({
                 skillName: contentObj.skill_name,
+                skillUrl: contentObj.skill_url,
                 resourceId: question.content_id,
-                skillId: contentObj.skill_id,
                 action: question.action,
                 date: createDate,
                 time: createTime,
@@ -98,7 +98,7 @@ export default {
                     v-else
                     class="skill-link"
                     target="_blank"
-                    :to="`/skills/${question.skillId}`"
+                    :to="`/skills/${question.skillUrl}`"
                     >{{ question.skillName }}</router-link
                 >
             </div>

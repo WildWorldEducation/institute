@@ -21,6 +21,7 @@ export default {
         'id',
         'children',
         'name',
+        'url',
         'isUnlocked',
         'isMastered',
         'type',
@@ -111,7 +112,7 @@ export default {
     methods: {
         mainButtonPress() {
             if (this.type != 'domain') {
-                window.open('/skills/' + this.id, '_blank');
+                window.open('/skills/' + this.url, '_blank');
             } else this.toggleChildren();
         },
         // Save the state of the skills list to browser storage.
@@ -371,6 +372,7 @@ export default {
         :type="subSkill.type"
         :level="subSkill.level"
         :name="subSkill.skill_name"
+        :url="subSkill.url"
         :isFiltered="subSkill.isFiltered"
         :role="role"
         :depth="depth + 1"
@@ -388,6 +390,7 @@ export default {
         :type="child.type"
         :level="child.level"
         :name="child.skill_name"
+        :url="child.url"
         :isFiltered="child.isFiltered"
         :role="role"
         :depth="depth + 1"
