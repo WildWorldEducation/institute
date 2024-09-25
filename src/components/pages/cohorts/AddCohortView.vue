@@ -29,7 +29,7 @@ export default {
                     name: this.cohort.name
                 })
             };
-            var url = '/questions/essay-questions/add';
+            var url = '/cohorts/add';
             fetch(url, requestOptions)
                 .then(() => {
                     alert('Cohort added');

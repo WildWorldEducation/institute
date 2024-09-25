@@ -165,5 +165,30 @@ router.get('/:id/skill-filters', (req, res, next) => {
     }
 });
 
+/**
+ * Create New Cohort
+ *
+ * @return response()
+ */
+router.post('/add', (req, res, next) => {
+    if (req.session.userName) {
+        let data = { name: req.body.name };
+        let sqlQuery = 'INSERT INTO cohorts SET ?';
+        conn.query(sqlQuery, data, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
