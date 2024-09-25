@@ -13,7 +13,8 @@ export default {
         if (this.visitedSkills.length > 0) {
             this.noSkills = false;
         }
-    }
+    },
+    computed: {}
 };
 </script>
 
@@ -24,7 +25,7 @@ export default {
         <div v-for="skill in visitedSkills">
             <router-link
                 class="skill-link"
-                :to="`/skills/${skill.id}`"
+                :to="`/skills/${skill.url}`"
                 target="_blank"
             >
                 {{ skill.name }}

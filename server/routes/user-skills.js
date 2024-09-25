@@ -16,22 +16,23 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 
-/* Nested list of user-skills, without the skill mastery requirements*/
-// For the skills list (also know as the "Collapsible Tree"), which does not require the mastery requirements.
-// Note: removing the mastery requirements decreases the network load hugely, increasing page load speed.
+/* Nested list of user-skills*/
+// For the skills list (also know as the "Collapsible Tree").
 router.get('/:userId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id
+    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = '${req.params.userId}' AND is_filtered = 'available' AND is_deleted = 0
+    WHERE user_skills.user_id = ${conn.escape(req.params.userId)} 
+    AND is_filtered = 'available' 
+    AND is_deleted = 0
 
     UNION
-    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id
+    SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -39,7 +40,9 @@ router.get('/:userId', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = '${req.params.userId}') AND is_filtered = 'available' AND is_deleted = 0
+    WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
+    AND is_filtered = 'available' 
+    AND is_deleted = 0
     ORDER BY skillorder, id;`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -113,7 +116,8 @@ router.get('/separate-subskills/:userId', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = '${req.params.userId}' AND is_filtered = 'available'
+    WHERE user_skills.user_id = ${conn.escape(req.params.userId)} 
+    AND is_filtered = 'available'
 
     UNION
     SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name
@@ -124,7 +128,8 @@ router.get('/separate-subskills/:userId', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = '${req.params.userId}') AND is_filtered = 'available'
+    WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
+    AND is_filtered = 'available'
     ORDER BY skillorder, id;`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -172,67 +177,6 @@ router.get('/separate-subskills/:userId', (req, res, next) => {
     }
 });
 
-/* Nested list - without subskills */
-// Individual user and user-skills.
-// Used for skill tree component, editing the user skill mastery component, and the skills list component.
-router.get('/no-sub-skills/:userId', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-
-        let sqlQuery = `
-    SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, description, type, mastery_requirements
-    FROM skills
-    LEFT OUTER JOIN user_skills
-    ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = '${req.params.userId}' AND skills.type <> 'sub'          
-
-    UNION
-    SELECT skills.id, name, parent, "", "", description, type, mastery_requirements
-    FROM skills
-    WHERE skills.id NOT IN 
-
-    (SELECT skills.id
-    FROM skills
-    LEFT OUTER JOIN user_skills
-    ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = '${req.params.userId}')  AND skills.type <> 'sub'            
-    ORDER BY id;`;
-
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-
-                for (var i = 0; i < results.length; i++) {
-                    results[i].children = [];
-                    if (results[i].parent != null && results[i].parent != 0) {
-                        var parentId = results[i].parent;
-
-                        // go through all rows again, add children
-                        for (let j = 0; j < results.length; j++) {
-                            if (results[j].id == parentId) {
-                                results[j].children.push(results[i]);
-                            }
-                        }
-                    }
-                }
-
-                let studentSkills = [];
-                for (var i = 0; i < results.length; i++) {
-                    if (results[i].parent == null || results[i].parent == 0) {
-                        studentSkills.push(results[i]);
-                    }
-                }
-
-                res.json(studentSkills);
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-});
-
 /* Unnested list */
 router.get('/unnested-list/:userId', (req, res, next) => {
     // Check if logged in.
@@ -240,14 +184,14 @@ router.get('/unnested-list/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name, is_accessible, is_mastered, type
+    SELECT skills.id, name, is_accessible, is_mastered, type, url
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = '${req.params.userId}'
+    WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
 
     UNION
-    SELECT skills.id, name, "", "", type
+    SELECT skills.id, name, "", "", type, url
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -255,7 +199,7 @@ router.get('/unnested-list/:userId', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = '${req.params.userId}')
+    WHERE user_skills.user_id = ${conn.escape(req.params.userId)})
     ORDER BY id;`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -272,7 +216,7 @@ router.get('/unnested-list/:userId', (req, res, next) => {
     }
 });
 
-/* Filtered Unnested list */
+/* Filtered Unnested list - used on ShowSkill Vue component.*/
 router.get('/filtered-unnested-list/:userId', (req, res, next) => {
     // Check if logged in.
     if (req.session.userName) {
@@ -283,7 +227,8 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = '${req.params.userId}' AND is_filtered = 'available'
+    WHERE user_skills.user_id = ${conn.escape(req.params.userId)} 
+    AND is_filtered = 'available'
 
     UNION
     SELECT skills.id, name, "", "", type, parent
@@ -294,7 +239,8 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
-    WHERE user_skills.user_id = '${req.params.userId}') AND is_filtered = 'available'
+    WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
+    AND is_filtered = 'available'
     ORDER BY id;`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -312,19 +258,17 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
 });
 
 /**
- * Edit item
+ * Make skill accessible.
  *
  * @return response()
  */
 router.get('/accessible/:userId/:skillId', (req, res, next) => {
     if (req.session.userName) {
         // Make this skill accessible.
-        let sqlQuery =
-            `
+        let sqlQuery = `
         INSERT INTO user_skills (user_id, skill_id, is_accessible) 
-        VALUES('${req.params.userId}', ` +
-            req.params.skillId +
-            `, 1) 
+        VALUES(${conn.escape(req.params.userId)},
+        ${conn.escape(req.params.skillId)}, 1) 
         ON DUPLICATE KEY UPDATE is_accessible=1;
         `;
         conn.query(sqlQuery, (err, results) => {
@@ -343,18 +287,17 @@ router.get('/accessible/:userId/:skillId', (req, res, next) => {
 });
 
 /**
- * Edit item
+ * Make skill locked.
  *
  * @return response()
  */
 router.get('/inaccessible/:userId/:skillId', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
+        let sqlQuery = `
         INSERT INTO user_skills (user_id, skill_id, is_accessible) 
-        VALUES('${req.params.userId}', ` +
-            req.params.skillId +
-            `, 0) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.skillId
+        )}, 0) 
         ON DUPLICATE KEY UPDATE is_accessible=0;
         `;
 
@@ -374,19 +317,18 @@ router.get('/inaccessible/:userId/:skillId', (req, res, next) => {
 });
 
 /**
- * Edit item
+ * Make skill unmastered.
  *
  * @return response()
  */
 router.get('/unmastered/:userId/:skillId', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            `
+        let sqlQuery = `
         INSERT INTO user_skills (user_id, skill_id, is_mastered) 
-        VALUES('${req.params.userId}', ` +
-            req.params.skillId +
-            `, 0) 
-        ON DUPLICATE KEY UPDATE is_mastered=0;    `;
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.skillId
+        )}, 0) 
+        ON DUPLICATE KEY UPDATE is_mastered=0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -444,7 +386,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                 FROM skills
                 LEFT OUTER JOIN user_skills
                 ON skills.id = user_skills.skill_id
-                WHERE user_skills.user_id = '${req.params.userId}'
+                WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
             
                 UNION
                 SELECT skills.id, name, "", "", type
@@ -455,7 +397,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                 FROM skills
                 LEFT OUTER JOIN user_skills
                 ON skills.id = user_skills.skill_id
-                WHERE user_skills.user_id = '${req.params.userId}')
+                WHERE user_skills.user_id = ${conn.escape(req.params.userId)})
                 ORDER BY id;`;
 
                 conn.query(sqlQuery2, (err, results) => {
@@ -485,17 +427,15 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                 value = 1;
                             }
 
-                            let sqlQuery =
-                                `
+                            let sqlQuery = `
                             INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
-                            VALUES('${req.params.userId}', ` +
-                                skill.id +
-                                `, ` +
-                                value +
-                                `, 1) 
-                            ON DUPLICATE KEY UPDATE is_mastered=` +
-                                value +
-                                `, is_accessible=1;
+                            VALUES(${conn.escape(req.params.userId)},
+                            ${conn.escape(skill.id)},
+                            ${conn.escape(value)},
+                            1) 
+                            ON DUPLICATE KEY UPDATE is_mastered= ${conn.escape(
+                                value
+                            )}, is_accessible=1;
                             `;
 
                             conn.query(sqlQuery, (err, results) => {
@@ -640,12 +580,9 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                         }
                         function makeAccessible(userId, skillId) {
                             // Make this skill accessible.
-                            let sqlQuery3 =
-                                `
+                            let sqlQuery3 = `
     INSERT INTO user_skills (user_id, skill_id, is_accessible) 
-    VALUES('${userId}', ` +
-                                skillId +
-                                `, 1) 
+    VALUES(${conn.escape(userId)}, ${conn.escape(skillId)}, 1) 
     ON DUPLICATE KEY UPDATE is_accessible=1;
     `;
                             conn.query(sqlQuery3, (err, results) => {
@@ -690,7 +627,7 @@ SELECT skills.id, name, is_accessible, is_mastered, type, parent
 FROM skills
 LEFT OUTER JOIN user_skills
 ON skills.id = user_skills.skill_id
-WHERE user_skills.user_id = '${userId}'
+WHERE user_skills.user_id = ${conn.escape(userId)}
 
 UNION
 SELECT skills.id, name, "", "", type, parent
@@ -701,7 +638,7 @@ WHERE skills.id NOT IN
 FROM skills
 LEFT OUTER JOIN user_skills
 ON skills.id = user_skills.skill_id
-WHERE user_skills.user_id = '${userId}')
+WHERE user_skills.user_id = ${conn.escape(userId)})
 ORDER BY id;`;
 
     conn.query(sqlQuery, (err, results) => {
@@ -777,12 +714,9 @@ function CheckIfDomainIsMastered(domain, parentChildren, userId) {
 // and then check its first ancestor domain, to see if it should
 // be made mastered.
 function MakeDomainMastered(domain, userId) {
-    let sqlQuery =
-        `
+    let sqlQuery = `
 INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
-VALUES('${userId}', ` +
-        domain.id +
-        `, 1, 1) 
+VALUES(${conn.escape(userId)}, ${conn.escape(domain.id)}, 1, 1) 
 ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
 `;
 

@@ -24,7 +24,7 @@ Routes
 router.get('/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT notification_1, notification_2 FROM notifications`;
+        let sqlQuery = `SELECT notification_1, notification_2 FROM notifications;`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -45,26 +45,12 @@ router.get('/list', (req, res, next) => {
  */
 router.put('/edit', (req, res, next) => {
     if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.notification1 != null)
-            req.body.notification1 = req.body.notification1.replace(
-                /'/g,
-                "\\'"
-            );
-        if (req.body.notification2 != null)
-            req.body.notification2 = req.body.notification2.replace(
-                /'/g,
-                "\\'"
-            );
-
         // Add data.
-        let sqlQuery =
-            `UPDATE notifications 
-        SET notification_1='` +
-            req.body.notification1 +
-            `', notification_2 = '` +
-            req.body.notification2 +
-            `';`;
+        let sqlQuery = `UPDATE notifications 
+        SET notification_1 = ${conn.escape(
+            req.body.notification1
+        )}, notification_2 = ${conn.escape(req.body.notification2)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {

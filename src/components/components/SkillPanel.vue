@@ -65,7 +65,7 @@ export default {
                     class="btn green-btn ms-auto me-2"
                     target="_blank"
                     id="skillLink"
-                    :to="'/skills/' + skill.id"
+                    :to="'/skills/' + skill.url"
                     b-on-hover
                     title="To Skill Details Page"
                     >See More&nbsp;

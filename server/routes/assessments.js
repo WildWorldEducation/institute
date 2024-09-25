@@ -50,20 +50,13 @@ router.post('/:studentId/:skillId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Get the current date and time.
         var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        let sqlQuery =
-            `
-        INSERT INTO unmarked_assessments (student_id, skill_id, total_score, current_score, num_unmarked_questions_remaining, date) 
-        VALUES('${req.params.studentId}', ` +
-            req.params.skillId +
-            `, ` +
-            req.body.totalScore +
-            `, ` +
-            req.body.currentScore +
-            `, ` +
-            req.body.numUnmarkedQuestions +
-            `, '` +
-            date +
-            `')
+        let sqlQuery = `INSERT INTO unmarked_assessments (student_id, skill_id, total_score, current_score, num_unmarked_questions_remaining, date) 
+        VALUES(${conn.escape(req.params.studentId)},
+        ${conn.escape(req.params.skillId)},
+        ${conn.escape(req.body.totalScore)},
+        ${conn.escape(req.body.currentScore)},
+        ${conn.escape(req.body.numUnmarkedQuestions)},
+        ${conn.escape(date)})
         ON DUPLICATE KEY UPDATE 
         total_score = VALUES(total_score), 
         current_score = VALUES(current_score), 
@@ -75,12 +68,13 @@ router.post('/:studentId/:skillId', (req, res, next) => {
                     throw err;
                 } else {
                     // If both the username and password are not correct, check if the account exists.
-                    let sqlQuery2 =
-                        `SELECT id FROM unmarked_assessments
-                     WHERE unmarked_assessments.student_id = '${req.params.studentId}'
-                        AND unmarked_assessments.skill_id = ` +
-                        req.params.skillId +
-                        `;`;
+                    let sqlQuery2 = `SELECT id FROM unmarked_assessments
+                     WHERE unmarked_assessments.student_id = ${conn.escape(
+                         req.params.studentId
+                     )}
+                     AND unmarked_assessments.skill_id = ${conn.escape(
+                         req.params.skillId
+                     )};`;
 
                     conn.query(sqlQuery2, (err, results) => {
                         try {
@@ -111,9 +105,9 @@ router.post('/:studentId/:skillId', (req, res, next) => {
 router.put('/:id/increase-grade', (req, res, next) => {
     if (req.session.userName) {
         var sqlQuery;
-        sqlQuery =
-            `UPDATE unmarked_assessments SET current_score = current_score + 1, num_unmarked_questions_remaining = num_unmarked_questions_remaining - 1 WHERE id = ` +
-            req.params.id;
+        sqlQuery = `UPDATE unmarked_assessments 
+        SET current_score = current_score + 1, num_unmarked_questions_remaining = num_unmarked_questions_remaining - 1 
+        WHERE id = ${conn.escape(req.params.id)};`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -133,9 +127,10 @@ router.put('/:id/increase-grade', (req, res, next) => {
 router.put('/:id/decrease-grade', (req, res, next) => {
     if (req.session.userName) {
         var sqlQuery;
-        sqlQuery =
-            `UPDATE unmarked_assessments SET num_unmarked_questions_remaining = num_unmarked_questions_remaining - 1 WHERE id = ` +
-            req.params.id;
+        sqlQuery = `UPDATE unmarked_assessments 
+            SET num_unmarked_questions_remaining = num_unmarked_questions_remaining - 1 
+            WHERE id = ${conn.escape(req.params.id)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -158,8 +153,9 @@ router.put('/:id/decrease-grade', (req, res, next) => {
  */
 router.delete('/:id', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery =
-            'DELETE FROM unmarked_assessments WHERE id=' + req.params.id;
+        let sqlQuery = `DELETE FROM unmarked_assessments 
+            WHERE id = ${conn.escape(req.params.id)};`;
+
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -186,9 +182,15 @@ router.put('/:studentId/:skillId', (req, res, next) => {
         var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
         let sqlQuery = `
         UPDATE unmarked_assessments 
-        SET total_score = ${req.body.totalScore}, current_score = ${req.body.currentScore}, num_unmarked_questions_remaining = ${req.body.numUnmarkedQuestions}, date = '${date}'
-        WHERE student_id = '${req.params.studentId}' AND skill_id = '${req.params.skillId}'
-        `;
+        SET total_score = ${conn.escape(
+            req.body.totalScore
+        )}, current_score = ${conn.escape(req.body.currentScore)},
+         num_unmarked_questions_remaining = ${conn.escape(
+             req.body.numUnmarkedQuestions
+         )}, 
+         date = ${conn.escape(date)}
+        WHERE student_id = ${conn.escape(req.params.studentId)} 
+        AND skill_id = ${conn.escape(req.params.skillId)};`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -196,12 +198,13 @@ router.put('/:studentId/:skillId', (req, res, next) => {
                     throw err;
                 } else {
                     // If both the username and password are not correct, check if the account exists.
-                    let sqlQuery2 =
-                        `SELECT id FROM unmarked_assessments
-                     WHERE unmarked_assessments.student_id = '${req.params.studentId}'
-                        AND unmarked_assessments.skill_id = ` +
-                        req.params.skillId +
-                        `;`;
+                    let sqlQuery2 = `SELECT id FROM unmarked_assessments
+                     WHERE unmarked_assessments.student_id = ${conn.escape(
+                         req.params.studentId
+                     )}
+                     AND unmarked_assessments.skill_id = ${conn.escape(
+                         req.params.skillId
+                     )};`;
 
                     conn.query(sqlQuery2, (err, results) => {
                         try {

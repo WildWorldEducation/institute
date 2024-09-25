@@ -20,9 +20,13 @@ export default {
                     (this.userSkills[i].is_mastered != 1) &
                     (this.userSkills[i].type != 'domain')
                 ) {
+                    // Format the skill name as a URL, based on the Wikipedia style.
+                    let url = this.userSkills[i].name.replace(/ /g, '_');
+
                     availableSkills.push({
                         name: this.userSkills[i].name,
-                        id: this.userSkills[i].id
+                        id: this.userSkills[i].id,
+                        url: this.userSkills[i].url
                     });
                 }
             }
@@ -45,7 +49,7 @@ export default {
         <div v-for="availableSkill in availableSkills">
             <router-link
                 class="skill-link"
-                :to="`/skills/${availableSkill.id}`"
+                :to="`/skills/${availableSkill.url}`"
                 target="_blank"
             >
                 {{ availableSkill.name }}

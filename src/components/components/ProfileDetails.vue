@@ -21,9 +21,9 @@ export default {
     computed: {
         name() {
             return (
-                this.userDetailsStore.firstName +
+                this.userDetailsStore.firstName ? this.userDetailsStore.firstName : '' +
                 ' ' +
-                this.userDetailsStore.lastName
+                this.userDetailsStore.lastName ? this.userDetailsStore.lastName : ''
             );
         }
     },

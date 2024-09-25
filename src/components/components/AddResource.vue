@@ -81,7 +81,7 @@ export default {
                     }
                 })
                 .then(() => {
-                    this.$router.push('/skills/' + this.skillId);
+                    this.$router.back();
                 });
         }
     }

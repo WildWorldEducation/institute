@@ -4,7 +4,6 @@ import { useSkillsStore } from '../../../stores/SkillsStore';
 
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
-import NewSkillPanel from '../NewSkillPanel.vue';
 import SliderControl from './SliderControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
@@ -29,6 +28,7 @@ export default {
                 isUnlocked: null,
                 container: null,
                 name: null,
+                url: null,
                 description: null,
                 tagIDs: [],
                 sprite: null,
@@ -55,12 +55,13 @@ export default {
             xPos: 0,
             yPos: 0,
             showAnimation: false,
-            showSkillPanel: false
+            showSkillPanel: false,
+            resultNode: null
         };
     },
     components: {
         SkillPanel,
-        NewSkillPanel,
+        SkillPanel,
         SliderControl,
         JoystickControl
     },
@@ -131,10 +132,11 @@ export default {
                 // Because this is so much data, we do not send it with the rest of the skill tree,
                 // or it will slow the load down too much.
                 const result = await fetch(
-                    '/skills/mastery-requirements/' + this.skill.id
+                    '/skills/mastery-requirements-and-url/' + this.skill.id
                 );
-                const masteryRequirements = await result.json();
-                this.skill.masteryRequirements = masteryRequirements;
+                const result2 = await result.json();
+                this.skill.masteryRequirements = result2.mastery_requirements;
+                this.skill.url = result2.url;
                 this.showSkillPanel = true;
             }
         });
@@ -341,6 +343,9 @@ export default {
         drawNode(node) {
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
+            // A flag to determine if this node was searched by user
+            const isSearched =
+                node.data.name === this.resultNode?.data.skill_name;
 
             // Visible context.
             // If not a domain, make node a circle.
@@ -369,19 +374,28 @@ export default {
                     ctx1.beginPath();
                     ctx1.strokeStyle = '#FFF';
                     ctx1.lineWidth = 4;
-                    ctx1.fillStyle = '#000';
+                    // Hight light the text if user search for it
+                    ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
+                    ctx1.font = isSearched ? 'bold' : 'normal';
                     ctx1.font = 'normal';
                     ctx1.direction = 'ltr';
-                    ctx1.strokeText(node.data.name, node.y + 15, node.x + 2);
-                    ctx1.fillText(node.data.name, node.y + 15, node.x + 2);
+                    //  also added a triangle to the end of skill name
+                    const showName = isSearched
+                        ? `${node.data.name} ◀`
+                        : node.data.name;
+                    ctx1.strokeText(showName, node.y + 15, node.x + 2);
+                    ctx1.fillText(showName, node.y + 15, node.x + 2);
                 } else {
                     ctx1.beginPath();
                     ctx1.strokeStyle = '#FFF';
                     ctx1.lineWidth = 4;
-                    ctx1.fillStyle = '#849cab';
+                    ctx1.fillStyle = isSearched ? '#ff0000' : '#849cab';
                     ctx1.direction = 'rtl';
-                    ctx1.strokeText(node.data.name, node.y - 5, node.x + 2);
-                    ctx1.fillText(node.data.name, node.y - 5, node.x + 2);
+                    const showName = isSearched
+                        ? `${node.data.name} ▶`
+                        : node.data.name;
+                    ctx1.strokeText(showName, node.y - 5, node.x + 2);
+                    ctx1.fillText(showName, node.y - 5, node.x + 2);
                 }
             }
 
@@ -672,7 +686,79 @@ export default {
                 default:
                     break;
             }
+        },
+        // zoom and pan to a node
+        goToLocation(node) {
+            this.resultNode = node;
+            const translateX =
+                -node.y * this.scale +
+                (window.innerWidth / (2 * this.scale)) * this.scale;
+            const translateY =
+                -node.x * this.scale +
+                (window.innerHeight / (2 * this.scale)) * this.scale;
+
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(2000)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity
+                        .translate(translateX, translateY)
+                        .scale(this.scale)
+                );
+        },
+        // Find node with name include
+        findNodeWithName(searchString) {
+            let results = [];
+            // D3
+            //let breakLoop = false;
+            this.root.each(function (node) {
+                if (searchString.length < 2) {
+                    if (
+                        node.data?.name
+                            ?.toLowerCase()
+                            .substring(0, searchString.length) === searchString
+                    ) {
+                        const reformatData = {
+                            ...node.data,
+                            skill_name: node.data.name
+                        };
+                        results.push({ ...node, data: reformatData });
+                    }
+                } else {
+                    if (node.data?.name?.toLowerCase().includes(searchString)) {
+                        const reformatData = {
+                            ...node.data,
+                            skill_name: node.data.name
+                        };
+                        results.push({ ...node, data: reformatData });
+                    }
+                }
+            });
+            return results;
         }
+        // async showSkillPanelComponent(node) {
+        //     // We clicked on something, lets set the color of the node
+        //     // we also have access to the data associated with it, which in
+        //     // this case is just its original index in the data array.
+        //     node.renderCol = node.__pickColor;
+
+        //     //Update the display with some data
+        //     this.skill.name = node.data.skill_name;
+        //     this.skill.id = node.data.id;
+        //     this.skill.type = node.data.type;
+
+        //     // Get the mastery requirements data separately.
+        //     // Because this is so much data, we do not send it with the rest of the skill tree,
+        //     // or it will slow the load down too much.
+        //     const result = await fetch(
+        //         '/skills/mastery-requirements/' + this.skill.id
+        //     );
+        //     const masteryRequirements = await result.json();
+        //     this.skill.masteryRequirements = masteryRequirements;
+        //     // *** Preserve in case client want clamp instead of scroll
+        //     this.showSkillPanel = true;
+        // }
     }
 };
 </script>

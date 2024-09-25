@@ -216,6 +216,23 @@ export default {
                     filters: this.filters
                 })
             })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    // Check if skill exist already.
+                    if (data.result == 'skill already exists') {
+                        alert(data.result);
+                        return;
+                    } else if (
+                        data.result ==
+                        'skill was deleted, but has now been undeleted. Please find it and edit it.'
+                    ) {
+                        alert(data.result);
+                    } else if (data.result == 'skill added') {
+                        alert(data.result);
+                    }
+                })
                 .then(() => {
                     this.skillsStore.getNestedSkillsList();
                 })

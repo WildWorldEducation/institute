@@ -60,7 +60,8 @@ export default {
             yPos: 0,
             showAnimation: false,
             showSkillPanel: false,
-            userAvatarImg: null
+            userAvatarImg: null,
+            currentZoom: 1
         };
     },
     components: {
@@ -92,13 +93,15 @@ export default {
             this.d3Zoom = d3
                 .zoom()
                 .scaleExtent([0.05, 8])
-                .on('zoom', ({ transform }) => this.zoomed(transform));
+                .on('zoom', ({ transform }) => {
+                    this.currentZoom = transform.k;
+                    this.zoomed(transform);
+                });
             d3.select(this.context.canvas).call(this.d3Zoom);
 
             // Zoom and move the tree to it initial position
             this.defaultPosition();
-        }
-        
+        };
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', async (e) => {
@@ -150,12 +153,11 @@ export default {
                 // Because this is so much data, we do not send it with the rest of the skill tree,
                 // or it will slow the load down too much.
                 const result = await fetch(
-                    '/skills/mastery-requirements/' + this.skill.id
+                    '/skills/mastery-requirements-and-url/' + this.skill.id
                 );
-                const masteryRequirements = await result.json();
-                this.skill.masteryRequirements = masteryRequirements;
-                // *** Preserve in case client want clamp instead of scroll
-                //this.showInfoPanel();
+                const result2 = await result.json();
+                this.skill.masteryRequirements = result2.mastery_requirements;
+                this.skill.url = result2.url;
                 this.showSkillPanel = true;
             }
         });
@@ -274,7 +276,6 @@ export default {
             this.context.clip();
             this.context.drawImage(this.userAvatarImg, -20, -20, 40, 40);
             this.context.restore();
-
         },
         drawNode(node) {
             let ctx1 = this.context;
@@ -417,9 +418,11 @@ export default {
             // If skill is mastered.
             let color = '#71717a';
             if (link.target.data.is_mastered == 1) {
-                this.context.lineWidth = 4;
+                this.context.lineWidth =
+                    4 + parseInt(3 * (1 / this.currentZoom));
                 color = '#ffffff';
-            } else this.context.lineWidth = 1;
+            } else
+                this.context.lineWidth = parseInt(3 * (1 / this.currentZoom));
 
             this.context.beginPath();
             linkGenerator(link);
@@ -458,10 +461,16 @@ export default {
                 this.width,
                 this.height
             );
-            this.context.translate(transform.x - this.width/2, transform.y - this.height/2);
+            this.context.translate(
+                transform.x - this.width / 2,
+                transform.y - this.height / 2
+            );
             this.context.scale(transform.k, transform.k);
 
-            this.hiddenCanvasContext.translate(transform.x - this.width/2, transform.y - this.height/2);
+            this.hiddenCanvasContext.translate(
+                transform.x - this.width / 2,
+                transform.y - this.height / 2
+            );
             this.hiddenCanvasContext.scale(transform.k, transform.k);
 
             this.drawTree();
@@ -747,7 +756,9 @@ export default {
                 .duration(300)
                 .call(
                     this.d3Zoom.transform,
-                    d3.zoomIdentity.translate(this.width / 2, this.height / 2).scale(0.08)
+                    d3.zoomIdentity
+                        .translate(this.width / 2, this.height / 2)
+                        .scale(0.08)
                 );
         }
     }
