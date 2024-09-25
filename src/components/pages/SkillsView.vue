@@ -15,7 +15,10 @@ export default {
         return {
             isInstructorMode: false,
             searchText: '',
-            resultsSkills: []
+            resultsSkills: [],
+            chooseResult: null,
+            // flag to make watcher do not react when user choose a result
+            updateChooseResult: false
         };
     },
     components: {
@@ -31,17 +34,26 @@ export default {
             const res = await fetch(url);
             const results = await res.json();
             this.resultsSkills = results;
+            this.updateChooseResult = true;
         },
         handleChooseResult(result) {
             this.resultsSkills = [];
+            this.searchText = result.name;
+            this.chooseResult = result;
+            this.$refs.skillList.findNode(result.name);
         }
     },
     watch: {
         // We use watcher instead of compute because we made API call
         searchText: {
             handler(newVal) {
-                if (newVal.length > 3) {
-                    this.getFullTextResult();
+                // if
+                if (this.chooseResult) {
+                    this.chooseResult = false;
+                } else {
+                    if (newVal.length > 3) {
+                        this.getFullTextResult();
+                    }
                 }
             }
         }
@@ -139,7 +151,7 @@ export default {
             </div>
         </div>
     </div>
-    <SkillsListParent />
+    <SkillsListParent ref="skillList" />
 </template>
 
 <style scoped>

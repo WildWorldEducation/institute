@@ -1,4 +1,5 @@
 <script>
+import { path } from 'pdfkit';
 import router from '../../router';
 
 export default {
@@ -23,7 +24,8 @@ export default {
         'depth',
         'role',
         'isFiltered',
-        'DeleteSkill'
+        'DeleteSkill',
+        'path'
     ],
     computed: {
         indent() {
@@ -143,6 +145,18 @@ export default {
             this.recursivelySetState(this.children, !this.showChildren);
             localStorage.setItem(this.id + 'children', !this.showChildren);
             this.showChildren = !this.showChildren;
+        }
+    },
+    watch: {
+        path: {
+            handler(newVal) {
+                const inPath = newVal.find((node) => node.id === this.id);
+                if (inPath) {
+                    console.log('Show children for node: ');
+                    console.log(this.id + ' || ' + this.name);
+                    this.showChildren = true;
+                }
+            }
         }
     }
 };
@@ -318,6 +332,7 @@ export default {
         :name="subSkill.name"
         :role="role"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildNonStudent>
     <!-- Admin Role -->
@@ -333,6 +348,7 @@ export default {
         :isFiltered="isFiltered"
         :DeleteSkill="DeleteSkill"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildNonStudent>
     <SkillsListChildNonStudent
@@ -347,6 +363,7 @@ export default {
         :isFiltered="subSkill.is_filtered"
         :DeleteSkill="DeleteSkill"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildNonStudent>
 
@@ -366,6 +383,7 @@ export default {
         :name="child.name"
         :role="role"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildNonStudent>
     <!-- Admin Role -->
@@ -381,6 +399,7 @@ export default {
         :isFiltered="isFiltered"
         :DeleteSkill="DeleteSkill"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildNonStudent>
     <SkillsListChildNonStudent
@@ -395,6 +414,7 @@ export default {
         :isFiltered="child.is_filtered"
         :DeleteSkill="DeleteSkill"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildNonStudent>
 </template>

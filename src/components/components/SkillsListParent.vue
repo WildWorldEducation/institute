@@ -33,7 +33,8 @@ export default {
             instructorMode: false,
             studentUserSkills: [],
             // For the loading animation.
-            isLoading: true
+            isLoading: true,
+            path: []
         };
     },
     computed: {},
@@ -75,7 +76,6 @@ export default {
             this.studentUserSkills = this.skillTreeStore.studentSkills;
         }
 
-        console.log(this.skillsStore.nestedSkillsList);
         // For the loading animation.
         this.isLoading = false;
     },
@@ -83,13 +83,21 @@ export default {
         async DeleteSkill(id) {
             await this.skillsStore.deleteSkill(id);
             await this.skillsStore.getNestedSkillsList();
+        },
+        findNode(name) {
+            console.log('search name: ');
+            console.log(name);
+            this.path = this.skillsStore.findPathInNestedSkillTree(name);
+            console.log('path is: ');
+            console.log(this.path);
         }
     },
     components: {
         SkillsListChildStudent,
         SkillsListChildNonStudent,
         SkillsListChildInstructorMode
-    }
+    },
+    watcher: {}
 };
 </script>
 
@@ -152,6 +160,7 @@ export default {
                 :isFiltered="skill.is_filtered"
                 :role="userDetailsStore.role"
                 :DeleteSkill="DeleteSkill"
+                :path="this.path"
             >
             </SkillsListChildNonStudent>
         </div>
