@@ -304,6 +304,13 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
         },
         {
+            path: '/cohorts/add',
+            name: 'add-cohort',
+            component: () =>
+                import('../components/pages/cohorts/AddCohortView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
+        },
+        {
             path: '/cohort/:cohortId',
             name: 'cohort',
             component: () =>
