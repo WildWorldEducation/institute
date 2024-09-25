@@ -50,6 +50,48 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
     conn.query(sqlQuery1, data, (err, results) => {
         try {
             if (err) {
+                // Check if skill name exists already.
+                if (err.code == 'ER_DUP_ENTRY') {
+                    // check if deleted.
+                    let existingNameQuery = `SELECT is_deleted
+                    FROM skills
+                    WHERE name = ${conn.escape(data.name)};`;
+
+                    conn.query(existingNameQuery, (err, result) => {
+                        try {
+                            if (err) {
+                                throw err;
+                            } else {
+                                if (result[0].is_deleted == 0) {
+                                    res.json({
+                                        result: 'skill already exists'
+                                    });
+                                } else if (result[0].is_deleted == 1) {
+                                    // Undelete skill.
+                                    let unDeleteSkillQuery = `UPDATE skills
+                                    SET is_deleted = 0
+                                    WHERE name = ${conn.escape(data.name)};`;
+                                    conn.query(unDeleteSkillQuery, (err) => {
+                                        try {
+                                            if (err) {
+                                                throw err;
+                                            }
+                                            res.json({
+                                                result: 'skill was deleted, but has now been undeleted. Please find it and edit it.'
+                                            });
+                                        } catch (err) {
+                                            next(err);
+                                        }
+                                    });
+                                }
+                            }
+                        } catch (err) {
+                            next(err);
+                        }
+                    });
+
+                    return;
+                }
                 throw err;
             } else {
                 // Get its id.
@@ -116,7 +158,11 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                                                                     if (err) {
                                                                         throw err;
                                                                     } else {
-                                                                        res.end();
+                                                                        res.json(
+                                                                            {
+                                                                                result: 'skill added'
+                                                                            }
+                                                                        );
                                                                     }
                                                                 } catch (err) {
                                                                     next(err);
@@ -137,7 +183,9 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                         next(err);
                     }
                 });
-                res.end();
+                res.json({
+                    result: 'skill added'
+                });
             }
         } catch (err) {
             next(err);
