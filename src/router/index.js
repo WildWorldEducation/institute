@@ -301,14 +301,14 @@ const router = createRouter({
             name: 'cohorts',
             component: () =>
                 import('../components/pages/cohorts/CohortsListView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
         },
         {
             path: '/cohort/:cohortId',
             name: 'cohort',
             component: () =>
                 import('../components/pages/cohorts/CohortView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
         }
     ]
 });
