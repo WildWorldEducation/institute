@@ -1,18 +1,27 @@
 <script>
+// Import the store.
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import FilterParent from '../../components/filter-system/FilterParent.vue';
 
 export default {
-    setup() {},
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            userDetailsStore
+        };
+    },
     data() {
         return {
             cohortId: this.$route.params.cohortId,
             cohort: {},
+            students: [],
             members: [],
             showFilters: false
         };
     },
     async created() {
         await this.getCohort();
+        await this.getStudents();
         await this.getCohortMembers();
     },
     components: {
@@ -28,14 +37,26 @@ export default {
                     this.cohort = data;
                 });
         },
-        async getCohortMembers() {
-            fetch('/cohorts/' + this.cohortId + '/members')
+        async getStudents() {
+            fetch(
+                '/instructor-students/' + this.userDetailsStore.userId + '/list'
+            )
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => {
-                    this.members = data;
+                    this.students = data;
+                    console.log(this.students);
                 });
+        },
+        async updateCohortMembers() {
+            // fetch('/cohorts/' + this.cohortId + '/members')
+            //     .then(function (response) {
+            //         return response.json();
+            //     })
+            //     .then((data) => {
+            //         this.members = data;
+            //     });
         }
     }
 };
@@ -46,7 +67,10 @@ export default {
         <h1>Cohorts: {{ cohort.name }}</h1>
         <h2>Members</h2>
         <ul>
-            <li v-for="member in members">{{ member.username }}</li>
+            <li v-for="student in students">
+                {{ student.username }}
+                <input type="checkbox" :value="student.id" v-model="members" />
+            </li>
         </ul>
 
         <!-- Filters -->

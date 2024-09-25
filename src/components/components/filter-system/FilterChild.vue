@@ -48,7 +48,6 @@ export default {
         },
         filter() {
             console.log('test');
-           
         }
     },
     components: {}

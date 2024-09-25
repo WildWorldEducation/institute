@@ -63,36 +63,36 @@ router.get('/:id', (req, res, next) => {
     }
 });
 
-/**
- * Get All Items
- *
- * @return response()
- */
-router.get('/:id/members', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT users.id, users.username
-FROM cohorts
-JOIN cohorts_users
-ON
-cohorts.id = cohorts_users.cohort_id
-JOIN users
-ON cohorts_users.user_id = users.id
-WHERE cohorts.id = ${req.params.id}
-        `;
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
+// /**
+//  * Get All Items
+//  *
+//  * @return response()
+//  */
+// router.get('/:id/members', (req, res, next) => {
+//     if (req.session.userName) {
+//         res.setHeader('Content-Type', 'application/json');
+//         let sqlQuery = `SELECT users.id, users.username
+// FROM cohorts
+// JOIN cohorts_users
+// ON
+// cohorts.id = cohorts_users.cohort_id
+// JOIN users
+// ON cohorts_users.user_id = users.id
+// WHERE cohorts.id = ${req.params.id}
+//         `;
+//         conn.query(sqlQuery, (err, results) => {
+//             try {
+//                 if (err) {
+//                     throw err;
+//                 }
 
-                res.json(results);
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-});
+//                 res.json(results);
+//             } catch (err) {
+//                 next(err);
+//             }
+//         });
+//     }
+// });
 
 /**
  * Get Cohort Skill Filters
