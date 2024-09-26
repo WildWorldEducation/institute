@@ -16,7 +16,8 @@ export default {
             cohort: {},
             students: [],
             members: [],
-            showFilters: false
+            showFilters: false,
+            showMembers: false
         };
     },
     async created() {
@@ -112,21 +113,54 @@ export default {
 <template>
     <div class="container">
         <h1>Cohorts: {{ cohort.name }}</h1>
-        <h2>Members</h2>
-        <ul>
-            <li v-for="student in students">
-                {{ student.username }}
-                <input
-                    type="checkbox"
-                    :value="student.id"
-                    v-model="student.isMember"
-                />
-            </li>
-        </ul>
-        <button @click="submit">Submit</button>
-
         <!-- Filters -->
         <div class="d-flex flex-column">
+            <div class="d-flex flex-row justify-content-between">
+                <div
+                    class="log-type"
+                    @click="showMembers = !showMembers"
+                    b-on-hover
+                    :title="showMembers ? 'collapse' : 'expand'"
+                >
+                    <div class="d-flex">
+                        <h2>Members</h2>
+                        <!-- Arrow Icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 320 512"
+                            width="22"
+                            height="22"
+                            fill="#667085"
+                            :class="[
+                                showMembers
+                                    ? 'arrow-point-down mb-2'
+                                    : 'arrow-point-up '
+                            ]"
+                        >
+                            <path
+                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="showMembers">
+            <ul>
+                <li v-for="student in students">
+                    {{ student.username }}
+                    <input
+                        type="checkbox"
+                        :value="student.id"
+                        v-model="student.isMember"
+                    />
+                </li>
+            </ul>
+            <button @click="submit">Submit</button>
+        </div>
+
+        <!-- Filters -->
+        <div class="d-flex flex-column mt-4">
             <div class="d-flex flex-row justify-content-between">
                 <div
                     class="log-type"
