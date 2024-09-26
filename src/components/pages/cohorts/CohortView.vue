@@ -21,11 +21,27 @@ export default {
     },
     async created() {
         await this.getCohort();
+        await this.getMembers();
         await this.getStudents();
-        await this.getCohortMembers();
     },
     components: {
         FilterParent
+    },
+    computed: {
+        // StudentsAndMembers() {
+        //     let studentsAndMembers = [];
+        //     //   console.log(this.students.length);
+        //     for (let i = 0; i < this.students.length; i++) {
+        //         for (let j = 0; j < this.members.length; j++) {
+        //             if (this.students[i].id == this.members[j].id) {
+        //                 this.students[i].isMember = true;
+        //             }
+        //         }
+        //         studentsAndMembers.push(this.students[i]);
+        //     }
+        //     //  console.log(studentsAndMembers);
+        //     return studentsAndMembers;
+        // }
     },
     methods: {
         async getCohort() {
@@ -37,6 +53,16 @@ export default {
                     this.cohort = data;
                 });
         },
+        async getMembers() {
+            fetch('/cohorts/' + this.cohortId + '/members')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    this.members = data;
+                    console.log(this.members);
+                });
+        },
         async getStudents() {
             fetch(
                 '/instructor-students/' + this.userDetailsStore.userId + '/list'
@@ -46,17 +72,37 @@ export default {
                 })
                 .then((data) => {
                     this.students = data;
+                    for (let i = 0; i < this.students.length; i++) {
+                        this.students[i].isMember = false;
+                        for (let j = 0; j < this.members.length; j++) {
+                            if (this.students[i].id == this.members[j].id) {
+                                this.students[i].isMember = true;
+                            }
+                        }
+                    }
                     console.log(this.students);
                 });
         },
         async updateCohortMembers() {
-            // fetch('/cohorts/' + this.cohortId + '/members')
-            //     .then(function (response) {
-            //         return response.json();
-            //     })
-            //     .then((data) => {
-            //         this.members = data;
-            //     });
+            console.log(this.students);
+            for (let i = 0; i < this.students.length; i++) {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.students[i].id,
+                        isMember: this.students[i].isMember
+                    })
+                };
+                var url = '/cohorts/edit/' + this.cohortId;
+                fetch(url, requestOptions)
+                    .then(() => {
+                        // alert('Cohort added');
+                    })
+                    .then(() => {
+                        // this.$router.go(-1);
+                    });
+            }
         }
     }
 };
@@ -69,9 +115,14 @@ export default {
         <ul>
             <li v-for="student in students">
                 {{ student.username }}
-                <input type="checkbox" :value="student.id" v-model="members" />
+                <input
+                    type="checkbox"
+                    :value="student.id"
+                    v-model="student.isMember"
+                />
             </li>
         </ul>
+        <button @click="updateCohortMembers">Submit</button>
 
         <!-- Filters -->
         <div class="d-flex flex-column">
