@@ -295,6 +295,11 @@ const router = createRouter({
             name: 'todo-list',
             component: () => import('../components/pages/TodoListView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('../components/pages/PageNotFoundView.vue')
         }
     ]
 });
