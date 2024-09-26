@@ -63,36 +63,33 @@ router.get('/:id', (req, res, next) => {
     }
 });
 
-// /**
-//  * Get All Items
-//  *
-//  * @return response()
-//  */
-// router.get('/:id/members', (req, res, next) => {
-//     if (req.session.userName) {
-//         res.setHeader('Content-Type', 'application/json');
-//         let sqlQuery = `SELECT users.id, users.username
-// FROM cohorts
-// JOIN cohorts_users
-// ON
-// cohorts.id = cohorts_users.cohort_id
-// JOIN users
-// ON cohorts_users.user_id = users.id
-// WHERE cohorts.id = ${req.params.id}
-//         `;
-//         conn.query(sqlQuery, (err, results) => {
-//             try {
-//                 if (err) {
-//                     throw err;
-//                 }
+/**
+ * Get All Members of a Cohort
+ *
+ * @return response()
+ */
+router.get('/:cohortId/members', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT users.id, users.username
+        FROM cohorts_users
+        JOIN users
+        ON cohorts_users.user_id = users.id
+        WHERE cohort_id = ${req.params.cohortId}
+        `;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
 
-//                 res.json(results);
-//             } catch (err) {
-//                 next(err);
-//             }
-//         });
-//     }
-// });
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
 
 /**
  * Get Cohort Skill Filters
@@ -180,6 +177,33 @@ router.post('/add', (req, res, next) => {
                     throw err;
                 } else {
                     res.end();
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Edit Cohorts
+ *
+ * @return response()
+ */
+router.put('/edit/:cohortId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO cohorts_users (cohort_id, user_id)
+        VALUES (${conn.escape(req.params.cohortId)}, ${conn.escape(
+            req.body.userId
+        )});`;
+
+        conn.query(sqlQuery1, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
                 }
             } catch (err) {
                 next(err);
