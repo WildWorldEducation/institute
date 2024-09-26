@@ -21,8 +21,8 @@ export default {
     },
     async created() {
         await this.getCohort();
-        await this.getMembers();
-        await this.getStudents();
+        if (this.members.length == 0) await this.getMembers();
+        if (this.students.length == 0) await this.getStudents();
     },
     components: {
         FilterParent
@@ -60,7 +60,6 @@ export default {
                 })
                 .then((data) => {
                     this.members = data;
-                    console.log(this.members);
                 });
         },
         async getStudents() {
@@ -80,29 +79,31 @@ export default {
                             }
                         }
                     }
-                    console.log(this.students);
                 });
         },
-        async updateCohortMembers() {
-            console.log(this.students);
-            for (let i = 0; i < this.students.length; i++) {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: this.students[i].id,
-                        isMember: this.students[i].isMember
-                    })
-                };
-                var url = '/cohorts/edit/' + this.cohortId;
-                fetch(url, requestOptions)
-                    .then(() => {
-                        // alert('Cohort added');
-                    })
-                    .then(() => {
-                        // this.$router.go(-1);
-                    });
-            }
+        submit() {
+            let index = 0;
+            this.updateCohortMembers(index);
+        },
+        updateCohortMembers(index) {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    studentId: this.students[index].id,
+                    isMember: this.students[index].isMember
+                })
+            };
+            var url = '/cohorts/edit/' + this.cohortId;
+            fetch(url, requestOptions).then((response) => {
+                if (index + 1 < this.students.length) {
+                    index++;
+                    this.updateCohortMembers(index);
+                } else {
+                    alert('Cohort updated');
+                    return;
+                }
+            });
         }
     }
 };
@@ -122,7 +123,7 @@ export default {
                 />
             </li>
         </ul>
-        <button @click="updateCohortMembers">Submit</button>
+        <button @click="submit">Submit</button>
 
         <!-- Filters -->
         <div class="d-flex flex-column">

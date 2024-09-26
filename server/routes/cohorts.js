@@ -194,17 +194,29 @@ router.post('/add', (req, res, next) => {
  */
 router.put('/edit/:cohortId', (req, res, next) => {
     if (req.session.userName) {
-        let sqlQuery = `
-        INSERT INTO cohorts_users (cohort_id, user_id)
-        VALUES (${conn.escape(req.params.cohortId)}, ${conn.escape(
-            req.body.userId
-        )});`;
+        let sqlQuery = '';
+        // If student is a member of cohort, and record does not exist already, add record.
+        if (req.body.isMember) {
+            sqlQuery = `
+            INSERT IGNORE INTO cohorts_users (cohort_id, user_id)
+            VALUES (${conn.escape(req.params.cohortId)}, ${conn.escape(
+                req.body.studentId
+            )});`;
+            // If student is not a member of cohort, delete any record.
+        } else {
+            sqlQuery = `
+            DELETE
+            FROM cohorts_users
+            WHERE cohort_id = ${conn.escape(req.params.cohortId)} 
+            AND user_id =  ${conn.escape(req.body.studentId)};`;
+        }
 
-        conn.query(sqlQuery1, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;
                 }
+                res.end();
             } catch (err) {
                 next(err);
             }
