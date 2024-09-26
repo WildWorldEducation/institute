@@ -85,11 +85,7 @@ export default {
             await this.skillsStore.getNestedSkillsList();
         },
         findNode(name) {
-            console.log('search name: ');
-            console.log(name);
             this.path = this.skillsStore.findPathInNestedSkillTree(name);
-            console.log('path is: ');
-            console.log(this.path);
         }
     },
     components: {

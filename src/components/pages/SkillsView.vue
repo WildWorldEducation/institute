@@ -41,6 +41,9 @@ export default {
             this.searchText = result.name;
             this.chooseResult = result;
             this.$refs.skillList.findNode(result.name);
+        },
+        clearResults() {
+            this.$refs.skillList.path = [];
         }
     },
     watch: {
@@ -54,6 +57,9 @@ export default {
                     if (newVal.length > 3) {
                         this.getFullTextResult();
                     }
+                }
+                if (newVal.length === 0) {
+                    this.clearResults();
                 }
             }
         }
