@@ -4,8 +4,10 @@ export default {
     props: ['id', 'children', 'name', 'type', 'level', 'depth', 'is_filtered'],
     data() {
         return {
+            cohortId: this.$route.params.cohortId,
             showChildren: false,
-            parentIsFiltered: false
+            parentIsFiltered: false,
+            isFiltered: null
         };
     },
     computed: {
@@ -47,7 +49,24 @@ export default {
             this.showChildren = !this.showChildren;
         },
         filter() {
-            console.log('test');
+            // Toggle isFiltered
+            if (this.is_filtered == 1) {
+                this.isFiltered = 0;
+            } else {
+                this.isFiltered = 1;
+            }
+            console.log(this.id);
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cohortId: this.cohortId,
+                    skillId: this.id,
+                    isFiltered: this.isFiltered
+                })
+            };
+            var url = '/cohorts/' + this.cohortId + '/edit-filters';
+            fetch(url, requestOptions).then((response) => {});
         }
     },
     components: {}

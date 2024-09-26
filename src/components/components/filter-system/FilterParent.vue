@@ -20,8 +20,6 @@ export default {
     computed: {},
     async created() {
         await this.cohortsStore.getCohortSkillFilters(this.cohortId);
-
-        console.log(this.cohortsStore.cohortSkills);
     },
     methods: {},
     components: {

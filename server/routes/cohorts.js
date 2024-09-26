@@ -226,5 +226,40 @@ router.put('/edit/:cohortId', (req, res, next) => {
     }
 });
 
+router.put('/:cohortId/edit-filters', (req, res, next) => {
+    if (req.session.userName) {
+        console.log(req.body);
+        let sqlQuery = '';
+        // If skill is filtered, and record does not exist already, add record.
+        if (req.body.isFiltered) {
+            sqlQuery = `
+            INSERT IGNORE INTO cohort_skill_filters (cohort_id, skill_id)
+            VALUES (${conn.escape(req.params.cohortId)}, ${conn.escape(
+                req.body.skillId
+            )});`;
+            // If skill is not filtered, delete any record.
+        } else {
+            sqlQuery = `
+            DELETE
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${conn.escape(req.params.cohortId)} 
+            AND skill_id =  ${conn.escape(req.body.skillId)};`;
+        }
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
