@@ -7,6 +7,7 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+
         return {
             userDetailsStore
         };
@@ -18,7 +19,8 @@ export default {
             resultsSkills: [],
             chooseResult: null,
             // flag to make watcher do not react when user choose a result
-            updateChooseResult: false
+            updateChooseResult: false,
+            findNodeLoading: null
         };
     },
     components: {
@@ -245,6 +247,10 @@ export default {
     border-bottom: 0px !important ;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
+}
+
+.loadingNode {
+    background-color: #989ba1;
 }
 
 .skill-tree-input {

@@ -98,7 +98,6 @@ export default {
                 this.showChildren = true;
             }
         }
-
         // if we are the last node to appear when user choose a path we scroll to here
         const lastNode = this.path[this.path.length - 1];
         if (lastNode && this.id === lastNode.id) {
@@ -172,6 +171,14 @@ export default {
                 }
                 if (newVal.length === 0 && this.isResult === true) {
                     this.isResult = false;
+                }
+                // if we are the last node to appear when user choose a path we scroll to here
+                const lastNode = this.path[this.path.length - 1];
+                if (lastNode && this.id === lastNode.id) {
+                    this.isResult = true;
+                    document.getElementById(`skill${this.id}`).scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 }
             }
         }
@@ -471,11 +478,6 @@ export default {
     height: 68px;
 }
 
-.result-button {
-    color: red;
-    text-decoration: underline;
-    border: dashed 4px red !important;
-}
 /* Sub skill buttons */
 .sub-skill-button {
     width: 490px;
