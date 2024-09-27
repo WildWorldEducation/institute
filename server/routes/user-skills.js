@@ -17,7 +17,8 @@ Routes
 --------------------------------------------*/
 
 /* Nested list of user-skills*/
-// For the skills list (also know as the "Collapsible Tree").
+// For Collapsible Tree and Linear Tree.
+// - now replaced by "filter-by-cohort" version.
 router.get('/:userId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -106,7 +107,7 @@ router.get('/:userId', (req, res, next) => {
 });
 
 /* Nested list of user-skills, with the subskills separate from the other child skills */
-// Used for the radial skill tree component.
+// Used for the Radial Skill Tree.
 router.get('/separate-subskills/:userId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
@@ -118,6 +119,7 @@ router.get('/separate-subskills/:userId', (req, res, next) => {
     ON skills.id = user_skills.skill_id
     WHERE user_skills.user_id = ${conn.escape(req.params.userId)} 
     AND is_filtered = 'available'
+    AND is_deleted = 0
 
     UNION
     SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name
@@ -130,6 +132,8 @@ router.get('/separate-subskills/:userId', (req, res, next) => {
     ON skills.id = user_skills.skill_id
     WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
     AND is_filtered = 'available'
+    AND is_deleted = 0
+
     ORDER BY skillorder, id;`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -250,6 +254,249 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
                 }
 
                 res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
+// For Collapsible Tree and Linear Tree.
+router.get('/filter-by-cohort/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        // Check if student is member of a cohort
+        let isInCohortSQLQuery = `
+        SELECT cohort_id 
+        FROM skill_tree.cohorts_users
+        WHERE user_id = ${conn.escape(req.params.userId)};
+        `;
+        conn.query(isInCohortSQLQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let cohortId;
+                if (results.length == 0) {
+                    cohortId = 0;
+                } else cohortId = results[0].cohort_id;
+
+                // Check what skills are available for this cohort.
+                let sqlQuery = `
+            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
+            AND is_filtered = 'available' 
+            AND is_deleted = 0
+            AND skills.id NOT IN 
+            (SELECT skill_id 
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${conn.escape(cohortId)})
+            
+            UNION
+            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+            FROM skills
+            WHERE skills.id NOT IN 
+            
+            (SELECT skills.id
+            FROM skills
+            LEFT OUTER JOIN user_skills
+            ON skills.id = user_skills.skill_id
+            WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
+            AND is_filtered = 'available' 
+            AND is_deleted = 0
+            AND skills.id NOT IN 
+            (SELECT skill_id 
+            FROM cohort_skill_filters
+            WHERE cohort_id = ${conn.escape(cohortId)})    
+                
+            ORDER BY skillorder, id;
+            `;
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        // Give each object a 'children' element.
+                        for (var i = 0; i < results.length; i++) {
+                            results[i].children = [];
+                        }
+
+                        // Deal with skills that have multiple parents.
+                        // These skills have secret copies in the table.
+                        for (var i = 0; i < results.length; i++) {
+                            if (results[i].display_name != null) {
+                                results[i].skill_name = results[i].display_name;
+
+                                for (var j = 0; j < results.length; j++) {
+                                    if (
+                                        results[i].is_copy_of_skill_id ==
+                                        results[j].id
+                                    ) {
+                                        results[i].is_accessible =
+                                            results[j].is_accessible;
+                                        results[i].is_mastered =
+                                            results[j].is_mastered;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Assign children to parent skills.
+                        for (var i = 0; i < results.length; i++) {
+                            // Regular parent.
+                            if (
+                                results[i].parent != null &&
+                                results[i].parent != 0
+                            ) {
+                                var parentId = results[i].parent;
+
+                                // Go through all rows again, add children
+                                for (let j = 0; j < results.length; j++) {
+                                    if (results[j].id == parentId) {
+                                        // bug
+                                        results[j].children.push(results[i]);
+                                    }
+                                }
+                            }
+                        }
+
+                        let studentSkills = [];
+                        for (var i = 0; i < results.length; i++) {
+                            if (
+                                results[i].parent == null ||
+                                results[i].parent == 0
+                            ) {
+                                studentSkills.push(results[i]);
+                            }
+                        }
+
+                        res.json(studentSkills);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
+// For Radial Tree.
+// Not used currently
+router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+
+        // Check if student is member of a cohort
+        let isInCohortSQLQuery = `
+        SELECT cohort_id 
+        FROM skill_tree.cohorts_users
+        WHERE user_id = ${conn.escape(req.params.userId)};
+        `;
+
+        conn.query(isInCohortSQLQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let cohortId;
+                if (results.length == 0) {
+                    cohortId = 0;
+                } else cohortId = results[0].cohort_id;
+
+                let sqlQuery = `
+                SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name
+                FROM skills
+                LEFT OUTER JOIN user_skills
+                ON skills.id = user_skills.skill_id
+                WHERE user_skills.user_id = ${conn.escape(req.params.userId)} 
+                AND is_filtered = 'available'
+                AND is_deleted = 0
+                AND skills.id NOT IN 
+                (SELECT skill_id 
+                FROM cohort_skill_filters
+                WHERE cohort_id = ${conn.escape(cohortId)})
+            
+                UNION
+                SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name
+                FROM skills
+                WHERE skills.id NOT IN 
+            
+                (SELECT skills.id
+                FROM skills
+                LEFT OUTER JOIN user_skills
+                ON skills.id = user_skills.skill_id
+                WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
+                AND is_filtered = 'available'
+                AND is_deleted = 0
+                AND skills.id NOT IN 
+                (SELECT skill_id 
+                FROM cohort_skill_filters
+                WHERE cohort_id = ${conn.escape(cohortId)})
+            
+                ORDER BY skillorder, id;`;
+
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        for (var i = 0; i < results.length; i++) {
+                            results[i].children = [];
+                            results[i].subskills = [];
+                        }
+
+                        // Add children for first parent.
+                        for (var i = 0; i < results.length; i++) {
+                            if (
+                                results[i].parent != null &&
+                                results[i].parent != 0
+                            ) {
+                                var parentId = results[i].parent;
+
+                                // go through all rows again, add children
+                                for (let j = 0; j < results.length; j++) {
+                                    if (results[j].id == parentId) {
+                                        if (results[i].type == 'sub') {
+                                            results[j].subskills.push(
+                                                results[i]
+                                            );
+                                        } else {
+                                            results[j].children.push(
+                                                results[i]
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Add the first level to the array.
+                        let studentSkills = [];
+                        for (var i = 0; i < results.length; i++) {
+                            if (
+                                results[i].parent == null ||
+                                results[i].parent == 0
+                            ) {
+                                studentSkills.push(results[i]);
+                            }
+                        }
+
+                        res.json(studentSkills);
+                    } catch (err) {
+                        next(err);
+                    }
+                });
             } catch (err) {
                 next(err);
             }

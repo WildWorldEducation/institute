@@ -99,6 +99,8 @@ const skillHistory = require('./routes/skill-history');
 app.use('/skill-history', skillHistory);
 const todoCount = require('./routes/todo-count');
 app.use('/todo-count', todoCount);
+const cohorts = require('./routes/cohorts');
+app.use('/cohorts', cohorts);
 
 app.locals.title = 'Skill Tree';
 

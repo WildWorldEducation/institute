@@ -295,6 +295,27 @@ const router = createRouter({
             name: 'todo-list',
             component: () => import('../components/pages/TodoListView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+        },
+        {
+            path: '/cohorts',
+            name: 'cohorts',
+            component: () =>
+                import('../components/pages/cohorts/CohortsListView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
+        },
+        {
+            path: '/cohorts/add',
+            name: 'add-cohort',
+            component: () =>
+                import('../components/pages/cohorts/AddCohortView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
+        },
+        {
+            path: '/cohort/:cohortId',
+            name: 'cohort',
+            component: () =>
+                import('../components/pages/cohorts/CohortView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
         }
     ]
 });
