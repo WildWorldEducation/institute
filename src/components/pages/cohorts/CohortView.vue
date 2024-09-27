@@ -15,6 +15,7 @@ export default {
             cohortId: this.$route.params.cohortId,
             cohort: {},
             students: [],
+            unavailableStudents: [],
             members: [],
             showFilters: false,
             showMembers: false
@@ -23,27 +24,14 @@ export default {
     async created() {
         await this.getCohort();
         if (this.members.length == 0) await this.getMembers();
+        if (this.unavailableStudents.length == 0)
+            await this.getUnavailableStudents();
         if (this.students.length == 0) await this.getStudents();
     },
     components: {
         FilterParent
     },
-    computed: {
-        // StudentsAndMembers() {
-        //     let studentsAndMembers = [];
-        //     //   console.log(this.students.length);
-        //     for (let i = 0; i < this.students.length; i++) {
-        //         for (let j = 0; j < this.members.length; j++) {
-        //             if (this.students[i].id == this.members[j].id) {
-        //                 this.students[i].isMember = true;
-        //             }
-        //         }
-        //         studentsAndMembers.push(this.students[i]);
-        //     }
-        //     //  console.log(studentsAndMembers);
-        //     return studentsAndMembers;
-        // }
-    },
+    computed: {},
     methods: {
         async getCohort() {
             fetch('/cohorts/' + this.cohortId)
@@ -63,6 +51,15 @@ export default {
                     this.members = data;
                 });
         },
+        async getUnavailableStudents() {
+            fetch('/cohorts/unavailable/' + this.cohortId + '/list')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    this.unavailableStudents = data;
+                });
+        },
         async getStudents() {
             fetch(
                 '/instructor-students/' + this.userDetailsStore.userId + '/list'
@@ -72,11 +69,29 @@ export default {
                 })
                 .then((data) => {
                     this.students = data;
+                    // Show which students are already part of this cohort.
                     for (let i = 0; i < this.students.length; i++) {
                         this.students[i].isMember = false;
                         for (let j = 0; j < this.members.length; j++) {
                             if (this.students[i].id == this.members[j].id) {
                                 this.students[i].isMember = true;
+                            }
+                        }
+                    }
+
+                    // Show which students are a part of another cohort, and hence unavailable.
+                    for (let i = 0; i < this.students.length; i++) {
+                        this.students[i].unavailable = false;
+                        for (
+                            let j = 0;
+                            j < this.unavailableStudents.length;
+                            j++
+                        ) {
+                            if (
+                                this.students[i].id ==
+                                this.unavailableStudents[j].user_id
+                            ) {
+                                this.students[i].unavailable = true;
                             }
                         }
                     }
@@ -123,7 +138,7 @@ export default {
                     :title="showMembers ? 'collapse' : 'expand'"
                 >
                     <div class="d-flex">
-                        <h2>Members</h2>
+                        <h2>Available Students</h2>
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -142,6 +157,7 @@ export default {
                             />
                         </svg>
                     </div>
+                    <p><em>students can only be in one cohort at a time</em></p>
                 </div>
             </div>
         </div>
@@ -153,6 +169,7 @@ export default {
                         type="checkbox"
                         :value="student.id"
                         v-model="student.isMember"
+                        :disabled="student.unavailable ? true : false"
                     />
                 </li>
             </ul>

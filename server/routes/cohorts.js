@@ -261,5 +261,30 @@ router.put('/:cohortId/edit-filters', (req, res, next) => {
     }
 });
 
+/**
+ * Get All Students that are currently in cohorts
+ *
+ * @return response()
+ */
+router.get('/unavailable/:cohortId/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT user_id 
+        FROM cohorts_users
+        WHERE cohort_id <> ${conn.escape(req.params.cohortId)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
