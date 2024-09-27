@@ -23,9 +23,8 @@ export default {
     },
     async created() {
         await this.getCohort();
-        if (this.members.length == 0) await this.getMembers();
-        if (this.unavailableStudents.length == 0)
-            await this.getUnavailableStudents();
+        await this.getMembers();
+        await this.getUnavailableStudents();
         if (this.students.length == 0) await this.getStudents();
     },
     components: {
@@ -127,7 +126,7 @@ export default {
 
 <template>
     <div class="container">
-        <h1>Cohorts: {{ cohort.name }}</h1>
+        <h1 class="heading">Cohorts: {{ cohort.name }}</h1>
         <!-- Filters -->
         <div class="d-flex flex-column">
             <div class="d-flex flex-row justify-content-between">
@@ -138,7 +137,7 @@ export default {
                     :title="showMembers ? 'collapse' : 'expand'"
                 >
                     <div class="d-flex">
-                        <h2>Available Students</h2>
+                        <h2 class="heading">Available Students</h2>
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -173,7 +172,7 @@ export default {
                     />
                 </li>
             </ul>
-            <button @click="submit">Submit</button>
+            <button class="green-btn btn" @click="submit">Submit</button>
         </div>
 
         <!-- Filters -->
@@ -186,7 +185,7 @@ export default {
                     :title="showFilters ? 'collapse' : 'expand'"
                 >
                     <div class="d-flex">
-                        <h2>Filters</h2>
+                        <h2 class="heading">Filters</h2>
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -266,5 +265,30 @@ export default {
 .dropdown-leave-active {
     transform-origin: top center;
     animation: slide 0.5s reverse;
+}
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    height: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
+    color: white;
+}
+
+.heading {
+    color: #a48be7;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
 }
 </style>
