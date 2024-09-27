@@ -100,7 +100,7 @@ router.get('/:id/skill-filters', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `        
-    SELECT skills.id, name, parent, type, level, skills.order as skillorder, cohort_skill_filters.is_filtered
+    SELECT skills.id, name, parent, type, level, skills.order as skillorder, 1 as filtered
     FROM skills
     LEFT OUTER JOIN cohort_skill_filters
     ON skills.id = cohort_skill_filters.skill_id
@@ -108,7 +108,7 @@ router.get('/:id/skill-filters', (req, res, next) => {
 	AND is_deleted = 0
 
     UNION
-    SELECT skills.id, name, parent, type, level, skills.order as skillorder, ''
+    SELECT skills.id, name, parent, type, level, skills.order as skillorder, 0 as filtered
     FROM skills
     WHERE skills.id NOT IN 
 

@@ -1,7 +1,15 @@
 <script>
+// Import the stores.
+import { useCohortsStore } from '../../../stores/CohortsStore.js';
+
 export default {
-    setup() {},
-    props: ['id', 'children', 'name', 'type', 'level', 'depth', 'is_filtered'],
+    setup() {
+        const cohortsStore = useCohortsStore();
+        return {
+            cohortsStore
+        };
+    },
+    props: ['id', 'children', 'name', 'type', 'level', 'depth', 'filtered'],
     data() {
         return {
             cohortId: this.$route.params.cohortId,
@@ -40,7 +48,7 @@ export default {
         }
     },
     async created() {
-        if (this.$parent.is_filtered) {
+        if (this.$parent.filtered == 1) {
             this.parentIsFiltered = true;
         }
     },
@@ -50,12 +58,11 @@ export default {
         },
         filter() {
             // Toggle isFiltered
-            if (this.is_filtered == 1) {
+            if (this.filtered == 1) {
                 this.isFiltered = 0;
             } else {
                 this.isFiltered = 1;
             }
-            console.log(this.id);
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -66,7 +73,9 @@ export default {
                 })
             };
             var url = '/cohorts/' + this.cohortId + '/edit-filters';
-            fetch(url, requestOptions).then((response) => {});
+            fetch(url, requestOptions).then((response) => {
+                this.cohortsStore.getCohortSkillFilters(this.cohortId);
+            });
         }
     },
     components: {}
@@ -77,7 +86,7 @@ export default {
     <button
         :style="indent"
         class="skill-button d-flex justify-content-between align-items-center"
-        :class="{ 'is-filtered': is_filtered == '1' || parentIsFiltered }"
+        :class="{ 'is-filtered': filtered == 1 || parentIsFiltered }"
         @click="toggleChildSkills()"
     >
         <span> {{ name }}</span>
@@ -139,7 +148,7 @@ export default {
         v-for="child in children"
         v-if="showChildren"
         :id="child.id"
-        :is_filtered="child.is_filtered"
+        :filtered="child.filtered"
         :children="child.children"
         :type="child.type"
         :level="child.level"

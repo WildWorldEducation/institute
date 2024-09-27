@@ -19,7 +19,7 @@ export default {
     },
     computed: {},
     async created() {
-        await this.cohortsStore.getCohortSkillFilters(this.cohortId);
+        await this.cohortsStore.getCohortSkillFilters(this.cohortId);        
     },
     methods: {},
     components: {
@@ -36,7 +36,7 @@ export default {
         :depth="1"
         :name="skill.name"
         :type="skill.type"
-        :is_filtered="skill.is_filtered"
+        :filtered="skill.filtered"
     >
     </FilterChild>
 </template>
