@@ -273,7 +273,11 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                let cohortId = results[0].cohort_id;
+             
+                let cohortId;
+                if (results.length == 0) {
+                    cohortId = 0;
+                } else cohortId = results[0].cohort_id;
 
                 // Check what skills are available for this cohort.
                 let sqlQuery = `
