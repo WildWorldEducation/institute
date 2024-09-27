@@ -111,6 +111,7 @@ router.get('/:id/skill-filters', (req, res, next) => {
         req.params.id
     )}            
 	AND is_deleted = 0
+    AND is_filtered = 'available' 
 
     UNION
     SELECT skills.id, name, parent, type, level, skills.order as skillorder, 0 as filtered
@@ -123,6 +124,8 @@ router.get('/:id/skill-filters', (req, res, next) => {
     ON skills.id = cohort_skill_filters.skill_id
     WHERE cohort_skill_filters.cohort_id = ${conn.escape(req.params.id)}) 
     AND is_deleted = 0
+    AND is_filtered = 'available' 
+    
     ORDER BY skillorder, id;
         `;
         conn.query(sqlQuery, (err, results) => {
