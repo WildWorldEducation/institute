@@ -16,7 +16,9 @@ export const useSkillTreeStore = defineStore('skillTree', {
             const userDetailsStore = useUserDetailsStore();
             const userDetails = await userDetailsStore.getUserDetails();
 
-            const result = await fetch('/user-skills/' + userDetails.userId);
+            const result = await fetch(
+                '/user-skills/filter-by-cohort/' + userDetails.userId
+            );
 
             this.userSkills = await result.json();
         },

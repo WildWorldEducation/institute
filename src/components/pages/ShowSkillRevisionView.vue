@@ -22,9 +22,10 @@ export default {
             skillRevision: {},
             currentVersionNumber: null,
             revertComment: '',
-            isCurrentVersion: false, 
+            isCurrentVersion: false,
             showConfirmModal: false,
-            showCommentModal: false
+            showCommentModal: false,
+            skill: {}
         };
     },
     async mounted() {
@@ -105,15 +106,15 @@ export default {
                 options
             );
         },
-        confirmRevert(){
+        confirmRevert() {
             this.showConfirmModal = true;
         },
-        closeModal(){
+        closeModal() {
             this.showConfirmModal = false;
             this.showCommentModal = false;
         },
-        openCommentModal(){
-            this.closeModal()
+        openCommentModal() {
+            this.closeModal();
             this.showCommentModal = true;
         },
         revert() {
@@ -130,7 +131,7 @@ export default {
                 '/revert-to/' +
                 this.versionNumber;
             fetch(url, requestOptions).then(() => {
-                this.$router.push('/skills/' + this.skillId);
+                this.$router.push('/skills/' + this.skill.url);
             });
         }
     }
@@ -323,7 +324,7 @@ export default {
                 </textarea>
                 <!-- Suggest template -->
             </div>
-            
+
             <!-- Buttons row -->
             <div
                 class="d-flex justify-content-lg-between justify-content-md-end justify-content-between gap-2 mt-2"
@@ -374,7 +375,6 @@ export default {
 </template>
 
 <style scoped>
-
 /* The Warning Modal */
 .modal {
     display: block;

@@ -20,7 +20,11 @@ const router = createRouter({
             name: 'student-vertical-tree',
             component: () =>
                 import('../components/pages/StudentTidyTreeView.vue'),
-            meta: { title: 'Skill tree', requiresAuth: true, roles: ['instructor', 'admin'] }
+            meta: {
+                title: 'Skill tree',
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
         },
         {
             path: '/',
@@ -70,10 +74,14 @@ const router = createRouter({
             path: '/student/:studentId/skills',
             name: 'student-skills',
             component: SkillsView,
-            meta: { title: 'Student skills', requiresAuth: true, roles: ['instructor', 'admin'] }
+            meta: {
+                title: 'Student skills',
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
         },
         {
-            path: '/skills/:skillId',
+            path: '/skills/:skillUrl',
             name: 'show-skill',
             component: () => import('../components/pages/ShowSkillView.vue')
         },
@@ -224,7 +232,7 @@ const router = createRouter({
             name: 'user-activity-report',
             component: () =>
                 import('../components/pages/UserActivityReportPageView.vue'),
-            meta: { requiresAuth: true, roles: ['admin'] }
+            meta: { requiresAuth: true, roles: ['editor', 'admin'] }
         },
         {
             path: '/users/:userId/activity-report/source/:sourceId',
@@ -287,6 +295,32 @@ const router = createRouter({
             name: 'todo-list',
             component: () => import('../components/pages/TodoListView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+        },
+        {
+            path: '/cohorts',
+            name: 'cohorts',
+            component: () =>
+                import('../components/pages/cohorts/CohortsListView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
+        },
+        {
+            path: '/cohorts/add',
+            name: 'add-cohort',
+            component: () =>
+                import('../components/pages/cohorts/AddCohortView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
+        },
+        {
+            path: '/cohort/:cohortId',
+            name: 'cohort',
+            component: () =>
+                import('../components/pages/cohorts/CohortView.vue'),
+            meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('../components/pages/PageNotFoundView.vue')
         }
     ]
 });
@@ -333,13 +367,12 @@ router.beforeEach(async (to, from, next) => {
     if (to.name == 'show-skill') {
         const skillsStore = useSkillsStore();
 
-        if (skillsStore.skillsList.length == 0) {
-            await skillsStore.getSkillsList();
-        }
+        await skillsStore.getSkillsList();
 
         const currentSkill = skillsStore.skillsList.find(
-            (item) => item.id == to.params.skillId
+            (item) => item.url == to.params.skillUrl
         );
+
         if (currentSkill.type == 'domain') {
             next({ path: '/skills' });
             return;

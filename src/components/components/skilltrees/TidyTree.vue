@@ -3,7 +3,6 @@
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
-import NewSkillPanel from '../NewSkillPanel.vue';
 import SliderControl from './SliderControl.vue';
 import JoystickControl from './JoystickControl.vue';
 
@@ -28,6 +27,7 @@ export default {
                 isUnlocked: null,
                 container: null,
                 name: null,
+                url: null,
                 description: null,
                 tagIDs: [],
                 sprite: null,
@@ -62,7 +62,7 @@ export default {
         SkillPanel,
         SliderControl,
         JoystickControl,
-        NewSkillPanel
+        SkillPanel
     },
     async mounted() {
         if (this.skillTreeStore.userSkills.length == 0) {
@@ -120,6 +120,7 @@ export default {
             // WILL GET DELETE
 
             if (node && node.data.id) {
+                console.log('test2');
                 // We clicked on something, lets set the color of the node
                 // we also have access to the data associated with it, which in
                 // this case is just its original index in the data array.
@@ -134,11 +135,11 @@ export default {
                 // Because this is so much data, we do not send it with the rest of the skill tree,
                 // or it will slow the load down too much.
                 const result = await fetch(
-                    '/skills/mastery-requirements/' + this.skill.id
+                    '/skills/mastery-requirements-and-url/' + this.skill.id
                 );
-                const masteryRequirements = await result.json();
-                this.skill.masteryRequirements = masteryRequirements;
-                // *** Preserve in case client want clamp instead of scroll
+                const result2 = await result.json();
+                this.skill.masteryRequirements = result2.mastery_requirements;
+                this.skill.url = result2.url;
                 this.showSkillPanel = true;
             }
         });
@@ -751,30 +752,33 @@ export default {
             });
 
             return results;
-        },
-
-        async showSkillPanelComponent(node) {
-            // We clicked on something, lets set the color of the node
-            // we also have access to the data associated with it, which in
-            // this case is just its original index in the data array.
-            node.renderCol = node.__pickColor;
-
-            //Update the display with some data
-            this.skill.name = node.data.skill_name;
-            this.skill.id = node.data.id;
-            this.skill.type = node.data.type;
-
-            // Get the mastery requirements data separately.
-            // Because this is so much data, we do not send it with the rest of the skill tree,
-            // or it will slow the load down too much.
-            const result = await fetch(
-                '/skills/mastery-requirements/' + this.skill.id
-            );
-            const masteryRequirements = await result.json();
-            this.skill.masteryRequirements = masteryRequirements;
-            // *** Preserve in case client want clamp instead of scroll
-            this.showSkillPanel = true;
         }
+
+        // async showSkillPanelComponent(node) {
+        //     console.log('result');
+        //     // We clicked on something, lets set the color of the node
+        //     // we also have access to the data associated with it, which in
+        //     // this case is just its original index in the data array.
+        //     node.renderCol = node.__pickColor;
+
+        //     //Update the display with some data
+        //     this.skill.name = node.data.skill_name;
+        //     this.skill.id = node.data.id;
+        //     this.skill.type = node.data.type;
+
+        //     // Get the mastery requirements data separately.
+        //     // Because this is so much data, we do not send it with the rest of the skill tree,
+        //     // or it will slow the load down too much.
+        //     const result = await fetch(
+        //         '/skills/mastery-requirements/' + this.skill.id
+        //     );
+        //     result = await result.json();
+        //     console.log('result');
+        //     console.log(result);
+        //     this.skill.masteryRequirements = masteryRequirements;
+        //     // *** Preserve in case client want clamp instead of scroll
+        //     this.showSkillPanel = true;
+        // }
     }
 };
 </script>

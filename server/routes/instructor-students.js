@@ -39,5 +39,35 @@ router.get('/list', (req, res, next) => {
     }
 });
 
+/**
+ * Get All Students of a Particular Instructor
+ *
+ * @return response()
+ */
+router.get('/:instructorId/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT users.id, username 
+        FROM users
+        JOIN instructor_students
+        ON users.id = instructor_students.student_id
+        WHERE instructor_students.instructor_id = ${conn.escape(
+            req.params.instructorId
+        )}
+        AND users.is_deleted = 0;`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

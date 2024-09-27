@@ -43,7 +43,8 @@ export default {
     },
     data() {
         return {
-            skillId: this.$route.params.skillId,
+            skillUrl: this.$route.params.skillUrl,
+            skillId: null,
             skill: {},
             userSkills: [],
             isMastered: false,
@@ -75,8 +76,9 @@ export default {
     methods: {
         async getSkill() {
             // Load the skill data
-            const res = await fetch('/skills/show/' + this.skillId);
+            const res = await fetch('/skills/url/' + this.skillUrl);
             this.skill = await res.json();
+            this.skillId = this.skill.id;
 
             // Meta title for SEO
             document.title = this.skill.name + ' - The Collins Institute';
@@ -157,7 +159,7 @@ export default {
 
             // stop when the first ancestor node that is unlocked for the student
             if (inAccessibleList) {
-                this.ancestor = node.id;
+                this.ancestor = node.url;
                 // show the button to go to the skill when the link is ready
                 this.showAncestorLink = true;
                 return;
@@ -177,7 +179,7 @@ export default {
                 }
             }
             if (subskills.length > 0) {
-                this.ancestor = subskills[0].id;
+                this.ancestor = subskills[0].url;
                 // show the button to go to the skill when the link is ready
                 this.showAncestorLink = true;
                 return;
@@ -204,7 +206,7 @@ export default {
     watch: {
         async $route(to, from) {
             // react to route changes...
-            this.skillId = to.params.skillId;
+            this.skillUrl = to.params.skillUrl;
             await this.getSkill();
             await this.getUserSkills();
         }

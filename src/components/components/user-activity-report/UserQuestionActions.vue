@@ -29,7 +29,6 @@ export default {
                 question_name: contentObj.question_name,
                 skillName: contentObj.skill_name,
                 resourceId: question.content_id,
-                skillId: contentObj.skill_id,
                 action: question.action,
                 date: createDate,
                 time: createTime,
@@ -38,6 +37,7 @@ export default {
                 studentId: contentObj.student_id,
                 type: question.content_type,
                 skillDeleted: contentObj.skill_deleted,
+                skillUrl: contentObj.skill_url,
                 questionDeleted: contentObj.question_deleted
             });
         });
@@ -125,7 +125,7 @@ export default {
                     v-else
                     class="skill-link"
                     target="_blank"
-                    :to="`/skills/${question.skillId}`"
+                    :to="`/skills/${question.skillUrl}`"
                     >{{ question.skillName }}</router-link
                 >
             </div>
