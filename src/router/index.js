@@ -316,6 +316,11 @@ const router = createRouter({
             component: () =>
                 import('../components/pages/cohorts/CohortView.vue'),
             meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('../components/pages/PageNotFoundView.vue')
         }
     ]
 });
