@@ -1053,6 +1053,38 @@ router.delete('/delete-broken-sources', (req, res, next) => {
     }
 });
 
+function deleteDownVotedSources() {
+    let sqlQuery = `SELECT resource_id, SUM(vote) as vote
+        FROM resources      
+        JOIN user_votes
+        ON resources.id = user_votes.resource_id
+        GROUP BY resource_id
+        HAVING vote < 0`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            // add delete action into user_actions table
+            const actionData = {
+                action: 'delete',
+                content_id: req.params.resourceId,
+                content_type: 'resource',
+                user_id: req.session.userId
+            };
+
+            const createAction = 'INSERT INTO user_actions SET ?';
+            conn.query(createAction, actionData, (err) => {
+                if (err) throw err;
+                else res.end();
+            });
+        } catch (err) {
+            next(err);
+        }
+    });
+}
+
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });
