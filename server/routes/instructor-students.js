@@ -53,7 +53,8 @@ router.get('/:instructorId/list', (req, res, next) => {
         ON users.id = instructor_students.student_id
         WHERE instructor_students.instructor_id = ${conn.escape(
             req.params.instructorId
-        )};`;
+        )}
+        AND users.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {

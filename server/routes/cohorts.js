@@ -76,6 +76,7 @@ router.get('/:cohortId/members', (req, res, next) => {
         JOIN users
         ON cohorts_users.user_id = users.id
         WHERE cohort_id = ${req.params.cohortId}
+        AND users.is_deleted = 0;
         `;
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -228,7 +229,6 @@ router.put('/edit/:cohortId', (req, res, next) => {
 
 router.put('/:cohortId/edit-filters', (req, res, next) => {
     if (req.session.userName) {
-        console.log(req.body);
         let sqlQuery = '';
         // If skill is filtered, and record does not exist already, add record.
         if (req.body.isFiltered) {
