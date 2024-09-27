@@ -214,6 +214,7 @@ export default {
         }"
         class="skill-button d-flex justify-content-between align-items-center"
         @click.stop="mainButtonPress()"
+        :id="`skill${this.id}`"
     >
         <!-- Emoticons -->
         <div v-if="level != 'domain'" class="align-self-end">
@@ -443,6 +444,7 @@ export default {
     font-size: 20px;
     font-weight: 500;
     background-color: #f2edff;
+    scroll-margin-top: 35vh;
 }
 
 .has-children {

@@ -85,10 +85,22 @@ export default {
             await this.skillsStore.getNestedSkillsList();
         },
         findNode(name) {
-            this.path = this.findPathInNestedSkillTree(
-                name,
-                this.skillsStore.nestedSkillsList
-            );
+            if (this.instructorMode === false) {
+                // Admins.
+                if (this.userDetailsStore.role == 'admin') {
+                    this.path = this.findPathInNestedSkillTree(
+                        name,
+                        this.skillsStore.nestedSkillsList
+                    );
+                }
+                // Students.
+                else if (this.userDetailsStore.role == 'student') {
+                    this.path = this.findPathInNestedSkillTree(
+                        name,
+                        this.userSkills
+                    );
+                }
+            }
         },
         // for finding the path to a specific node in admin nested skill list
         // Implement of DFS algorithm for tree searching
@@ -118,7 +130,10 @@ export default {
                         });
                         // also add the current node to visited node
                         visited.push(currentNode);
-                        if (currentNode.name === name) {
+                        if (
+                            currentNode.name === name ||
+                            currentNode.skill_name === name
+                        ) {
                             // we find the path that lead to the found node
                             let parentId = currentNode.parent;
                             // add the node to the head of the array for easier read
