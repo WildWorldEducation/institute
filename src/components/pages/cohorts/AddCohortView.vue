@@ -1,5 +1,13 @@
 <script>
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+
 export default {
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            userDetailsStore
+        };
+    },
     data() {
         return {
             cohort: {
@@ -26,7 +34,8 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: this.cohort.name
+                    name: this.cohort.name,
+                    instructorId: this.userDetailsStore.userId
                 })
             };
             var url = '/cohorts/add';

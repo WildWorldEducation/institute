@@ -1,28 +1,24 @@
 <script>
-import { RouterLink } from 'vue-router';
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
 export default {
     setup() {
         const cohortsStore = useCohortsStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
-            cohortsStore
+            cohortsStore,
+            userDetailsStore
         };
     },
     data() {
         return {};
     },
     async created() {
-        if (this.cohortsStore.cohorts.length == 0) {
-            await this.cohortsStore.getCohorts();
-        }
+        await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
     },
-    methods: {
-        addCohort() {},
-        editCohort() {},
-        deleteCohort() {}
-    }
+    methods: {}
 };
 </script>
 

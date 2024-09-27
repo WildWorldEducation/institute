@@ -21,10 +21,12 @@ Routes
  *
  * @return response()
  */
-router.get('/list', (req, res, next) => {
+router.get('/:instructorId/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT * FROM cohorts';
+        let sqlQuery = `SELECT * 
+        FROM cohorts
+        WHERE instructor_id = ${conn.escape(req.params.instructorId)}`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -48,7 +50,7 @@ router.get('/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT * FROM cohorts
-        WHERE id = ${req.params.id}`;
+        WHERE id = ${conn.escape(req.params.id)};`;
         conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
@@ -75,7 +77,7 @@ router.get('/:cohortId/members', (req, res, next) => {
         FROM cohorts_users
         JOIN users
         ON cohorts_users.user_id = users.id
-        WHERE cohort_id = ${req.params.cohortId}
+        WHERE cohort_id = ${conn.escape(req.params.cohortId)}
         AND users.is_deleted = 0;
         `;
         conn.query(sqlQuery, (err, results) => {
@@ -105,7 +107,9 @@ router.get('/:id/skill-filters', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN cohort_skill_filters
     ON skills.id = cohort_skill_filters.skill_id
-    WHERE cohort_skill_filters.cohort_id = ${req.params.id}            
+    WHERE cohort_skill_filters.cohort_id = ${conn.escape(
+        req.params.id
+    )}            
 	AND is_deleted = 0
 
     UNION
@@ -117,7 +121,7 @@ router.get('/:id/skill-filters', (req, res, next) => {
     FROM skills
     LEFT OUTER JOIN cohort_skill_filters
     ON skills.id = cohort_skill_filters.skill_id
-    WHERE cohort_skill_filters.cohort_id = ${req.params.id}            ) 
+    WHERE cohort_skill_filters.cohort_id = ${conn.escape(req.params.id)}) 
     AND is_deleted = 0
     ORDER BY skillorder, id;
         `;
@@ -170,7 +174,10 @@ router.get('/:id/skill-filters', (req, res, next) => {
  */
 router.post('/add', (req, res, next) => {
     if (req.session.userName) {
-        let data = { name: req.body.name };
+        let data = {
+            name: req.body.name,
+            instructor_id: req.body.instructorId
+        };
         let sqlQuery = 'INSERT INTO cohorts SET ?';
         conn.query(sqlQuery, data, (err) => {
             try {
@@ -283,6 +290,31 @@ router.get('/unavailable/:cohortId/list', (req, res, next) => {
                 next(err);
             }
         });
+    }
+});
+
+/**
+ * Delete Item
+ *
+ * @return response()
+ */
+router.delete('/:cohortId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `DELETE FROM cohorts WHERE id=${conn.escape(
+            req.params.cohortId
+        )};`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
     }
 });
 

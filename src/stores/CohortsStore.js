@@ -8,8 +8,8 @@ export const useCohortsStore = defineStore('cohorts', {
         };
     },
     actions: {
-        async getCohorts() {
-            const result = await fetch('/cohorts/list');
+        async getCohorts(instructorId) {
+            const result = await fetch('/cohorts/' + instructorId + '/list');
             const data = await result.json();
             this.cohorts = data;
             return this.$state;

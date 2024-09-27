@@ -119,6 +119,26 @@ export default {
                     return;
                 }
             });
+        },
+        async deleteCohort() {
+            let text = 'Are you sure you want to delete this cohort?';
+            if (confirm(text) == true) {
+                if (this.members.length > 0) {
+                    alert(
+                        'Please remove all members from this cohort before deleting it.'
+                    );
+                } else {
+                    const result = await fetch('/cohorts/' + this.cohortId, {
+                        method: 'DELETE'
+                    });
+
+                    if (result.error) {
+                        console.log(result.error);
+                    }
+
+                    this.$router.push('/cohorts');
+                }
+            }
         }
     }
 };
@@ -213,6 +233,7 @@ export default {
             </div>
         </Transition>
     </div>
+    <button class="btn red-btn" @click="deleteCohort">Delete</button>
 </template>
 
 <style scoped>
@@ -284,6 +305,19 @@ export default {
 .green-btn:hover {
     background-color: #3eb3a3;
     color: white;
+}
+
+.red-btn {
+    background-color: #da7033 !important;
+    color: white;
+    border: 1px solid #7f56d9;
+    align-items: center;
+    max-width: fit-content;
+    display: flex;
+}
+
+.red-btn:hover {
+    background-color: rgb(209, 96, 15);
 }
 
 .heading {
