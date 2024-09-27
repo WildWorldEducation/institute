@@ -19,8 +19,7 @@ export default {
             resultsSkills: [],
             chooseResult: null,
             // flag to make watcher do not react when user choose a result
-            updateChooseResult: false,
-            findNodeLoading: null
+            updateChooseResult: false
         };
     },
     components: {
@@ -46,6 +45,7 @@ export default {
         },
         clearResults() {
             this.$refs.skillList.path = [];
+            this.resultsSkills = [];
         }
     },
     watch: {
@@ -61,6 +61,7 @@ export default {
                     }
                 }
                 if (newVal.length === 0) {
+                    console.log('result is clear');
                     this.clearResults();
                 }
             }
@@ -240,7 +241,7 @@ export default {
     border: 1px solid #989ba1;
     border-radius: 8px;
     background-color: white;
-    width: 15%;
+    width: 25%;
 }
 
 .have-results {
@@ -256,6 +257,7 @@ export default {
 .skill-tree-input {
     outline: none;
     border: 0px;
+    width: 100%;
 }
 
 .search-results {
@@ -273,7 +275,7 @@ export default {
     max-height: 400px;
     overflow-y: auto;
     z-index: 1000;
-    width: 101%;
+    width: 100.5%;
 }
 
 .result-row {
@@ -283,5 +285,20 @@ export default {
 
 .result-row:hover {
     background-color: #f3f5f6;
+}
+
+/* Mobile view style */
+@media (max-width: 480px) {
+    .search-bar {
+        width: 100%;
+        margin-left: 5%;
+    }
+}
+
+/* Tablet view style */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .search-bar {
+        width: 50%;
+    }
 }
 </style>

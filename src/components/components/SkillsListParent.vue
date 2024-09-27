@@ -100,6 +100,22 @@ export default {
                         this.userSkills
                     );
                 }
+                // Instructor and editor
+                if (
+                    this.userDetailsStore.role == 'instructor' ||
+                    this.userDetailsStore.role == 'editor'
+                ) {
+                    this.path = this.findPathInNestedSkillTree(
+                        name,
+                        this.skillsStore.filteredNestedSkillsList
+                    );
+                }
+            } else {
+                // instructor mode search
+                this.path = this.findPathInNestedSkillTree(
+                    name,
+                    studentUserSkills
+                );
             }
         },
         // for finding the path to a specific node in admin nested skill list
