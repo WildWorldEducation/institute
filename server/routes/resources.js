@@ -1100,9 +1100,12 @@ router.delete('/downvoted', (req, res, next) => {
             let sourcesToDelete = results;
             let index = 0;
             let userId = req.session.userId;
+            function respond() {
+                res.end();
+            }
             // Cycle through all these sources.
             if (sourcesToDelete.length > 0)
-                deleteDownVotedSources(index, sourcesToDelete, userId);
+                deleteDownVotedSources(index, sourcesToDelete, userId, respond);
             else res.end();
         } catch (err) {
             console.log(err);
@@ -1110,7 +1113,7 @@ router.delete('/downvoted', (req, res, next) => {
     });
 });
 
-function deleteDownVotedSources(index, sourcesToDelete, userId) {
+function deleteDownVotedSources(index, sourcesToDelete, userId, respond) {
     // Delete the source.
     const deleteSourceQuery = `UPDATE resources 
     SET is_deleted = 1 
@@ -1137,9 +1140,14 @@ function deleteDownVotedSources(index, sourcesToDelete, userId) {
                 index++;
                 if (index < sourcesToDelete.length) {
                     // Call the function again, cycling through the sources
-                    deleteDownVotedSources(index, sourcesToDelete, userId);
+                    deleteDownVotedSources(
+                        index,
+                        sourcesToDelete,
+                        userId,
+                        respond
+                    );
                 } else {
-                    // return sourcesToDelete.length + ' sources deleted.';
+                    respond(); // return sourcesToDelete.length + ' sources deleted.';
                 }
             });
         } catch (err) {
