@@ -3,6 +3,7 @@ import ProfileDetails from '../components/ProfileDetails.vue';
 import Settings from '../components/settings/Settings.vue';
 import BulkQuestionsUpload from '../components/settings/BulkQuestionsUpload.vue';
 import AutoGenerateSources from '../components/settings/AutoGenerateSources.vue';
+import DeleteDownVotedSources from '../components/settings/DeleteDownVotedSources.vue';
 // Import the store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
@@ -20,7 +21,8 @@ export default {
         ProfileDetails,
         Settings,
         BulkQuestionsUpload,
-        AutoGenerateSources
+        AutoGenerateSources,
+        DeleteDownVotedSources
     },
     methods: {
         CheckMCQuestions() {
@@ -67,7 +69,7 @@ export default {
      <!-- Hidden from all users --->
     <AutoGenerateSources v-if="userDetailsStore.role == 'dev'" />
 
-    
+    <DeleteDownVotedSources v-if="userDetailsStore.role == 'admin' || userDetailsStore.username == 'Sgt. Dysxleia'" />
 </template>
 
 <style>
