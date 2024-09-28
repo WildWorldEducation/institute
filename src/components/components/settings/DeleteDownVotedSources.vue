@@ -28,6 +28,7 @@ export default {
             });
 
             alert('all gone');
+            this.getTotalDownvotedSources();
         }
     }
 };
