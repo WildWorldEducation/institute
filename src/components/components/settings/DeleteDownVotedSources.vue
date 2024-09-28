@@ -21,6 +21,13 @@ export default {
                     console.log(data);
                     this.totalDownVotedSources = data;
                 });
+        },
+        async deleteSources() {
+            await fetch('/resources/downvoted', {
+                method: 'DELETE'
+            });
+
+            alert('all gone');
         }
     }
 };
@@ -32,7 +39,13 @@ export default {
             <hr />
             <h2 class="title">Downvoted Sources</h2>
             <p>Number of downvoted sources: {{ totalDownVotedSources }}</p>
-            
+            <button
+                type="button"
+                @click="deleteSources"
+                class="btn btn-danger delete-btn"
+            >
+                Delete them
+            </button>
         </section>
     </div>
 </template>

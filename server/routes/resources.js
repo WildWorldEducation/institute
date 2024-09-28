@@ -1065,6 +1065,7 @@ router.get('/downvoted', isAuthenticated, (req, res, next) => {
         FROM resources
         JOIN user_votes
         ON resources.id = user_votes.resource_id
+        WHERE is_deleted = 0
         GROUP BY resource_id
         HAVING vote < 0`;
 
@@ -1086,6 +1087,7 @@ router.delete('/downvoted', (req, res, next) => {
         FROM resources      
         JOIN user_votes
         ON resources.id = user_votes.resource_id
+        WHERE is_deleted = 0
         GROUP BY resource_id
         HAVING vote < 0`;
 
@@ -1097,16 +1099,18 @@ router.delete('/downvoted', (req, res, next) => {
 
             let sourcesToDelete = results;
             let index = 0;
+            let userId = req.session.userId;
             // Cycle through all these sources.
-            let response = deleteDownVotedSources(index, sourcesToDelete);
-            res.send(response);
+            if (sourcesToDelete.length > 0)
+                deleteDownVotedSources(index, sourcesToDelete, userId);
+            else res.end();
         } catch (err) {
             console.log(err);
         }
     });
 });
 
-function deleteDownVotedSources(index, sourcesToDelete) {
+function deleteDownVotedSources(index, sourcesToDelete, userId) {
     // Delete the source.
     const deleteSourceQuery = `UPDATE resources 
     SET is_deleted = 1 
@@ -1123,7 +1127,7 @@ function deleteDownVotedSources(index, sourcesToDelete) {
                 action: 'bulk-delete',
                 content_id: sourcesToDelete[index].resource_id,
                 content_type: 'resource',
-                user_id: req.session.userId
+                user_id: userId
             };
 
             const createAction = 'INSERT INTO user_actions SET ?';
@@ -1133,13 +1137,13 @@ function deleteDownVotedSources(index, sourcesToDelete) {
                 index++;
                 if (index < sourcesToDelete.length) {
                     // Call the function again, cycling through the sources
-                    deleteDownVotedSources(index, sourcesToDelete);
+                    deleteDownVotedSources(index, sourcesToDelete, userId);
                 } else {
-                    return sourcesToDelete.length + ' sources deleted.';
+                    // return sourcesToDelete.length + ' sources deleted.';
                 }
             });
         } catch (err) {
-            next(err);
+            console.log(err);
         }
     });
 }
