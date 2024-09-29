@@ -73,8 +73,6 @@ export default {
             await this.skillTreeStore.getUserSkills();
         }
 
-        console.log(this.skillTreeStore.userSkills);
-
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
 
@@ -770,6 +768,7 @@ export default {
                 '/' +
                 node.id;
             fetch(url);
+            this.reloadTree();
         },
         toggleShowChildren(node) {
             var url =
@@ -778,6 +777,18 @@ export default {
                 '/' +
                 node.id;
             fetch(url);
+            this.reloadTree();
+        },
+        async reloadTree() {
+            await this.skillTreeStore.getUserSkills();
+
+            this.skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: this.skillTreeStore.userSkills
+            };
+
+            this.getAlgorithm();
         }
     }
 };
