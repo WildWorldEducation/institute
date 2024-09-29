@@ -93,7 +93,7 @@ export default {
                 <router-link
                     :to="
                         '/skills/' +
-                        skill.id +
+                        skill.url +
                         '/revision/' +
                         revision.version_number
                     "

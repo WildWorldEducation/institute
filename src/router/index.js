@@ -102,7 +102,7 @@ const router = createRouter({
             component: () => import('../components/pages/SkillHistoryView.vue')
         },
         {
-            path: '/skills/:skillId/revision/:versionNumber',
+            path: '/skills/:skillUrl/revision/:versionNumber',
             name: 'skill-revision',
             component: () =>
                 import('../components/pages/ShowSkillRevisionView.vue')
