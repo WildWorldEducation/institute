@@ -116,6 +116,8 @@ export default {
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
 
+            console.log(node);
+
             if (node && node.data.id) {
                 // We clicked on something, lets set the color of the node
                 // we also have access to the data associated with it, which in
