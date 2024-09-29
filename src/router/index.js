@@ -92,7 +92,7 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ['admin'] }
         },
         {
-            path: '/skills/edit/:id',
+            path: '/skills/edit/:skillUrl',
             name: 'edit-skill',
             component: () => import('../components/pages/EditSkillView.vue')
         },
