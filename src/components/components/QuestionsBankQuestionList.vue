@@ -2,7 +2,7 @@
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 export default {
-    props: ['isMultipleChoice', 'isEssay', 'isImage'],
+    props: ['isMultipleChoice', 'isEssay', 'isImage', 'skill'],
     setup() {
         const userDetailsStore = useUserDetailsStore();
 
@@ -12,7 +12,6 @@ export default {
     },
     data() {
         return {
-            skillId: this.$route.params.id,
             mcQuestions: [],
             essayQuestions: [],
             imageQuestions: [],
@@ -33,7 +32,7 @@ export default {
     },
     methods: {
         getMCQuestions() {
-            fetch('/skills/' + this.skillId + '/mc-questions/list')
+            fetch('/skills/' + this.skill.id + '/mc-questions/list')
                 .then(function (response) {
                     return response.json();
                 })
@@ -42,7 +41,7 @@ export default {
                 });
         },
         getEssayQuestions() {
-            fetch('/skills/' + this.skillId + '/essay-questions/list')
+            fetch('/skills/' + this.skill.id + '/essay-questions/list')
                 .then(function (response) {
                     return response.json();
                 })
@@ -51,7 +50,7 @@ export default {
                 });
         },
         getImageQuestions() {
-            fetch('/skills/' + this.skillId + '/image-questions/list')
+            fetch('/skills/' + this.skill.id + '/image-questions/list')
                 .then(function (response) {
                     return response.json();
                 })

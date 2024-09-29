@@ -13,7 +13,6 @@ import FlagModals from './FlagModals.vue';
 
 // Nested component.
 import Forum from './forum/Forum.vue';
-import router from '../../router';
 
 export default {
     setup() {
@@ -499,7 +498,7 @@ export default {
                         <router-link
                             v-if="skill.type != 'super'"
                             class="btn purple-btn mt-3 me-3"
-                            :to="skill.id + '/question-bank'"
+                            :to="skillUrl + '/question-bank'"
                             >Question Bank&nbsp;&nbsp;
                             <!-- Pencil icon -->
                             <svg

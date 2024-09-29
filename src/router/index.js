@@ -113,7 +113,7 @@ const router = createRouter({
             component: () => import('../components/pages/AddQuestionView.vue')
         },
         {
-            path: '/skills/:id/question-bank',
+            path: '/skills/:skillUrl/question-bank',
             name: 'question-bank',
             component: () => import('../components/pages/QuestionBankView.vue')
         },
