@@ -13,7 +13,6 @@ import FlagModals from './FlagModals.vue';
 
 // Nested component.
 import Forum from './forum/Forum.vue';
-import router from '../../router';
 
 export default {
     setup() {
@@ -231,7 +230,7 @@ export default {
                     <!-- Edit skill -->
                     <router-link
                         v-if="sessionDetailsStore.isLoggedIn"
-                        :to="'/skills/edit/' + skillId"
+                        :to="'/skills/edit/' + skillUrl"
                         class="btn green-btn"
                         :class="{
                             'mb-1': isMobileCheck > 576,
@@ -259,7 +258,7 @@ export default {
                             userDetailsStore.role == 'admin' ||
                             userDetailsStore.role == 'editor'
                         "
-                        :to="'/skills/history/' + this.skill.id"
+                        :to="'/skills/history/' + this.skillUrl"
                         class="btn purple-btn mb-1"
                         style="max-height: 37.6px"
                         ><span v-if="isMobileCheck > 576">History</span>
@@ -499,7 +498,7 @@ export default {
                         <router-link
                             v-if="skill.type != 'super'"
                             class="btn purple-btn mt-3 me-3"
-                            :to="skill.id + '/question-bank'"
+                            :to="skillUrl + '/question-bank'"
                             >Question Bank&nbsp;&nbsp;
                             <!-- Pencil icon -->
                             <svg

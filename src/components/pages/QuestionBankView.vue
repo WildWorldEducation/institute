@@ -14,11 +14,11 @@ export default {
     },
     data() {
         return {
-            skillId: this.$route.params.id,
-            skillName: null,
+            skillUrl: this.$route.params.skillUrl,
             isMultipleChoice: true,
             isEssay: true,
-            isImage: true
+            isImage: true,
+            skill: {}
         };
     },
     async created() {
@@ -27,8 +27,8 @@ export default {
         }
 
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            if (this.skillId == this.skillsStore.skillsList[i].id) {
-                this.skillName = this.skillsStore.skillsList[i].name;
+            if (this.skillUrl == this.skillsStore.skillsList[i].url) {
+                this.skill = this.skillsStore.skillsList[i];
             }
         }
     },
@@ -51,7 +51,7 @@ export default {
                     userDetailsStore.role == 'editor'
                 "
                 class="purple-btn btn"
-                :to="'/skills/' + skillId + '/question-bank/add'"
+                :to="'/skills/' + skill.id + '/question-bank/add'"
             >
                 Add &ThickSpace;
                 <!-- Plus sign -->
@@ -91,7 +91,7 @@ export default {
         <!-- Tile Row  -->
         <div class="row mt-3">
             <div class="col">
-                <h1>{{ skillName }} Question Bank</h1>
+                <h1>{{ skill.name }} Question Bank</h1>
             </div>
         </div>
         <!-- question type checker row -->
@@ -143,6 +143,7 @@ export default {
                     :isMultipleChoice="isMultipleChoice"
                     :isEssay="isEssay"
                     :isImage="isImage"
+                    :skill="skill"
                 />
             </div>
         </div>
