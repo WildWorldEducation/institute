@@ -97,7 +97,7 @@ const router = createRouter({
             component: () => import('../components/pages/EditSkillView.vue')
         },
         {
-            path: '/skills/history/:id',
+            path: '/skills/history/:skillUrl',
             name: 'skill-history',
             component: () => import('../components/pages/SkillHistoryView.vue')
         },

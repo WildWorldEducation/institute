@@ -259,7 +259,7 @@ export default {
                             userDetailsStore.role == 'admin' ||
                             userDetailsStore.role == 'editor'
                         "
-                        :to="'/skills/history/' + this.skill.id"
+                        :to="'/skills/history/' + this.skillUrl"
                         class="btn purple-btn mb-1"
                         style="max-height: 37.6px"
                         ><span v-if="isMobileCheck > 576">History</span>
