@@ -234,7 +234,6 @@ export default {
 .search-bar {
     display: flex;
     flex-direction: column;
-
     border: 1px solid #dce2f2;
     border-radius: 8px;
 }
@@ -262,7 +261,6 @@ export default {
     border-right: 1px solid #dce2f2;
     border-left: 1px solid #dce2f2;
     background-color: white;
-
     max-height: 400px;
     overflow-y: auto;
     z-index: 1000;

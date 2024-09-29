@@ -98,7 +98,6 @@ export default {
                     this.zoomed(transform);
                 });
             d3.select(this.context.canvas).call(this.d3Zoom);
-
             // Zoom and move the tree to it initial position
             this.defaultPosition();
         };
@@ -190,7 +189,6 @@ export default {
                     .hierarchy(this.data)
                     .sort((a, b) => d3.ascending(a.data.name, b.data.name))
             );
-
             var canvas = document.getElementById('canvas');
             canvas.width = this.width;
             canvas.height = this.height;
@@ -760,6 +758,33 @@ export default {
                         .translate(this.width / 2, this.height / 2)
                         .scale(0.08)
                 );
+        },
+        // Find node with name include
+        findNodeWithName(searchString) {
+            let results = [];
+            // D3
+            //let breakLoop = false;
+            this.root.each(function (node) {
+                if (searchString.length < 2) {
+                    if (
+                        node.data.skill_name
+                            .toLowerCase()
+                            .substring(0, searchString.length) === searchString
+                    ) {
+                        results.push(node);
+                    }
+                } else {
+                    if (
+                        node.data.skill_name
+                            .toLowerCase()
+                            .includes(searchString)
+                    ) {
+                        results.push(node);
+                    }
+                }
+            });
+
+            return results;
         }
     }
 };
