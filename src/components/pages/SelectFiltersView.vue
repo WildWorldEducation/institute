@@ -50,7 +50,7 @@ export default {
 
 <template>
     <div class="container mb-3">
-        <h1>Select Filters</h1>
+        <h1>Select Global Filters</h1>
         <div v-for="tag in this.tagsStore.tagsList">
             <div class="form-check">
                 <input
