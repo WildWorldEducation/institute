@@ -116,8 +116,6 @@ export default {
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
 
-            console.log(node);
-
             if (node && node.data.id) {
                 // We clicked on something, lets set the color of the node
                 // we also have access to the data associated with it, which in
@@ -347,6 +345,8 @@ export default {
             this.hiddenCanvasContext.restore();
         },
         drawNode(node) {
+            // Make sure the nodes have solid outlines
+            this.context.setLineDash([]);
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
             // A flag to determine if this node was searched by user
@@ -354,7 +354,6 @@ export default {
                 node.data.skill_name === this.resultNode?.data.skill_name;
             // Visible context.
             // If not a domain, make node a circle.
-            // console.log(node.data.is_mastered);
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
                 ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
