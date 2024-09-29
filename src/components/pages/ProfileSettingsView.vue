@@ -69,7 +69,7 @@ export default {
      <!-- Hidden from all users --->
     <AutoGenerateSources v-if="userDetailsStore.role == 'dev'" />
 
-    <DeleteDownVotedSources v-if="userDetailsStore.role == 'admin' || userDetailsStore.username == 'Sgt. Dysxleia'" />
+    <DeleteDownVotedSources v-if="userDetailsStore.role == 'admin' || userDetailsStore.userName == 'Sgt. Dysxleia' || userDetailsStore.userName =='jonathandyason@gmail.com'" />
 </template>
 
 <style>
