@@ -1,7 +1,7 @@
 <script>
 // Import the stores.
-import { useSettingsStore } from '../../stores/SettingsStore.js';
-import { useTagsStore } from '../../stores/TagsStore';
+import { useSettingsStore } from '../../../stores/SettingsStore.js';
+import { useTagsStore } from '../../../stores/TagsStore';
 
 export default {
     setup() {

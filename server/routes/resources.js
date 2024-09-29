@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 router.use(express.json({ limit: '25mb' }));
 router.use(express.urlencoded({ limit: '25mb', extended: true }));
 router.use(bodyParser.json());
+const isAuthenticated = require('../middlewares/authMiddleware');
 // DB
 const conn = require('../config/db');
 
@@ -1053,8 +1054,106 @@ router.delete('/delete-broken-sources', (req, res, next) => {
     }
 });
 
-// router.get('*', (req, res) => {
-//     res.redirect('/');
-// });
+/*
+ * Downvoted Sources.
+ */
+// Provide number of downvoted sources, for the Settings page
+// For admins, and Daniel (the head editor).
+router.get('/downvoted', isAuthenticated, (req, res, next) => {
+    // Get all sources.
+    let sqlQuery = `SELECT resource_id, SUM(vote) as vote
+        FROM resources
+        JOIN user_votes
+        ON resources.id = user_votes.resource_id
+        WHERE is_deleted = 0
+        GROUP BY resource_id
+        HAVING vote < 0`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            res.json(results.length);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+});
+
+router.delete('/downvoted', (req, res, next) => {
+    let sqlQuery = `SELECT resource_id, SUM(vote) as vote
+        FROM resources      
+        JOIN user_votes
+        ON resources.id = user_votes.resource_id
+        WHERE is_deleted = 0
+        GROUP BY resource_id
+        HAVING vote < 0`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            let sourcesToDelete = results;
+            let index = 0;
+            let userId = req.session.userId;
+            function respond() {
+                res.end();
+            }
+            // Cycle through all these sources.
+            if (sourcesToDelete.length > 0)
+                deleteDownVotedSources(index, sourcesToDelete, userId, respond);
+            else res.end();
+        } catch (err) {
+            console.log(err);
+        }
+    });
+});
+
+function deleteDownVotedSources(index, sourcesToDelete, userId, respond) {
+    // Delete the source.
+    const deleteSourceQuery = `UPDATE resources 
+    SET is_deleted = 1 
+    WHERE resources.id = ${conn.escape(sourcesToDelete[index].resource_id)};`;
+
+    conn.query(deleteSourceQuery, (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            // Add delete action into user_actions table
+            const actionData = {
+                action: 'bulk-delete',
+                content_id: sourcesToDelete[index].resource_id,
+                content_type: 'resource',
+                user_id: userId
+            };
+
+            const createAction = 'INSERT INTO user_actions SET ?';
+            conn.query(createAction, actionData, (err) => {
+                if (err) throw err;
+
+                index++;
+                if (index < sourcesToDelete.length) {
+                    // Call the function again, cycling through the sources
+                    deleteDownVotedSources(
+                        index,
+                        sourcesToDelete,
+                        userId,
+                        respond
+                    );
+                } else {
+                    respond(); // return sourcesToDelete.length + ' sources deleted.';
+                }
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
 
 module.exports = router;
