@@ -93,7 +93,6 @@ export default {
             // there is an interaction. This sketch can draw it on
             // each loop, but that is only for demonstration.
 
-            var data = this.nodes;
             //Figure out where the mouse click occurred.
             var mouseX = e.layerX;
             var mouseY = e.layerY;
@@ -117,10 +116,7 @@ export default {
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
 
-            // WILL GET DELETE
-
             if (node && node.data.id) {
-                console.log('test2');
                 // We clicked on something, lets set the color of the node
                 // we also have access to the data associated with it, which in
                 // this case is just its original index in the data array.
@@ -141,6 +137,8 @@ export default {
                 this.skill.masteryRequirements = result2.mastery_requirements;
                 this.skill.url = result2.url;
                 this.showSkillPanel = true;
+
+                console.log(node);
             }
         });
 
