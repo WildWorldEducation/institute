@@ -64,6 +64,16 @@ export default {
                     class="skill-mastery-requirement"
                     v-html="skill.masteryRequirements"
                 ></div>
+                <div
+                    v-if="skill?.type == 'domain'"
+                    class="skill-mastery-requirement"
+                >
+                    <p>
+                        This is a larger subject holding a series of more
+                        specific skills; click through to the skills within it
+                        to master each one!
+                    </p>
+                </div>
             </div>
             <div class="skill-info-panel-bottom">
                 <hr v-if="skill.type != 'domain'" />
@@ -99,13 +109,6 @@ export default {
                             />
                         </svg>
                     </router-link>
-                </div>
-                <div v-if="skill?.type == 'domain'" class="mt-4">
-                    <p>
-                        This is a larger subject holding a series of more
-                        specific skills; click through to the skills within it
-                        to master each one!
-                    </p>
                 </div>
             </div>
         </div>
