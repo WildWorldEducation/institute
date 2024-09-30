@@ -1,17 +1,21 @@
 <script>
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useSkillsStore } from '../../stores/SkillsStore.js';
 
 export default {
     props: ['isMultipleChoice', 'isEssay', 'isImage', 'skill'],
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const skillsStore = useSkillsStore();
 
         return {
-            userDetailsStore
+            userDetailsStore,
+            skillsStore
         };
     },
     data() {
         return {
+            skillUrl: this.$route.params.skillUrl,
             mcQuestions: [],
             essayQuestions: [],
             imageQuestions: [],
@@ -25,7 +29,10 @@ export default {
         };
     },
     computed: {},
-    created() {
+    async created() {
+        if (this.skillsStore.skillsList.length == 0) {
+            await this.skillsStore.getSkillsList();
+        }
         this.getMCQuestions();
         this.getEssayQuestions();
         this.getImageQuestions();
@@ -136,7 +143,12 @@ export default {
                                 </svg>
                             </router-link>
                         </td>
-                        <td v-if="userDetailsStore.role == 'admin'">
+                        <td
+                            v-if="
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                        >
                             <button
                                 type="button"
                                 @click="
@@ -194,7 +206,12 @@ export default {
                                 </svg>
                             </router-link>
                         </td>
-                        <td v-if="userDetailsStore.role == 'admin'">
+                        <td
+                            v-if="
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                        >
                             <button
                                 type="button"
                                 @click="
@@ -252,7 +269,12 @@ export default {
                                 </svg>
                             </router-link>
                         </td>
-                        <td v-if="userDetailsStore.role == 'admin'">
+                        <td
+                            v-if="
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                        >
                             <button
                                 type="button"
                                 @click="
