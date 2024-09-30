@@ -195,6 +195,11 @@ export default {
                         parentChildren[i].type == 'super' &&
                         parentChildren[i].position != 'end'
                     ) {
+                        if (parentChildren[i].show_children) {
+                            if (parentChildren[i].show_children == 0) {
+                                return;
+                            }
+                        }
                         // Separate the child nodes.
                         var subSkills = [];
                         var regularChildSkills = [];
