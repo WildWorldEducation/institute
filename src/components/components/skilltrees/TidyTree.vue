@@ -34,7 +34,8 @@ export default {
                 description: null,
                 tagIDs: [],
                 sprite: null,
-                type: null
+                type: null,
+                hasChildren: false
             },
             tree: {},
             root: {},
@@ -125,30 +126,28 @@ export default {
                 // we also have access to the data associated with it, which in
                 // this case is just its original index in the data array.
                 node.renderCol = node.__pickColor;
-                if (this.clickMode == 'showPanel') {
-                    //Update the display with some data
-                    this.skill.name = node.data.skill_name;
-                    this.skill.id = node.data.id;
-                    this.skill.type = node.data.type;
-                    this.skill.show_children = node.data.show_children;
 
-                    // Get the mastery requirements data separately.
-                    // Because this is so much data, we do not send it with the rest of the skill tree,
-                    // or it will slow the load down too much.
-                    const result = await fetch(
-                        '/skills/mastery-requirements-and-url/' + this.skill.id
-                    );
-                    const result2 = await result.json();
-                    this.skill.masteryRequirements =
-                        result2.mastery_requirements;
-                    this.skill.url = result2.url;
-                    this.showSkillPanel = true;
-                } else {
-                    console.log(node.data);
-                    if (node.data.show_children == 0)
-                        this.toggleShowChildren(node.data);
-                    else this.toggleHideChildren(node.data);
+                //Update the display with some data
+                this.skill.name = node.data.skill_name;
+                this.skill.id = node.data.id;
+                this.skill.type = node.data.type;
+                // For the collapsing nodes
+                this.skill.show_children = node.data.show_children;
+                this.skill.hasChildren = false;
+                if (node.data.children.length > 0) {
+                    this.skill.hasChildren = true;
                 }
+
+                // Get the mastery requirements data separately.
+                // Because this is so much data, we do not send it with the rest of the skill tree,
+                // or it will slow the load down too much.
+                const result = await fetch(
+                    '/skills/mastery-requirements-and-url/' + this.skill.id
+                );
+                const result2 = await result.json();
+                this.skill.masteryRequirements = result2.mastery_requirements;
+                this.skill.url = result2.url;
+                this.showSkillPanel = true;
             }
         });
 

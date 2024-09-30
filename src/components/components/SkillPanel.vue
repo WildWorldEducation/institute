@@ -69,6 +69,7 @@ export default {
                 <hr v-if="skill.type != 'domain'" />
                 <div class="d-flex justify-content-between">
                     <button
+                        v-if="skill.hasChildren"
                         class="green-btn ms-2 btn"
                         @click="toggleChildNodes"
                     >
@@ -77,6 +78,7 @@ export default {
                     <router-link
                         v-if="skill.type != 'domain'"
                         class="btn green-btn me-2"
+                        :class="{ 'ms-auto': !skill.hasChildren }"
                         target="_blank"
                         id="skillLink"
                         :to="'/skills/' + skill.url"
