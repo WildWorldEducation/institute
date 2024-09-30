@@ -172,6 +172,9 @@ export default {
         },
         setFormUpdated() {
             this.formUpdated = true;
+        },
+        closeTab() {
+            window.close();
         }
     },
     computed: {
@@ -384,9 +387,9 @@ export default {
                     </div>
 
                     <div class="d-flex justify-content-end gap-4">
-                        <a class="btn red-btn" @click="$router.go(-1)"
-                            >Cancel</a
-                        >
+                        <button class="btn red-btn" @click="closeTab()">
+                            Cancel
+                        </button>
                         <button
                             v-if="
                                 userDetailsStore.role == 'admin' ||
