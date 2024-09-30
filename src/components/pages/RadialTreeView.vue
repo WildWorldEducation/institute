@@ -37,6 +37,16 @@ export default {
                 return [];
             }
         }
+    },
+    watch: {
+        searchText: {
+            handler(newVal) {
+                if (newVal === '') {
+                    this.$refs.childComponent.showSkillPanel = false;
+                    this.$refs.childComponent.defaultPosition();
+                }
+            }
+        }
     }
 };
 </script>
