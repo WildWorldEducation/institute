@@ -285,7 +285,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
 
                 // Check what skills are available for this cohort.
                 let sqlQuery = `
-            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+            SELECT skills.id, name AS skill_name, parent, is_accessible, is_mastered, type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, show_children
             FROM skills
             LEFT OUTER JOIN user_skills
             ON skills.id = user_skills.skill_id
@@ -298,7 +298,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
             WHERE cohort_id = ${conn.escape(cohortId)})
             
             UNION
-            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url
+            SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, ""
             FROM skills
             WHERE skills.id NOT IN 
             
@@ -359,8 +359,17 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
                                 // Go through all rows again, add children
                                 for (let j = 0; j < results.length; j++) {
                                     if (results[j].id == parentId) {
-                                        // bug
-                                        results[j].children.push(results[i]);
+                                        if (results[j].show_children) {
+                                            if (results[j].show_children == 1) {
+                                                results[j].children.push(
+                                                    results[i]
+                                                );
+                                            }
+                                        } else {
+                                            results[j].children.push(
+                                                results[i]
+                                            );
+                                        }
                                     }
                                 }
                             }
@@ -554,6 +563,61 @@ router.get('/inaccessible/:userId/:skillId', (req, res, next) => {
                     throw err;
                 }
                 res.redirect('back');
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
+ * Make skill locked.
+ *
+ * @return response()
+ */
+router.get('/hide-children/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, show_children) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.skillId
+        )}, 0) 
+        ON DUPLICATE KEY UPDATE show_children=0;
+        `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+router.get('/show-children/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        INSERT INTO user_skills (user_id, skill_id, show_children) 
+        VALUES(${conn.escape(req.params.userId)}, ${conn.escape(
+            req.params.skillId
+        )}, 1) 
+        ON DUPLICATE KEY UPDATE show_children=1;
+        `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
             } catch (err) {
                 next(err);
             }
