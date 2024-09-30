@@ -10,18 +10,32 @@ export default {
         };
     },
     components: { RadialTree },
-    methods: {},
+    methods: {
+        handleChooseResult(node) {
+            this.searchText = node.data.skill_name;
+            this.lastChooseResult = node.data.skill_name;
+
+            // go to the skill position
+            this.$refs.childComponent.goToLocation(node);
+            // also open the skill requirement mastery div
+            this.$refs.childComponent.showSkillPanelComponent(node);
+        }
+    },
     computed: {
         findNodeResults() {
             if (this.lastChooseResult === this.searchText) {
                 return [];
             }
-            // close the mastery requirement panel when showing search result
-            this.$refs.childComponent.showSkillPanel = false;
-            const results = this.$refs.childComponent.findNodeWithName(
-                this.searchText.toLocaleLowerCase()
-            );
-            return results;
+            if (this.searchText.length > 0) {
+                // close the mastery requirement panel when showing search result
+                this.$refs.childComponent.showSkillPanel = false;
+                const results = this.$refs.childComponent.findNodeWithName(
+                    this.searchText.toLocaleLowerCase()
+                );
+                return results;
+            } else {
+                return [];
+            }
         }
     }
 };
@@ -89,7 +103,7 @@ export default {
                         <div
                             :class="[
                                 'search-bar',
-                                searchText.length > 0 && 'have-results'
+                                findNodeResults.length > 0 && 'have-results'
                             ]"
                         >
                             <div class="d-flex align-items-center p-1">
@@ -115,7 +129,7 @@ export default {
                             </div>
                             <div class="position-relative">
                                 <div
-                                    v-if="searchText.length"
+                                    v-if="findNodeResults.length"
                                     class="search-results"
                                 >
                                     <div

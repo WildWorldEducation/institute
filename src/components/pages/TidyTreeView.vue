@@ -27,6 +27,7 @@ export default {
         handleChooseResult(node) {
             this.searchText = node.data.skill_name;
             this.lastChooseResult = node.data.skill_name;
+
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
             // also open the skill requirement mastery div

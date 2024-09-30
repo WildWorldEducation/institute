@@ -61,7 +61,8 @@ export default {
             showAnimation: false,
             showSkillPanel: false,
             userAvatarImg: null,
-            currentZoom: 1
+            currentZoom: 1,
+            resultNode: null
         };
     },
     components: {
@@ -275,6 +276,15 @@ export default {
             this.context.drawImage(this.userAvatarImg, -20, -20, 40, 40);
             this.context.restore();
         },
+        // rotate node 90 degrees because d3 use a weird
+        rotateNode(cx, cy, x, y, angle) {
+            var radians = (Math.PI / 180) * angle,
+                cos = Math.cos(radians),
+                sin = Math.sin(radians),
+                nx = cos * (x - cx) + sin * (y - cy) + cx,
+                ny = cos * (y - cy) - sin * (x - cx) + cy;
+            return [nx, ny];
+        },
         drawNode(node) {
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
@@ -353,6 +363,12 @@ export default {
                     moveY = 0;
                 }
 
+                let drawText = node.data.skill_name;
+                // we add ◀ if text is the result node
+                if (node.data.skill_name === this.resultNode?.data.skill_name) {
+                    drawText = '▶ ' + drawText + ' ◀';
+                }
+
                 // Flip if on left side of chart.
                 if (pos[0] < 0) {
                     ctx1.textAlign =
@@ -369,9 +385,12 @@ export default {
 
                 ctx1.strokeText(node.data.skill_name, moveX, moveY);
                 // domain label will have lighter tone color
-                ctx1.fillStyle =
-                    node.data.level !== 'domain' ? '#FFF' : '#afb9c9';
-                ctx1.fillText(node.data.skill_name, moveX, moveY);
+                ctx1.fillStyle = this.textFillColor(
+                    node.data.skill_name,
+                    node.data.level
+                );
+
+                ctx1.fillText(drawText, moveX, moveY);
                 ctx1.restore();
             }
 
@@ -405,6 +424,15 @@ export default {
                     ctx2.fill();
                 }
             }
+        },
+        textFillColor(skillName, level) {
+            if (skillName === this.resultNode?.data.skill_name) {
+                return '#FFAE00';
+            }
+            if (level === 'domain') {
+                return '#FFF';
+            }
+            return '#afb9c9';
         },
         drawLink(link) {
             const linkGenerator = d3
@@ -441,6 +469,8 @@ export default {
             return col;
         },
         zoomed(transform) {
+            // Update scale value for moving to node function
+            this.scale = transform.k;
             // For the regular canvas.
             this.context.save();
             this.hiddenCanvasContext.save();
@@ -765,6 +795,7 @@ export default {
             // D3
             //let breakLoop = false;
             this.root.each(function (node) {
+                // search only first letter if search string is less than 2
                 if (searchString.length < 2) {
                     if (
                         node.data.skill_name
@@ -773,7 +804,9 @@ export default {
                     ) {
                         results.push(node);
                     }
-                } else {
+                }
+                // search whole skill name if search text is greater than two
+                else {
                     if (
                         node.data.skill_name
                             .toLowerCase()
@@ -783,8 +816,31 @@ export default {
                     }
                 }
             });
-
             return results;
+        },
+        // zoom and pan to a node
+        goToLocation(node) {
+            this.resultNode = node;
+            // Because it is a radial chart - need to convert values.
+            let radX = Math.cos(node.x) * node.y;
+            let radY = Math.sin(node.x) * node.y;
+            let pos = this.rotateNode(0, 0, radX, radY, 90);
+            const translateX =
+                -pos[0] * this.scale +
+                (window.innerWidth / (2 * this.scale)) * this.scale;
+            const translateY =
+                -pos[1] * this.scale +
+                ((window.innerHeight - 50) / (2 * this.scale)) * this.scale;
+
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(2000)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity
+                        .translate(translateX, translateY)
+                        .scale(this.scale)
+                );
         }
     }
 };
