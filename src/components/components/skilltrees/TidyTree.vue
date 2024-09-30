@@ -402,26 +402,25 @@ export default {
                     ctx1.strokeStyle = skillColor;
                     ctx1.stroke();
                 }
+            }
+            // If child nodes are collapsed.
+            if (node.data.show_children) {
+                if (node.data.show_children == 0) {
+                    // Set line properties
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = 'black';
 
-                // If child nodes are collapsed.
-                if (node.data.show_children) {
-                    if (node.data.show_children == 0) {
-                        // Set line properties
-                        ctx1.lineWidth = 2;
-                        ctx1.strokeStyle = 'black';
+                    // Draw vertical line
+                    ctx1.beginPath();
+                    ctx1.moveTo(node.y - 10, node.x);
+                    ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
+                    ctx1.stroke();
 
-                        // Draw vertical line
-                        ctx1.beginPath();
-                        ctx1.moveTo(node.y - 10, node.x);
-                        ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
-                        ctx1.stroke();
-
-                        // Draw horizontal line
-                        ctx1.beginPath();
-                        ctx1.moveTo(node.y, node.x - 10);
-                        ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
-                        ctx1.stroke();
-                    }
+                    // Draw horizontal line
+                    ctx1.beginPath();
+                    ctx1.moveTo(node.y, node.x - 10);
+                    ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
+                    ctx1.stroke();
                 }
             }
 
