@@ -152,8 +152,7 @@ export default {
         });
 
         // Zoom and pan with mouse
-        // We have to construct the d3 zoom function and assign the zoom event,
-
+        // We have to construct the d3 zoom function and assign the zoom event
         this.d3Zoom = d3
             .zoom()
             .scaleExtent([0.1, 5])
@@ -789,6 +788,26 @@ export default {
             };
 
             this.getAlgorithm();
+
+            // Zoom and pan with mouse
+            // We have to construct the d3 zoom function and assign the zoom event
+            this.d3Zoom = d3
+                .zoom()
+                .scaleExtent([0.1, 5])
+                .on('zoom', ({ transform }) => {
+                    this.debugScale = transform.k;
+                    this.transformX = transform.x;
+                    this.transformY = transform.y;
+                    this.drawTree(transform);
+                    // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
+                    this.$refs.sliderControl.changeGradientBG();
+                });
+
+            // Bind the above object to canvas so it can zoom the tree
+            d3.select(this.context.canvas).call(this.d3Zoom);
+
+            // Set initial zoom value.
+            this.resetPos();
         }
     }
 };
