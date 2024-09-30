@@ -130,6 +130,7 @@ export default {
                     this.skill.name = node.data.skill_name;
                     this.skill.id = node.data.id;
                     this.skill.type = node.data.type;
+                    this.skill.show_children = node.data.show_children;
 
                     // Get the mastery requirements data separately.
                     // Because this is so much data, we do not send it with the rest of the skill tree,
@@ -363,8 +364,14 @@ export default {
             // Visible context.
             // If not a domain, make node a circle.
             if (node.data.type != 'domain') {
+                let radius = 10;
+                if (node.data.show_children) {
+                    if (node.data.show_children == 0) {
+                        radius = 20;
+                    }
+                }
                 ctx1.beginPath();
-                ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
                 // get the color associate with skill level
                 const skillColor = node.data.level
                     ? this.hexColor(node.data.level)
@@ -829,13 +836,6 @@ export default {
             :style="{ top: `${yPos}px`, left: `${xPos}px` }"
             class="click-animation"
         ></div>
-
-        <input type="radio" value="showPanel" v-model="clickMode" />
-        <label for="one">Show panel</label>
-        <input type="radio" value="toggleChildren" v-model="clickMode" />
-        <label for="two">Toggle children</label>
-        {{ clickMode }}
-
         <canvas
             id="canvas"
             width="1500"
