@@ -1559,7 +1559,7 @@ async function aiMarkEssayQuestionAnswer(question, answer, level) {
         escapedResponseJSON = responseJSON.replace(/\\n/g, '\\n');
         // Convert string to object.
         var responseObj = JSON.parse(escapedResponseJSON);
-        console.log(responseObj);
+
         return responseObj;
     } catch (err) {
         console.log('Error with ChatGPT API call: ' + err);

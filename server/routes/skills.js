@@ -207,8 +207,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-                              req.body.skillToBeCopied.id
-                          )} AND skills.is_deleted = 0;`;
+            req.body.skillToBeCopied.id
+        )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -610,8 +610,8 @@ router.put(
                     ${conn.escape(req.body.icon_image)},
                     ${conn.escape(req.body.banner_image)},
                     ${conn.escape(
-                        req.body.mastery_requirements
-                    )},                    
+                req.body.mastery_requirements
+            )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
@@ -631,8 +631,8 @@ router.put(
                         icon_image = ${conn.escape(req.body.icon_image)}, 
                         banner_image = ${conn.escape(req.body.banner_image)}, 
                         mastery_requirements = ${conn.escape(
-                            req.body.mastery_requirements
-                        )}, 
+                        req.body.mastery_requirements
+                    )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)}, 
                         skills.order = ${conn.escape(req.body.order)}, 
@@ -703,8 +703,8 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-             req.body.mastery_requirements
-         )}, 
+            req.body.mastery_requirements
+        )}, 
          date = CURRENT_TIMESTAMP(), 
          icon_image = ${conn.escape(req.body.icon_image)}, 
          banner_image = ${conn.escape(req.body.banner_image)}, 
@@ -830,11 +830,10 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${
-                                                    req.body.edit
-                                                        ? 'edit_and_approve'
-                                                        : 'approve'
-                                                }`,
+                                                userAction: `${req.body.edit
+                                                    ? 'edit_and_approve'
+                                                    : 'approve'
+                                                    }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -1201,4 +1200,28 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
 //     res.redirect('/');
 // });
 
+// Full text search skills table
+router.get('/full-text-search', (req, res, next) => {
+    const searchText = req.query.searchText;
+    // we search for three column but value the relevance of 
+    const query = `
+                    SELECT skills.name,
+                    MATCH (name) AGAINST ('${searchText}') AS rel1,
+                    MATCH (mastery_requirements) AGAINST ('${searchText}') AS rel2,
+                    MATCH (description) AGAINST ('${searchText}') AS rel3
+                    FROM skills
+                    WHERE MATCH (name, description, mastery_requirements) AGAINST ('${searchText}')
+                    ORDER BY (rel1*1.5)+(rel2*0.5)+(rel3) DESC
+                `
+    conn.query(query, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    })
+})
 module.exports = router;

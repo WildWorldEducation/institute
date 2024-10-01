@@ -14,7 +14,8 @@ export default {
             showSubskills: true,
             showModal: false,
             childrenNotSubskills: [],
-            subSkills: []
+            subSkills: [],
+            isResult: false
         };
     },
     props: [
@@ -29,7 +30,8 @@ export default {
         'depth',
         'role',
         'isFiltered',
-        'DeleteSkill'
+        'DeleteSkill',
+        'path'
     ],
     computed: {
         indent() {
@@ -108,6 +110,22 @@ export default {
             this.$refs.name.classList.add('three-row-domain-name');
         else if (this.$refs.name.offsetHeight > 30)
             this.$refs.name.classList.add('two-row-domain-name');
+
+        // We only check path to show child if the node depth is 2 or greater
+        if (this.depth >= 2) {
+            const inPath = this.path.find((node) => node.id === this.id);
+            if (inPath) {
+                this.showChildren = true;
+            }
+        }
+        // if we are the last node to appear when user choose a path we scroll to here
+        const lastNode = this.path[this.path.length - 1];
+        if (lastNode && this.id === lastNode.id) {
+            this.isResult = true;
+            document.getElementById(`skill${this.id}`).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
     },
     methods: {
         mainButtonPress() {
@@ -160,6 +178,19 @@ export default {
             localStorage.setItem(this.id + 'children', !this.showChildren);
             this.showChildren = !this.showChildren;
         }
+    },
+    watch: {
+        path: {
+            handler(newVal) {
+                const inPath = newVal.find((node) => node.id === this.id);
+                if (inPath) {
+                    this.showChildren = true;
+                }
+                if (newVal.length === 0 && this.isResult === true) {
+                    this.isResult = false;
+                }
+            }
+        }
     }
 };
 </script>
@@ -179,10 +210,12 @@ export default {
             'high-school-level': level == 'high_school',
             'college-level': level == 'college',
             'phd-level': level == 'phd',
-            'has-children': children.length > 0
+            'has-children': children.length > 0,
+            'result-button': isResult === true
         }"
         class="skill-button d-flex justify-content-between align-items-center"
         @click.stop="mainButtonPress()"
+        :id="`skill${this.id}`"
     >
         <!-- Emoticons -->
         <div v-if="level != 'domain'" class="align-self-end">
@@ -376,6 +409,7 @@ export default {
         :isFiltered="subSkill.isFiltered"
         :role="role"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildStudent>
 
@@ -394,6 +428,7 @@ export default {
         :isFiltered="child.isFiltered"
         :role="role"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildStudent>
 </template>
@@ -412,6 +447,7 @@ export default {
     font-size: 20px;
     font-weight: 500;
     background-color: #f2edff;
+    scroll-margin-top: 35vh;
 }
 
 .has-children {
