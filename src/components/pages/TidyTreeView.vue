@@ -36,9 +36,13 @@ export default {
     },
     computed: {
         findNodeResults() {
-            if (this.lastChooseResult === this.searchText) {
+            if (
+                this.lastChooseResult === this.searchText ||
+                this.searchText.length === 0
+            ) {
                 return [];
             }
+
             // close the mastery requirement panel when showing search result
             this.$refs.childComponent.showSkillPanel = false;
             const results = this.$refs.childComponent.findNodeWithName(
@@ -102,7 +106,7 @@ export default {
                         <div
                             :class="[
                                 'search-bar mt-3',
-                                searchText.length > 0 && 'have-results'
+                                findNodeResults.length > 0 && 'have-results'
                             ]"
                         >
                             <div class="d-flex align-items-center p-1">
@@ -128,7 +132,7 @@ export default {
                             </div>
                             <div class="position-relative">
                                 <div
-                                    v-if="searchText.length"
+                                    v-if="findNodeResults.length > 0"
                                     class="search-results"
                                 >
                                     <div
@@ -164,7 +168,7 @@ export default {
                         <div
                             :class="[
                                 'search-bar',
-                                searchText.length > 0 && 'have-results'
+                                findNodeResults.length > 0 && 'have-results'
                             ]"
                         >
                             <div class="d-flex align-items-center p-1">
@@ -190,7 +194,7 @@ export default {
                             </div>
                             <div class="position-relative">
                                 <div
-                                    v-if="searchText.length"
+                                    v-if="findNodeResults.length > 0"
                                     class="search-results"
                                 >
                                     <div
