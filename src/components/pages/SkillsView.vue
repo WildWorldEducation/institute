@@ -19,15 +19,20 @@ export default {
             resultsSkills: [],
             chooseResult: null,
             // flag to make watcher do not react when user choose a result
-            updateChooseResult: false
+            updateChooseResult: false,
+            nameList: []
         };
     },
     components: {
         SkillsListParent
     },
-    created() {
+    async created() {
         // Check if the view is in instructor mode (a student's skills being viewed by an instructor or admin)
         this.isInstructorMode = typeof this.$route.params.studentId == 'string';
+        const url = `/skills/name-list`;
+        const res = await fetch(url);
+        const results = await res.json();
+        this.nameList = results;
     },
     methods: {
         async getFullTextResult() {
@@ -36,6 +41,28 @@ export default {
             const results = await res.json();
             this.resultsSkills = results;
             this.updateChooseResult = true;
+        },
+        getResults(searchText) {
+            let results = [];
+            this.nameList.forEach((element) => {
+                // search only first work match if search text is less than three
+                if (searchText.length < 3) {
+                    if (
+                        element.name
+                            .toLowerCase()
+                            .substring(0, searchText.length) === searchText
+                    ) {
+                        results.push(element);
+                    }
+                }
+                // search for all word in skill name string if search text is greater than three
+                else {
+                    if (element.name.toLowerCase().includes(searchText)) {
+                        results.push(element);
+                    }
+                }
+            });
+            this.resultsSkills = results;
         },
         handleChooseResult(result) {
             this.resultsSkills = [];
@@ -56,9 +83,7 @@ export default {
                 if (this.chooseResult) {
                     this.chooseResult = false;
                 } else {
-                    if (newVal.length > 3) {
-                        this.getFullTextResult();
-                    }
+                    this.getResults(newVal);
                 }
                 if (newVal.length === 0) {
                     console.log('result is clear');

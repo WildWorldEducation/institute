@@ -462,8 +462,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
     const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.url = ${conn.escape(
-                              req.params.skillUrl
-                          )} AND is_deleted = 0`;
+        req.params.skillUrl
+    )} AND is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -1224,4 +1224,21 @@ router.get('/full-text-search', (req, res, next) => {
         }
     })
 })
+
+// get list of skill name for search feature in frontend
+router.get('/name-list', (req, res, next) => {
+    const query = 'SELECT skills.name FROM skills'
+    conn.query(query, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    })
+})
+
+
 module.exports = router;
