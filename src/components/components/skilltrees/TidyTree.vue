@@ -140,6 +140,8 @@ export default {
                 ) {
                     this.skill.hasChildren = true;
                 }
+                this.skill.x = node.x;
+                this.skill.y = node.y;
 
                 // Get the mastery requirements data separately.
                 // Because this is so much data, we do not send it with the rest of the skill tree,
@@ -802,7 +804,7 @@ export default {
                 '/' +
                 node.id;
             fetch(url);
-            this.reloadTree();
+            this.reloadTree(node);
         },
         toggleShowChildren(node) {
             var url =
@@ -823,27 +825,118 @@ export default {
                 children: this.skillTreeStore.userSkills
             };
 
-            this.getAlgorithm();
+            var skillsWithSubSkillsMoved = [];
+            skillsWithSubSkillsMoved = JSON.parse(
+                JSON.stringify(this.skill.children)
+            );
 
-            // Zoom and pan with mouse
-            // We have to construct the d3 zoom function and assign the zoom event
-            this.d3Zoom = d3
-                .zoom()
-                .scaleExtent([0.1, 5])
-                .on('zoom', ({ transform }) => {
-                    this.debugScale = transform.k;
-                    this.transformX = transform.x;
-                    this.transformY = transform.y;
-                    this.drawTree(transform);
-                    // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
-                    this.$refs.sliderControl.changeGradientBG();
-                });
+            // Duplicate super skill node, and make second one a child of the first.
+            // Put all the subskills of the node in the second version.
+            // This is an attempt to show the subskills using only D3.
+            // Other options, such as having them circle around the super skill,
+            // like the D3 and Pixi version, were too complex.
+            function moveSubSkills(parentChildren) {
+                var i = parentChildren.length;
+                while (i--) {
+                    // If the skill is a super skill, and not an "end" super skill.
+                    if (
+                        parentChildren[i].type == 'super' &&
+                        parentChildren[i].position != 'end'
+                    ) {
+                        if (parentChildren[i].show_children) {
+                            if (parentChildren[i].show_children == 0) {
+                                return;
+                            }
+                        }
+                        // Separate the child nodes.
+                        var subSkills = [];
+                        var regularChildSkills = [];
+                        for (
+                            let j = 0;
+                            j < parentChildren[i].children.length;
+                            j++
+                        ) {
+                            if (parentChildren[i].children[j].type == 'sub') {
+                                subSkills.push(parentChildren[i].children[j]);
+                            } else {
+                                regularChildSkills.push(
+                                    parentChildren[i].children[j]
+                                );
+                            }
+                        }
 
-            // Bind the above object to canvas so it can zoom the tree
-            d3.select(this.context.canvas).call(this.d3Zoom);
+                        // Create a new child node, with the subskills in it.
+                        var superSkillEndNode = {
+                            skill_name: parentChildren[i].skill_name,
+                            type: 'super',
+                            position: 'end',
+                            children: subSkills
+                        };
 
-            // Set initial zoom value.
-            this.resetPos();
+                        // Empty the child nodes.
+                        parentChildren[i].children = [];
+                        // Add the new node.
+                        parentChildren[i].children.push(superSkillEndNode);
+                        // Add the other child nodes, excluding subskills.
+                        for (let j = 0; j < regularChildSkills.length; j++) {
+                            parentChildren[i].children.push(
+                                regularChildSkills[j]
+                            );
+                        }
+                    }
+
+                    if (typeof parentChildren[i] !== 'undefined') {
+                        /*
+                         * Run the above function again recursively.
+                         */
+                        if (
+                            parentChildren[i].children &&
+                            Array.isArray(parentChildren[i].children) &&
+                            parentChildren[i].children.length > 0
+                        )
+                            moveSubSkills(parentChildren[i].children);
+                    }
+                }
+            }
+
+            moveSubSkills(skillsWithSubSkillsMoved);
+
+            this.data = {
+                skill_name: 'My skills',
+                children: skillsWithSubSkillsMoved
+            };
+
+            // Compute the tree height; this approach will allow the height of the
+            // SVG to scale according to the breadth (width) of the tree layout.
+            this.root = d3.hierarchy(this.data);
+            const dx = 24;
+            const dy = this.width / (this.root.height + 1);
+
+            // Create a tree layout.
+            this.tree = d3.tree().nodeSize([dx, dy]);
+
+            // Sort the tree and apply the layout.
+            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
+            this.tree(this.root);
+
+            this.zoomInD3(this.scale, this.panX, this.panY);
+
+            const translateX =
+                -node.y * this.scale +
+                (window.innerWidth / (2 * this.scale)) * this.scale;
+            const translateY =
+                -node.x * this.scale +
+                (window.innerHeight / (2 * this.scale)) * this.scale;
+
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(1000)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity
+                        .translate(translateX, translateY)
+                        .scale(this.scale)
+                );
         }
     }
 };
