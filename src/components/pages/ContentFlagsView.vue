@@ -2168,7 +2168,7 @@ h2 {
     text-overflow: ellipsis;
     /* Needed to make the over flow work */
     overflow: hidden;
-    white-space: nowrap;
+    //white-space: nowrap;
     width: 200px;
 }
 
