@@ -735,7 +735,7 @@ export default {
             //let breakLoop = false;
             this.root.each(function (node) {
                 // search only first work match if search text is less than three
-                if (searchString.length < 2) {
+                if (searchString.length < 3) {
                     if (
                         node.data.skill_name
                             .toLowerCase()

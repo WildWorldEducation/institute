@@ -32,7 +32,19 @@ export default {
                 const results = this.$refs.childComponent.findNodeWithName(
                     this.searchText.toLocaleLowerCase()
                 );
-                return results;
+                // we highlight the part that match search text
+                const highlightedResult = results.map((result) => {
+                    const matchedRegex = new RegExp(
+                        `(${this.searchText})`,
+                        'gi'
+                    );
+                    const newText = result.data.skill_name.replace(
+                        matchedRegex,
+                        '<span class="hightLight">$1</span>'
+                    );
+                    return { ...result, highlightedResult: newText };
+                });
+                return highlightedResult;
             } else {
                 return [];
             }
@@ -126,9 +138,8 @@ export default {
                                         @click="handleChooseResult(result)"
                                         class="result-row"
                                         v-for="result in findNodeResults"
-                                    >
-                                        {{ result.data.skill_name }}
-                                    </div>
+                                        v-html="result.highlightedResult"
+                                    ></div>
                                 </div>
                             </div>
                         </div>
@@ -189,9 +200,8 @@ export default {
                                         @click="handleChooseResult(result)"
                                         class="result-row"
                                         v-for="result in findNodeResults"
-                                    >
-                                        {{ result.data.skill_name }}
-                                    </div>
+                                        v-html="result.highlightedResult"
+                                    ></div>
                                 </div>
                             </div>
                         </div>
@@ -304,6 +314,17 @@ export default {
     border-radius: 50%;
 }
 
+.hightLight {
+    font-weight: 500;
+    color: #242424;
+    float: none !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0px !important;
+    border-radius: 0px !important;
+    border: 0px !important;
+}
+
 /* Level colors */
 .legend .grade-school {
     background-color: #40e0d0;
@@ -383,6 +404,7 @@ export default {
 .result-row {
     padding: 4px;
     cursor: pointer;
+    color: #6e6e6e;
 }
 
 .result-row:hover {

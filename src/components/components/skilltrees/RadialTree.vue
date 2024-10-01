@@ -796,7 +796,7 @@ export default {
             //let breakLoop = false;
             this.root.each(function (node) {
                 // search only first letter if search string is less than 2
-                if (searchString.length < 2) {
+                if (searchString.length < 3) {
                     if (
                         node.data.skill_name
                             .toLowerCase()

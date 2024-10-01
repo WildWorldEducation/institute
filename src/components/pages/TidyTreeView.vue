@@ -55,7 +55,6 @@ export default {
                     matchedRegex,
                     '<span class="hightLight">$1</span>'
                 );
-                console.log(newText);
                 return { ...result, highlightedResult: newText };
             });
             return highlightedResult;
