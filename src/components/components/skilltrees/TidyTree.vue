@@ -803,8 +803,9 @@ export default {
                 this.userDetailsStore.userId +
                 '/' +
                 node.id;
-            fetch(url);
-            this.reloadTree(node);
+            fetch(url).then(() => {
+                this.reloadTree(node);
+            });
         },
         toggleShowChildren(node) {
             var url =
@@ -812,8 +813,9 @@ export default {
                 this.userDetailsStore.userId +
                 '/' +
                 node.id;
-            fetch(url);
-            this.reloadTree(node);
+            fetch(url).then(() => {
+                this.reloadTree(node);
+            });
         },
         async reloadTree(node) {
             this.showSkillPanel = false;
