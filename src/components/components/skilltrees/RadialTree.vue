@@ -830,7 +830,7 @@ export default {
                 (window.innerWidth / (2 * this.scale)) * this.scale;
             const translateY =
                 -pos[1] * this.scale +
-                ((window.innerHeight - 50) / (2 * this.scale)) * this.scale;
+                (window.innerHeight / (2 * this.scale)) * this.scale;
 
             d3.select(this.context.canvas)
                 .transition()
