@@ -671,7 +671,9 @@ export default {
                 (window.innerWidth / (2 * this.scale)) * this.scale;
             const translateY =
                 -node.x * this.scale +
-                (window.innerHeight / (2 * this.scale)) * this.scale;
+                ((window.innerHeight - window.innerHeight * 0.1) /
+                    (2 * this.scale)) *
+                    this.scale;
 
             d3.select(this.context.canvas)
                 .transition()
@@ -732,6 +734,7 @@ export default {
             // D3
             //let breakLoop = false;
             this.root.each(function (node) {
+                // search only first work match if search text is less than three
                 if (searchString.length < 2) {
                     if (
                         node.data.skill_name
@@ -740,7 +743,9 @@ export default {
                     ) {
                         results.push(node);
                     }
-                } else {
+                }
+                // search for all word in skill name string if search text is greater than three
+                else {
                     if (
                         node.data.skill_name
                             .toLowerCase()
