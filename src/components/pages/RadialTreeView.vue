@@ -17,8 +17,8 @@ export default {
 
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
-            // also open the skill requirement mastery div
-            this.$refs.childComponent.showSkillPanelComponent(node);
+            // // also open the skill requirement mastery div
+            // this.$refs.childComponent.showSkillPanelComponent(node);
         }
     },
     computed: {
@@ -134,12 +134,12 @@ export default {
                                     v-if="findNodeResults.length"
                                     class="search-results"
                                 >
-                                    <div
+                                    <button
                                         @click="handleChooseResult(result)"
                                         class="result-row"
                                         v-for="result in findNodeResults"
                                         v-html="result.highlightedResult"
-                                    ></div>
+                                    ></button>
                                 </div>
                             </div>
                         </div>
@@ -196,12 +196,12 @@ export default {
                                     v-if="findNodeResults.length"
                                     class="search-results"
                                 >
-                                    <div
+                                    <button
                                         @click="handleChooseResult(result)"
                                         class="result-row"
                                         v-for="result in findNodeResults"
                                         v-html="result.highlightedResult"
-                                    ></div>
+                                    ></button>
                                 </div>
                             </div>
                         </div>
@@ -405,9 +405,14 @@ export default {
     padding: 4px;
     cursor: pointer;
     color: #6e6e6e;
+    background-color: inherit;
+    border: 0px;
+    text-align: left;
 }
 
-.result-row:hover {
+.result-row:hover,
+.result-row:focus {
     background-color: #f3f5f6;
+    color: black;
 }
 </style>

@@ -144,12 +144,12 @@ export default {
                                     v-if="findNodeResults.length > 0"
                                     class="search-results"
                                 >
-                                    <div
+                                    <button
                                         @click="handleChooseResult(result)"
                                         class="result-row"
                                         v-for="result in findNodeResults"
                                         v-html="result.highlightedResult"
-                                    ></div>
+                                    ></button>
                                 </div>
                             </div>
                         </div>
@@ -205,12 +205,12 @@ export default {
                                     v-if="findNodeResults.length > 0"
                                     class="search-results"
                                 >
-                                    <div
+                                    <button
                                         @click="handleChooseResult(result)"
                                         class="result-row"
                                         v-for="result in findNodeResults"
                                         v-html="result.highlightedResult"
-                                    ></div>
+                                    ></button>
                                 </div>
                             </div>
                         </div>
@@ -325,12 +325,20 @@ export default {
     padding: 4px;
     cursor: pointer;
     color: #6e6e6e;
+    background-color: inherit;
+    border: 0px;
+    text-align: left;
 }
 
-.result-row:hover {
+.result-row:hover,
+.result-row:focus {
     background-color: #f3f5f6;
+    color: black;
 }
 
+.result-row:focus {
+    border: 1px solid #133b61;
+}
 /* Small devices (portrait phones) */
 @media (max-width: 800px) {
     #mobile-legend {
