@@ -316,7 +316,7 @@ export default {
 
 .hightLight {
     font-weight: 500;
-    color: #242424;
+    color: #9985d1;
     float: none !important;
     width: auto !important;
     height: auto !important;
