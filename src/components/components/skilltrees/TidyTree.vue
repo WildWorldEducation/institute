@@ -21,7 +21,7 @@ export default {
     },
     data() {
         return {
-            width: 6000,
+            width: null,
             height: null,
             skill: {
                 id: null,
@@ -60,7 +60,8 @@ export default {
             showAnimation: false,
             showSkillPanel: false,
             resultNode: null,
-            clickMode: 'showPanel'
+            clickMode: 'showPanel',
+            skillCount: null
         };
     },
     components: {
@@ -191,9 +192,11 @@ export default {
             // This is an attempt to show the subskills using only D3.
             // Other options, such as having them circle around the super skill,
             // like the D3 and Pixi version, were too complex.
+            let count = 0;
             function moveSubSkills(parentChildren) {
                 var i = parentChildren.length;
                 while (i--) {
+                    count++;
                     // If the skill is a super skill, and not an "end" super skill.
                     if (
                         parentChildren[i].type == 'super' &&
@@ -256,6 +259,18 @@ export default {
             }
 
             moveSubSkills(skillsWithSubSkillsMoved);
+
+            // To determine the size of the skill tree based on the number of skills showing.
+            // It should not be too big, compared to the number of nodes,
+            // or the nodes will be too far a part.
+            this.skillCount = count;
+            if (this.skillCount > 2000) {
+                this.width = this.skillCount * 1.5;
+            } else if (this.skillCount > 1000) {
+                this.width = this.skillCount * 1.5 * 4;
+            } else {
+                this.width = this.skillCount * 1.5 * 20;
+            }
 
             this.data = {
                 skill_name: 'My skills',
