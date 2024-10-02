@@ -311,7 +311,21 @@ router.delete('/:cohortId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                res.end();
+                let sqlQuery2 = `DELETE 
+                FROM cohort_skill_filters 
+                WHERE cohort_id=${conn.escape(req.params.cohortId)}`;
+
+                conn.query(sqlQuery2, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
             } catch (err) {
                 next(err);
             }
