@@ -140,22 +140,24 @@ export default {
     </div>
     <div class="collapsible-tree-legend container-fluid p-2">
         <div class="legend row">
-            <div class="col-md col-6">
-                <span class="grade-school"></span>Grade school
+            <div class="col-lg col-md-4 col-6">
+                <span class="grade-school"></span> Grade school
             </div>
-            <div class="col-md col-6">
+            <div class="col-lg col-md-4 col-6">
                 <span class="middle-school"></span> Middle school
             </div>
-            <div class="col-md col-6">
+            <div class="col-lg col-md-4 col-6">
                 <span class="high-school"></span> High school
             </div>
-            <div class="col-md col-6">
+            <div class="col-lg col-md-4 col-6">
                 <span class="college"></span> College
             </div>
-            <div class="col-md col-6"><span class="phd"></span> PHD</div>
+            <div class="col-lg col-md-4 col-6">
+                <span class="phd"></span> PHD
+            </div>
         </div>
     </div>
-    <div class="d-flex flex-row-reverse me-3">
+    <div class="d-flex flex-row-reverse me-0 me-lg-3 mt-2 mt-lg-0">
         <!-- Search Feature -->
         <div
             :class="['search-bar', resultsSkills.length > 0 && 'have-results']"
@@ -193,6 +195,7 @@ export default {
             </div>
         </div>
     </div>
+    <hr class="d-lg-none" />
     <SkillsListParent ref="skillList" />
 </template>
 
@@ -333,15 +336,28 @@ export default {
 /* Mobile view style */
 @media (max-width: 480px) {
     .search-bar {
-        width: 100%;
-        margin-left: 5%;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
 /* Tablet view style */
 @media (min-width: 481px) and (max-width: 1024px) {
     .search-bar {
-        width: 50%;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
     }
+
+    .legend {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* .label-col {
+        display: flex;
+        justify-content: center;
+    } */
 }
 </style>
