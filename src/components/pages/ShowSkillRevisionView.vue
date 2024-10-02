@@ -17,7 +17,7 @@ export default {
     },
     data() {
         return {
-            skillId: this.$route.params.skillId,
+            skillUrl: this.$route.params.skillUrl,
             versionNumber: this.$route.params.versionNumber,
             skillRevision: {},
             currentVersionNumber: null,
@@ -42,14 +42,14 @@ export default {
     methods: {
         async getSkill() {
             // Load the skill data
-            const res = await fetch('/skills/show/' + this.skillId);
+            const res = await fetch('/skills/url/' + this.skillUrl);
             this.skill = await res.json();
             this.currentVersionNumber = this.skill.version_number;
             await this.getSkillVersion();
         },
         async getSkillVersion() {
             let url =
-                '/skill-history/' + this.skillId + '/' + this.versionNumber;
+                '/skill-history/' + this.skill.id + '/' + this.versionNumber;
 
             const res = await fetch(url);
             this.skillRevision = await res.json();
@@ -127,7 +127,7 @@ export default {
             };
             var url =
                 '/skill-history/' +
-                this.skillId +
+                this.skill.id +
                 '/revert-to/' +
                 this.versionNumber;
             fetch(url, requestOptions).then(() => {

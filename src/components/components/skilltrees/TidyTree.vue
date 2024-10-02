@@ -1,6 +1,7 @@
 <script>
 // Import the stores.
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
 import SliderControl from './SliderControl.vue';
@@ -12,8 +13,10 @@ import * as d3 from 'd3';
 export default {
     setup() {
         const skillTreeStore = useSkillTreeStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
-            skillTreeStore
+            skillTreeStore,
+            userDetailsStore
         };
     },
     data() {
@@ -31,7 +34,8 @@ export default {
                 description: null,
                 tagIDs: [],
                 sprite: null,
-                type: null
+                type: null,
+                hasChildren: false
             },
             tree: {},
             root: {},
@@ -55,7 +59,8 @@ export default {
             yPos: 0,
             showAnimation: false,
             showSkillPanel: false,
-            resultNode: null
+            resultNode: null,
+            clickMode: 'showPanel'
         };
     },
     components: {
@@ -93,7 +98,6 @@ export default {
             // there is an interaction. This sketch can draw it on
             // each loop, but that is only for demonstration.
 
-            var data = this.nodes;
             //Figure out where the mouse click occurred.
             var mouseX = e.layerX;
             var mouseY = e.layerY;
@@ -117,10 +121,7 @@ export default {
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
 
-            // WILL GET DELETE
-
             if (node && node.data.id) {
-                console.log('test2');
                 // We clicked on something, lets set the color of the node
                 // we also have access to the data associated with it, which in
                 // this case is just its original index in the data array.
@@ -130,6 +131,17 @@ export default {
                 this.skill.name = node.data.skill_name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
+                // For the collapsing nodes
+                this.skill.show_children = node.data.show_children;
+                this.skill.hasChildren = false;
+                if (
+                    node.data.children.length > 0 ||
+                    (this.skill.show_children && this.skill.show_children == 0)
+                ) {
+                    this.skill.hasChildren = true;
+                }
+                this.skill.x = node.x;
+                this.skill.y = node.y;
 
                 // Get the mastery requirements data separately.
                 // Because this is so much data, we do not send it with the rest of the skill tree,
@@ -145,8 +157,7 @@ export default {
         });
 
         // Zoom and pan with mouse
-        // We have to construct the d3 zoom function and assign the zoom event,
-
+        // We have to construct the d3 zoom function and assign the zoom event
         this.d3Zoom = d3
             .zoom()
             .scaleExtent([0.1, 5])
@@ -188,6 +199,11 @@ export default {
                         parentChildren[i].type == 'super' &&
                         parentChildren[i].position != 'end'
                     ) {
+                        if (parentChildren[i].show_children) {
+                            if (parentChildren[i].show_children == 0) {
+                                return;
+                            }
+                        }
                         // Separate the child nodes.
                         var subSkills = [];
                         var regularChildSkills = [];
@@ -347,6 +363,8 @@ export default {
             this.hiddenCanvasContext.restore();
         },
         drawNode(node) {
+            // Make sure the nodes have solid outlines
+            this.context.setLineDash([]);
             let ctx1 = this.context;
             let ctx2 = this.hiddenCanvasContext;
             // A flag to determine if this node was searched by user
@@ -354,10 +372,16 @@ export default {
                 node.data.skill_name === this.resultNode?.data.skill_name;
             // Visible context.
             // If not a domain, make node a circle.
-            // console.log(node.data.is_mastered);
             if (node.data.type != 'domain') {
+                let radius = 10;
+                // If child nodes are collapsed.
+                if (node.data.show_children) {
+                    if (node.data.show_children == 0) {
+                        radius = 20;
+                    }
+                }
                 ctx1.beginPath();
-                ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
                 // get the color associate with skill level
                 const skillColor = node.data.level
                     ? this.hexColor(node.data.level)
@@ -378,6 +402,26 @@ export default {
                     ctx1.fillStyle = '#FFF';
                     ctx1.fill();
                     ctx1.strokeStyle = skillColor;
+                    ctx1.stroke();
+                }
+            }
+            // If child nodes are collapsed.
+            if (node.data.show_children) {
+                if (node.data.show_children == 0) {
+                    // Set line properties
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = 'black';
+
+                    // Draw vertical line
+                    ctx1.beginPath();
+                    ctx1.moveTo(node.y - 10, node.x);
+                    ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
+                    ctx1.stroke();
+
+                    // Draw horizontal line
+                    ctx1.beginPath();
+                    ctx1.moveTo(node.y, node.x - 10);
+                    ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
                     ctx1.stroke();
                 }
             }
@@ -757,33 +801,150 @@ export default {
             });
 
             return results;
+        },
+        toggleHideChildren(node) {
+            var url =
+                '/user-skills/hide-children/' +
+                this.userDetailsStore.userId +
+                '/' +
+                node.id;
+            fetch(url).then(() => {
+                this.reloadTree(node);
+            });
+        },
+        toggleShowChildren(node) {
+            var url =
+                '/user-skills/show-children/' +
+                this.userDetailsStore.userId +
+                '/' +
+                node.id;
+            fetch(url).then(() => {
+                this.reloadTree(node);
+            });
+        },
+        async reloadTree(node) {
+            this.showSkillPanel = false;
+            await this.skillTreeStore.getUserSkills();
+
+            this.skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: this.skillTreeStore.userSkills
+            };
+
+            var skillsWithSubSkillsMoved = [];
+            skillsWithSubSkillsMoved = JSON.parse(
+                JSON.stringify(this.skill.children)
+            );
+
+            // Duplicate super skill node, and make second one a child of the first.
+            // Put all the subskills of the node in the second version.
+            // This is an attempt to show the subskills using only D3.
+            // Other options, such as having them circle around the super skill,
+            // like the D3 and Pixi version, were too complex.
+            function moveSubSkills(parentChildren) {
+                var i = parentChildren.length;
+                while (i--) {
+                    // If the skill is a super skill, and not an "end" super skill.
+                    if (
+                        parentChildren[i].type == 'super' &&
+                        parentChildren[i].position != 'end'
+                    ) {
+                        if (parentChildren[i].show_children) {
+                            if (parentChildren[i].show_children == 0) {
+                                return;
+                            }
+                        }
+                        // Separate the child nodes.
+                        var subSkills = [];
+                        var regularChildSkills = [];
+                        for (
+                            let j = 0;
+                            j < parentChildren[i].children.length;
+                            j++
+                        ) {
+                            if (parentChildren[i].children[j].type == 'sub') {
+                                subSkills.push(parentChildren[i].children[j]);
+                            } else {
+                                regularChildSkills.push(
+                                    parentChildren[i].children[j]
+                                );
+                            }
+                        }
+
+                        // Create a new child node, with the subskills in it.
+                        var superSkillEndNode = {
+                            skill_name: parentChildren[i].skill_name,
+                            type: 'super',
+                            position: 'end',
+                            children: subSkills
+                        };
+
+                        // Empty the child nodes.
+                        parentChildren[i].children = [];
+                        // Add the new node.
+                        parentChildren[i].children.push(superSkillEndNode);
+                        // Add the other child nodes, excluding subskills.
+                        for (let j = 0; j < regularChildSkills.length; j++) {
+                            parentChildren[i].children.push(
+                                regularChildSkills[j]
+                            );
+                        }
+                    }
+
+                    if (typeof parentChildren[i] !== 'undefined') {
+                        /*
+                         * Run the above function again recursively.
+                         */
+                        if (
+                            parentChildren[i].children &&
+                            Array.isArray(parentChildren[i].children) &&
+                            parentChildren[i].children.length > 0
+                        )
+                            moveSubSkills(parentChildren[i].children);
+                    }
+                }
+            }
+
+            moveSubSkills(skillsWithSubSkillsMoved);
+
+            this.data = {
+                skill_name: 'My skills',
+                children: skillsWithSubSkillsMoved
+            };
+
+            // Compute the tree height; this approach will allow the height of the
+            // SVG to scale according to the breadth (width) of the tree layout.
+            this.root = d3.hierarchy(this.data);
+            const dx = 24;
+            const dy = this.width / (this.root.height + 1);
+
+            // Create a tree layout.
+            this.tree = d3.tree().nodeSize([dx, dy]);
+
+            // Sort the tree and apply the layout.
+            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
+            this.tree(this.root);
+
+            this.zoomInD3(this.scale, this.panX, this.panY);
+
+            const translateX =
+                -node.y * this.scale +
+                (window.innerWidth / (2 * this.scale)) * this.scale;
+            const translateY =
+                -node.x * this.scale +
+                (window.innerHeight / (2 * this.scale)) * this.scale;
+
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(1000)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity
+                        .translate(translateX, translateY)
+                        .scale(this.scale)
+                );
         }
-
-        // async showSkillPanelComponent(node) {
-        //     console.log('result');
-        //     // We clicked on something, lets set the color of the node
-        //     // we also have access to the data associated with it, which in
-        //     // this case is just its original index in the data array.
-        //     node.renderCol = node.__pickColor;
-
-        //     //Update the display with some data
-        //     this.skill.name = node.data.skill_name;
-        //     this.skill.id = node.data.id;
-        //     this.skill.type = node.data.type;
-
-        //     // Get the mastery requirements data separately.
-        //     // Because this is so much data, we do not send it with the rest of the skill tree,
-        //     // or it will slow the load down too much.
-        //     const result = await fetch(
-        //         '/skills/mastery-requirements/' + this.skill.id
-        //     );
-        //     result = await result.json();
-        //     console.log('result');
-        //     console.log(result);
-        //     this.skill.masteryRequirements = masteryRequirements;
-        //     // *** Preserve in case client want clamp instead of scroll
-        //     this.showSkillPanel = true;
-        // }
     }
 };
 </script>

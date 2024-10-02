@@ -150,7 +150,7 @@ export default {
                                 }
                                 flagRow.type = 'mc question';
                                 flagRow.name = `${contentObj.name} ${contentObj.question}`;
-                                flagRow.nameUrl = `skills/${contentObj.skillId}/question-bank`;
+                                flagRow.nameUrl = `skills/${contentObj.url}/question-bank`;
                                 flagRow.flagId = flag.id;
                                 flagRow.editUrl = `/mc-questions/edit/${flag.content_id}`;
                                 flagRow.expandContent = contentObj;
@@ -161,13 +161,13 @@ export default {
                                 };
 
                                 break;
-                            // Handle for mc question flag
+                            // Handle for essay question flag
                             case 'essay_question':
                                 flagRow.contentId = flag.content_id;
                                 flagRow.type = 'essay question';
                                 flagRow.name = `${contentObj.name} ${contentObj.question}`;
 
-                                flagRow.nameUrl = `skills/${contentObj.skillId}/question-bank`;
+                                flagRow.nameUrl = `skills/${contentObj.url}/question-bank`;
                                 flagRow.flagId = flag.id;
                                 flagRow.editUrl = `/essay-questions/edit/${flag.content_id}`;
                                 flagRow.expandContent = contentObj;
@@ -182,7 +182,7 @@ export default {
                                 flagRow.contentId = flag.content_id;
                                 flagRow.type = 'image question';
                                 flagRow.name = `${contentObj.name} ${contentObj.question}`;
-                                flagRow.nameUrl = `skills/${contentObj.skillId}/question-bank`;
+                                flagRow.nameUrl = `skills/${contentObj.url}/question-bank`;
                                 flagRow.flagId = flag.id;
                                 flagRow.editUrl = `/image-questions/edit/${flag.content_id}`;
                                 flagRow.expandContent = contentObj;
@@ -2168,7 +2168,7 @@ h2 {
     text-overflow: ellipsis;
     /* Needed to make the over flow work */
     overflow: hidden;
-    white-space: nowrap;
+    //white-space: nowrap;
     width: 200px;
 }
 

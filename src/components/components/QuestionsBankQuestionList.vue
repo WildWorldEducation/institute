@@ -1,18 +1,21 @@
 <script>
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useSkillsStore } from '../../stores/SkillsStore.js';
 
 export default {
-    props: ['isMultipleChoice', 'isEssay', 'isImage'],
+    props: ['isMultipleChoice', 'isEssay', 'isImage', 'skill'],
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const skillsStore = useSkillsStore();
 
         return {
-            userDetailsStore
+            userDetailsStore,
+            skillsStore
         };
     },
     data() {
         return {
-            skillId: this.$route.params.id,
+            skillUrl: this.$route.params.skillUrl,
             mcQuestions: [],
             essayQuestions: [],
             imageQuestions: [],
@@ -26,14 +29,17 @@ export default {
         };
     },
     computed: {},
-    created() {
+    async created() {
+        if (this.skillsStore.skillsList.length == 0) {
+            await this.skillsStore.getSkillsList();
+        }
         this.getMCQuestions();
         this.getEssayQuestions();
         this.getImageQuestions();
     },
     methods: {
         getMCQuestions() {
-            fetch('/skills/' + this.skillId + '/mc-questions/list')
+            fetch('/skills/' + this.skill.id + '/mc-questions/list')
                 .then(function (response) {
                     return response.json();
                 })
@@ -42,7 +48,7 @@ export default {
                 });
         },
         getEssayQuestions() {
-            fetch('/skills/' + this.skillId + '/essay-questions/list')
+            fetch('/skills/' + this.skill.id + '/essay-questions/list')
                 .then(function (response) {
                     return response.json();
                 })
@@ -51,7 +57,7 @@ export default {
                 });
         },
         getImageQuestions() {
-            fetch('/skills/' + this.skillId + '/image-questions/list')
+            fetch('/skills/' + this.skill.id + '/image-questions/list')
                 .then(function (response) {
                     return response.json();
                 })
@@ -137,7 +143,12 @@ export default {
                                 </svg>
                             </router-link>
                         </td>
-                        <td v-if="userDetailsStore.role == 'admin'">
+                        <td
+                            v-if="
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                        >
                             <button
                                 type="button"
                                 @click="
@@ -195,7 +206,12 @@ export default {
                                 </svg>
                             </router-link>
                         </td>
-                        <td v-if="userDetailsStore.role == 'admin'">
+                        <td
+                            v-if="
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                        >
                             <button
                                 type="button"
                                 @click="
@@ -253,7 +269,12 @@ export default {
                                 </svg>
                             </router-link>
                         </td>
-                        <td v-if="userDetailsStore.role == 'admin'">
+                        <td
+                            v-if="
+                                userDetailsStore.role == 'admin' ||
+                                userDetailsStore.role == 'editor'
+                            "
+                        >
                             <button
                                 type="button"
                                 @click="

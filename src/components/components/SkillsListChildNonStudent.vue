@@ -115,7 +115,7 @@ export default {
             } else this.toggleChildren();
         },
         openEdit(id) {
-            this.$router.push(`/skills/edit/${id}`);
+            this.$router.push(`/skills/edit/${this.url}`);
         },
         // Save the state of the skills list to browser storage.
         toggleChildren() {

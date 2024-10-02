@@ -1,8 +1,9 @@
 <script>
 import ProfileDetails from '../components/ProfileDetails.vue';
-import Settings from '../components/Settings.vue';
-import BulkQuestionsUpload from '../components/BulkQuestionsUpload.vue';
-import AutoGenerateSources from '../components/AutoGenerateSources.vue';
+import Settings from '../components/settings/Settings.vue';
+import BulkQuestionsUpload from '../components/settings/BulkQuestionsUpload.vue';
+import AutoGenerateSources from '../components/settings/AutoGenerateSources.vue';
+import DeleteDownVotedSources from '../components/settings/DeleteDownVotedSources.vue';
 // Import the store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
@@ -20,7 +21,8 @@ export default {
         ProfileDetails,
         Settings,
         BulkQuestionsUpload,
-        AutoGenerateSources
+        AutoGenerateSources,
+        DeleteDownVotedSources
     },
     methods: {
         CheckMCQuestions() {
@@ -66,6 +68,8 @@ export default {
     <!-- Ability to autogenerate sources for all skills. At the moment, has to be done by programmer --->
      <!-- Hidden from all users --->
     <AutoGenerateSources v-if="userDetailsStore.role == 'dev'" />
+
+    <DeleteDownVotedSources v-if="userDetailsStore.role == 'admin' || userDetailsStore.userName == 'Sgt. Dysxleia' || userDetailsStore.userName =='jonathandyason@gmail.com'" />
 </template>
 
 <style>

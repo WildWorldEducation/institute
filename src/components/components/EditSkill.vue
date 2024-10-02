@@ -24,7 +24,7 @@ export default {
     },
     data() {
         return {
-            skillId: this.$route.params.id,
+            skillUrl: this.$route.params.skillUrl,
             skills: [],
             skill: {
                 id: '',
@@ -111,7 +111,7 @@ export default {
     methods: {
         getParentSkills() {
             for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                if (this.skillsStore.skillsList[i].id != this.skillId) {
+                if (this.skillsStore.skillsList[i].url != this.skillUrl) {
                     if (this.skillsStore.skillsList[i].type == 'super') {
                         this.superSkills.push(this.skillsStore.skillsList[i]);
                     }
@@ -128,7 +128,7 @@ export default {
             this.getSkill();
         },
         getSkill() {
-            fetch('/skills/show/' + this.skillId)
+            fetch('/skills/url/' + this.skillUrl)
                 .then(function (response) {
                     return response.json();
                 })
@@ -173,7 +173,7 @@ export default {
             for (let i = 0; i < this.skillTagsStore.skillTagsList.length; i++) {
                 if (
                     this.skillTagsStore.skillTagsList[i].skill_id ==
-                    this.skillId
+                    this.skill.id
                 ) {
                     this.filters.push(
                         this.skillTagsStore.skillTagsList[i].tag_id
@@ -187,7 +187,7 @@ export default {
                 return;
             }
 
-            await this.skillsStore.deleteSkill(this.skillId);
+            await this.skillsStore.deleteSkill(this.skill.id);
             // redirect user back to skill list page
             this.router.push('/skills');
         },
@@ -233,11 +233,11 @@ export default {
         },
         SubmitFilters() {
             // 1 delete the existing filters.
-            fetch('/skill-tags/remove/' + this.skillId, {
+            fetch('/skill-tags/remove/' + this.skill.id, {
                 method: 'DELETE'
                 // 2 push the new filters.
             }).then(() => {
-                var url = '/skill-tags/add/' + this.skillId;
+                var url = '/skill-tags/add/' + this.skill.id;
                 // do stuff with `data`, call second `fetch`
                 fetch(url, {
                     method: 'POST',
@@ -256,7 +256,7 @@ export default {
                 for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
                     if (
                         this.skillsStore.skillsList[i].type == 'sub' &&
-                        this.skillsStore.skillsList[i].parent == this.skillId
+                        this.skillsStore.skillsList[i].parent == this.skill.id
                     ) {
                         hasSubSkills = true;
                     }
@@ -289,7 +289,9 @@ export default {
                         this.skill.level = this.skillsStore.skillsList[i].level;
                     }
                     // Cant change a skill to be a sub skill, while it has its own child skills.
-                    if (this.skillsStore.skillsList[i].parent == this.skillId) {
+                    if (
+                        this.skillsStore.skillsList[i].parent == this.skill.id
+                    ) {
                         this.validate.noChild = true;
                         this.validate.violated = true;
                         alert(
@@ -341,7 +343,7 @@ export default {
                 })
             };
 
-            var url = '/skills/' + this.skillId + '/edit';
+            var url = '/skills/' + this.skill.id + '/edit';
             fetch(url, requestOptions)
                 .then(() => {
                     this.skillsStore.getNestedSkillsList();
@@ -372,7 +374,7 @@ export default {
                 })
             };
 
-            var url = '/skills/' + this.skillId + '/edit-for-review';
+            var url = '/skills/' + this.skill.id + '/edit-for-review';
             fetch(url, requestOptions).then(() => {
                 alert(
                     `This edit is being submitted for review.\nWe do this to prevent misinformation and sloppy wording from being added. If you would like to become an editor and help with this, please reach out.`

@@ -10,7 +10,7 @@ export default {
     },
     data() {
         return {
-            skillId: this.$route.params.id,
+            skillUrl: this.$route.params.skillUrl,
             skill: {},
             skillRevisions: [],
             currentVersionNumber: null
@@ -24,14 +24,16 @@ export default {
     methods: {
         async getSkill() {
             // Load the skill data
-            const res = await fetch('/skills/show/' + this.skillId);
+            const res = await fetch('/skills/url/' + this.skillUrl);
             this.skill = await res.json();
             this.currentVersionNumber = this.skill.version_number;
             await this.getRevisions();
         },
         async getRevisions() {
             // Load the skill data
-            const res = await fetch('/skill-history/' + this.skillId + '/list');
+            const res = await fetch(
+                '/skill-history/' + this.skill.id + '/list'
+            );
             this.skillRevisions = await res.json();
 
             // Prepare the data.
@@ -91,7 +93,7 @@ export default {
                 <router-link
                     :to="
                         '/skills/' +
-                        skillId +
+                        skill.url +
                         '/revision/' +
                         revision.version_number
                     "
