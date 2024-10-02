@@ -55,7 +55,7 @@ export default {
 
 <style>
 .heading {
-    color: #a48be7;
+    color: #8f7bd6;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }
