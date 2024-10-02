@@ -62,7 +62,16 @@ export default {
                     }
                 }
             });
-            this.resultsSkills = results;
+            // we highlight the part that match search text
+            const highlightedResult = results.map((result) => {
+                const matchedRegex = new RegExp(`(${this.searchText})`, 'gi');
+                const newText = result.name.replace(
+                    matchedRegex,
+                    '<span class="hightLight">$1</span>'
+                );
+                return { ...result, highlightedResult: newText };
+            });
+            this.resultsSkills = highlightedResult;
         },
         handleChooseResult(result) {
             this.resultsSkills = [];
@@ -174,13 +183,12 @@ export default {
             </div>
             <div class="position-relative">
                 <div v-if="resultsSkills.length" class="search-results">
-                    <div
+                    <button
                         @click="handleChooseResult(result)"
                         class="result-row"
                         v-for="result in resultsSkills"
-                    >
-                        {{ result.name }}
-                    </div>
+                        v-html="result.highlightedResult"
+                    ></button>
                 </div>
             </div>
         </div>
@@ -312,6 +320,16 @@ export default {
     background-color: #f3f5f6;
 }
 
+.hightLight {
+    font-weight: 500;
+    color: #9985d1;
+    float: none !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0px !important;
+    border-radius: 0px !important;
+    border: 0px !important;
+}
 /* Mobile view style */
 @media (max-width: 480px) {
     .search-bar {
