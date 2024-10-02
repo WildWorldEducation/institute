@@ -25,7 +25,7 @@ export default {
 <template>
     <div class="container">
         <div class="d-flex justify-content-between">
-            <h1>Cohorts</h1>
+            <h1 class="heading">Cohorts</h1>
             <router-link class="btn purple-btn" to="/cohorts/add"
                 >Add&nbsp;
                 <!-- Plus sign -->
@@ -54,6 +54,12 @@ export default {
 </template>
 
 <style>
+.heading {
+    color: #a48be7;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
 .purple-btn {
     background-color: #a48be6;
     color: white;

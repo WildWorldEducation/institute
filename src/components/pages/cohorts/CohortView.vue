@@ -147,7 +147,12 @@ export default {
 
 <template>
     <div class="container cohort-page">
-        <h1 class="heading">Cohorts: {{ cohort.name }}</h1>
+        <span class="d-flex justify-content-between"
+            ><h1 class="heading">{{ cohort.name }}</h1>
+            <button class="btn red-btn" @click="deleteCohort">
+                Delete
+            </button></span
+        >
         <!-- Filters -->
         <div class="d-flex flex-column">
             <div class="d-flex flex-row justify-content-between">
@@ -158,7 +163,7 @@ export default {
                     :title="showMembers ? 'collapse' : 'expand'"
                 >
                     <div class="d-flex">
-                        <h2 class="heading">Available Students</h2>
+                        <h2 class="heading h3">Available Students</h2>
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -177,20 +182,36 @@ export default {
                             />
                         </svg>
                     </div>
-                    <p><em>students can only be in one cohort at a time</em></p>
+                    <p>
+                        <em
+                            >Please note that a student can only be in one
+                            cohort.</em
+                        >
+                    </p>
                 </div>
             </div>
         </div>
         <div v-if="showMembers">
-            <ul>
+            <ul style="list-style: none">
                 <li v-for="student in students">
-                    {{ student.username }}
-                    <input
+                    <!-- <input
                         type="checkbox"
                         :value="student.id"
                         v-model="student.isMember"
                         :disabled="student.unavailable ? true : false"
-                    />
+                    /> -->
+                    <div class="form-check">
+                        <label class="control control-checkbox">
+                            <input
+                                type="checkbox"
+                                :value="student.id"
+                                v-model="student.isMember"
+                                :disabled="student.unavailable ? true : false"
+                            />
+                            <div class="control_indicator"></div>
+                        </label>
+                        <span class="students">{{ student.username }}</span>
+                    </div>
                 </li>
             </ul>
             <button class="green-btn btn" @click="submit">Submit</button>
@@ -206,7 +227,7 @@ export default {
                     :title="showFilters ? 'collapse' : 'expand'"
                 >
                     <div class="d-flex">
-                        <h2 class="heading">Filters</h2>
+                        <h2 class="heading h3">Filters</h2>
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -233,7 +254,6 @@ export default {
                 <FilterParent />
             </div>
         </Transition>
-        <button class="btn red-btn" @click="deleteCohort">Delete</button>
     </div>
 </template>
 
@@ -319,6 +339,7 @@ export default {
     align-items: center;
     max-width: fit-content;
     display: flex;
+    height: fit-content;
 }
 
 .red-btn:hover {
@@ -329,5 +350,114 @@ export default {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
+}
+
+/**-------------------------------------  */
+/* A lot of CSS to styling two check box */
+.control {
+    font-family: 'Poppins' sans-serif;
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 5px;
+    padding-top: 3px;
+    cursor: pointer;
+}
+
+.control > span {
+    font-weight: 500;
+    font-size: 0.938rem;
+    color: #667085;
+    text-align: center;
+}
+.control input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+.control_indicator {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    height: 29.09px;
+    width: 29.09px;
+    background: #f9f5ff;
+    border: 1.45px solid #9c7eec;
+    border-radius: 8.73px;
+}
+.control:hover input ~ .control_indicator,
+.control input:focus ~ .control_indicator {
+    background: #e7ddf6;
+}
+
+.plus-svg:hover {
+    cursor: pointer;
+}
+.control input:checked ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control:hover input:not([disabled]):checked ~ .control_indicator,
+.control input:checked:focus ~ .control_indicator {
+    background: #f9f5ff;
+}
+.control input:disabled ~ .control_indicator {
+    background: #e6e6e6;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.control_indicator:after {
+    box-sizing: unset;
+    content: '';
+    position: absolute;
+    display: none;
+}
+.control input:checked ~ .control_indicator:after {
+    display: block;
+}
+.control-checkbox .control_indicator:after {
+    left: 4px;
+    top: 5px;
+    width: 13.58px;
+    height: 9.33px;
+    border: solid #9c7eec;
+    border-width: 0px 0px 2.9px 2.9px;
+    transform: rotate(-45deg);
+}
+.control-checkbox input:disabled ~ .control_indicator:after {
+    border-color: #7b7b7b;
+}
+.control-checkbox .control_indicator::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-left: -1.3rem;
+    margin-top: -1.3rem;
+    background: #9c7eec;
+    border-radius: 3rem;
+    opacity: 0.6;
+    z-index: 99999;
+    transform: scale(0);
+}
+
+.control-checkbox input + .control_indicator::before {
+    animation: s-ripple 250ms ease-out;
+}
+.control-checkbox input:checked + .control_indicator::before {
+    animation-name: s-ripple-dup;
+}
+/* End of check box styling */
+
+/* ------------------------------------------------------------- */
+.form-check {
+    margin: 0px;
+    padding: 0px;
+}
+
+.students {
+    margin-left: 35px;
 }
 </style>
