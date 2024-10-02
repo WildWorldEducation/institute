@@ -14,7 +14,6 @@ export default {
         return {
             cohortId: this.$route.params.cohortId,
             showChildren: false,
-            parentIsFiltered: false,
             isFiltered: null
         };
     },
@@ -47,11 +46,7 @@ export default {
             }
         }
     },
-    async created() {
-        if (this.$parent.filtered == 1) {
-            this.parentIsFiltered = true;
-        }
-    },
+    async created() {},
     methods: {
         toggleChildSkills() {
             this.showChildren = !this.showChildren;
@@ -86,7 +81,7 @@ export default {
     <button
         :style="indent"
         class="filter-button d-flex justify-content-between align-items-center"
-        :class="{ 'is-filtered': filtered == 1 || parentIsFiltered }"
+        :class="{ 'is-filtered': filtered == 1 }"
         @click="toggleChildSkills()"
     >
         <span> {{ name }}</span>
@@ -162,7 +157,7 @@ export default {
         v-for="child in children"
         v-if="showChildren"
         :id="child.id"
-        :filtered="child.filtered"
+        :filtered="filtered"
         :children="child.children"
         :type="child.type"
         :level="child.level"
