@@ -9,12 +9,20 @@ export default {
             cohortsStore
         };
     },
-    props: ['id', 'children', 'name', 'type', 'level', 'depth', 'filtered'],
+    props: [
+        'id',
+        'children',
+        'name',
+        'type',
+        'level',
+        'depth',
+        'filtered',
+        'ancestorFiltered'
+    ],
     data() {
         return {
             cohortId: this.$route.params.cohortId,
             showChildren: false,
-            parentIsFiltered: false,
             isFiltered: null
         };
     },
@@ -47,16 +55,12 @@ export default {
             }
         }
     },
-    async created() {
-        if (this.$parent.filtered == 1) {
-            this.parentIsFiltered = true;
-        }
-    },
+    async created() {},
     methods: {
         toggleChildSkills() {
             this.showChildren = !this.showChildren;
         },
-        filter() {
+        filter() {           
             // Toggle isFiltered
             if (this.filtered == 1) {
                 this.isFiltered = 0;
@@ -85,8 +89,8 @@ export default {
 <template>
     <button
         :style="indent"
-        class="skill-button d-flex justify-content-between align-items-center"
-        :class="{ 'is-filtered': filtered == 1 || parentIsFiltered }"
+        class="filter-button d-flex justify-content-between align-items-center"
+        :class="{ 'is-filtered': filtered == 1 || ancestorFiltered == 1 }"
         @click="toggleChildSkills()"
     >
         <span> {{ name }}</span>
@@ -163,6 +167,7 @@ export default {
         v-if="showChildren"
         :id="child.id"
         :filtered="child.filtered"
+        :ancestorFiltered="filtered"
         :children="child.children"
         :type="child.type"
         :level="child.level"
@@ -174,13 +179,13 @@ export default {
 
 <style scoped>
 /* The skill buttons */
-.skill-button {
+.filter-button {
     padding: 10px;
     margin-bottom: 10px;
     border-style: solid;
     border-width: 2px;
     border-radius: 8px;
-    width: 400px;
+    width: 90%;
     height: 40px;
     color: #53389e;
     font-size: 16px;

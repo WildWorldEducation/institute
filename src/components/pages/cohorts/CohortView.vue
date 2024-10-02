@@ -100,7 +100,7 @@ export default {
             let index = 0;
             this.updateCohortMembers(index);
         },
-        updateCohortMembers(index) {
+        async updateCohortMembers(index) {
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -110,12 +110,13 @@ export default {
                 })
             };
             var url = '/cohorts/edit/' + this.cohortId;
-            fetch(url, requestOptions).then((response) => {
+            fetch(url, requestOptions).then(() => {
                 if (index + 1 < this.students.length) {
                     index++;
                     this.updateCohortMembers(index);
                 } else {
                     alert('Cohort updated');
+                    this.getMembers();
                     return;
                 }
             });
@@ -145,7 +146,7 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+    <div class="container cohort-page">
         <h1 class="heading">Cohorts: {{ cohort.name }}</h1>
         <!-- Filters -->
         <div class="d-flex flex-column">
@@ -232,11 +233,15 @@ export default {
                 <FilterParent />
             </div>
         </Transition>
+        <button class="btn red-btn" @click="deleteCohort">Delete</button>
     </div>
-    <button class="btn red-btn" @click="deleteCohort">Delete</button>
 </template>
 
 <style scoped>
+.cohort-page {
+    height: 100%;
+    position: relative;
+}
 /* +-+-+ Rotate Arrow Animation +-+-+  */
 .arrow-point-down {
     animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
