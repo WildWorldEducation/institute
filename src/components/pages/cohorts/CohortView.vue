@@ -100,7 +100,7 @@ export default {
             let index = 0;
             this.updateCohortMembers(index);
         },
-        updateCohortMembers(index) {
+        async updateCohortMembers(index) {
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -110,12 +110,13 @@ export default {
                 })
             };
             var url = '/cohorts/edit/' + this.cohortId;
-            fetch(url, requestOptions).then((response) => {
+            fetch(url, requestOptions).then(() => {
                 if (index + 1 < this.students.length) {
                     index++;
                     this.updateCohortMembers(index);
                 } else {
                     alert('Cohort updated');
+                    this.getMembers();
                     return;
                 }
             });

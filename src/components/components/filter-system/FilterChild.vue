@@ -9,7 +9,16 @@ export default {
             cohortsStore
         };
     },
-    props: ['id', 'children', 'name', 'type', 'level', 'depth', 'filtered'],
+    props: [
+        'id',
+        'children',
+        'name',
+        'type',
+        'level',
+        'depth',
+        'filtered',
+        'ancestorFiltered'
+    ],
     data() {
         return {
             cohortId: this.$route.params.cohortId,
@@ -51,7 +60,7 @@ export default {
         toggleChildSkills() {
             this.showChildren = !this.showChildren;
         },
-        filter() {
+        filter() {           
             // Toggle isFiltered
             if (this.filtered == 1) {
                 this.isFiltered = 0;
@@ -81,7 +90,7 @@ export default {
     <button
         :style="indent"
         class="filter-button d-flex justify-content-between align-items-center"
-        :class="{ 'is-filtered': filtered == 1 }"
+        :class="{ 'is-filtered': filtered == 1 || ancestorFiltered == 1 }"
         @click="toggleChildSkills()"
     >
         <span> {{ name }}</span>
@@ -157,7 +166,8 @@ export default {
         v-for="child in children"
         v-if="showChildren"
         :id="child.id"
-        :filtered="filtered"
+        :filtered="child.filtered"
+        :ancestorFiltered="filtered"
         :children="child.children"
         :type="child.type"
         :level="child.level"
