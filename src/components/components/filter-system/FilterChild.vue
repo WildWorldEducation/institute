@@ -85,7 +85,7 @@ export default {
 <template>
     <button
         :style="indent"
-        class="skill-button d-flex justify-content-between align-items-center"
+        class="filter-button d-flex justify-content-between align-items-center"
         :class="{ 'is-filtered': filtered == 1 || parentIsFiltered }"
         @click="toggleChildSkills()"
     >
@@ -174,13 +174,13 @@ export default {
 
 <style scoped>
 /* The skill buttons */
-.skill-button {
+.filter-button {
     padding: 10px;
     margin-bottom: 10px;
     border-style: solid;
     border-width: 2px;
     border-radius: 8px;
-    width: 400px;
+    width: 90%;
     height: 40px;
     color: #53389e;
     font-size: 16px;

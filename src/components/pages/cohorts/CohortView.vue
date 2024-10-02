@@ -318,8 +318,6 @@ export default {
     align-items: center;
     max-width: fit-content;
     display: flex;
-    position: absolute;
-    bottom: 10px;
 }
 
 .red-btn:hover {
