@@ -209,7 +209,7 @@ export default {
 }
 
 .is-filtered {
-    background-color: red;
+    background-color: darkslategrey;
     color: white;
 }
 
