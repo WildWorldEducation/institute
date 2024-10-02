@@ -46,7 +46,20 @@ export default {
             }
         }
     },
-    async created() {},
+    mounted() {
+        /*
+         * Give longer node names smaller font, otherwise they look bad.
+         * Do this by checking how many lines they span (by checking height.)
+         */
+        console.log(this.$refs.name.offsetHeight);
+        if (this.$refs.name.offsetHeight > 90)
+            this.$refs.name.classList.add('four-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 60)
+            this.$refs.name.classList.add('three-row-domain-name');
+        else if (this.$refs.name.offsetHeight > 30) {
+            this.$refs.name.classList.add('two-row-domain-name');
+        }
+    },
     methods: {
         toggleChildSkills() {
             this.showChildren = !this.showChildren;
@@ -84,7 +97,7 @@ export default {
         :class="{ 'is-filtered': filtered == 1 }"
         @click="toggleChildSkills()"
     >
-        <span> {{ name }}</span>
+        <span ref="name"> {{ name }}</span>
         <div>
             <!-- Filter Button -->
             <button class="btn" @click.stop="filter">
@@ -187,7 +200,7 @@ export default {
     border-style: solid;
     border-width: 2px;
     border-radius: 8px;
-    width: 90%;
+    width: 400px;
     height: 40px;
     color: black;
     font-size: 16px;
@@ -198,5 +211,35 @@ export default {
 .is-filtered {
     background-color: red;
     color: white;
+}
+
+.two-row-domain-name {
+    font-size: 14px;
+}
+
+.three-row-domain-name {
+    font-size: 13px;
+}
+
+.four-row-domain-name {
+    font-size: 11px;
+}
+
+@media (max-width: 480px) {
+    .filter-button {
+        width: 100%;
+    }
+
+    .two-row-domain-name {
+        font-size: 13px;
+    }
+
+    .three-row-domain-name {
+        font-size: 11px;
+    }
+
+    .four-row-domain-name {
+        font-size: 9px;
+    }
 }
 </style>
