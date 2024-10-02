@@ -145,7 +145,7 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+    <div class="container cohort-page">
         <h1 class="heading">Cohorts: {{ cohort.name }}</h1>
         <!-- Filters -->
         <div class="d-flex flex-column">
@@ -232,11 +232,15 @@ export default {
                 <FilterParent />
             </div>
         </Transition>
+        <button class="btn red-btn" @click="deleteCohort">Delete</button>
     </div>
-    <button class="btn red-btn" @click="deleteCohort">Delete</button>
 </template>
 
 <style scoped>
+.cohort-page {
+    height: 100%;
+    position: relative;
+}
 /* +-+-+ Rotate Arrow Animation +-+-+  */
 .arrow-point-down {
     animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
@@ -314,6 +318,8 @@ export default {
     align-items: center;
     max-width: fit-content;
     display: flex;
+    position: absolute;
+    bottom: 10px;
 }
 
 .red-btn:hover {
