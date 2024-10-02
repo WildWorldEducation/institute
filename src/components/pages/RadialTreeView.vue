@@ -150,20 +150,24 @@ export default {
             </div>
             <div class="tablet-and-up-legend">
                 <div class="legend row">
-                    <div class="col">
+                    <div class="col d-flex align-items-center">
                         <span class="grade-school"></span>Grade school
                     </div>
-                    <div class="col">
+                    <div class="col d-flex align-items-center">
                         <span class="middle-school"></span> Middle school
                     </div>
-                    <div class="col">
+                    <div class="col d-flex align-items-center">
                         <span class="high-school"></span> High school
                     </div>
-                    <div class="col"><span class="college"></span> College</div>
-                    <div class="col"><span class="phd"></span> PHD</div>
+                    <div class="col d-flex align-items-center">
+                        <span class="college"></span> College
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <span class="phd"></span> PHD
+                    </div>
 
                     <div
-                        class="col d-flex justify-content-end align-items-center gap-2"
+                        class="col d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
                     >
                         <!-- Search Feature -->
                         <div
@@ -266,54 +270,6 @@ export default {
 
 .collapsible-tree-legend {
     width: 100%;
-}
-
-/* X-Small devices (portrait phones, less than 576px) */
-@media (max-width: 800px) {
-    .mobile-legend {
-        display: block;
-    }
-
-    .tablet-and-up-legend {
-        display: none;
-    }
-
-    #print-btn {
-        margin-bottom: 5px;
-    }
-
-    #legend {
-        height: 180px;
-    }
-}
-
-/* Bigger devices */
-@media (min-width: 801px) {
-    .mobile-legend {
-        display: none;
-    }
-
-    #legend {
-        height: 110px;
-    }
-
-    .tablet-and-up-legend {
-        display: block;
-    }
-    .legend {
-        align-items: center;
-    }
-
-    .legend .col {
-        display: flex;
-    }
-    .legend span {
-        flex-shrink: 0;
-    }
-}
-
-#legend {
-    height: 90px;
 }
 
 .legend span {
@@ -424,5 +380,57 @@ export default {
 .result-row:focus {
     background-color: #f3f5f6;
     color: black;
+}
+
+.mobile-legend {
+    display: none;
+}
+
+/* X-Small devices (portrait phones, less than 576px) */
+@media (max-width: 480px) {
+    .mobile-legend {
+        display: block;
+    }
+
+    .tablet-and-up-legend {
+        display: none;
+    }
+
+    #print-btn {
+        margin-bottom: 5px;
+    }
+
+    #legend {
+        height: 180px;
+    }
+}
+
+/* Bigger devices */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .mobile-legend {
+        display: none;
+    }
+
+    #legend {
+        height: 90px;
+    }
+
+    .tablet-and-up-legend {
+        display: block;
+    }
+    .legend {
+        align-items: center;
+    }
+
+    .legend .col {
+        display: flex;
+    }
+    .legend span {
+        flex-shrink: 0;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
 }
 </style>
