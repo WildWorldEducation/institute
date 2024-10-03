@@ -44,6 +44,7 @@ export default {
         },
         getResults(searchText) {
             let results = [];
+
             this.nameList.forEach((element) => {
                 // search only first work match if search text is less than three
                 if (searchText.length < 3) {
@@ -57,11 +58,15 @@ export default {
                 }
                 // search for all word in skill name string if search text is greater than three
                 else {
+                    if (element.name.includes('gun')) {
+                        console.log(element.name.toLowerCase());
+                    }
                     if (element.name.toLowerCase().includes(searchText)) {
                         results.push(element);
                     }
                 }
             });
+
             // we highlight the part that match search text
             const highlightedResult = results.map((result) => {
                 const matchedRegex = new RegExp(`(${this.searchText})`, 'gi');
@@ -92,10 +97,9 @@ export default {
                 if (this.chooseResult) {
                     this.chooseResult = null;
                 } else {
-                    this.getResults(newVal);
+                    this.getResults(newVal.toLowerCase());
                 }
                 if (newVal.length === 0) {
-                    console.log('result is clear');
                     this.clearResults();
                 }
             }
