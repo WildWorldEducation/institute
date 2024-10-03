@@ -167,12 +167,12 @@ export default {
                     </div>
 
                     <div
-                        class="col-12 col-lg d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
+                        class="col-12 col-lg-4 d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
                     >
                         <!-- Search Feature -->
                         <div
                             :class="[
-                                'search-bar',
+                                'search-bar w-100',
                                 findNodeResults.length > 0 && 'have-results'
                             ]"
                         >
