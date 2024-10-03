@@ -177,7 +177,6 @@ export default {
                 }
             }
             this.findNodeLoading = false;
-            console.log(path);
             return path;
         }
     },

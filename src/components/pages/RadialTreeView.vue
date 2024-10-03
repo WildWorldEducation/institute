@@ -103,7 +103,7 @@ export default {
                         </button>
                     </div>
                 </div>
-                <div class="w-75 mx-auto">
+                <div class="search-mobile-row">
                     <!-- Search Feature -->
                     <div
                         :class="[
@@ -167,7 +167,7 @@ export default {
                     </div>
 
                     <div
-                        class="col d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
+                        class="col-12 col-lg d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
                     >
                         <!-- Search Feature -->
                         <div
@@ -386,6 +386,10 @@ export default {
     display: none;
 }
 
+.skill-tree-input {
+    width: 100%;
+}
+
 /* X-Small devices (portrait phones, less than 576px) */
 @media (max-width: 480px) {
     .mobile-legend {
@@ -402,6 +406,12 @@ export default {
 
     #legend {
         height: 180px;
+    }
+
+    .search-mobile-row {
+        width: 96%;
+        margin-left: 0px;
+        margin-right: auto;
     }
 }
 

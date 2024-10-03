@@ -63,7 +63,6 @@ export default {
         },
         countMastered() {
             let masteredCount = 0;
-
             // Iterate through each object in the array
             for (let obj of this.subSkills) {
                 // Check if the object has the attribute "is_mastered" set to true
@@ -196,6 +195,8 @@ export default {
                     document.getElementById(`skill${this.id}`).scrollIntoView({
                         behavior: 'smooth'
                     });
+                } else {
+                    this.isResult = false;
                 }
             }
         }

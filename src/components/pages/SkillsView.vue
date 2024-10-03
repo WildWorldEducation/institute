@@ -352,6 +352,10 @@ export default {
         margin-left: auto;
         margin-right: auto;
     }
+
+    .skill-tree-input {
+        width: 100%;
+    }
 }
 
 /* Tablet view style */

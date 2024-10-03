@@ -114,7 +114,7 @@ export default {
                         </button>
                     </div>
                 </div>
-                <div class="w-75 mx-auto">
+                <div class="search-mobile-row">
                     <!-- Search feature -->
                     <div
                         :class="[
@@ -177,7 +177,7 @@ export default {
                         <span class="phd"></span> PHD
                     </div>
                     <div
-                        class="col d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
+                        class="col-12 col-lg d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
                     >
                         <!-- Search Feature -->
                         <div
@@ -413,6 +413,10 @@ export default {
     background-color: #9da7b1;
 }
 
+.skill-tree-input {
+    width: 100%;
+}
+
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
     #mobile-legend {
@@ -429,6 +433,12 @@ export default {
 
     #legend {
         height: 190px;
+    }
+
+    .search-mobile-row {
+        width: 96%;
+        margin-left: 0px;
+        margin-right: auto;
     }
 }
 
