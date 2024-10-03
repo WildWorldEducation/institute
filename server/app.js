@@ -371,6 +371,7 @@ app.post('/login-attempt', (req, res, next) => {
                     (err, response) => {
                         if (err) {
                         }
+
                         // If password matches.
                         if (response) {
                             // Populate user session data.

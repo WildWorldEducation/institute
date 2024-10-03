@@ -4,7 +4,8 @@ export const useSkillsStore = defineStore('skills', {
     state: () => ({
         nestedSkillsList: [],
         filteredNestedSkillsList: [],
-        skillsList: []
+        skillsList: [],
+        findNodeLoading: false,
     }),
     actions: {
         // For 'Admin' role
@@ -66,6 +67,7 @@ export const useSkillsStore = defineStore('skills', {
 
             // Update the store.
             this.getNestedSkillsList();
-        }
+        },
+
     }
 });
