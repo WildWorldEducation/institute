@@ -101,12 +101,9 @@ export default {
                     </div>
 
                     <div class="d-flex justify-content-end gap-4">
-                        <router-link
-                            class="btn red-btn"
-                            :to="'/skills/' + skillId"
-                        >
+                        <button class="btn red-btn" @click="$router.go(-1)">
                             Cancel
-                        </router-link>
+                        </button>
                         <button class="btn purple-btn" @click="Submit()">
                             Submit
                         </button>
