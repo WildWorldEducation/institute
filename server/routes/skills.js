@@ -1199,13 +1199,72 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
 
 // get list of skill name for search feature in frontend
 router.get('/name-list', (req, res, next) => {
-    const query = 'SELECT skills.name FROM skills';
+    const query = `SELECT id, name, parent, display_name
+    FROM skills
+    WHERE is_deleted = 0
+    AND is_filtered = 'available';`;
     conn.query(query, (err, results) => {
         try {
             if (err) {
                 throw err;
             }
-            res.json(results);
+
+            // Need to make the array nested, as need to filter out skills that have been
+            // gloablly filtered, as well as their descendants.
+            // Create the 'children' array.
+            for (var i = 0; i < results.length; i++) {
+                results[i].children = [];
+            }
+
+            // Deal with skills that have multiple parents.
+            // These skills have secret copies in the table.
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].display_name != null) {
+                    results[i].name = results[i].display_name;
+                }
+            }
+
+            // First parent.
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].parent != null && results[i].parent != 0) {
+                    var parentId = results[i].parent;
+                    // go through all rows again, add children
+                    for (let j = 0; j < results.length; j++) {
+                        if (results[j].id == parentId) {
+                            results[j].children.push(results[i]);
+                        }
+                    }
+                }
+            }
+
+            // Add first level of array.
+            let filteredNestedSkills = [];
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].parent == null || results[i].parent == 0) {
+                    filteredNestedSkills.push(results[i]);
+                }
+            }
+
+            // Convert back to single flat array.
+            function flat(array) {
+                var result = [];
+                array.forEach(function (a) {
+                    result.push(a);
+                    if (Array.isArray(a.children)) {
+                        result = result.concat(flat(a.children));
+                    }
+                });
+                return result;
+            }
+
+            let flatArray = flat(filteredNestedSkills);
+
+            // Only return the name field.
+            var namesArray = flatArray.map(function (a) {
+                return { name: a.name };
+            });
+
+            res.json(namesArray);
         } catch (err) {
             next(err);
         }
