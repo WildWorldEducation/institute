@@ -27,6 +27,7 @@ export default {
         handleChooseResult(node) {
             this.searchText = node.data.skill_name;
             this.lastChooseResult = node.data.skill_name;
+
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
             // also open the skill requirement mastery div
@@ -35,15 +36,28 @@ export default {
     },
     computed: {
         findNodeResults() {
-            if (this.lastChooseResult === this.searchText) {
+            if (
+                this.lastChooseResult === this.searchText ||
+                this.searchText.length === 0
+            ) {
                 return [];
             }
+
             // close the mastery requirement panel when showing search result
             this.$refs.childComponent.showSkillPanel = false;
             const results = this.$refs.childComponent.findNodeWithName(
                 this.searchText.toLocaleLowerCase()
             );
-            return results;
+            // we highlight the part that match search text
+            const highlightedResult = results.map((result) => {
+                const matchedRegex = new RegExp(`(${this.searchText})`, 'gi');
+                const newText = result.data.skill_name.replace(
+                    matchedRegex,
+                    '<span class="hightLight">$1</span>'
+                );
+                return { ...result, highlightedResult: newText };
+            });
+            return highlightedResult;
         }
     },
     watch: {
@@ -100,28 +114,76 @@ export default {
                         </button>
                     </div>
                 </div>
+                <div class="search-mobile-row">
+                    <!-- Search feature -->
+                    <div
+                        :class="[
+                            'search-bar mt-3',
+                            findNodeResults.length > 0 && 'have-results'
+                        ]"
+                    >
+                        <div class="d-flex align-items-center p-1">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="15"
+                                height="15"
+                                fill="#5f6368"
+                                class="me-2"
+                            >
+                                <path
+                                    d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                                />
+                            </svg>
+                            <input
+                                id="skill-tree-search-text"
+                                type="text"
+                                class="skill-tree-input"
+                                placeholder="Skill Name"
+                                v-model="searchText"
+                            />
+                        </div>
+                        <div class="position-relative">
+                            <div
+                                v-if="findNodeResults.length > 0"
+                                class="search-results"
+                            >
+                                <button
+                                    @click="handleChooseResult(result)"
+                                    class="result-row"
+                                    v-for="result in findNodeResults"
+                                    v-html="result.highlightedResult"
+                                ></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="tablet-and-up-legend">
                 <div class="legend row">
-                    <div class="col">
+                    <div class="col d-flex align-items-center">
                         <span class="grade-school"></span>Grade school
                     </div>
-                    <div class="col">
+                    <div class="col d-flex align-items-center">
                         <span class="middle-school"></span> Middle school
                     </div>
-                    <div class="col">
+                    <div class="col d-flex align-items-center">
                         <span class="high-school"></span> High school
                     </div>
-                    <div class="col"><span class="college"></span> College</div>
-                    <div class="col"><span class="phd"></span> PHD</div>
+                    <div class="col d-flex align-items-center">
+                        <span class="college"></span> College
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <span class="phd"></span> PHD
+                    </div>
                     <div
-                        class="col d-flex justify-content-end align-items-center gap-2"
+                        class="col-12 col-lg-4 d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
                     >
                         <!-- Search Feature -->
                         <div
                             :class="[
-                                'search-bar',
-                                searchText.length > 0 && 'have-results'
+                                'search-bar w-100',
+                                findNodeResults.length > 0 && 'have-results'
                             ]"
                         >
                             <div class="d-flex align-items-center p-1">
@@ -147,31 +209,29 @@ export default {
                             </div>
                             <div class="position-relative">
                                 <div
-                                    v-if="searchText.length"
+                                    v-if="findNodeResults.length > 0"
                                     class="search-results"
                                 >
-                                    <div
+                                    <button
                                         @click="handleChooseResult(result)"
                                         class="result-row"
                                         v-for="result in findNodeResults"
-                                    >
-                                        {{ result.data.skill_name }}
-                                    </div>
+                                        v-html="result.highlightedResult"
+                                    ></button>
                                 </div>
                             </div>
                         </div>
-
                         <button
                             v-if="sessionDetailsStore.isLoggedIn"
                             id="print-btn"
-                            class="btn btn-info me-3"
+                            class="btn btn-info me-1"
                             @click="$refs.childComponent.printPDF()"
                         >
                             Print
                         </button>
                         <button
                             id="reset-btn"
-                            class="btn btn-primary"
+                            class="btn btn-primary me-3"
                             @click="resetPos()"
                         >
                             Reset
@@ -234,7 +294,6 @@ export default {
 .search-bar {
     display: flex;
     flex-direction: column;
-
     border: 1px solid #dce2f2;
     border-radius: 8px;
 }
@@ -262,7 +321,6 @@ export default {
     border-right: 1px solid #dce2f2;
     border-left: 1px solid #dce2f2;
     background-color: white;
-
     max-height: 400px;
     overflow-y: auto;
     z-index: 1000;
@@ -272,46 +330,28 @@ export default {
 .result-row {
     padding: 4px;
     cursor: pointer;
+    color: #6e6e6e;
+    background-color: inherit;
+    border: 0px;
+    text-align: left;
 }
 
-.result-row:hover {
+.result-row:hover,
+.result-row:focus {
     background-color: #f3f5f6;
+    color: black;
 }
 
-/* Small devices (portrait phones) */
-@media (max-width: 800px) {
-    #mobile-legend {
-        display: block;
-    }
-
-    #tablet-and-up-legend {
-        display: none;
-    }
-
-    #print-btn {
-        margin-bottom: 5px;
-    }
+.result-row:focus {
+    border: 1px solid #133b61;
 }
 
-/* Bigger devices */
-@media (min-width: 801px) {
-    #mobile-legend {
-        display: none;
-    }
+#legend {
+    height: 60px;
+}
 
-    #tablet-and-up-legend {
-        display: block;
-    }
-    .legend {
-        align-items: center;
-    }
-
-    .legend .col {
-        display: flex;
-    }
-    .legend span {
-        flex-shrink: 0;
-    }
+#mobile-legend {
+    display: none;
 }
 
 .legend span {
@@ -320,6 +360,17 @@ export default {
     height: 20px;
     margin: 2px;
     border-radius: 50%;
+}
+
+.hightLight {
+    font-weight: 500;
+    color: #9985d1;
+    float: none !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0px !important;
+    border-radius: 0px !important;
+    border: 0px !important;
 }
 /* Level colors */
 .legend .grade-school {
@@ -362,5 +413,62 @@ export default {
     background-color: #9da7b1;
 }
 
+.skill-tree-input {
+    width: 100%;
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    #mobile-legend {
+        display: block;
+    }
+
+    #tablet-and-up-legend {
+        display: none;
+    }
+
+    #print-btn {
+        margin-bottom: 5px;
+    }
+
+    #legend {
+        height: 190px;
+    }
+
+    .search-mobile-row {
+        width: 96%;
+        margin-left: 0px;
+        margin-right: auto;
+    }
+}
+
+/* Bigger devices ( Tablet ) */
+@media (min-width: 481px) and (max-width: 1024px) {
+    #legend {
+        height: 90px;
+    }
+
+    #mobile-legend {
+        display: none;
+    }
+
+    #tablet-and-up-legend {
+        display: block;
+    }
+    .legend {
+        align-items: center;
+    }
+
+    .legend .col {
+        display: flex;
+    }
+    .legend span {
+        flex-shrink: 0;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+}
 /*---*/
 </style>

@@ -1197,8 +1197,19 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
     }
 });
 
-// router.get('*', (req, res) => {
-//     res.redirect('/');
-// });
+// get list of skill name for search feature in frontend
+router.get('/name-list', (req, res, next) => {
+    const query = 'SELECT skills.name FROM skills';
+    conn.query(query, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.json(results);
+        } catch (err) {
+            next(err);
+        }
+    });
+});
 
 module.exports = router;

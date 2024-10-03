@@ -33,12 +33,13 @@ export default {
             instructorMode: false,
             studentUserSkills: [],
             // For the loading animation.
-            isLoading: true
+            isLoading: true,
+            path: []
         };
     },
     computed: {},
     async created() {
-        // Check if regualr or instructor mode.
+        // Check if regular or instructor mode.
         if (typeof this.studentId == 'string') {
             this.instructorMode = true;
         }
@@ -82,13 +83,109 @@ export default {
         async DeleteSkill(id) {
             await this.skillsStore.deleteSkill(id);
             await this.skillsStore.getNestedSkillsList();
+        },
+        findNode(name) {
+            if (this.instructorMode === false) {
+                // Admins.
+                if (this.userDetailsStore.role == 'admin') {
+                    this.path = this.findPathInNestedSkillTree(
+                        name,
+                        this.skillsStore.nestedSkillsList
+                    );
+                }
+                // Students.
+                else if (this.userDetailsStore.role == 'student') {
+                    this.path = this.findPathInNestedSkillTree(
+                        name,
+                        this.userSkills
+                    );
+                }
+                // Instructor and editor
+                if (
+                    this.userDetailsStore.role == 'instructor' ||
+                    this.userDetailsStore.role == 'editor'
+                ) {
+                    this.path = this.findPathInNestedSkillTree(
+                        name,
+                        this.skillsStore.filteredNestedSkillsList
+                    );
+                }
+            } else {
+                // instructor mode search
+                this.path = this.findPathInNestedSkillTree(
+                    name,
+                    studentUserSkills
+                );
+            }
+        },
+        // for finding the path to a specific node in admin nested skill list
+        // Implement of DFS algorithm for tree searching
+        findPathInNestedSkillTree(name, initialSkillList) {
+            this.findNodeLoading = true;
+            // the return array that contains path to desire node
+            let path = [];
+            // stop condition when the node is found
+            let finish = false;
+            // stack contain node that need to check. Initial data is child of root node
+            let serveStack = [...initialSkillList];
+            // stack contain node that we have visited
+            let visited = [];
+            while (!finish) {
+                const currentNode = serveStack.pop();
+                if (currentNode) {
+                    // check if current node is already visited
+                    const visitedNode = visited.some(
+                        (node) => node.id === currentNode.id
+                    );
+
+                    // skip the visited node
+                    if (!visitedNode) {
+                        // add current node children to serveStack
+                        currentNode.children?.forEach((childNode) => {
+                            serveStack.push(childNode);
+                        });
+                        // also add the current node to visited node
+                        visited.push(currentNode);
+                        if (
+                            currentNode.name === name ||
+                            currentNode.skill_name === name
+                        ) {
+                            // we find the path that lead to the found node
+                            let parentId = currentNode.parent;
+                            // add the node to the head of the array for easier read
+                            path = [currentNode, ...path];
+                            let pathNode = currentNode;
+                            while (parentId !== 0) {
+                                // Find parent in visit stack
+                                pathNode = visited.find(
+                                    (node) => node.id === pathNode.parent
+                                );
+                                // add the node to the head of the array for easier read
+                                path = [pathNode, ...path];
+                                parentId = pathNode.parent;
+                            }
+                            // stop the search loop
+                            finish = true;
+                        }
+                    }
+                } else {
+                    // if the serve stack is empty that mean we search for the whole tree
+                    finish = true;
+                }
+                if (serveStack.length === 0) {
+                    finish;
+                }
+            }
+            this.findNodeLoading = false;
+            return path;
         }
     },
     components: {
         SkillsListChildStudent,
         SkillsListChildNonStudent,
         SkillsListChildInstructorMode
-    }
+    },
+    watcher: {}
 };
 </script>
 
@@ -118,6 +215,7 @@ export default {
                 :type="skill.type"
                 :level="skill.level"
                 :role="userDetailsStore.role"
+                :path="this.path"
             >
             </SkillsListChildStudent>
         </div>
@@ -138,6 +236,7 @@ export default {
                 :type="skill.type"
                 :level="skill.level"
                 :role="userDetailsStore.role"
+                :path="this.path"
             >
             </SkillsListChildNonStudent>
         </div>
@@ -154,6 +253,7 @@ export default {
                 :isFiltered="skill.is_filtered"
                 :role="userDetailsStore.role"
                 :DeleteSkill="DeleteSkill"
+                :path="this.path"
             >
             </SkillsListChildNonStudent>
         </div>
@@ -169,6 +269,7 @@ export default {
                 :type="skill.type"
                 :level="skill.level"
                 :role="userDetailsStore.role"
+                :path="this.path"
             >
             </SkillsListChildInstructorMode>
         </div>
@@ -185,6 +286,12 @@ export default {
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
+}
+
+:deep(.result-button) {
+    color: red;
+    text-decoration: underline;
+    border: dashed 4px red !important;
 }
 
 @keyframes rotation {
