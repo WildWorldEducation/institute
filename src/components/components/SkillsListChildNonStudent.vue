@@ -173,7 +173,7 @@ export default {
                 if (newVal.length === 0 && this.isResult === true) {
                     this.isResult = false;
                 }
-                // if we are the last node to appear when user choose a path we scroll to here
+                // if we are the last node to appear when user choose a path we scroll to the node
                 const lastNode = this.path[this.path.length - 1];
                 if (lastNode && this.id === lastNode.id) {
                     this.isResult = true;

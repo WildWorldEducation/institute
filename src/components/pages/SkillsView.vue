@@ -58,9 +58,6 @@ export default {
                 }
                 // search for all word in skill name string if search text is greater than three
                 else {
-                    if (element.name.includes('gun')) {
-                        console.log(element.name.toLowerCase());
-                    }
                     if (element.name.toLowerCase().includes(searchText)) {
                         results.push(element);
                     }
