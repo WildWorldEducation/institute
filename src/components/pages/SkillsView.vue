@@ -90,7 +90,7 @@ export default {
             handler(newVal) {
                 // if
                 if (this.chooseResult) {
-                    this.chooseResult = false;
+                    this.chooseResult = null;
                 } else {
                     this.getResults(newVal);
                 }
@@ -317,13 +317,23 @@ export default {
 .result-row {
     padding: 4px;
     cursor: pointer;
+    color: #6e6e6e;
+    background-color: inherit;
+    border: 0px;
+    text-align: left;
 }
 
-.result-row:hover {
+.result-row:hover,
+.result-row:focus {
     background-color: #f3f5f6;
+    color: black;
 }
 
-.hightLight {
+.result-row:focus {
+    border: 1px solid #133b61;
+}
+
+:deep(.hightLight) {
     font-weight: 500;
     color: #9985d1;
     float: none !important;
@@ -333,6 +343,7 @@ export default {
     border-radius: 0px !important;
     border: 0px !important;
 }
+
 /* Mobile view style */
 @media (max-width: 480px) {
     .search-bar {
