@@ -71,9 +71,11 @@ export default {
         SkillPanel
     },
     async mounted() {
-        if (this.skillTreeStore.userSkills.length == 0) {
-            await this.skillTreeStore.getUserSkills();
+        if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
+            await this.skillTreeStore.getVerticalTreeUserSkills();
         }
+
+        console.log('test');
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
@@ -81,7 +83,7 @@ export default {
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillTreeStore.userSkills
+            children: this.skillTreeStore.verticalTreeUserSkills
         };
 
         this.getAlgorithm();
@@ -140,7 +142,7 @@ export default {
                     (this.skill.show_children && this.skill.show_children == 0)
                 ) {
                     this.skill.hasChildren = true;
-                }
+                }            
                 this.skill.x = node.x;
                 this.skill.y = node.y;
 
@@ -834,12 +836,12 @@ export default {
         },
         async reloadTree(node) {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getUserSkills();
+            await this.skillTreeStore.getVerticalTreeUserSkills();
 
             this.skill = {
                 name: 'SKILLS',
                 sprite: null,
-                children: this.skillTreeStore.userSkills
+                children: this.skillTreeStore.verticalTreeUserSkills
             };
 
             var skillsWithSubSkillsMoved = [];
