@@ -726,16 +726,20 @@ export default {
         },
         // zoom and pan to a node
         goToLocation(node) {
+            const skillTreeHeight = this.$refs.wrapper.clientHeight;
+            const skillTreeWidth = this.$refs.wrapper.clientWidth;
+            const zoomedScale = skillTreeWidth > 480 ? 1.75 : 1.2;
+
+            // add if point is less than zero and minus otherwise
+            const centerYoffset =
+                node.x < 0
+                    ? (skillTreeHeight / (2 * zoomedScale)) * -zoomedScale
+                    : (skillTreeHeight / (2 * zoomedScale)) * zoomedScale;
             this.resultNode = node;
-            const zoomedScale = 1.75;
             const translateX =
                 -node.y * zoomedScale +
-                (window.innerWidth / (2 * zoomedScale)) * zoomedScale;
-            const translateY =
-                -node.x * zoomedScale +
-                ((window.innerHeight - window.innerHeight * 0.1) /
-                    (2 * zoomedScale)) *
-                    zoomedScale;
+                (skillTreeWidth / (2 * zoomedScale)) * zoomedScale;
+            const translateY = -node.x * zoomedScale + centerYoffset;
 
             d3.select(this.context.canvas)
                 .transition()
@@ -746,6 +750,11 @@ export default {
                         .translate(translateX, translateY)
                         .scale(zoomedScale)
                 );
+
+            const centerXoffset =
+                node.y < 0
+                    ? (skillTreeWidth / (2 * zoomedScale)) * zoomedScale
+                    : -((skillTreeWidth / (2 * zoomedScale)) * zoomedScale);
         },
         // Pan with arrow keys and joystick.
         panInD3() {
@@ -976,7 +985,7 @@ export default {
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
-    <div v-show="isLoading == false" id="wrapper">
+    <div ref="wrapper" v-show="isLoading == false" id="wrapper">
         <SkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
         <div
             v-if="showAnimation"
