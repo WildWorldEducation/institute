@@ -689,14 +689,18 @@ export default {
         },
         // zoom and pan to a node
         goToLocation(node) {
+            const skillTreeHeight = this.$refs.wrapper.clientHeight;
+            const skillTreeWidth = this.$refs.wrapper.clientWidth;
+            const centerYOffset = skillTreeWidth > 480 ? 2.5 : 2.8;
+            const centerXOffset = 2;
             this.resultNode = node;
-            const fixedScale = 1.75;
+            const fixedScale = skillTreeWidth > 480 ? 1.75 : 1.2;
             const translateX =
                 -node.y * fixedScale +
-                (window.innerWidth / (2 * fixedScale)) * fixedScale;
+                (skillTreeWidth / (centerXOffset * fixedScale)) * fixedScale;
             const translateY =
                 -node.x * fixedScale +
-                (window.innerHeight / (2 * fixedScale)) * fixedScale;
+                (skillTreeHeight / (centerYOffset * fixedScale)) * fixedScale;
 
             d3.select(this.context.canvas)
                 .transition()
@@ -773,7 +777,7 @@ export default {
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
-    <div v-show="isLoading == false" id="wrapper">
+    <div v-show="isLoading == false" id="wrapper" ref="wrapper">
         <SkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
         <div
             v-if="showAnimation"

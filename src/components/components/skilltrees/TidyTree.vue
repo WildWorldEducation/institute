@@ -729,17 +729,14 @@ export default {
             const skillTreeHeight = this.$refs.wrapper.clientHeight;
             const skillTreeWidth = this.$refs.wrapper.clientWidth;
             const zoomedScale = skillTreeWidth > 480 ? 1.75 : 1.2;
-
-            // add if point is less than zero and minus otherwise
-            const centerYoffset =
-                node.x < 0
-                    ? (skillTreeHeight / (2 * zoomedScale)) * -zoomedScale
-                    : (skillTreeHeight / (2 * zoomedScale)) * zoomedScale;
+            const centerYOffset = skillTreeWidth > 480 ? 2.5 : 2.8;
+            const centerXOffset = 2;
             this.resultNode = node;
             const translateX =
                 -node.y * zoomedScale +
-                (skillTreeWidth / (2 * zoomedScale)) * zoomedScale;
-            const translateY = -node.x * zoomedScale + centerYoffset;
+                (skillTreeWidth / (centerXOffset * zoomedScale)) * zoomedScale;
+            const translateY =
+                -node.x * zoomedScale + skillTreeHeight / centerYOffset;
 
             d3.select(this.context.canvas)
                 .transition()
@@ -750,11 +747,6 @@ export default {
                         .translate(translateX, translateY)
                         .scale(zoomedScale)
                 );
-
-            const centerXoffset =
-                node.y < 0
-                    ? (skillTreeWidth / (2 * zoomedScale)) * zoomedScale
-                    : -((skillTreeWidth / (2 * zoomedScale)) * zoomedScale);
         },
         // Pan with arrow keys and joystick.
         panInD3() {
