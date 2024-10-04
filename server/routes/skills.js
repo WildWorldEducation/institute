@@ -1197,7 +1197,7 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
     }
 });
 
-// get list of skill name for search feature in frontend
+// For the search feature on the Collapsable Skill Tree.
 router.get('/name-list', (req, res, next) => {
     const query = `SELECT id, name, parent, display_name
     FROM skills
@@ -1210,7 +1210,8 @@ router.get('/name-list', (req, res, next) => {
             }
 
             // Need to make the array nested, as need to filter out skills that have been
-            // gloablly filtered, as well as their descendants.
+            // globally filtered, as well as their descendants.
+
             // Create the 'children' array.
             for (var i = 0; i < results.length; i++) {
                 results[i].children = [];

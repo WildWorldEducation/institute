@@ -131,10 +131,7 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'admin'
-                            "
+                            v-if="userDetailsStore.role == 'instructor'"
                             class="nav-item"
                         >
                             <RouterLink to="/cohorts" class="nav-link">
