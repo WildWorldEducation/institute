@@ -98,19 +98,19 @@ export default {
                     </div>
                     <div class="col-4 d-flex flex-column align-items-end">
                         <button
+                            id="reset-btn"
+                            class="btn btn-primary"
+                            @click="resetPos()"
+                        >
+                            Reset
+                        </button>
+                        <button
                             v-if="sessionDetailsStore.isLoggedIn"
                             id="print-btn"
                             class="btn btn-info"
                             @click="$refs.childComponent.printPDF()"
                         >
                             Print
-                        </button>
-                        <button
-                            id="reset-btn"
-                            class="btn btn-primary"
-                            @click="resetPos()"
-                        >
-                            Reset
                         </button>
                     </div>
                 </div>
@@ -221,20 +221,21 @@ export default {
                                 </div>
                             </div>
                         </div>
-                        <button
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            id="print-btn"
-                            class="btn btn-info me-1"
-                            @click="$refs.childComponent.printPDF()"
-                        >
-                            Print
-                        </button>
+
                         <button
                             id="reset-btn"
-                            class="btn btn-primary me-3"
+                            class="btn btn-primary me-1"
                             @click="resetPos()"
                         >
                             Reset
+                        </button>
+                        <button
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            id="print-btn"
+                            class="btn btn-info me-3"
+                            @click="$refs.childComponent.printPDF()"
+                        >
+                            Print
                         </button>
                     </div>
                 </div>
