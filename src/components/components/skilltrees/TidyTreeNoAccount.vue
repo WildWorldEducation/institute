@@ -690,12 +690,13 @@ export default {
         // zoom and pan to a node
         goToLocation(node) {
             this.resultNode = node;
+            const fixedScale = 1.75;
             const translateX =
-                -node.y * this.scale +
-                (window.innerWidth / (2 * this.scale)) * this.scale;
+                -node.y * fixedScale +
+                (window.innerWidth / (2 * fixedScale)) * fixedScale;
             const translateY =
-                -node.x * this.scale +
-                (window.innerHeight / (2 * this.scale)) * this.scale;
+                -node.x * fixedScale +
+                (window.innerHeight / (2 * fixedScale)) * fixedScale;
 
             d3.select(this.context.canvas)
                 .transition()
@@ -704,7 +705,7 @@ export default {
                     this.d3Zoom.transform,
                     d3.zoomIdentity
                         .translate(translateX, translateY)
-                        .scale(this.scale)
+                        .scale(fixedScale)
                 );
         },
         // Find node with name include
