@@ -1199,10 +1199,20 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
 
 // For the search feature on the Collapsable Skill Tree.
 router.get('/name-list', (req, res, next) => {
-    const query = `SELECT id, name, parent, display_name
+    let query = `SELECT id, name, parent, display_name
     FROM skills
     WHERE is_deleted = 0
     AND is_filtered = 'available';`;
+
+    // Show globally filtered skills for admins.
+    if (req.session) {
+        if (req.session.role == 'admin') {
+            query = `SELECT id, name, parent, display_name
+            FROM skills
+            WHERE is_deleted = 0;`;
+        }
+    }
+
     conn.query(query, (err, results) => {
         try {
             if (err) {
