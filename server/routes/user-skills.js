@@ -628,7 +628,36 @@ router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
                             }
                         }
 
-                        res.json(studentSkills);
+                        // Count the filtered skills, to determine size of Radial Tree
+                        // so that leaves not too far spaced apart.
+                        let count = 0;
+                        function countNestedSkills(parentChildren) {
+                            var i = parentChildren.length;
+                            while (i--) {
+                                count++;
+                                if (typeof parentChildren[i] !== 'undefined') {
+                                    /*
+                                     * Run the above function again recursively.
+                                     */
+                                    if (
+                                        parentChildren[i].children &&
+                                        Array.isArray(
+                                            parentChildren[i].children
+                                        ) &&
+                                        parentChildren[i].children.length > 0
+                                    )
+                                        countNestedSkills(
+                                            parentChildren[i].children
+                                        );
+                                }
+                            }
+                            return count;
+                        }
+
+                        countNestedSkills(studentSkills);
+                        const numSkills = count;
+
+                        res.json({ skills: studentSkills, count: numSkills });
                     } catch (err) {
                         next(err);
                     }
@@ -928,7 +957,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                                 ) {
                                                     if (
                                                         skills[j].parent ==
-                                                        childSkills[i].id &&
+                                                            childSkills[i].id &&
                                                         skills[j].type == 'sub'
                                                     ) {
                                                         subSkills.push(
@@ -966,7 +995,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 skills[i].parent ==
-                                                skill.parent &&
+                                                    skill.parent &&
                                                 skills[i].id != skill.id
                                             ) {
                                                 if (skills[i].type == 'sub') {

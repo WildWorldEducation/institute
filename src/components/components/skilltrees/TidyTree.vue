@@ -60,8 +60,7 @@ export default {
             showAnimation: false,
             showSkillPanel: false,
             resultNode: null,
-            clickMode: 'showPanel',
-            skillCount: null
+            clickMode: 'showPanel'
         };
     },
     components: {
@@ -74,8 +73,6 @@ export default {
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
             await this.skillTreeStore.getVerticalTreeUserSkills();
         }
-
-        console.log('test');
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
@@ -142,7 +139,7 @@ export default {
                     (this.skill.show_children && this.skill.show_children == 0)
                 ) {
                     this.skill.hasChildren = true;
-                }            
+                }
                 this.skill.x = node.x;
                 this.skill.y = node.y;
 
@@ -192,8 +189,6 @@ export default {
             // Duplicate super skill node, and make second one a child of the first.
             // Put all the subskills of the node in the second version.
             // This is an attempt to show the subskills using only D3.
-            // Other options, such as having them circle around the super skill,
-            // like the D3 and Pixi version, were too complex.
             let count = 0;
             function moveSubSkills(parentChildren) {
                 var i = parentChildren.length;
@@ -265,13 +260,13 @@ export default {
             // To determine the size of the skill tree based on the number of skills showing.
             // It should not be too big, compared to the number of nodes,
             // or the nodes will be too far a part.
-            this.skillCount = count;
-            if (this.skillCount > 2000) {
-                this.width = this.skillCount * 1.5;
-            } else if (this.skillCount > 1000) {
-                this.width = this.skillCount * 1.5 * 4;
+            const skillCount = count;
+            if (skillCount > 2000) {
+                this.width = skillCount * 1.5;
+            } else if (skillCount > 1000) {
+                this.width = skillCount * 1.5 * 4;
             } else {
-                this.width = this.skillCount * 1.5 * 20;
+                this.width = skillCount * 1.5 * 40;
             }
 
             this.data = {
