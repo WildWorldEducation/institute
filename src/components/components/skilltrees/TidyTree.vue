@@ -142,7 +142,7 @@ export default {
                     (this.skill.show_children && this.skill.show_children == 0)
                 ) {
                     this.skill.hasChildren = true;
-                }            
+                }
                 this.skill.x = node.x;
                 this.skill.y = node.y;
 
@@ -727,14 +727,15 @@ export default {
         // zoom and pan to a node
         goToLocation(node) {
             this.resultNode = node;
+            const zoomedScale = 1.75;
             const translateX =
-                -node.y * this.scale +
-                (window.innerWidth / (2 * this.scale)) * this.scale;
+                -node.y * zoomedScale +
+                (window.innerWidth / (2 * zoomedScale)) * zoomedScale;
             const translateY =
-                -node.x * this.scale +
+                -node.x * zoomedScale +
                 ((window.innerHeight - window.innerHeight * 0.1) /
-                    (2 * this.scale)) *
-                    this.scale;
+                    (2 * zoomedScale)) *
+                    zoomedScale;
 
             d3.select(this.context.canvas)
                 .transition()
@@ -743,7 +744,7 @@ export default {
                     this.d3Zoom.transform,
                     d3.zoomIdentity
                         .translate(translateX, translateY)
-                        .scale(this.scale)
+                        .scale(zoomedScale)
                 );
         },
         // Pan with arrow keys and joystick.
