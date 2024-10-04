@@ -825,12 +825,13 @@ export default {
             let radX = Math.cos(node.x) * node.y;
             let radY = Math.sin(node.x) * node.y;
             let pos = this.rotateNode(0, 0, radX, radY, 90);
+            const fixedScale = 1.75;
             const translateX =
-                -pos[0] * this.scale +
-                (window.innerWidth / (2 * this.scale)) * this.scale;
+                -pos[0] * fixedScale +
+                (window.innerWidth / (2 * fixedScale)) * fixedScale;
             const translateY =
-                -pos[1] * this.scale +
-                (window.innerHeight / (2 * this.scale)) * this.scale;
+                -pos[1] * fixedScale +
+                (window.innerHeight / (2 * fixedScale)) * fixedScale;
 
             d3.select(this.context.canvas)
                 .transition()
@@ -839,7 +840,7 @@ export default {
                     this.d3Zoom.transform,
                     d3.zoomIdentity
                         .translate(translateX, translateY)
-                        .scale(this.scale)
+                        .scale(fixedScale)
                 );
         }
     }
