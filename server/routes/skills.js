@@ -1199,133 +1199,160 @@ router.post('/:id/essay-questions/add', (req, res, next) => {
 
 // For the search feature on the Collapsable Skill Tree.
 router.get('/name-list', (req, res, next) => {
-    res.setHeader('Content-Type', 'application/json');
+    if (req.session) {
+        res.setHeader('Content-Type', 'application/json');
 
-    // Check if student is member of a cohort.
-    let isInCohortSQLQuery = `
+        // Check if student is member of a cohort.
+        let isInCohortSQLQuery = `
         SELECT cohort_id 
         FROM cohorts_users
         WHERE user_id = ${conn.escape(req.session.userId)};
         `;
 
-    conn.query(isInCohortSQLQuery, (err, results) => {
-        try {
-            if (err) {
-                throw err;
-            }
+        conn.query(isInCohortSQLQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
 
-            let cohortId;
-            if (results.length == 0) {
-                cohortId = 0;
-            } else cohortId = results[0].cohort_id;
+                let sqlQuery = '';
 
-            // Check what skills are available for this cohort.
-            let sqlQuery = `
-            SELECT skills.id, skills.name, parent, display_name, show_children
-            FROM skills
-            LEFT OUTER JOIN user_skills
-            ON skills.id = user_skills.skill_id
-            WHERE user_skills.user_id = ${conn.escape(req.session.userId)}
-            AND is_filtered = 'available' 
-            AND is_deleted = 0
-            AND skills.id NOT IN 
-            (SELECT skill_id 
-            FROM cohort_skill_filters
-            WHERE cohort_id = ${conn.escape(cohortId)})
-            
-            UNION
-            SELECT skills.id, name, parent, display_name, ""
-            FROM skills
-            WHERE skills.id NOT IN 
-            (SELECT skills.id
-            FROM skills
-            LEFT OUTER JOIN user_skills
-            ON skills.id = user_skills.skill_id
-            WHERE user_skills.user_id = ${conn.escape(req.session.userId)}) 
-            AND is_filtered = 'available' 
-            AND is_deleted = 0
-            AND skills.id NOT IN 
-            (SELECT skill_id 
-            FROM cohort_skill_filters
-            WHERE cohort_id = ${conn.escape(cohortId)});                
-            `;
+                // For admins, so skills should be removed.
+                if (req.session.role == 'admin') {
+                    sqlQuery = `SELECT id, name, parent, display_name
+                    FROM skills
+                    WHERE is_deleted = 0;`;
+                    // For instructors and admins, globally filtered skills should be removed.
+                } else if (
+                    req.session.role == 'editor' ||
+                    req.session.role == 'instructor'
+                ) {
+                    sqlQuery = `SELECT id, name, parent, display_name
+                    FROM skills
+                    WHERE is_deleted = 0
+                    AND is_filtered = 'available';`;
 
-            conn.query(sqlQuery, (err, results) => {
-                try {
-                    if (err) {
-                        throw err;
-                    }
+                    // For students, both globally filtered skills and skills that
+                    // have been filtered for their cohort, should be removed.
+                } else if (req.session.role == 'student') {
+                    let cohortId;
+                    if (results.length == 0) {
+                        cohortId = 0;
+                    } else cohortId = results[0].cohort_id;
 
-                    // Give each object a 'children' element.
-                    for (var i = 0; i < results.length; i++) {
-                        results[i].children = [];
-                    }
+                    // Check what skills are available for this cohort.
+                    sqlQuery = `
+                    SELECT skills.id, skills.name, parent, display_name, show_children
+                    FROM skills
+                    LEFT OUTER JOIN user_skills
+                    ON skills.id = user_skills.skill_id
+                    WHERE user_skills.user_id = ${conn.escape(
+                        req.session.userId
+                    )}
+                    AND is_filtered = 'available' 
+                    AND is_deleted = 0
+                    AND skills.id NOT IN 
+                    (SELECT skill_id 
+                    FROM cohort_skill_filters
+                    WHERE cohort_id = ${conn.escape(cohortId)})
+                    
+                    UNION
+                    SELECT skills.id, name, parent, display_name, ""
+                    FROM skills
+                    WHERE skills.id NOT IN 
+                    (SELECT skills.id
+                    FROM skills
+                    LEFT OUTER JOIN user_skills
+                    ON skills.id = user_skills.skill_id
+                    WHERE user_skills.user_id = ${conn.escape(
+                        req.session.userId
+                    )}) 
+                    AND is_filtered = 'available' 
+                    AND is_deleted = 0
+                    AND skills.id NOT IN 
+                    (SELECT skill_id 
+                    FROM cohort_skill_filters
+                    WHERE cohort_id = ${conn.escape(cohortId)});                
+                    `;
+                }
 
-                    // Deal with skills that have multiple parents.
-                    // These skills have secret copies in the table.
-                    for (var i = 0; i < results.length; i++) {
-                        if (results[i].display_name != null) {
-                            results[i].skill_name = results[i].display_name;
+                conn.query(sqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
                         }
-                    }
 
-                    // Make the array nested, as we need to remove child nodes of filtered skills.
-                    // Assign children to parent skills.
-                    for (var i = 0; i < results.length; i++) {
-                        // Regular parent.
-                        if (
-                            results[i].parent != null &&
-                            results[i].parent != 0
-                        ) {
-                            var parentId = results[i].parent;
+                        // Give each object a 'children' element.
+                        for (var i = 0; i < results.length; i++) {
+                            results[i].children = [];
+                        }
 
-                            // Go through all rows again, add children
-                            for (let j = 0; j < results.length; j++) {
-                                if (results[j].id == parentId) {
-                                    results[j].children.push(results[i]);
+                        // Deal with skills that have multiple parents.
+                        // These skills have secret copies in the table.
+                        for (var i = 0; i < results.length; i++) {
+                            if (results[i].display_name != null) {
+                                results[i].skill_name = results[i].display_name;
+                            }
+                        }
+
+                        // Make the array nested, as we need to remove child nodes of filtered skills.
+                        // Assign children to parent skills.
+                        for (var i = 0; i < results.length; i++) {
+                            // Regular parent.
+                            if (
+                                results[i].parent != null &&
+                                results[i].parent != 0
+                            ) {
+                                var parentId = results[i].parent;
+
+                                // Go through all rows again, add children
+                                for (let j = 0; j < results.length; j++) {
+                                    if (results[j].id == parentId) {
+                                        results[j].children.push(results[i]);
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    let studentSkills = [];
-                    for (var i = 0; i < results.length; i++) {
-                        if (
-                            results[i].parent == null ||
-                            results[i].parent == 0
-                        ) {
-                            studentSkills.push(results[i]);
-                        }
-                    }
-
-                    // Convert back to single flat array.
-                    function flat(array) {
-                        var result = [];
-                        array.forEach(function (a) {
-                            result.push(a);
-                            if (Array.isArray(a.children)) {
-                                result = result.concat(flat(a.children));
+                        let studentSkills = [];
+                        for (var i = 0; i < results.length; i++) {
+                            if (
+                                results[i].parent == null ||
+                                results[i].parent == 0
+                            ) {
+                                studentSkills.push(results[i]);
                             }
+                        }
+
+                        // Convert back to single flat array.
+                        function flat(array) {
+                            var result = [];
+                            array.forEach(function (a) {
+                                result.push(a);
+                                if (Array.isArray(a.children)) {
+                                    result = result.concat(flat(a.children));
+                                }
+                            });
+                            return result;
+                        }
+
+                        let flatArray = flat(studentSkills);
+
+                        // Only return the name field.
+                        var namesArray = flatArray.map(function (a) {
+                            return { name: a.name };
                         });
-                        return result;
+
+                        res.json(namesArray);
+                    } catch (err) {
+                        next(err);
                     }
-
-                    let flatArray = flat(studentSkills);
-
-                    // Only return the name field.
-                    var namesArray = flatArray.map(function (a) {
-                        return { name: a.name };
-                    });
-
-                    res.json(namesArray);
-                } catch (err) {
-                    next(err);
-                }
-            });
-        } catch (err) {
-            next(err);
-        }
-    });
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
 });
 
 // For the search feature on the Collapsable Skill Tree.
