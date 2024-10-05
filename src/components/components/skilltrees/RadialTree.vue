@@ -81,7 +81,7 @@ export default {
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillTreeStore.userSkillsSubSkillsSeparate
+            children: this.skillTreeStore.userSkillsSubSkillsSeparate.skills
         };
 
         this.userAvatarImg = new Image();
@@ -175,6 +175,19 @@ export default {
                 children: skillsNoSubSkills
             };
 
+            // To determine the size of the skill tree based on the number of skills showing.
+            // It should not be too big, compared to the number of nodes,
+            // or the nodes will be too far a part.
+            const skillCount =
+                this.skillTreeStore.userSkillsSubSkillsSeparate.count;
+            if (skillCount > 2000) {
+                this.radiusMultiplier = 96;
+            } else if (skillCount > 1000) {
+                this.radiusMultiplier = 32;
+            } else {
+                this.radiusMultiplier = 6;
+            }
+
             // Create a radial tree layout. The layout’s first dimension (x)
             // is the angle, while the second (y) is the radius.
             const tree = d3
@@ -190,6 +203,7 @@ export default {
                     .hierarchy(this.data)
                     .sort((a, b) => d3.ascending(a.data.name, b.data.name))
             );
+
             var canvas = document.getElementById('canvas');
             canvas.width = this.width;
             canvas.height = this.height;
@@ -213,23 +227,6 @@ export default {
         },
         drawTree() {
             this.nodes = this.root.descendants();
-
-            // Concentric circles.
-            // for (let i = 50; i > 5; i = i - 5) {
-            //     this.context.beginPath();
-            //     this.context.arc(
-            //         0,
-            //         0,
-            //         i * (this.radius * this.radiusMultiplier),
-            //         0,
-            //         2 * Math.PI,
-            //         false
-            //     );
-
-            //     this.context.lineWidth = 3;
-            //     this.context.strokeStyle = 'red';
-            //     this.context.stroke();
-            // }
 
             // Draw links.
             const links = this.root.links();
@@ -786,7 +783,7 @@ export default {
                     this.d3Zoom.transform,
                     d3.zoomIdentity
                         .translate(this.width / 2, this.height / 2)
-                        .scale(0.08)
+                        .scale(0.5)
                 );
         },
         // Find node with name include

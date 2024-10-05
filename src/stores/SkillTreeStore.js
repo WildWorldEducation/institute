@@ -23,7 +23,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             this.userSkills = await result.json();
         },
-        // API call for vertical skill tree.
+        // API call for Vertical skill tree.
         async getVerticalTreeUserSkills() {
             const userDetailsStore = useUserDetailsStore();
             const userDetails = await userDetailsStore.getUserDetails();
@@ -34,13 +34,15 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             this.verticalTreeUserSkills = await result.json();
         },
+        // API call for Radial skill tree.
         async getUserSkillsSubSkillsSeparate() {
             // API call for skill tree.
             const userDetailsStore = useUserDetailsStore();
             const userDetails = await userDetailsStore.getUserDetails();
 
             const result = await fetch(
-                '/user-skills/separate-subskills/' + userDetails.userId
+                '/user-skills/separate-subskills/filter-by-cohort/' +
+                    userDetails.userId
             );
             this.userSkillsSubSkillsSeparate = await result.json();
         },
