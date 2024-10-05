@@ -52,3 +52,7 @@ npm run build
 ### Run compiled version
 
 npm run start
+
+## Contributing
+
+[Read here](https://github.com/RussiSunni/SkillTreeAppV3/blob/main/CONTRIBUTING.md)
