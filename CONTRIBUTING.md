@@ -19,13 +19,13 @@ To submit a feature request please file an issue on this Github repository, usin
 
 ## Submitting Pull Requests
 
-# Agreement
+### Agreement
 
 Contributing to the project automatically grants us intellectual property rights to the material contributed. This allows us to maintain our legal rights when we use and distribute this project.
 
 While you will still own the material you contribute, you are giving us joint-ownership of the material.
 
-# Guidelines
+### Guidelines
 
 Your pull request should generally consist of a single commit. This helps keep the git history clean by keeping each commit focused on a single purpose.
 
