@@ -13,6 +13,10 @@ This work is licensed under a
 
 An LMS-like web application, which includes a skill tree progression system, used by the Collins Institute online learning system. To learn more about the problem [the Collins Institute](https://collinsinstitute.org/) is trying to solve, please visit their website.
 
+## Contribution Guidelines
+
+[Read here](https://github.com/RussiSunni/SkillTreeAppV3/blob/main/CONTRIBUTING.md)
+
 ## Tech Stack
 
 ### Front End
@@ -52,7 +56,3 @@ npm run build
 ### Run compiled version
 
 npm run start
-
-## Contributing
-
-[Read here](https://github.com/RussiSunni/SkillTreeAppV3/blob/main/CONTRIBUTING.md)
