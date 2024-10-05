@@ -5,10 +5,11 @@ export default {
     data() {
         return {
             skillId: this.$route.params.skillId,
-            description: null
+            description: null,
+            validateDescription: true,
+            validateContact: true
         };
     },
-    setup() {},
     mounted: function () {
         // Calculate summer note height base on window height
         let summernoteHeight;
@@ -23,7 +24,7 @@ export default {
             summernoteHeight = 58;
         }
 
-        //  summernote config
+        //  Summernote config.
         $('#summernote-description').summernote({
             placeholder: '',
             height: summernoteHeight,
@@ -63,18 +64,30 @@ export default {
     },
     methods: {
         async Submit() {
-            var url = '/tutor-posts/add/' + this.skillId;
-            var resourceData = $('#summernote').summernote('code');
+            const url = '/tutor-posts/add/' + this.skillId;
+            const description = $('#summernote-description').summernote('code');
+            const contactPreference = $(
+                '#summernote-contact-preference'
+            ).summernote('code');
+
+            console.log(typeof description);
+            console.log(description.length);
+
+            if (description.length < 25) {
+                this.validateDescription = false;
+            }
+
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    description: resourceData
+                    description: description,
+                    contactPreference: contactPreference
                 })
             };
-            await fetch(url, requestOptions).then(() => {
-                router.back();
-            });
+            // await fetch(url, requestOptions).then(() => {
+            //     router.back();
+            // });
         }
     }
 };
@@ -107,7 +120,10 @@ export default {
                                 name="editordata"
                             ></textarea>
                         </div>
-                        <div v-if="1 == 2" class="form-validate">
+                        <div
+                            v-if="validateDescription == false"
+                            class="form-validate"
+                        >
                             please complete this section!
                         </div>
                     </div>
@@ -122,7 +138,10 @@ export default {
                                 name="editordata2"
                             ></textarea>
                         </div>
-                        <div v-if="1 == 2" class="form-validate">
+                        <div
+                            v-if="validateContact == false"
+                            class="form-validate"
+                        >
                             please complete this section!
                         </div>
                     </div>
