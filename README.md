@@ -11,6 +11,8 @@ This work is licensed under a
 
 # Collins Institute Core Platform
 
+An LMS-like web application, which includes a skill tree progression system, used by the Collins Institute online learning system.
+
 ## Tech Stack
 
 ### Front End
