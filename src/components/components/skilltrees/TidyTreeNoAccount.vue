@@ -696,11 +696,9 @@ export default {
             this.resultNode = node;
             const fixedScale = skillTreeWidth > 480 ? 1.75 : 1.2;
             const translateX =
-                -node.y * fixedScale +
-                (skillTreeWidth / (centerXOffset * fixedScale)) * fixedScale;
+                -node.y * fixedScale + skillTreeWidth / centerXOffset;
             const translateY =
-                -node.x * fixedScale +
-                (skillTreeHeight / (centerYOffset * fixedScale)) * fixedScale;
+                -node.x * fixedScale + skillTreeHeight / centerYOffset;
 
             d3.select(this.context.canvas)
                 .transition()

@@ -733,8 +733,7 @@ export default {
             const centerXOffset = 2;
             this.resultNode = node;
             const translateX =
-                -node.y * zoomedScale +
-                (skillTreeWidth / (centerXOffset * zoomedScale)) * zoomedScale;
+                -node.y * zoomedScale + skillTreeWidth / centerXOffset;
             const translateY =
                 -node.x * zoomedScale + skillTreeHeight / centerYOffset;
 
