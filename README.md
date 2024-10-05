@@ -41,7 +41,11 @@ npm install
 
 ### Setup database
 
-Please import the latest DB backup from the "db_backups" folder.
+Run the database-setup.sql script to create the database schema
+
+### Setup .env file
+
+Create an .env file based on the .env.example file
 
 ## Run or Compile
 
