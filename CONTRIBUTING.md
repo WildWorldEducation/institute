@@ -16,3 +16,24 @@ Additional notes:
 ## Feature Requests
 
 To submit a feature request please file an issue on this Github repository, using the "Feature request" option.
+
+## Submitting Pull Requests
+
+# Agreement
+
+Contributing to the project automatically grants us intellectual property rights to the material contributed. This allows us to maintain our legal rights when we use and distribute this project.
+
+While you will still own the material you contribute, you are giving us joint-ownership of the material.
+
+# Guidelines
+
+Your pull request should generally consist of a single commit. This helps keep the git history clean by keeping each commit focused on a single purpose.
+
+Your commit message should follow this general format:
+
+```
+ Summary of the commit (Subject)
+
+ Further explanation of the commit, generally focusing on why you chose
+ the approach you did in making this change.
+```
