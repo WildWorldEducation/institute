@@ -10,27 +10,21 @@ export default {
     },
     setup() {},
     mounted: function () {
-        // calculate summer note height base on window height
-        let summernoteHeight =
-            window.innerHeight -
-            document.getElementById('banner').clientHeight -
-            document.getElementById('header-tile').clientHeight -
-            50;
-
-        // return difference height base on window width ( manual responsive )
+        // Calculate summer note height base on window height
+        let summernoteHeight;
         /** == Phone Screen == **/
         if (window.innerWidth < 481) {
-            summernoteHeight = summernoteHeight - 310;
+            summernoteHeight = 100;
         } else if (window.innerWidth >= 481 && window.innerWidth < 1024) {
             /** == Tablet Screen == **/
-            summernoteHeight = summernoteHeight - 300;
+            summernoteHeight = 100;
         } else {
             /** == PC Screen == **/
-            summernoteHeight = summernoteHeight - 450;
+            summernoteHeight = 58;
         }
 
         //  summernote config
-        $('#summernote').summernote({
+        $('#summernote-description').summernote({
             placeholder: '',
             height: summernoteHeight,
             tabsize: 2,
@@ -43,7 +37,25 @@ export default {
             ],
             maximumImageFileSize: 2048 * 1024, // 2 MB
             callbacks: {
-                onImageUploadError: function (msg) {
+                onImageUploadError: function () {
+                    alert('Max image size is 2MB.');
+                }
+            }
+        });
+
+        $('#summernote-contact-preference').summernote({
+            placeholder: '',
+            height: summernoteHeight,
+            tabsize: 2,
+            toolbar: [
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            maximumImageFileSize: 2048 * 1024, // 2 MB
+            callbacks: {
+                onImageUploadError: function () {
                     alert('Max image size is 2MB.');
                 }
             }
@@ -84,15 +96,30 @@ export default {
         <div class="main-content-container container-fluid p-2">
             <div class="row">
                 <div class="col">
-                    <div class="mb-3">
-                        <label for="first_name" class="form-label"
+                    <div class="mb-4">
+                        <label
                             >Describe your tutoring style and experience with
-                            the subject</label
+                            the subject.</label
                         >
                         <div class="mb-3 mt-3 text-area-div">
                             <textarea
-                                id="summernote"
+                                id="summernote-description"
                                 name="editordata"
+                            ></textarea>
+                        </div>
+                        <div v-if="1 == 2" class="form-validate">
+                            please complete this section!
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label
+                            >How would you like to be contacted (eg: an email
+                            address, mobile number or calendar booking link)?
+                        </label>
+                        <div class="mb-3 mt-3 text-area-div">
+                            <textarea
+                                id="summernote-contact-preference"
+                                name="editordata2"
                             ></textarea>
                         </div>
                         <div v-if="1 == 2" class="form-validate">
