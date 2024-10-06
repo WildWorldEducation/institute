@@ -1,6 +1,4 @@
 <script>
-import router from '../../router';
-
 export default {
     data() {
         return {
@@ -15,51 +13,42 @@ export default {
         let summernoteHeight;
         /** == Phone Screen == **/
         if (window.innerWidth < 481) {
-            summernoteHeight = 100;
+            summernoteHeight = 200;
         } else if (window.innerWidth >= 481 && window.innerWidth < 1024) {
             /** == Tablet Screen == **/
             summernoteHeight = 100;
         } else {
             /** == PC Screen == **/
-            summernoteHeight = 58;
+            summernoteHeight = 75;
         }
 
         //  Summernote config.
         $('#summernote-description').summernote({
-            placeholder: '',
+            disableDragAndDrop: true,
+            placeholder:
+                'Describe your tutoring style and experience with the subject.',
             height: summernoteHeight,
             tabsize: 2,
             toolbar: [
                 ['style', ['style']],
                 ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            maximumImageFileSize: 2048 * 1024, // 2 MB
-            callbacks: {
-                onImageUploadError: function () {
-                    alert('Max image size is 2MB.');
-                }
-            }
+                ['para', ['ul']],
+                ['view', ['codeview']]
+            ]
         });
 
         $('#summernote-contact-preference').summernote({
-            placeholder: '',
+            disableDragAndDrop: true,
+            placeholder:
+                'How would you like to be contacted (eg: an email address, mobile number or calendar booking link)?',
             height: summernoteHeight,
             tabsize: 2,
             toolbar: [
                 ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            maximumImageFileSize: 2048 * 1024, // 2 MB
-            callbacks: {
-                onImageUploadError: function () {
-                    alert('Max image size is 2MB.');
-                }
-            }
+                ['para', ['ul']],
+                ['insert', ['link']],
+                ['view', ['codeview']]
+            ]
         });
     },
     methods: {
@@ -69,9 +58,6 @@ export default {
             const contactPreference = $(
                 '#summernote-contact-preference'
             ).summernote('code');
-
-            console.log(typeof description);
-            console.log(description.length);
 
             if (description.length < 25) {
                 this.validateDescription = false;
@@ -114,11 +100,11 @@ export default {
             <div class="row">
                 <div class="col">
                     <div class="mb-4">
-                        <label
+                        <!-- <label
                             >Describe your tutoring style and experience with
                             the subject.</label
-                        >
-                        <div class="mb-3 mt-3 text-area-div">
+                        > -->
+                        <div class="mb-3 mt-1 text-area-div">
                             <textarea
                                 id="summernote-description"
                                 name="editordata"
@@ -132,10 +118,10 @@ export default {
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label
+                        <!-- <label
                             >How would you like to be contacted (eg: an email
                             address, mobile number or calendar booking link)?
-                        </label>
+                        </label> -->
                         <div class="mb-3 mt-3 text-area-div">
                             <textarea
                                 id="summernote-contact-preference"
