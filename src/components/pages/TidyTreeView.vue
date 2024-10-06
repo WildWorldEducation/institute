@@ -42,20 +42,36 @@ export default {
             ) {
                 return [];
             }
-
-            // close the mastery requirement panel when showing search result
             this.$refs.childComponent.showSkillPanel = false;
             const results = this.$refs.childComponent.findNodeWithName(
                 this.searchText.toLocaleLowerCase()
             );
-            // we highlight the part that match search text
+
+            const capitalizeText = (text, charIndex) =>
+                text &&
+                text.slice(0, charIndex) +
+                    text[charIndex].toUpperCase() +
+                    text.slice(charIndex + 1);
+
             const highlightedResult = results.map((result) => {
-                const matchedRegex = new RegExp(`(${this.searchText})`, 'gi');
-                const newText = result.data.skill_name.replace(
-                    matchedRegex,
-                    '<span class="hightLight">$1</span>'
-                );
-                return { ...result, highlightedResult: newText };
+                const hightLightedText = result.data.skill_name
+                    .toLocaleLowerCase()
+                    .replace(
+                        this.searchText.toLocaleLowerCase(),
+                        `<span class="hightLight">${this.searchText}</span>`
+                    );
+
+                // index of first character if we have span at the head of the string is 25
+                const indexOfFirstChar = hightLightedText[0] === '<' ? 25 : 0;
+
+                return {
+                    ...result,
+                    // capitalize text better ui and ux
+                    highlightedResult: capitalizeText(
+                        hightLightedText,
+                        indexOfFirstChar
+                    )
+                };
             });
             return highlightedResult;
         }
@@ -325,7 +341,8 @@ export default {
     max-height: 400px;
     overflow-y: auto;
     z-index: 1000;
-    width: 101%;
+    /* extremely  weird things when 100% does not match the parent div*/
+    width: 100.3%;
 }
 
 .result-row {
