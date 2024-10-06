@@ -77,6 +77,10 @@ export default {
                 this.validateDescription = false;
             }
 
+            if (contactPreference.length < 25) {
+                this.contactPreference = false;
+            }
+
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
