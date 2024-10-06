@@ -64,7 +64,7 @@ export default {
             }
 
             if (contactPreference.length < 25) {
-                this.contactPreference = false;
+                this.validateContact = false;
             }
 
             const requestOptions = {
@@ -75,9 +75,9 @@ export default {
                     contactPreference: contactPreference
                 })
             };
-            // await fetch(url, requestOptions).then(() => {
-            //     router.back();
-            // });
+            await fetch(url, requestOptions).then(() => {
+                this.$router.back();
+            });
         }
     }
 };
@@ -189,5 +189,11 @@ h2 {
 .purple-btn:hover {
     background-color: #8666ca;
     color: white;
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
 }
 </style>

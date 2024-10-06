@@ -54,7 +54,8 @@ router.post('/add/:skillId', (req, res, next) => {
         let data = {
             skill_id: req.params.skillId,
             user_id: req.session.userId,
-            description: req.body.description
+            description: req.body.description,
+            contact_preference: req.body.contactPreference
         };
 
         // Check that source is not in the list of blocked domains.
