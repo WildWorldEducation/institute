@@ -98,9 +98,22 @@ export default {
         },
         showContactAdviceModal() {
             this.showContactDetails = !this.showContactDetails;
-            document.getElementById('myModal').addEventListener('click', () => {
-                this.showContactDetails = false;
-            });
+            // Close modal by clicking outside it.
+            document
+                .getElementById('myModal')
+                .addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('modal-content')) {
+                        this.showContactDetails = false;
+                    }
+                });
+            // The above should not work on the modal content.
+            document.getElementById('modal-content').addEventListener(
+                'click',
+                function (e) {
+                    e.stopPropagation();
+                },
+                false
+            );
         }
     }
 };
@@ -387,10 +400,10 @@ export default {
     <div v-show="showContactDetails">
         <div id="myModal" class="modal">
             <!-- Modal content -->
-            <div class="modal-content">
+            <div id="modal-content" class="modal-content contact-modal-content">
                 <button
                     type="button"
-                    class="closeBtn btn"
+                    class="close closeBtn"
                     @click="showContactAdviceModal()"
                     aria-label="Close"
                 >
@@ -401,7 +414,6 @@ export default {
                             width="25"
                             height="25"
                         >
-                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                             <path
                                 d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
                                 fill="black"
@@ -415,7 +427,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 .tutor {
     border-top: 2px dotted #aea3ce;
     border-right: 2px solid #aea3ce;
@@ -525,8 +537,8 @@ export default {
 
 .closeBtn {
     position: absolute;
-    top: 0px;
-    right: 0px;
+    top: 5px;
+    right: 5px;
 }
 
 .red-btn {
@@ -565,14 +577,35 @@ export default {
 }
 
 /* Modal Content/Box */
-.modal-content {
+.contact-modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
-    /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 600px;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .contact-modal-content {
+        margin: 30% auto !important;
+        width: 90% !important;
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .contact-modal-content {
+        margin: 15% auto !important;
+        width: 90% !important;
+    }
+}
+
+/* Desktops/laptops */
+@media (min-width: 1025px) {
+    .contact-modal-content {
+        margin: 15% auto;
+    }
 }
 </style>
