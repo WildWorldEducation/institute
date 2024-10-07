@@ -9,7 +9,7 @@ This work is licensed under a
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
 [cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
 
-# Collins Institute Core Platform
+# The Collins Institute Core Platform
 
 An LMS-like web application, which includes a skill tree progression system, used by the Collins Institute online learning system. To learn more about the problem [the Collins Institute](https://collinsinstitute.org/) is trying to solve, please visit their website.
 
