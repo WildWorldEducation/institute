@@ -130,6 +130,9 @@ export default {
                 .then((data) => {
                     data.forEach(function (element) {
                         element.type = 'tutor';
+                        if (element.contact_preference == null) {
+                            element.contact_preference = element.email;
+                        }
                     });
 
                     // Add these tutor posts to the other posts, if the skill is the same.

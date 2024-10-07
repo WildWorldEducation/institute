@@ -61,10 +61,16 @@ export default {
 
             if (description.length < 25) {
                 this.validateDescription = false;
+                return;
+            } else {
+                this.validateDescription = true;
             }
 
             if (contactPreference.length < 25) {
                 this.validateContact = false;
+                return;
+            } else {
+                this.validateContact = true;
             }
 
             const requestOptions = {
