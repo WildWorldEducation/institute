@@ -51,7 +51,17 @@ export default {
 
             var url = '/questions/essay/' + this.questionId + '/edit';
             fetch(url, requestOptions).then(() => {
-                this.$router.back();
+                // Delete flag if exist
+                let dismissFlagId = this.$route.query.dismissFlagId;
+                if(dismissFlagId){
+                    fetch('/content-flags/' + dismissFlagId, {
+                        method: 'DELETE'
+                    }).finally(()=>{
+                        this.$router.back();
+                    });
+                }else{
+                    this.$router.back();
+                }
             });
         },
         // If edit is from a student or instructor.
