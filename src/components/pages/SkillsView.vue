@@ -106,12 +106,12 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
+    <!-- <div id="banner">
         <img
             src="/images/banners/edit-mastery-skill-banner.png"
             class="img-fluid"
         />
-    </div>
+    </div> -->
     <div
         v-if="userDetailsStore.role == 'admin' && !isInstructorMode"
         class="topnav"
