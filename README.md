@@ -25,7 +25,7 @@ An LMS-like web application, which includes a skill tree progression system, use
 -   Pinia
 -   Vue Router
 -   Vite
--   D3.js
+-   D3
 
 ### Back End
 
