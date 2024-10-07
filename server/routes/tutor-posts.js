@@ -22,7 +22,7 @@ Routes
 router.get('/:skillId/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT tutor_posts.id, tutor_posts.user_id, tutor_posts.skill_id, tutor_posts.description,
+        let sqlQuery = `SELECT tutor_posts.id, tutor_posts.user_id, tutor_posts.skill_id, tutor_posts.description, tutor_posts.contact_preference,
         tutor_posts.created_at, users.username, users.avatar, users.email
         FROM tutor_posts
         JOIN users ON tutor_posts.user_id = users.id
