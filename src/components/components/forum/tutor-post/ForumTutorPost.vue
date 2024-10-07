@@ -58,6 +58,7 @@ export default {
         },
         deleteTutorPost(post) {
             this.$parent.deleteTutorPost(post);
+            this.isAlreadyTutoring = false;
             this.showWarnModal = false;
         },
         /* Because we store the tutor post with HTML tags so we 
@@ -71,9 +72,7 @@ export default {
 </script>
 
 <template>
-    <div
-        class="d-flex flex-column flex-md-row justify-content-between my-4"
-    >
+    <div class="d-flex flex-column flex-md-row justify-content-between my-4">
         <div class="ms-0 me-auto ms-lg-auto me-lg-0">
             <div
                 class="d-flex flex-column align-items-baseline"
