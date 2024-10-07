@@ -22,7 +22,7 @@ Routes
 router.get('/:skillId/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT tutor_posts.id, tutor_posts.user_id, tutor_posts.skill_id, tutor_posts.description,
+        let sqlQuery = `SELECT tutor_posts.id, tutor_posts.user_id, tutor_posts.skill_id, tutor_posts.description, tutor_posts.contact_preference,
         tutor_posts.created_at, users.username, users.avatar, users.email
         FROM tutor_posts
         JOIN users ON tutor_posts.user_id = users.id
@@ -54,7 +54,8 @@ router.post('/add/:skillId', (req, res, next) => {
         let data = {
             skill_id: req.params.skillId,
             user_id: req.session.userId,
-            description: req.body.description
+            description: req.body.description,
+            contact_preference: req.body.contactPreference
         };
 
         // Check that source is not in the list of blocked domains.
