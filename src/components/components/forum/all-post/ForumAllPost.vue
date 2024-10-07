@@ -61,13 +61,15 @@ export default {
         showWarningModal(post, postType) {
             switch (postType) {
                 case 'tutorPost':
-                    this.warnText = 'tutor offer';
+                    this.warnText =
+                        'Are you sure you want to remove this tutor offer?';
                     this.deletePostType = 'tutorPost';
                     break;
                 // default case will be source type post
                 default:
                     this.deletePostType = 'resource';
-                    this.warnText = 'source';
+                    this.warnText =
+                        'Are you sure you want to delete this source?';
                     break;
             }
             this.currentPost = post;
@@ -159,7 +161,7 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Are you sure you want to delete this source?</p>
+                <p>{{ warnText }}</p>
                 <div style="display: flex; gap: 10px">
                     <button
                         type="button"

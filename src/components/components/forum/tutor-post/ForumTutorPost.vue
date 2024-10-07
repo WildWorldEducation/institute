@@ -101,7 +101,7 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Are you sure you want to delete this offer?</p>
+                <p>Are you sure you want to remove this offer?</p>
                 <div style="display: flex; gap: 10px">
                     <button
                         type="button"
