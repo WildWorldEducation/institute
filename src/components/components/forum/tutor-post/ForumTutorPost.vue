@@ -6,7 +6,8 @@ export default {
         return {
             showWarnModal: false,
             currentPost: null,
-            isAlreadyTutoring: this.$parent.isAlreadyTutoring
+            isLoading: true,
+            isAlreadyTutoring: false
         };
     },
     mounted() {},
@@ -23,9 +24,13 @@ export default {
                 return b.voteCount - a.voteCount;
             });
 
-            // for (let i = 0; i < sortedPosts.length; i++) {
-            //     this.resourcePosts[i].index = i;
-            // }
+            for (let i = 0; i < sortedPosts.length; i++) {
+                if (sortedPosts[i].user_id == this.user.userId) {
+                    this.isAlreadyTutoring = true;
+                }
+            }
+
+            this.isLoading = false;
 
             return sortedPosts;
         }
@@ -66,9 +71,14 @@ export default {
 </script>
 
 <template>
-    <div class="d-flex flex-column flex-md-row justify-content-between my-4">
+    <div
+        class="d-flex flex-column flex-md-row justify-content-between my-4"
+    >
         <div class="ms-0 me-auto ms-lg-auto me-lg-0">
-            <div class="d-flex flex-column align-items-baseline">
+            <div
+                class="d-flex flex-column align-items-baseline"
+                v-if="isLoading == false"
+            >
                 <router-link
                     v-if="user.role == 'student' && isAlreadyTutoring == false"
                     :to="'/tutor/add/' + skillId"
@@ -101,7 +111,7 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Are you sure you want to delete this offer?</p>
+                <p>Are you sure you want to remove this offer?</p>
                 <div style="display: flex; gap: 10px">
                     <button
                         type="button"

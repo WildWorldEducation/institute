@@ -21,7 +21,9 @@ export default {
             showWarnModal: false,
             currentPost: null,
             warnText: '',
-            deletePostType: ''
+            deletePostType: '',
+            isLoading: true,
+            isAlreadyTutoring: false
         };
     },
     components: {
@@ -38,10 +40,17 @@ export default {
                 }
                 return b.voteCount - a.voteCount;
             });
-            // for (let i = 0; i < sortedPosts.length; i++) {
-            //     this.resourcePosts[i].index = i;
-            // }
-
+            for (let i = 0; i < this.posts.length; i++) {
+                if (this.posts[i].type == 'tutor-post') {
+                    if (
+                        sortedPosts[i].user_id ==
+                        this.sessionDetailsStore.userId
+                    ) {
+                        this.isAlreadyTutoring = true;
+                    }
+                }
+            }
+            this.isLoading = false;
             return sortedPosts;
         }
     },
@@ -61,13 +70,15 @@ export default {
         showWarningModal(post, postType) {
             switch (postType) {
                 case 'tutorPost':
-                    this.warnText = 'tutor offer';
+                    this.warnText =
+                        'Are you sure you want to remove this tutor offer?';
                     this.deletePostType = 'tutorPost';
                     break;
                 // default case will be source type post
                 default:
                     this.deletePostType = 'resource';
-                    this.warnText = 'source';
+                    this.warnText =
+                        'Are you sure you want to delete this source?';
                     break;
             }
             this.currentPost = post;
@@ -94,7 +105,10 @@ export default {
     <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex flex-column mt-4">
         <div class="d-flex flex-column flex-lg-row">
             <div class="ms-0 me-auto ms-lg-auto me-lg-0">
-                <div class="d-flex flex-column align-items-baseline">
+                <div
+                    class="d-flex flex-column align-items-baseline"
+                    v-if="isLoading == false"
+                >
                     <router-link
                         :to="'/resources/add/' + skillId"
                         class="btn green-btn"
@@ -147,7 +161,7 @@ export default {
                 :user="user"
             />
             <TutorPostCard
-                v-if="post.type === 'tutor'"
+                v-if="post.type === 'tutor-post'"
                 :post="post"
                 :user="user"
                 class="my-4"
@@ -159,7 +173,7 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-                <p>Are you sure you want to delete this source?</p>
+                <p>{{ warnText }}</p>
                 <div style="display: flex; gap: 10px">
                     <button
                         type="button"
