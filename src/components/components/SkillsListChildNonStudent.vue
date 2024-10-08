@@ -31,28 +31,22 @@ export default {
     computed: {
         indent() {
             var amount = 0;
-            if (screen.width <= 480) {
-                if (this.depth == 1) {
-                    amount = 25;
-                } else {
-                    amount = 20;
-                }
+            if (this.depth == 1) {
+                amount = 25;
             } else {
-                amount = 50;
+                amount = 20;
             }
 
             // For regular skills.
             if (this.type != 'sub') {
                 return {
-                    transform: `translate(${this.depth * amount - 35.2}px)`
+                    transform: `translate(${this.depth * amount}px)`
                 };
             }
             // For subskills. They should be indented to the same amount as their main skill.
             else {
                 return {
-                    transform: `translate(${
-                        (this.depth - 1) * amount - 35.2
-                    }px)`
+                    transform: `translate(${(this.depth - 1) * amount}px)`
                 };
             }
         }
