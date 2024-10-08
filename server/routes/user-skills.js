@@ -729,10 +729,11 @@ router.get('/inaccessible/:userId/:skillId', (req, res, next) => {
 });
 
 /**
- * Make skill locked.
+ * Hide /show child nodes on the Vertical Skill Tree.
  *
  * @return response()
  */
+// Hide child nodes on the Vertical Skill Tree.
 router.get('/hide-children/:userId/:skillId', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
@@ -758,6 +759,7 @@ router.get('/hide-children/:userId/:skillId', (req, res, next) => {
     }
 });
 
+// Show child nodes on the Vertical Skill Tree.
 router.get('/show-children/:userId/:skillId', (req, res, next) => {
     if (req.session.userName) {
         let sqlQuery = `
@@ -769,6 +771,29 @@ router.get('/show-children/:userId/:skillId', (req, res, next) => {
         `;
 
         conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+// Expand all child nodes on the Vertical Skill Tree.
+router.get('/expand-all-children/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `
+        UPDATE user_skills
+        SET show_children = 1
+        WHERE user_id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err) => {
             try {
                 if (err) {
                     throw err;

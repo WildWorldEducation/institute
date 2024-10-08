@@ -32,6 +32,9 @@ export default {
             this.$refs.childComponent.goToLocation(node);
             // also open the skill requirement mastery div
             this.$refs.childComponent.showSkillPanelComponent(node);
+        },
+        expandAllNodes() {
+            this.$refs.childComponent.expandAllChildren();
         }
     },
     computed: {
@@ -115,18 +118,46 @@ export default {
                     <div class="col-4 d-flex flex-column align-items-end">
                         <button
                             id="reset-btn"
-                            class="btn btn-primary"
+                            class="btn btn-primary me-3"
                             @click="resetPos()"
                         >
                             Reset
                         </button>
                         <button
                             v-if="sessionDetailsStore.isLoggedIn"
-                            id="print-btn"
-                            class="btn btn-info"
+                            class="btn legend-btn me-3 mt-1"
+                            @click="expandAllNodes()"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="20"
+                                height="20"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z"
+                                    fill="white"
+                                />
+                            </svg>
+                        </button>
+                        <button
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="legend-btn btn mt-1 me-3"
                             @click="$refs.childComponent.printPDF()"
                         >
-                            Print
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="19"
+                                height="18"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
+                                    fill="white"
+                                />
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -247,8 +278,25 @@ export default {
                         </button>
                         <button
                             v-if="sessionDetailsStore.isLoggedIn"
-                            id="print-btn"
-                            class="btn btn-info me-3"
+                            class="btn legend-btn me-1"
+                            @click="expandAllNodes()"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="20"
+                                height="20"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z"
+                                    fill="white"
+                                />
+                            </svg>
+                        </button>
+                        <button
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="btn legend-btn me-3"
                             @click="$refs.childComponent.printPDF()"
                         >
                             Print
@@ -407,15 +455,14 @@ export default {
     background-color: #ff0000;
 }
 
-#print-btn {
+.legend-btn {
     background-color: #184e80;
     border: #184e80;
     color: white;
-    width: 70px;
     max-height: 40px;
 }
 
-#print-btn:hover {
+.legend-btn:hover {
     background-color: #133b61;
 }
 
@@ -443,10 +490,6 @@ export default {
 
     #tablet-and-up-legend {
         display: none;
-    }
-
-    #print-btn {
-        margin-bottom: 5px;
     }
 
     #legend {
