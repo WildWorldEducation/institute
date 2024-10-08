@@ -77,15 +77,35 @@ export default {
             <div class="position-relative">
                 <Transition name="appear">
                     <div
-                        class="revision-hover-detail appear-center"
+                        class="revision-hover-detail"
+                        :class="{
+                            'appear-top': revision.isCurrentRevision,
+                            'appear-center':
+                                !revision.isCurrentRevision &&
+                                revision.lastRevision,
+                            'appear-bottom':
+                                !revision.lastRevision &&
+                                !revision.isCurrentRevision
+                        }"
                         v-if="hoverOn"
                     >
-                        <div class="bubble triangle-top">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing
-                            elit. Rerum earum exercitationem impedit,
-                            consequuntur est ea. Dolore sequi illo fugiat
-                            molestiae fugit error commodi, eius excepturi eum
-                            consectetur blanditiis delectus voluptate?
+                        <div
+                            class="bubble"
+                            :class="{
+                                'triangle-top': revision.isCurrentRevision,
+                                'triangle-center':
+                                    !revision.isCurrentRevision &&
+                                    revision.lastRevision,
+                                'triangle-bottom':
+                                    !revision.lastRevision &&
+                                    !revision.isCurrentRevision
+                            }"
+                        >
+                            Lorem ipsum dolor sit amet consectetur, adipisicing
+                            elit. Accusantium, repudiandae at, sint molestias,
+                            praesentium vitae obcaecati quae nostrum amet
+                            quaerat repellendus! Labore provident neque a
+                            debitis? At doloribus voluptatibus repellendus.
                         </div>
                     </div>
                 </Transition>
@@ -163,8 +183,8 @@ export default {
 
 .revision-hover-detail {
     position: absolute;
-    left: 30px;
-    width: 400px;
+    left: 15px;
+
     z-index: 100;
 }
 
@@ -182,23 +202,29 @@ export default {
 }
 
 .appear-top {
-    top: -50%;
+    top: -60%;
 }
 
 .appear-center {
-    top: -65%;
+    top: -130%;
 }
 
-/*  */
+.appear-bottom {
+    top: -195%;
+}
+
+/* Styling for the triangle in bubble text */
 
 .triangle-top:before {
     content: '';
     width: 0px;
     height: 0px;
     position: absolute;
-    border: 20px solid transparent;
-    border-right-color: #334155;
-    left: -40px;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid transparent;
+    border-right: 10px solid #334155;
+    left: -20px;
     top: 6px;
 }
 
@@ -207,9 +233,66 @@ export default {
     width: 0px;
     height: 0px;
     position: absolute;
-    border: 20px solid transparent;
-    border-right-color: white;
-    left: -39px;
+    border: 13px solid transparent;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid transparent;
+    border-right: 10px solid white;
+    left: -19px;
     top: 6px;
+}
+
+.triangle-center:before {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid transparent;
+    border-right: 10px solid #334155;
+    left: -20px;
+    top: calc(50% - 10px);
+}
+
+.triangle-center::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border: 13px solid transparent;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid transparent;
+    border-right: 10px solid white;
+    left: -19px;
+    top: calc(50% - 10px);
+}
+
+.triangle-bottom:before {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid transparent;
+    border-right: 10px solid #334155;
+    left: -20px;
+    bottom: 10px;
+}
+
+.triangle-bottom::after {
+    content: '';
+    width: 0px;
+    height: 0px;
+    position: absolute;
+    border: 13px solid transparent;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid transparent;
+    border-right: 10px solid white;
+    left: -19px;
+    bottom: 10px;
 }
 </style>
