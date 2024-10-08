@@ -941,12 +941,16 @@ export default {
 
             this.zoomInD3(this.scale, this.panX, this.panY);
 
-            const translateX =
-                -node.y * this.scale +
-                (window.innerWidth / (2 * this.scale)) * this.scale;
-            const translateY =
-                -node.x * this.scale +
-                (window.innerHeight / (2 * this.scale)) * this.scale;
+            let translateX = 0;
+            let translateY = 0;
+            if (typeof node !== 'undefined') {
+                translateX =
+                    -node.y * this.scale +
+                    (window.innerWidth / (2 * this.scale)) * this.scale;
+                translateY =
+                    -node.x * this.scale +
+                    (window.innerHeight / (2 * this.scale)) * this.scale;
+            }
 
             d3.select(this.context.canvas)
                 .transition()
@@ -957,6 +961,14 @@ export default {
                         .translate(translateX, translateY)
                         .scale(this.scale)
                 );
+        },
+        expandAllChildren() {
+            var url =
+                '/user-skills/expand-all-children/' +
+                this.userDetailsStore.userId;
+            fetch(url).then(() => {
+                this.reloadTree();
+            });
         }
     }
 };
