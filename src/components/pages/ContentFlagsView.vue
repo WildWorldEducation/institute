@@ -1010,6 +1010,17 @@ export default {
                                             <button
                                                 class="custom-dropdown-option"
                                                 @click="
+                                                    flagTypeCriteria =
+                                                        'image question';
+                                                    showFlagTypeDropDown = false;
+                                                    showFlagTypeFilter = false;
+                                                "
+                                            >
+                                                image question
+                                            </button>
+                                            <button
+                                                class="custom-dropdown-option"
+                                                @click="
                                                     flagTypeCriteria = 'skill';
                                                     showFlagTypeDropDown = false;
                                                     showFlagTypeFilter = false;

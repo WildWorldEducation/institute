@@ -459,11 +459,16 @@ router.get('/url/:skillUrl', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const sqlQuery = `SELECT *
-                          FROM skills
-                          WHERE skills.url = ${conn.escape(
-                              req.params.skillUrl
-                          )} AND is_deleted = 0`;
+    const sqlQuery = `SELECT 
+                        s.*,
+                        parent_skill.type AS parent_type
+                    FROM 
+                        skills AS s
+                    LEFT JOIN 
+                        skills AS parent_skill ON s.parent = parent_skill.id
+                    WHERE s.url = ${conn.escape(
+                            req.params.skillUrl
+                        )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
