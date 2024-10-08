@@ -106,12 +106,6 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            src="/images/banners/edit-mastery-skill-banner.png"
-            class="img-fluid"
-        />
-    </div>
     <div
         v-if="userDetailsStore.role == 'admin' && !isInstructorMode"
         class="topnav"
@@ -139,68 +133,156 @@ export default {
             >
         </div>
     </div>
-    <div class="collapsible-tree-legend container-fluid p-2">
-        <div class="legend row">
-            <div class="col-lg col-md-4 col-6">
-                <span class="grade-school"></span> Grade school
+    <div
+        id="legend"
+        class="collapsible-tree-legend container-fluid p-2 position-relative"
+    >
+        <div class="position-absolute legend-div">
+            <div id="mobile-legend">
+                <div class="legend row">
+                    <div class="col-8">
+                        <div class="col">
+                            <span class="grade-school"></span>Grade school
+                        </div>
+                        <div class="col">
+                            <span class="middle-school"></span> Middle school
+                        </div>
+                        <div class="col">
+                            <span class="high-school"></span> High school
+                        </div>
+                        <div class="col">
+                            <span class="college"></span> College
+                        </div>
+                        <div class="col"><span class="phd"></span> PHD</div>
+                    </div>
+                </div>
+                <div class="search-mobile-row">
+                    <!-- Search Feature -->
+                    <div
+                        :class="[
+                            'search-bar',
+                            resultsSkills.length > 0 && 'have-results'
+                        ]"
+                    >
+                        <div class="d-flex align-items-center p-1">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="15"
+                                height="15"
+                                fill="#5f6368"
+                                class="me-2"
+                            >
+                                <path
+                                    d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                                />
+                            </svg>
+                            <input
+                                id="skill-tree-search-text"
+                                type="text"
+                                class="skill-tree-input"
+                                placeholder="Skill Name"
+                                v-model="searchText"
+                            />
+                        </div>
+                        <div class="position-relative">
+                            <div
+                                v-if="resultsSkills.length"
+                                class="search-results"
+                            >
+                                <button
+                                    @click="handleChooseResult(result)"
+                                    class="result-row"
+                                    v-for="result in resultsSkills"
+                                    v-html="result.highlightedResult"
+                                ></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg col-md-4 col-6">
-                <span class="middle-school"></span> Middle school
-            </div>
-            <div class="col-lg col-md-4 col-6">
-                <span class="high-school"></span> High school
-            </div>
-            <div class="col-lg col-md-4 col-6">
-                <span class="college"></span> College
-            </div>
-            <div class="col-lg col-md-4 col-6">
-                <span class="phd"></span> PHD
-            </div>
-        </div>
-    </div>
-    <div class="d-flex flex-row-reverse me-0 me-lg-3 mt-2 mt-lg-0">
-        <!-- Search Feature -->
-        <div
-            :class="['search-bar', resultsSkills.length > 0 && 'have-results']"
-        >
-            <div class="d-flex align-items-center p-1">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    width="15"
-                    height="15"
-                    fill="#5f6368"
-                    class="me-2"
-                >
-                    <path
-                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-                    />
-                </svg>
-                <input
-                    id="skill-tree-search-text"
-                    type="text"
-                    class="skill-tree-input"
-                    placeholder="Skill Name"
-                    v-model="searchText"
-                />
-            </div>
-            <div class="position-relative">
-                <div v-if="resultsSkills.length" class="search-results">
-                    <button
-                        @click="handleChooseResult(result)"
-                        class="result-row"
-                        v-for="result in resultsSkills"
-                        v-html="result.highlightedResult"
-                    ></button>
+            <div id="tablet-and-up-legend">
+                <div class="legend row">
+                    <div class="col d-flex align-items-center">
+                        <span class="grade-school"></span>Grade school
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <span class="middle-school"></span> Middle school
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <span class="high-school"></span> High school
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <span class="college"></span> College
+                    </div>
+                    <div class="col d-flex align-items-center">
+                        <span class="phd"></span> PHD
+                    </div>
+                    <div
+                        class="col-12 col-lg-3 d-flex justify-content-center align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
+                    >
+                        <!-- Search Feature -->
+                        <div
+                            :class="[
+                                'search-bar',
+                                resultsSkills.length > 0 && 'have-results'
+                            ]"
+                        >
+                            <div class="d-flex align-items-center p-1">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="15"
+                                    height="15"
+                                    fill="#5f6368"
+                                    class="me-2"
+                                >
+                                    <path
+                                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+                                    />
+                                </svg>
+                                <input
+                                    id="skill-tree-search-text"
+                                    type="text"
+                                    class="skill-tree-input"
+                                    placeholder="Skill Name"
+                                    v-model="searchText"
+                                />
+                            </div>
+                            <div class="position-relative">
+                                <div
+                                    v-if="resultsSkills.length"
+                                    class="search-results"
+                                >
+                                    <button
+                                        @click="handleChooseResult(result)"
+                                        class="result-row"
+                                        v-for="result in resultsSkills"
+                                        v-html="result.highlightedResult"
+                                    ></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <hr class="d-lg-none" />
+
     <SkillsListParent ref="skillList" />
 </template>
 
 <style scoped>
+#legend {
+    height: 60px;
+    border-bottom: 2px #a48be640 solid;
+}
+
+.legend-div {
+    height: auto;
+    width: 100%;
+}
+
 .topnav {
     padding: 5px 10px;
 }
@@ -210,19 +292,86 @@ export default {
     width: 100%;
 }
 
-/* basic positioning */
-.legend {
-    list-style: none;
+.collapsible-tree-legend {
     width: 100%;
 }
 
+.search-bar {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #dce2f2;
+    border-radius: 8px;
+}
+
+#legend {
+    height: 60px;
+}
+
+#mobile-legend {
+    display: none;
+}
+
 .legend span {
-    border: 1px solid #ccc;
     float: left;
     width: 20px;
     height: 20px;
     margin: 2px;
     border-radius: 50%;
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    #mobile-legend {
+        display: block;
+    }
+
+    #tablet-and-up-legend {
+        display: none;
+    }
+
+    #print-btn {
+        margin-bottom: 5px;
+    }
+
+    #legend {
+        height: 190px;
+    }
+
+    .search-mobile-row {
+        width: 96%;
+        margin-left: 0px;
+        margin-right: auto;
+        margin-top: 15px;
+    }
+}
+
+/* Bigger devices ( Tablet ) */
+@media (min-width: 481px) and (max-width: 1024px) {
+    #legend {
+        height: 90px;
+    }
+
+    #mobile-legend {
+        display: none;
+    }
+
+    #tablet-and-up-legend {
+        display: block;
+    }
+    .legend {
+        align-items: center;
+    }
+
+    .legend .col {
+        display: flex;
+    }
+    .legend span {
+        flex-shrink: 0;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
 }
 
 /* Level colors */
@@ -270,15 +419,6 @@ export default {
     position: absolute;
     margin-top: 10px;
     right: 10px;
-}
-
-.search-bar {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #989ba1;
-    border-radius: 8px;
-    background-color: white;
-    width: 25%;
 }
 
 .have-results {
@@ -347,12 +487,6 @@ export default {
 
 /* Mobile view style */
 @media (max-width: 480px) {
-    .search-bar {
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
     .skill-tree-input {
         width: 100%;
     }
@@ -365,15 +499,5 @@ export default {
         margin-left: auto;
         margin-right: auto;
     }
-
-    .legend {
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    /* .label-col {
-        display: flex;
-        justify-content: center;
-    } */
 }
 </style>
