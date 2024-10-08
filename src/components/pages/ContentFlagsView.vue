@@ -1797,7 +1797,7 @@ export default {
                                                 class="custom-dropdown-option"
                                                 @click="
                                                     flagTypeCriteria =
-                                                        'resource';
+                                                        'source';
                                                     showFlagTypeFilter = false;
                                                     showFlagTypeDropDown = false;
                                                 "
