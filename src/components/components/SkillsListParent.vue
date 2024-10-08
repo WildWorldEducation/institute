@@ -200,7 +200,6 @@ export default {
     </div>
     <div
         v-else
-        class="mt-3"
         style="
             overflow: auto;
             position: absolute;
