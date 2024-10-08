@@ -56,7 +56,7 @@ export default {
             userNameCriteria: '',
             showUserFilter: false,
             showDateFilter: false,
-            dateOrder: 'asc',
+            dateOrder: 'desc',
             searchText: '',
             userRoleCriteria: 'all',
             // Custom drop down flag and state
@@ -242,6 +242,11 @@ export default {
                         }
                         this.rows.push(flagRow);
                     }
+                    this.rows = this.rows.sort((a, b) => {
+                        const dateA = new Date(a.dateString);
+                        const dateB = new Date(b.dateString);
+                        return dateB - dateA;
+                    });
                     this.rowsLength = this.rows.length;
                     this.isContentFlagsLoaded = true;
                 });
@@ -403,7 +408,7 @@ export default {
             this.showUserFilter = false;
             this.showDateFilter = false;
             this.dateFilterCriteria = 'all';
-            this.dateOrder = 'asc';
+            this.dateOrder = 'desc';
             this.dateDayCriteria = '';
             this.dateMonthCriteria = '';
             this.dateYearCriteria = '';
