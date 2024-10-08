@@ -835,7 +835,7 @@ export default {
                 this.reloadTree(node);
             });
         },
-        async reloadTree(node) {         
+        async reloadTree(node) {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills();
 
