@@ -81,6 +81,13 @@ export default {
                 ) {
                     this.skillRevisions[i].isCurrentRevision = true;
                 }
+
+                if (i + 1 === this.skillRevisions.length && i > 0) {
+                    this.skillRevisions[i].isOrigin = true;
+                } else {
+                    this.skillRevisions[i].lastRevision =
+                        this.skillRevisions[i + 1];
+                }
             }
             console.log('skill revision: ');
             console.log(this.skillRevisions);
