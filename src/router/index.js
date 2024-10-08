@@ -415,6 +415,7 @@ router.beforeEach(async (to, from, next) => {
     if (
         to.name == 'vertical-tree' ||
         to.name == 'radial-tree' ||
+        to.name == 'skills' ||
         to.name == 'student-signup' ||
         to.name == 'editor-signup' ||
         to.name == 'login'
