@@ -38,7 +38,17 @@ export default {
             };
             fetch(url, requestOptions)
                 .then(() => {
-                    this.$router.go(-1);
+                    // Delete flag if exist
+                    let dismissFlagId = this.$route.query.dismissFlagId;
+                    if(dismissFlagId){
+                        fetch('/content-flags/' + dismissFlagId, {
+                            method: 'DELETE'
+                        }).finally(()=>{
+                            this.$router.back();
+                        });
+                    }else{
+                        this.$router.back();
+                    }
                 });
         }
     }

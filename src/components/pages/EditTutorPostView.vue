@@ -40,7 +40,17 @@ export default {
 
             var url = '/tutor-posts/edit/' + this.tutorPostId;
             fetch(url, requestOptions).then(() => {
-                this.$router.back();
+                // Delete flag if exist
+                let dismissFlagId = this.$route.query.dismissFlagId;
+                if(dismissFlagId){
+                    fetch('/content-flags/' + dismissFlagId, {
+                        method: 'DELETE'
+                    }).finally(()=>{
+                        this.$router.back();
+                    });
+                }else{
+                    this.$router.back();
+                }
             });
         }
     }

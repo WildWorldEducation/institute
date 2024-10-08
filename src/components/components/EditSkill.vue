@@ -350,7 +350,18 @@ export default {
                     this.SubmitFilters();
                 })
                 .then(() => {
-                    if (this.skill.type == 'domain') {
+
+                    // Delete flag if exist
+                    let dismissFlagId = this.$route.query.dismissFlagId;
+                    if(dismissFlagId){
+                        fetch('/content-flags/' + dismissFlagId, {
+                            method: 'DELETE'
+                        }).finally(()=>{
+                            this.$router.back();
+                        });
+                    }
+
+                    else if (this.skill.type == 'domain') {
                         this.router.push('/skills');
                     } else {
                         this.$router.push('/skills/' + this.skill.url);
