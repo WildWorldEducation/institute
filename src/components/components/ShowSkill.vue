@@ -222,37 +222,12 @@ export default {
             <!-- Buttons -->
             <div class="row">
                 <div
-                    class="col-sm mb-2"
+                    class="col-9"
                     :class="{
                         'd-flex': isMobileCheck < 576,
                         'justify-content-center': isMobileCheck < 576
                     }"
                 >
-                    <!-- Edit skill -->
-                    <router-link
-                        v-if="sessionDetailsStore.isLoggedIn"
-                        :to="'/skills/edit/' + skillUrl"
-                        class="btn green-btn"
-                        :class="{
-                            'mb-1': isMobileCheck > 576,
-                            'me-1': isMobileCheck < 576
-                        }"
-                        ><span>Edit</span>
-                        <!-- Pencil icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="20"
-                            fill="white"
-                            class="mb-1 ms-1 btn-icon"
-                        >
-                            <path
-                                d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
-                            />
-                        </svg>
-                    </router-link>
-
                     <!-- Show version history -->
                     <router-link
                         v-if="
@@ -270,7 +245,7 @@ export default {
                             width="18"
                             height="20"
                             fill="white"
-                            class="mb-1 ms-1 btn-icon"
+                            class="mb-1 ms-1"
                         >
                             <path
                                 d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
@@ -278,70 +253,65 @@ export default {
                         </svg>
                     </router-link>
                 </div>
-                <!-- Take assessment -->
-                <div class="col-sm">
-                    <div
-                        v-if="
-                            userDetailsStore.role == 'student' ||
-                            !sessionDetailsStore.isLoggedIn
-                        "
-                        class="xs:flex xs:justify-content-center"
-                    >
-                        <div
-                            class="d-flex justify-content-center justify-content-sm-end align-items-start mb-2 mb-md-0"
+
+                <div class="col-3">
+                    <div class="d-flex justify-content-end">
+                        <!-- Edit skill -->
+                        <router-link
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            :to="'/skills/edit/' + skillUrl"
+                            class="btn green-btn"
                         >
-                            <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
-                            <router-link
-                                :to="'/skills/' + ancestor"
-                                v-if="
-                                    !isUnlocked &&
-                                    !isMastered &&
-                                    showAncestorLink
-                                "
-                                class="btn purple-btn text-capitalize"
+                            <!-- Pencil icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="20"
+                                height="20"
+                                fill="white"
                             >
-                                go to nearest unlockable skill
-                            </router-link>
-                            <!-- Take Assessment Button -->
-                            <router-link
-                                v-if="isUnlocked && !isMastered"
-                                class="btn purple-btn assessment-btn"
-                                :to="skill.id + '/assessment'"
+                                <path
+                                    d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
+                                />
+                            </svg>
+                        </router-link>
+                        <!-- Sharable URL -->
+                        <button
+                            @click="copyShareableURLToClipBoard"
+                            class="btn purple-btn"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="20"
+                                heigth="20"
                             >
-                                <svg
-                                    fill="#ffffff"
-                                    height="45px"
-                                    width="45px"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 640 512"
-                                >
-                                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                    <path
-                                        d="M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9v28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5V291.9c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z"
-                                    />
-                                </svg>
-                                <span>Take Assessment</span>
-                            </router-link>
-                            <router-link
-                                v-if="!sessionDetailsStore.isLoggedIn"
-                                class="btn purple-btn assessment-btn"
-                                to="/login"
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    fill="white"
+                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
+                                />
+                            </svg>
+                        </button>
+                        <!-- Flag button -->
+                        <button
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            @click="showFlaggingModal = true"
+                            class="btn purple-btn"
+                            b-tooltip.hover
+                            title="Report this skill to the admin if it has errors"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                class="flag-icon"
                             >
-                                <svg
-                                    fill="#ffffff"
-                                    height="45px"
-                                    width="45px"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 640 512"
-                                >
-                                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                    <path
-                                        d="M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9v28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5V291.9c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z"
-                                    />
-                                </svg>
-                                <span>Take Assessment</span>
-                            </router-link>
-                        </div>
+                                <path
+                                    fill="white"
+                                    d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                />
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -368,57 +338,76 @@ export default {
                                 <div v-html="skill.mastery_requirements"></div>
                             </div>
                         </div>
-                        <div
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="row mt-3 me-1"
-                        >
-                            <!-- Flag the skill button -->
-                            <div class="d-flex flex-row-reverse">
-                                <div
-                                    @click="showFlaggingModal = true"
-                                    type="button"
-                                    class="me-1"
-                                    b-tooltip.hover
-                                    title="Report this skill to the admin if it has errors"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        class="flag-icon"
-                                    >
-                                        <path
-                                            fill="#8f7bd6"
-                                            d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
-                                        />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="col-md-4 order-1 order-md-2">
-                    <div class="info-box">
-                        <!-- Sharable URL -->
-                        <button
-                            @click="copyShareableURLToClipBoard"
-                            class="btn purple-btn"
+                    <div class="info-box p-2">
+                        <!-- Take assessment -->
+                        <div
+                            v-if="
+                                userDetailsStore.role == 'student' ||
+                                !sessionDetailsStore.isLoggedIn
+                            "
+                            class="xs:flex xs:justify-content-center"
                         >
-                            Sharable URL&nbsp;
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="20"
-                                heigth="20"
+                            <div
+                                class="d-flex justify-content-center justify-content-sm-end align-items-start mb-2 mb-md-0"
                             >
-                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                                <path
-                                    fill="white"
-                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
-                                />
-                            </svg>
-                        </button>
+                                <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
+                                <router-link
+                                    :to="'/skills/' + ancestor"
+                                    v-if="
+                                        !isUnlocked &&
+                                        !isMastered &&
+                                        showAncestorLink
+                                    "
+                                    class="btn purple-btn text-capitalize"
+                                >
+                                    go to nearest unlockable skill
+                                </router-link>
+                                <!-- Take Assessment Button -->
+                                <router-link
+                                    v-if="isUnlocked && !isMastered"
+                                    class="btn purple-btn assessment-btn"
+                                    :to="skill.id + '/assessment'"
+                                >
+                                    <svg
+                                        fill="#ffffff"
+                                        height="45px"
+                                        width="45px"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 640 512"
+                                    >
+                                        <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                        <path
+                                            d="M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9v28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5V291.9c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z"
+                                        />
+                                    </svg>
+                                    <span>Take Assessment</span>
+                                </router-link>
+                                <router-link
+                                    v-if="!sessionDetailsStore.isLoggedIn"
+                                    class="btn purple-btn assessment-btn"
+                                    to="/login"
+                                >
+                                    <svg
+                                        fill="#ffffff"
+                                        height="45px"
+                                        width="45px"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 640 512"
+                                    >
+                                        <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                        <path
+                                            d="M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9v28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5V291.9c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z"
+                                        />
+                                    </svg>
+                                    <span>Take Assessment</span>
+                                </router-link>
+                            </div>
+                        </div>
                         <!-- Image -->
-                        <div id="skill-image">
+                        <div>
                             <!-- Skill image -->
                             <!-- Show a default skill avatar if skill not have image yet -->
                             <img
@@ -427,7 +416,7 @@ export default {
                                         ? skill.icon_image
                                         : '/images/skill-avatar/recurso.png'
                                 "
-                                class="skill-icon rounded"
+                                class="rounded img-fluid"
                             />
                         </div>
                         <!-- Level -->
@@ -596,10 +585,6 @@ export default {
     justify-content: center;
 }
 
-.skill-icon {
-    width: 220px;
-}
-
 .skill-name {
     font-family: 'Poppins', sans-serif;
     font-size: 40px;
@@ -631,10 +616,6 @@ export default {
 
 #hr-parent {
     border-color: #aea3ce !important;
-}
-
-#skill-image {
-    max-width: 600px;
 }
 
 #skill-info-container {
@@ -677,7 +658,6 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    max-height: 37.6px;
 }
 
 .green-btn:hover {
@@ -720,10 +700,6 @@ export default {
     background-color: #3eb3a3;
 }
 
-.btn-icon {
-    height: fit-content !important;
-}
-
 .flag-icon {
     height: 20px !important;
 }
@@ -742,13 +718,6 @@ export default {
 }
 /* Specific phone view css */
 @media (max-width: 576px) {
-    img {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        width: 50%;
-    }
-
     h1,
     h2 {
         text-align: center;
@@ -764,12 +733,6 @@ export default {
         background-color: #f2edffcc;
         border-radius: 12px;
         padding: 20px;
-    }
-
-    #skill-image {
-        width: 75%;
-        height: auto;
-        margin: auto;
     }
 
     .mastery-requirements {
