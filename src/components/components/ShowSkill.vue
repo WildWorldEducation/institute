@@ -219,6 +219,7 @@ export default {
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
         >
+            <!-- Buttons -->
             <div class="row">
                 <div
                     class="col-sm mb-2"
@@ -276,26 +277,6 @@ export default {
                             />
                         </svg>
                     </router-link>
-
-                    <!-- Sharable URL -->
-                    <button
-                        @click="copyShareableURLToClipBoard"
-                        class="btn purple-btn"
-                    >
-                        Sharable URL&nbsp;
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 448 512"
-                            width="20"
-                            heigth="20"
-                        >
-                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                            <path
-                                fill="white"
-                                d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
-                            />
-                        </svg>
-                    </button>
                 </div>
                 <!-- Take assessment -->
                 <div class="col-sm">
@@ -364,139 +345,120 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Skill Info -->
-            <div class="d-flex flex-column gap-2">
-                <!-- Skill image -->
-                <div id="skill-image">
-                    <!-- Show a default skill avatar if skill not have image yet -->
-                    <img
-                        :src="
-                            skill.icon_image
-                                ? skill.icon_image
-                                : '/images/skill-avatar/recurso.png'
-                        "
-                        class="skill-icon rounded"
-                    />
-                </div>
+            <div class="row gap-2">
                 <!-- Skill name and skill description -->
-                <div class="d-flex flex-column">
-                    <h1 class="skill-name">{{ skill.name }}</h1>
-                    <!-- Description only seen by admins -->
-                    <div
-                        v-if="userDetailsStore.role == 'admin'"
-                        class="row pe-4 ps-4 ps-md-0 skill-description"
-                    >
-                        <p>{{ skill.description }}</p>
-                    </div>
-                </div>
-            </div>
-            <div v-if="skill.type != 'domain'">
-                <!-- A line divide -->
-                <div class="row">
-                    <div class="col col-md-8 p-4 p-md-0">
-                        <hr
-                            id="hr-parent"
-                            class="border border-2 opacity-100"
-                        />
-                    </div>
-                </div>
-                <!-- Level -->
-                <div class="mt-3" style="color: #a48be6">
-                    <strong>
-                        <!-- <div class="h1-title">Level</div> -->
-                        <span v-if="skill.level == 'grade_school'"
-                            >Grade School</span
-                        >
-                        <span v-else-if="skill.level == 'middle_school'"
-                            >Middle School</span
-                        >
-                        <span v-else-if="skill.level == 'high_school'"
-                            >High School</span
-                        >
-                        <span v-else-if="skill.level == 'college'"
-                            >College</span
-                        >
-                        <span v-else-if="skill.level == 'phd'">PHD</span>
-                    </strong>
-                </div>
-                <!-- Mastery Requirements -->
-                <div class="mt-3 d-flex flex-column">
-                    <div class="mastery-requirements">
-                        <div v-html="skill.mastery_requirements"></div>
-                    </div>
-                </div>
+                <h1 class="skill-name">{{ skill.name }}</h1>
+                <!-- Description only seen by admins -->
                 <div
-                    v-if="sessionDetailsStore.isLoggedIn"
-                    class="row mt-3 me-1"
+                    v-if="userDetailsStore.role == 'admin'"
+                    class="row pe-4 ps-4 ps-md-0 skill-description"
                 >
-                    <!-- Flag the skill button -->
-                    <div class="d-flex flex-row-reverse">
+                    <p>{{ skill.description }}</p>
+                </div>
+                <!-- A line divide -->
+                <hr id="hr-parent" class="border border-2 opacity-100" />
+            </div>
+            <div class="row">
+                <div class="col-md-8 order-2 order-md-1">
+                    <!-- Mastery Requirements -->
+                    <div v-if="skill.type != 'domain'">
+                        <!-- Mastery Requirements -->
+                        <div class="mt-3 d-flex flex-column">
+                            <div class="mastery-requirements">
+                                <div v-html="skill.mastery_requirements"></div>
+                            </div>
+                        </div>
                         <div
-                            @click="showFlaggingModal = true"
-                            type="button"
-                            class="me-1"
-                            b-tooltip.hover
-                            title="Report this skill to the admin if it has errors"
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="row mt-3 me-1"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                class="flag-icon"
-                            >
-                                <path
-                                    fill="#8f7bd6"
-                                    d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
-                                />
-                            </svg>
+                            <!-- Flag the skill button -->
+                            <div class="d-flex flex-row-reverse">
+                                <div
+                                    @click="showFlaggingModal = true"
+                                    type="button"
+                                    class="me-1"
+                                    b-tooltip.hover
+                                    title="Report this skill to the admin if it has errors"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 448 512"
+                                        class="flag-icon"
+                                    >
+                                        <path
+                                            fill="#8f7bd6"
+                                            d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- A line divide -->
-            <div v-if="userDetailsStore.role == 'admin'">
-                <div class="row">
-                    <div class="col col-md-8 p-4 p-md-0">
-                        <hr
-                            id="hr-parent"
-                            class="border border-2 opacity-100"
-                        />
-                    </div>
-                </div>
-                <!-- Filters -->
-                <div class="row mt-3">
-                    <div class="h1-title">Filter</div>
-                    <label
-                        v-for="tag in tagsStore.tagsList"
-                        class="control control-checkbox"
-                    >
-                        <span class="my-auto mx-2 me-4"> {{ tag.name }}</span>
-                        <input
-                            type="checkbox"
-                            :value="tag.id"
-                            v-model="filters"
-                            disabled
-                        />
-                        <div class="control_indicator"></div>
-                    </label>
-                </div>
-            </div>
-            <!-- A line divide -->
-            <div
-                v-if="skill.type != 'domain' && sessionDetailsStore.isLoggedIn"
-            >
-                <div class="row">
-                    <div class="col col-md-8 p-4 p-md-0">
-                        <hr
-                            id="hr-parent"
-                            class="border border-2 opacity-100"
-                        />
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="h1-title">Assessment</div>
-                    <div class="col ms-1">
+                <div class="col-md-4 order-1 order-md-2">
+                    <div class="info-box">
+                        <!-- Sharable URL -->
+                        <button
+                            @click="copyShareableURLToClipBoard"
+                            class="btn purple-btn"
+                        >
+                            Sharable URL&nbsp;
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="20"
+                                heigth="20"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    fill="white"
+                                    d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
+                                />
+                            </svg>
+                        </button>
+                        <!-- Image -->
+                        <div id="skill-image">
+                            <!-- Skill image -->
+                            <!-- Show a default skill avatar if skill not have image yet -->
+                            <img
+                                :src="
+                                    skill.icon_image
+                                        ? skill.icon_image
+                                        : '/images/skill-avatar/recurso.png'
+                                "
+                                class="skill-icon rounded"
+                            />
+                        </div>
+                        <!-- Level -->
+                        <div class="mt-3" style="color: #a48be6">
+                            Level:
+                            <strong>
+                                <!-- <div class="h1-title">Level</div> -->
+                                <span v-if="skill.level == 'grade_school'"
+                                    >Grade School</span
+                                >
+                                <span v-else-if="skill.level == 'middle_school'"
+                                    >Middle School</span
+                                >
+                                <span v-else-if="skill.level == 'high_school'"
+                                    >High School</span
+                                >
+                                <span v-else-if="skill.level == 'college'"
+                                    >College</span
+                                >
+                                <span v-else-if="skill.level == 'phd'"
+                                    >PHD</span
+                                >
+                            </strong>
+                        </div>
+                        <!-- Question Bank -->
                         <router-link
-                            v-if="skill.type != 'super'"
+                            v-if="
+                                skill.type != 'domain' &&
+                                skill.type != 'super' &&
+                                sessionDetailsStore.isLoggedIn
+                            "
                             class="btn purple-btn mt-3 me-3"
                             :to="skillUrl + '/question-bank'"
                             >Question Bank&nbsp;&nbsp;
@@ -529,7 +491,37 @@ export default {
                     </div>
                 </div>
             </div>
+
+            <!-- A line divide -->
+            <div v-if="userDetailsStore.role == 'admin'">
+                <div class="row">
+                    <div class="col col-md-8 p-4 p-md-0">
+                        <hr
+                            id="hr-parent"
+                            class="border border-2 opacity-100"
+                        />
+                    </div>
+                </div>
+                <!-- Filters -->
+                <div class="row mt-3">
+                    <div class="h1-title">Filter</div>
+                    <label
+                        v-for="tag in tagsStore.tagsList"
+                        class="control control-checkbox"
+                    >
+                        <span class="my-auto mx-2 me-4"> {{ tag.name }}</span>
+                        <input
+                            type="checkbox"
+                            :value="tag.id"
+                            v-model="filters"
+                            disabled
+                        />
+                        <div class="control_indicator"></div>
+                    </label>
+                </div>
+            </div>
         </div>
+        <!-- Posts -->
         <div v-if="skill.type != 'domain'">
             <div class="row mt-3 mb-3">
                 <Forum v-if="isSkillLoaded" :skillId="skill.id" />
@@ -594,12 +586,18 @@ export default {
 </template>
 
 <style scoped>
-.image-attribution-text {
-    font-size: smaller;
+.info-box {
+    border: 1px solid #a2a9b1;
+    color: black;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .skill-icon {
-    max-width: 200px;
+    width: 220px;
 }
 
 .skill-name {
