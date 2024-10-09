@@ -581,7 +581,7 @@ export default {
     background-color: #fefefe;
     padding: 20px;
     border: 1px solid #888;
-    width: 600px;
+    width: 600px !important;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
 }
