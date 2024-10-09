@@ -95,6 +95,7 @@ export default {
                 .zoom()
                 .scaleExtent([0.05, 8])
                 .on('zoom', ({ transform }) => {
+                    // For line thickness
                     this.currentZoom = transform.k;
                     this.zoomed(transform);
                 });
@@ -782,8 +783,8 @@ export default {
                 .call(
                     this.d3Zoom.transform,
                     d3.zoomIdentity
-                        .translate(this.width / 2, this.height / 2)
-                        .scale(0.5)
+                        .translate(this.width / 2, this.height / 3)
+                        .scale(0.1)
                 );
         },
         // Find node with name include
