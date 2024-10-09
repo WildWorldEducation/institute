@@ -40,6 +40,8 @@ export default {
 
             // Prepare the data.
             for (let i = 0; i < this.skillRevisions.length; i++) {
+                this.skillRevisions[i].timeStamp =
+                    this.skillRevisions[i].edited_date;
                 // Prep the date and time data ---------------
                 // Split timestamp into [ Y, M, D, h, m, s ]
                 var date = this.skillRevisions[i].edited_date.replace('T', ' ');

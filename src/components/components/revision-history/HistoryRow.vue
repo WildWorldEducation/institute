@@ -1,14 +1,21 @@
 <script>
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
 export default {
     setup() {},
     data() {
         return {
-            hoverOn: false
+            hoverOn: false,
+            dateFromNow: ''
         };
     },
     props: ['revision', 'skill'],
     methods: {},
-    async mounted() {}
+    async mounted() {
+        dayjs.extend(relativeTime);
+        this.dateFromNow = dayjs(this.revision.timeStamp).fromNow();
+    }
 };
 </script>
 
@@ -74,41 +81,63 @@ export default {
                 <div class="by-user">By {{ revision.username }}</div>
             </router-link>
             <!-- revision detail appear when user hover over the row -->
-            <div class="position-relative">
-                <Transition name="appear">
-                    <div
-                        class="revision-hover-detail"
-                        :class="{
-                            'appear-top': revision.isCurrentRevision,
-                            'appear-center':
-                                !revision.isCurrentRevision &&
-                                revision.lastRevision,
-                            'appear-bottom':
-                                !revision.lastRevision &&
-                                !revision.isCurrentRevision
-                        }"
-                        v-if="hoverOn"
-                    >
+            <div>
+                <div class="position-relative anchor">
+                    <Transition name="appear">
                         <div
-                            class="bubble"
+                            class="revision-hover-detail"
                             :class="{
-                                'triangle-top': revision.isCurrentRevision,
-                                'triangle-center':
+                                'appear-top': revision.isCurrentRevision,
+                                'appear-center':
                                     !revision.isCurrentRevision &&
                                     revision.lastRevision,
-                                'triangle-bottom':
-                                    !revision.lastRevision &&
-                                    !revision.isCurrentRevision
+                                'appear-bottom': revision.isOrigin
                             }"
+                            v-if="hoverOn"
                         >
-                            Lorem ipsum dolor sit amet consectetur, adipisicing
-                            elit. Accusantium, repudiandae at, sint molestias,
-                            praesentium vitae obcaecati quae nostrum amet
-                            quaerat repellendus! Labore provident neque a
-                            debitis? At doloribus voluptatibus repellendus.
+                            <div
+                                class="bubble"
+                                :class="{
+                                    'triangle-top': revision.isCurrentRevision,
+                                    'triangle-center':
+                                        !revision.isCurrentRevision &&
+                                        revision.lastRevision,
+                                    'triangle-bottom':
+                                        !revision.lastRevision &&
+                                        !revision.isCurrentRevision
+                                }"
+                            >
+                                <div class="d-flex align-items-center">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 512 512"
+                                        width="15"
+                                        height="15"
+                                        fill="#64748b"
+                                    >
+                                        <path
+                                            d="M406.5 399.6C387.4 352.9 341.5 320 288 320l-64 0c-53.5 0-99.4 32.9-118.5 79.6C69.9 362.2 48 311.7 48 256C48 141.1 141.1 48 256 48s208 93.1 208 208c0 55.7-21.9 106.2-57.5 143.6zm-40.1 32.7C334.4 452.4 296.6 464 256 464s-78.4-11.6-110.5-31.7c7.3-36.7 39.7-64.3 78.5-64.3l64 0c38.8 0 71.2 27.6 78.5 64.3zM256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-272a40 40 0 1 1 0-80 40 40 0 1 1 0 80zm-88-40a88 88 0 1 0 176 0 88 88 0 1 0 -176 0z"
+                                        />
+                                    </svg>
+                                    <div class="mx-1">
+                                        {{ revision.username }},
+                                        {{ dateFromNow }}
+                                        ({{ revision.edited_date }})
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    {{
+                                        revision.isOrigin
+                                            ? 'Origin created by admin.'
+                                            : revision.comment
+                                    }}
+                                </div>
+                                <hr />
+                                <div>100 insertion, 200 deletion</div>
+                            </div>
                         </div>
-                    </div>
-                </Transition>
+                    </Transition>
+                </div>
             </div>
         </div>
     </div>
@@ -192,25 +221,33 @@ export default {
     width: 500px;
     margin: 50px auto;
     background: white;
-    padding: 20px;
-    text-align: center;
-    font-weight: 900;
+    padding: 3px 10px;
+    font-weight: 500;
+    font-size: 14px;
     color: #64748b;
     border: 1px solid #64748b;
     border-radius: 5px;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .appear-top {
-    top: -60%;
+    top: 0%;
+    left: 10px;
+    transform: translate(0, calc(-25%));
 }
 
 .appear-center {
-    top: -130%;
+    top: 0%;
+    left: 10px;
+    transform: translate(0, calc(-50% + 10px));
 }
 
 .appear-bottom {
-    top: -195%;
+    top: 0%;
+    left: 10px;
+    transform: translate(0, calc(-55% - 10px));
 }
 
 /* Styling for the triangle in bubble text */
