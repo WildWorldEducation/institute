@@ -41,7 +41,9 @@ npm install
 
 ### Setup database
 
-Run the database-setup.sql script to create the database schema
+For an empty database schema, run the database-setup.sql script.
+For a database schema with certain important tables (eg skills and sources) populated,
+download a recent backup [here](https://institute-database.s3.amazonaws.com/02-10-24.zip)
 
 ### Setup .env file
 
