@@ -17,24 +17,47 @@ export default {
                 })
                 .then((data) => (this.tutorPost = data));
 
-                $('#summernote').summernote(
-                    {
-                        maximumImageFileSize: 2048 * 1024, // 2 MB
-                        callbacks: {
-                            onImageUploadError: function (msg) {
-                                alert("Max image size is 2MB.")
-                            }
-                        }
-                    }
-                ).summernote('code', this.tutorPost.description);
+            $('#summernote-description')
+                .summernote({
+                    disableDragAndDrop: true,
+                    placeholder:
+                        'Describe your tutoring style and experience with the subject.',
+                    tabsize: 2,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'underline', 'clear']],
+                        ['para', ['ul']],
+                        ['view', ['codeview']]
+                    ]
+                })
+                .summernote('code', this.tutorPost.description);
+
+            $('#summernote-contact-preference')
+                .summernote({
+                    disableDragAndDrop: true,
+                    placeholder:
+                        'How would you like to be contacted (eg: an email address, mobile number or calendar booking link)?',
+                    tabsize: 2,
+                    toolbar: [
+                        ['font', ['bold', 'underline', 'clear']],
+                        ['para', ['ul']],
+                        ['insert', ['link']],
+                        ['view', ['codeview']]
+                    ]
+                })
+                .summernote('code', this.tutorPost.contact_preference);
         },
         Submit() {
-            var resourceData = $('#summernote').summernote("code");
+            let description = $('#summernote-description').summernote('code');
+            let contact_preference = $(
+                '#summernote-contact-preference'
+            ).summernote('code');
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    description: resourceData
+                    description: description,
+                    contact_preference: contact_preference
                 })
             };
 
@@ -42,13 +65,13 @@ export default {
             fetch(url, requestOptions).then(() => {
                 // Delete flag if exist
                 let dismissFlagId = this.$route.query.dismissFlagId;
-                if(dismissFlagId){
+                if (dismissFlagId) {
                     fetch('/content-flags/' + dismissFlagId, {
                         method: 'DELETE'
-                    }).finally(()=>{
+                    }).finally(() => {
                         this.$router.back();
                     });
-                }else{
+                } else {
                     this.$router.back();
                 }
             });
@@ -62,7 +85,16 @@ export default {
         <h2>Edit Tutor Post</h2>
         <div class="row">
             <div class="mb-3">
-                <textarea id="summernote" name="editordata"></textarea>
+                <textarea
+                    id="summernote-description"
+                    name="editordata"
+                ></textarea>
+            </div>
+            <div class="mb-3">
+                <textarea
+                    id="summernote-contact-preference"
+                    name="editordata2"
+                ></textarea>
             </div>
             <div class="mb-3 d-flex justify-content-end gap-4">
                 <a class="btn red-btn" @click="$router.go(-1)"> Cancel </a>

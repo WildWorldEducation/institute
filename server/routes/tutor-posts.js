@@ -158,10 +158,6 @@ router.get('/show/:tutorPostId', (req, res, next) => {
  */
 router.put('/edit/:id', (req, res, next) => {
     if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.description != null)
-            req.body.description = req.body.description.replace(/'/g, "\\'");
-
         //Extra backend security check that the user is allowed to edit the post.
         let postUserId;
         const sqlQuery1 = `SELECT user_id 
@@ -183,7 +179,9 @@ router.put('/edit/:id', (req, res, next) => {
                         let sqlQuery2 = `UPDATE tutor_posts 
                             SET description= ${conn.escape(
                                 req.body.description
-                            )}
+                            )}, contact_preference = ${conn.escape(
+                            req.body.contact_preference
+                        )}
                             WHERE id= ${conn.escape(req.params.id)};`;
 
                         conn.query(sqlQuery2, (err) => {
