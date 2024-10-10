@@ -1,20 +1,99 @@
 <script>
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { diffWords } from 'diff';
 
 export default {
     setup() {},
     data() {
         return {
             hoverOn: false,
-            dateFromNow: ''
+            dateFromNow: '',
+            added: 0,
+            removed: 0,
+            changed: {
+                name: false,
+                description: false,
+                mastery_requirements: false
+            }
         };
     },
     props: ['revision', 'skill'],
-    methods: {},
+    methods: {
+        extractContent(html) {
+            return new DOMParser().parseFromString(html, 'text/html')
+                .documentElement.textContent;
+        },
+        countDiff() {
+            const plainTextMastery = this.extractContent(
+                this.revision.mastery_requirements
+            );
+            const plainTextPreviousMastery = this.extractContent(
+                this.revision.lastRevision?.mastery_requirements
+            );
+            const masteryDiff = diffWords(
+                plainTextPreviousMastery,
+                plainTextMastery
+            );
+
+            const nameDiff = diffWords(
+                this.revision.lastRevision?.name,
+                this.revision.name
+            );
+
+            const descriptionDiff = diffWords(
+                this.revision.lastRevision?.description,
+                this.revision.description
+            );
+
+            masteryDiff.forEach((element) => {
+                if (element.added) {
+                    this.added = this.added + 1;
+                    this.changed.mastery_requirements = true;
+                }
+                if (element.removed) {
+                    this.removed = this.removed + 1;
+                    this.changed.mastery_requirements = true;
+                }
+            });
+
+            nameDiff.forEach((element) => {
+                if (element.added) {
+                    this.added = this.added + 1;
+                    this.changed.name = true;
+                }
+                if (element.removed) {
+                    this.removed = this.removed + 1;
+                    this.changed.name = true;
+                }
+            });
+
+            console.log(nameDiff);
+            console.log('description diff');
+            console.log(descriptionDiff);
+
+            descriptionDiff.forEach((element) => {
+                if (element.added) {
+                    this.added = this.added + 1;
+                    this.changed.description = true;
+                }
+                if (element.removed) {
+                    this.removed = this.removed + 1;
+                    this.changed.description = true;
+                }
+            });
+
+            // console.log('compare: ' + this.revision.comment);
+            // console.log({
+            //     added: this.added,
+            //     removed: this.removed
+            // });
+        }
+    },
     async mounted() {
         dayjs.extend(relativeTime);
         this.dateFromNow = dayjs(this.revision.timeStamp).fromNow();
+        this.countDiff();
     }
 };
 </script>
@@ -133,7 +212,42 @@ export default {
                                     }}
                                 </div>
                                 <hr />
-                                <div>100 insertion, 200 deletion</div>
+                                <div>
+                                    Changed:
+                                    {{
+                                        changed.name
+                                            ? changed.description
+                                                ? 'name,'
+                                                : 'name'
+                                            : ''
+                                    }}
+                                    {{
+                                        changed.description
+                                            ? changed.mastery_requirements
+                                                ? 'description, '
+                                                : 'description'
+                                            : ''
+                                    }}
+                                    {{
+                                        changed.mastery_requirements
+                                            ? 'mastery requirements'
+                                            : ''
+                                    }}
+                                </div>
+                                <div>
+                                    <span
+                                        class="insert"
+                                        b-on-hoover
+                                        title="number of words added"
+                                        >+{{ added }} insertion,</span
+                                    >
+                                    <span
+                                        class="removed ms-1"
+                                        b-on-hoover
+                                        title="number of words removed"
+                                        >-{{ removed }} deletion</span
+                                    >
+                                </div>
                             </div>
                         </div>
                     </Transition>
@@ -331,5 +445,13 @@ export default {
     border-right: 10px solid white;
     left: -19px;
     bottom: 10px;
+}
+
+.insert {
+    color: rgb(89, 194, 89);
+}
+
+.removed {
+    color: rgb(197, 24, 24);
 }
 </style>
