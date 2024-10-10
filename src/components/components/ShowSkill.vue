@@ -369,11 +369,19 @@ export default {
                 <!-- Skill image -->
                 <div id="skill-image">
                     <!-- Show a default skill avatar if skill not have image yet -->
-                    <img
+                    <!-- <img
                         :src="
                             skill.icon_image
                                 ? skill.icon_image
                                 : '/images/skill-avatar/recurso.png'
+                        "
+                        class="skill-icon rounded"
+                    /> -->
+                    <!-- AWS S3 hosted image -->
+                    <img
+                        :src="
+                            'https://institute-skill-images.s3.amazonaws.com/' +
+                            skillUrl
                         "
                         class="skill-icon rounded"
                     />
