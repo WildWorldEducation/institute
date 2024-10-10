@@ -1788,6 +1788,17 @@ export default {
                                             >
                                                 mc question
                                             </div>
+                                            <button
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
+                                                        'image question';
+                                                    showFlagTypeDropDown = false;
+                                                    showFlagTypeFilter = false;
+                                                "
+                                            >
+                                                image question
+                                            </button>
                                             <div
                                                 class="custom-dropdown-option"
                                                 @click="
