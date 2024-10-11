@@ -196,6 +196,9 @@ export default {
         copyShareableURLToClipBoard() {
             navigator.clipboard.writeText(window.location.href);
             this.showConfirmModal = true;
+        },
+        imageUrlAlternative(event) {
+            event.target.src = '/images/skill-avatar/recurso.png';
         }
     },
     /**
@@ -368,13 +371,14 @@ export default {
             <div class="d-flex flex-column gap-2">
                 <!-- Skill image -->
                 <div id="skill-image">
+                    <!-- AWS S3 hosted image -->
                     <!-- Show a default skill avatar if skill not have image yet -->
                     <img
                         :src="
-                            skill.icon_image
-                                ? skill.icon_image
-                                : '/images/skill-avatar/recurso.png'
+                            'https://institute-skill-images.s3.amazonaws.com/' +
+                            skillUrl
                         "
+                        @error="imageUrlAlternative"
                         class="skill-icon rounded"
                     />
                 </div>
