@@ -16,6 +16,24 @@ const isAdmin = require('../middlewares/adminMiddleware');
 const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 const { recordUserAction } = require('../utilities/record-user-action');
 
+/*
+/AWS S3 images
+*/
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+// S3 needs access to the .env variables
+require('dotenv').config();
+const bucketName = process.env.S3_BUCKET_NAME;
+const bucketRegion = process.env.S3_BUCKET_REGION;
+const accessKeyId = process.env.S3_ACCESS_KEY_ID;
+const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
+const s3 = new S3Client({
+    credentials: {
+        accessKeyId: accessKeyId,
+        secretAccessKey: accessSecretKey
+    },
+    region: bucketRegion
+});
+
 /*------------------------------------------
 --------------------------------------------
 Routes
