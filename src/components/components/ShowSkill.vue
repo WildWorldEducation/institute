@@ -373,14 +373,21 @@ export default {
                 <div id="skill-image">
                     <!-- AWS S3 hosted image -->
                     <!-- Show a default skill avatar if skill not have image yet -->
-                    <img
-                        :src="
-                            'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+                    <a
+                        :href="
+                            'https://institute-skill-infobox-images.s3.amazonaws.com/' +
                             skillUrl
                         "
-                        @error="imageUrlAlternative"
-                        class="skill-icon rounded"
-                    />
+                    >
+                        <img
+                            :src="
+                                'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+                                skillUrl
+                            "
+                            @error="imageUrlAlternative"
+                            class="skill-icon rounded"
+                        />
+                    </a>
                 </div>
                 <!-- Skill name and skill description -->
                 <div class="d-flex flex-column">
