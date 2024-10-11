@@ -1529,7 +1529,8 @@ const sharp = require('sharp');
 async function openAIGenSkillIconImages() {
     let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
     WHERE type <> 'domain'  
-    AND is_deleted = 0      
+    AND is_deleted = 0    
+    AND id = 29  
     LIMIT 1;`;
 
     conn.query(sqlQuery, async (err, results) => {
