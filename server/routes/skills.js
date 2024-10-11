@@ -467,8 +467,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-                            req.params.skillUrl
-                        )} AND s.is_deleted = 0`;
+                        req.params.skillUrl
+                    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -1444,5 +1444,59 @@ router.get('/name-list-old', (req, res, next) => {
         }
     });
 });
+
+// Import OpenAI package.
+const { OpenAI } = require('openai');
+// Include API key.
+// To access the .env file.
+require('dotenv').config();
+const openai = new OpenAI({
+    apiKey: process.env.CHAT_GPT_API_KEY
+});
+async function openAIGenSkillIconImages() {
+    let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
+    WHERE type <> 'domain'  
+    AND is_deleted = 0      
+    LIMIT 1;`;
+
+    conn.query(sqlQuery, async (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            // Clean up variables.
+            let masteryRequirements = results[0].mastery_requirements.replace(
+                /<\/?[^>]+(>|$)/g,
+                ''
+            );
+            masteryRequirements = masteryRequirements.replace('&nbsp;', ' ');
+            let name = results[0].name;
+            let url = results[0].url;
+
+            // Create prompt for ChatGPT.
+            let prompt = `Please create an image based on the following title: ${name}, and description: ${masteryRequirements}.
+            Name the file: ${url}. Please create using .jpeg file extension.`;
+
+            console.log(name);
+            const response = await openai.images.generate({
+                model: 'dall-e-3',
+                prompt: prompt,
+                n: 1,
+                size: '1024x1792',
+                response_format: 'b64_json'
+            });
+            // Image response in base64 format.
+            const imgSrc = `data:image/jpeg;base64,${response.data[0].b64_json}`;
+
+            // image_url = response.data[0].url;
+            // console.log(image_url);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+
+//openAIGenSkillIconImages();
 
 module.exports = router;
