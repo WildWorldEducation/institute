@@ -9,27 +9,6 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 
 /*
-/ Multer (for uploading image files to S3 - not sure if we need.)
-*/
-// Multer is used for uploading images files to AWS S3.
-// const multer = require('multer');
-// // multer({
-// //     limits: { fieldSize: 2 * 1024 * 1024 }
-// // });
-// console.log(multer);
-// We use multer memory storage, as there is no requirement to save the image file to the
-// server permanently.
-// const storage = multer.memoryStorage();
-// const upload = multer({
-//     storage: storage,
-//     limits: {
-//         fileSize: 5000000
-//     }
-// });
-// console.log(upload);
-//const upload = multer({ dest: './public/data/uploads/' });
-
-/*
 /AWS S3 images
 */
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
