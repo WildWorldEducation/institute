@@ -1504,11 +1504,30 @@ async function openAIGenSkillIconImages() {
                 size: '1024x1792',
                 response_format: 'b64_json'
             });
+
             // Image response in base64 format.
             const imgSrc = `data:image/jpeg;base64,${response.data[0].b64_json}`;
 
-            // image_url = response.data[0].url;
-            // console.log(image_url);
+            // Get file from Base64 encoding (client sends as base64)
+            let fileData = Buffer.from(
+                imgSrc.replace(/^data:image\/\w+;base64,/, ''),
+                'base64'
+            );
+
+            let data = {
+                // The name it will be saved as on S3
+                Key: url,
+                // The image
+                Body: fileData,
+                ContentEncoding: 'base64',
+                ContentType: 'image/jpeg',
+                // The S3 bucket
+                Bucket: bucketName
+            };
+
+            // Send to the bucket.
+            const command = new PutObjectCommand(data);
+            await s3.send(command);
         } catch (err) {
             console.log(err);
         }
