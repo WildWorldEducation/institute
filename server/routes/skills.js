@@ -93,23 +93,45 @@ router.post('/:skillUrl/add/image', async (req, res, next) => {
  *
  */
 router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
-    // No need to escape single quotes for SQL to accept,
-    // as using '?'.
     // Add the skill.
     let data = {};
     data = {
         name: req.body.name,
         description: req.body.description,
         parent: req.body.parent,
-        icon_image: req.body.icon_image,
         banner_image: req.body.banner_image,
         mastery_requirements: req.body.mastery_requirements,
         type: req.body.type,
         level: req.body.level
     };
 
+    // Create the skill page url field.
     data.url = data.name.replace(/\//g, 'or');
     data.url = data.url.replace(/ /g, '_');
+
+    /*
+     * Send icon image to S3
+     */
+    // Get file from Base64 encoding (client sends as base64)
+    let fileData = Buffer.from(
+        req.body.icon_image.replace(/^data:image\/\w+;base64,/, ''),
+        'base64'
+    );
+
+    let imgData = {
+        // The name it will be saved as on S3
+        Key: data.url,
+        // The image
+        Body: fileData,
+        ContentEncoding: 'base64',
+        ContentType: 'image/jpeg',
+        // The S3 bucket
+        Bucket: bucketName
+    };
+
+    // Send to the bucket.
+    const command = new PutObjectCommand(imgData);
+    await s3.send(command);
 
     // Insert the new skill.
     let sqlQuery1 = `INSERT INTO skills SET ?;`;
@@ -170,7 +192,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                         } else {
                             // Add skill revision history (this is the first revision.)
                             let revisionHistoryQuery = `INSERT INTO skill_history
-                            (id, version_number, user_id, name, description, icon_image, banner_image,
+                            (id, version_number, user_id, name, description, banner_image,
                             mastery_requirements, level)
                             VALUES
                             (${conn.escape(skillId)},
@@ -179,8 +201,9 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                             ${conn.escape(
                                 req.body.name
                             )},                           
-                            ${conn.escape(req.body.description)},
-                            ${conn.escape(req.body.icon_image)},
+                            ${conn.escape(
+                                req.body.description
+                            )},                            
                             ${conn.escape(req.body.banner_image)},
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
