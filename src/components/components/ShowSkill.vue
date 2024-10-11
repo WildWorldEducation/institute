@@ -375,7 +375,7 @@ export default {
                     <!-- Show a default skill avatar if skill not have image yet -->
                     <img
                         :src="
-                            'https://institute-skill-images.s3.amazonaws.com/' +
+                            'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
                             skillUrl
                         "
                         @error="imageUrlAlternative"

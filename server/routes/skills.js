@@ -14,7 +14,10 @@ router.use(bodyParser.json());
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 // S3 needs access to the .env variables
 require('dotenv').config();
-const bucketName = process.env.S3_BUCKET_NAME;
+const skillInfoboxImagesBucketName =
+    process.env.S3_SKILL_INFOBOX_IMAGE_BUCKET_NAME;
+const skillInfoboxImageThumbnailsBucketName =
+    process.env.S3_SKILL_INFOBOX_IMAGE_THUMBNAILS_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 const accessKeyId = process.env.S3_ACCESS_KEY_ID;
 const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
@@ -59,7 +62,7 @@ router.post('/:skillUrl/add/image', async (req, res, next) => {
         ContentEncoding: 'base64',
         ContentType: 'image/jpeg',
         // The S3 bucket
-        Bucket: bucketName
+        Bucket: skillInfoboxImagesBucketName
     };
 
     // Send to the bucket.
@@ -105,7 +108,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
         ContentEncoding: 'base64',
         ContentType: 'image/jpeg',
         // The S3 bucket
-        Bucket: bucketName
+        Bucket: skillInfoboxImagesBucketName
     };
 
     // Send to the bucket.
@@ -1521,6 +1524,8 @@ require('dotenv').config();
 const openai = new OpenAI({
     apiKey: process.env.CHAT_GPT_API_KEY
 });
+
+const sharp = require('sharp');
 async function openAIGenSkillIconImages() {
     let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
     WHERE type <> 'domain'  
@@ -1564,7 +1569,7 @@ async function openAIGenSkillIconImages() {
                 'base64'
             );
 
-            let data = {
+            let fullSizeData = {
                 // The name it will be saved as on S3
                 Key: url,
                 // The image
@@ -1572,12 +1577,31 @@ async function openAIGenSkillIconImages() {
                 ContentEncoding: 'base64',
                 ContentType: 'image/jpeg',
                 // The S3 bucket
-                Bucket: bucketName
+                Bucket: skillInfoboxImagesBucketName
             };
 
             // Send to the bucket.
-            const command = new PutObjectCommand(data);
-            await s3.send(command);
+            const fullSizeCommand = new PutObjectCommand(fullSizeData);
+            await s3.send(fullSizeCommand);
+
+            const thumbnailFileData = await sharp(fileData)
+                .resize({ width: 220 })
+                .toBuffer();
+
+            let thumbnailData = {
+                // The name it will be saved as on S3
+                Key: url,
+                // The image
+                Body: thumbnailFileData,
+                ContentEncoding: 'base64',
+                ContentType: 'image/jpeg',
+                // The S3 bucket
+                Bucket: skillInfoboxImageThumbnailsBucketName
+            };
+
+            // Send to the bucket.
+            const thumbnailCommand = new PutObjectCommand(thumbnailData);
+            await s3.send(thumbnailCommand);
         } catch (err) {
             console.log(err);
         }
