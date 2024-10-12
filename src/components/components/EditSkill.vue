@@ -141,10 +141,21 @@ export default {
                 .then(() => {
                     this.iconImage = this.skill.icon_image;
                     this.bannerImage = this.skill.banner_image;
-                    $('#summernote').summernote(
-                        'code',
-                        this.skill.mastery_requirements
-                    );
+                    $('#summernote')
+                        .summernote({
+                            disableDragAndDrop: true,
+                            toolbar: [
+                                ['style', ['style']],
+                                ['font', ['bold', 'underline', 'clear']],
+                                ['fontname', ['fontname']],
+                                ['color', ['color']],
+                                ['para', ['ul', 'ol', 'paragraph']],
+                                ['table', ['table']],
+                                ['insert', ['link']],
+                                ['view', ['codeview', 'help']]
+                            ]
+                        })
+                        .summernote('code', this.skill.mastery_requirements);
                     // Levels
                     if (this.skill.level != 'domain') {
                         const skillResult = this.levels.find((level) => {
@@ -350,18 +361,15 @@ export default {
                     this.SubmitFilters();
                 })
                 .then(() => {
-
                     // Delete flag if exist
                     let dismissFlagId = this.$route.query.dismissFlagId;
-                    if(dismissFlagId){
+                    if (dismissFlagId) {
                         fetch('/content-flags/' + dismissFlagId, {
                             method: 'DELETE'
-                        }).finally(()=>{
+                        }).finally(() => {
                             this.$router.back();
                         });
-                    }
-
-                    else if (this.skill.type == 'domain') {
+                    } else if (this.skill.type == 'domain') {
                         this.router.push('/skills');
                     } else {
                         this.$router.push('/skills/' + this.skill.url);
@@ -646,7 +654,10 @@ export default {
                                 <div class="control_indicator"></div>
                             </label>
                         </div>
-                        <div v-if="skill.parent_type == 'super'" class="form-check col-6 col-md-5 my-2">
+                        <div
+                            v-if="skill.parent_type == 'super'"
+                            class="form-check col-6 col-md-5 my-2"
+                        >
                             <label class="control control-checkbox">
                                 <span class="my-auto mx-2 me-4"
                                     >Cluster node outer</span
