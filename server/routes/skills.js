@@ -942,8 +942,7 @@ router.put(
                             let updateRecordSQLQuery = `UPDATE skills SET 
                             mastery_requirements = ${conn.escape(
                                 req.body.mastery_requirements
-                            )}, 
-                            icon_image = ${conn.escape(req.body.icon_image)}, 
+                            )},                            
                             banner_image = ${conn.escape(
                                 req.body.banner_image
                             )}, 
@@ -1584,7 +1583,7 @@ async function openAIGenSkillIconImages() {
     let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
     WHERE type <> 'domain'  
     AND is_deleted = 0    
-    AND id BETWEEN 213 AND 250;`;
+    AND id BETWEEN 29 AND 31;`;
 
     conn.query(sqlQuery, async (err, results) => {
         try {
