@@ -98,7 +98,8 @@ export default {
             step2Confirm: false,
             orderArray: Array.from({ length: 20 }, (_, i) => i + 1),
             comment: '',
-            isAnotherInstanceOfExistingSkill: false
+            isAnotherInstanceOfExistingSkill: false,
+            randomNum: 0
         };
     },
     async mounted() {
@@ -139,7 +140,12 @@ export default {
                     }
                 })
                 .then(() => {
-                    this.iconImage = this.skill.icon_image;
+                    //this.iconImage = this.skill.icon_image;
+                    this.randomNum = Math.random();
+                    this.iconImage = document
+                        .getElementById('originalImage')
+                        .getAttribute('src');
+
                     this.bannerImage = this.skill.banner_image;
                     $('#summernote')
                         .summernote({
@@ -843,6 +849,16 @@ export default {
                                 </button>
                             </p>
                         </div>
+                        <img
+                            id="originalImage"
+                            class="d-none"
+                            :src="
+                                'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+                                skillUrl +
+                                '?' +
+                                randomNum
+                            "
+                        />
                     </div>
                 </div>
                 <!-- Banner chooser -->

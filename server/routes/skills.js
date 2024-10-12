@@ -44,7 +44,7 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 /**
- * Add new skill images - to AWS S3.
+ * Add new skill images - to AWS S3. Not used.
  *
  */
 router.post('/:skillUrl/add/image', async (req, res, next) => {
@@ -100,7 +100,7 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
         'base64'
     );
 
-    let imgData = {
+    let fullSizeData = {
         // The name it will be saved as on S3
         Key: data.url,
         // The image
@@ -112,8 +112,27 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
     };
 
     // Send to the bucket.
-    const command = new PutObjectCommand(imgData);
-    await s3.send(command);
+    const fullSizeCommand = new PutObjectCommand(fullSizeData);
+    await s3.send(fullSizeCommand);
+
+    const thumbnailFileData = await sharp(fileData)
+        .resize({ width: 330 })
+        .toBuffer();
+
+    let thumbnailData = {
+        // The name it will be saved as on S3
+        Key: data.url,
+        // The image
+        Body: thumbnailFileData,
+        ContentEncoding: 'base64',
+        ContentType: 'image/jpeg',
+        // The S3 bucket
+        Bucket: skillInfoboxImageThumbnailsBucketName
+    };
+
+    // Send to the bucket.
+    const thumbnailCommand = new PutObjectCommand(thumbnailData);
+    await s3.send(thumbnailCommand);
 
     // Insert the new skill.
     let sqlQuery1 = `INSERT INTO skills SET ?;`;
@@ -692,19 +711,70 @@ router.put(
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
 
-            conn.query(addVersionHistoryInsertSQLQuery, (err) => {
+            conn.query(addVersionHistoryInsertSQLQuery, async (err) => {
                 try {
                     if (err) {
                         throw err;
                     }
+
+                    /*
+                     * Send icon image to S3
+                     */
+                    // Get file from Base64 encoding (client sends as base64)
+                    let fileData = Buffer.from(
+                        req.body.icon_image.replace(
+                            /^data:image\/\w+;base64,/,
+                            ''
+                        ),
+                        'base64'
+                    );
+
+                    let url = req.body.url;
+
+                    let fullSizeData = {
+                        // The name it will be saved as on S3
+                        Key: url,
+                        // The image
+                        Body: fileData,
+                        ContentEncoding: 'base64',
+                        ContentType: 'image/jpeg',
+                        // The S3 bucket
+                        Bucket: skillInfoboxImagesBucketName
+                    };
+
+                    // Send to the bucket.
+                    const fullSizeCommand = new PutObjectCommand(fullSizeData);
+                    await s3.send(fullSizeCommand);
+
+                    const thumbnailFileData = await sharp(fileData)
+                        .resize({ width: 330 })
+                        .toBuffer();
+
+                    let thumbnailData = {
+                        // The name it will be saved as on S3
+                        Key: url,
+                        // The image
+                        Body: thumbnailFileData,
+                        ContentEncoding: 'base64',
+                        ContentType: 'image/jpeg',
+                        // The S3 bucket
+                        Bucket: skillInfoboxImageThumbnailsBucketName
+                    };
+
+                    // Send to the bucket.
+                    const thumbnailCommand = new PutObjectCommand(
+                        thumbnailData
+                    );
+                    await s3.send(thumbnailCommand);
 
                     // Update record in skill table.
                     let updateRecordSQLQuery = `UPDATE skills 
                         SET name = ${conn.escape(req.body.name)},
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
-                        description = ${conn.escape(req.body.description)}, 
-                        icon_image = ${conn.escape(req.body.icon_image)}, 
+                        description = ${conn.escape(
+                            req.body.description
+                        )},                         
                         banner_image = ${conn.escape(req.body.banner_image)}, 
                         mastery_requirements = ${conn.escape(
                             req.body.mastery_requirements
@@ -760,14 +830,6 @@ router.put(
  */
 router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
-        // Prep data.
-        // Escape single quotes for SQL to accept.
-        if (req.body.mastery_requirements != null)
-            req.body.mastery_requirements =
-                req.body.mastery_requirements.replace(/'/g, "\\'");
-        if (req.body.comment != null)
-            req.body.comment = req.body.comment.replace(/'/g, "\\'");
-
         // Add data.
         let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, banner_image, comment)
          VALUES (${conn.escape(req.params.id)}, 
@@ -849,14 +911,6 @@ router.put(
                     let previousOrder = results[0].order;
                     let versionNumber = results[0].version_number;
 
-                    // Escape single quotes for SQL to accept.
-                    if (previousName != null)
-                        previousName = previousName.replace(/'/g, "\\'");
-                    if (previousDescription != null)
-                        previousDescription = previousDescription.replace(
-                            /'/g,
-                            "\\'"
-                        );
                     versionNumber = versionNumber + 1;
 
                     let addVersionHistoryInsertSQLQuery = `
@@ -1530,7 +1584,7 @@ async function openAIGenSkillIconImages() {
     let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
     WHERE type <> 'domain'  
     AND is_deleted = 0    
-    AND id BETWEEN 51 AND 80;`;
+    AND id BETWEEN 213 AND 250;`;
 
     conn.query(sqlQuery, async (err, results) => {
         try {
@@ -1622,6 +1676,6 @@ async function openAIGenSkillIconImages() {
     });
 }
 
-openAIGenSkillIconImages();
+//openAIGenSkillIconImages();
 
 module.exports = router;
