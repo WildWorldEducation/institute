@@ -849,6 +849,7 @@ export default {
                                 </button>
                             </p>
                         </div>
+                        <!-- Using random number otherwise url doesnt change (cache)-->
                         <img
                             id="originalImage"
                             class="d-none"
