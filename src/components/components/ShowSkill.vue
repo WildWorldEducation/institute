@@ -403,25 +403,24 @@ export default {
                 <div class="col-md-4 order-1 order-md-2">
                     <div class="info-box p-2">
                         <!-- Skill featured image -->
-                        <div id="skill-image">
-                            <!-- AWS S3 hosted image -->
-                            <!-- Show a default skill avatar if skill not have image yet -->
-                            <a
-                                :href="
-                                    'https://institute-skill-infobox-images.s3.amazonaws.com/' +
+
+                        <!-- AWS S3 hosted image -->
+                        <!-- Show a default skill avatar if skill not have image yet -->
+                        <a
+                            :href="
+                                'https://institute-skill-infobox-images.s3.amazonaws.com/' +
+                                skillUrl
+                            "
+                        >
+                            <img
+                                :src="
+                                    'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
                                     skillUrl
                                 "
-                            >
-                                <img
-                                    :src="
-                                        'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                                        skillUrl
-                                    "
-                                    @error="imageUrlAlternative"
-                                    class="skill-icon rounded"
-                                />
-                            </a>
-                        </div>
+                                @error="imageUrlAlternative"
+                                class="rounded img-fluid"
+                            />
+                        </a>
 
                         <!-- Level -->
                         <div class="mt-3" style="color: #a48be6">
@@ -732,8 +731,10 @@ export default {
     }
 
     .mastery-requirements {
-        width: 90%;
-        margin-left: 20px;
+        width: 100%;
+        margin-left: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
     }
 
     .skill-name {
