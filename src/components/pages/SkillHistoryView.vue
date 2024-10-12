@@ -1,6 +1,7 @@
 <script>
 import { useUsersStore } from '../../stores/UsersStore';
 import HistoryRow from '../components/revision-history/historyRow.vue';
+import HistoryRowTabletPhone from '../components/revision-history/HistoryRowTabletPhone.vue';
 
 export default {
     setup() {
@@ -17,7 +18,7 @@ export default {
             currentVersionNumber: null
         };
     },
-    components: { HistoryRow },
+    components: { HistoryRow, HistoryRowTabletPhone },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
         await this.getSkill();
@@ -108,8 +109,15 @@ export default {
     <div class="container">
         <h1>{{ skill.name }}: Revision history</h1>
         <hr />
-        <div class="d-flex flex-column">
+        <div class="d-none d-lg-flex flex-column">
             <HistoryRow
+                v-for="revision in skillRevisions"
+                :revision="revision"
+                :skill="skill"
+            />
+        </div>
+        <div class="d-flex d-lg-none flex-column">
+            <HistoryRowTabletPhone
                 v-for="revision in skillRevisions"
                 :revision="revision"
                 :skill="skill"
