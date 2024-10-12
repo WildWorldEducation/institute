@@ -1612,6 +1612,7 @@ async function openAIGenSkillIconImages() {
                 console.log(index);
                 console.log('completed: ' + name);
                 if (index < results.length) getImage(index, results);
+                else console.log('batch completed');
             }
 
             getImage(index, results);
@@ -1621,6 +1622,6 @@ async function openAIGenSkillIconImages() {
     });
 }
 
-// openAIGenSkillIconImages();
+openAIGenSkillIconImages();
 
 module.exports = router;
