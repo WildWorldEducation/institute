@@ -222,8 +222,21 @@ export default {
             id="skill-info-container"
             :class="{ domain: skill.type == 'domain' }"
         >
+            <!-- Name and description -->
+            <div class="d-flex flex-column">
+                <h1 class="skill-name">{{ skill.name }}</h1>
+                <!-- Description only seen by admins -->
+                <div
+                    v-if="userDetailsStore.role == 'admin'"
+                    class="row pe-4 ps-4 ps-md-0 skill-description"
+                >
+                    <p>{{ skill.description }}</p>
+                </div>
+                <!-- A line divide -->
+                <hr class="border border-2 opacity-100 hr" />
+            </div>
             <!-- Buttons -->
-            <div class="row">
+            <div class="row mb-2">
                 <div
                     class="col-9"
                     :class="{
@@ -256,7 +269,6 @@ export default {
                         </svg>
                     </router-link>
                 </div>
-
                 <div class="col-3">
                     <div class="d-flex justify-content-end">
                         <!-- Edit skill -->
@@ -373,26 +385,15 @@ export default {
                         </button>
                     </div>
                 </div>
-            </div>
-            <div class="d-flex flex-column gap-2">
-                <!-- Skill name and skill description -->
-                <h1 class="skill-name">{{ skill.name }}</h1>
-                <!-- Description only seen by admins -->
-                <div
-                    v-if="userDetailsStore.role == 'admin'"
-                    class="row pe-4 ps-4 ps-md-0 skill-description"
-                >
-                    <p>{{ skill.description }}</p>
-                </div>
                 <!-- A line divide -->
-                <hr id="hr-parent" class="border border-2 opacity-100" />
+                <hr class="border border-1 opacity-100 hr mt-2" />
             </div>
+            <!-- Content -->
             <div class="row">
+                <!-- Mastery Requirements -->
                 <div class="col-md-8 order-2 order-md-1">
-                    <!-- Mastery Requirements -->
                     <div v-if="skill.type != 'domain'">
-                        <!-- Mastery Requirements -->
-                        <div class="mt-3 d-flex flex-column">
+                        <div class="d-flex flex-column">
                             <div class="mastery-requirements">
                                 <div v-html="skill.mastery_requirements"></div>
                             </div>
@@ -488,10 +489,7 @@ export default {
             <div v-if="userDetailsStore.role == 'admin'">
                 <div class="row">
                     <div class="col col-md-8 p-4 p-md-0">
-                        <hr
-                            id="hr-parent"
-                            class="border border-2 opacity-100"
-                        />
+                        <hr class="border border-2 opacity-100 hr" />
                     </div>
                 </div>
                 <!-- Filters -->
@@ -593,6 +591,7 @@ export default {
     font-size: 40px;
     color: #a48be6;
     font-weight: 800;
+    margin-bottom: 0px;
 }
 
 .skill-description {
@@ -617,7 +616,7 @@ export default {
     width: 98%;
 }
 
-#hr-parent {
+.hr {
     border-color: #aea3ce !important;
 }
 
