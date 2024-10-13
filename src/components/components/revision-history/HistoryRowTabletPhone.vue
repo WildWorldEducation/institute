@@ -147,8 +147,13 @@ export default {
                         </svg>
                         <div>Origin</div>
                     </div>
+                    <!-- Chevron Icon -->
                     <svg
                         class="ms-1 my-auto chevron-icon"
+                        :class="{
+                            'chevron-down': showDetail,
+                            'chevron-up': !showDetail
+                        }"
                         width="14"
                         height="14"
                         xmlns="http://www.w3.org/2000/svg"
@@ -376,7 +381,7 @@ export default {
     background-color: white;
     border: 1px gray solid;
     border-radius: 6px;
-    padding: 5px 10px;
+    padding: 5px 0px;
     position: absolute;
     top: 10px;
     left: 0px;
@@ -421,5 +426,50 @@ export default {
     border-right: 10px solid transparent;
     left: 20px;
     top: -20px;
+}
+
+/* The chevron animation */
+.chevron-up {
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+.chevron-down {
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+}
+
+/* The animation key frame */
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+/* View Specific On Phone */
+@media (min-width: 0px) and (max-width: 576px) {
+    .details-div {
+        max-width: 400px;
+        left: -20px;
+        box-shadow: 2px 2px 2px rgb(105, 104, 104);
+    }
+
+    .revision-comment {
+        max-width: 220px;
+    }
 }
 </style>
