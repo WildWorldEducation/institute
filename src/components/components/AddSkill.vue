@@ -95,6 +95,7 @@ export default {
     },
     async mounted() {
         $('#summernote').summernote({
+            disableDragAndDrop: true,
             placeholder: '',
             tabsize: 2,
             height: 120,
@@ -104,8 +105,8 @@ export default {
                 ['color', ['color']],
                 ['para', ['ul', 'ol', 'paragraph']],
                 ['table', ['table']],
-                ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
+                ['insert', ['link']],
+                ['view', ['codeview', 'help']]
             ],
             maximumImageFileSize: 2048 * 1024, // 2 MB
             callbacks: {

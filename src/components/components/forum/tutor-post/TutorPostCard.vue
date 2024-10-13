@@ -7,7 +7,8 @@ export default {
             currentClickId: 0,
             isAlreadyTutoring: this.$parent.isAlreadyTutoring,
             expandPost: false,
-            showActionButton: false
+            showActionButton: false,
+            showContactDetails: false
         };
     },
     mounted() {},
@@ -94,13 +95,32 @@ export default {
         */
         toPlainText(code) {
             return code?.replace(/<\/?[^>]+(>|$)/g, '');
+        },
+        showContactAdviceModal() {
+            this.showContactDetails = !this.showContactDetails;
+            // Close modal by clicking outside it.
+            document
+                .getElementById('myModal')
+                .addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('modal-content')) {
+                        this.showContactDetails = false;
+                    }
+                });
+            // The above should not work on the modal content.
+            document.getElementById('modal-content').addEventListener(
+                'click',
+                function (e) {
+                    e.stopPropagation();
+                },
+                false
+            );
         }
     }
 };
 </script>
 
 <template>
-    <div class="tutor d-flex w-100 p-3 flex-column flex-lg-row">
+    <div class="tutor d-flex w-100 p-3 flex-column flex-lg-row mt-4">
         <!-- User avatar -->
         <div
             class="d-flex justify-content-center ms-3 ms-md-0 tutor-avatar-div"
@@ -137,11 +157,6 @@ export default {
                     </svg>
                 </div>
             </div>
-            <div class="user-email">
-                <div>
-                    {{ post.email }}
-                </div>
-            </div>
             <!-- First row of post contain proposal content -->
             <div class="d-flex mt-4 tutor-post">
                 <p
@@ -157,25 +172,12 @@ export default {
                 <Transition name="dropdown">
                     <div v-if="expandPost" class="d-flex flex-column">
                         <p v-html="post.description"></p>
-                        <div
+                        <button
                             class="btn green-btn mt-2 me-0 ms-auto w-auto mb-3"
-                            role="button"
-                            @click="expandPost = false"
+                            @click="showContactAdviceModal()"
                         >
-                            Shrink
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 384 512"
-                                width="15"
-                                heigh="15"
-                                fill="white"
-                                class="ms-2"
-                            >
-                                <path
-                                    d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2 160 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-306.7L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-                                />
-                            </svg>
-                        </div>
+                            Contact details
+                        </button>
                     </div>
                 </Transition>
             </div>
@@ -394,9 +396,38 @@ export default {
             </div>
         </div>
     </div>
+    <!-- The Contact Advice Modal -->
+    <div v-show="showContactDetails">
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div id="modal-content" class="modal-content contact-modal-content">
+                <button
+                    type="button"
+                    class="close closeBtn"
+                    @click="showContactAdviceModal()"
+                    aria-label="Close"
+                >
+                    <span aria-hidden="true">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="25"
+                            height="25"
+                        >
+                            <path
+                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                                fill="black"
+                            />
+                        </svg>
+                    </span>
+                </button>
+                <div v-html="post.contact_preference"></div>
+            </div>
+        </div>
+    </div>
 </template>
 
-<style>
+<style scoped>
 .tutor {
     border-top: 2px dotted #aea3ce;
     border-right: 2px solid #aea3ce;
@@ -501,6 +532,80 @@ export default {
     .tutor-img {
         margin-right: unset;
         margin: auto;
+    }
+}
+
+.closeBtn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.red-btn {
+    background-color: #da7033 !important;
+    color: white;
+    border: 1px solid #7f56d9;
+    align-items: center;
+    max-width: fit-content;
+    display: flex;
+}
+
+.red-btn:hover {
+    background-color: rgb(209, 96, 15);
+}
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: hidden;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.contact-modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 600px !important;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .contact-modal-content {
+        margin: 30% auto !important;
+        width: 90% !important;
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .contact-modal-content {
+        margin: 15% auto !important;
+        width: 90% !important;
+    }
+}
+
+/* Desktops/laptops */
+@media (min-width: 1025px) {
+    .contact-modal-content {
+        margin: 15% auto;
     }
 }
 </style>

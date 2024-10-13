@@ -22,7 +22,7 @@ Routes
 router.get('/:skillId/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT tutor_posts.id, tutor_posts.user_id, tutor_posts.skill_id, tutor_posts.description,
+        let sqlQuery = `SELECT tutor_posts.id, tutor_posts.user_id, tutor_posts.skill_id, tutor_posts.description, tutor_posts.contact_preference,
         tutor_posts.created_at, users.username, users.avatar, users.email
         FROM tutor_posts
         JOIN users ON tutor_posts.user_id = users.id
@@ -54,7 +54,8 @@ router.post('/add/:skillId', (req, res, next) => {
         let data = {
             skill_id: req.params.skillId,
             user_id: req.session.userId,
-            description: req.body.description
+            description: req.body.description,
+            contact_preference: req.body.contactPreference
         };
 
         // Check that source is not in the list of blocked domains.
@@ -157,10 +158,6 @@ router.get('/show/:tutorPostId', (req, res, next) => {
  */
 router.put('/edit/:id', (req, res, next) => {
     if (req.session.userName) {
-        // Escape single quotes for SQL to accept.
-        if (req.body.description != null)
-            req.body.description = req.body.description.replace(/'/g, "\\'");
-
         //Extra backend security check that the user is allowed to edit the post.
         let postUserId;
         const sqlQuery1 = `SELECT user_id 
@@ -182,7 +179,9 @@ router.put('/edit/:id', (req, res, next) => {
                         let sqlQuery2 = `UPDATE tutor_posts 
                             SET description= ${conn.escape(
                                 req.body.description
-                            )}
+                            )}, contact_preference = ${conn.escape(
+                            req.body.contact_preference
+                        )}
                             WHERE id= ${conn.escape(req.params.id)};`;
 
                         conn.query(sqlQuery2, (err) => {

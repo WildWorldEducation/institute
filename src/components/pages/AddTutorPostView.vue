@@ -1,67 +1,88 @@
 <script>
-import router from '../../router';
-
 export default {
     data() {
         return {
             skillId: this.$route.params.skillId,
-            description: null
+            description: null,
+            validateDescription: true,
+            validateContact: true
         };
     },
-    setup() {},
     mounted: function () {
-        // calculate summer note height base on window height
-        let summernoteHeight =
-            window.innerHeight -
-            document.getElementById('banner').clientHeight -
-            document.getElementById('header-tile').clientHeight -
-            50;
-
-        // return difference height base on window width ( manual responsive )
+        // Calculate summer note height base on window height
+        let summernoteHeight;
         /** == Phone Screen == **/
         if (window.innerWidth < 481) {
-            summernoteHeight = summernoteHeight - 310;
+            summernoteHeight = 200;
         } else if (window.innerWidth >= 481 && window.innerWidth < 1024) {
             /** == Tablet Screen == **/
-            summernoteHeight = summernoteHeight - 300;
+            summernoteHeight = 100;
         } else {
             /** == PC Screen == **/
-            summernoteHeight = summernoteHeight - 450;
+            summernoteHeight = 75;
         }
 
-        //  summernote config
-        $('#summernote').summernote({
-            placeholder: '',
+        //  Summernote config.
+        $('#summernote-description').summernote({
+            disableDragAndDrop: true,
+            placeholder:
+                'Describe your tutoring style and experience with the subject.',
             height: summernoteHeight,
             tabsize: 2,
             toolbar: [
                 ['style', ['style']],
                 ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            maximumImageFileSize: 2048 * 1024, // 2 MB
-            callbacks: {
-                onImageUploadError: function (msg) {
-                    alert('Max image size is 2MB.');
-                }
-            }
+                ['para', ['ul']],
+                ['view', ['codeview']]
+            ]
+        });
+
+        $('#summernote-contact-preference').summernote({
+            disableDragAndDrop: true,
+            placeholder:
+                'How would you like to be contacted (eg: an email address, mobile number or calendar booking link)?',
+            height: summernoteHeight,
+            tabsize: 2,
+            toolbar: [
+                ['font', ['bold', 'underline', 'clear']],
+                ['para', ['ul']],
+                ['insert', ['link']],
+                ['view', ['codeview']]
+            ]
         });
     },
     methods: {
         async Submit() {
-            var url = '/tutor-posts/add/' + this.skillId;
-            var resourceData = $('#summernote').summernote('code');
+            const url = '/tutor-posts/add/' + this.skillId;
+            const description = $('#summernote-description').summernote('code');
+            const contactPreference = $(
+                '#summernote-contact-preference'
+            ).summernote('code');
+
+            if (description.length < 25) {
+                this.validateDescription = false;
+                return;
+            } else {
+                this.validateDescription = true;
+            }
+
+            if (contactPreference.length < 25) {
+                this.validateContact = false;
+                return;
+            } else {
+                this.validateContact = true;
+            }
+
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    description: resourceData
+                    description: description,
+                    contactPreference: contactPreference
                 })
             };
             await fetch(url, requestOptions).then(() => {
-                router.back();
+                this.$router.back();
             });
         }
     }
@@ -84,18 +105,39 @@ export default {
         <div class="main-content-container container-fluid p-2">
             <div class="row">
                 <div class="col">
-                    <div class="mb-3">
-                        <label for="first_name" class="form-label"
+                    <div class="mb-4">
+                        <!-- <label
                             >Describe your tutoring style and experience with
-                            the subject</label
-                        >
-                        <div class="mb-3 mt-3 text-area-div">
+                            the subject.</label
+                        > -->
+                        <div class="mb-3 mt-1 text-area-div">
                             <textarea
-                                id="summernote"
+                                id="summernote-description"
                                 name="editordata"
                             ></textarea>
                         </div>
-                        <div v-if="1 == 2" class="form-validate">
+                        <div
+                            v-if="validateDescription == false"
+                            class="form-validate"
+                        >
+                            please complete this section!
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <!-- <label
+                            >How would you like to be contacted (eg: an email
+                            address, mobile number or calendar booking link)?
+                        </label> -->
+                        <div class="mb-3 mt-3 text-area-div">
+                            <textarea
+                                id="summernote-contact-preference"
+                                name="editordata2"
+                            ></textarea>
+                        </div>
+                        <div
+                            v-if="validateContact == false"
+                            class="form-validate"
+                        >
                             please complete this section!
                         </div>
                     </div>
@@ -153,5 +195,11 @@ h2 {
 .purple-btn:hover {
     background-color: #8666ca;
     color: white;
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
 }
 </style>

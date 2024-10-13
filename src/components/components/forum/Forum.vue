@@ -21,7 +21,6 @@ export default {
         return {
             sourcePosts: [],
             tutorPosts: [],
-            isAlreadyTutoring: false,
             // posts: [],
             user: {},
             showModal: false,
@@ -49,7 +48,7 @@ export default {
         }
     },
     async created() {
-        this.getUserId();
+        await this.getUserId();
 
         // Get all sources for this skill.
         await this.getSourcePosts(this.skillId);
@@ -71,7 +70,7 @@ export default {
         }
     },
     methods: {
-        getUserId() {
+        async getUserId() {
             fetch('/get-session-details')
                 .then(function (response) {
                     return response.json();
@@ -128,21 +127,17 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    data.forEach(function (element) {
-                        element.type = 'tutor';
+                    data.forEach((element) => {
+                        element.type = 'tutor-post';
+                        if (element.contact_preference == null) {
+                            element.contact_preference = element.email;
+                        }
                     });
 
                     // Add these tutor posts to the other posts, if the skill is the same.
                     for (let i = 0; i < data.length; i++) {
                         if (data[i].skill_id == this.skillId) {
                             this.tutorPosts.push(data[i]);
-                        }
-                    }
-
-                    // Prevent student from adding another tutor post, if they already have.
-                    for (let i = 0; i < this.tutorPosts.length; i++) {
-                        if (this.tutorPosts[i].user_id == this.user.userId) {
-                            this.isAlreadyTutoring = true;
                         }
                     }
                 });
@@ -185,7 +180,7 @@ export default {
             // Delete record from DB.
             // Using switch case for easy future adding new type of post
             switch (source.type) {
-                case 'tutor':
+                case 'tutor-post':
                     fetch('/tutor-posts/delete/' + source.id, {
                         method: 'DELETE'
                     }).then(() => {

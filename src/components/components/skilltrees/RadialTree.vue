@@ -95,6 +95,7 @@ export default {
                 .zoom()
                 .scaleExtent([0.05, 8])
                 .on('zoom', ({ transform }) => {
+                    // For line thickness
                     this.currentZoom = transform.k;
                     this.zoomed(transform);
                 });
@@ -782,8 +783,8 @@ export default {
                 .call(
                     this.d3Zoom.transform,
                     d3.zoomIdentity
-                        .translate(this.width / 2, this.height / 2)
-                        .scale(0.5)
+                        .translate(this.width / 2, this.height / 3)
+                        .scale(0.1)
                 );
         },
         // Find node with name include
@@ -817,17 +818,21 @@ export default {
         },
         // zoom and pan to a node
         goToLocation(node) {
+            const skillTreeHeight = this.$refs.wrapper.clientHeight;
+            const skillTreeWidth = this.$refs.wrapper.clientWidth;
+            const fixedScale = skillTreeWidth > 480 ? 1.75 : 1.45;
+            const centerYOffset = skillTreeWidth > 480 ? 2 : 2.3;
+            const centerXOffset = 2;
             this.resultNode = node;
             // Because it is a radial chart - need to convert values.
             let radX = Math.cos(node.x) * node.y;
             let radY = Math.sin(node.x) * node.y;
+
             let pos = this.rotateNode(0, 0, radX, radY, 90);
             const translateX =
-                -pos[0] * this.scale +
-                (window.innerWidth / (2 * this.scale)) * this.scale;
+                -pos[0] * fixedScale + skillTreeWidth / centerXOffset;
             const translateY =
-                -pos[1] * this.scale +
-                (window.innerHeight / (2 * this.scale)) * this.scale;
+                -pos[1] * fixedScale + skillTreeHeight / centerYOffset;
 
             d3.select(this.context.canvas)
                 .transition()
@@ -836,7 +841,7 @@ export default {
                     this.d3Zoom.transform,
                     d3.zoomIdentity
                         .translate(translateX, translateY)
-                        .scale(this.scale)
+                        .scale(fixedScale)
                 );
         }
     }
@@ -855,7 +860,7 @@ export default {
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
-    <div v-show="isLoading == false" id="wrapper">
+    <div v-show="isLoading == false" id="wrapper" ref="wrapper">
         <SkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
         <div
             v-if="showAnimation"

@@ -373,7 +373,7 @@ router.post('/generate-sources', (req, res, next) => {
 )
         
         ORDER BY id`;
-        let query = conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, (err, results) => {
             try {
                 if (err) {
                     throw err;

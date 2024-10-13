@@ -15,7 +15,8 @@ export default {
         return {
             searchText: '',
             lastChooseResult: '',
-            showResult: false
+            showResult: false,
+            showConfirmModal: false
         };
     },
     created() {},
@@ -32,6 +33,13 @@ export default {
             this.$refs.childComponent.goToLocation(node);
             // also open the skill requirement mastery div
             this.$refs.childComponent.showSkillPanelComponent(node);
+        },
+        expandAllNodesWarning() {
+            this.showConfirmModal = true;
+        },
+        expandAllNodes() {
+            this.showConfirmModal = false;
+            this.$refs.childComponent.expandAllChildren();
         }
     },
     computed: {
@@ -42,20 +50,36 @@ export default {
             ) {
                 return [];
             }
-
-            // close the mastery requirement panel when showing search result
             this.$refs.childComponent.showSkillPanel = false;
             const results = this.$refs.childComponent.findNodeWithName(
                 this.searchText.toLocaleLowerCase()
             );
-            // we highlight the part that match search text
+
+            const capitalizeText = (text, charIndex) =>
+                text &&
+                text.slice(0, charIndex) +
+                    text[charIndex].toUpperCase() +
+                    text.slice(charIndex + 1);
+
             const highlightedResult = results.map((result) => {
-                const matchedRegex = new RegExp(`(${this.searchText})`, 'gi');
-                const newText = result.data.skill_name.replace(
-                    matchedRegex,
-                    '<span class="hightLight">$1</span>'
-                );
-                return { ...result, highlightedResult: newText };
+                const hightLightedText = result.data.skill_name
+                    .toLocaleLowerCase()
+                    .replace(
+                        this.searchText.toLocaleLowerCase(),
+                        `<span class="hightLight">${this.searchText}</span>`
+                    );
+
+                // index of first character if we have span at the head of the string is 25
+                const indexOfFirstChar = hightLightedText[0] === '<' ? 25 : 0;
+
+                return {
+                    ...result,
+                    // capitalize text better ui and ux
+                    highlightedResult: capitalizeText(
+                        hightLightedText,
+                        indexOfFirstChar
+                    )
+                };
             });
             return highlightedResult;
         }
@@ -99,18 +123,46 @@ export default {
                     <div class="col-4 d-flex flex-column align-items-end">
                         <button
                             id="reset-btn"
-                            class="btn btn-primary"
+                            class="btn btn-primary me-3"
                             @click="resetPos()"
                         >
                             Reset
                         </button>
                         <button
                             v-if="sessionDetailsStore.isLoggedIn"
-                            id="print-btn"
-                            class="btn btn-info"
+                            class="btn legend-btn me-3 mt-1"
+                            @click="expandAllNodesWarning()"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="20"
+                                height="20"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z"
+                                    fill="white"
+                                />
+                            </svg>
+                        </button>
+                        <button
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="legend-btn btn mt-1 me-3"
                             @click="$refs.childComponent.printPDF()"
                         >
-                            Print
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="19"
+                                height="18"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
+                                    fill="white"
+                                />
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -231,14 +283,72 @@ export default {
                         </button>
                         <button
                             v-if="sessionDetailsStore.isLoggedIn"
-                            id="print-btn"
-                            class="btn btn-info me-3"
+                            class="btn legend-btn me-1"
+                            @click="expandAllNodesWarning()"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                width="20"
+                                height="20"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z"
+                                    fill="white"
+                                />
+                            </svg>
+                        </button>
+                        <button
+                            v-if="sessionDetailsStore.isLoggedIn"
+                            class="btn legend-btn me-3"
                             @click="$refs.childComponent.printPDF()"
                         >
                             Print
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div
+        v-if="showConfirmModal"
+        @click="showConfirmModal = false"
+        class="modal"
+    >
+        <!-- Confirm Modal -->
+        <div class="modal-content asking-modal">
+            <div class="d-flex gap-4">
+                <!-- Warn Triangle Icon -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    fill="grey"
+                    width="45"
+                    height="45"
+                >
+                    <path
+                        d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+                    />
+                </svg>
+                <p>Are you sure you want to expand all skills?</p>
+            </div>
+            <!-- Buttons row -->
+            <div class="d-flex justify-content-end gap-2">
+                <button
+                    type="button"
+                    class="btn red-btn modal-btn"
+                    @click="showConfirmModal = false"
+                >
+                    <span> No </span>
+                </button>
+                <button
+                    type="button"
+                    class="btn green-btn modal-btn"
+                    @click="expandAllNodes()"
+                >
+                    <span> OK </span>
+                </button>
             </div>
         </div>
     </div>
@@ -325,7 +435,8 @@ export default {
     max-height: 400px;
     overflow-y: auto;
     z-index: 1000;
-    width: 101%;
+    /* extremely  weird things when 100% does not match the parent div*/
+    width: 100.3%;
 }
 
 .result-row {
@@ -390,15 +501,18 @@ export default {
     background-color: #ff0000;
 }
 
-#print-btn {
+.legend-btn {
     background-color: #184e80;
     border: #184e80;
     color: white;
-    width: 70px;
     max-height: 40px;
 }
 
-#print-btn:hover {
+.legend-btn:hover {
+    background-color: #133b61;
+}
+
+.legend-btn:active {
     background-color: #133b61;
 }
 
@@ -418,6 +532,40 @@ export default {
     width: 100%;
 }
 
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
     #mobile-legend {
@@ -428,10 +576,6 @@ export default {
         display: none;
     }
 
-    #print-btn {
-        margin-bottom: 5px;
-    }
-
     #legend {
         height: 190px;
     }
@@ -440,6 +584,12 @@ export default {
         width: 96%;
         margin-left: 0px;
         margin-right: auto;
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 30%;
     }
 }
 
@@ -472,4 +622,43 @@ export default {
     }
 }
 /*---*/
+
+.modal-btn {
+    width: fit-content;
+}
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    height: auto;
+    align-items: center;
+    justify-content: center;
+    max-width: fit-content;
+}
+
+.green-btn:hover {
+    background-color: #3eb3a3;
+}
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    border: 1px solid #d33622;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.red-btn:hover {
+    background-color: #cc3535;
+    color: white;
+}
 </style>

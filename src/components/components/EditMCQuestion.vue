@@ -63,8 +63,19 @@ export default {
 
             var url = '/questions/mc/' + this.questionId + '/edit';
             fetch(url, requestOptions).then(() => {
-                alert('Question edited successfully.');
-                this.$router.back();
+                // Delete flag if exist
+                let dismissFlagId = this.$route.query.dismissFlagId;
+                if(dismissFlagId){
+                    fetch('/content-flags/' + dismissFlagId, {
+                        method: 'DELETE'
+                    }).finally(()=>{
+                        alert('Question edited successfully.');
+                        this.$router.back();
+                    });
+                }else{
+                    alert('Question edited successfully.');
+                    this.$router.back();
+                }
             });
         },
         // If edit is from a student or instructor.

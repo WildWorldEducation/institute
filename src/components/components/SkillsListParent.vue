@@ -198,7 +198,15 @@ export default {
     >
         <span class="loader"></span>
     </div>
-    <div v-else class="container mt-3" style="overflow: auto">
+    <div
+        v-else
+        style="
+            overflow: auto;
+            position: absolute;
+            height: -webkit-fill-available;
+            width: 100%;
+        "
+    >
         <!-- Students -->
         <div
             v-if="this.userDetailsStore.role == 'student'"

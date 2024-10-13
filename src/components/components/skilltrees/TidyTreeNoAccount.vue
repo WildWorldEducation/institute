@@ -689,13 +689,16 @@ export default {
         },
         // zoom and pan to a node
         goToLocation(node) {
+            const skillTreeHeight = this.$refs.wrapper.clientHeight;
+            const skillTreeWidth = this.$refs.wrapper.clientWidth;
+            const centerYOffset = skillTreeWidth > 480 ? 2.5 : 2.8;
+            const centerXOffset = 2;
             this.resultNode = node;
+            const fixedScale = skillTreeWidth > 480 ? 1.75 : 1.2;
             const translateX =
-                -node.y * this.scale +
-                (window.innerWidth / (2 * this.scale)) * this.scale;
+                -node.y * fixedScale + skillTreeWidth / centerXOffset;
             const translateY =
-                -node.x * this.scale +
-                (window.innerHeight / (2 * this.scale)) * this.scale;
+                -node.x * fixedScale + skillTreeHeight / centerYOffset;
 
             d3.select(this.context.canvas)
                 .transition()
@@ -704,7 +707,7 @@ export default {
                     this.d3Zoom.transform,
                     d3.zoomIdentity
                         .translate(translateX, translateY)
-                        .scale(this.scale)
+                        .scale(fixedScale)
                 );
         },
         // Find node with name include
@@ -772,7 +775,7 @@ export default {
         <span class="loader"></span>
     </div>
     <!-- Wrapper is for the dark overlay, when the sidepanel is displayed -->
-    <div v-show="isLoading == false" id="wrapper">
+    <div v-show="isLoading == false" id="wrapper" ref="wrapper">
         <SkillPanel :skill="skill" :showSkillPanel="showSkillPanel" />
         <div
             v-if="showAnimation"

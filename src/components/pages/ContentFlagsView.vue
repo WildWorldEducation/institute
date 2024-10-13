@@ -56,7 +56,7 @@ export default {
             userNameCriteria: '',
             showUserFilter: false,
             showDateFilter: false,
-            dateOrder: 'asc',
+            dateOrder: 'desc',
             searchText: '',
             userRoleCriteria: 'all',
             // Custom drop down flag and state
@@ -152,7 +152,7 @@ export default {
                                 flagRow.name = `${contentObj.name} ${contentObj.question}`;
                                 flagRow.nameUrl = `skills/${contentObj.url}/question-bank`;
                                 flagRow.flagId = flag.id;
-                                flagRow.editUrl = `/mc-questions/edit/${flag.content_id}`;
+                                flagRow.editUrl = `/mc-questions/edit/${flag.content_id}?dismissFlagId=${flagRow.flagId}`;
                                 flagRow.expandContent = contentObj;
                                 flagRow.user = {
                                     username: flag.username,
@@ -169,7 +169,7 @@ export default {
 
                                 flagRow.nameUrl = `skills/${contentObj.url}/question-bank`;
                                 flagRow.flagId = flag.id;
-                                flagRow.editUrl = `/essay-questions/edit/${flag.content_id}`;
+                                flagRow.editUrl = `/essay-questions/edit/${flag.content_id}?dismissFlagId=${flagRow.flagId}`;
                                 flagRow.expandContent = contentObj;
                                 flagRow.user = {
                                     username: flag.username,
@@ -184,7 +184,7 @@ export default {
                                 flagRow.name = `${contentObj.name} ${contentObj.question}`;
                                 flagRow.nameUrl = `skills/${contentObj.url}/question-bank`;
                                 flagRow.flagId = flag.id;
-                                flagRow.editUrl = `/image-questions/edit/${flag.content_id}`;
+                                flagRow.editUrl = `/image-questions/edit/${flag.content_id}?dismissFlagId=${flagRow.flagId}`;
                                 flagRow.expandContent = contentObj;
                                 flagRow.user = {
                                     username: flag.username,
@@ -199,7 +199,7 @@ export default {
                                 flagRow.name = contentObj.name;
                                 flagRow.nameUrl = `skills/${contentObj.url}`;
                                 flagRow.flagId = flag.id;
-                                flagRow.editUrl = `/skills/edit/${flag.content_id}`;
+                                flagRow.editUrl = `/skills/edit/${flag.content_id}?dismissFlagId=${flagRow.flagId}`;
                                 (flagRow.expandContent = contentObj),
                                     (flagRow.user = {
                                         username: flag.username,
@@ -214,7 +214,7 @@ export default {
                                 flagRow.name = `Commented by user: ${contentObj.user} in skill: ${contentObj.skill} forum`;
                                 flagRow.nameUrl = `skills/${contentObj.url}`;
                                 flagRow.flagId = flag.id;
-                                flagRow.editUrl = `/resources/edit/${flag.content_id}`;
+                                flagRow.editUrl = `/resources/edit/${flag.content_id}?dismissFlagId=${flagRow.flagId}`;
                                 flagRow.expandContent = contentObj;
                                 flagRow.user = {
                                     username: flag.username,
@@ -228,7 +228,7 @@ export default {
                                 flagRow.name = `Tutor post by user: ${contentObj.user} in skill: ${contentObj.skill} forum`;
                                 flagRow.nameUrl = `skills/${contentObj.skillId}`;
                                 flagRow.flagId = flag.id;
-                                flagRow.editUrl = `/tutor/edit/${flag.content_id}`;
+                                flagRow.editUrl = `/tutor/edit/${flag.content_id}?dismissFlagId=${flagRow.flagId}`;
                                 flagRow.expandContent = contentObj;
                                 flagRow.user = {
                                     username: flag.username,
@@ -242,6 +242,11 @@ export default {
                         }
                         this.rows.push(flagRow);
                     }
+                    this.rows = this.rows.sort((a, b) => {
+                        const dateA = new Date(a.dateString);
+                        const dateB = new Date(b.dateString);
+                        return dateB - dateA;
+                    });
                     this.rowsLength = this.rows.length;
                     this.isContentFlagsLoaded = true;
                 });
@@ -403,7 +408,7 @@ export default {
             this.showUserFilter = false;
             this.showDateFilter = false;
             this.dateFilterCriteria = 'all';
-            this.dateOrder = 'asc';
+            this.dateOrder = 'desc';
             this.dateDayCriteria = '';
             this.dateMonthCriteria = '';
             this.dateYearCriteria = '';
@@ -1006,6 +1011,17 @@ export default {
                                                 "
                                             >
                                                 mc question
+                                            </button>
+                                            <button
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
+                                                        'image question';
+                                                    showFlagTypeDropDown = false;
+                                                    showFlagTypeFilter = false;
+                                                "
+                                            >
+                                                image question
                                             </button>
                                             <button
                                                 class="custom-dropdown-option"
@@ -1772,6 +1788,17 @@ export default {
                                             >
                                                 mc question
                                             </div>
+                                            <button
+                                                class="custom-dropdown-option"
+                                                @click="
+                                                    flagTypeCriteria =
+                                                        'image question';
+                                                    showFlagTypeDropDown = false;
+                                                    showFlagTypeFilter = false;
+                                                "
+                                            >
+                                                image question
+                                            </button>
                                             <div
                                                 class="custom-dropdown-option"
                                                 @click="
@@ -1786,7 +1813,7 @@ export default {
                                                 class="custom-dropdown-option"
                                                 @click="
                                                     flagTypeCriteria =
-                                                        'resource';
+                                                        'source';
                                                     showFlagTypeFilter = false;
                                                     showFlagTypeDropDown = false;
                                                 "

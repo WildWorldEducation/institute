@@ -9,7 +9,7 @@ This work is licensed under a
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
 [cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
 
-# Collins Institute Core Platform
+# The Collins Institute Core Platform
 
 An LMS-like web application, which includes a skill tree progression system, used by the Collins Institute online learning system. To learn more about the problem [the Collins Institute](https://collinsinstitute.org/) is trying to solve, please visit their website.
 
@@ -25,7 +25,7 @@ An LMS-like web application, which includes a skill tree progression system, use
 -   Pinia
 -   Vue Router
 -   Vite
--   D3.js
+-   D3
 
 ### Back End
 
@@ -41,7 +41,9 @@ npm install
 
 ### Setup database
 
-Run the database-setup.sql script to create the database schema
+For an empty database schema, run the database-setup.sql script.
+For a database schema with certain important tables (eg skills and sources) populated,
+download a recent backup [here](https://institute-database.s3.amazonaws.com/02-10-24.zip)
 
 ### Setup .env file
 
