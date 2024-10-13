@@ -440,7 +440,7 @@ export default {
                 </div>
                 <!-- Infobox -->
                 <div class="col-md-4 order-1 order-md-2">
-                    <div class="info-box p-2">
+                    <div class="info-box p-2 mb-2">
                         <!-- AWS S3 hosted feature image -->
                         <!-- Show a default skill avatar if skill not have image yet -->
                         <a
@@ -657,6 +657,8 @@ export default {
 
 .assessment-btn {
     height: auto;
+    max-height: 48px;
+    margin-left: 10px;
 }
 
 .green-btn {
