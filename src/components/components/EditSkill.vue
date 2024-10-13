@@ -142,9 +142,18 @@ export default {
                 .then(() => {
                     //this.iconImage = this.skill.icon_image;
                     this.randomNum = Math.random();
-                    this.iconImage = document
-                        .getElementById('originalImage')
-                        .getAttribute('src');
+
+                    if (
+                        typeof document
+                            .getElementById('originalImage')
+                            .getAttribute('src').src !== 'undefined'
+                    ) {
+                        this.iconImage = document
+                            .getElementById('originalImage')
+                            .getAttribute('src');
+                    } else {
+                        this.iconImage = '';
+                    }
 
                     this.bannerImage = this.skill.banner_image;
                     $('#summernote')
