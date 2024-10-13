@@ -595,6 +595,7 @@ export default {
     color: #a48be6;
     font-weight: 800;
     margin-bottom: 0px;
+    text-align: start;
 }
 
 .skill-description {
@@ -711,15 +712,12 @@ export default {
 
 /* Specific phone view css */
 @media (max-width: 576px) {
-    h1,
     h2 {
         text-align: center;
     }
 
     h1 {
         font-size: 2.5rem;
-        padding-left: 50px;
-        padding-right: 50px;
     }
 
     #skill-info-container {
@@ -738,7 +736,6 @@ export default {
     .skill-name {
         margin-top: 5px;
         font-size: 25px;
-        text-align: center;
         margin: 0px 5px;
     }
 
