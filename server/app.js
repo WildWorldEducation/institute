@@ -126,8 +126,7 @@ app.get('/google-login-attempt', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     // Get user id based on Google email, if it exists.
     let sqlQuery = `SELECT * FROM users 
-        WHERE email = ${conn.escape(googleUserDetails.email)}
-        AND is_deleted = 0;`;
+        WHERE email = ${conn.escape(googleUserDetails.email)};`;
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -135,17 +134,22 @@ app.get('/google-login-attempt', (req, res) => {
             }
             // Check if user exists.
             if (typeof results[0] !== 'undefined') {
-                // Log user in.
-                req.session.isLoggedIn = true;
-                req.session.userId = results[0].id;
-                req.session.userName = results[0].username;
-                req.session.role = results[0].role;
-                if (req.session.role == 'student')
-                    res.redirect('/vertical-tree');
-                else res.redirect('/');
+                if(!results[0].is_deleted){
+                    // Log user in.
+                    req.session.isLoggedIn = true;
+                    req.session.userId = results[0].id;
+                    req.session.userName = results[0].username;
+                    req.session.role = results[0].role;
+                    if (req.session.role == 'student')
+                        res.redirect('/vertical-tree');
+                    else res.redirect('/');
+                }else{
+                    googleLoginResult = 'no account';
+                    res.redirect('/');
+                }
+                
             } else {
-                googleLoginResult = 'no account';
-                res.redirect('/');
+                res.redirect('/google-student-signup-attempt');
             }
         } catch (err) {
             next(err);
