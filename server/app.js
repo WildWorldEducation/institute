@@ -101,6 +101,8 @@ const todoCount = require('./routes/todo-count');
 app.use('/todo-count', todoCount);
 const cohorts = require('./routes/cohorts');
 app.use('/cohorts', cohorts);
+const passwordReset = require('./routes/password-reset');
+app.use('/password-reset', passwordReset);
 
 app.locals.title = 'Skill Tree';
 
