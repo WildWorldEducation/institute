@@ -46,6 +46,7 @@ export default {
                 this.skill.mastery_requirements,
                 this.skillEdit.mastery_requirements
             );
+            console.log(this.diffHtml);
         }
 
         // // Render the Summernote content.
@@ -125,6 +126,7 @@ export default {
                 this.skill.mastery_requirements,
                 this.skillEdit.mastery_requirements
             );
+
             this.showEditMastery = false;
         },
         cancelEditMastery() {

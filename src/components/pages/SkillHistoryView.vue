@@ -1,5 +1,7 @@
 <script>
 import { useUsersStore } from '../../stores/UsersStore';
+import HistoryRow from '../components/revision-history/historyRow.vue';
+import HistoryRowTabletPhone from '../components/revision-history/HistoryRowTabletPhone.vue';
 
 export default {
     setup() {
@@ -16,6 +18,7 @@ export default {
             currentVersionNumber: null
         };
     },
+    components: { HistoryRow, HistoryRowTabletPhone },
     async created() {
         if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
         await this.getSkill();
@@ -38,6 +41,8 @@ export default {
 
             // Prepare the data.
             for (let i = 0; i < this.skillRevisions.length; i++) {
+                this.skillRevisions[i].timeStamp =
+                    this.skillRevisions[i].edited_date;
                 // Prep the date and time data ---------------
                 // Split timestamp into [ Y, M, D, h, m, s ]
                 var date = this.skillRevisions[i].edited_date.replace('T', ' ');
@@ -79,31 +84,45 @@ export default {
                 ) {
                     this.skillRevisions[i].isCurrentRevision = true;
                 }
+
+                if (i + 1 === this.skillRevisions.length && i > 0) {
+                    this.skillRevisions[i].isOrigin = true;
+                } else {
+                    this.skillRevisions[i].lastRevision =
+                        this.skillRevisions[i + 1];
+                }
             }
+            console.log('skill revision: ');
+            console.log(this.skillRevisions);
         }
     }
 };
 </script>
 
 <template>
+    <div id="banner">
+        <img
+            v-bind:src="'/images/banners/skills-banner.png'"
+            class="img-fluid"
+        />
+    </div>
     <div class="container">
         <h1>{{ skill.name }}: Revision history</h1>
-        <ul>
-            <li v-for="revision in skillRevisions">
-                <router-link
-                    :to="
-                        '/skills/' +
-                        skill.url +
-                        '/revision/' +
-                        revision.version_number
-                    "
-                    >{{ revision.edited_date }}</router-link
-                >, {{ revision.username }}, {{ revision.comment
-                }}<span v-show="revision.isCurrentRevision"
-                    >, (current revision)</span
-                >
-            </li>
-        </ul>
+        <hr />
+        <div class="d-none d-lg-flex flex-column">
+            <HistoryRow
+                v-for="revision in skillRevisions"
+                :revision="revision"
+                :skill="skill"
+            />
+        </div>
+        <div class="d-flex d-lg-none flex-column">
+            <HistoryRowTabletPhone
+                v-for="revision in skillRevisions"
+                :revision="revision"
+                :skill="skill"
+            />
+        </div>
     </div>
 </template>
 
@@ -111,7 +130,12 @@ export default {
 h1 {
     color: #a48be6;
     font-size: 30px;
-    font-weight: 700;
+    font-weight: 500;
     margin-bottom: 5px;
+}
+
+.img-fluid {
+    width: 100% !important;
+    height: auto;
 }
 </style>
