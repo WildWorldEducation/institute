@@ -1,12 +1,9 @@
 <script>
 export default {
     data() {
-        return {
-            email: ''
-        };
+        return {};
     },
 
-    async created() {},
     async mounted() {},
     methods: {
         Submit() {
