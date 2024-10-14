@@ -68,10 +68,6 @@ export default {
                 }
             });
 
-            console.log(nameDiff);
-            console.log('description diff');
-            console.log(descriptionDiff);
-
             descriptionDiff.forEach((element) => {
                 if (element.added) {
                     this.added = this.added + 1;
@@ -87,7 +83,9 @@ export default {
     async mounted() {
         dayjs.extend(relativeTime);
         this.dateFromNow = dayjs(this.revision.timeStamp).fromNow();
-        this.countDiff();
+        if (this.revision.lastRevision) {
+            this.countDiff();
+        }
     }
 };
 </script>

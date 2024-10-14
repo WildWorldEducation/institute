@@ -84,8 +84,10 @@ export default {
     async mounted() {
         dayjs.extend(relativeTime);
         this.dateFromNow = dayjs(this.revision.timeStamp).fromNow();
-        this.countDiff();
         this.shortDate = dayjs(this.revision.timeStamp).format('DD-MM-YYYY');
+        if (this.revision.lastRevision) {
+            this.countDiff();
+        }
     }
 };
 </script>

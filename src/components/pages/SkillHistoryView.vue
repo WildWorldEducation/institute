@@ -92,8 +92,6 @@ export default {
                         this.skillRevisions[i + 1];
                 }
             }
-            console.log('skill revision: ');
-            console.log(this.skillRevisions);
         }
     }
 };
