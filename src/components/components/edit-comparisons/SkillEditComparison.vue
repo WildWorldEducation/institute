@@ -726,15 +726,18 @@ export default {
     background-color: #81d5b9;
     border-radius: 4px;
     color: black;
-
+    white-space-collapse: collapse;
     text-decoration: none;
+    margin: 0px 3px;
 }
 
 :deep(del) {
     background-color: #faa5a5;
     color: black;
     border-radius: 4px;
-    text-decoration-color: black;
+    text-decoration-color: #1e293b;
+    white-space-collapse: collapse;
+    margin: 0px 3px;
 }
 
 /* Slide down animation */
