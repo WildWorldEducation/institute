@@ -126,7 +126,8 @@ app.get('/google-login-attempt', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     // Get user id based on Google email, if it exists.
     let sqlQuery = `SELECT * FROM users 
-        WHERE email = ${conn.escape(googleUserDetails.email)};`;
+        WHERE email = ${conn.escape(googleUserDetails.email)}
+        AND is_deleted = 0;`;
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -134,20 +135,14 @@ app.get('/google-login-attempt', (req, res) => {
             }
             // Check if user exists.
             if (typeof results[0] !== 'undefined') {
-                if(!results[0].is_deleted){
-                    // Log user in.
-                    req.session.isLoggedIn = true;
-                    req.session.userId = results[0].id;
-                    req.session.userName = results[0].username;
-                    req.session.role = results[0].role;
-                    if (req.session.role == 'student')
-                        res.redirect('/vertical-tree');
-                    else res.redirect('/');
-                }else{
-                    googleLoginResult = 'no account';
-                    res.redirect('/');
-                }
-                
+                // Log user in.
+                req.session.isLoggedIn = true;
+                req.session.userId = results[0].id;
+                req.session.userName = results[0].username;
+                req.session.role = results[0].role;
+                if (req.session.role == 'student')
+                    res.redirect('/vertical-tree');
+                else res.redirect('/');
             } else {
                 res.redirect('/google-student-signup-attempt');
             }
@@ -203,6 +198,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 req.session.userId = results[0].id;
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
+                googleLoginResult = 'new account';
                 res.redirect('/vertical-tree');
             }
             // If not.
@@ -239,7 +235,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
 
                             // Unlock skills here
                             unlockInitialSkills(newStudentId);
-
+                            googleLoginResult = 'new account';
                             res.redirect('/vertical-tree');
                         }
                     } catch (err) {

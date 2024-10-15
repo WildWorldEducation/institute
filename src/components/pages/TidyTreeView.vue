@@ -20,6 +20,9 @@ export default {
         };
     },
     created() {},
+    mounted() {
+        this.GetGoogleLoginResult();
+    },
     components: { TidyTree, TidyTreeNoAccount },
     methods: {
         resetPos() {
@@ -40,6 +43,16 @@ export default {
         expandAllNodes() {
             this.showConfirmModal = false;
             this.$refs.childComponent.expandAllChildren();
+        },
+        GetGoogleLoginResult() {
+            fetch('/google-login-result')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.account == 'new account')
+                        alert('New account created!.');
+                });
         }
     },
     computed: {
