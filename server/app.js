@@ -144,8 +144,8 @@ app.get('/google-login-attempt', (req, res) => {
                     res.redirect('/vertical-tree');
                 else res.redirect('/');
             } else {
-                googleLoginResult = 'no account';
-                res.redirect('/');
+                // Create account.
+                res.redirect('/google-student-signup-attempt');
             }
         } catch (err) {
             next(err);
@@ -199,6 +199,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 req.session.userId = results[0].id;
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
+                googleLoginResult = 'new account';
                 res.redirect('/vertical-tree');
             }
             // If not.
@@ -235,7 +236,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
 
                             // Unlock skills here
                             unlockInitialSkills(newStudentId);
-
+                            googleLoginResult = 'new account';
                             res.redirect('/vertical-tree');
                         }
                     } catch (err) {
