@@ -37,26 +37,27 @@ export default {
         }
 
         //  summernote config
-        $('#summernote').summernote({
-            placeholder: '',
-            height: summernoteHeight,
-            tabsize: 2,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'underline', 'clear']],
-                ['color', ['color']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'video']],
-                ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            maximumImageFileSize: 2048 * 1024, // 2 MB
-            callbacks: {
-                onImageUploadError: function (msg) {
-                    alert('Max image size is 2MB.');
+            $('#summernote').summernote({
+                placeholder: '',
+                height: summernoteHeight,
+                tabsize: 2,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+                maximumImageFileSize: 2048 * 1024, // 2 MB
+                callbacks: {
+                    onImageUploadError: function (msg) {
+                        alert('Max image size is 2MB.');
+                    }
                 }
-            }
-        });
+            });
+            $('.note-editor .note-editable').css('background-color', '#ffffff');
     },
     methods: {
         Submit() {

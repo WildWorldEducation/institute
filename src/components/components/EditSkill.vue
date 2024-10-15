@@ -167,10 +167,15 @@ export default {
                                 ['para', ['ul', 'ol', 'paragraph']],
                                 ['table', ['table']],
                                 ['insert', ['link']],
-                                ['view', ['codeview', 'help']]
+                                ['view', ['fullscreen', 'codeview', 'help']]
                             ]
                         })
                         .summernote('code', this.skill.mastery_requirements);
+                    // Background for fullscreen view.
+                    $('.note-editor .note-editable').css(
+                        'background-color',
+                        '#ffffff'
+                    );
                     // Levels
                     if (this.skill.level != 'domain') {
                         const skillResult = this.levels.find((level) => {
