@@ -1,7 +1,10 @@
 <script>
 export default {
     data() {
-        return {};
+        return {
+            token: this.$route.params.token,
+            password: ''
+        };
     },
 
     async mounted() {},
@@ -11,10 +14,11 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    email: this.email
+                    token: this.token,
+                    password: this.password
                 })
             };
-            var url = '/password-reset/forgot-password';
+            var url = '/reset-password';
 
             fetch(url, requestOptions)
                 .then(function (response) {
@@ -29,19 +33,15 @@ export default {
 <template>
     <form>
         <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
+            <label for="exampleInputPassword1">Password</label>
             <input
-                type="email"
+                type="password"
                 class="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Enter email"
-                v-model="email"
+                id="exampleInputPassword1"
+                placeholder="Password"
             />
-            <small id="emailHelp" class="form-text text-muted"
-                >We'll never share your email with anyone else.</small
-            >
         </div>
+
         <button type="submit" class="btn btn-primary" @click="Submit">
             Submit
         </button>

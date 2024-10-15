@@ -326,7 +326,7 @@ const router = createRouter({
                 )
         },
         {
-            path: '/reset-password',
+            path: '/reset-password/:token',
             name: 'reset-password',
             component: () =>
                 import(
@@ -402,6 +402,7 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'student-signup' &&
         to.name !== 'editor-signup' &&
         to.name !== 'password-reset' &&
+        to.name !== 'reset-password' &&
         // For guest access.
         to.name !== 'vertical-tree' &&
         to.name !== 'show-skill' &&

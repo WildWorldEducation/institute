@@ -8,6 +8,8 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
+var crypto = require('crypto');
+const nodemailer = require('nodemailer');
 // DB
 const conn = require('../config/db');
 
@@ -19,7 +21,7 @@ Routes
 /*
  * When user clicks "forgot password" link.
  */
-router.post('/forgot-password', (req, res) => {
+router.post('/forgot-password', (req, res, next) => {
     const { email } = req.body;
     console.log(email);
 
@@ -34,7 +36,7 @@ router.post('/forgot-password', (req, res) => {
                 throw err;
             } else {
                 console.log(results[0]);
-                let user = results[0]
+                let user = results[0];
                 // Check if the email exists in your user database
                 if (results.length > 0) {
                     // Generate a reset token
@@ -43,14 +45,17 @@ router.post('/forgot-password', (req, res) => {
                     user.resetToken = token;
                     // Send the reset token to the user's email
                     const transporter = nodemailer.createTransport({
-                        service: 'gmail',
+                        service: 'Gmail',
+                        host: 'smtp.gmail.com',
+                        port: 465,
+                        secure: true,
                         auth: {
-                            user: 'your-email@gmail.com',
-                            pass: 'your-email-password'
+                            user: 'jonathandyason@gmail.com',
+                            pass: 'yrog qznb vgna xnhm'
                         }
                     });
                     const mailOptions = {
-                        from: 'your-email@gmail.com',
+                        from: 'jonathandyason@gmail.com',
                         to: email,
                         subject: 'Password Reset',
                         text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}`
@@ -82,7 +87,7 @@ router.post('/forgot-password', (req, res) => {
  * A form to create a new password.
  */
 router.get('/reset-password/:token', (req, res) => {
-    const { token } = req.params;
+    const { token } = req.params;    
     // Check if the token exists and is still valid
     if (users.some((user) => user.resetToken === token)) {
         // Render a form for the user to enter a new password
