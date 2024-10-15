@@ -171,6 +171,7 @@ export default {
                             ]
                         })
                         .summernote('code', this.skill.mastery_requirements);
+                        $('.note-editor .note-editable').css('background-color', '#ffffff');
                     // Levels
                     if (this.skill.level != 'domain') {
                         const skillResult = this.levels.find((level) => {

@@ -115,6 +115,7 @@ export default {
                 }
             }
         });
+        $('.note-editor .note-editable').css('background-color', '#ffffff');
     },
     methods: {
         async getParentSkills() {
