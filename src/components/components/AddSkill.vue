@@ -328,7 +328,10 @@ export default {
             <div
                 class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline justify-content-center justify-content-md-start gap-3 mt-3"
             >
-                <h1 id="page-tile">Add Skill</h1>
+                <h1 id="page-tile">
+                    <span v-if="skill.type != 'domain'">Add Skill</span>
+                    <span v-else>Add Category</span>                    
+                </h1>
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
