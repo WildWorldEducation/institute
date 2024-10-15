@@ -51,7 +51,7 @@ export default {
                 })
                 .then((data) => {
                     if (data.account == 'new account')
-                        alert('New account created!.');
+                        alert('Your account has been created!');
                 });
         }
     },

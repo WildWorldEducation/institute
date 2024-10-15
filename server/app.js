@@ -144,6 +144,7 @@ app.get('/google-login-attempt', (req, res) => {
                     res.redirect('/vertical-tree');
                 else res.redirect('/');
             } else {
+                // Create account.
                 res.redirect('/google-student-signup-attempt');
             }
         } catch (err) {
