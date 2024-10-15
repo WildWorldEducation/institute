@@ -106,7 +106,7 @@ export default {
                 ['para', ['ul', 'ol', 'paragraph']],
                 ['table', ['table']],
                 ['insert', ['link']],
-                ['view', ['codeview', 'help']]
+                ['view', ['fullscreen', 'codeview', 'help']]
             ],
             maximumImageFileSize: 2048 * 1024, // 2 MB
             callbacks: {
