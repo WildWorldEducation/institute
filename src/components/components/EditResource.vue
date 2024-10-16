@@ -25,6 +25,7 @@ export default {
                 }
             }
         ).summernote('code', data.content);
+        $('.note-editor .note-editable').css('background-color', '#ffffff');
     },
     methods: {
         Submit() {

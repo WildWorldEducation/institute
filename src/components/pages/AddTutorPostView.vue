@@ -33,7 +33,7 @@ export default {
                 ['style', ['style']],
                 ['font', ['bold', 'underline', 'clear']],
                 ['para', ['ul']],
-                ['view', ['codeview']]
+                ['view', ['fullscreen', 'codeview']]
             ]
         });
 
@@ -47,9 +47,10 @@ export default {
                 ['font', ['bold', 'underline', 'clear']],
                 ['para', ['ul']],
                 ['insert', ['link']],
-                ['view', ['codeview']]
+                ['view', ['fullscreen', 'codeview']]
             ]
         });
+        $('.note-editor .note-editable').css('background-color', '#ffffff');
     },
     methods: {
         async Submit() {

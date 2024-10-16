@@ -405,8 +405,7 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'reset-password' &&
         // For guest access.
         to.name !== 'vertical-tree' &&
-        to.name !== 'show-skill' &&
-        to.name !== 'profile-settings'
+        to.name !== 'show-skill'
     ) {
         next({ name: 'vertical-tree' });
         return;

@@ -167,10 +167,15 @@ export default {
                                 ['para', ['ul', 'ol', 'paragraph']],
                                 ['table', ['table']],
                                 ['insert', ['link']],
-                                ['view', ['codeview', 'help']]
+                                ['view', ['fullscreen', 'codeview', 'help']]
                             ]
                         })
                         .summernote('code', this.skill.mastery_requirements);
+                    // Background for fullscreen view.
+                    $('.note-editor .note-editable').css(
+                        'background-color',
+                        '#ffffff'
+                    );
                     // Levels
                     if (this.skill.level != 'domain') {
                         const skillResult = this.levels.find((level) => {
@@ -501,7 +506,10 @@ export default {
             <div
                 class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
             >
-                <h1 id="page-tile">Edit Skill</h1>
+                <h1 id="page-tile">
+                    <span v-if="skill.type != 'domain'">Edit Skill</span>
+                    <span v-else>Edit Category</span>
+                </h1>
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>

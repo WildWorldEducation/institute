@@ -1491,6 +1491,7 @@ router.get('/name-list', (req, res, next) => {
                                         results[j].children.push(results[i]);
                                     }
                                 }
+                                1;
                             }
                         }
 
@@ -1634,7 +1635,7 @@ async function openAIGenSkillIconImages() {
     let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
     WHERE type <> 'domain'  
     AND is_deleted = 0    
-    AND id BETWEEN 1045 AND 1080
+    AND id BETWEEN 1461 AND 1490
     ;`;
 
     conn.query(sqlQuery, async (err, results) => {

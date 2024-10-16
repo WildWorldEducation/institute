@@ -120,7 +120,7 @@ export default {
                     </div>
                 </div>
                 <button class="btn btn-dark mb-2" @click="Submit()">
-                    Sign in
+                    Log in
                 </button>
                 <div
                     id="g_id_onload"
