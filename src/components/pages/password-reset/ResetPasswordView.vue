@@ -47,21 +47,24 @@ export default {
 </script>
 
 <template>
-    <form>
-        <div v-if="isValid" class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input
-                type="password"
-                class="form-control"
-                id="exampleInputPassword1"
-                placeholder="Password"
-            />
-        </div>
+    <div class="container">
+        <form>
+            <div v-if="isValid" class="form-group">
+                <label for="exampleInputPassword1">Password</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="exampleInputPassword1"
+                    placeholder="Password"
+                />
+            </div>
+            <p v-else>Token expired or not valid</p>
 
-        <button type="submit" class="btn btn-primary" @click="Submit">
-            Submit
-        </button>
-    </form>
+            <button type="submit" class="btn btn-primary" @click="Submit">
+                Submit
+            </button>
+        </form>
+    </div>
 </template>
 
 <style></style>
