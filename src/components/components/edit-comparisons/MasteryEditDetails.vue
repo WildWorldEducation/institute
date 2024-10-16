@@ -57,21 +57,29 @@ export default {
             @click="showDetails = !showDetails"
             class="d-flex align-items-center details-btn-text"
         >
-            <div>See Details</div>
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                width="20"
-                height="20"
-                class="ms-1"
-                fill="#a48be7"
+            <div class="">See Details</div>
+            <div
+                class="my-auto ms-0"
+                :class="{
+                    'expand-arrow': showDetails,
+                    'minimize-arrow': !showDetails
+                }"
             >
-                <path
-                    d="M512 256A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM271 135c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-87 87 87 87c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L167 273c-9.4-9.4-9.4-24.6 0-33.9L271 135z"
-                />
-            </svg>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    width="20"
+                    height="20"
+                    class="ms-1"
+                    fill="#a48be7"
+                >
+                    <path
+                        d="M512 256A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM271 135c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-87 87 87 87c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L167 273c-9.4-9.4-9.4-24.6 0-33.9L271 135z"
+                    />
+                </svg>
+            </div>
         </div>
-        <Transition name="diffDetails">
+        <Transition name="expand">
             <div v-if="showDetails" class="diff-details-container">
                 <div class="d-flex flex-column details-row">
                     <div class="d-flex">
@@ -135,8 +143,9 @@ export default {
     border: 1px solid #a48be7;
     border-radius: 5px;
     padding: 5px 10px;
-    margin-left: -8px;
+    margin-left: -12px;
     margin-top: 5px;
+    background-color: white;
 }
 
 .words-row {
@@ -159,5 +168,63 @@ export default {
     padding: 3px;
     border-radius: 5px;
     width: 300px;
+}
+
+/* ANIMATION PARTS */
+.expand-arrow {
+    animation: rotation 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+    transform-origin: 50% 50%;
+    cursor: pointer;
+    padding-bottom: 3px;
+    padding-right: 7px;
+}
+
+.minimize-arrow {
+    animation: rotationBack 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+    cursor: pointer;
+    transform-origin: 50% 50%;
+    padding-bottom: 3px;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+.expand-enter-active {
+    transform-origin: right center;
+    animation: slide 1s;
+}
+.expand-leave-active {
+    transform-origin: right center;
+    animation: slide 1s reverse;
 }
 </style>
