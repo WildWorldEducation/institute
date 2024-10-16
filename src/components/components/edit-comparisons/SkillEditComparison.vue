@@ -1,6 +1,7 @@
 <script>
 import HtmlDiff from 'htmldiff-js';
 import { nextTick } from 'vue';
+import MasteryEditDetails from './MasteryEditDetails.vue';
 
 export default {
     setup() {},
@@ -24,6 +25,7 @@ export default {
             showHighLight: true
         };
     },
+    components: { MasteryEditDetails },
     async created() {
         await this.getSkillEdit();
         await this.getSkill();
@@ -46,7 +48,6 @@ export default {
                 this.skill.mastery_requirements,
                 this.skillEdit.mastery_requirements
             );
-            console.log(this.diffHtml);
         }
 
         // // Render the Summernote content.
@@ -468,6 +469,7 @@ export default {
                             </svg>
                         </div>
                     </div>
+
                     <div
                         v-if="showHighLight"
                         class="ms-auto me-3 mt-3 explain-div"
@@ -492,6 +494,11 @@ export default {
                             <div class="unchange-block"></div>
                         </div>
                     </div>
+                    <!-- Mastery compare details -->
+                    <MasteryEditDetails
+                        :skill="skill"
+                        :skillEdited="skillEdit"
+                    />
                     <div class="d-flex flex-lg-row flex-column mt-4">
                         <div
                             class="old-container skill-mastery-container d-none d-lg-block"
