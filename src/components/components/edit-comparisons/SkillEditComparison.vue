@@ -74,7 +74,7 @@ export default {
                 })
                 .then((data) => {
                     this.skillEdit = data;
-                    console.log(this.skillEdit);
+
                     this.comment = data.comment;
                 });
         },

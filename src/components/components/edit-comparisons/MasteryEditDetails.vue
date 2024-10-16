@@ -143,7 +143,7 @@ export default {
     border: 1px solid #a48be7;
     border-radius: 5px;
     padding: 5px 10px;
-    margin-left: -12px;
+    margin-left: -8px;
     margin-top: 5px;
     background-color: white;
 }
@@ -226,5 +226,16 @@ export default {
 .expand-leave-active {
     transform-origin: right center;
     animation: slide 1s reverse;
+}
+
+/* Specific phone view css */
+@media (max-width: 576px) {
+    .words-add-div {
+        width: 190px;
+    }
+
+    .words-removed-div {
+        width: 190px;
+    }
 }
 </style>
