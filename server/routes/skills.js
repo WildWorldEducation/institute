@@ -297,8 +297,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-            req.body.skillToBeCopied.id
-        )} AND skills.is_deleted = 0;`;
+                              req.body.skillToBeCopied.id
+                          )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -557,8 +557,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-        req.params.skillUrl
-    )} AND s.is_deleted = 0`;
+                        req.params.skillUrl
+                    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -705,8 +705,8 @@ router.put(
                     ${conn.escape(req.body.icon_image)},
                     ${conn.escape(req.body.banner_image)},
                     ${conn.escape(
-                req.body.mastery_requirements
-            )},                    
+                        req.body.mastery_requirements
+                    )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
@@ -773,12 +773,12 @@ router.put(
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(
-                        req.body.description
-                    )},                         
+                            req.body.description
+                        )},                         
                         banner_image = ${conn.escape(req.body.banner_image)}, 
                         mastery_requirements = ${conn.escape(
-                        req.body.mastery_requirements
-                    )}, 
+                            req.body.mastery_requirements
+                        )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)}, 
                         skills.order = ${conn.escape(req.body.order)}, 
@@ -841,8 +841,8 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-            req.body.mastery_requirements
-        )}, 
+             req.body.mastery_requirements
+         )}, 
          date = CURRENT_TIMESTAMP(), 
          icon_image = ${conn.escape(req.body.icon_image)}, 
          banner_image = ${conn.escape(req.body.banner_image)}, 
@@ -1010,10 +1010,11 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${req.body.edit
-                                                    ? 'edit_and_approve'
-                                                    : 'approve'
-                                                    }`,
+                                                userAction: `${
+                                                    req.body.edit
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
+                                                }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -1489,7 +1490,8 @@ router.get('/name-list', (req, res, next) => {
                                     if (results[j].id == parentId) {
                                         results[j].children.push(results[i]);
                                     }
-                                } 1
+                                }
+                                1;
                             }
                         }
 
@@ -1633,7 +1635,7 @@ async function openAIGenSkillIconImages() {
     let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
     WHERE type <> 'domain'  
     AND is_deleted = 0    
-    AND id BETWEEN 751 AND 770
+    AND id BETWEEN 1004 AND 1020
     ;`;
 
     conn.query(sqlQuery, async (err, results) => {
@@ -1726,6 +1728,6 @@ async function openAIGenSkillIconImages() {
     });
 }
 
-//openAIGenSkillIconImages();
+// openAIGenSkillIconImages();
 
 module.exports = router;
