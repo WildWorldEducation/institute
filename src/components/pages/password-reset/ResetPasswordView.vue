@@ -3,12 +3,28 @@ export default {
     data() {
         return {
             token: this.$route.params.token,
-            password: ''
+            password: '',
+            isValid: false
         };
     },
-
-    async mounted() {},
+    async created() {
+        await this.CheckToken();
+    },
     methods: {
+        async CheckToken() {
+            var url = '/password-reset/reset-password/' + this.token;
+
+            fetch(url)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.status == 'Valid token') {
+                        this.isValid = true;
+                    } else {
+                    }
+                });
+        },
         Submit() {
             const requestOptions = {
                 method: 'POST',
@@ -32,7 +48,7 @@ export default {
 
 <template>
     <form>
-        <div class="form-group">
+        <div v-if="isValid" class="form-group">
             <label for="exampleInputPassword1">Password</label>
             <input
                 type="password"
