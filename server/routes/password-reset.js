@@ -44,10 +44,14 @@ router.post('/forgot-password', (req, res, next) => {
                     // Generate a reset token
                     const token = crypto.randomBytes(20).toString('hex');
                     // Store the token with the user's email in a database or in-memory store
-                    user.resetToken = token;
+                    const dateTime = new Date();
+                    dateTime.toISOString().split('T')[0] +
+                        ' ' +
+                        dateTime.toTimeString().split(' ')[0];
 
                     let updateTokenSqlQuery = `UPDATE users
-                    SET reset_password_token = ${conn.escape(token)}
+                    SET reset_password_token = ${conn.escape(token)},
+                    reset_password_token_datetime = ${conn.escape(dateTime)}
                     WHERE id = ${conn.escape(user.id)};`;
 
                     conn.query(updateTokenSqlQuery, (err) => {
@@ -169,7 +173,8 @@ router.post('/reset-password', (req, res, next) => {
 
                                 // Remove the reset token after the password is updated
                                 let removeTokenSqlQuery = `UPDATE users
-                                SET reset_password_token = ''
+                                SET reset_password_token = '', 
+                                reset_password_token_datetime = NULL
                                 WHERE reset_password_token = ${conn.escape(
                                     token
                                 )};`;
