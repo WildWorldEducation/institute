@@ -210,27 +210,6 @@ export default {
                             this.changeCount.questionRemove + element.count;
                     }
                 });
-
-                console.log(this.changeCount);
-                console.log(diffArray);
-
-                // // find the difference between two string
-                // this.changed.question = diff(
-                //     this.mcQuestion.question,
-                //     this.mcQuestionEdit.question
-                // );
-                // // counting add and remove token in string diff array
-                // this.changeCount.questionAdd = this.changed.question.filter(
-                //     (e) => {
-                //         return e[0] === 1;
-                //     }
-                // ).length;
-
-                // this.changeCount.questionRemove = this.changed.question.filter(
-                //     (e) => {
-                //         return e[0] === -1;
-                //     }
-                // ).length;
             }
             // --- Correct Answer
             if (
@@ -254,25 +233,6 @@ export default {
                             element.count;
                     }
                 });
-
-                console.log(this.changeCount);
-                console.log(diffArray);
-
-                // this.changed.correct_answer = diff(
-                //     this.mcQuestion.correct_answer,
-                //     this.mcQuestionEdit.correct_answer
-                // );
-
-                // // counting add and remove token in string diff array
-                // this.changeCount.correctAnswerAdd =
-                //     this.changed.correct_answer.filter((e) => {
-                //         return e[0] === 1;
-                //     }).length;
-
-                // this.changeCount.correctAnswerRemove =
-                //     this.changed.correct_answer.filter((e) => {
-                //         return e[0] === -1;
-                //     }).length;
             }
 
             // --- Incorrect Answer 1
@@ -281,20 +241,23 @@ export default {
                     this.mcQuestionEdit.incorrect_answer_1 ||
                 this.isEditMode
             ) {
-                this.changed.incorrect_answer_1 = diff(
+                this.changed.incorrect_answer_1 = diffWords(
                     this.mcQuestion.incorrect_answer_1,
                     this.mcQuestionEdit.incorrect_answer_1
                 );
-                // counting add and remove token in string diff array
-                this.changeCount.incorrectAnswer1Add =
-                    this.changed.incorrect_answer_1.filter((e) => {
-                        return e[0] === 1;
-                    }).length;
 
-                this.changeCount.incorrectAnswer1Remove =
-                    this.changed.incorrect_answer_1.filter((e) => {
-                        return e[0] === -1;
-                    }).length;
+                this.changed.incorrect_answer_1.forEach((element) => {
+                    if (element.added && !element.removed) {
+                        this.changeCount.incorrectAnswer1Add =
+                            this.changeCount.incorrectAnswer1Add +
+                            element.count;
+                    }
+                    if (!element.added && element.removed) {
+                        this.changeCount.incorrectAnswer1Remove =
+                            this.changeCount.incorrectAnswer1Remove +
+                            element.count;
+                    }
+                });
             }
 
             // --- Incorrect Answer 2
@@ -303,21 +266,23 @@ export default {
                     this.mcQuestionEdit.incorrect_answer_2 ||
                 this.isEditMode
             ) {
-                this.changed.incorrect_answer_2 = diff(
+                this.changed.incorrect_answer_2 = diffWords(
                     this.mcQuestion.incorrect_answer_2,
                     this.mcQuestionEdit.incorrect_answer_2
                 );
 
-                // counting add and remove token in string diff array
-                this.changeCount.incorrectAnswer2Add =
-                    this.changed.incorrect_answer_2.filter((e) => {
-                        return e[0] === 1;
-                    }).length;
-
-                this.changeCount.incorrectAnswer2Remove =
-                    this.changed.incorrect_answer_2.filter((e) => {
-                        return e[0] === -1;
-                    }).length;
+                this.changed.incorrect_answer_2.forEach((element) => {
+                    if (element.added && !element.removed) {
+                        this.changeCount.incorrectAnswer2Add =
+                            this.changeCount.incorrectAnswer2Add +
+                            element.count;
+                    }
+                    if (!element.added && element.removed) {
+                        this.changeCount.incorrectAnswer2Remove =
+                            this.changeCount.incorrectAnswer2Remove +
+                            element.count;
+                    }
+                });
             }
 
             // --- Incorrect Answer 3
@@ -326,20 +291,23 @@ export default {
                     this.mcQuestionEdit.incorrect_answer_3 ||
                 this.isEditMode
             ) {
-                this.changed.incorrect_answer_3 = diff(
+                this.changed.incorrect_answer_3 = diffWords(
                     this.mcQuestion.incorrect_answer_3,
                     this.mcQuestionEdit.incorrect_answer_3
                 );
-                // counting add and remove token in string diff array
-                this.changeCount.incorrectAnswer3Add =
-                    this.changed.incorrect_answer_3.filter((e) => {
-                        return e[0] === 1;
-                    }).length;
 
-                this.changeCount.incorrectAnswer3Remove =
-                    this.changed.incorrect_answer_3.filter((e) => {
-                        return e[0] === -1;
-                    }).length;
+                this.changed.incorrect_answer_3.forEach((element) => {
+                    if (element.added && !element.removed) {
+                        this.changeCount.incorrectAnswer3Add =
+                            this.changeCount.incorrectAnswer3Add +
+                            element.count;
+                    }
+                    if (!element.added && element.removed) {
+                        this.changeCount.incorrectAnswer3Remove =
+                            this.changeCount.incorrectAnswer3Remove +
+                            element.count;
+                    }
+                });
             }
 
             // --- Incorrect Answer 4
@@ -348,21 +316,23 @@ export default {
                     this.mcQuestionEdit.incorrect_answer_4 ||
                 this.isEditMode
             ) {
-                this.changed.incorrect_answer_4 = diff(
+                this.changed.incorrect_answer_4 = diffWords(
                     this.mcQuestion.incorrect_answer_4,
                     this.mcQuestionEdit.incorrect_answer_4
                 );
 
-                // counting add and remove token in string diff array
-                this.changeCount.incorrectAnswer4Add =
-                    this.changed.incorrect_answer_4.filter((e) => {
-                        return e[0] === 1;
-                    }).length;
-
-                this.changeCount.incorrectAnswer4Remove =
-                    this.changed.incorrect_answer_4.filter((e) => {
-                        return e[0] === -1;
-                    }).length;
+                this.changed.incorrect_answer_4.forEach((element) => {
+                    if (element.added && !element.removed) {
+                        this.changeCount.incorrectAnswer4Add =
+                            this.changeCount.incorrectAnswer4Add +
+                            element.count;
+                    }
+                    if (!element.added && element.removed) {
+                        this.changeCount.incorrectAnswer4Remove =
+                            this.changeCount.incorrectAnswer4Remove +
+                            element.count;
+                    }
+                });
             }
 
             // --- Explanation
@@ -371,21 +341,36 @@ export default {
                     this.mcQuestionEdit.explanation ||
                 this.isEditMode
             ) {
-                this.changed.explanation = diff(
+                this.changed.explanation = diffWords(
                     this.mcQuestion.explanation,
                     this.mcQuestionEdit.explanation
                 );
 
-                // counting add and remove token in string diff array
-                this.changeCount.explanationAdd =
-                    this.changed.explanation.filter((e) => {
-                        return e[0] === 1;
-                    }).length;
+                this.changed.explanation.forEach((element) => {
+                    if (element.added && !element.removed) {
+                        this.changeCount.explanationAdd =
+                            this.changeCount.explanationAdd + element.count;
+                    }
+                    if (!element.added && element.removed) {
+                        this.changeCount.explanationRemove =
+                            this.changeCount.explanationRemove + element.count;
+                    }
+                });
+                // this.changed.explanation = diff(
+                //     this.mcQuestion.explanation,
+                //     this.mcQuestionEdit.explanation
+                // );
 
-                this.changeCount.explanationRemove =
-                    this.changed.explanation.filter((e) => {
-                        return e[0] === -1;
-                    }).length;
+                // // counting add and remove token in string diff array
+                // this.changeCount.explanationAdd =
+                //     this.changed.explanation.filter((e) => {
+                //         return e[0] === 1;
+                //     }).length;
+
+                // this.changeCount.explanationRemove =
+                //     this.changed.explanation.filter((e) => {
+                //         return e[0] === -1;
+                //     }).length;
             }
         }
     }
