@@ -59,22 +59,36 @@ export default {
 
 <template>
     <div class="container">
-        <h1>Choose new password</h1>
+        <h1 class="header-title mb-2">Choose new password</h1>
 
         <div v-if="isValid" class="form-group">
-            <label for="exampleInputPassword1">Password</label>
             <input
                 type="password"
-                class="form-control"
-                id="exampleInputPassword1"
+                class="form-control password-input"
                 placeholder="Password"
                 v-model="password"
             />
         </div>
         <p v-else>Token expired or not valid</p>
 
-        <button class="btn btn-primary" @click="Submit">Submit</button>
+        <button class="btn btn-primary mt-2" @click="Submit">Submit</button>
     </div>
 </template>
 
-<style></style>
+<style>
+.header-title {
+    color: #a48be6;
+    font-family: 'Poppins' sans-serif;
+    font-size: 2.375rem;
+    font-weight: 900;
+    line-height: 41px;
+    letter-spacing: 0em;
+    text-align: left;
+    margin-top: auto;
+    margin-bottom: 0px;
+}
+
+.password-input {
+    max-width: 500px;
+}
+</style>
