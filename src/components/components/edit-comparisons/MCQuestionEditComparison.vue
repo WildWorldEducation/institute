@@ -356,21 +356,6 @@ export default {
                             this.changeCount.explanationRemove + element.count;
                     }
                 });
-                // this.changed.explanation = diff(
-                //     this.mcQuestion.explanation,
-                //     this.mcQuestionEdit.explanation
-                // );
-
-                // // counting add and remove token in string diff array
-                // this.changeCount.explanationAdd =
-                //     this.changed.explanation.filter((e) => {
-                //         return e[0] === 1;
-                //     }).length;
-
-                // this.changeCount.explanationRemove =
-                //     this.changed.explanation.filter((e) => {
-                //         return e[0] === -1;
-                //     }).length;
             }
         }
     }
