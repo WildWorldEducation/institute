@@ -4,7 +4,9 @@ export default {
         return {
             token: this.$route.params.token,
             password: '',
-            isValid: false
+            isValid: false,
+            isComplete: false,
+            message: ''
         };
     },
     async created() {
@@ -41,16 +43,16 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then(function (data) {
+                .then((data) => {
                     if (data.status == 'Password updated successfully') {
-                        alert('Password updated successfully');
+                        this.message = 'Password updated successfully';
                     } else if (data.status == 'Invalid or expired token') {
-                        alert('Invalid or expired token');
+                        this.message = 'Invalid or expired token';
                     } else {
-                        alert(
-                            'Problem updating password. Please try again later.'
-                        );
+                        this.message =
+                            'Problem updating password. Please try again later.';
                     }
+                    this.isComplete = true;
                 });
         }
     }
@@ -59,19 +61,22 @@ export default {
 
 <template>
     <div class="container">
-        <h1 class="header-title mb-2">Choose new password</h1>
-
-        <div v-if="isValid" class="form-group">
-            <input
-                type="password"
-                class="form-control password-input"
-                placeholder="Password"
-                v-model="password"
-            />
+        <div v-if="!isComplete">
+            <h1 class="header-title mb-2">Choose new password</h1>
+            <div v-if="isValid" class="form-group">
+                <input
+                    type="password"
+                    class="form-control password-input"
+                    placeholder="Password"
+                    v-model="password"
+                />
+            </div>
+            <p v-else>Token expired or not valid</p>
+            <button class="btn btn-primary mt-2 purple-btn" @click="Submit">
+                Submit
+            </button>
         </div>
-        <p v-else>Token expired or not valid</p>
-
-        <button class="btn btn-primary mt-2" @click="Submit">Submit</button>
+        <div v-else>{{ this.message }}</div>
     </div>
 </template>
 
@@ -90,5 +95,22 @@ export default {
 
 .password-input {
     max-width: 500px;
+}
+
+.purple-btn {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.purple-btn:hover {
+    background-color: #a48be6;
+    color: white;
 }
 </style>
