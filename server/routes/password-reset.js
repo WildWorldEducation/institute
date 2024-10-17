@@ -13,6 +13,10 @@ const nodemailer = require('nodemailer');
 // DB
 const conn = require('../config/db');
 
+// For password encryption.
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -127,7 +131,7 @@ router.get('/reset-password/:token', (req, res) => {
 /*
  * When user submits the new password form.
  */
-router.post('/reset-password', (req, res) => {
+router.post('/reset-password', (req, res, next) => {
     const { token, password } = req.body;
 
     // Check if the token exists and is still valid
@@ -142,39 +146,53 @@ router.post('/reset-password', (req, res) => {
             }
 
             if (results.length > 0) {
-                // Find the user with the given token and update their password
-                let updatePasswordSqlQuery = `UPDATE users
-                SET password = ${conn.escape(password)}
-                WHERE reset_password_token = ${conn.escape(token)};`;
-
-                conn.query(updatePasswordSqlQuery, (err, results) => {
-                    try {
+                let escapedPassword = conn.escape(password);
+                // Hash the password.
+                bcrypt.hash(
+                    escapedPassword,
+                    saltRounds,
+                    function (err, hashedPassword) {
                         if (err) {
-                            throw err;
+                            console.log(err);
                         }
 
-                        // Remove the reset token after the password is updated
-                        let removeTokenSqlQuery = `UPDATE users
-                        SET reset_password_token = ''
+                        // Find the user with the given token and update their password
+                        let updatePasswordSqlQuery = `UPDATE users
+                        SET password = ${conn.escape(hashedPassword)}
                         WHERE reset_password_token = ${conn.escape(token)};`;
 
-                        conn.query(removeTokenSqlQuery, (err) => {
+                        conn.query(updatePasswordSqlQuery, (err, results) => {
                             try {
                                 if (err) {
                                     throw err;
                                 }
 
-                                res.status(200).json({
-                                    status: 'Password updated successfully'
+                                // Remove the reset token after the password is updated
+                                let removeTokenSqlQuery = `UPDATE users
+                                SET reset_password_token = ''
+                                WHERE reset_password_token = ${conn.escape(
+                                    token
+                                )};`;
+
+                                conn.query(removeTokenSqlQuery, (err) => {
+                                    try {
+                                        if (err) {
+                                            throw err;
+                                        }
+
+                                        res.status(200).json({
+                                            status: 'Password updated successfully'
+                                        });
+                                    } catch (err) {
+                                        next(err);
+                                    }
                                 });
                             } catch (err) {
                                 next(err);
                             }
                         });
-                    } catch (err) {
-                        next(err);
                     }
-                });
+                );
             } else {
                 res.status(404).json({ status: 'Invalid or expired token' });
             }
