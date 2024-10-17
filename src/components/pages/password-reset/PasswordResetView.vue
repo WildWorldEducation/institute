@@ -37,8 +37,7 @@ export default {
         <div v-if="!isSubmitted" class="form-group">
             <input
                 type="email"
-                class="form-control"
-                id="exampleInputEmail1"
+                class="form-control password-email"
                 aria-describedby="emailHelp"
                 placeholder="Enter email"
                 v-model="email"
@@ -51,4 +50,8 @@ export default {
     </div>
 </template>
 
-<style></style>
+<style>
+.password-email {
+    max-width: 500px;
+}
+</style>
