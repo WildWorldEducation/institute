@@ -44,10 +44,11 @@ router.post('/forgot-password', (req, res, next) => {
                     // Generate a reset token
                     const token = crypto.randomBytes(20).toString('hex');
                     // Store the token with the user's email in a database or in-memory store
-                    const dateTime = new Date();
-                    dateTime.toISOString().split('T')[0] +
-                        ' ' +
-                        dateTime.toTimeString().split(' ')[0];
+                    let dateTime = new Date();
+                    dateTime = dateTime
+                        .toISOString()
+                        .slice(0, 19)
+                        .replace('T', ' ');
 
                     let updateTokenSqlQuery = `UPDATE users
                     SET reset_password_token = ${conn.escape(token)},
@@ -107,7 +108,7 @@ router.post('/forgot-password', (req, res, next) => {
  * When user clicks "reset password" link in email.
  * A form to create a new password.
  */
-router.get('/reset-password/:token', (req, res) => {
+router.get('/reset-password/:token', (req, res, next) => {
     const { token } = req.params;
     // Check if the token exists and is still valid
     let usersSqlQuery = `SELECT * 
@@ -120,11 +121,18 @@ router.get('/reset-password/:token', (req, res) => {
             if (err) {
                 throw err;
             }
-
             if (results.length > 0) {
-                res.status(200).json({ status: 'Valid token' });
+                // Get the datetime the token was created.
+                let dateTime = results[0].reset_password_token_datetime;
+                let oneHour = 60 * 60 * 1000;
+                // Check if it is less than one hour old.
+                if (new Date() - dateTime < oneHour) {
+                    res.status(200).json({ status: 'valid' });
+                } else {
+                    res.status(404).json({ status: 'expired' });
+                }
             } else {
-                res.status(404).json({ status: 'Invalid or expired token' });
+                res.status(404).json({ status: 'invalid' });
             }
         } catch (err) {
             next(err);
@@ -165,7 +173,7 @@ router.post('/reset-password', (req, res, next) => {
                         SET password = ${conn.escape(hashedPassword)}
                         WHERE reset_password_token = ${conn.escape(token)};`;
 
-                        conn.query(updatePasswordSqlQuery, (err, results) => {
+                        conn.query(updatePasswordSqlQuery, (err) => {
                             try {
                                 if (err) {
                                     throw err;

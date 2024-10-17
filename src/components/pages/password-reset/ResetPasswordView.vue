@@ -19,9 +19,10 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    if (data.status == 'Valid token') {
+                    if (data.status == 'valid') {
                         this.isValid = true;
                     } else {
+                        console.log('Expired or invalid token.');
                     }
                 });
         },
@@ -33,7 +34,7 @@ export default {
                     token: this.token,
                     password: this.password
                 })
-            };           
+            };
             var url = '/password-reset/reset-password';
 
             fetch(url, requestOptions)
