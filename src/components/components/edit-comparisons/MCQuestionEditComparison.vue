@@ -2,6 +2,7 @@
 import diff from 'fast-diff';
 import CompareString from './CompareString.vue';
 import { nextTick } from 'vue';
+import { diffWords } from 'diff';
 
 export default {
     setup() {},
@@ -57,7 +58,6 @@ export default {
     async created() {
         await this.getMCQuestionEdit();
         await this.getMCQuestion();
-        console.log(this.mcQuestion);
         this.compareEdit();
     },
     methods: {
@@ -195,23 +195,42 @@ export default {
                 this.mcQuestion.question !== this.mcQuestionEdit.question ||
                 this.isEditMode
             ) {
-                // find the difference between two string
-                this.changed.question = diff(
+                this.changed.question = diffWords(
                     this.mcQuestion.question,
                     this.mcQuestionEdit.question
                 );
-                // counting add and remove token in string diff array
-                this.changeCount.questionAdd = this.changed.question.filter(
-                    (e) => {
-                        return e[0] === 1;
-                    }
-                ).length;
 
-                this.changeCount.questionRemove = this.changed.question.filter(
-                    (e) => {
-                        return e[0] === -1;
+                this.changed.question.forEach((element) => {
+                    if (element.added && !element.removed) {
+                        this.changeCount.questionAdd =
+                            this.changeCount.questionAdd + element.count;
                     }
-                ).length;
+                    if (!element.added && element.removed) {
+                        this.changeCount.questionRemove =
+                            this.changeCount.questionRemove + element.count;
+                    }
+                });
+
+                console.log(this.changeCount);
+                console.log(diffArray);
+
+                // // find the difference between two string
+                // this.changed.question = diff(
+                //     this.mcQuestion.question,
+                //     this.mcQuestionEdit.question
+                // );
+                // // counting add and remove token in string diff array
+                // this.changeCount.questionAdd = this.changed.question.filter(
+                //     (e) => {
+                //         return e[0] === 1;
+                //     }
+                // ).length;
+
+                // this.changeCount.questionRemove = this.changed.question.filter(
+                //     (e) => {
+                //         return e[0] === -1;
+                //     }
+                // ).length;
             }
             // --- Correct Answer
             if (
@@ -219,21 +238,41 @@ export default {
                     this.mcQuestionEdit.correct_answer ||
                 this.isEditMode
             ) {
-                this.changed.correct_answer = diff(
+                this.changed.correct_answer = diffWords(
                     this.mcQuestion.correct_answer,
                     this.mcQuestionEdit.correct_answer
                 );
 
-                // counting add and remove token in string diff array
-                this.changeCount.correctAnswerAdd =
-                    this.changed.correct_answer.filter((e) => {
-                        return e[0] === 1;
-                    }).length;
+                this.changed.correct_answer.forEach((element) => {
+                    if (element.added && !element.removed) {
+                        this.changeCount.correctAnswerAdd =
+                            this.changeCount.correctAnswerAdd + element.count;
+                    }
+                    if (!element.added && element.removed) {
+                        this.changeCount.correctAnswerRemove =
+                            this.changeCount.correctAnswerRemove +
+                            element.count;
+                    }
+                });
 
-                this.changeCount.correctAnswerRemove =
-                    this.changed.correct_answer.filter((e) => {
-                        return e[0] === -1;
-                    }).length;
+                console.log(this.changeCount);
+                console.log(diffArray);
+
+                // this.changed.correct_answer = diff(
+                //     this.mcQuestion.correct_answer,
+                //     this.mcQuestionEdit.correct_answer
+                // );
+
+                // // counting add and remove token in string diff array
+                // this.changeCount.correctAnswerAdd =
+                //     this.changed.correct_answer.filter((e) => {
+                //         return e[0] === 1;
+                //     }).length;
+
+                // this.changeCount.correctAnswerRemove =
+                //     this.changed.correct_answer.filter((e) => {
+                //         return e[0] === -1;
+                //     }).length;
             }
 
             // --- Incorrect Answer 1
