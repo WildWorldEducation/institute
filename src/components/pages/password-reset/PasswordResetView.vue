@@ -42,7 +42,9 @@ export default {
                 placeholder="Enter email"
                 v-model="email"
             />
-            <button class="btn btn-primary mt-2" @click="Submit">Submit</button>
+            <button class="btn btn-primary mt-2 purple-btn" @click="Submit">
+                Submit
+            </button>
         </div>
         <p v-else>
             Please check your email for instructions on resetting your password.
@@ -53,5 +55,22 @@ export default {
 <style>
 .password-email {
     max-width: 500px;
+}
+
+.purple-btn {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.purple-btn:hover {
+    background-color: #a48be6;
+    color: white;
 }
 </style>
