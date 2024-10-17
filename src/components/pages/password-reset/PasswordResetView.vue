@@ -2,12 +2,11 @@
 export default {
     data() {
         return {
-            email: ''
+            email: '',
+            isSubmitted: false
         };
     },
 
-    async created() {},
-    async mounted() {},
     methods: {
         Submit() {
             const requestOptions = {
@@ -23,16 +22,19 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then(function (data) {});
+                .then((data) => {
+                    if (data.status == 'success') {
+                        this.isSubmitted = true;
+                    }
+                });
         }
     }
 };
 </script>
 
 <template>
-    <form>
-        <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
+    <div class="container">
+        <div v-if="!isSubmitted" class="form-group">
             <input
                 type="email"
                 class="form-control"
@@ -41,14 +43,12 @@ export default {
                 placeholder="Enter email"
                 v-model="email"
             />
-            <small id="emailHelp" class="form-text text-muted"
-                >We'll never share your email with anyone else.</small
-            >
+            <button class="btn btn-primary mt-2" @click="Submit">Submit</button>
         </div>
-        <button type="submit" class="btn btn-primary" @click="Submit">
-            Submit
-        </button>
-    </form>
+        <p v-else>
+            Please check your email for instructions on resetting your password.
+        </p>
+    </div>
 </template>
 
 <style></style>

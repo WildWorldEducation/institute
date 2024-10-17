@@ -84,10 +84,10 @@ router.post('/forgot-password', (req, res, next) => {
                                     console.log(error);
                                     res.status(500).send('Error sending email');
                                 } else {
-                                    console.log(`Email sent: ${info.response}`);
-                                    res.status(200).send(
-                                        'Check your email for instructions on resetting your password'
-                                    );
+                                    //console.log(`Email sent: ${info.response}`);
+                                    res.status(200).json({
+                                        status: 'success'
+                                    });
                                 }
                             });
                         } catch (err) {
