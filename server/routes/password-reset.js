@@ -54,17 +54,17 @@ router.post('/forgot-password', (req, res, next) => {
 
                             // Send the reset token to the user's email
                             const transporter = nodemailer.createTransport({
-                                service: 'Gmail',
-                                host: 'smtp.gmail.com',
+                                service: process.env.EMAIL_SERVICE,
+                                host: process.env.EMAIL_HOST,
                                 port: 465,
                                 secure: true,
                                 auth: {
-                                    user: 'jonathandyason@gmail.com',
-                                    pass: 'yrog qznb vgna xnhm'
+                                    user: process.env.APP_EMAIL_ADDRESS,
+                                    pass: process.env.APP_EMAIL_PASSWORD
                                 }
                             });
                             const mailOptions = {
-                                from: 'jonathandyason@gmail.com',
+                                from: process.env.APP_EMAIL_ADDRESS,
                                 to: email,
                                 subject: 'Password Reset',
                                 text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}`
@@ -100,7 +100,6 @@ router.post('/forgot-password', (req, res, next) => {
  * A form to create a new password.
  */
 router.get('/reset-password/:token', (req, res) => {
-    console.log('test');
     const { token } = req.params;
     // Check if the token exists and is still valid
     let usersSqlQuery = `SELECT * 
@@ -130,15 +129,43 @@ router.get('/reset-password/:token', (req, res) => {
  */
 router.post('/reset-password', (req, res) => {
     const { token, password } = req.body;
-    // Find the user with the given token and update their password
-    const user = users.find((user) => user.resetToken === token);
-    if (user) {
-        user.password = password;
-        delete user.resetToken; // Remove the reset token after the password is updated
-        res.status(200).send('Password updated successfully');
-    } else {
-        res.status(404).send('Invalid or expired token');
-    }
+
+    // Check if the token exists and is still valid
+    let usersSqlQuery = `SELECT * 
+FROM users 
+WHERE reset_password_token = ${conn.escape(token)}
+AND is_deleted = 0;`;
+    conn.query(usersSqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+
+            if (results.length > 0) {
+                // Find the user with the given token and update their password
+                let updatePasswordSqlQuery = `UPDATE users
+            SET password = ${conn.escape(password)}
+            WHERE reset_password_token = ${conn.escape(token)};`;
+
+                conn.query(updatePasswordSqlQuery, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        delete user.resetToken; // Remove the reset token after the password is updated
+                        res.status(200).send('Password updated successfully');
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } else {
+                res.status(404).send('Invalid or expired token');
+            }
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 // Export the router for app to use.
