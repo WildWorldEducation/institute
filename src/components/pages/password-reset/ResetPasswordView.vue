@@ -33,14 +33,24 @@ export default {
                     token: this.token,
                     password: this.password
                 })
-            };
-            var url = '/reset-password';
+            };           
+            var url = '/password-reset/reset-password';
 
             fetch(url, requestOptions)
                 .then(function (response) {
                     return response.json();
                 })
-                .then(function (data) {});
+                .then(function (data) {
+                    if (data.status == 'Password updated successfully') {
+                        alert('Password updated successfully');
+                    } else if (data.status == 'Invalid or expired token') {
+                        alert('Invalid or expired token');
+                    } else {
+                        alert(
+                            'Problem updating password. Please try again later.'
+                        );
+                    }
+                });
         }
     }
 };
@@ -48,22 +58,21 @@ export default {
 
 <template>
     <div class="container">
-        <form>
-            <div v-if="isValid" class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                <input
-                    type="password"
-                    class="form-control"
-                    id="exampleInputPassword1"
-                    placeholder="Password"
-                />
-            </div>
-            <p v-else>Token expired or not valid</p>
+        <h1>Choose new password</h1>
 
-            <button type="submit" class="btn btn-primary" @click="Submit">
-                Submit
-            </button>
-        </form>
+        <div v-if="isValid" class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input
+                type="password"
+                class="form-control"
+                id="exampleInputPassword1"
+                placeholder="Password"
+                v-model="password"
+            />
+        </div>
+        <p v-else>Token expired or not valid</p>
+
+        <button class="btn btn-primary" @click="Submit">Submit</button>
     </div>
 </template>
 

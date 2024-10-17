@@ -46,7 +46,7 @@ router.post('/forgot-password', (req, res, next) => {
                     SET reset_password_token = ${conn.escape(token)}
                     WHERE id = ${conn.escape(user.id)};`;
 
-                    conn.query(updateTokenSqlQuery, (err, results) => {
+                    conn.query(updateTokenSqlQuery, (err) => {
                         try {
                             if (err) {
                                 throw err;
@@ -132,9 +132,9 @@ router.post('/reset-password', (req, res) => {
 
     // Check if the token exists and is still valid
     let usersSqlQuery = `SELECT * 
-FROM users 
-WHERE reset_password_token = ${conn.escape(token)}
-AND is_deleted = 0;`;
+    FROM users 
+    WHERE reset_password_token = ${conn.escape(token)}
+    AND is_deleted = 0;`;
     conn.query(usersSqlQuery, (err, results) => {
         try {
             if (err) {
@@ -144,8 +144,8 @@ AND is_deleted = 0;`;
             if (results.length > 0) {
                 // Find the user with the given token and update their password
                 let updatePasswordSqlQuery = `UPDATE users
-            SET password = ${conn.escape(password)}
-            WHERE reset_password_token = ${conn.escape(token)};`;
+                SET password = ${conn.escape(password)}
+                WHERE reset_password_token = ${conn.escape(token)};`;
 
                 conn.query(updatePasswordSqlQuery, (err, results) => {
                     try {
@@ -153,14 +153,30 @@ AND is_deleted = 0;`;
                             throw err;
                         }
 
-                        delete user.resetToken; // Remove the reset token after the password is updated
-                        res.status(200).send('Password updated successfully');
+                        // Remove the reset token after the password is updated
+                        let removeTokenSqlQuery = `UPDATE users
+                        SET reset_password_token = ''
+                        WHERE reset_password_token = ${conn.escape(token)};`;
+
+                        conn.query(removeTokenSqlQuery, (err) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                }
+
+                                res.status(200).json({
+                                    status: 'Password updated successfully'
+                                });
+                            } catch (err) {
+                                next(err);
+                            }
+                        });
                     } catch (err) {
                         next(err);
                     }
                 });
             } else {
-                res.status(404).send('Invalid or expired token');
+                res.status(404).json({ status: 'Invalid or expired token' });
             }
         } catch (err) {
             next(err);
