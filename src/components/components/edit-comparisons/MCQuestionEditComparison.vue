@@ -1285,7 +1285,7 @@ export default {
                                         removal
                                     </div>
                                     <MCQuestionDetailsDropDown
-                                        :diffObj="changed.incorrect_answer_2"
+                                        :diffObj="changed.incorrect_answer_4"
                                         type="remove"
                                     />
                                 </div>
