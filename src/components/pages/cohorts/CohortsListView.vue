@@ -43,6 +43,26 @@ export default {
                 </svg>
             </router-link>
         </div>
+        <section>
+            <p>
+                Cohorts allow you, as an instructor, to present the same
+                filtered version of a skill tree to a selective group of
+                handpicked students. For example, if you are guiding students
+                through a math class, each student can create a math-specific
+                account and you can add those accounts to your math class
+                cohort, updating the nodes as your instruction progresses.
+            </p>
+            <p>
+                To leverage this feature, create a cohort, add relevant
+                students, and filter the tree they are to see as desired. You
+                can update the filtered skill tree nodes in your cohort, plus
+                the cohort's members, whenever you please.
+            </p>
+            <p>
+                Before adding a student to your cohort, make sure they are in no
+                other cohorts; students can only be in one cohort at a time.
+            </p>
+        </section>
         <ul>
             <li v-for="cohort in cohortsStore.cohorts">
                 <RouterLink :to="'/cohort/' + cohort.id">{{
