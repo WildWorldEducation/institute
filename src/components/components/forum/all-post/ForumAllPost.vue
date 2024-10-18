@@ -56,9 +56,9 @@ export default {
     },
     methods: {
         deletePost(post, postType) {
-            switch (postType) {
+            switch (this.deletePostType) {
                 case 'tutorPost':
-                    this.$parent.deleteTutorPost(post);
+                    this.$parent.deleteTutorPost(this.currentPost);
                     this.isAlreadyTutoring = false
                     break;
                 // default case will be source type post
