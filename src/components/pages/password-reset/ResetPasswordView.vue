@@ -70,11 +70,11 @@ export default {
                     placeholder="Password"
                     v-model="password"
                 />
+                <button class="btn btn-primary mt-2 purple-btn" @click="Submit">
+                    Submit
+                </button>
             </div>
-            <p v-else>Token expired or not valid</p>
-            <button class="btn btn-primary mt-2 purple-btn" @click="Submit">
-                Submit
-            </button>
+            <p v-else>Token expired or not valid. Please try again.</p>
         </div>
         <div v-else>{{ this.message }}</div>
     </div>

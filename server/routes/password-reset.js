@@ -76,7 +76,7 @@ router.post('/forgot-password', (req, res, next) => {
                                 from: process.env.APP_EMAIL_ADDRESS,
                                 to: email,
                                 subject: 'Password Reset',
-                                text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}`
+                                text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}. It will expire in one hour.`
                             };
 
                             transporter.sendMail(mailOptions, (error, info) => {
