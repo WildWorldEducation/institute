@@ -3,6 +3,7 @@ import diff from 'fast-diff';
 import CompareString from './CompareString.vue';
 import { nextTick } from 'vue';
 import { diffWords } from 'diff';
+import MCQuestionDetailsDropDown from './MCQuestionDetailsDropDown.vue';
 
 export default {
     setup() {},
@@ -53,7 +54,8 @@ export default {
         };
     },
     components: {
-        CompareString
+        CompareString,
+        MCQuestionDetailsDropDown
     },
     async created() {
         await this.getMCQuestionEdit();
@@ -443,37 +445,49 @@ export default {
                     <div class="d-flex flex-column">
                         <!-- Addition and removal count section -->
                         <div class="d-flex flex-row-reverse gap-4 mb-3">
-                            <div class="add-count">
-                                <span class="plus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#1aa375"
-                                    >
-                                        <path
-                                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.questionAdd }} addition
+                            <div class="d-flex align-items-start">
+                                <div class="add-count">
+                                    <span class="plus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#1aa375"
+                                        >
+                                            <path
+                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.questionAdd }} addition
+                                </div>
+                                <MCQuestionDetailsDropDown
+                                    :diffObj="changed.question"
+                                    type="add"
+                                />
                             </div>
-                            <div class="remove-count">
-                                <span class="minus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#ea6c6c"
-                                    >
-                                        <path
-                                            d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.questionRemove }} removal
+                            <div class="d-flex align-items-start">
+                                <div class="remove-count">
+                                    <span class="minus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#ea6c6c"
+                                        >
+                                            <path
+                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.questionRemove }} removal
+                                </div>
+                                <MCQuestionDetailsDropDown
+                                    :diffObj="changed.question"
+                                    type="remove"
+                                />
                             </div>
                         </div>
                         <div class="d-flex flex-lg-row flex-column">
@@ -579,38 +593,51 @@ export default {
                     <div v-if="showCorrectAnswerChange && !isEditMode">
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-row-reverse gap-4 mb-3">
-                                <div class="add-count">
-                                    <span class="plus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#1aa375"
-                                        >
-                                            <path
-                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.correctAnswerAdd }} addition
+                                <div class="d-flex align-items-start">
+                                    <div class="add-count">
+                                        <span class="plus-icon">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                height="15"
+                                                width="15"
+                                                fill="#1aa375"
+                                            >
+                                                <path
+                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {{ changeCount.correctAnswerAdd }}
+                                        addition
+                                    </div>
+                                    <MCQuestionDetailsDropDown
+                                        :diffObj="changed.correct_answer"
+                                        type="add"
+                                    />
                                 </div>
-                                <div class="remove-count">
-                                    <span class="minus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#ea6c6c"
-                                        >
-                                            <path
-                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.correctAnswerRemove }}
-                                    removal
+                                <div class="d-flex align-items-start">
+                                    <div class="remove-count">
+                                        <span class="minus-icon">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                height="15"
+                                                width="15"
+                                                fill="#ea6c6c"
+                                            >
+                                                <path
+                                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {{ changeCount.correctAnswerRemove }}
+                                        removal
+                                    </div>
+                                    <MCQuestionDetailsDropDown
+                                        :diffObj="changed.correct_answer"
+                                        type="remove"
+                                    />
                                 </div>
                             </div>
                             <div class="d-flex flex-lg-row flex-column">
@@ -724,39 +751,51 @@ export default {
                     <div v-if="showIncorrectAnswer1Change && !isEditMode">
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-row-reverse gap-4 mb-3">
-                                <div class="add-count">
-                                    <span class="plus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#1aa375"
-                                        >
-                                            <path
-                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.incorrectAnswer1Add }}
-                                    addition
+                                <div class="d-flex align-items-start">
+                                    <div class="add-count">
+                                        <span class="plus-icon">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                height="15"
+                                                width="15"
+                                                fill="#1aa375"
+                                            >
+                                                <path
+                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {{ changeCount.incorrectAnswer1Add }}
+                                        addition
+                                    </div>
+                                    <MCQuestionDetailsDropDown
+                                        :diffObj="changed.incorrect_answer_1"
+                                        type="add"
+                                    />
                                 </div>
-                                <div class="remove-count">
-                                    <span class="minus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#ea6c6c"
-                                        >
-                                            <path
-                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.incorrectAnswer1Remove }}
-                                    removal
+                                <div class="d-flex align-items-start">
+                                    <div class="remove-count">
+                                        <span class="minus-icon">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                height="15"
+                                                width="15"
+                                                fill="#ea6c6c"
+                                            >
+                                                <path
+                                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {{ changeCount.incorrectAnswer1Remove }}
+                                        removal
+                                    </div>
+                                    <MCQuestionDetailsDropDown
+                                        :diffObj="changed.incorrect_answer_1"
+                                        type="remove"
+                                    />
                                 </div>
                             </div>
                             <div class="d-flex flex-lg-row flex-column">
@@ -876,39 +915,51 @@ export default {
                     <div v-if="showIncorrectAnswer2Change && !isEditMode">
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-row-reverse gap-4 mb-3">
-                                <div class="add-count">
-                                    <span class="plus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#1aa375"
-                                        >
-                                            <path
-                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.incorrectAnswer2Add }}
-                                    addition
+                                <div class="d-flex align-items-start">
+                                    <div class="add-count">
+                                        <span class="plus-icon">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                height="15"
+                                                width="15"
+                                                fill="#1aa375"
+                                            >
+                                                <path
+                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {{ changeCount.incorrectAnswer2Add }}
+                                        addition
+                                    </div>
+                                    <MCQuestionDetailsDropDown
+                                        :diffObj="changed.incorrect_answer_2"
+                                        type="add"
+                                    />
                                 </div>
-                                <div class="remove-count">
-                                    <span class="minus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#ea6c6c"
-                                        >
-                                            <path
-                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.incorrectAnswer2Remove }}
-                                    removal
+                                <div class="d-flex align-items-start">
+                                    <div class="remove-count">
+                                        <span class="minus-icon">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                height="15"
+                                                width="15"
+                                                fill="#ea6c6c"
+                                            >
+                                                <path
+                                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {{ changeCount.incorrectAnswer2Remove }}
+                                        removal
+                                    </div>
+                                    <MCQuestionDetailsDropDown
+                                        :diffObj="changed.incorrect_answer_2"
+                                        type="remove"
+                                    />
                                 </div>
                             </div>
                             <div class="d-flex flex-lg-row flex-column">
@@ -1028,39 +1079,51 @@ export default {
                     <div v-if="showIncorrectAnswer3Change && !isEditMode">
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-row-reverse gap-4 mb-3">
-                                <div class="add-count">
-                                    <span class="plus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#1aa375"
-                                        >
-                                            <path
-                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.incorrectAnswer3Add }}
-                                    addition
+                                <div class="d-flex align-items-start">
+                                    <div class="add-count">
+                                        <span class="plus-icon">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                height="15"
+                                                width="15"
+                                                fill="#1aa375"
+                                            >
+                                                <path
+                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {{ changeCount.incorrectAnswer3Add }}
+                                        addition
+                                    </div>
+                                    <MCQuestionDetailsDropDown
+                                        :diffObj="changed.incorrect_answer_3"
+                                        type="add"
+                                    />
                                 </div>
-                                <div class="remove-count">
-                                    <span class="minus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#ea6c6c"
-                                        >
-                                            <path
-                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.incorrectAnswer3Remove }}
-                                    removal
+                                <div class="d-flex align-items-start">
+                                    <div class="remove-count">
+                                        <span class="minus-icon">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                height="15"
+                                                width="15"
+                                                fill="#ea6c6c"
+                                            >
+                                                <path
+                                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {{ changeCount.incorrectAnswer3Remove }}
+                                        removal
+                                    </div>
+                                    <MCQuestionDetailsDropDown
+                                        :diffObj="changed.incorrect_answer_3"
+                                        type="remove"
+                                    />
                                 </div>
                             </div>
                             <div class="d-flex flex-lg-row flex-column">
@@ -1180,39 +1243,51 @@ export default {
                     <div v-if="showIncorrectAnswer4Change && !isEditMode">
                         <div class="d-flex flex-column">
                             <div class="d-flex flex-row-reverse gap-4 mb-3">
-                                <div class="add-count">
-                                    <span class="plus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#1aa375"
-                                        >
-                                            <path
-                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.incorrectAnswer4Add }}
-                                    addition
+                                <div class="d-flex align-items-start">
+                                    <div class="add-count">
+                                        <span class="plus-icon">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                height="15"
+                                                width="15"
+                                                fill="#1aa375"
+                                            >
+                                                <path
+                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {{ changeCount.incorrectAnswer4Add }}
+                                        addition
+                                    </div>
+                                    <MCQuestionDetailsDropDown
+                                        :diffObj="changed.incorrect_answer_4"
+                                        type="add"
+                                    />
                                 </div>
-                                <div class="remove-count">
-                                    <span class="minus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#ea6c6c"
-                                        >
-                                            <path
-                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.incorrectAnswer4Remove }}
-                                    removal
+                                <div class="d-flex align-items-start">
+                                    <div class="remove-count">
+                                        <span class="minus-icon">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 448 512"
+                                                height="15"
+                                                width="15"
+                                                fill="#ea6c6c"
+                                            >
+                                                <path
+                                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {{ changeCount.incorrectAnswer4Remove }}
+                                        removal
+                                    </div>
+                                    <MCQuestionDetailsDropDown
+                                        :diffObj="changed.incorrect_answer_2"
+                                        type="remove"
+                                    />
                                 </div>
                             </div>
                             <div class="d-flex flex-lg-row flex-column">
@@ -1323,37 +1398,49 @@ export default {
                 <div v-if="showExplanationChange && !isEditMode">
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-row-reverse gap-4 mb-3">
-                            <div class="add-count">
-                                <span class="plus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#1aa375"
-                                    >
-                                        <path
-                                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.explanationAdd }} addition
+                            <div class="d-flex align-items-start">
+                                <div class="add-count">
+                                    <span class="plus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#1aa375"
+                                        >
+                                            <path
+                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.explanationAdd }} addition
+                                </div>
+                                <MCQuestionDetailsDropDown
+                                    :diffObj="changed.explanation"
+                                    type="add"
+                                />
                             </div>
-                            <div class="remove-count">
-                                <span class="minus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#ea6c6c"
-                                    >
-                                        <path
-                                            d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.explanationRemove }} removal
+                            <div class="d-flex align-items-start">
+                                <div class="remove-count">
+                                    <span class="minus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#ea6c6c"
+                                        >
+                                            <path
+                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.explanationRemove }} removal
+                                </div>
+                                <MCQuestionDetailsDropDown
+                                    :diffObj="changed.explanation"
+                                    type="remove"
+                                />
                             </div>
                         </div>
                         <div class="d-flex flex-lg-row flex-column">
@@ -1618,6 +1705,7 @@ export default {
     font-size: 16px;
     font-weight: 500;
     display: flex;
+
     gap: 5px;
 }
 

@@ -44,30 +44,6 @@ export default {
 <template>
     <div class="d-flex flex-row align-items-center flex-wrap">
         <div v-html="innerHtmlDisplay"></div>
-        <!-- <div v-for="change in diffString">
-            <div
-                v-if="change?.added && !change?.removed"
-                class="mx-1 add"
-                b-on-hoover
-                title="added"
-            >
-                {{ change.value }}
-            </div>
-            <div
-                v-if="!change?.added && change?.removed"
-                class="mx-1 remove"
-                b-on-hoover
-                title="deleted"
-            >
-                {{ change.value }}
-            </div>
-            <div
-                v-if="!change?.added && !change?.removed"
-                class="mx-1 unchange"
-            >
-                {{ change.value }}
-            </div>
-        </div> -->
     </div>
 </template>
 
