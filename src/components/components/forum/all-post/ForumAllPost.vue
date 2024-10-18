@@ -105,9 +105,9 @@ export default {
 <template>
     <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex flex-column mt-4">
         <div class="d-flex flex-column flex-lg-row">
-            <div class="ms-0 me-auto ms-lg-auto me-lg-0">
+            <div class="col-12">
                 <div
-                    class="d-flex flex-column align-items-baseline"
+                    class="d-flex justify-content-xl-end justify-content-between"
                     v-if="isLoading == false"
                 >
                     <router-link
@@ -134,7 +134,7 @@ export default {
                             user.role == 'student' && isAlreadyTutoring == false
                         "
                         :to="'/tutor/add/' + skillId"
-                        class="btn purple-btn mt-2"
+                        class="btn purple-btn"
                         role="button"
                         >Offer to tutor&nbsp;&nbsp;
                         <!-- hand point up icon -->
@@ -196,12 +196,15 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 #posts-big-container {
     padding-left: 10px;
     padding-right: 10px;
 }
-
+.green-btn{
+    margin-right: 10px;
+    height: 44px;
+}
 .forum-container {
     border-radius: 12px;
     padding-top: 12px;
