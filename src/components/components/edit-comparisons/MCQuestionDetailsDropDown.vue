@@ -62,7 +62,15 @@ export default {
 
         <div class="position-relative">
             <div v-if="showDetails" class="details-div">
-                <div v-for="word in diffWords">{{ word }}</div>
+                <div
+                    v-for="word in diffWords"
+                    :class="{
+                        'add-details': type === 'add',
+                        'remove-details': type == 'remove'
+                    }"
+                >
+                    {{ word }}
+                </div>
             </div>
         </div>
     </div>
@@ -82,7 +90,28 @@ export default {
     right: 5px;
     z-index: 100;
     width: 300px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
     background-color: white;
+    box-shadow: 3px 3px 3px rgb(36, 36, 36);
+    border: 1px solid #1e293b;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.add-details {
+    background-color: #bbf7d0;
+    border-radius: 5px;
+    color: #052e16;
+    padding: 5px;
+}
+
+.remove-details {
+    background-color: #fecaca;
+    border-radius: 5px;
+    color: #7f1d1d;
+    padding: 5px;
 }
 
 .triangle-container {
