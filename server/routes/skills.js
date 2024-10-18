@@ -1635,7 +1635,7 @@ async function openAIGenSkillIconImages() {
     let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
     WHERE type <> 'domain'  
     AND is_deleted = 0    
-    AND id BETWEEN 1811 AND 1830
+    AND id BETWEEN 1968 AND 1980
     ;`;
 
     conn.query(sqlQuery, async (err, results) => {
@@ -1728,6 +1728,6 @@ async function openAIGenSkillIconImages() {
     });
 }
 
-openAIGenSkillIconImages();
+//openAIGenSkillIconImages();
 
 module.exports = router;
