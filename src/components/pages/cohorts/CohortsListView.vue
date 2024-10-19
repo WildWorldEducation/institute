@@ -224,7 +224,7 @@ export default {
 /* Desktops/laptops */
 @media (min-width: 1025px) {
     .contact-modal-content {
-        margin: 15% auto;
+        margin: 10% auto;
     }
 }
 </style>
