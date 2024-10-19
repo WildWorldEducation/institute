@@ -62,16 +62,18 @@ export default {
 
             if (description.length < 25) {
                 this.validateDescription = false;
-                return;
             } else {
                 this.validateDescription = true;
             }
 
             if (contactPreference.length < 25) {
                 this.validateContact = false;
-                return;
             } else {
                 this.validateContact = true;
+            }
+
+            if(!this.validateContact || !this.validateDescription){
+                return
             }
 
             const requestOptions = {
@@ -121,7 +123,7 @@ export default {
                             v-if="validateDescription == false"
                             class="form-validate"
                         >
-                            please complete this section!
+                            Please provide at least 25 characters.
                         </div>
                     </div>
                     <div class="mb-3">
@@ -139,7 +141,7 @@ export default {
                             v-if="validateContact == false"
                             class="form-validate"
                         >
-                            please complete this section!
+                            Please provide at least 25 characters.
                         </div>
                     </div>
 
