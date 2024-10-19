@@ -1,6 +1,8 @@
 <script>
 import diff from 'fast-diff';
+import { diffWords } from 'diff';
 import CompareString from './CompareString.vue';
+import { count } from 'd3';
 export default {
     setup() {},
     data() {
@@ -178,18 +180,22 @@ export default {
                 this.isEditMode
             ) {
                 // find the difference between two string
-                this.changed.name = diff(
+                this.changed.name = diffWords(
                     this.essayQuestion.name,
                     this.essayQuestionEdit.name
                 );
                 // counting add and remove token in string diff array
-                this.changeCount.nameAdd = this.changed.name.filter((e) => {
-                    return e[0] === 1;
-                }).length;
+                const countObj = this.countChangedWords(this.changed.name);
+                this.changeCount.nameAdd = countObj.added;
+                this.changeCount.nameRemove = countObj.removed;
 
-                this.changeCount.nameRemove = this.changed.name.filter((e) => {
-                    return e[0] === -1;
-                }).length;
+                // this.changeCount.nameAdd = this.changed.name.filter((e) => {
+                //     return e[0] === 1;
+                // }).length;
+
+                // this.changeCount.nameRemove = this.changed.name.filter((e) => {
+                //     return e[0] === -1;
+                // }).length;
             }
             // --- Question Content
             if (
@@ -198,23 +204,44 @@ export default {
                 this.isEditMode
             ) {
                 // find the difference between two string
-                this.changed.question = diff(
+                this.changed.question = diffWords(
                     this.essayQuestion.question,
                     this.essayQuestionEdit.question
                 );
-                // counting add and remove token in string diff array
-                this.changeCount.questionAdd = this.changed.question.filter(
-                    (e) => {
-                        return e[0] === 1;
-                    }
-                ).length;
 
-                this.changeCount.questionRemove = this.changed.question.filter(
-                    (e) => {
-                        return e[0] === -1;
-                    }
-                ).length;
+                const countObj = this.countChangedWords(this.changed.question);
+                this.changeCount.questionAdd = countObj.added;
+                this.changeCount.questionRemove = countObj.removed;
+                // // counting add and remove token in string diff array
+                // this.changeCount.questionAdd = this.changed.question.filter(
+                //     (e) => {
+                //         return e[0] === 1;
+                //     }
+                // ).length;
+
+                // this.changeCount.questionRemove = this.changed.question.filter(
+                //     (e) => {
+                //         return e[0] === -1;
+                //     }
+                // ).length;
             }
+        },
+        countChangedWords(wordsArray) {
+            const returnObj = {
+                added: 0,
+                removed: 0
+            };
+            wordsArray.forEach((element) => {
+                if (element.added && !element.removed) {
+                    returnObj.added = returnObj.added + 1;
+                }
+
+                if (!element.added) {
+                    returnObj.removed = returnObj.removed + 1;
+                }
+            });
+
+            return returnObj;
         },
         applyEditChange() {
             this.compareEdit();
