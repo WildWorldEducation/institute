@@ -3,7 +3,7 @@ import diff from 'fast-diff';
 import CompareString from './CompareString.vue';
 import { nextTick } from 'vue';
 import { diffWords } from 'diff';
-import MCQuestionDetailsDropDown from './MCQuestionDetailsDropDown.vue';
+import DiffWordsDropDown from './DiffWordsDropDown.vue';
 
 export default {
     setup() {},
@@ -55,7 +55,7 @@ export default {
     },
     components: {
         CompareString,
-        MCQuestionDetailsDropDown
+        DiffWordsDropDown
     },
     async created() {
         await this.getMCQuestionEdit();
@@ -462,7 +462,7 @@ export default {
                                     </span>
                                     {{ changeCount.questionAdd }} addition
                                 </div>
-                                <MCQuestionDetailsDropDown
+                                <DiffWordsDropDown
                                     :diffObj="changed.question"
                                     type="add"
                                 />
@@ -484,7 +484,7 @@ export default {
                                     </span>
                                     {{ changeCount.questionRemove }} removal
                                 </div>
-                                <MCQuestionDetailsDropDown
+                                <DiffWordsDropDown
                                     :diffObj="changed.question"
                                     type="remove"
                                 />
@@ -611,7 +611,7 @@ export default {
                                         {{ changeCount.correctAnswerAdd }}
                                         addition
                                     </div>
-                                    <MCQuestionDetailsDropDown
+                                    <DiffWordsDropDown
                                         :diffObj="changed.correct_answer"
                                         type="add"
                                     />
@@ -634,7 +634,7 @@ export default {
                                         {{ changeCount.correctAnswerRemove }}
                                         removal
                                     </div>
-                                    <MCQuestionDetailsDropDown
+                                    <DiffWordsDropDown
                                         :diffObj="changed.correct_answer"
                                         type="remove"
                                     />
@@ -769,7 +769,7 @@ export default {
                                         {{ changeCount.incorrectAnswer1Add }}
                                         addition
                                     </div>
-                                    <MCQuestionDetailsDropDown
+                                    <DiffWordsDropDown
                                         :diffObj="changed.incorrect_answer_1"
                                         type="add"
                                     />
@@ -792,7 +792,7 @@ export default {
                                         {{ changeCount.incorrectAnswer1Remove }}
                                         removal
                                     </div>
-                                    <MCQuestionDetailsDropDown
+                                    <DiffWordsDropDown
                                         :diffObj="changed.incorrect_answer_1"
                                         type="remove"
                                     />
@@ -933,7 +933,7 @@ export default {
                                         {{ changeCount.incorrectAnswer2Add }}
                                         addition
                                     </div>
-                                    <MCQuestionDetailsDropDown
+                                    <DiffWordsDropDown
                                         :diffObj="changed.incorrect_answer_2"
                                         type="add"
                                     />
@@ -956,7 +956,7 @@ export default {
                                         {{ changeCount.incorrectAnswer2Remove }}
                                         removal
                                     </div>
-                                    <MCQuestionDetailsDropDown
+                                    <DiffWordsDropDown
                                         :diffObj="changed.incorrect_answer_2"
                                         type="remove"
                                     />
@@ -1097,7 +1097,7 @@ export default {
                                         {{ changeCount.incorrectAnswer3Add }}
                                         addition
                                     </div>
-                                    <MCQuestionDetailsDropDown
+                                    <DiffWordsDropDown
                                         :diffObj="changed.incorrect_answer_3"
                                         type="add"
                                     />
@@ -1120,7 +1120,7 @@ export default {
                                         {{ changeCount.incorrectAnswer3Remove }}
                                         removal
                                     </div>
-                                    <MCQuestionDetailsDropDown
+                                    <DiffWordsDropDown
                                         :diffObj="changed.incorrect_answer_3"
                                         type="remove"
                                     />
@@ -1261,7 +1261,7 @@ export default {
                                         {{ changeCount.incorrectAnswer4Add }}
                                         addition
                                     </div>
-                                    <MCQuestionDetailsDropDown
+                                    <DiffWordsDropDown
                                         :diffObj="changed.incorrect_answer_4"
                                         type="add"
                                     />
@@ -1284,7 +1284,7 @@ export default {
                                         {{ changeCount.incorrectAnswer4Remove }}
                                         removal
                                     </div>
-                                    <MCQuestionDetailsDropDown
+                                    <DiffWordsDropDown
                                         :diffObj="changed.incorrect_answer_4"
                                         type="remove"
                                     />
@@ -1415,7 +1415,7 @@ export default {
                                     </span>
                                     {{ changeCount.explanationAdd }} addition
                                 </div>
-                                <MCQuestionDetailsDropDown
+                                <DiffWordsDropDown
                                     :diffObj="changed.explanation"
                                     type="add"
                                 />
@@ -1437,7 +1437,7 @@ export default {
                                     </span>
                                     {{ changeCount.explanationRemove }} removal
                                 </div>
-                                <MCQuestionDetailsDropDown
+                                <DiffWordsDropDown
                                     :diffObj="changed.explanation"
                                     type="remove"
                                 />

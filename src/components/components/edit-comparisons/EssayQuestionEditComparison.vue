@@ -2,6 +2,7 @@
 import diff from 'fast-diff';
 import { diffWords } from 'diff';
 import CompareString from './CompareString.vue';
+import DiffWordsDropDown from './DiffWordsDropDown.vue';
 
 export default {
     setup() {},
@@ -30,7 +31,7 @@ export default {
             tempEssayEdit: null
         };
     },
-    components: { CompareString },
+    components: { CompareString, DiffWordsDropDown },
     async created() {
         await this.getEssayQuestionEdit();
         await this.getEssayQuestion();
@@ -212,18 +213,6 @@ export default {
                 const countObj = this.countChangedWords(this.changed.question);
                 this.changeCount.questionAdd = countObj.added;
                 this.changeCount.questionRemove = countObj.removed;
-                // // counting add and remove token in string diff array
-                // this.changeCount.questionAdd = this.changed.question.filter(
-                //     (e) => {
-                //         return e[0] === 1;
-                //     }
-                // ).length;
-
-                // this.changeCount.questionRemove = this.changed.question.filter(
-                //     (e) => {
-                //         return e[0] === -1;
-                //     }
-                // ).length;
             }
         },
         countChangedWords(wordsArray) {
@@ -231,13 +220,14 @@ export default {
                 added: 0,
                 removed: 0
             };
+            console.log(wordsArray);
             wordsArray.forEach((element) => {
                 if (element.added && !element.removed) {
-                    returnObj.added = returnObj.added + 1;
+                    returnObj.added = returnObj.added + element.count;
                 }
 
-                if (!element.added) {
-                    returnObj.removed = returnObj.removed + 1;
+                if (!element.added && element.removed) {
+                    returnObj.removed = returnObj.removed + element.count;
                 }
             });
 
@@ -342,37 +332,49 @@ export default {
                 <div v-if="showNameChange && !isEditMode">
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-row-reverse gap-4 mb-3">
-                            <div class="add-count">
-                                <span class="plus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#1aa375"
-                                    >
-                                        <path
-                                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.nameAdd }} addition
+                            <div class="d-flex align-items-start">
+                                <div class="add-count">
+                                    <span class="plus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#1aa375"
+                                        >
+                                            <path
+                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.nameAdd }} addition
+                                </div>
+                                <DiffWordsDropDown
+                                    :diffObj="changed.name"
+                                    type="add"
+                                />
                             </div>
-                            <div class="remove-count">
-                                <span class="minus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#ea6c6c"
-                                    >
-                                        <path
-                                            d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.nameRemove }} removal
+                            <div class="d-flex align-items-start">
+                                <div class="remove-count">
+                                    <span class="minus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#ea6c6c"
+                                        >
+                                            <path
+                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.nameRemove }} removal
+                                </div>
+                                <DiffWordsDropDown
+                                    :diffObj="changed.name"
+                                    type="remove"
+                                />
                             </div>
                         </div>
                         <div class="d-flex flex-lg-row flex-column">
@@ -472,37 +474,49 @@ export default {
                 <div v-if="showQuestionChange && !isEditMode">
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-row-reverse gap-4 mb-3">
-                            <div class="add-count">
-                                <span class="plus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#1aa375"
-                                    >
-                                        <path
-                                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.questionAdd }} addition
+                            <div class="d-flex align-items-start">
+                                <div class="add-count">
+                                    <span class="plus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#1aa375"
+                                        >
+                                            <path
+                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.questionAdd }} addition
+                                </div>
+                                <DiffWordsDropDown
+                                    :diffObj="changed.question"
+                                    type="add"
+                                />
                             </div>
-                            <div class="remove-count">
-                                <span class="minus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#ea6c6c"
-                                    >
-                                        <path
-                                            d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.questionRemove }} removal
+                            <div class="d-flex align-items-start">
+                                <div class="remove-count">
+                                    <span class="minus-icon">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 448 512"
+                                            height="15"
+                                            width="15"
+                                            fill="#ea6c6c"
+                                        >
+                                            <path
+                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                            />
+                                        </svg>
+                                    </span>
+                                    {{ changeCount.questionRemove }} removal
+                                </div>
+                                <DiffWordsDropDown
+                                    :diffObj="changed.question"
+                                    type="remove"
+                                />
                             </div>
                         </div>
                         <div class="d-flex flex-lg-row flex-column">

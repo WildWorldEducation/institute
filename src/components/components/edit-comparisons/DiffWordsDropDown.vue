@@ -51,7 +51,9 @@ export default {
                 class="triangle-icon"
                 :class="{
                     'expand-arrow': showDetails,
-                    'minimize-arrow': !showDetails
+                    'minimize-arrow': !showDetails,
+                    fillRed: type === 'remove' ? true : false,
+                    fillGreen: type === 'add' ? true : false
                 }"
             >
                 <path
@@ -82,6 +84,14 @@ export default {
     align-items: end;
     height: fit-content;
     padding-top: 7px;
+}
+
+.fillRed {
+    fill: #7f1d1d;
+}
+
+.fillGreen {
+    fill: green;
 }
 
 .details-div {
