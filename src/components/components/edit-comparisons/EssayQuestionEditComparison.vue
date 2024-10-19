@@ -2,7 +2,7 @@
 import diff from 'fast-diff';
 import { diffWords } from 'diff';
 import CompareString from './CompareString.vue';
-import { count } from 'd3';
+
 export default {
     setup() {},
     data() {
