@@ -3,6 +3,7 @@ import diff from 'fast-diff';
 import { diffWords } from 'diff';
 import CompareString from './CompareString.vue';
 import DiffWordsDropDown from './DiffWordsDropDown.vue';
+import ComparisonContainer from './ComparisonContainer.vue';
 
 export default {
     setup() {},
@@ -31,7 +32,7 @@ export default {
             tempEssayEdit: null
         };
     },
-    components: { CompareString, DiffWordsDropDown },
+    components: { CompareString, DiffWordsDropDown, ComparisonContainer },
     async created() {
         await this.getEssayQuestionEdit();
         await this.getEssayQuestion();
@@ -309,6 +310,13 @@ export default {
             </div>
         </div>
         <!-- ----| Question Name |---- -->
+        <ComparisonContainer
+            :diffString="changed.name"
+            containerName="Name"
+            :originData="essayQuestion.name"
+            :tempData="tempEssayEdit.name"
+            :showHighLight="showHighLight"
+        />
         <div class="compare-container">
             <div class="d-flex align-items-center">
                 <h2 class="compare-container-tile mb-3">Name</h2>
@@ -450,6 +458,7 @@ export default {
                 </div>
             </Transition>
         </div>
+        <!-- ***************************************** -->
         <!-- ----| Question Content Container |---- -->
         <div class="compare-container mt-5">
             <div class="d-flex align-items-center">
