@@ -214,44 +214,9 @@ router.post(
                                                     actionData,
                                                     (err) => {
                                                         if (err) throw err;
-                                                        else {
-                                                            // Insert any new filters for the skill.
-                                                            for (
-                                                                let i = 0;
-                                                                i <
-                                                                req.body.filters
-                                                                    .length;
-                                                                i++
-                                                            ) {
-                                                                let sqlQuery3 = `
-                            INSERT INTO skill_tags (skill_id, tag_id)
-                            VALUES(${conn.escape(skillId)},
-                            ${conn.escape(req.body.filters[i])});`;
-
-                                                                conn.query(
-                                                                    sqlQuery3,
-                                                                    (err) => {
-                                                                        try {
-                                                                            if (
-                                                                                err
-                                                                            ) {
-                                                                                throw err;
-                                                                            } else {
-                                                                                res.json(
-                                                                                    {
-                                                                                        result: 'skill added'
-                                                                                    }
-                                                                                );
-                                                                            }
-                                                                        } catch (err) {
-                                                                            next(
-                                                                                err
-                                                                            );
-                                                                        }
-                                                                    }
-                                                                );
-                                                            }
-                                                        }
+                                                        res.json({
+                                                            result: 'skill added'
+                                                        });
                                                     }
                                                 );
                                             }
@@ -1632,7 +1597,7 @@ async function openAIGenSkillIconImages() {
     let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
     WHERE type <> 'domain'  
     AND is_deleted = 0    
-    AND id BETWEEN 2754 AND 2770
+    AND id BETWEEN 2913 AND 2920
     ;`;
 
     conn.query(sqlQuery, async (err, results) => {
