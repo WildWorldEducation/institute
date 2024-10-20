@@ -2,13 +2,16 @@
 import VueMultiselect from 'vue-multiselect';
 // Import the stores.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
-            skillsStore
+            skillsStore,
+            userDetailsStore
         };
     },
     components: { VueMultiselect },
@@ -154,7 +157,6 @@ export default {
             };
             reader.readAsDataURL(file);
         },
-
         // New delete image method
         deleteImage(type) {
             switch (type) {
@@ -168,19 +170,22 @@ export default {
             }
         },
         async Submit() {
-            // validate some require data before fetch
+            // Validation
+            // Check sub skills have a parent skill.
             if (this.skill.type == 'sub' && this.skill.parent == 0) {
                 alert('cluster nodes must have a parent');
                 this.validate.orphan = true;
                 // turn on the violated flag
                 this.validate.violated = true;
             }
+            // Check skill has a name.
             if (this.skill.name === '' || this.skill.name === null) {
                 alert('please enter a skill name');
                 this.validate.name = true;
                 this.validate.description = true;
             }
 
+            // Assign levels of domains and subskills automatically.
             if (this.skill.type == 'domain') {
                 this.skill.level = 'domain';
             } else if (this.skill.type == 'sub') {
@@ -222,13 +227,13 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    // Check if skill exist already.
-                    if (data.result == 'skill already exists') {
+                    // Check if skill exists already.
+                    if (data.result == 'This skill already exists.') {
                         alert(data.result);
                         return;
                     } else if (
                         data.result ==
-                        'skill was deleted, but has now been undeleted. Please find it and edit it.'
+                        'This skill was deleted, but has now been undeleted. Please find it and edit it.'
                     ) {
                         alert(data.result);
                     } else if (data.result == 'skill added') {
@@ -330,12 +335,11 @@ export default {
             >
                 <h1 id="page-tile">
                     <span v-if="skill.type != 'domain'">Add Skill</span>
-                    <span v-else>Add Category</span>                    
+                    <span v-else>Add Category</span>
                 </h1>
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
-
         <!-- If making another instance of an existing skill on the tree -->
         <div class="row">
             <div class="col-12 col-md-8 col-lg-5 mt-2">
@@ -378,7 +382,6 @@ export default {
                 </div>
             </div>
         </div>
-
         <!-- If making a new skill -->
         <div v-if="!isAnotherInstanceOfExistingSkill">
             <!-- Skill Name -->
@@ -404,7 +407,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Parent will be typing dropdown -->
+            <!-- Parent -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div v-if="skill.type != 'sub'" class="mb-3">
@@ -483,7 +486,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Skill level custom dropdown-->
+            <!-- Skill level -->
             <div class="row">
                 <div v-if="skill.type != 'domain' && skill.type != 'sub'">
                     <div class="col col-md-8 col-lg-5 mt-2">
@@ -555,7 +558,7 @@ export default {
                 </div>
             </div>
         </div> -->
-            <!-- Skills Types Radio choose -->
+            <!-- Skills Type -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <label class="form-label">Node Type</label>
@@ -629,7 +632,7 @@ export default {
                     please choose a parent for this skill
                 </div>
             </div>
-            <!-- Icon and Banner file choose -->
+            <!-- Icon and Banner -->
             <div class="row">
                 <!-- Icon chooser -->
                 <div class="col-6 col-md-3 col-lg-2 mt-2">
@@ -804,8 +807,8 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Description Text Area -->
-            <div class="row">
+            <!-- Description  -->
+            <div class="row" v-if="userDetailsStore.role == 'admin'">
                 <div class="col">
                     <div class="mb-3">
                         <label for="description" class="form-label"

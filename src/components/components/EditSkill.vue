@@ -543,7 +543,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <!-- Skill level dropdown -->
+                <!-- Skill level -->
                 <div class="row">
                     <div v-if="skill.type != 'domain' && skill.type != 'sub'">
                         <div class="col col-md-8 col-lg-5 mt-2">
@@ -777,7 +777,6 @@ export default {
                 </div>
             </div>
         </div>
-
         <div v-if="!isAnotherInstanceOfExistingSkill">
             <!-- Icon and Banner -->
             <div class="row">
@@ -966,7 +965,6 @@ export default {
                     </div>
                 </div>
             </div>
-
             <!-- Description -->
             <div v-if="userDetailsStore.role == 'admin'" class="row">
                 <div class="col">
