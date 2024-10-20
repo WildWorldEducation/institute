@@ -1732,6 +1732,6 @@ async function openAIGenSkillIconImages() {
     });
 }
 
-openAIGenSkillIconImages();
+//openAIGenSkillIconImages();
 
 module.exports = router;
