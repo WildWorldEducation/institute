@@ -329,6 +329,17 @@ export default {
                 ctx1.arc(pos[0], pos[1], size, 0, 2 * Math.PI);
                 ctx1.fillStyle = color;
                 ctx1.fill();
+
+                // Write sub skills length in node center.
+                if (node.data.type == 'super'){
+                    let currentFont = ctx1.font;
+                    ctx1.fillStyle = "black";  // Set the text color (if needed)
+                    ctx1.font = `bold ${size}px Arial`;  // Set the font size based on circle size
+                    ctx1.textAlign = "center";  // Center the text horizontally
+                    ctx1.textBaseline = "middle";  // Center the text vertically
+                    ctx1.fillText(node.data.subskills.length, pos[0], pos[1]+1);
+                    ctx1.font = currentFont;
+                }
             }
 
             function angle(cx, cy, ex, ey) {
@@ -397,31 +408,6 @@ export default {
             ctx2.moveTo(pos[0], pos[1]);
             ctx2.arc(pos[0], pos[1], size, 0, 2 * Math.PI);
             ctx2.fill();
-
-            // Render sub skills.
-            if (node.data.type == 'super') {
-                for (let i = 0; i < node.data.subskills.length; i++) {
-                    // Calculate the increment of the subskills, around a circle.
-                    let increment = 360 / node.data.subskills.length;
-                    // Get the correct index number.
-                    let subSkillsIndex = i;
-                    // Calculate the nodes angle.
-                    let angle = increment * subSkillsIndex;
-                    let rads = (angle * Math.PI) / 180;
-                    let x = 20 * Math.cos(rads);
-                    let y = 20 * Math.sin(rads);
-                    ctx1.beginPath();
-                    ctx1.moveTo(pos[0], pos[1]);
-                    ctx1.arc(pos[0] + x, pos[1] + y, 5, 0, 2 * Math.PI);
-                    ctx1.fillStyle = color;
-                    ctx1.fill();
-
-                    ctx2.beginPath();
-                    ctx2.moveTo(pos[0], pos[1]);
-                    ctx2.arc(pos[0] + x, pos[1] + y, 5, 0, 2 * Math.PI);
-                    ctx2.fill();
-                }
-            }
         },
         textFillColor(skillName, level) {
             if (skillName === this.resultNode?.data.skill_name) {
