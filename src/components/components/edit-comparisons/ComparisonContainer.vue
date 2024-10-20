@@ -15,7 +15,13 @@ export default {
     components: {
         DiffWordsDropDown
     },
-    props: ['diffString', 'containerName'],
+    props: [
+        'diffString',
+        'containerName',
+        'originalData',
+        'tempData',
+        'showHighlight'
+    ],
     async created() {},
     methods: {}
 };
@@ -99,7 +105,7 @@ export default {
                         <div class="old-container general-container">
                             <div class="container-tile">Original</div>
                             <div class="container-content">
-                                {{ essayQuestion.name }}
+                                {{ originalData }}
                             </div>
                         </div>
                         <!-- Long arrow pointing right -->
@@ -151,7 +157,7 @@ export default {
                 <div class="d-flex flex-column">
                     <textarea
                         class="editable-text-area"
-                        v-model="tempEssayEdit.name"
+                        v-model="tempData"
                     ></textarea>
                 </div>
             </div>
@@ -210,5 +216,29 @@ export default {
     border-radius: 10px;
     padding: 10px 15px;
     color: rgb(46, 126, 38);
+}
+
+.container-tile {
+    position: absolute;
+    top: -15px;
+    font-size: 18px;
+    left: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: white;
+}
+
+.container-content {
+    color: black;
+    text-align: left;
+    width: 100%;
+    margin-top: 5px;
+    margin-left: 9px;
+}
+
+.editable-text-area {
+    border-radius: 5px;
+    border: 1px solid rgb(46, 126, 38);
+    padding: 5px 10px;
 }
 </style>

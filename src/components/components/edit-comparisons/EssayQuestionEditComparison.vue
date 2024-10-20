@@ -697,6 +697,7 @@ export default {
     background-color: white;
 }
 
+/* Rotate animation */
 @keyframes rotation {
     from {
         transform: rotate(0deg);
