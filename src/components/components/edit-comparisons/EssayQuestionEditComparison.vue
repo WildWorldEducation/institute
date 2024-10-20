@@ -243,6 +243,12 @@ export default {
         cancelEditChange() {
             this.isEditMode = false;
             this.$parent.disableBtn = false;
+        },
+        toTileCase(string) {
+            const result = string
+                .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase()) // Initial char (after -/_)
+                .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase()); // First char after each -/
+            return result;
         }
     }
 };
@@ -256,16 +262,16 @@ export default {
         </div>
         <!-- General Skill Info -->
         <div class="d-flex flex-column gap-2 mb-3">
-            <div class="d-flex gap-2 align-items-center">
-                <div class="compare-container-tile">Skill:</div>
+            <h1 class="d-flex gap-2 align-items-center header-tile">
+                <div class="major-text">Skill:</div>
                 <div class="minor-text">{{ essayQuestion.skill_name }}</div>
-            </div>
-            <div class="d-flex gap-2 align-items-center">
-                <div class="compare-container-tile">Level:</div>
+            </h1>
+            <h1 class="d-flex gap-2 align-items-center header-tile">
+                <div class="major-text">Level:</div>
                 <div class="minor-text capitalize">
                     {{ toTileCase(essayQuestion.skill_level) }}
                 </div>
-            </div>
+            </h1>
         </div>
         <!-- Show / Hide hight light button -->
         <div class="d-flex flex-row-reverse my-3">
@@ -652,11 +658,15 @@ export default {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
-.compare-container-tile {
-    color: #a48be7;
+.header-tile {
+    color: #475569;
+    font-size: 18px;
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 22px;
+    font-weight: 500;
+}
+
+.major-text {
+    color: #a48be7;
 }
 
 .old-container {

@@ -359,6 +359,12 @@ export default {
                     }
                 });
             }
+        },
+        toTileCase(string) {
+            const result = string
+                .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase()) // Initial char (after -/_)
+                .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase()); // First char after each -/
+            return result;
         }
     }
 };
@@ -370,14 +376,18 @@ export default {
         <hr />
         <!-- ---General info of skills -->
         <div class="d-flex flex-column gap-2 mb-3">
-            <div class="d-flex gap-2 align-items-center">
-                <div class="compare-container-tile">Skill:</div>
-                <div class="minor-text">{{ mcQuestion.skill_name }}</div>
-            </div>
-            <div class="d-flex gap-2 align-items-center">
-                <div class="compare-container-tile">Level:</div>
-                <div class="minor-text">{{ mcQuestion.skill_level }}</div>
-            </div>
+            <h1 class="d-flex gap-2 align-items-end header-tile">
+                <div class="major-text">Skill:</div>
+                <div class="minor-text">
+                    {{ toTileCase(mcQuestion.skill_name) }}
+                </div>
+            </h1>
+            <h1 class="d-flex gap-2 align-items-end header-tile">
+                <div class="major-text">Level:</div>
+                <div class="minor-text">
+                    {{ toTileCase(mcQuestion.skill_level) }}
+                </div>
+            </h1>
         </div>
         <!-- ----Show and hide Hight light Button-->
         <div class="d-flex flex-row-reverse my-3">
@@ -1573,6 +1583,17 @@ export default {
     font-weight: 600;
 }
 
+.header-tile {
+    color: #475569;
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.major-text {
+    color: #a48be7;
+}
+
 .compare-container {
     display: flex;
     flex-direction: column;
@@ -1742,5 +1763,12 @@ export default {
     border-radius: 5px;
     padding: 15px;
     width: 100%;
+}
+
+/* Specific phone view css */
+@media (max-width: 576px) {
+    .header-tile {
+        font-size: 16px;
+    }
 }
 </style>

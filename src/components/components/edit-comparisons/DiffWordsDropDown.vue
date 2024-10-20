@@ -63,7 +63,11 @@ export default {
         </div>
 
         <div class="position-relative">
-            <div v-if="showDetails" class="details-div">
+            <div
+                v-if="showDetails"
+                class="details-div"
+                :class="[type === 'remove' && 'remove-details-div']"
+            >
                 <div
                     v-for="word in diffWords"
                     :class="{
@@ -96,7 +100,7 @@ export default {
 
 .details-div {
     position: absolute;
-    top: 5px;
+    top: -5px;
     right: 5px;
     z-index: 100;
     width: 300px;
@@ -104,8 +108,8 @@ export default {
     flex-wrap: wrap;
     gap: 5px;
     background-color: white;
-    box-shadow: 3px 3px 3px rgb(36, 36, 36);
-    border: 1px solid #1e293b;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+
     border-radius: 5px;
     padding: 5px 10px;
 }
@@ -175,6 +179,10 @@ export default {
 
     .words-removed-div {
         width: 190px;
+    }
+
+    .remove-details-div {
+        right: -150px;
     }
 }
 </style>
