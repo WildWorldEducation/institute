@@ -2,13 +2,16 @@
 import VueMultiselect from 'vue-multiselect';
 // Import the stores.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
-            skillsStore
+            skillsStore,
+            userDetailsStore
         };
     },
     components: { VueMultiselect },
@@ -74,7 +77,9 @@ export default {
             },
             isAnotherInstanceOfExistingSkill: false,
             skillToBeCopied: null,
-            parentOfNewInstance: null
+            parentOfNewInstance: null,
+            showCopiedSkillModal: false,
+            showSkillTypeModal: false
         };
     },
     computed: {
@@ -116,6 +121,35 @@ export default {
             }
         });
         $('.note-editor .note-editable').css('background-color', '#ffffff');
+
+        // Modals
+        // Close modal by clicking outside it.
+        document.getElementById('myModal1').addEventListener('click', (e) => {
+            if (!e.target.classList.contains('modal-content')) {
+                this.showCopiedSkillModal = false;
+            }
+        });
+        // The above should not work on the modal content.
+        document.getElementById('modal-content1').addEventListener(
+            'click',
+            function (e) {
+                e.stopPropagation();
+            },
+            false
+        );
+        document.getElementById('myModal2').addEventListener('click', (e) => {
+            if (!e.target.classList.contains('modal-content')) {
+                this.showSkillTypeModal = false;
+            }
+        });
+        // The above should not work on the modal content.
+        document.getElementById('modal-content2').addEventListener(
+            'click',
+            function (e) {
+                e.stopPropagation();
+            },
+            false
+        );
     },
     methods: {
         async getParentSkills() {
@@ -154,7 +188,6 @@ export default {
             };
             reader.readAsDataURL(file);
         },
-
         // New delete image method
         deleteImage(type) {
             switch (type) {
@@ -168,19 +201,22 @@ export default {
             }
         },
         async Submit() {
-            // validate some require data before fetch
+            // Validation
+            // Check sub skills have a parent skill.
             if (this.skill.type == 'sub' && this.skill.parent == 0) {
                 alert('cluster nodes must have a parent');
                 this.validate.orphan = true;
                 // turn on the violated flag
                 this.validate.violated = true;
             }
+            // Check skill has a name.
             if (this.skill.name === '' || this.skill.name === null) {
                 alert('please enter a skill name');
                 this.validate.name = true;
                 this.validate.description = true;
             }
 
+            // Assign levels of domains and subskills automatically.
             if (this.skill.type == 'domain') {
                 this.skill.level = 'domain';
             } else if (this.skill.type == 'sub') {
@@ -222,13 +258,13 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    // Check if skill exist already.
-                    if (data.result == 'skill already exists') {
+                    // Check if skill exists already.
+                    if (data.result == 'This skill already exists.') {
                         alert(data.result);
                         return;
                     } else if (
                         data.result ==
-                        'skill was deleted, but has now been undeleted. Please find it and edit it.'
+                        'This skill was deleted, but has now been undeleted. Please find it and edit it.'
                     ) {
                         alert(data.result);
                     } else if (data.result == 'skill added') {
@@ -330,19 +366,18 @@ export default {
             >
                 <h1 id="page-tile">
                     <span v-if="skill.type != 'domain'">Add Skill</span>
-                    <span v-else>Add Category</span>                    
+                    <span v-else>Add Category</span>
                 </h1>
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
-
         <!-- If making another instance of an existing skill on the tree -->
         <div class="row">
-            <div class="col-12 col-md-8 col-lg-5 mt-2">
-                <div class="row p-0 m-0">
-                    <div class="form-check my-2">
+            <div class="col-12 mt-2">
+                <div class="row p-0 m-0 d-flex">
+                    <div class="form-check my-2 col-10">
                         <label class="control control-checkbox">
-                            <span class="my-auto mx-2 me-2"
+                            <span class="my-auto ms-2"
                                 >Is this an existing skill that needs to appear
                                 again in the tree?</span
                             >
@@ -353,6 +388,26 @@ export default {
                             />
                             <div class="control_indicator"></div>
                         </label>
+                    </div>
+                    <!-- Information button -->
+                    <div class="col-2">
+                        <button
+                            class="btn purple-btn mt-2"
+                            @click="showCopiedSkillModal = 'true'"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 192 512"
+                                width="18"
+                                height="18"
+                                fill="white"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                                />
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <div v-if="isAnotherInstanceOfExistingSkill" class="mb-3">
@@ -378,7 +433,6 @@ export default {
                 </div>
             </div>
         </div>
-
         <!-- If making a new skill -->
         <div v-if="!isAnotherInstanceOfExistingSkill">
             <!-- Skill Name -->
@@ -404,7 +458,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Parent will be typing dropdown -->
+            <!-- Parent -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div v-if="skill.type != 'sub'" class="mb-3">
@@ -483,7 +537,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Skill level custom dropdown-->
+            <!-- Skill level -->
             <div class="row">
                 <div v-if="skill.type != 'domain' && skill.type != 'sub'">
                     <div class="col col-md-8 col-lg-5 mt-2">
@@ -531,33 +585,9 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Skill filter Checker-->
-            <!-- <div class="row">
-            <div class="col col-md-8 col-lg-5 mt-2">
-                <div v-if="skill.type != 'sub'">
-                    <label class="form-label">Filters</label>
-                    <div class="col">
-                        <label
-                            v-for="tag in tagsStore.tagsList"
-                            class="control control-checkbox"
-                        >
-                            <span class="my-auto mx-2 me-4">
-                                {{ tag.name }}</span
-                            >
-                            <input
-                                type="checkbox"
-                                :value="tag.id"
-                                v-model="filters"
-                            />
-                            <div class="control_indicator"></div>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-            <!-- Skills Types Radio choose -->
+            <!-- Skills Type -->
             <div class="row">
-                <div class="col-12 col-md-8 col-lg-5 mt-2">
+                <div class="col-10 mt-2">
                     <label class="form-label">Node Type</label>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
@@ -628,8 +658,28 @@ export default {
                 >
                     please choose a parent for this skill
                 </div>
+                <!-- Information button -->
+                <div class="col-2">
+                    <button
+                        class="btn purple-btn mt-2"
+                        @click="showSkillTypeModal = true"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 192 512"
+                            width="18"
+                            height="18"
+                            fill="white"
+                        >
+                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <path
+                                d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"
+                            />
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <!-- Icon and Banner file choose -->
+            <!-- Icon and Banner -->
             <div class="row">
                 <!-- Icon chooser -->
                 <div class="col-6 col-md-3 col-lg-2 mt-2">
@@ -804,8 +854,8 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Description Text Area -->
-            <div class="row">
+            <!-- Description  -->
+            <div class="row" v-if="userDetailsStore.role == 'admin'">
                 <div class="col">
                     <div class="mb-3">
                         <label for="description" class="form-label"
@@ -868,6 +918,92 @@ export default {
             </div>
         </div>
     </div>
+    <!-- The Skill Copy Info Modal -->
+    <div v-show="showCopiedSkillModal">
+        <div id="myModal1" class="modal">
+            <!-- Modal content -->
+            <div
+                id="modal-content1"
+                class="modal-content contact-modal-content"
+            >
+                <button
+                    type="button"
+                    @click="showCopiedSkillModal = false"
+                    class="close closeBtn"
+                    aria-label="Close"
+                >
+                    <span aria-hidden="true">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="25"
+                            height="25"
+                        >
+                            <path
+                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                                fill="black"
+                            />
+                        </svg>
+                    </span>
+                </button>
+                <section>
+                    This is for skills that need to appear in more than one
+                    place.
+                </section>
+            </div>
+        </div>
+    </div>
+    <!-- The Skill Type Info Modal -->
+    <div v-show="showSkillTypeModal">
+        <div id="myModal2" class="modal">
+            <!-- Modal content -->
+            <div
+                id="modal-content2"
+                class="modal-content contact-modal-content"
+            >
+                <button
+                    type="button"
+                    @click="showSkillTypeModal = false"
+                    class="close closeBtn"
+                    aria-label="Close"
+                >
+                    <span aria-hidden="true">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            width="25"
+                            height="25"
+                        >
+                            <path
+                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                                fill="black"
+                            />
+                        </svg>
+                    </span>
+                </button>
+                <section>
+                    <ul>
+                        <li>
+                            <strong>Regular nodes</strong> are the most standard
+                            type
+                        </li>
+                        <li>
+                            <strong>Categories</strong> do not have assessments,
+                            and are used to organise the skills
+                        </li>
+                        <li>
+                            <strong>Cluster node centers</strong> are skills
+                            that are comprised of multiple outer skills
+                        </li>
+                        <li>
+                            <strong>Cluster node outer skills</strong> are
+                            skills that make up a cluster node center skill
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -909,6 +1045,7 @@ export default {
     line-height: 24px;
     display: flex;
     align-items: center;
+    width: fit-content;
 }
 
 .purple-btn:hover {
@@ -1234,6 +1371,67 @@ export default {
     }
     #page-tile {
         font-size: 32px;
+    }
+}
+
+.closeBtn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: hidden;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.contact-modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 600px !important;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .contact-modal-content {
+        margin: 30% auto !important;
+        width: 90% !important;
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .contact-modal-content {
+        margin: 15% auto !important;
+        width: 90% !important;
+    }
+}
+
+/* Desktops/laptops */
+@media (min-width: 1025px) {
+    .contact-modal-content {
+        margin: 10% auto;
     }
 }
 </style>
