@@ -3,7 +3,9 @@ export default {
     data() {
         return {
             email: '',
-            isSubmitted: false
+            isSubmitted: false,
+            isSuccess: false,
+            isError: false
         };
     },
 
@@ -23,8 +25,11 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
+                    this.isSubmitted = true;
                     if (data.status == 'success') {
-                        this.isSubmitted = true;
+                        this.isSuccess = true;
+                    } else if (data.status == 'not found') {
+                        this.isError = true;
                     }
                 });
         }
@@ -46,9 +51,16 @@ export default {
                 Submit
             </button>
         </div>
-        <p v-else>
-            Please check your email for instructions on resetting your password.
-        </p>
+        <div v-else>
+            <p v-if="isSuccess">
+                Please check your email for instructions on resetting your
+                password.
+            </p>
+            <p v-else-if="isError">
+                Email address not found. Please contact
+                support@collinsinstitute.org if you need assistance.
+            </p>
+        </div>
     </div>
 </template>
 

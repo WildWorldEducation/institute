@@ -78,7 +78,7 @@ router.post('/forgot-password', (req, res, next) => {
                                 service: 'gmail',
                                 auth: {
                                     type: 'OAuth2',
-                                    user: 'jonathan@collinsinstitute.org',
+                                    user: 'help@collinsinstitute.org',
                                     clientId: process.env.GMAIL_CLIENT_ID,
                                     clientSecret:
                                         process.env.GMAIL_CLIENT_SECRET,
@@ -89,10 +89,11 @@ router.post('/forgot-password', (req, res, next) => {
                             });
 
                             const mailOptions = {
-                                from: 'Support@CollinsInstitute.org',
+                                from: 'Collins Institute Support <Support@CollinsInstitute.org>',
                                 to: email,
                                 subject: 'Password Reset',
-                                text: `Click the following link to reset your password: https://parrhesia.io/reset-password/${token}. It will expire in one hour.`
+                                //text: `Click the following link to reset your password: https://parrhesia.io/reset-password/${token}. It will expire in one hour.`
+                                text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}. It will expire in one hour.`
                             };
 
                             transport.sendMail(mailOptions, (error, info) => {
@@ -111,7 +112,7 @@ router.post('/forgot-password', (req, res, next) => {
                         }
                     });
                 } else {
-                    res.status(404).send('Email not found');
+                    res.status(404).json({ status: 'not found' });
                 }
             }
         } catch (err) {
