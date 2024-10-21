@@ -1,4 +1,5 @@
 <script>
+import CompareString from './CompareString.vue';
 import DiffWordsDropDown from './DiffWordsDropDown.vue';
 
 export default {
@@ -9,21 +10,59 @@ export default {
             isEditMode: false,
             addCount: 0,
             removeCount: 0,
-            changedObject: null
+            changedObject: null,
+            changed: false
         };
     },
     components: {
-        DiffWordsDropDown
+        DiffWordsDropDown,
+        CompareString
     },
     props: [
         'diffString',
+        'showHighlight',
         'containerName',
         'originalData',
-        'tempData',
-        'showHighlight'
+        'tempData'
     ],
     async created() {},
-    methods: {}
+    methods: {
+        countChangedWords(wordsArray) {
+            const returnObj = {
+                added: 0,
+                removed: 0
+            };
+            wordsArray.forEach((element) => {
+                if (element.added && !element.removed) {
+                    this.addCount = returnObj.added + element.count;
+                }
+
+                if (!element.added && element.removed) {
+                    this.removeCount = returnObj.removed + element.count;
+                }
+            });
+
+            return returnObj;
+        }
+    },
+    computed: {
+        showingData() {
+            if (this.diffString.length > 0) {
+                this.changed = true;
+                this.countChangedWords(this.diffString);
+            }
+
+            console.log(this.showHighlight);
+            return {
+                changedObject: this.changedObject,
+                originalData: this.originalData,
+                removeCount: this.removeCount,
+                addCount: this.addCount,
+                diffString: this.diffString,
+                showHighLight: this.showHighlight
+            };
+        }
+    }
 };
 </script>
 
@@ -73,7 +112,7 @@ export default {
                                 {{ addCount }} addition
                             </div>
                             <DiffWordsDropDown
-                                :diffObj="changedObject"
+                                :diffObj="showingData.diffString"
                                 type="add"
                             />
                         </div>
@@ -95,7 +134,7 @@ export default {
                                 {{ removeCount }} removal
                             </div>
                             <DiffWordsDropDown
-                                :diffObj="changedObject"
+                                :diffObj="showingData.diffString"
                                 type="remove"
                             />
                         </div>
@@ -105,7 +144,7 @@ export default {
                         <div class="old-container general-container">
                             <div class="container-tile">Original</div>
                             <div class="container-content">
-                                {{ originalData }}
+                                {{ showingData.originalData }}
                             </div>
                         </div>
                         <!-- Long arrow pointing right -->
@@ -138,11 +177,15 @@ export default {
                             <div class="container-tile">Changed</div>
                             <div class="container-content">
                                 <CompareString
-                                    v-if="changed.name && showHighLight"
-                                    :diffString="changed.name"
+                                    v-if="changed && showingData.diffString"
+                                    :diffString="diffString"
                                 />
-                                <div v-else-if="changed.name && !showHighLight">
-                                    {{ essayQuestionEdit.name }}
+                                <div
+                                    v-else-if="
+                                        !changed && showingData.showHighLight
+                                    "
+                                >
+                                    {{ showingData.originalData }}
                                 </div>
                                 <div v-else>No changed Happened</div>
                             </div>
@@ -152,7 +195,7 @@ export default {
             </div>
         </Transition>
         <!-- Editable Text area -->
-        <Transition name="dropdown">
+        <!-- <Transition name="dropdown">
             <div v-if="showNameChange && isEditMode">
                 <div class="d-flex flex-column">
                     <textarea
@@ -161,7 +204,7 @@ export default {
                     ></textarea>
                 </div>
             </div>
-        </Transition>
+        </Transition> -->
     </div>
 </template>
 
@@ -216,6 +259,22 @@ export default {
     border-radius: 10px;
     padding: 10px 15px;
     color: rgb(46, 126, 38);
+}
+
+.add-count {
+    color: #157a6e;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    gap: 5px;
+}
+
+.remove-count {
+    color: #b12c2b;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    gap: 5px;
 }
 
 .container-tile {

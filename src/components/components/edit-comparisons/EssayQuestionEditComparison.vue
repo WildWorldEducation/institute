@@ -72,7 +72,6 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     this.essayQuestionEdit = data;
                     this.comment = data.comment;
                 });
@@ -83,7 +82,6 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     this.essayQuestion = data;
                 });
         },
@@ -221,7 +219,6 @@ export default {
                 added: 0,
                 removed: 0
             };
-            console.log(wordsArray);
             wordsArray.forEach((element) => {
                 if (element.added && !element.removed) {
                     returnObj.added = returnObj.added + element.count;
@@ -244,12 +241,6 @@ export default {
         cancelEditChange() {
             this.isEditMode = false;
             this.$parent.disableBtn = false;
-        },
-        toTileCase(string) {
-            const result = string
-                .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase()) // Initial char (after -/_)
-                .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase()); // First char after each -/
-            return result;
         }
     }
 };
@@ -311,11 +302,12 @@ export default {
         </div>
         <!-- ----| Question Name |---- -->
         <ComparisonContainer
+            :showHighlight="showHighLight"
             :diffString="changed.name"
             containerName="Name"
-            :originData="essayQuestion.name"
-            :tempData="tempEssayEdit.name"
-            :showHighLight="showHighLight"
+            :originalData="essayQuestion.name"
+            :tempData="tempEssayEdit?.name"
+            :changedObject="changed.name"
         />
         <div class="compare-container">
             <div class="d-flex align-items-center">
@@ -392,7 +384,7 @@ export default {
                             </div>
                         </div>
                         <div class="d-flex flex-lg-row flex-column">
-                            <!-- Old Banner -->
+                            <!-- Old Question name -->
                             <div class="old-container general-container">
                                 <div class="container-tile">Original</div>
                                 <div class="container-content">
