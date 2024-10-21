@@ -92,8 +92,8 @@ router.post('/forgot-password', (req, res, next) => {
                                 from: 'Collins Institute Support <Support@CollinsInstitute.org>',
                                 to: email,
                                 subject: 'Password Reset',
-                                //text: `Click the following link to reset your password: https://parrhesia.io/reset-password/${token}. It will expire in one hour.`
-                                text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}. It will expire in one hour.`
+                                //text: `Visit the following link to reset your password: https://parrhesia.io/reset-password/${token}. It will expire in one hour.`
+                                text: `Visit the following link to reset your password: http://localhost:3000/reset-password/${token}. It will expire in one hour.`
                             };
 
                             transport.sendMail(mailOptions, (error, info) => {
@@ -144,7 +144,12 @@ router.get('/reset-password/:token', (req, res, next) => {
                 let oneHour = 60 * 60 * 1000;
                 // Check if it is less than one hour old.
                 if (new Date() - dateTime < oneHour) {
-                    res.status(200).json({ status: 'valid' });
+                    res.status(200).json({
+                        status: 'valid',
+                        username: results[0].username,
+                        firstName: results[0].first_name,
+                        lastName: results[0].last_name
+                    });
                 } else {
                     res.status(404).json({ status: 'expired' });
                 }
