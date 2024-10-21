@@ -92,8 +92,8 @@ router.post('/forgot-password', (req, res, next) => {
                                 from: 'Collins Institute Support <Support@CollinsInstitute.org>',
                                 to: email,
                                 subject: 'Password Reset',
-                                //text: `Visit the following link to reset your password: https://parrhesia.io/reset-password/${token}. It will expire in one hour.`
-                                text: `Visit the following link to reset your password: http://localhost:3000/reset-password/${token}. It will expire in one hour.`
+                                text: `Visit the following link to reset your password: https://parrhesia.io/reset-password/${token}. It will expire in one hour.`
+                                //text: `Visit the following link to reset your password: http://localhost:3000/reset-password/${token}. It will expire in one hour.`
                             };
 
                             transport.sendMail(mailOptions, (error, info) => {
