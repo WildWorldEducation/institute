@@ -148,7 +148,8 @@ router.get('/reset-password/:token', (req, res, next) => {
                         status: 'valid',
                         username: results[0].username,
                         firstName: results[0].first_name,
-                        lastName: results[0].last_name
+                        lastName: results[0].last_name,
+                        email: results[0].email
                     });
                 } else {
                     res.status(404).json({ status: 'expired' });

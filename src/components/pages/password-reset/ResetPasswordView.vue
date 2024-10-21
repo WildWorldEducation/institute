@@ -16,7 +16,8 @@ export default {
             },
             userName: '',
             firstName: '',
-            lastName: ''
+            lastName: '',
+            email: ''
         };
     },
     async created() {
@@ -35,9 +36,10 @@ export default {
                 })
                 .then((data) => {
                     console.log(data);
-                    this.userName = data.userName;
+                    this.userName = data.username;
                     this.firstName = data.firstName;
                     this.lastName = data.lastName;
+                    this.email = data.email;
                     if (data.status == 'valid') {
                         this.isValid = true;
                     } else {
