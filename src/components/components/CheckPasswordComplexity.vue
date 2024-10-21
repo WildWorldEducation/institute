@@ -161,14 +161,16 @@ export default {
                         if (
                             newVal.password
                                 .toLowerCase()
-                                .includes(newVal.username) ||
+                                .includes(newVal.username.toLowerCase()) ||
                             newVal.password
                                 .toLowerCase()
-                                .includes(newVal.firstName) ||
+                                .includes(newVal.firstName.toLowerCase()) ||
                             newVal.password
                                 .toLowerCase()
-                                .includes(newVal.lastName) ||
-                            newVal.password.toLowerCase().includes(newVal.email)
+                                .includes(newVal.lastName.toLowerCase()) ||
+                            newVal.password
+                                .toLowerCase()
+                                .includes(newVal.email.toLowerCase())
                         ) {
                             this.criteriaFlag.predictable = true;
                             // if the password is predictable it strength return to 0
@@ -195,7 +197,7 @@ export default {
     <div class="d-flex flex-column">
         <div v-if="strengthScore < 3 && showCriteria" class="form-validate">
             Your password is not strong enough
-        </div>
+        </div>       
         <div class="form-validate" v-if="criteriaFlag.predictable">
             Your password mustn&lsquo;t contain your name, user-name or email.
             Please do not use predictable password

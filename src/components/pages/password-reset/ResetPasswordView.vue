@@ -142,7 +142,8 @@ export default {
                         username: userName,
                         password: password,
                         firstName: firstName,
-                        lastName: lastName
+                        lastName: lastName,
+                        email: email
                     }"
                 />
                 <button class="btn btn-primary mt-2 purple-btn" @click="Submit">
