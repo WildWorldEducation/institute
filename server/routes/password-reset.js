@@ -9,7 +9,10 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 var crypto = require('crypto');
+// For sending password reset email.
 const nodemailer = require('nodemailer');
+// The account is Gmail, so need to authenticate (OAuth)
+const { google } = require('googleapis');
 // DB
 const conn = require('../config/db');
 
@@ -22,6 +25,40 @@ const saltRounds = 10;
 Routes
 --------------------------------------------
 --------------------------------------------*/
+const oAuth2Client = new google.auth.OAuth2(
+    process.env.GMAIL_CLIENT_ID,
+    process.env.GMAIL_CLIENT_SECRET,
+    process.env.GMAIL_REDIRECT_URI
+);
+oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
+
+// async function sendMail(params) {
+//     try {
+//         const accessToken = await oAuth2Client.getAccessToken();
+
+//         const transport = nodemailer.createTransport({
+//             service: 'gmail',
+//             auth: {
+//                 type: 'OAuth2',
+//                 user: 'jonathan@collinsinstitute.org',
+//                 clientId: process.env.GMAIL_CLIENT_ID,
+//                 clientSecret: process.env.GMAIL_CLIENT_SECRET,
+//                 refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+//                 accessToken: accessToken
+//             }
+//         });
+
+//         const mailOptions = {
+//             from: 'Support@CollinsInstitute.org',
+//             to: process.env.GMAIL_ADDRESS,
+//             subject: 'Password Reset',
+//             text: `Click the following link to reset your password: https://parrhesia.io/reset-password/${token}. It will expire in one hour.`
+//         };
+//     } catch (error) {
+//         return error;
+//     }
+// }
+
 /*
  * When user clicks "forgot password" link.
  */
@@ -55,31 +92,55 @@ router.post('/forgot-password', (req, res, next) => {
                     reset_password_token_datetime = ${conn.escape(dateTime)}
                     WHERE id = ${conn.escape(user.id)};`;
 
-                    conn.query(updateTokenSqlQuery, (err) => {
+                    conn.query(updateTokenSqlQuery, async (err) => {
                         try {
                             if (err) {
                                 throw err;
                             }
 
                             // Send the reset token to the user's email
-                            const transporter = nodemailer.createTransport({
-                                service: process.env.EMAIL_SERVICE,
-                                host: process.env.EMAIL_HOST,
-                                port: 465,
-                                secure: true,
+                            // const transporter = nodemailer.createTransport({
+                            //     service: process.env.EMAIL_SERVICE,
+                            //     host: process.env.EMAIL_HOST,
+                            //     port: 465,
+                            //     secure: true,
+                            //     auth: {
+                            //         user: process.env.APP_EMAIL_ADDRESS,
+                            //         pass: process.env.APP_EMAIL_PASSWORD
+                            //     }
+                            // });
+                            // const mailOptions = {
+                            //     from: process.env.APP_EMAIL_ADDRESS,
+                            //     to: email,
+                            //     subject: 'Password Reset',
+                            //     text: `Click the following link to reset your password: https://parrhesia.io/reset-password/${token}. It will expire in one hour.`
+                            // };
+
+                            const accessToken =
+                                await oAuth2Client.getAccessToken();
+
+                            const transport = nodemailer.createTransport({
+                                service: 'gmail',
                                 auth: {
-                                    user: process.env.APP_EMAIL_ADDRESS,
-                                    pass: process.env.APP_EMAIL_PASSWORD
+                                    type: 'OAuth2',
+                                    user: 'jonathan@collinsinstitute.org',
+                                    clientId: process.env.GMAIL_CLIENT_ID,
+                                    clientSecret:
+                                        process.env.GMAIL_CLIENT_SECRET,
+                                    refreshToken:
+                                        process.env.GMAIL_REFRESH_TOKEN,
+                                    accessToken: accessToken
                                 }
                             });
+
                             const mailOptions = {
-                                from: process.env.APP_EMAIL_ADDRESS,
+                                from: 'Support@CollinsInstitute.org',
                                 to: email,
                                 subject: 'Password Reset',
-                                text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}. It will expire in one hour.`
+                                text: `Click the following link to reset your password: https://parrhesia.io/reset-password/${token}. It will expire in one hour.`
                             };
 
-                            transporter.sendMail(mailOptions, (error, info) => {
+                            transport.sendMail(mailOptions, (error, info) => {
                                 if (error) {
                                     console.log(error);
                                     res.status(500).send('Error sending email');
