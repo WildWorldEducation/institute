@@ -7,11 +7,12 @@ export default {
     data() {
         return {
             show: true,
-            isEditMode: false,
+
             addCount: 0,
             removeCount: 0,
             changedObject: null,
-            changed: false
+            changed: false,
+            textEditData: null
         };
     },
     components: {
@@ -23,7 +24,11 @@ export default {
         'showHighlight',
         'containerName',
         'originalData',
-        'tempData'
+        'tempData',
+        'isEditMode',
+        'tempData',
+        'updateTempData',
+        'type'
     ],
     async created() {},
     methods: {
@@ -52,6 +57,7 @@ export default {
                 this.countChangedWords(this.diffString);
             }
 
+            this.textEditData = this.tempData;
             console.log(this.showHighlight);
             return {
                 changedObject: this.changedObject,
@@ -59,10 +65,13 @@ export default {
                 removeCount: this.removeCount,
                 addCount: this.addCount,
                 diffString: this.diffString,
-                showHighLight: this.showHighlight
+                showHighLight: this.showHighlight,
+                isEditMode: this.isEditMode
             };
         }
-    }
+    },
+    // Using watch because we need to bind text area to parent data
+    watch: {}
 };
 </script>
 
@@ -195,16 +204,17 @@ export default {
             </div>
         </Transition>
         <!-- Editable Text area -->
-        <!-- <Transition name="dropdown">
-            <div v-if="showNameChange && isEditMode">
+        <Transition name="dropdown">
+            <div v-if="show && showingData.isEditMode">
                 <div class="d-flex flex-column">
                     <textarea
                         class="editable-text-area"
-                        v-model="tempData"
+                        v-model="textEditData"
+                        @input="updateTempData(this.type, this.textEditData)"
                     ></textarea>
                 </div>
             </div>
-        </Transition> -->
+        </Transition>
     </div>
 </template>
 
@@ -269,6 +279,15 @@ export default {
     gap: 5px;
 }
 
+.plus-icon {
+    background-color: #ccebe0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 5px;
+}
+
 .remove-count {
     color: #b12c2b;
     font-size: 16px;
@@ -299,5 +318,39 @@ export default {
     border-radius: 5px;
     border: 1px solid rgb(46, 126, 38);
     padding: 5px 10px;
+}
+
+.editable-text-area:focus {
+    outline: none;
+}
+
+.minus-icon {
+    background-color: #f9d2d2;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px 5px;
+}
+
+/* Slide down animation */
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+.dropdown-enter-active {
+    transform-origin: top center;
+    animation: slide 0.4s;
+}
+.dropdown-leave-active {
+    transform-origin: top center;
+    animation: slide 0.4s reverse;
 }
 </style>
