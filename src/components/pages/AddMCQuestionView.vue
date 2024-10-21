@@ -9,26 +9,26 @@ export default {
             question: {
                 name: '',
                 question: '',
-                correctAnswer: '',
-                incorrectAnswer1: '',
-                incorrectAnswer2: '',
-                incorrectAnswer3: '',
-                incorrectAnswer4: '',
-                question: '',
-                explanation: ''
+                explanation: '',
+                question_text: "",
+                correct_answer: 1, // The default correct answer is the first one
+                is_random: false,
             },
             // validate object
             validate: {
                 validated: false,
                 name: false,
                 question: false,
-                correctAnswer: false,
-                incorrectAnswer1: false,
-                incorrectAnswer2: false,
-                incorrectAnswer3: false,
-                incorrectAnswer4: false,
+                answer: false,
                 explanation: false
-            }
+            },
+            answers: [
+                { text: "" }, // Answer 1
+                { text: "" }, // Answer 2
+            ],
+            submitted: false,
+            submittedQuestion: null,
+            submittedAnswers: []
         };
     },
     methods: {
@@ -49,45 +49,11 @@ export default {
                 this.validate.validated = true;
             }
 
-            if (
-                this.question.correctAnswer === '' ||
-                this.question.correctAnswer === null
-            ) {
-                this.validate.correctAnswer = true;
-                this.validate.validated = true;
-            }
-
-            if (
-                this.question.incorrectAnswer1 === '' ||
-                this.question.incorrectAnswer1 === null
-            ) {
-                this.validate.incorrectAnswer1 = true;
-                this.validate.validated = true;
-            }
-
-            if (
-                this.question.incorrectAnswer2 === '' ||
-                this.question.incorrectAnswer2 === null
-            ) {
-                this.validate.incorrectAnswer2 = true;
-                this.validate.validated = true;
-            }
-
-            if (
-                this.question.incorrectAnswer3 === '' ||
-                this.question.incorrectAnswer3 === null
-            ) {
-                this.validate.incorrectAnswer3 = true;
-                this.validate.validated = true;
-            }
-
-            if (
-                this.question.incorrectAnswer4 === '' ||
-                this.question.incorrectAnswer4 === null
-            ) {
-                this.validate.incorrectAnswer4 = true;
-                this.validate.validated = true;
-            }
+            this.answers.forEach(element => {
+                if(element.text == ''){
+                    this.validate.validated = true;
+                }
+            });
 
             if (
                 this.question.explanation === '' ||
@@ -100,7 +66,8 @@ export default {
             if (this.validate.validated) {
                 return; // stop the submit operation if there something violated validate condition
             }
-
+            alert("Form validated!");
+            return;
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -124,6 +91,40 @@ export default {
                 .then(() => {
                     this.$router.go(-1);
                 });
+        },
+        addAnswer() {
+            if (this.answers.length < 5) {
+                this.answers.push({ text: "" });
+            }
+        },
+        removeAnswer(index) {
+            if (this.answers.length > 2) {
+                this.answers.splice(index, 1);
+                // Adjust correct answer selection if necessary
+                if (this.question.correct_answer > this.answers.length) {
+                this.question.correct_answer = this.answers.length;
+                }
+            }
+        },
+        submitQuestion() {
+            // Create a copy of the question and answers
+            this.submittedQuestion = { ...this.question };
+            this.submittedAnswers = [...this.answers];
+
+            // If random order is enabled, shuffle the answers
+            if (this.question.is_random) {
+                this.submittedAnswers = this.shuffleArray(this.submittedAnswers);
+            }
+
+            // Mark the question as submitted to show the preview
+            this.submitted = true;
+            },
+            shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
     }
 };
@@ -184,95 +185,68 @@ export default {
                             please enter a question content !
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Correct answer</label>
-                        <input
-                            v-model="question.correctAnswer"
-                            type="text"
-                            class="form-control"
-                        />
+                    <div v-for="(answer, index) in answers" :key="index" class="mb-3">
+                        <label class="form-label">Answer {{ index + 1 }}:</label>
+                        <div class="d-flex answer-option">
+                            <input
+                                v-model="answer.text"
+                                :id="'answer' + (index + 1)"
+                                placeholder="Enter answer option"
+                                type="text"
+                                class="form-control"
+                            />
+                            <!-- Remove Answer Button (visible only if more than 2 answers) -->
+                            <button
+                                v-if="answers.length > 2"
+                                @click="removeAnswer(index)"
+                                class="btn red-btn"
+                            >
+                                <svg width="20" height="20" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. --><path d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                            </button>
+                        </div>
                         <div
                             v-if="
-                                validate.correctAnswer &&
-                                (question.correctAnswer === '' ||
-                                    question.correctAnswer === null)
+                                validate.validated && answer.text === ''
                             "
                             class="form-validate"
                         >
                             please enter a correct answer !
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Wrong answer 1</label>
-                        <input
-                            v-model="question.incorrectAnswer1"
-                            type="text"
-                            class="form-control"
-                        />
-                        <div
-                            v-if="
-                                validate.incorrectAnswer1 &&
-                                (question.incorrectAnswer1 === '' ||
-                                    question.incorrectAnswer1 === null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter incorrect answer 1 !
+                        <!-- Correct Answer Radio Button -->
+                        <div class="form-check">
+                            <input
+                            class="form-check-input"
+                            type="radio"
+                            :id="'correct' + (index + 1)"
+                            name="correctAnswer"
+                            :value="index + 1"
+                            v-model="question.correct_answer"
+                            />
+                            <label :for="'correct' + (index + 1)" class="">Set as correct</label>
                         </div>
                     </div>
+
+                    <!-- Add Answer Button (max 5 answers) -->
                     <div class="mb-3">
-                        <label class="form-label">Wrong answer 2</label>
-                        <input
-                            v-model="question.incorrectAnswer2"
-                            type="text"
-                            class="form-control"
-                        />
-                        <div
-                            v-if="
-                                validate.incorrectAnswer2 &&
-                                (question.incorrectAnswer2 === '' ||
-                                    question.incorrectAnswer2 === null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter incorrect answer 2 !
-                        </div>
+                    <button
+                        v-if="answers.length < 5"
+                        @click="addAnswer"
+                        class="btn purple-btn"
+                    >
+                        <svg width="20" height="20" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. --><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>
+                        Add Answer
+                    </button>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Wrong answer 3</label>
-                        <input
-                            v-model="question.incorrectAnswer3"
-                            type="text"
-                            class="form-control"
-                        />
-                        <div
-                            v-if="
-                                validate.incorrectAnswer3 &&
-                                (question.incorrectAnswer3 === '' ||
-                                    question.incorrectAnswer3 === null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter incorrect answer 3 !
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Wrong answer 4</label>
-                        <input
-                            v-model="question.incorrectAnswer4"
-                            type="text"
-                            class="form-control"
-                        />
-                        <div
-                            v-if="
-                                validate.incorrectAnswer4 &&
-                                (question.incorrectAnswer4 === '' ||
-                                    question.incorrectAnswer4 === null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter incorrect answer 4 !
-                        </div>
+
+                    <!-- Random Order Toggle -->
+                    <div class="mb-3 form-check">
+                    <input
+                        type="checkbox"
+                        id="randomOrder"
+                        v-model="question.is_random"
+                        class="form-check-input"
+                    />
+                    <label for="randomOrder" class="form-check-label">Show answers in random order</label>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Explanation</label>
@@ -308,6 +282,9 @@ export default {
 </template>
 
 <style>
+.answer-option{
+    gap: 5px;
+}
 .red-btn {
     background-color: #e24d4d;
     color: white;
