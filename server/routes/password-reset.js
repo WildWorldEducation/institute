@@ -62,8 +62,7 @@ oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
 /*
  * When user clicks "forgot password" link.
  */
-router.post('/forgot-password', (req, res, next) => {
-    console.log('password reset');
+router.post('/forgot-password', (req, res, next) => {    
     const { email } = req.body;
 
     let usersSqlQuery = `SELECT * 
@@ -98,24 +97,6 @@ router.post('/forgot-password', (req, res, next) => {
                             if (err) {
                                 throw err;
                             }
-
-                            // Send the reset token to the user's email
-                            // const transporter = nodemailer.createTransport({
-                            //     service: process.env.EMAIL_SERVICE,
-                            //     host: process.env.EMAIL_HOST,
-                            //     port: 465,
-                            //     secure: true,
-                            //     auth: {
-                            //         user: process.env.APP_EMAIL_ADDRESS,
-                            //         pass: process.env.APP_EMAIL_PASSWORD
-                            //     }
-                            // });
-                            // const mailOptions = {
-                            //     from: process.env.APP_EMAIL_ADDRESS,
-                            //     to: email,
-                            //     subject: 'Password Reset',
-                            //     text: `Click the following link to reset your password: https://parrhesia.io/reset-password/${token}. It will expire in one hour.`
-                            // };
 
                             const accessToken =
                                 await oAuth2Client.getAccessToken();
