@@ -1,5 +1,4 @@
 <script>
-import router from '../../router';
 // Import the stores.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUsersStore } from '../../stores/UsersStore';
