@@ -197,7 +197,7 @@ export default {
     <div class="d-flex flex-column">
         <div v-if="strengthScore < 3 && showCriteria" class="form-validate">
             Your password is not strong enough
-        </div>       
+        </div>
         <div class="form-validate" v-if="criteriaFlag.predictable">
             Your password mustn&lsquo;t contain your name, user-name or email.
             Please do not use predictable password
