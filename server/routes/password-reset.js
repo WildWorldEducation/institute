@@ -221,6 +221,7 @@ router.post('/reset-password', (req, res, next) => {
 
             if (results.length > 0) {
                 let escapedPassword = conn.escape(password);
+                console.log(escapedPassword);
                 // Hash the password.
                 bcrypt.hash(
                     escapedPassword,
