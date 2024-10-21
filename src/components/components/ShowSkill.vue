@@ -263,6 +263,9 @@ export default {
                         class="btn purple-btn me-1 assessment-btn"
                         :to="skill.id + '/assessment'"
                     >
+                        <span v-if="isMobileCheck > 576"
+                            >Take assessment&nbsp;</span
+                        >
                         <svg
                             fill="#ffffff"
                             height="30"
@@ -280,7 +283,9 @@ export default {
                         v-else-if="!sessionDetailsStore.isLoggedIn"
                         class="btn purple-btn me-1 assessment-btn"
                         to="/login"
-                    >
+                        ><span v-if="isMobileCheck > 576"
+                            >Take assessment&nbsp;</span
+                        >
                         <svg
                             fill="#ffffff"
                             height="30"

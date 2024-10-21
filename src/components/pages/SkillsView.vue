@@ -107,7 +107,10 @@ export default {
 
 <template>
     <div
-        v-if="userDetailsStore.role == 'admin' && !isInstructorMode"
+        v-if="
+            (userDetailsStore.role == 'admin' && !isInstructorMode) ||
+            userDetailsStore.role == 'editor'
+        "
         class="topnav"
         id="skill-nav"
     >
@@ -127,7 +130,7 @@ export default {
                 />
             </svg>
         </router-link>
-        <div class="d-flex gap-2">
+        <div v-if="userDetailsStore.role == 'admin'" class="d-flex gap-2">
             <router-link class="btn purple-btn" to="/tags"
                 >Skill Filters</router-link
             >
