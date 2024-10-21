@@ -63,6 +63,7 @@ oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
  * When user clicks "forgot password" link.
  */
 router.post('/forgot-password', (req, res, next) => {
+    console.log('password reset');
     const { email } = req.body;
 
     let usersSqlQuery = `SELECT * 
