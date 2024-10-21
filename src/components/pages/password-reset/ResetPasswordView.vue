@@ -48,31 +48,35 @@ export default {
                 });
         },
         Submit() {
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    token: this.token,
-                    password: this.password
-                })
-            };
-            var url = '/password-reset/reset-password';
+            if (this.validate.passwordComplex) {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: this.token,
+                        password: this.password
+                    })
+                };
+                var url = '/password-reset/reset-password';
 
-            fetch(url, requestOptions)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => {
-                    if (data.status == 'Password updated successfully') {
-                        this.message = 'Password updated successfully';
-                    } else if (data.status == 'Invalid or expired token') {
-                        this.message = 'Invalid or expired token';
-                    } else {
-                        this.message =
-                            'Problem updating password. Please try again later.';
-                    }
-                    this.isComplete = true;
-                });
+                fetch(url, requestOptions)
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        if (data.status == 'Password updated successfully') {
+                            this.message = 'Password updated successfully';
+                        } else if (data.status == 'Invalid or expired token') {
+                            this.message = 'Invalid or expired token';
+                        } else {
+                            this.message =
+                                'Problem updating password. Please try again later.';
+                        }
+                        this.isComplete = true;
+                    });
+            } else {
+                alert('Please make password more complex.');
+            }
         }
     }
 };
