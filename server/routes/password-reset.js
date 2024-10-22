@@ -119,7 +119,7 @@ router.post('/forgot-password', (req, res, next) => {
         }
 
         a {
-            color: white
+            color: #a48be6;
         }
 
         a img {
