@@ -186,7 +186,6 @@ export default {
         },
 
         applyEditChange() {
-            this.compareEdit();
             this.isEditMode = false;
             this.$parent.disableBtn = false;
             this.edited = true;
@@ -270,12 +269,9 @@ export default {
         <ComparisonContainer
             class="mt-4"
             :showHighlight="showHighLight"
-            :diffString="changed.question"
             containerName="Question"
             :originalData="essayQuestion.question"
             :newData="essayQuestionEdit.question"
-            :tempData="tempEssayEdit?.question"
-            :changedObject="changed.question"
             :isEditMode="isEditMode"
             type="essay_question"
             :updateTempData="updateTempData"

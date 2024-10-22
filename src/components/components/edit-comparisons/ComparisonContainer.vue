@@ -67,6 +67,10 @@ export default {
                 this.changed = true;
             }
 
+            if (this.isEditMode) {
+                this.textEditData = this.newData;
+            }
+
             return {
                 changedObject: this.changedObject,
                 originalData: this.originalData,

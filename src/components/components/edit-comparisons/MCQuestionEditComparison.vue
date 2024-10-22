@@ -4,6 +4,7 @@ import CompareString from './CompareString.vue';
 import { nextTick } from 'vue';
 import { diffWords } from 'diff';
 import DiffWordsDropDown from './DiffWordsDropDown.vue';
+import ComparisonContainer from './ComparisonContainer.vue';
 
 export default {
     setup() {},
@@ -55,7 +56,8 @@ export default {
     },
     components: {
         CompareString,
-        DiffWordsDropDown
+        DiffWordsDropDown,
+        ComparisonContainer
     },
     async created() {
         await this.getMCQuestionEdit();
@@ -361,10 +363,20 @@ export default {
             }
         },
         toTileCase(string) {
-            const result = string
-                .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase()) // Initial char (after -/_)
-                .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase()); // First char after each -/
-            return result;
+            if (string) {
+                const tileCase = string
+                    .replace(/^[-_]*(.)/, (_, c) => c.toUpperCase()) // Initial char (after -/_)
+                    .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase()); // First char after each -/_
+                return tileCase;
+            }
+        },
+        updateTempData(type, value) {
+            switch (type) {
+                case 'mc_question':
+                    this.tempMcQuestionEdit.question = value;
+                default:
+                    break;
+            }
         }
     }
 };
@@ -425,6 +437,15 @@ export default {
             </div>
         </div>
         <!-- ----| Question Compare Container |---- -->
+        <ComparisonContainer
+            containerName="Question"
+            :originalData="mcQuestion.question"
+            :newData="mcQuestionEdit.question"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="mc_question"
+        />
         <div class="compare-container">
             <div class="d-flex align-items-center">
                 <h2 class="compare-container-tile mb-3">Question</h2>
