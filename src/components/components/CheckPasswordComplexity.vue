@@ -86,8 +86,6 @@ export default {
                 this.criteriaFlag.passwordLength = false;
             }
 
-            console.log(this.formData);
-
             // Series Check if user re-use they name or user name for password
             if (
                 (this.formData.firstName &&
