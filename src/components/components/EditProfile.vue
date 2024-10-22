@@ -36,10 +36,11 @@ export default {
             validate: {
                 firstName: false,
                 lastName: false,
+                username: false,
                 email: false,
                 emailFormat: false,
                 password: false,
-                // this validate is fire when image profile upload is not square
+                // this is fired when image profile upload is not square
                 notSquareImg: false,
                 // flag to show warning when cancel crop
                 notCropped: false,
@@ -115,6 +116,9 @@ export default {
             });
         },
         Submit() {
+            console.log(this.validate);
+            return;
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -466,7 +470,7 @@ export default {
                     />
                     <div
                         v-if="
-                            validate.userName &&
+                            validate.username &&
                             (userName == '' || userName == null)
                         "
                         class="form-validate"
@@ -621,7 +625,8 @@ export default {
                             username: userName,
                             password: password,
                             firstName: firstName,
-                            lastName: lastName
+                            lastName: lastName,
+                            email: email
                         }"
                     />
                 </div>
