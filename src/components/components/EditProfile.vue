@@ -115,54 +115,55 @@ export default {
             });
         },
         Submit() {
-            console.log(this.validate);
-            if (!this.validate.username && !this.validate.email) {
-                console.log('valid');
-            }
-            return;
+            // If valid, submit.
+            if (
+                !this.validate.username &&
+                !this.validate.email &&
+                !this.validate.emailFormat
+            ) {
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        firstName: this.firstName,
+                        lastName: this.lastName,
+                        username: this.userName,
+                        email: this.email,
+                        avatar: this.avatar,
+                        instructorID: this.instructorID
+                    })
+                };
 
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    firstName: this.firstName,
-                    lastName: this.lastName,
-                    username: this.userName,
-                    email: this.email,
-                    avatar: this.avatar,
-                    instructorID: this.instructorID
-                })
-            };
-
-            var url = '/users/profile/' + this.id + '/edit';
-            fetch(url, requestOptions).then(() => {
-                if (
-                    this.userDetailsStore.role == 'student' &&
-                    this.instructorID != '' &&
-                    this.instructorID != null
-                ) {
-                    const requestOptions = {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            instructor_id: this.instructorID
-                        })
-                    };
-                    var url =
-                        '/users/' +
-                        this.userDetailsStore.userId +
-                        '/edit/instructor';
-                    fetch(url, requestOptions).then(() => {
+                var url = '/users/profile/' + this.id + '/edit';
+                fetch(url, requestOptions).then(() => {
+                    if (
+                        this.userDetailsStore.role == 'student' &&
+                        this.instructorID != '' &&
+                        this.instructorID != null
+                    ) {
+                        const requestOptions = {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                instructor_id: this.instructorID
+                            })
+                        };
+                        var url =
+                            '/users/' +
+                            this.userDetailsStore.userId +
+                            '/edit/instructor';
+                        fetch(url, requestOptions).then(() => {
+                            // refresh user list so the users page will show the update data
+                            this.userDetailsStore.getUserDetails();
+                            this.$router.push('/profile-settings');
+                        });
+                    } else {
                         // refresh user list so the users page will show the update data
                         this.userDetailsStore.getUserDetails();
                         this.$router.push('/profile-settings');
-                    });
-                } else {
-                    // refresh user list so the users page will show the update data
-                    this.userDetailsStore.getUserDetails();
-                    this.$router.push('/profile-settings');
-                }
-            });
+                    }
+                });
+            }
         },
 
         HandleClickSubmit() {
