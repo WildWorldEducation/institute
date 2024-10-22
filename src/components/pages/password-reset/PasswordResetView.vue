@@ -5,12 +5,32 @@ export default {
             email: '',
             isSubmitted: false,
             isSuccess: false,
-            isError: false
+            isError: false,
+            isEmailValidated: false,
+            isValidated: { email: false, emailFormat: false }
         };
     },
 
     methods: {
+        ValidateEmail() {
+            this.isValidated.email = true;
+            this.isValidated.emailFormat = true;
+
+            if (this.email == '' || this.email == null) {
+                this.isValidated.email = false;
+            } else if (
+                /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.email)
+            ) {
+                this.isValidated.emailFormat = true;
+            } else {
+                this.isValidated.emailFormat = false;
+            }
+        },
         Submit() {
+            if (!this.isValidated.email || !this.isValidated.emailFormat) {
+                return;
+            }
+
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -51,7 +71,14 @@ export default {
                     aria-describedby="emailHelp"
                     placeholder="Enter email"
                     v-model="email"
+                    @blur="ValidateEmail"
                 />
+                <div v-if="!isValidated.email" class="form-validate">
+                    please enter an email !
+                </div>
+                <div v-else-if="!isValidated.emailFormat" class="form-validate">
+                    please enter a valid email !
+                </div>
                 <button class="btn btn-primary mt-2 purple-btn" @click="Submit">
                     Submit
                 </button>
@@ -97,5 +124,11 @@ export default {
 .purple-btn:hover {
     background-color: #a48be6;
     color: white;
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
 }
 </style>
