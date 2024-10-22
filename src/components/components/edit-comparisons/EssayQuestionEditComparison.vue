@@ -200,14 +200,6 @@ export default {
                 const countObj = this.countChangedWords(this.changed.name);
                 this.changeCount.nameAdd = countObj.added;
                 this.changeCount.nameRemove = countObj.removed;
-
-                // this.changeCount.nameAdd = this.changed.name.filter((e) => {
-                //     return e[0] === 1;
-                // }).length;
-
-                // this.changeCount.nameRemove = this.changed.name.filter((e) => {
-                //     return e[0] === -1;
-                // }).length;
             }
             // --- Question Content
             if (
@@ -316,11 +308,9 @@ export default {
         <!-- ----| Question Name |---- -->
         <ComparisonContainer
             :showHighlight="showHighLight"
-            :diffString="changed.name"
             containerName="Name"
             :originalData="essayQuestion.name"
-            :tempData="tempEssayEdit?.name"
-            :changedObject="changed.name"
+            :newData="essayQuestionEdit.name"
             :isEditMode="isEditMode"
             type="essay_name"
             :updateTempData="updateTempData"
@@ -333,6 +323,7 @@ export default {
             :diffString="changed.question"
             containerName="Question"
             :originalData="essayQuestion.question"
+            :newData="essayQuestionEdit.question"
             :tempData="tempEssayEdit?.question"
             :changedObject="changed.question"
             :isEditMode="isEditMode"

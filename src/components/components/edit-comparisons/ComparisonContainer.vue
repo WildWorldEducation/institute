@@ -1,6 +1,7 @@
 <script>
 import CompareString from './CompareString.vue';
 import DiffWordsDropDown from './DiffWordsDropDown.vue';
+import { diffWords } from 'diff';
 
 export default {
     setup() {},
@@ -12,7 +13,8 @@ export default {
             removeCount: 0,
             changedObject: null,
             changed: false,
-            textEditData: null
+            textEditData: null,
+            changedWords: null
         };
     },
     components: {
@@ -20,13 +22,11 @@ export default {
         CompareString
     },
     props: [
-        'diffString',
         'showHighlight',
         'containerName',
         'originalData',
-        'tempData',
+        'newData',
         'isEditMode',
-        'tempData',
         'updateTempData',
         'type'
     ],
@@ -39,32 +39,41 @@ export default {
             };
             wordsArray.forEach((element) => {
                 if (element.added && !element.removed) {
-                    this.addCount = returnObj.added + element.count;
+                    returnObj.added = returnObj.added + element.count;
                 }
 
                 if (!element.added && element.removed) {
-                    this.removeCount = returnObj.removed + element.count;
+                    returnObj.removed = returnObj.removed + element.count;
                 }
             });
 
             return returnObj;
+        },
+        // --- Compare all aspect of two question --- //
+        compareEdit() {
+            this.changedWords = diffWords(this.originalData, this.newData);
+            // counting add and remove token in string diff array
+            const countObj = this.countChangedWords(this.changedWords);
+            this.addCount = countObj.added;
+            this.removeCount = countObj.removed;
+            console.log(this.newData);
+            console.log(countObj);
         }
     },
     computed: {
         showingData() {
-            if (this.diffString.length > 0) {
+            if (this.originalData !== this.newData) {
+                this.compareEdit();
                 this.changed = true;
-                this.countChangedWords(this.diffString);
             }
 
-            this.textEditData = this.tempData;
-            console.log(this.showHighlight);
             return {
                 changedObject: this.changedObject,
                 originalData: this.originalData,
+                newData: this.newData,
                 removeCount: this.removeCount,
                 addCount: this.addCount,
-                diffString: this.diffString,
+                diffString: this.changedWords,
                 showHighLight: this.showHighlight,
                 isEditMode: this.isEditMode
             };
@@ -186,15 +195,15 @@ export default {
                             <div class="container-tile">Changed</div>
                             <div class="container-content">
                                 <CompareString
-                                    v-if="changed && showingData.diffString"
-                                    :diffString="diffString"
+                                    v-if="changed && showingData.showHighLight"
+                                    :diffString="changedWords"
                                 />
                                 <div
                                     v-else-if="
-                                        !changed && showingData.showHighLight
+                                        changed && !showingData.showHighLight
                                     "
                                 >
-                                    {{ showingData.originalData }}
+                                    {{ showingData.newData }}
                                 </div>
                                 <div v-else>No changed Happened</div>
                             </div>
