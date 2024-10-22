@@ -7,7 +7,7 @@ export default {
             isSuccess: false,
             isError: false,
             isEmailValidated: false,
-            isValidated: { email: false, emailFormat: false }
+            isValidated: { email: true, emailFormat: true }
         };
     },
 
