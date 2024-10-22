@@ -53,6 +53,7 @@ router.post('/forgot-password', (req, res, next) => {
                 if (results.length > 0) {
                     // Generate a reset token
                     const token = crypto.randomBytes(20).toString('hex');
+                    console.log(token);
                     // Store the token with the user's email in a database or in-memory store
                     let dateTime = new Date();
                     dateTime = dateTime
@@ -473,7 +474,7 @@ router.post('/forgot-password', (req, res, next) => {
                                                             role="presentation">
                                                             <tr>
                                                                 <td align="center">
-                                                                    <a href="https://parrhesia.io/reset-password/${token}}"
+                                                                    <a href="https://parrhesia.io/reset-password/${token}"
                                                                         class="button button--green"
                                                                         target="_blank">Reset
                                                                         your password</a>
@@ -555,8 +556,8 @@ router.get('/reset-password/:token', (req, res, next) => {
         try {
             if (err) {
                 throw err;
-            }
-            if (results.length > 0) {
+            }           
+            if (results.length > 0) {                
                 // Get the datetime the token was created.
                 let dateTime = results[0].reset_password_token_datetime;
                 let oneHour = 60 * 60 * 1000;
