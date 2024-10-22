@@ -39,32 +39,45 @@ export default {
 
 <template>
     <div class="container">
-        <div v-if="!isSubmitted" class="form-group">
-            <input
-                type="email"
-                class="form-control password-email"
-                aria-describedby="emailHelp"
-                placeholder="Enter email"
-                v-model="email"
-            />
-            <button class="btn btn-primary mt-2 purple-btn" @click="Submit">
-                Submit
-            </button>
-        </div>
-        <div v-else>
-            <p v-if="isSuccess">
-                Please check your email for instructions on resetting your
-                password.
-            </p>
-            <p v-else-if="isError">
-                Email address not found. Please contact
-                support@collinsinstitute.org if you need assistance.
-            </p>
+        <div class="center">
+            <div v-if="!isSubmitted" class="form-group">
+                <p>
+                    Enter your email and we'll send you a link to reset your
+                    password.
+                </p>
+                <input
+                    type="email"
+                    class="form-control password-email"
+                    aria-describedby="emailHelp"
+                    placeholder="Enter email"
+                    v-model="email"
+                />
+                <button class="btn btn-primary mt-2 purple-btn" @click="Submit">
+                    Submit
+                </button>
+            </div>
+            <div v-else>
+                <p v-if="isSuccess">
+                    Please check your email for instructions on resetting your
+                    password.
+                </p>
+                <p v-else-if="isError">
+                    Email address not found. Please contact
+                    support@collinsinstitute.org if you need assistance.
+                </p>
+            </div>
         </div>
     </div>
 </template>
 
 <style>
+.center {
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15%;
+}
+
 .password-email {
     max-width: 500px;
 }
