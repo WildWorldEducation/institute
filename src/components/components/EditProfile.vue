@@ -81,9 +81,8 @@ export default {
                 this.validate.username = true;
             } else if (this.email == '' || this.email == null) {
                 this.validate.email = true;
-            } else {
-                this.HandleClickSubmit();
             }
+            this.HandleClickSubmit();
         },
         ValidatePassword() {
             if (this.validate.passwordComplex) {
@@ -117,6 +116,9 @@ export default {
         },
         Submit() {
             console.log(this.validate);
+            if (!this.validate.username && !this.validate.email) {
+                console.log('valid');
+            }
             return;
 
             const requestOptions = {
@@ -492,7 +494,7 @@ export default {
                     >
                         please enter an email !
                     </div>
-                    <div v-if="validate.emailFormat" class="form-validate">
+                    <div v-else-if="validate.emailFormat" class="form-validate">
                         please enter a valid email !
                     </div>
                 </div>
