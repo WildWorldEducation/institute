@@ -374,6 +374,8 @@ export default {
             switch (type) {
                 case 'mc_question':
                     this.tempMcQuestionEdit.question = value;
+                case 'mc_correct_answer':
+                    this.tempMcQuestionEdit.correct_answer = value;
                 default:
                     break;
             }
@@ -446,149 +448,18 @@ export default {
             :updateTempData="updateTempData"
             type="mc_question"
         />
-        <div class="compare-container">
-            <div class="d-flex align-items-center">
-                <h2 class="compare-container-tile mb-3">Question</h2>
-                <div
-                    @click="showQuestionChange = !showQuestionChange"
-                    :class="[
-                        showQuestionChange ? 'expand-arrow' : 'minimize-arrow'
-                    ]"
-                    b-on-hover
-                    :title="showQuestionChange ? 'minimize' : 'expand'"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="16"
-                        heigh="16"
-                        fill="#475569"
-                    >
-                        <path
-                            d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
-                        />
-                    </svg>
-                </div>
-            </div>
-            <!-- Compare Content -->
-            <Transition name="dropdown">
-                <div v-if="showQuestionChange && !isEditMode">
-                    <div class="d-flex flex-column">
-                        <!-- Addition and removal count section -->
-                        <div class="d-flex flex-row-reverse gap-4 mb-3">
-                            <div class="d-flex align-items-start">
-                                <div class="add-count">
-                                    <span class="plus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#1aa375"
-                                        >
-                                            <path
-                                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.questionAdd }} addition
-                                </div>
-                                <DiffWordsDropDown
-                                    :diffObj="changed.question"
-                                    type="add"
-                                />
-                            </div>
-                            <div class="d-flex align-items-start">
-                                <div class="remove-count">
-                                    <span class="minus-icon">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 448 512"
-                                            height="15"
-                                            width="15"
-                                            fill="#ea6c6c"
-                                        >
-                                            <path
-                                                d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                            />
-                                        </svg>
-                                    </span>
-                                    {{ changeCount.questionRemove }} removal
-                                </div>
-                                <DiffWordsDropDown
-                                    :diffObj="changed.question"
-                                    type="remove"
-                                />
-                            </div>
-                        </div>
-                        <div class="d-flex flex-lg-row flex-column">
-                            <!-- Old Banner -->
-                            <div class="old-container general-container">
-                                <div class="container-tile">Original</div>
-                                <div class="container-content">
-                                    {{ mcQuestion.question }}
-                                </div>
-                            </div>
-                            <!-- Long arrow pointing right -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="50"
-                                height="50"
-                                fill="#ac90e8"
-                                class="d-none d-lg-block my-auto mx-1"
-                            >
-                                <path
-                                    d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
-                                />
-                            </svg>
-                            <!-- Long arrow pointing down on tablet and mobile-->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 320 512"
-                                fill="#ac90e8"
-                                height="50"
-                                width="50"
-                                class="mx-auto my-2 d-lg-none"
-                            >
-                                <path
-                                    d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
-                                />
-                            </svg>
-                            <div class="new-container general-container">
-                                <div class="container-tile">Changed</div>
-                                <div class="container-content">
-                                    <CompareString
-                                        v-if="changed.question && showHighLight"
-                                        :diffString="changed.question"
-                                    />
-                                    <div
-                                        v-else-if="
-                                            changed.question && !showHighLight
-                                        "
-                                    >
-                                        {{ mcQuestionEdit.question }}
-                                    </div>
-                                    <div v-else>No changed Happened</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-            <!-- Editable Text area -->
-            <Transition name="dropdown">
-                <div v-if="showQuestionChange && isEditMode">
-                    <div class="d-flex flex-column">
-                        <textarea
-                            class="editable-text-area"
-                            v-model="tempMcQuestionEdit.question"
-                        ></textarea>
-                    </div>
-                </div>
-            </Transition>
-        </div>
+
         <!-- ----| Answers Compare Container |---- -->
+        <!-- --Correct answer--  -->
+        <ComparisonContainer
+            containerName="Correct Answer"
+            :originalData="mcQuestion.correct_answer"
+            :newData="mcQuestionEdit.correct_answer"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="mc_correct_answer"
+        />
         <div class="compare-container mt-5">
             <!-- --Correct answer-- -->
             <div class="d-flex flex-column">

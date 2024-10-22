@@ -1,6 +1,4 @@
 <script>
-import diff from 'fast-diff';
-import { diffWords } from 'diff';
 import CompareString from './CompareString.vue';
 import DiffWordsDropDown from './DiffWordsDropDown.vue';
 import ComparisonContainer from './ComparisonContainer.vue';
@@ -18,18 +16,6 @@ export default {
             isEditMode: false,
             edited: false,
             showHighLight: true,
-            showQuestionChange: true,
-            showNameChange: true,
-            changed: {
-                name: false,
-                question: false
-            },
-            changeCount: {
-                questionAdd: 0,
-                questionRemove: 0,
-                nameAdd: 0,
-                nameRemove: 0
-            },
             tempEssayEdit: null
         };
     },
@@ -37,7 +23,7 @@ export default {
     async created() {
         await this.getEssayQuestionEdit();
         await this.getEssayQuestion();
-        this.compareEdit();
+
         // Auto size text area to show all text without scroll bar.
         const tx = document.getElementsByTagName('textarea');
         for (let i = 0; i < tx.length; i++) {
