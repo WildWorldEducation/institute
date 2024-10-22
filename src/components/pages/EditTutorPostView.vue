@@ -3,7 +3,9 @@ export default {
     data() {
         return {
             tutorPostId: this.$route.params.tutorPostId,
-            tutorPost: {}
+            tutorPost: {},
+            validateDescription: true,
+            validateContact: true
         };
     },
     created() {
@@ -54,6 +56,23 @@ export default {
             let contact_preference = $(
                 '#summernote-contact-preference'
             ).summernote('code');
+
+            if (description.length < 25) {
+                this.validateDescription = false;
+            } else {
+                this.validateDescription = true;
+            }
+
+            if (contact_preference.length < 25) {
+                this.validateContact = false;
+            } else {
+                this.validateContact = true;
+            }
+
+            if(!this.validateContact || !this.validateDescription){
+                return
+            }
+
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -91,12 +110,25 @@ export default {
                     id="summernote-description"
                     name="editordata"
                 ></textarea>
+                <div
+                    v-if="validateDescription == false"
+                    class="form-validate"
+                >
+                    Please provide at least 25 characters.
+                </div>
             </div>
+            
             <div class="mb-3">
                 <textarea
                     id="summernote-contact-preference"
                     name="editordata2"
                 ></textarea>
+                <div
+                    v-if="validateContact == false"
+                    class="form-validate"
+                >
+                    Please provide at least 25 characters.
+                </div>
             </div>
             <div class="mb-3 d-flex justify-content-end gap-4">
                 <a class="btn red-btn" @click="$router.go(-1)"> Cancel </a>
