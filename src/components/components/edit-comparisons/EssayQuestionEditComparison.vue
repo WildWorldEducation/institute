@@ -184,57 +184,7 @@ export default {
                 console.log(result.error);
             }
         },
-        // --- Compare all aspect of two question --- //
-        compareEdit() {
-            // --- Name Compare
-            if (
-                this.essayQuestion.name !== this.essayQuestionEdit.name ||
-                this.isEditMode
-            ) {
-                // find the difference between two string
-                this.changed.name = diffWords(
-                    this.essayQuestion.name,
-                    this.essayQuestionEdit.name
-                );
-                // counting add and remove token in string diff array
-                const countObj = this.countChangedWords(this.changed.name);
-                this.changeCount.nameAdd = countObj.added;
-                this.changeCount.nameRemove = countObj.removed;
-            }
-            // --- Question Content
-            if (
-                this.essayQuestion.question !==
-                    this.essayQuestionEdit.question ||
-                this.isEditMode
-            ) {
-                // find the difference between two string
-                this.changed.question = diffWords(
-                    this.essayQuestion.question,
-                    this.essayQuestionEdit.question
-                );
 
-                const countObj = this.countChangedWords(this.changed.question);
-                this.changeCount.questionAdd = countObj.added;
-                this.changeCount.questionRemove = countObj.removed;
-            }
-        },
-        countChangedWords(wordsArray) {
-            const returnObj = {
-                added: 0,
-                removed: 0
-            };
-            wordsArray.forEach((element) => {
-                if (element.added && !element.removed) {
-                    returnObj.added = returnObj.added + element.count;
-                }
-
-                if (!element.added && element.removed) {
-                    returnObj.removed = returnObj.removed + element.count;
-                }
-            });
-
-            return returnObj;
-        },
         applyEditChange() {
             this.compareEdit();
             this.isEditMode = false;
