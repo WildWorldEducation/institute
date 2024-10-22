@@ -5,12 +5,32 @@ export default {
             email: '',
             isSubmitted: false,
             isSuccess: false,
-            isError: false
+            isError: false,
+            isEmailValidated: false,
+            isValidated: { email: true, emailFormat: true }
         };
     },
 
     methods: {
+        ValidateEmail() {
+            this.isValidated.email = true;
+            this.isValidated.emailFormat = true;
+
+            if (this.email == '' || this.email == null) {
+                this.isValidated.email = false;
+            } else if (
+                /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.email)
+            ) {
+                this.isValidated.emailFormat = true;
+            } else {
+                this.isValidated.emailFormat = false;
+            }
+        },
         Submit() {
+            if (!this.isValidated.email || !this.isValidated.emailFormat) {
+                return;
+            }
+
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -51,16 +71,38 @@ export default {
                     aria-describedby="emailHelp"
                     placeholder="Enter email"
                     v-model="email"
+                    @blur="ValidateEmail"
                 />
+                <div v-if="!isValidated.email" class="form-validate">
+                    please enter an email !
+                </div>
+                <div v-else-if="!isValidated.emailFormat" class="form-validate">
+                    please enter a valid email !
+                </div>
                 <button class="btn btn-primary mt-2 purple-btn" @click="Submit">
                     Submit
                 </button>
             </div>
             <div v-else>
-                <p v-if="isSuccess">
-                    Please check your email for instructions on resetting your
-                    password.
-                </p>
+                <div v-if="isSuccess">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="40"
+                        height="40"
+                        fill="#a48be6"
+                    >
+                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
+                        />
+                    </svg>
+                    <h1 class="h4 mt-2" style="color: #a48be6">Email sent</h1>
+                    <p>
+                        Please check your email for instructions on resetting
+                        your password.
+                    </p>
+                </div>
                 <p v-else-if="isError">
                     Email address not found. Please contact
                     support@collinsinstitute.org if you need assistance.
@@ -97,5 +139,11 @@ export default {
 .purple-btn:hover {
     background-color: #a48be6;
     color: white;
+}
+
+.form-validate {
+    font-size: 0.75rem;
+    color: red;
+    font-weight: 300;
 }
 </style>
