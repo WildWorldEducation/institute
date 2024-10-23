@@ -1,5 +1,4 @@
 <script>
-import diff from 'fast-diff';
 import CompareString from './CompareString.vue';
 import { nextTick } from 'vue';
 import { diffWords } from 'diff';
