@@ -249,6 +249,7 @@ export default {
             :isEditMode="isEditMode"
             type="essay_name"
             :updateTempData="updateTempData"
+            :singleComponent="true"
         />
 
         <!-- ----| Question Content Container |---- -->
@@ -261,6 +262,7 @@ export default {
             :isEditMode="isEditMode"
             type="essay_question"
             :updateTempData="updateTempData"
+            :singleComponent="true"
         />
 
         <!-- ----| Buttons Only Shows when User Edit question |---- -->

@@ -8,7 +8,6 @@ export default {
     data() {
         return {
             show: true,
-
             addCount: 0,
             removeCount: 0,
             changedObject: null,
@@ -28,7 +27,8 @@ export default {
         'newData',
         'isEditMode',
         'updateTempData',
-        'type'
+        'type',
+        'singleComponent'
     ],
     async created() {},
     methods: {
@@ -56,8 +56,6 @@ export default {
             const countObj = this.countChangedWords(this.changedWords);
             this.addCount = countObj.added;
             this.removeCount = countObj.removed;
-            console.log(this.newData);
-            console.log(countObj);
         }
     },
     computed: {
@@ -89,7 +87,12 @@ export default {
 </script>
 
 <template>
-    <div class="compare-container">
+    <div
+        :class="{
+            'compare-container': singleComponent,
+            'multiple-compare-container': !singleComponent
+        }"
+    >
         <div class="d-flex align-items-center">
             <h2 class="compare-container-tile mb-3">{{ containerName }}</h2>
             <div
@@ -116,7 +119,11 @@ export default {
             <div v-if="show && !isEditMode">
                 <div class="d-flex flex-column">
                     <div class="d-flex flex-row-reverse gap-4 mb-3">
-                        <div class="d-flex align-items-start">
+                        <div
+                            class="d-flex align-items-start"
+                            b-on-hoover
+                            :tile="`add ${addCount} words`"
+                        >
                             <div class="add-count">
                                 <span class="plus-icon">
                                     <svg
@@ -138,7 +145,11 @@ export default {
                                 type="add"
                             />
                         </div>
-                        <div class="d-flex align-items-start">
+                        <div
+                            class="d-flex align-items-start"
+                            b-on-hoover
+                            :tile="`remove ${removeCount} words`"
+                        >
                             <div class="remove-count">
                                 <span class="minus-icon">
                                     <svg
@@ -239,6 +250,11 @@ export default {
     border-radius: 5px;
     padding: 10px 15px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.multiple-compare-container {
+    display: flex;
+    flex-direction: column;
 }
 
 .expand-arrow {
