@@ -204,8 +204,11 @@ export default {
     align-items: center;
 }
 
-.purple-btn:hover {
+.purple-btn:hover,
+.purple-btn:active,
+.purple-btn:focus {
     background-color: #7f56d9;
+    border: 1px solid #7f56d9;
     color: white;
 }
 
