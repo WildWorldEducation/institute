@@ -7,12 +7,15 @@ export default {
             isSuccess: false,
             isError: false,
             isEmailValidated: false,
-            isValidated: { email: true, emailFormat: true }
+            isValidated: { email: true, emailFormat: true },
+            // check that user has tried to input something
+            hasInput: false
         };
     },
 
     methods: {
         ValidateEmail() {
+            this.hasInput = true;
             this.isValidated.email = true;
             this.isValidated.emailFormat = true;
 
@@ -27,6 +30,10 @@ export default {
             }
         },
         Submit() {
+            if (!this.hasInput) {
+                this.ValidateEmail();
+            }
+
             if (!this.isValidated.email || !this.isValidated.emailFormat) {
                 return;
             }
@@ -79,7 +86,7 @@ export default {
                 <div v-else-if="!isValidated.emailFormat" class="form-validate">
                     please enter a valid email !
                 </div>
-                <button class="btn btn-primary mt-2 purple-btn" @click="Submit">
+                <button class="btn mt-2 purple-btn" @click="Submit">
                     Submit
                 </button>
             </div>
@@ -139,6 +146,14 @@ export default {
 .purple-btn:hover {
     background-color: #a48be6;
     color: white;
+    border: 1px solid #7f56d9;
+}
+
+.purple-btn:active,
+.purple-btn:focus {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
 }
 
 .form-validate {
