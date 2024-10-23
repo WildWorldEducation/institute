@@ -506,7 +506,10 @@ export default {
             <div
                 class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
             >
-                <h1 id="page-tile">Edit Skill</h1>
+                <h1 id="page-tile">
+                    <span v-if="skill.type != 'domain'">Edit Skill</span>
+                    <span v-else>Edit Category</span>
+                </h1>
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
@@ -540,7 +543,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <!-- Skill level dropdown -->
+                <!-- Skill level -->
                 <div class="row">
                     <div v-if="skill.type != 'domain' && skill.type != 'sub'">
                         <div class="col col-md-8 col-lg-5 mt-2">
@@ -774,7 +777,6 @@ export default {
                 </div>
             </div>
         </div>
-
         <div v-if="!isAnotherInstanceOfExistingSkill">
             <!-- Icon and Banner -->
             <div class="row">
@@ -963,7 +965,6 @@ export default {
                     </div>
                 </div>
             </div>
-
             <!-- Description -->
             <div v-if="userDetailsStore.role == 'admin'" class="row">
                 <div class="col">

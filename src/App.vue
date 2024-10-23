@@ -157,7 +157,7 @@ export default {
                                 to="/login"
                                 class="btn purple-btn login-btn"
                             >
-                                Login
+                                Log in
                             </RouterLink>
                         </li>
                     </ul>

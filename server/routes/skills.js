@@ -44,155 +44,138 @@ Routes
 --------------------------------------------
 --------------------------------------------*/
 /**
- * Add new skill images - to AWS S3. Not used.
- *
- */
-router.post('/:skillUrl/add/image', async (req, res, next) => {
-    // Get file from Base64 encoding (client sends as base64)
-    let fileData = Buffer.from(
-        req.body.image.replace(/^data:image\/\w+;base64,/, ''),
-        'base64'
-    );
-
-    let data = {
-        // The name it will be saved as on S3
-        Key: req.params.skillUrl,
-        // The image
-        Body: fileData,
-        ContentEncoding: 'base64',
-        ContentType: 'image/jpeg',
-        // The S3 bucket
-        Bucket: skillInfoboxImagesBucketName
-    };
-
-    // Send to the bucket.
-    const command = new PutObjectCommand(data);
-    await s3.send(command);
-});
-
-/**
  * Create New Item
  *
  */
-router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
-    // Add the skill.
-    let data = {};
-    data = {
-        name: req.body.name,
-        description: req.body.description,
-        parent: req.body.parent,
-        banner_image: req.body.banner_image,
-        mastery_requirements: req.body.mastery_requirements,
-        type: req.body.type,
-        level: req.body.level
-    };
+router.post(
+    '/add',
+    isAuthenticated,
+    checkRoleHierarchy('editor'),
+    async (req, res, next) => {
+        // Add the skill.
+        let data = {};
+        data = {
+            name: req.body.name,
+            description: req.body.description,
+            parent: req.body.parent,
+            banner_image: req.body.banner_image,
+            mastery_requirements: req.body.mastery_requirements,
+            type: req.body.type,
+            level: req.body.level
+        };
 
-    // Create the skill page url field.
-    data.url = data.name.replace(/\//g, 'or');
-    data.url = data.url.replace(/ /g, '_');
+        // Create the skill page url field.
+        data.url = data.name.replace(/\//g, 'or');
+        data.url = data.url.replace(/ /g, '_');
 
-    /*
-     * Send icon image to S3
-     */
-    // Get file from Base64 encoding (client sends as base64)
-    let fileData = Buffer.from(
-        req.body.icon_image.replace(/^data:image\/\w+;base64,/, ''),
-        'base64'
-    );
+        /*
+         * Send icon image to S3
+         */
+        // Check if empty.
+        if (req.body.icon_image.length > 1) {
+            // Get file from Base64 encoding (client sends as base64)
+            let fileData = Buffer.from(
+                req.body.icon_image.replace(/^data:image\/\w+;base64,/, ''),
+                'base64'
+            );
 
-    let fullSizeData = {
-        // The name it will be saved as on S3
-        Key: data.url,
-        // The image
-        Body: fileData,
-        ContentEncoding: 'base64',
-        ContentType: 'image/jpeg',
-        // The S3 bucket
-        Bucket: skillInfoboxImagesBucketName
-    };
+            let fullSizeData = {
+                // The name it will be saved as on S3
+                Key: data.url,
+                // The image
+                Body: fileData,
+                ContentEncoding: 'base64',
+                ContentType: 'image/jpeg',
+                // The S3 bucket
+                Bucket: skillInfoboxImagesBucketName
+            };
 
-    // Send to the bucket.
-    const fullSizeCommand = new PutObjectCommand(fullSizeData);
-    await s3.send(fullSizeCommand);
+            // Send to the bucket.
+            const fullSizeCommand = new PutObjectCommand(fullSizeData);
+            await s3.send(fullSizeCommand);
 
-    const thumbnailFileData = await sharp(fileData)
-        .resize({ width: 330 })
-        .toBuffer();
+            const thumbnailFileData = await sharp(fileData)
+                .resize({ width: 330 })
+                .toBuffer();
 
-    let thumbnailData = {
-        // The name it will be saved as on S3
-        Key: data.url,
-        // The image
-        Body: thumbnailFileData,
-        ContentEncoding: 'base64',
-        ContentType: 'image/jpeg',
-        // The S3 bucket
-        Bucket: skillInfoboxImageThumbnailsBucketName
-    };
+            let thumbnailData = {
+                // The name it will be saved as on S3
+                Key: data.url,
+                // The image
+                Body: thumbnailFileData,
+                ContentEncoding: 'base64',
+                ContentType: 'image/jpeg',
+                // The S3 bucket
+                Bucket: skillInfoboxImageThumbnailsBucketName
+            };
 
-    // Send to the bucket.
-    const thumbnailCommand = new PutObjectCommand(thumbnailData);
-    await s3.send(thumbnailCommand);
+            // Send to the bucket.
+            const thumbnailCommand = new PutObjectCommand(thumbnailData);
+            await s3.send(thumbnailCommand);
+        }
 
-    // Insert the new skill.
-    let sqlQuery1 = `INSERT INTO skills SET ?;`;
-    conn.query(sqlQuery1, data, (err, results) => {
-        try {
-            if (err) {
-                // Check if skill name exists already.
-                if (err.code == 'ER_DUP_ENTRY') {
-                    // check if deleted.
-                    let existingNameQuery = `SELECT is_deleted
+        // Insert the new skill.
+        let sqlQuery1 = `INSERT INTO skills SET ?;`;
+        conn.query(sqlQuery1, data, (err, results) => {
+            try {
+                if (err) {
+                    // Check if skill name exists already.
+                    if (err.code == 'ER_DUP_ENTRY') {
+                        // check if deleted.
+                        let existingNameQuery = `SELECT is_deleted
                     FROM skills
                     WHERE name = ${conn.escape(data.name)};`;
 
-                    conn.query(existingNameQuery, (err, result) => {
+                        conn.query(existingNameQuery, (err, result) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                } else {
+                                    if (result[0].is_deleted == 0) {
+                                        res.json({
+                                            result: 'This skill already exists.'
+                                        });
+                                    } else if (result[0].is_deleted == 1) {
+                                        // Undelete skill.
+                                        let unDeleteSkillQuery = `UPDATE skills
+                                    SET is_deleted = 0
+                                    WHERE name = ${conn.escape(data.name)};`;
+                                        conn.query(
+                                            unDeleteSkillQuery,
+                                            (err) => {
+                                                try {
+                                                    if (err) {
+                                                        throw err;
+                                                    }
+                                                    res.json({
+                                                        result: 'This skill was deleted, but has now been undeleted. Please find it and edit it.'
+                                                    });
+                                                } catch (err) {
+                                                    next(err);
+                                                }
+                                            }
+                                        );
+                                    }
+                                }
+                            } catch (err) {
+                                next(err);
+                            }
+                        });
+
+                        return;
+                    }
+                    throw err;
+                } else {
+                    // Get its id.
+                    let sqlQuery2 = `SELECT LAST_INSERT_ID();`;
+                    conn.query(sqlQuery2, data, (err, results) => {
+                        const skillId = Object.values(results[0])[0];
                         try {
                             if (err) {
                                 throw err;
                             } else {
-                                if (result[0].is_deleted == 0) {
-                                    res.json({
-                                        result: 'skill already exists'
-                                    });
-                                } else if (result[0].is_deleted == 1) {
-                                    // Undelete skill.
-                                    let unDeleteSkillQuery = `UPDATE skills
-                                    SET is_deleted = 0
-                                    WHERE name = ${conn.escape(data.name)};`;
-                                    conn.query(unDeleteSkillQuery, (err) => {
-                                        try {
-                                            if (err) {
-                                                throw err;
-                                            }
-                                            res.json({
-                                                result: 'skill was deleted, but has now been undeleted. Please find it and edit it.'
-                                            });
-                                        } catch (err) {
-                                            next(err);
-                                        }
-                                    });
-                                }
-                            }
-                        } catch (err) {
-                            next(err);
-                        }
-                    });
-
-                    return;
-                }
-                throw err;
-            } else {
-                // Get its id.
-                let sqlQuery2 = `SELECT LAST_INSERT_ID();`;
-                conn.query(sqlQuery2, data, (err, results) => {
-                    const skillId = Object.values(results[0])[0];
-                    try {
-                        if (err) {
-                            throw err;
-                        } else {
-                            // Add skill revision history (this is the first revision.)
-                            let revisionHistoryQuery = `INSERT INTO skill_history
+                                // Add skill revision history (this is the first revision.)
+                                let revisionHistoryQuery = `INSERT INTO skill_history
                             (id, version_number, user_id, name, description, banner_image,
                             mastery_requirements, level)
                             VALUES
@@ -209,79 +192,54 @@ router.post('/add', isAuthenticated, isAdmin, async (req, res, next) => {
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
-                            conn.query(revisionHistoryQuery, data, (err) => {
-                                try {
-                                    if (err) {
-                                        throw err;
-                                    } else {
-                                        // add create skill action into user_actions
-                                        const actionData = {
-                                            action: 'create',
-                                            content_id: skillId,
-                                            user_id: req.session.userId,
-                                            content_type: 'skill'
-                                        };
-                                        const actionQuery =
-                                            'INSERT INTO user_actions SET ?';
-                                        conn.query(
-                                            actionQuery,
-                                            actionData,
-                                            (err) => {
-                                                if (err) throw err;
-                                                else {
-                                                    // Insert any new filters for the skill.
-                                                    for (
-                                                        let i = 0;
-                                                        i <
-                                                        req.body.filters.length;
-                                                        i++
-                                                    ) {
-                                                        let sqlQuery3 = `
-                            INSERT INTO skill_tags (skill_id, tag_id)
-                            VALUES(${conn.escape(skillId)},
-                            ${conn.escape(req.body.filters[i])});`;
-
-                                                        conn.query(
-                                                            sqlQuery3,
-                                                            (err, results) => {
-                                                                try {
-                                                                    if (err) {
-                                                                        throw err;
-                                                                    } else {
-                                                                        res.json(
-                                                                            {
-                                                                                result: 'skill added'
-                                                                            }
-                                                                        );
-                                                                    }
-                                                                } catch (err) {
-                                                                    next(err);
-                                                                }
-                                                            }
-                                                        );
+                                conn.query(
+                                    revisionHistoryQuery,
+                                    data,
+                                    (err) => {
+                                        try {
+                                            if (err) {
+                                                throw err;
+                                            } else {
+                                                // add create skill action into user_actions
+                                                const actionData = {
+                                                    action: 'create',
+                                                    content_id: skillId,
+                                                    user_id: req.session.userId,
+                                                    content_type: 'skill'
+                                                };
+                                                const actionQuery =
+                                                    'INSERT INTO user_actions SET ?';
+                                                conn.query(
+                                                    actionQuery,
+                                                    actionData,
+                                                    (err) => {
+                                                        if (err) throw err;
+                                                        res.json({
+                                                            result: 'skill added'
+                                                        });
                                                     }
-                                                }
+                                                );
                                             }
-                                        );
+                                        } catch (err) {
+                                            next(err);
+                                        }
                                     }
-                                } catch (err) {
-                                    next(err);
-                                }
-                            });
+                                );
+                            }
+                        } catch (err) {
+                            next(err);
                         }
-                    } catch (err) {
-                        next(err);
-                    }
-                });
-                res.json({
-                    result: 'skill added'
-                });
+                    });
+                    res.json({
+                        result: 'skill added'
+                    });
+                }
+            } catch (err) {
+                next(err);
             }
-        } catch (err) {
-            next(err);
-        }
-    });
-});
+        });
+    }
+);
 
 // Create a new instance of an existing skill,
 // in order to have the skill show in more than one place in the tree.
@@ -720,52 +678,56 @@ router.put(
                     /*
                      * Send icon image to S3
                      */
-                    // Get file from Base64 encoding (client sends as base64)
-                    let fileData = Buffer.from(
-                        req.body.icon_image.replace(
-                            /^data:image\/\w+;base64,/,
-                            ''
-                        ),
-                        'base64'
-                    );
+                    if (req.body.icon_image.length > 1) {
+                        // Get file from Base64 encoding (client sends as base64)
+                        let fileData = Buffer.from(
+                            req.body.icon_image.replace(
+                                /^data:image\/\w+;base64,/,
+                                ''
+                            ),
+                            'base64'
+                        );
 
-                    let url = req.body.url;
+                        let url = req.body.url;
 
-                    let fullSizeData = {
-                        // The name it will be saved as on S3
-                        Key: url,
-                        // The image
-                        Body: fileData,
-                        ContentEncoding: 'base64',
-                        ContentType: 'image/jpeg',
-                        // The S3 bucket
-                        Bucket: skillInfoboxImagesBucketName
-                    };
+                        let fullSizeData = {
+                            // The name it will be saved as on S3
+                            Key: url,
+                            // The image
+                            Body: fileData,
+                            ContentEncoding: 'base64',
+                            ContentType: 'image/jpeg',
+                            // The S3 bucket
+                            Bucket: skillInfoboxImagesBucketName
+                        };
 
-                    // Send to the bucket.
-                    const fullSizeCommand = new PutObjectCommand(fullSizeData);
-                    await s3.send(fullSizeCommand);
+                        // Send to the bucket.
+                        const fullSizeCommand = new PutObjectCommand(
+                            fullSizeData
+                        );
+                        await s3.send(fullSizeCommand);
 
-                    const thumbnailFileData = await sharp(fileData)
-                        .resize({ width: 330 })
-                        .toBuffer();
+                        const thumbnailFileData = await sharp(fileData)
+                            .resize({ width: 330 })
+                            .toBuffer();
 
-                    let thumbnailData = {
-                        // The name it will be saved as on S3
-                        Key: url,
-                        // The image
-                        Body: thumbnailFileData,
-                        ContentEncoding: 'base64',
-                        ContentType: 'image/jpeg',
-                        // The S3 bucket
-                        Bucket: skillInfoboxImageThumbnailsBucketName
-                    };
+                        let thumbnailData = {
+                            // The name it will be saved as on S3
+                            Key: url,
+                            // The image
+                            Body: thumbnailFileData,
+                            ContentEncoding: 'base64',
+                            ContentType: 'image/jpeg',
+                            // The S3 bucket
+                            Bucket: skillInfoboxImageThumbnailsBucketName
+                        };
 
-                    // Send to the bucket.
-                    const thumbnailCommand = new PutObjectCommand(
-                        thumbnailData
-                    );
-                    await s3.send(thumbnailCommand);
+                        // Send to the bucket.
+                        const thumbnailCommand = new PutObjectCommand(
+                            thumbnailData
+                        );
+                        await s3.send(thumbnailCommand);
+                    }
 
                     // Update record in skill table.
                     let updateRecordSQLQuery = `UPDATE skills 
@@ -1620,114 +1582,5 @@ router.get('/name-list-old', (req, res, next) => {
         }
     });
 });
-
-// Import OpenAI package.
-const { OpenAI } = require('openai');
-// Include API key.
-// To access the .env file.
-require('dotenv').config();
-const openai = new OpenAI({
-    apiKey: process.env.CHAT_GPT_API_KEY
-});
-
-const sharp = require('sharp');
-async function openAIGenSkillIconImages() {
-    let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
-    WHERE type <> 'domain'  
-    AND is_deleted = 0    
-    AND id BETWEEN 1004 AND 1020
-    ;`;
-
-    conn.query(sqlQuery, async (err, results) => {
-        try {
-            if (err) {
-                throw err;
-            }
-
-            let index = 0;
-
-            async function getImage(index, results) {
-                // Clean up variables.
-                let masteryRequirements = results[
-                    index
-                ].mastery_requirements.replace(/<\/?[^>]+(>|$)/g, '');
-                masteryRequirements = masteryRequirements.replace(
-                    '&nbsp;',
-                    ' '
-                );
-                let name = results[index].name;
-                let url = results[index].url;
-
-                // Create prompt for ChatGPT.
-                let prompt = `Please create an image based on the following title: ${name}, and description: ${masteryRequirements}.
-            Name the file: ${url}. Please create using .jpeg file extension.`;
-
-                console.log(name);
-                const response = await openai.images.generate({
-                    model: 'dall-e-3',
-                    prompt: prompt,
-                    n: 1,
-                    size: '1024x1024',
-                    response_format: 'b64_json'
-                });
-
-                // Image response in base64 format.
-                const imgSrc = `data:image/jpeg;base64,${response.data[0].b64_json}`;
-
-                // Get file from Base64 encoding (client sends as base64)
-                let fileData = Buffer.from(
-                    imgSrc.replace(/^data:image\/\w+;base64,/, ''),
-                    'base64'
-                );
-
-                let fullSizeData = {
-                    // The name it will be saved as on S3
-                    Key: url,
-                    // The image
-                    Body: fileData,
-                    ContentEncoding: 'base64',
-                    ContentType: 'image/jpeg',
-                    // The S3 bucket
-                    Bucket: skillInfoboxImagesBucketName
-                };
-
-                // Send to the bucket.
-                const fullSizeCommand = new PutObjectCommand(fullSizeData);
-                await s3.send(fullSizeCommand);
-
-                const thumbnailFileData = await sharp(fileData)
-                    .resize({ width: 330 })
-                    .toBuffer();
-
-                let thumbnailData = {
-                    // The name it will be saved as on S3
-                    Key: url,
-                    // The image
-                    Body: thumbnailFileData,
-                    ContentEncoding: 'base64',
-                    ContentType: 'image/jpeg',
-                    // The S3 bucket
-                    Bucket: skillInfoboxImageThumbnailsBucketName
-                };
-
-                // Send to the bucket.
-                const thumbnailCommand = new PutObjectCommand(thumbnailData);
-                await s3.send(thumbnailCommand);
-
-                index++;
-                console.log(index);
-                console.log('completed: ' + name);
-                if (index < results.length) getImage(index, results);
-                else console.log('batch completed');
-            }
-
-            getImage(index, results);
-        } catch (err) {
-            console.log(err);
-        }
-    });
-}
-
-// openAIGenSkillIconImages();
 
 module.exports = router;

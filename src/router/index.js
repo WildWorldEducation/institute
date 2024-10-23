@@ -89,7 +89,7 @@ const router = createRouter({
             path: '/skills/add',
             name: 'add-skill',
             component: () => import('../components/pages/AddSkillView.vue'),
-            meta: { requiresAuth: true, roles: ['admin'] }
+            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
         },
         {
             path: '/skills/edit/:skillUrl',
@@ -318,6 +318,22 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
         },
         {
+            path: '/password-reset',
+            name: 'password-reset',
+            component: () =>
+                import(
+                    '../components/pages/password-reset/PasswordResetView.vue'
+                )
+        },
+        {
+            path: '/reset-password/:token',
+            name: 'reset-password',
+            component: () =>
+                import(
+                    '../components/pages/password-reset/ResetPasswordView.vue'
+                )
+        },
+        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')
@@ -385,10 +401,11 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'login' &&
         to.name !== 'student-signup' &&
         to.name !== 'editor-signup' &&
+        to.name !== 'password-reset' &&
+        to.name !== 'reset-password' &&
         // For guest access.
         to.name !== 'vertical-tree' &&
-        to.name !== 'show-skill' &&
-        to.name !== 'profile-settings'
+        to.name !== 'show-skill'
     ) {
         next({ name: 'vertical-tree' });
         return;
