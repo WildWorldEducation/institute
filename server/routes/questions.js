@@ -331,7 +331,7 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
             incorrect_answer_3 = ${conn.escape(req.body.incorrect_answer_3)}, 
             incorrect_answer_4 = ${conn.escape(req.body.incorrect_answer_4)}, 
             explanation = ${conn.escape(req.body.explanation)}, 
-            comment = ${conn.escape(req.body.comment)});`;
+            comment = ${conn.escape(req.body.comment)};`;
 
         conn.query(sqlQuery, (err) => {
             try {
