@@ -146,11 +146,14 @@ export default {
 .purple-btn:hover {
     background-color: #a48be6;
     color: white;
+    border: 1px solid #7f56d9;
 }
 
-.purple-btn:active {
+.purple-btn:active,
+.purple-btn:focus {
     background-color: #a48be6;
     color: white;
+    border: 1px solid #7f56d9;
 }
 
 .form-validate {
