@@ -1,1 +1,0 @@
-import{N as r}from"./main-99309460.js";const a=r("cohorts",{state:()=>({cohorts:[],cohortSkills:[]}),actions:{async getCohorts(t){const o=await(await fetch("/cohorts/"+t+"/list")).json();return this.cohorts=o,this.$state},async getCohortSkillFilters(t){const s=await fetch("/cohorts/"+t+"/skill-filters");this.cohortSkills=await s.json()}}});export{a as u};
