@@ -157,10 +157,7 @@ export default {
                             email: email
                         }"
                     />
-                    <button
-                        class="btn btn-primary mt-2 purple-btn"
-                        @click="Submit"
-                    >
+                    <button class="btn mt-2 purple-btn" @click="Submit">
                         Submit
                     </button>
                 </div>
@@ -220,6 +217,11 @@ export default {
 }
 
 .purple-btn:hover {
+    background-color: #a48be6;
+    color: white;
+}
+
+.purple-btn:active {
     background-color: #a48be6;
     color: white;
 }
