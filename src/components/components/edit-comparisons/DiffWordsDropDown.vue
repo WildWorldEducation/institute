@@ -21,7 +21,6 @@ export default {
 
             this.diffObj.forEach((element) => {
                 if (this.type === 'add') {
-                    console.log(element);
                     if (element.added && !element.removed) {
                         results.push(element.value);
                     }
