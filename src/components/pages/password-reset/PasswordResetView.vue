@@ -7,12 +7,15 @@ export default {
             isSuccess: false,
             isError: false,
             isEmailValidated: false,
-            isValidated: { email: true, emailFormat: true }
+            isValidated: { email: true, emailFormat: true },
+            // check that user has tried to input something
+            hasInput: false
         };
     },
 
     methods: {
         ValidateEmail() {
+            this.hasInput = true;
             this.isValidated.email = true;
             this.isValidated.emailFormat = true;
 
@@ -27,6 +30,10 @@ export default {
             }
         },
         Submit() {
+            if (!this.hasInput) {
+                this.ValidateEmail();
+            }
+
             if (!this.isValidated.email || !this.isValidated.emailFormat) {
                 return;
             }
