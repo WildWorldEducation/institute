@@ -342,6 +342,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+    // Title tag.
     const baseTitle = 'The Collins Institute';
     if (to.meta.title) {
         document.title = `${to.meta.title} - ${baseTitle}`;
@@ -443,6 +444,7 @@ router.beforeEach(async (to, from, next) => {
     }
 });
 
+// Scroll to top of page.
 router.afterEach((to, from, next) => {
     window.scrollTo(0, 0);
 });
