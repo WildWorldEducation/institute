@@ -1,5 +1,4 @@
 <script>
-import router from '../../router';
 // Import the stores.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 import { useUsersStore } from '../../stores/UsersStore';
@@ -37,10 +36,11 @@ export default {
             validate: {
                 firstName: false,
                 lastName: false,
+                username: false,
                 email: false,
                 emailFormat: false,
                 password: false,
-                // this validate is fire when image profile upload is not square
+                // this is fired when image profile upload is not square
                 notSquareImg: false,
                 // flag to show warning when cancel crop
                 notCropped: false,
@@ -81,16 +81,14 @@ export default {
                 this.validate.username = true;
             } else if (this.email == '' || this.email == null) {
                 this.validate.email = true;
-            } else {
-                this.HandleClickSubmit();
             }
+            this.HandleClickSubmit();
         },
         ValidatePassword() {
             if (this.validate.passwordComplex) {
                 this.HandlePasswordUpdate();
             }
         },
-
         ValidateEmail() {
             if (
                 /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.email)
@@ -116,48 +114,55 @@ export default {
             });
         },
         Submit() {
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    firstName: this.firstName,
-                    lastName: this.lastName,
-                    username: this.userName,
-                    email: this.email,
-                    avatar: this.avatar,
-                    instructorID: this.instructorID
-                })
-            };
+            // If valid, submit.
+            if (
+                !this.validate.username &&
+                !this.validate.email &&
+                !this.validate.emailFormat
+            ) {
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        firstName: this.firstName,
+                        lastName: this.lastName,
+                        username: this.userName,
+                        email: this.email,
+                        avatar: this.avatar,
+                        instructorID: this.instructorID
+                    })
+                };
 
-            var url = '/users/profile/' + this.id + '/edit';
-            fetch(url, requestOptions).then(() => {
-                if (
-                    this.userDetailsStore.role == 'student' &&
-                    this.instructorID != '' &&
-                    this.instructorID != null
-                ) {
-                    const requestOptions = {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            instructor_id: this.instructorID
-                        })
-                    };
-                    var url =
-                        '/users/' +
-                        this.userDetailsStore.userId +
-                        '/edit/instructor';
-                    fetch(url, requestOptions).then(() => {
+                var url = '/users/profile/' + this.id + '/edit';
+                fetch(url, requestOptions).then(() => {
+                    if (
+                        this.userDetailsStore.role == 'student' &&
+                        this.instructorID != '' &&
+                        this.instructorID != null
+                    ) {
+                        const requestOptions = {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                instructor_id: this.instructorID
+                            })
+                        };
+                        var url =
+                            '/users/' +
+                            this.userDetailsStore.userId +
+                            '/edit/instructor';
+                        fetch(url, requestOptions).then(() => {
+                            // refresh user list so the users page will show the update data
+                            this.userDetailsStore.getUserDetails();
+                            this.$router.push('/profile-settings');
+                        });
+                    } else {
                         // refresh user list so the users page will show the update data
                         this.userDetailsStore.getUserDetails();
                         this.$router.push('/profile-settings');
-                    });
-                } else {
-                    // refresh user list so the users page will show the update data
-                    this.userDetailsStore.getUserDetails();
-                    this.$router.push('/profile-settings');
-                }
-            });
+                    }
+                });
+            }
         },
 
         HandleClickSubmit() {
@@ -467,7 +472,7 @@ export default {
                     />
                     <div
                         v-if="
-                            validate.userName &&
+                            validate.username &&
                             (userName == '' || userName == null)
                         "
                         class="form-validate"
@@ -489,7 +494,7 @@ export default {
                     >
                         please enter an email !
                     </div>
-                    <div v-if="validate.emailFormat" class="form-validate">
+                    <div v-else-if="validate.emailFormat" class="form-validate">
                         please enter a valid email !
                     </div>
                 </div>
@@ -622,7 +627,8 @@ export default {
                             username: userName,
                             password: password,
                             firstName: firstName,
-                            lastName: lastName
+                            lastName: lastName,
+                            email: email
                         }"
                     />
                 </div>

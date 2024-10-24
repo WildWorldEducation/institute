@@ -114,7 +114,9 @@ export default {
                         </label>
                     </div>
                     <div style="color: rgba(164, 139, 229, 1)">
-                        <a href="#" class="links">Forgot password</a>
+                        <a href="/password-reset" class="links"
+                            >Forgot password</a
+                        >
                     </div>
                 </div>
                 <button class="btn btn-dark mb-2" @click="Submit()">

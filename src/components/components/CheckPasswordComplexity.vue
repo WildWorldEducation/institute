@@ -87,12 +87,21 @@ export default {
             }
 
             // Series Check if user re-use they name or user name for password
-
             if (
-                password.toLowerCase().includes(this.formData.firstName) ||
-                password.toLowerCase().includes(this.formData.lastName) ||
-                password.toLowerCase().includes(this.formData.username) ||
-                password.toLowerCase().includes(this.formData.email)
+                (this.formData.firstName &&
+                    password
+                        .toLowerCase()
+                        .includes(this.formData.firstName.toLowerCase())) ||
+                (this.formData.lastName &&
+                    password
+                        .toLowerCase()
+                        .includes(this.formData.lastName.toLowerCase())) ||
+                password
+                    .toLowerCase()
+                    .includes(this.formData.username.toLowerCase()) ||
+                password
+                    .toLowerCase()
+                    .includes(this.formData.email.toLowerCase())
             ) {
                 this.criteriaFlag.predictable = true;
                 // if the password is predictable it strength return to 0
@@ -154,14 +163,20 @@ export default {
                         if (
                             newVal.password
                                 .toLowerCase()
-                                .includes(newVal.username) ||
+                                .includes(newVal.username.toLowerCase()) ||
+                            (newVal.firstName &&
+                                newVal.password
+                                    .toLowerCase()
+                                    .includes(
+                                        newVal.firstName.toLowerCase()
+                                    )) ||
+                            (newVal.lastName &&
+                                newVal.password
+                                    .toLowerCase()
+                                    .includes(newVal.lastName.toLowerCase())) ||
                             newVal.password
                                 .toLowerCase()
-                                .includes(newVal.firstName) ||
-                            newVal.password
-                                .toLowerCase()
-                                .includes(newVal.lastName) ||
-                            newVal.password.toLowerCase().includes(newVal.email)
+                                .includes(newVal.email.toLowerCase())
                         ) {
                             this.criteriaFlag.predictable = true;
                             // if the password is predictable it strength return to 0

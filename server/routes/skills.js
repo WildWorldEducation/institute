@@ -58,7 +58,6 @@ router.post(
             name: req.body.name,
             description: req.body.description,
             parent: req.body.parent,
-            banner_image: req.body.banner_image,
             mastery_requirements: req.body.mastery_requirements,
             type: req.body.type,
             level: req.body.level
@@ -176,7 +175,7 @@ router.post(
                             } else {
                                 // Add skill revision history (this is the first revision.)
                                 let revisionHistoryQuery = `INSERT INTO skill_history
-                            (id, version_number, user_id, name, description, banner_image,
+                            (id, version_number, user_id, name, description,
                             mastery_requirements, level)
                             VALUES
                             (${conn.escape(skillId)},
@@ -187,8 +186,7 @@ router.post(
                             )},                           
                             ${conn.escape(
                                 req.body.description
-                            )},                            
-                            ${conn.escape(req.body.banner_image)},
+                            )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -279,7 +277,6 @@ router.post(
                     parent: req.body.parentOfNewInstance.id,
                     description: skill.description,
                     icon_image: skill.icon_image,
-                    banner_image: skill.banner_image,
                     mastery_requirements: skill.mastery_requirements,
                     type: skill.type,
                     level: skill.level,
@@ -292,7 +289,7 @@ router.post(
 
                 // Create the copy with new parent.
                 let sqlQuery1 = `INSERT INTO skills SET ?;`;
-                conn.query(sqlQuery1, data, (err, results) => {
+                conn.query(sqlQuery1, data, (err) => {
                     try {
                         if (err) {
                             throw err;
@@ -652,7 +649,7 @@ router.put(
 
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image, banner_image,
+                    (id, version_number, user_id, name, description, icon_image,
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
                     (${conn.escape(req.params.id)},
@@ -661,7 +658,6 @@ router.put(
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
                     ${conn.escape(req.body.icon_image)},
-                    ${conn.escape(req.body.banner_image)},
                     ${conn.escape(
                         req.body.mastery_requirements
                     )},                    
@@ -737,7 +733,6 @@ router.put(
                         description = ${conn.escape(
                             req.body.description
                         )},                         
-                        banner_image = ${conn.escape(req.body.banner_image)}, 
                         mastery_requirements = ${conn.escape(
                             req.body.mastery_requirements
                         )}, 
@@ -793,12 +788,11 @@ router.put(
 router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         // Add data.
-        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, banner_image, comment)
+        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, comment)
          VALUES (${conn.escape(req.params.id)}, 
          ${conn.escape(req.body.userId)}, 
          ${conn.escape(req.body.mastery_requirements)}, 
-         ${conn.escape(req.body.icon_image)}, 
-         ${conn.escape(req.body.banner_image)}, 
+         ${conn.escape(req.body.icon_image)},          
          ${conn.escape(req.body.comment)})
          
          ON DUPLICATE KEY
@@ -806,8 +800,7 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
              req.body.mastery_requirements
          )}, 
          date = CURRENT_TIMESTAMP(), 
-         icon_image = ${conn.escape(req.body.icon_image)}, 
-         banner_image = ${conn.escape(req.body.banner_image)}, 
+         icon_image = ${conn.escape(req.body.icon_image)},          
          comment = ${conn.escape(req.body.comment)};`;
 
         // Update record in skill table.
@@ -878,7 +871,7 @@ router.put(
 
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image, banner_image,
+                    (id, version_number, user_id, name, description, icon_image,
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
                     (${conn.escape(previousId)},
@@ -886,8 +879,7 @@ router.put(
                     ${conn.escape(req.session.userId)},
                     ${conn.escape(previousName)},                    
                     ${conn.escape(previousDescription)},
-                    ${conn.escape(req.body.icon_image)},
-                    ${conn.escape(req.body.banner_image)},
+                    ${conn.escape(req.body.icon_image)},                    
                     ${conn.escape(
                         req.body.mastery_requirements
                     )},                    
@@ -955,10 +947,7 @@ router.put(
                             let updateRecordSQLQuery = `UPDATE skills SET 
                             mastery_requirements = ${conn.escape(
                                 req.body.mastery_requirements
-                            )},                            
-                            banner_image = ${conn.escape(
-                                req.body.banner_image
-                            )}, 
+                            )},                                                        
                             version_number = ${conn.escape(
                                 versionNumber
                             )}                               
@@ -1582,114 +1571,5 @@ router.get('/name-list-old', (req, res, next) => {
         }
     });
 });
-
-// Import OpenAI package.
-const { OpenAI } = require('openai');
-// Include API key.
-// To access the .env file.
-require('dotenv').config();
-const openai = new OpenAI({
-    apiKey: process.env.CHAT_GPT_API_KEY
-});
-
-const sharp = require('sharp');
-async function openAIGenSkillIconImages() {
-    let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
-    WHERE type <> 'domain'  
-    AND is_deleted = 0    
-    AND id BETWEEN 2913 AND 2920
-    ;`;
-
-    conn.query(sqlQuery, async (err, results) => {
-        try {
-            if (err) {
-                throw err;
-            }
-
-            let index = 0;
-
-            async function getImage(index, results) {
-                // Clean up variables.
-                let masteryRequirements = results[
-                    index
-                ].mastery_requirements.replace(/<\/?[^>]+(>|$)/g, '');
-                masteryRequirements = masteryRequirements.replace(
-                    '&nbsp;',
-                    ' '
-                );
-                let name = results[index].name;
-                let url = results[index].url;
-
-                // Create prompt for ChatGPT.
-                let prompt = `Please create an image based on the following title: ${name}, and description: ${masteryRequirements}.
-            Name the file: ${url}. Please create using .jpeg file extension.`;
-
-                console.log(name);
-                const response = await openai.images.generate({
-                    model: 'dall-e-3',
-                    prompt: prompt,
-                    n: 1,
-                    size: '1024x1024',
-                    response_format: 'b64_json'
-                });
-
-                // Image response in base64 format.
-                const imgSrc = `data:image/jpeg;base64,${response.data[0].b64_json}`;
-
-                // Get file from Base64 encoding (client sends as base64)
-                let fileData = Buffer.from(
-                    imgSrc.replace(/^data:image\/\w+;base64,/, ''),
-                    'base64'
-                );
-
-                let fullSizeData = {
-                    // The name it will be saved as on S3
-                    Key: url,
-                    // The image
-                    Body: fileData,
-                    ContentEncoding: 'base64',
-                    ContentType: 'image/jpeg',
-                    // The S3 bucket
-                    Bucket: skillInfoboxImagesBucketName
-                };
-
-                // Send to the bucket.
-                const fullSizeCommand = new PutObjectCommand(fullSizeData);
-                await s3.send(fullSizeCommand);
-
-                const thumbnailFileData = await sharp(fileData)
-                    .resize({ width: 330 })
-                    .toBuffer();
-
-                let thumbnailData = {
-                    // The name it will be saved as on S3
-                    Key: url,
-                    // The image
-                    Body: thumbnailFileData,
-                    ContentEncoding: 'base64',
-                    ContentType: 'image/jpeg',
-                    // The S3 bucket
-                    Bucket: skillInfoboxImageThumbnailsBucketName
-                };
-
-                // Send to the bucket.
-                const thumbnailCommand = new PutObjectCommand(thumbnailData);
-                await s3.send(thumbnailCommand);
-
-                index++;
-                console.log(index);
-                console.log('completed: ' + name);
-                if (index < results.length) getImage(index, results);
-                else console.log('batch completed');
-            }
-
-            getImage(index, results);
-        } catch (err) {
-            console.log(err);
-        }
-    });
-}
-
-//openAIGenSkillIconImages();
 
 module.exports = router;

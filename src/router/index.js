@@ -318,6 +318,22 @@ const router = createRouter({
             meta: { requiresAuth: true, roles: ['admin', 'instructor'] }
         },
         {
+            path: '/password-reset',
+            name: 'password-reset',
+            component: () =>
+                import(
+                    '../components/pages/password-reset/PasswordResetView.vue'
+                )
+        },
+        {
+            path: '/reset-password/:token',
+            name: 'reset-password',
+            component: () =>
+                import(
+                    '../components/pages/password-reset/ResetPasswordView.vue'
+                )
+        },
+        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')
@@ -326,6 +342,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+    // Title tag.
     const baseTitle = 'The Collins Institute';
     if (to.meta.title) {
         document.title = `${to.meta.title} - ${baseTitle}`;
@@ -339,6 +356,21 @@ router.beforeEach(async (to, from, next) => {
     }
     const sessionDetailsStore = useSessionDetailsStore();
     const userDetailsStore = useUserDetailsStore();
+
+    // SEO: canoncial tag.
+    let link = document.createElement('link');
+    link.rel = 'canonical';
+    document.head.appendChild(link);
+    let baseURL = 'https://parrhesia.io';
+
+    // Check if skill page is a copy (ie appears more than once in the tree)
+    let isCopy = to.href.includes('_copy');
+    if (isCopy) {
+        let originalPage = to.href.replace('_copy', '');
+        link.href = baseURL + originalPage;
+    } else {
+        link.href = baseURL + to.href;
+    }
 
     // Check if the user is logged in and fetch session details if not
     if (!sessionDetailsStore.isLoggedIn) {
@@ -385,6 +417,8 @@ router.beforeEach(async (to, from, next) => {
         to.name !== 'login' &&
         to.name !== 'student-signup' &&
         to.name !== 'editor-signup' &&
+        to.name !== 'password-reset' &&
+        to.name !== 'reset-password' &&
         // For guest access.
         to.name !== 'vertical-tree' &&
         to.name !== 'show-skill'
@@ -425,6 +459,7 @@ router.beforeEach(async (to, from, next) => {
     }
 });
 
+// Scroll to top of page.
 router.afterEach((to, from, next) => {
     window.scrollTo(0, 0);
 });
