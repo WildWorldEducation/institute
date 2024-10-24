@@ -58,7 +58,6 @@ router.post(
             name: req.body.name,
             description: req.body.description,
             parent: req.body.parent,
-            banner_image: req.body.banner_image,
             mastery_requirements: req.body.mastery_requirements,
             type: req.body.type,
             level: req.body.level
@@ -176,7 +175,7 @@ router.post(
                             } else {
                                 // Add skill revision history (this is the first revision.)
                                 let revisionHistoryQuery = `INSERT INTO skill_history
-                            (id, version_number, user_id, name, description, banner_image,
+                            (id, version_number, user_id, name, description,
                             mastery_requirements, level)
                             VALUES
                             (${conn.escape(skillId)},
@@ -187,8 +186,7 @@ router.post(
                             )},                           
                             ${conn.escape(
                                 req.body.description
-                            )},                            
-                            ${conn.escape(req.body.banner_image)},
+                            )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -279,7 +277,6 @@ router.post(
                     parent: req.body.parentOfNewInstance.id,
                     description: skill.description,
                     icon_image: skill.icon_image,
-                    banner_image: skill.banner_image,
                     mastery_requirements: skill.mastery_requirements,
                     type: skill.type,
                     level: skill.level,
@@ -292,7 +289,7 @@ router.post(
 
                 // Create the copy with new parent.
                 let sqlQuery1 = `INSERT INTO skills SET ?;`;
-                conn.query(sqlQuery1, data, (err, results) => {
+                conn.query(sqlQuery1, data, (err) => {
                     try {
                         if (err) {
                             throw err;
@@ -652,7 +649,7 @@ router.put(
 
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image, banner_image,
+                    (id, version_number, user_id, name, description, icon_image,
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
                     (${conn.escape(req.params.id)},
@@ -661,7 +658,6 @@ router.put(
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
                     ${conn.escape(req.body.icon_image)},
-                    ${conn.escape(req.body.banner_image)},
                     ${conn.escape(
                         req.body.mastery_requirements
                     )},                    
@@ -737,7 +733,6 @@ router.put(
                         description = ${conn.escape(
                             req.body.description
                         )},                         
-                        banner_image = ${conn.escape(req.body.banner_image)}, 
                         mastery_requirements = ${conn.escape(
                             req.body.mastery_requirements
                         )}, 
@@ -793,12 +788,11 @@ router.put(
 router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         // Add data.
-        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, banner_image, comment)
+        let sqlQuery = `INSERT INTO skills_awaiting_approval (skill_id, user_id, mastery_requirements, icon_image, comment)
          VALUES (${conn.escape(req.params.id)}, 
          ${conn.escape(req.body.userId)}, 
          ${conn.escape(req.body.mastery_requirements)}, 
-         ${conn.escape(req.body.icon_image)}, 
-         ${conn.escape(req.body.banner_image)}, 
+         ${conn.escape(req.body.icon_image)},          
          ${conn.escape(req.body.comment)})
          
          ON DUPLICATE KEY
@@ -806,8 +800,7 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
              req.body.mastery_requirements
          )}, 
          date = CURRENT_TIMESTAMP(), 
-         icon_image = ${conn.escape(req.body.icon_image)}, 
-         banner_image = ${conn.escape(req.body.banner_image)}, 
+         icon_image = ${conn.escape(req.body.icon_image)},          
          comment = ${conn.escape(req.body.comment)};`;
 
         // Update record in skill table.
@@ -878,7 +871,7 @@ router.put(
 
                     let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
-                    (id, version_number, user_id, name, description, icon_image, banner_image,
+                    (id, version_number, user_id, name, description, icon_image,
                     mastery_requirements, level, skill_history.order, comment)
                     VALUES
                     (${conn.escape(previousId)},
@@ -886,8 +879,7 @@ router.put(
                     ${conn.escape(req.session.userId)},
                     ${conn.escape(previousName)},                    
                     ${conn.escape(previousDescription)},
-                    ${conn.escape(req.body.icon_image)},
-                    ${conn.escape(req.body.banner_image)},
+                    ${conn.escape(req.body.icon_image)},                    
                     ${conn.escape(
                         req.body.mastery_requirements
                     )},                    
@@ -955,10 +947,7 @@ router.put(
                             let updateRecordSQLQuery = `UPDATE skills SET 
                             mastery_requirements = ${conn.escape(
                                 req.body.mastery_requirements
-                            )},                            
-                            banner_image = ${conn.escape(
-                                req.body.banner_image
-                            )}, 
+                            )},                                                        
                             version_number = ${conn.escape(
                                 versionNumber
                             )}                               
@@ -1597,7 +1586,7 @@ async function openAIGenSkillIconImages() {
     let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
     WHERE type <> 'domain'  
     AND is_deleted = 0    
-    AND id BETWEEN 3472 AND 3490
+    AND id BETWEEN 3480 AND 3490
     ;`;
 
     conn.query(sqlQuery, async (err, results) => {
@@ -1690,6 +1679,6 @@ async function openAIGenSkillIconImages() {
     });
 }
 
-openAIGenSkillIconImages();
+//openAIGenSkillIconImages();
 
 module.exports = router;
