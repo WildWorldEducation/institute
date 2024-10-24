@@ -2,8 +2,8 @@
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 import { useSkillsStore } from '../../../stores/SkillsStore';
 import { useUsersStore } from '../../../stores/UsersStore';
-import ConfirmModal from './ConfirmModal.vue';
-import CommentModal from './CommentModal.vue';
+import ConfirmModal from './components/ConfirmModal.vue';
+import CommentModal from './components/CommentModal.vue';
 
 export default {
     setup() {
@@ -190,7 +190,7 @@ export default {
                 <hr class="border border-1 opacity-100 hr mt-2" />
                 <div class="d-flex flex-column-reverse flex-md-row gap-4">
                     <div class="mastery-requirements">
-                        <div v-html="skill.mastery_requirements"></div>
+                        <div v-html="skillRevision.mastery_requirements"></div>
                     </div>
                     <div class="info-box p-2 mb-2">
                         <img
@@ -231,7 +231,7 @@ export default {
                         (userDetailsStore.role == 'admin' ||
                             userDetailsStore.role == 'editor')
                     "
-                    class="btn purple-btn mt-2"
+                    class="btn purple-btn mt-4"
                     @click="confirmRevert()"
                 >
                     <svg
@@ -399,14 +399,15 @@ export default {
 }
 
 .info-box {
-    border: 1px solid #a2a9b1;
     color: black;
+    border-radius: 5px;
     background-color: white;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 35%;
+    height: fit-content;
 }
 
 /* Style Specific On Phone */
