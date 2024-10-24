@@ -17,7 +17,9 @@ export default {
             comment: '',
             isEditMode: false,
             edited: false,
-            showHighLight: true
+            showHighLight: true,
+            // wait for API call
+            isQuestionLoaded: false
         };
     },
     components: {
@@ -52,6 +54,7 @@ export default {
                 })
                 .then((data) => {
                     this.mcQuestion = data;
+                    this.isQuestionLoaded = true;
                 });
         },
         dismissEdit() {
@@ -214,7 +217,7 @@ export default {
                 </div>
             </h1>
         </div>
-        <!-- ----Show and hide Hight light Button-->
+        <!-- ----Show and hide High light Button-->
         <div class="d-flex flex-row-reverse my-3">
             <div
                 class="btn green-btn d-flex align-items-center"
@@ -251,6 +254,7 @@ export default {
         </div>
         <!-- ----| Question Compare Container |---- -->
         <ComparisonContainer
+            v-if="isQuestionLoaded"
             containerName="Question"
             :originalData="mcQuestion.question"
             :newData="mcQuestionEdit.question"
@@ -266,6 +270,7 @@ export default {
         <div class="compare-container mt-5">
             <!-- --Correct answer-- -->
             <ComparisonContainer
+                v-if="isQuestionLoaded"
                 containerName="Correct Answer"
                 :originalData="mcQuestion.correct_answer"
                 :newData="mcQuestionEdit.correct_answer"
@@ -280,6 +285,7 @@ export default {
             </div>
             <!-- --Incorrect Answer 1-- -->
             <ComparisonContainer
+                v-if="isQuestionLoaded"
                 containerName="Incorrect Answer 1"
                 :originalData="mcQuestion.incorrect_answer_1"
                 :newData="mcQuestionEdit.incorrect_answer_1"
@@ -294,6 +300,7 @@ export default {
             </div>
             <!-- --Incorrect Answer 2-- -->
             <ComparisonContainer
+                v-if="isQuestionLoaded"
                 containerName="Incorrect Answer 2"
                 :originalData="mcQuestion.incorrect_answer_2"
                 :newData="mcQuestionEdit.incorrect_answer_2"
@@ -309,6 +316,7 @@ export default {
             </div>
             <!-- --Incorrect Answer 3-- -->
             <ComparisonContainer
+                v-if="isQuestionLoaded"
                 containerName="Incorrect Answer 3"
                 :originalData="mcQuestion.incorrect_answer_3"
                 :newData="mcQuestionEdit.incorrect_answer_3"
@@ -323,6 +331,7 @@ export default {
                 <hr />
             </div>
             <ComparisonContainer
+                v-if="isQuestionLoaded"
                 containerName="Incorrect Answer 4"
                 :originalData="mcQuestion.incorrect_answer_4"
                 :newData="mcQuestionEdit.incorrect_answer_4"
@@ -335,6 +344,7 @@ export default {
         </div>
         <!-- ----| Explanation Compare Container -->
         <ComparisonContainer
+            v-if="isQuestionLoaded"
             class="mt-3"
             containerName="Explanation"
             :originalData="mcQuestion.explanation"
