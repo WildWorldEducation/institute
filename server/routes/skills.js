@@ -247,8 +247,6 @@ router.post(
     '/submit-new-skill-for-review',
     isAuthenticated,
     async (req, res, next) => {
-        console.log(req.body);
-        // Add the skill.
         let data = {};
         data = {
             name: req.body.name,
@@ -260,8 +258,8 @@ router.post(
         };
 
         // Insert the new skill.
-        let sqlQuery1 = `INSERT INTO new_skills_awaiting_approval SET ?;`;
-        conn.query(sqlQuery1, data, (err, results) => {
+        let sqlQuery = `INSERT INTO new_skills_awaiting_approval SET ?;`;
+        conn.query(sqlQuery, data, (err) => {
             try {
                 if (err) {
                     throw err;
