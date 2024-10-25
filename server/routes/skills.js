@@ -1597,7 +1597,7 @@ async function openAIGenSkillIconImages() {
     let sqlQuery = `SELECT name, url, mastery_requirements FROM skills 
     WHERE type <> 'domain'  
     AND is_deleted = 0    
-    AND id BETWEEN 3486 AND 3500
+    AND id BETWEEN 3514 AND 3520
     ;`;
 
     conn.query(sqlQuery, async (err, results) => {
