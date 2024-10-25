@@ -243,132 +243,36 @@ router.post(
  * Submit New Skill For Review
  *
  */
-router.post('/submit-for-review', isAuthenticated, async (req, res, next) => {
-    // Add the skill.
-    let data = {};
-    data = {
-        name: req.body.name,
-        parent: req.body.parent,
-        mastery_requirements: req.body.mastery_requirements,
-        icon_image: req.body.icon_image,
-        type: req.body.type,
-        level: req.body.level
-    };
+router.post(
+    '/submit-new-skill-for-review',
+    isAuthenticated,
+    async (req, res, next) => {
+        console.log(req.body);
+        // Add the skill.
+        let data = {};
+        data = {
+            name: req.body.name,
+            parent: req.body.parent,
+            mastery_requirements: req.body.mastery_requirements,
+            icon_image: req.body.icon_image,
+            type: req.body.type,
+            level: req.body.level
+        };
 
-    // Insert the new skill.
-    let sqlQuery1 = `INSERT INTO skills SET ?;`;
-    conn.query(sqlQuery1, data, (err, results) => {
-        try {
-            if (err) {
-                // Check if skill name exists already.
-                if (err.code == 'ER_DUP_ENTRY') {
-                    // check if deleted.
-                    let existingNameQuery = `SELECT is_deleted
-                    FROM skills
-                    WHERE name = ${conn.escape(data.name)};`;
-
-                    conn.query(existingNameQuery, (err, result) => {
-                        try {
-                            if (err) {
-                                throw err;
-                            } else {
-                                if (result[0].is_deleted == 0) {
-                                    res.json({
-                                        result: 'This skill already exists.'
-                                    });
-                                } else if (result[0].is_deleted == 1) {
-                                    // Undelete skill.
-                                    let unDeleteSkillQuery = `UPDATE skills
-                                    SET is_deleted = 0
-                                    WHERE name = ${conn.escape(data.name)};`;
-                                    conn.query(unDeleteSkillQuery, (err) => {
-                                        try {
-                                            if (err) {
-                                                throw err;
-                                            }
-                                            res.json({
-                                                result: 'This skill was deleted, but has now been undeleted. Please find it and edit it.'
-                                            });
-                                        } catch (err) {
-                                            next(err);
-                                        }
-                                    });
-                                }
-                            }
-                        } catch (err) {
-                            next(err);
-                        }
-                    });
-
-                    return;
+        // Insert the new skill.
+        let sqlQuery1 = `INSERT INTO new_skills_awaiting_approval SET ?;`;
+        conn.query(sqlQuery1, data, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
                 }
-                throw err;
-            } else {
-                // Get its id.
-                let sqlQuery2 = `SELECT LAST_INSERT_ID();`;
-                conn.query(sqlQuery2, data, (err, results) => {
-                    const skillId = Object.values(results[0])[0];
-                    try {
-                        if (err) {
-                            throw err;
-                        } else {
-                            // Add skill revision history (this is the first revision.)
-                            let revisionHistoryQuery = `INSERT INTO skill_history
-                            (id, version_number, user_id, name,
-                            mastery_requirements, level)
-                            VALUES
-                            (${conn.escape(skillId)},
-                            1,
-                            ${conn.escape(req.session.userId)},
-                            ${conn.escape(
-                                req.body.name
-                            )},                                                       
-                            ${conn.escape(req.body.mastery_requirements)},
-                            ${conn.escape(req.body.level)});`;
-
-                            conn.query(revisionHistoryQuery, data, (err) => {
-                                try {
-                                    if (err) {
-                                        throw err;
-                                    } else {
-                                        // add create skill action into user_actions
-                                        const actionData = {
-                                            action: 'create',
-                                            content_id: skillId,
-                                            user_id: req.session.userId,
-                                            content_type: 'skill'
-                                        };
-                                        const actionQuery =
-                                            'INSERT INTO user_actions SET ?';
-                                        conn.query(
-                                            actionQuery,
-                                            actionData,
-                                            (err) => {
-                                                if (err) throw err;
-                                                res.json({
-                                                    result: 'skill added'
-                                                });
-                                            }
-                                        );
-                                    }
-                                } catch (err) {
-                                    next(err);
-                                }
-                            });
-                        }
-                    } catch (err) {
-                        next(err);
-                    }
-                });
-                res.json({
-                    result: 'skill added'
-                });
+                res.end();
+            } catch (err) {
+                next(err);
             }
-        } catch (err) {
-            next(err);
-        }
-    });
-});
+        });
+    }
+);
 
 // Create a new instance of an existing skill,
 // in order to have the skill show in more than one place in the tree.

@@ -189,12 +189,14 @@ export default {
                 this.iconImage = '';
             }
         },
-        validateSkill()
-        {
-
-        },
-        async Submit() {
-            // Validation
+        validateSkill() {
+            // Check if skill name already exists.
+            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                if (this.skill.name == this.skillsStore.skillsList[i].name) {
+                    alert('This skill already exists.');
+                    return;
+                }
+            }
             // Check sub skills have a parent skill.
             if (this.skill.type == 'sub' && this.skill.parent == 0) {
                 alert('cluster nodes must have a parent');
@@ -208,7 +210,6 @@ export default {
                 this.validate.name = true;
                 this.validate.description = true;
             }
-
             // Assign levels of domains and subskills automatically.
             if (this.skill.type == 'domain') {
                 this.skill.level = 'domain';
@@ -222,21 +223,46 @@ export default {
                 }
             }
 
-            let url = '';
-            if (this.userDetailsStore.role == 'admin') {
-                url = '/skills/add';
-            } else {
-                url = '/skills/submit-for-review';
+            // if any of the validate is violated we end the method here
+            if (this.validate.violated) {
+                return;
             }
+
+            if (this.userDetailsStore.role == 'admin') {
+                this.Submit();
+            } else {
+                this.submitNewSkillForReview();
+            }
+        },
+        async submitNewSkillForReview() {
+            let url = '/skills/submit-new-skill-for-review';
 
             // Get the Summernote HTML.
             this.skill.mastery_requirements =
                 $('#summernote').summernote('code');
 
-            // if any of the validate is violated we end the method here
-            if (this.validate.violated) {
-                return;
-            }
+            await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: this.skill.name,
+                    parent: this.skill.parent,
+                    icon_image: this.skill.icon_image,
+                    mastery_requirements: this.skill.mastery_requirements,
+                    type: this.skill.type,
+                    level: this.skill.level
+                })
+            }).then(() => {
+                alert('New skill submitted for approval.');
+                this.$router.push('/skills');
+            });
+        },
+        async Submit() {
+            let url = '/skills/add';
+
+            // Get the Summernote HTML.
+            this.skill.mastery_requirements =
+                $('#summernote').summernote('code');
 
             await fetch(url, {
                 method: 'POST',
@@ -333,13 +359,11 @@ export default {
                     });
             }
         },
-
         handleChooseSuperSkill(skill) {
             this.clusterParentInput.suggestSuperSkills = [];
             this.skill.parent = skill.id;
             this.clusterParentInput.inputText = skill.name;
         },
-
         // -------------------------------------------
         handleChooseSkillLevel(level) {
             this.showLevel = level.name;
@@ -350,17 +374,6 @@ export default {
             // find the file input base on id and manually click them
             const input = document.getElementById(elName);
             input.click();
-        },
-        submitNewSkillForReview() {
-            // Check if skill name already exists.
-            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-                if (this.skill.name == this.skillsStore.skillsList[i].name) {
-                    alert('This skill already exists.');
-                    return;
-                }
-            }
-
-
         }
     }
 };
@@ -827,16 +840,6 @@ export default {
                     <button
                         v-if="
                             userDetailsStore.role == 'admin' &&
-                            !isAnotherInstanceOfExistingSkill
-                        "
-                        class="btn purple-btn"
-                        @click="Submit()"
-                    >
-                        Submit
-                    </button>
-                    <button
-                        v-else-if="
-                            userDetailsStore.role == 'admin' &&
                             isAnotherInstanceOfExistingSkill
                         "
                         class="btn purple-btn"
@@ -847,9 +850,15 @@ export default {
                     <button
                         v-else
                         class="btn purple-btn"
-                        @click="submitNewSkillForReview()"
+                        @click="validateSkill()"
                     >
-                        Submit New Skill For Review
+                        <span
+                            v-if="
+                                userDetailsStore.role == 'admin' &&
+                                !isAnotherInstanceOfExistingSkill
+                            "
+                            >Submit</span
+                        ><span v-else>Submit New Skill For Review</span>
                     </button>
                 </div>
             </div>
