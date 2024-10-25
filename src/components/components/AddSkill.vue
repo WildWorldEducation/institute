@@ -189,6 +189,10 @@ export default {
                 this.iconImage = '';
             }
         },
+        validateSkill()
+        {
+
+        },
         async Submit() {
             // Validation
             // Check sub skills have a parent skill.
@@ -218,7 +222,13 @@ export default {
                 }
             }
 
-            var url = '/skills/add';
+            let url = '';
+            if (this.userDetailsStore.role == 'admin') {
+                url = '/skills/add';
+            } else {
+                url = '/skills/submit-for-review';
+            }
+
             // Get the Summernote HTML.
             this.skill.mastery_requirements =
                 $('#summernote').summernote('code');
@@ -340,6 +350,17 @@ export default {
             // find the file input base on id and manually click them
             const input = document.getElementById(elName);
             input.click();
+        },
+        submitNewSkillForReview() {
+            // Check if skill name already exists.
+            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                if (this.skill.name == this.skillsStore.skillsList[i].name) {
+                    alert('This skill already exists.');
+                    return;
+                }
+            }
+
+
         }
     }
 };
@@ -804,18 +825,31 @@ export default {
                         Cancel
                     </router-link>
                     <button
-                        v-if="!isAnotherInstanceOfExistingSkill"
+                        v-if="
+                            userDetailsStore.role == 'admin' &&
+                            !isAnotherInstanceOfExistingSkill
+                        "
                         class="btn purple-btn"
                         @click="Submit()"
                     >
                         Submit
                     </button>
                     <button
-                        v-else
+                        v-else-if="
+                            userDetailsStore.role == 'admin' &&
+                            isAnotherInstanceOfExistingSkill
+                        "
                         class="btn purple-btn"
                         @click="CreateNewInstance()"
                     >
                         Create New Instance
+                    </button>
+                    <button
+                        v-else
+                        class="btn purple-btn"
+                        @click="submitNewSkillForReview()"
+                    >
+                        Submit New Skill For Review
                     </button>
                 </div>
             </div>
