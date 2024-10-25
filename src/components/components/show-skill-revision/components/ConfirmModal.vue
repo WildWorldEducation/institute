@@ -1,7 +1,6 @@
 <script>
 export default {
-    props: ['showConfirmModal', 'closeModal', 'openCommentModal'],
-    data() {}
+    props: ['showConfirmModal', 'closeModal', 'openCommentModal']
 };
 </script>
 

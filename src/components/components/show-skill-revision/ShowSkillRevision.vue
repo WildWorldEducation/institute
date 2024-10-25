@@ -4,6 +4,7 @@ import { useSkillsStore } from '../../../stores/SkillsStore';
 import { useUsersStore } from '../../../stores/UsersStore';
 import ConfirmModal from './components/ConfirmModal.vue';
 import CommentModal from './components/CommentModal.vue';
+import CompareWithDropdown from './components/CompareWithDropdown.vue';
 
 export default {
     setup() {
@@ -22,6 +23,7 @@ export default {
             skillUrl: this.$route.params.skillUrl,
             versionNumber: this.$route.params.versionNumber,
             skillRevision: {},
+            skillRevisionHistory: [],
             currentVersionNumber: null,
             revertComment: '',
             isCurrentVersion: false,
@@ -32,7 +34,8 @@ export default {
     },
     components: {
         ConfirmModal,
-        CommentModal
+        CommentModal,
+        CompareWithDropdown
     },
     async mounted() {
         // Get list of skills.
@@ -44,6 +47,7 @@ export default {
             await this.usersStore.getUsers();
         }
         await this.getSkill();
+        await this.getSkillRevisionHistory();
     },
     methods: {
         async getSkill() {
@@ -112,6 +116,19 @@ export default {
                 options
             );
         },
+        async getSkillRevisionHistory() {
+            const url = '/skill-history/' + this.skill.id + '/list';
+            const res = await fetch(url);
+            const skillRevisionsResult = await res.json();
+
+            this.skillRevisionHistory = skillRevisionsResult.map((revision) => {
+                const author = this.usersStore.users.find(
+                    (o) => o.id === revision.user_id
+                );
+                return { ...revision, user_name: author.username };
+            });
+            console.log(this.skillRevisionHistory);
+        },
         confirmRevert() {
             this.showConfirmModal = true;
         },
@@ -155,9 +172,7 @@ export default {
                 <!-- A line divide -->
                 <hr class="border border-2 opacity-100 hr" />
 
-                <div
-                    class="d-flex flex-column flex-md-row justify-content-between"
-                >
+                <div class="d-flex flex-column">
                     <div class="alert alert-warning d-flex" role="alert">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -185,6 +200,10 @@ export default {
                             >.
                         </span>
                     </div>
+
+                    <CompareWithDropdown
+                        :skillRevisionHistory="skillRevisionHistory"
+                    />
                 </div>
                 <!-- A line divide -->
                 <hr class="border border-1 opacity-100 hr mt-2" />
