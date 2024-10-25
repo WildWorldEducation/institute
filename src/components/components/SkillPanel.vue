@@ -17,6 +17,7 @@ export default {
     methods: {
         hideInfoPanel() {
             this.$parent.showSkillPanel = false;
+            console.log(this.skill);
         },
         toggleChildNodes() {
             if (this.skill.show_children == 0) {
@@ -24,7 +25,7 @@ export default {
             } else {
                 this.$parent.toggleHideChildren(this.skill);
             }
-        }
+        }      
     }
 };
 </script>
@@ -59,7 +60,9 @@ export default {
                         </svg>
                     </button>
                 </div>
+                <!-- Skill name -->
                 <h1 class="skill-name">{{ skill?.name }}</h1>
+                <!-- Mastery requirements -->
                 <div
                     class="skill-mastery-requirement"
                     v-html="skill.masteryRequirements"
@@ -73,6 +76,18 @@ export default {
                         specific skills; click through to the skills within it
                         to master each one!
                     </p>
+                </div>
+                <!-- Subskills -->
+                <div
+                    v-if="skill?.type == 'super'"
+                    class="skill-mastery-requirement"
+                >
+                    <h2 class="h4">Subskills</h2>
+                    <ul>
+                        <li v-for="subskill in skill.subskills">
+                            {{ subskill.skill_name }}
+                        </li>
+                    </ul>
                 </div>
             </div>
             <div class="skill-info-panel-bottom">
