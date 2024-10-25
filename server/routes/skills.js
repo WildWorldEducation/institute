@@ -581,11 +581,11 @@ router.get('/mastery-requirements-and-url/:id', (req, res, next) => {
     });
 });
 
-router.get('/sub-skill-urls/:id', (req, res, next) => {
+router.get('/sub-skills/:id', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     // Get skill.
-    const getSubSkillsSqlQuery = `SELECT url
+    const getSubSkillsSqlQuery = `SELECT name, url
     FROM skills
     WHERE skills.parent = ${conn.escape(req.params.id)}
      AND skills.is_deleted = 0
@@ -596,24 +596,6 @@ router.get('/sub-skill-urls/:id', (req, res, next) => {
             if (err) {
                 throw err;
             }
-
-            const getSubSkillURLSqlQuery = `SELECT url
-            FROM skills
-            WHERE skills.parent = ${conn.escape(req.params.id)}
-             AND skills.is_deleted = 0
-             AND skills.type = 'sub';`;
-
-            conn.query(getSubSkillURLSqlQuery, (err, results) => {
-                try {
-                    if (err) {
-                        throw err;
-                    }
-
-                    res.json(results);
-                } catch (err) {
-                    next(err);
-                }
-            });
 
             res.json(results);
         } catch (err) {

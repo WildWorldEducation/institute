@@ -17,7 +17,6 @@ export default {
     methods: {
         hideInfoPanel() {
             this.$parent.showSkillPanel = false;
-            console.log(this.skill);
         },
         toggleChildNodes() {
             if (this.skill.show_children == 0) {
@@ -25,7 +24,7 @@ export default {
             } else {
                 this.$parent.toggleHideChildren(this.skill);
             }
-        }      
+        }
     }
 };
 </script>
@@ -85,7 +84,9 @@ export default {
                     <h2 class="h4">Subskills</h2>
                     <ul>
                         <li v-for="subskill in skill.subskills">
-                            {{ subskill.skill_name }}
+                            <router-link :to="'/skills/' + subskill.url">{{
+                                subskill.name
+                            }}</router-link>
                         </li>
                     </ul>
                 </div>

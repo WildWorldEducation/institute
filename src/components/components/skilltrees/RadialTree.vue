@@ -155,11 +155,14 @@ export default {
                 );
                 const result2 = await result.json();
 
-                // Get urls of subskills, if a super skill
-                const subSkillsResult = await fetch(
-                    '/skills/sub-skill-urls/' + this.skill.id
-                );
-                const subSkillsResultJson = await subSkillsResult.json();
+                if (this.skill.type == 'super') {
+                    // Get urls of subskills, if a super skill
+                    const subSkillsResult = await fetch(
+                        '/skills/sub-skills/' + this.skill.id
+                    );
+                    const subSkillsResultJson = await subSkillsResult.json();
+                    this.skill.subskills = subSkillsResultJson;
+                }
 
                 this.skill.masteryRequirements = result2.mastery_requirements;
                 this.skill.url = result2.url;
