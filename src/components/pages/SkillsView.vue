@@ -106,16 +106,10 @@ export default {
 </script>
 
 <template>
-    <div
-        v-if="
-            (userDetailsStore.role == 'admin' && !isInstructorMode) ||
-            userDetailsStore.role == 'editor'
-        "
-        class="topnav"
-        id="skill-nav"
-    >
+    <div v-if="!isInstructorMode" class="topnav" id="skill-nav">
         <router-link class="btn purple-btn" to="/skills/add"
-            >Add&nbsp;
+            ><span v-if="userDetailsStore.role == 'admin'">Add&nbsp;</span>
+            <span v-else>Submit new skill for review&nbsp;</span>
             <!-- Plus sign -->
             <svg
                 width="18"
