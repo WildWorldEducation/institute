@@ -170,7 +170,7 @@ export default {
 
 <template>
     <div class="d-flex">
-        <div v-if="!compareWithRevision" class="container mt-3">
+        <div v-if="!compareWithRevision" class="mt-3">
             <div id="skill-info-container">
                 <!-- Skill Info -->
                 <div class="d-flex justify-content-between">
@@ -221,7 +221,7 @@ export default {
                     />
                 </div>
                 <!-- A line divide -->
-                <hr class="border border-1 opacity-100 hr mt-4" />
+                <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
                 <div class="d-flex flex-column-reverse flex-md-row gap-4">
                     <div class="mastery-requirements">
                         <div v-html="skillRevision.mastery_requirements"></div>
@@ -477,6 +477,15 @@ export default {
         margin-top: 5px;
         font-size: 25px;
         margin: 0px 5px;
+    }
+
+    .mastery-requirements {
+        width: 100%;
+    }
+
+    .info-box {
+        width: fit-content;
+        height: auto;
     }
 }
 

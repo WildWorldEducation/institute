@@ -132,7 +132,7 @@ export default {
                 />
             </div>
             <!-- A line divide -->
-            <hr class="border border-1 opacity-100 hr mt-5" />
+            <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
             <div class="d-flex flex-column-reverse flex-md-row gap-4">
                 <div class="mastery-requirements">
                     <div v-html="compareData.masteryDiff"></div>
@@ -367,6 +367,15 @@ export default {
         margin-top: 5px;
         font-size: 25px;
         margin: 0px 5px;
+    }
+
+    .mastery-requirements {
+        width: 100%;
+    }
+
+    .info-box {
+        width: fit-content;
+        height: auto;
     }
 }
 

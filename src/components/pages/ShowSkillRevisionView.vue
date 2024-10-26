@@ -40,7 +40,7 @@ export default {
 
 <template>
     <div class="position-relative d-flex">
-        <div class="container show-skill-ctnr">
+        <div class="container-lg container-fluid show-skill-ctnr">
             <ShowSkillRevision />
         </div>
         <div id="banner">
