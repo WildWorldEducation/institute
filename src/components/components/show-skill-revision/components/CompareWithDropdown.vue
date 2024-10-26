@@ -79,23 +79,25 @@ export default {
                 <div v-if="showDropDown" class="history-versions-dropdown">
                     <div
                         v-for="revision in skillRevisionHistory"
-                        class="revision-row d-flex flex-column flex-md-row align-items-center justify-content-start"
+                        class="revision-row d-flex flex-md-column flex-lg-row align-items-lg-center align-items-start justify-content-start"
                         @click="
                             updateCompareWithRevision(revision);
                             showDropDown = false;
                         "
                     >
-                        Version:
-                        <span class="revision-strong-text ms-2">{{
-                            revision.version_number
-                        }}</span
-                        >, Edit Date:
-                        <span class="revision-strong-text">
-                            {{ formatDate(revision.edited_date) }} </span
-                        >, by
-                        <span class="revision-strong-text ms-2">
-                            {{ revision.user_name }}
-                        </span>
+                        <div class="">
+                            Version:
+                            <span class="revision-strong-text">{{
+                                revision.version_number
+                            }}</span
+                            >, Edit Date:
+                            <span class="revision-strong-text">
+                                {{ formatDate(revision.edited_date) }} </span
+                            >, by
+                            <span class="revision-strong-text">
+                                {{ revision.user_name }}
+                            </span>
+                        </div>
                         <!-- Badge if the revision is the current showing revision -->
                         <div
                             v-if="
@@ -226,6 +228,12 @@ export default {
 
     to {
         transform: rotate(0deg);
+    }
+}
+/* Style Specific on Tablet */
+@media (min-width: 577px) and (max-width: 1023px) {
+    .compare-dropdown-div {
+        width: 100%;
     }
 }
 </style>

@@ -23,10 +23,12 @@ export default {
                 this.viewingRevision.mastery_requirements,
                 this.compareWithRevision.mastery_requirements
             );
+
             const nameDiff = diffWords(
                 this.viewingRevision.name,
                 this.compareWithRevision.name
             );
+
             const imageDiff =
                 this.viewingRevision.icon_image !==
                 this.compareWithRevision.icon_image;
@@ -57,6 +59,9 @@ export default {
             <div class="d-flex justify-content-between">
                 <h1 class="skill-name">
                     <CompareString :diffString="compareData.nameDiff" />
+                    <span class="revision-version"
+                        >(Ver: {{ compareData.skillData.version_number }})</span
+                    >
                 </h1>
             </div>
             <!-- A line divide -->
@@ -127,7 +132,7 @@ export default {
                 />
             </div>
             <!-- A line divide -->
-            <hr class="border border-1 opacity-100 hr mt-4" />
+            <hr class="border border-1 opacity-100 hr mt-5" />
             <div class="d-flex flex-column-reverse flex-md-row gap-4">
                 <div class="mastery-requirements">
                     <div v-html="compareData.masteryDiff"></div>
@@ -183,7 +188,10 @@ export default {
                     </div>
                 </div>
             </div>
-            <button class="btn purple-btn mt-4">
+            <button
+                class="btn purple-btn mt-4"
+                @click="updateCompareWithRevision(null)"
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 512 512"
