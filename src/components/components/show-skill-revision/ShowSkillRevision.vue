@@ -5,6 +5,7 @@ import { useUsersStore } from '../../../stores/UsersStore';
 import ConfirmModal from './components/ConfirmModal.vue';
 import CommentModal from './components/CommentModal.vue';
 import CompareWithDropdown from './components/CompareWithDropdown.vue';
+import CompareWithContent from './components/CompareWithContent.vue';
 
 export default {
     setup() {
@@ -29,13 +30,16 @@ export default {
             isCurrentVersion: false,
             showConfirmModal: false,
             showCommentModal: false,
-            skill: {}
+            skill: {},
+            compareWithRevision: null,
+            currentCompareWithRevision: null
         };
     },
     components: {
         ConfirmModal,
         CommentModal,
-        CompareWithDropdown
+        CompareWithDropdown,
+        CompareWithContent
     },
     async mounted() {
         // Get list of skills.
@@ -156,6 +160,9 @@ export default {
             fetch(url, requestOptions).then(() => {
                 this.$router.push('/skills/' + this.skill.url);
             });
+        },
+        updateCompareWithRevision(revision) {
+            this.compareWithRevision = revision;
         }
     }
 };
@@ -163,11 +170,16 @@ export default {
 
 <template>
     <div class="d-flex">
-        <div class="container mt-3">
+        <div v-if="!compareWithRevision" class="container mt-3">
             <div id="skill-info-container">
                 <!-- Skill Info -->
                 <div class="d-flex justify-content-between">
-                    <h1 class="skill-name">{{ skill.name }}</h1>
+                    <h1 class="skill-name">
+                        {{ skill.name }}
+                        <span class="revision-version"
+                            >(Ver: {{ skillRevision.version_number }})</span
+                        >
+                    </h1>
                 </div>
                 <!-- A line divide -->
                 <hr class="border border-2 opacity-100 hr" />
@@ -203,10 +215,13 @@ export default {
 
                     <CompareWithDropdown
                         :skillRevisionHistory="skillRevisionHistory"
+                        :currentShowingVersion="skillRevision.version_number"
+                        :updateCompareWithRevision="updateCompareWithRevision"
+                        :compareWithRevision="compareWithRevision"
                     />
                 </div>
                 <!-- A line divide -->
-                <hr class="border border-1 opacity-100 hr mt-2" />
+                <hr class="border border-1 opacity-100 hr mt-4" />
                 <div class="d-flex flex-column-reverse flex-md-row gap-4">
                     <div class="mastery-requirements">
                         <div v-html="skillRevision.mastery_requirements"></div>
@@ -270,6 +285,13 @@ export default {
                 <p>&nbsp;</p>
             </div>
         </div>
+        <CompareWithContent
+            v-else
+            :skillRevisionHistory="skillRevisionHistory"
+            :viewingRevision="skillRevision"
+            :compareWithRevision="compareWithRevision"
+            :updateCompareWithRevision="updateCompareWithRevision"
+        />
     </div>
     <!-- Confirm Modal -->
     <ConfirmModal
@@ -338,6 +360,11 @@ export default {
     font-weight: 800;
     margin-bottom: 0px;
     text-align: start;
+}
+
+.revision-version {
+    font-weight: 500;
+    font-size: 18px;
 }
 
 .hr {

@@ -1,12 +1,31 @@
 <script>
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import dayjs from 'dayjs';
 export default {
     data() {
         return {
-            compareWithVersion: 'none',
             showDropDown: false
         };
     },
-    props: ['skillRevisionHistory']
+    props: [
+        'skillRevisionHistory',
+        'currentShowingVersion',
+        'updateCompareWithRevision',
+        'compareWithRevision'
+    ],
+    methods: {
+        formatDate(dateString) {
+            dayjs.extend(LocalizedFormat);
+            const formattedDate = dayjs(dateString).format('lll');
+            return formattedDate;
+        }
+    },
+    computed: {
+        compareWithVersion() {
+            if (!this.compareWithRevision) return false;
+            return this.compareWithRevision;
+        }
+    }
 };
 </script>
 
@@ -15,10 +34,28 @@ export default {
     <div class="position-relative mb-4">
         <div
             class="d-flex flex-column compare-dropdown-div"
-            :class="[, showDropDown ? 'button-focus' : 'button-unfocus']"
+            :class="[showDropDown ? 'button-focus' : 'button-unfocus']"
         >
             <button @click="showDropDown = !showDropDown" class="dropdown-btn">
-                <div>Compare With: {{ compareWithVersion }}</div>
+                <div class="d-flex">
+                    Compare With -
+                    <div v-if="!compareWithVersion">none</div>
+                    <div v-else class="d-flex ms-2">
+                        Version
+                        <span class="revision-strong-text ms-2">{{
+                            compareWithVersion.version_number
+                        }}</span
+                        >, Edit Date:
+                        <span class="revision-strong-text">
+                            {{
+                                formatDate(compareWithVersion.edited_date)
+                            }} </span
+                        >, by
+                        <span class="revision-strong-text ms-2">
+                            {{ compareWithVersion.user_name }}
+                        </span>
+                    </div>
+                </div>
 
                 <svg
                     :class="{
@@ -42,13 +79,54 @@ export default {
                 <div v-if="showDropDown" class="history-versions-dropdown">
                     <div
                         v-for="revision in skillRevisionHistory"
-                        class="revision-row"
+                        class="revision-row d-flex flex-column flex-md-row align-items-center justify-content-start"
+                        @click="
+                            updateCompareWithRevision(revision);
+                            showDropDown = false;
+                        "
                     >
-                        Version: {{ revision.version_number }}, Edit Date:
-                        {{ revision.edited_date }} By
-                        {{ revision.user_name }}
+                        Version:
+                        <span class="revision-strong-text ms-2">{{
+                            revision.version_number
+                        }}</span
+                        >, Edit Date:
+                        <span class="revision-strong-text">
+                            {{ formatDate(revision.edited_date) }} </span
+                        >, by
+                        <span class="revision-strong-text ms-2">
+                            {{ revision.user_name }}
+                        </span>
+                        <!-- Badge if the revision is the current showing revision -->
+                        <div
+                            v-if="
+                                revision.version_number ===
+                                currentShowingVersion
+                            "
+                            class="version-badge ms-2"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                fill="white"
+                                width="20"
+                                height="20"
+                            >
+                                <path
+                                    d="M64 128l177.6 0c-1 5.2-1.6 10.5-1.6 16l0 16-32 0L64 160c-8.8 0-16-7.2-16-16s7.2-16 16-16zm224 16c0-17.7 14.3-32 32-32c0 0 0 0 0 0l24 0c66.3 0 120 53.7 120 120l0 48c0 52.5-33.7 97.1-80.7 113.4c.5-3.1 .7-6.2 .7-9.4c0-20-9.2-37.9-23.6-49.7c4.9-9 7.6-19.4 7.6-30.3c0-15.1-5.3-29-14-40c8.8-11 14-24.9 14-40l0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-40 0-40zm32-80s0 0 0 0c-18 0-34.6 6-48 16L64 80C28.7 80 0 108.7 0 144s28.7 64 64 64l82 0c-1.3 5.1-2 10.5-2 16c0 25.3 14.7 47.2 36 57.6c-2.6 7-4 14.5-4 22.4c0 20 9.2 37.9 23.6 49.7c-4.9 9-7.6 19.4-7.6 30.3c0 35.3 28.7 64 64 64l64 0 24 0c92.8 0 168-75.2 168-168l0-48c0-92.8-75.2-168-168-168l-24 0zM256 400c-8.8 0-16-7.2-16-16s7.2-16 16-16l48 0 16 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-64 0zM240 224c0 5.5 .7 10.9 2 16l-2 0-32 0c-8.8 0-16-7.2-16-16s7.2-16 16-16l32 0 0 16zm24 64l40 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-48 0-16 0c-8.8 0-16-7.2-16-16s7.2-16 16-16l24 0z"
+                                />
+                            </svg>
+                            You are in this version
+                        </div>
                     </div>
-                    <div>None</div>
+                    <div
+                        class="revision-row"
+                        @click="
+                            updateCompareWithRevision(null);
+                            showDropDown = false;
+                        "
+                    >
+                        None
+                    </div>
                 </div>
             </Transition>
         </div>
@@ -63,7 +141,7 @@ export default {
     position: absolute;
     top: 0px;
     left: 0px;
-    background-color: white;
+    background-color: #fbf9ff;
     border: 1px solid #aca4cc;
     border-radius: 5px;
     padding: 10px;
@@ -81,15 +159,41 @@ export default {
 }
 
 .history-versions-dropdown {
-    border-radius: 5px;
-    background-color: white;
+    background-color: #fbf9ff;
     padding: 10px;
     width: 100%;
+    margin-top: 15px;
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+.revision-row {
+    border-top: 1px solid #aca4cc;
+    border-radius: 0px;
+    padding: 20px 5px;
+}
+
+.revision-strong-text {
+    color: #7e59cf;
+}
+
+.revision-row:hover {
+    background-color: white;
+    border-radius: 5px;
+    border-top: 0px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .compare-dropdown-btn:focus {
     border: 1px solid #7e59cf;
     border-radius: 8px;
+}
+
+.version-badge {
+    background-color: #b3a2d6;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
 }
 
 .expand-arrow {
