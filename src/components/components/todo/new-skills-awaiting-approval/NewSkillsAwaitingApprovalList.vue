@@ -1,9 +1,10 @@
 <script>
 export default {
     setup() {},
-    props: [''],
     data() {
-        return {};
+        return {
+            newSkillsAwaitingApproval: []
+        };
     },
     components: {},
     async created() {
@@ -15,7 +16,9 @@ export default {
                 .then(function (response) {
                     return response.json();
                 })
-                .then((data) => {});
+                .then((data) => {
+                    this.newSkillsAwaitingApproval = data;
+                });
         }
     }
 };
@@ -29,6 +32,11 @@ export default {
         </div>
         <!-- Page title -->
         <h2 class="ps-3 mt-2 page-title">Approve New Skills</h2>
+        <ul>
+            <li v-for="potentialNewSkill in newSkillsAwaitingApproval">
+                {{ potentialNewSkill.name }}
+            </li>
+        </ul>
     </div>
 </template>
 

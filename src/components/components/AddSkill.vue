@@ -235,7 +235,8 @@ export default {
             }
         },
         async submitNewSkillForReview() {
-            let url = '/skills/submit-new-skill-for-review';
+            let url =
+                '/new-skills-awaiting-approval/submit-new-skill-for-review';
 
             // Get the Summernote HTML.
             this.skill.mastery_requirements =
@@ -245,6 +246,7 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    user_id: this.userDetailsStore.userId,
                     name: this.skill.name,
                     parent: this.skill.parent,
                     icon_image: this.skill.icon_image,

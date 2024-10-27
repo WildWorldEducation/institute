@@ -239,39 +239,6 @@ router.post(
     }
 );
 
-/**
- * Submit New Skill For Review
- *
- */
-router.post(
-    '/submit-new-skill-for-review',
-    isAuthenticated,
-    async (req, res, next) => {
-        let data = {};
-        data = {
-            name: req.body.name,
-            parent: req.body.parent,
-            mastery_requirements: req.body.mastery_requirements,
-            icon_image: req.body.icon_image,
-            type: req.body.type,
-            level: req.body.level
-        };
-
-        // Insert the new skill.
-        let sqlQuery = `INSERT INTO new_skills_awaiting_approval SET ?;`;
-        conn.query(sqlQuery, data, (err) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.end();
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-);
-
 // Create a new instance of an existing skill,
 // in order to have the skill show in more than one place in the tree.
 router.post(
