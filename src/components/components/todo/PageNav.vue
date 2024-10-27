@@ -73,7 +73,7 @@ export default {
                     <span
                         class="badge bg-danger"
                         b-on-hover
-                        title="number of content edit that needed to approve"
+                        title="number of content edits that needed to approved"
                         >{{ contentEditCount }}</span
                     >
                 </button>
@@ -89,7 +89,7 @@ export default {
                     Approve Student Added Questions
                     <span
                         b-on-hover
-                        title="number of student question that needed to approve"
+                        title="number of student questions that needed to approved"
                         class="badge bg-danger"
                         >{{ studentQuestionCount }}</span
                     >
@@ -107,9 +107,25 @@ export default {
                     <span
                         class="badge bg-danger"
                         b-on-hover
-                        title="number of content flag that needed to check"
+                        title="number of content flags that needed to checked"
                         >{{ contentFlagCount }}</span
                     >
+                </button>
+                <button
+                    :class="[
+                        'nav-item-tile',
+                        activeContent === 'flagList'
+                            ? 'active-item'
+                            : 'nav-bar-item'
+                    ]"
+                    @click="changeActiveContent('newSkillsList')"
+                >
+                    Approve New Skills
+                    <span
+                        class="badge bg-danger"
+                        b-on-hover
+                        title="number of new skills that needed to checked"
+                    ></span>
                 </button>
             </div>
         </div>
