@@ -609,7 +609,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Skills Type -->
+            <!-- Skill Type -->
             <div class="row">
                 <div class="col-10 mt-2">
                     <label class="form-label">Node Type</label>
@@ -815,7 +815,7 @@ export default {
                 </div>
             </div>
             <!-- Mastery Requirements with summernote -->
-            <div class="row">
+            <div class="row" v-if="skill.type != 'domain'">
                 <div class="col">
                     <div class="mb-3">
                         <label for="mastery_requirements" class="form-label"
