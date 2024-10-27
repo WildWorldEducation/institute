@@ -130,13 +130,10 @@ export default {
 
             // This will return that pixel's color
             var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
-            //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
 
             //Our map uses these rgb strings as keys to nodes.
             var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
             var node = this.colToNode[colString];
-
-            // console.log(this.colToNode);
 
             if (node) {
                 // We clicked on something, lets set the color of the node
@@ -144,7 +141,7 @@ export default {
                 // this case is just its original index in the data array.
                 node.renderCol = node.__pickColor;
 
-                //Update the display with some data
+                //Update the display
                 this.skill.name = node.data.skill_name;
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
@@ -157,6 +154,16 @@ export default {
                     '/skills/mastery-requirements-and-url/' + this.skill.id
                 );
                 const result2 = await result.json();
+
+                if (this.skill.type == 'super') {
+                    // Get urls of subskills, if a super skill
+                    const subSkillsResult = await fetch(
+                        '/skills/sub-skills/' + this.skill.id
+                    );
+                    const subSkillsResultJson = await subSkillsResult.json();
+                    this.skill.subskills = subSkillsResultJson;
+                }
+
                 this.skill.masteryRequirements = result2.mastery_requirements;
                 this.skill.url = result2.url;
                 this.showSkillPanel = true;
@@ -329,6 +336,21 @@ export default {
                 ctx1.arc(pos[0], pos[1], size, 0, 2 * Math.PI);
                 ctx1.fillStyle = color;
                 ctx1.fill();
+
+                // Write sub skills length in node center.
+                if (node.data.type == 'super') {
+                    let currentFont = ctx1.font;
+                    ctx1.fillStyle = 'black'; // Set the text color (if needed)
+                    ctx1.font = `bold ${size}px Arial`; // Set the font size based on circle size
+                    ctx1.textAlign = 'center'; // Center the text horizontally
+                    ctx1.textBaseline = 'middle'; // Center the text vertically
+                    ctx1.fillText(
+                        node.data.subskills.length,
+                        pos[0],
+                        pos[1] + 1
+                    );
+                    ctx1.font = currentFont;
+                }
             }
 
             function angle(cx, cy, ex, ey) {
@@ -397,31 +419,6 @@ export default {
             ctx2.moveTo(pos[0], pos[1]);
             ctx2.arc(pos[0], pos[1], size, 0, 2 * Math.PI);
             ctx2.fill();
-
-            // Render sub skills.
-            if (node.data.type == 'super') {
-                for (let i = 0; i < node.data.subskills.length; i++) {
-                    // Calculate the increment of the subskills, around a circle.
-                    let increment = 360 / node.data.subskills.length;
-                    // Get the correct index number.
-                    let subSkillsIndex = i;
-                    // Calculate the nodes angle.
-                    let angle = increment * subSkillsIndex;
-                    let rads = (angle * Math.PI) / 180;
-                    let x = 20 * Math.cos(rads);
-                    let y = 20 * Math.sin(rads);
-                    ctx1.beginPath();
-                    ctx1.moveTo(pos[0], pos[1]);
-                    ctx1.arc(pos[0] + x, pos[1] + y, 5, 0, 2 * Math.PI);
-                    ctx1.fillStyle = color;
-                    ctx1.fill();
-
-                    ctx2.beginPath();
-                    ctx2.moveTo(pos[0], pos[1]);
-                    ctx2.arc(pos[0] + x, pos[1] + y, 5, 0, 2 * Math.PI);
-                    ctx2.fill();
-                }
-            }
         },
         textFillColor(skillName, level) {
             if (skillName === this.resultNode?.data.skill_name) {

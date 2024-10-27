@@ -23,7 +23,9 @@ export default {
             },
 
             tempQuestionEdit: null,
-            showImageNumberDropdown: false
+            showImageNumberDropdown: false,
+            // wait for API call
+            isQuestionLoaded: false
         };
     },
     components: { CompareString, ComparisonContainer },
@@ -77,6 +79,7 @@ export default {
                 })
                 .then((data) => {
                     this.imageQuestion = data;
+                    this.isQuestionLoaded = true;
                 });
         },
         edit() {
@@ -262,6 +265,7 @@ export default {
         </div>
         <!-- ----| Question Name |---- -->
         <ComparisonContainer
+            v-if="isQuestionLoaded"
             :showHighlight="showHighLight"
             containerName="Name"
             :originalData="imageQuestion.name"
@@ -274,6 +278,7 @@ export default {
 
         <!-- ----| Question Content Container |---- -->
         <ComparisonContainer
+            v-if="isQuestionLoaded"
             class="mt-5"
             :showHighlight="showHighLight"
             containerName="Question"

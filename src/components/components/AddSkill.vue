@@ -24,7 +24,6 @@ export default {
                 description: '',
                 icon: '',
                 icon_image: '',
-                banner_image: '',
                 mastery_requirements: '',
                 type: 'regular',
                 level: 'grade_school'
@@ -181,27 +180,23 @@ export default {
                 if (type == 'icon') {
                     this.iconImage = e.target.result;
                     this.skill.icon_image = this.iconImage;
-                } else {
-                    this.bannerImage = e.target.result;
-                    this.skill.banner_image = this.bannerImage;
                 }
             };
             reader.readAsDataURL(file);
         },
-        // New delete image method
         deleteImage(type) {
-            switch (type) {
-                case 'icon':
-                    this.iconImage = '';
-                    break;
-
-                default:
-                    this.bannerImage = '';
-                    break;
+            if (type == 'icon') {
+                this.iconImage = '';
             }
         },
-        async Submit() {
-            // Validation
+        validateSkill() {
+            // Check if skill name already exists.
+            for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
+                if (this.skill.name == this.skillsStore.skillsList[i].name) {
+                    alert('This skill already exists.');
+                    return;
+                }
+            }
             // Check sub skills have a parent skill.
             if (this.skill.type == 'sub' && this.skill.parent == 0) {
                 alert('cluster nodes must have a parent');
@@ -215,7 +210,6 @@ export default {
                 this.validate.name = true;
                 this.validate.description = true;
             }
-
             // Assign levels of domains and subskills automatically.
             if (this.skill.type == 'domain') {
                 this.skill.level = 'domain';
@@ -229,15 +223,46 @@ export default {
                 }
             }
 
-            var url = '/skills/add';
-            // Get the Summernote HTML.
-            this.skill.mastery_requirements =
-                $('#summernote').summernote('code');
-
             // if any of the validate is violated we end the method here
             if (this.validate.violated) {
                 return;
             }
+
+            if (this.userDetailsStore.role == 'admin') {
+                this.Submit();
+            } else {
+                this.submitNewSkillForReview();
+            }
+        },
+        async submitNewSkillForReview() {
+            let url = '/skills/submit-new-skill-for-review';
+
+            // Get the Summernote HTML.
+            this.skill.mastery_requirements =
+                $('#summernote').summernote('code');
+
+            await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: this.skill.name,
+                    parent: this.skill.parent,
+                    icon_image: this.skill.icon_image,
+                    mastery_requirements: this.skill.mastery_requirements,
+                    type: this.skill.type,
+                    level: this.skill.level
+                })
+            }).then(() => {
+                alert('New skill submitted for approval.');
+                this.$router.push('/skills');
+            });
+        },
+        async Submit() {
+            let url = '/skills/add';
+
+            // Get the Summernote HTML.
+            this.skill.mastery_requirements =
+                $('#summernote').summernote('code');
 
             await fetch(url, {
                 method: 'POST',
@@ -247,7 +272,6 @@ export default {
                     parent: this.skill.parent,
                     description: this.skill.description,
                     icon_image: this.skill.icon_image,
-                    banner_image: this.skill.banner_image,
                     mastery_requirements: this.skill.mastery_requirements,
                     type: this.skill.type,
                     level: this.skill.level,
@@ -335,13 +359,11 @@ export default {
                     });
             }
         },
-
         handleChooseSuperSkill(skill) {
             this.clusterParentInput.suggestSuperSkills = [];
             this.skill.parent = skill.id;
             this.clusterParentInput.inputText = skill.name;
         },
-
         // -------------------------------------------
         handleChooseSkillLevel(level) {
             this.showLevel = level.name;
@@ -679,7 +701,7 @@ export default {
                     </button>
                 </div>
             </div>
-            <!-- Icon and Banner -->
+            <!-- Icon -->
             <div class="row">
                 <!-- Icon chooser -->
                 <div class="col-6 col-md-3 col-lg-2 mt-2">
@@ -768,91 +790,6 @@ export default {
                         </div>
                     </div>
                 </div>
-                <!-- Banner chooser -->
-                <div class="col-12 col-lg-10 mt-2">
-                    <div class="mb-3 row">
-                        <label for="image" class="form-label">Banner</label>
-                        <div v-if="!bannerImage">
-                            <input
-                                class="form-control d-none"
-                                type="file"
-                                accept="image/*"
-                                @change="onFileChange($event, 'banner')"
-                                id="bannerFileChoose"
-                            />
-                            <div class="default-no-img">
-                                <div
-                                    class="plus-svg"
-                                    @click="openImage('bannerFileChoose')"
-                                >
-                                    <!-- The plus Icon On Top Of the avatar -->
-                                    <svg
-                                        width="33"
-                                        height="33"
-                                        viewBox="0 0 53 53"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <circle
-                                            cx="26.5"
-                                            cy="26.5"
-                                            r="26.5"
-                                            fill="#D9D9D9"
-                                        />
-                                        <g clip-path="url(#clip0_372_11959)">
-                                            <path
-                                                d="M19.7439 45.0784L19.7439 33.2515L7.93354 33.268C7.40615 33.2671 6.90063 33.0572 6.52771 32.6843C6.15479 32.3114 5.94488 31.8059 5.94396 31.2785L5.93291 21.7174C5.93382 21.1901 6.14373 20.6845 6.51665 20.3116C6.88957 19.9387 7.3951 19.7288 7.92249 19.7279L19.7439 19.7334L19.7439 7.90646C19.7411 7.64223 19.7911 7.38009 19.8909 7.13543C19.9907 6.89076 20.1384 6.66849 20.3252 6.48164C20.5121 6.29479 20.7344 6.14713 20.979 6.0473C21.2237 5.94747 21.4858 5.8975 21.75 5.9003L31.2779 5.92241C31.8053 5.92332 32.3108 6.13322 32.6838 6.50615C33.0567 6.87907 33.2666 7.38459 33.2675 7.91198L33.262 19.7334L45.0889 19.7334C45.615 19.7337 46.1195 19.9428 46.4915 20.3148C46.8635 20.6869 47.0726 21.1913 47.073 21.7174L47.0951 31.2453C47.0948 31.7714 46.8856 32.2759 46.5136 32.6479C46.1416 33.0199 45.6371 33.229 45.111 33.2294L33.262 33.2515L33.2786 45.0618C33.2776 45.5892 33.0677 46.0947 32.6948 46.4677C32.3219 46.8406 31.8164 47.0505 31.289 47.0514L21.7501 47.0846C21.4858 47.0874 21.2237 47.0374 20.979 46.9376C20.7344 46.8377 20.5121 46.6901 20.3252 46.5032C20.1384 46.3164 19.9907 46.0941 19.8909 45.8494C19.7911 45.6048 19.7411 45.3426 19.7439 45.0784Z"
-                                                fill="white"
-                                            />
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_372_11959">
-                                                <rect
-                                                    width="37"
-                                                    height="37"
-                                                    fill="white"
-                                                    transform="translate(8 8)"
-                                                />
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </div>
-                            </div>
-                            <p style="font-size: 14px">
-                                <em>Maximum file size 15mb</em>
-                            </p>
-                        </div>
-                        <div v-else>
-                            <p>
-                                <img
-                                    :src="bannerImage"
-                                    height="158"
-                                    width="1175"
-                                    style="background-color: lightgrey"
-                                />
-                            </p>
-                            <p>
-                                <button
-                                    class="btn red-btn"
-                                    @click="deleteImage('banner')"
-                                >
-                                    Remove &nbsp;&nbsp;
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        width="20"
-                                        height="20"
-                                        fill="white"
-                                    >
-                                        <path
-                                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
-                                        />
-                                    </svg>
-                                </button>
-                            </p>
-                        </div>
-                    </div>
-                </div>
             </div>
             <!-- Description  -->
             <div class="row" v-if="userDetailsStore.role == 'admin'">
@@ -901,18 +838,27 @@ export default {
                         Cancel
                     </router-link>
                     <button
-                        v-if="!isAnotherInstanceOfExistingSkill"
-                        class="btn purple-btn"
-                        @click="Submit()"
-                    >
-                        Submit
-                    </button>
-                    <button
-                        v-else
+                        v-if="
+                            userDetailsStore.role == 'admin' &&
+                            isAnotherInstanceOfExistingSkill
+                        "
                         class="btn purple-btn"
                         @click="CreateNewInstance()"
                     >
                         Create New Instance
+                    </button>
+                    <button
+                        v-else
+                        class="btn purple-btn"
+                        @click="validateSkill()"
+                    >
+                        <span
+                            v-if="
+                                userDetailsStore.role == 'admin' &&
+                                !isAnotherInstanceOfExistingSkill
+                            "
+                            >Submit</span
+                        ><span v-else>Submit New Skill For Review</span>
                     </button>
                 </div>
             </div>

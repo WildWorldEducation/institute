@@ -16,7 +16,9 @@ export default {
             isEditMode: false,
             edited: false,
             showHighLight: true,
-            tempEssayEdit: null
+            tempEssayEdit: null,
+            // wait for API call
+            isQuestionLoaded: false
         };
     },
     components: { CompareString, DiffWordsDropDown, ComparisonContainer },
@@ -70,6 +72,7 @@ export default {
                 })
                 .then((data) => {
                     this.essayQuestion = data;
+                    this.isQuestionLoaded = true;
                 });
         },
         edit() {
@@ -242,6 +245,7 @@ export default {
         </div>
         <!-- ----| Question Name |---- -->
         <ComparisonContainer
+            v-if="isQuestionLoaded"
             :showHighlight="showHighLight"
             containerName="Name"
             :originalData="essayQuestion.name"
@@ -254,6 +258,7 @@ export default {
 
         <!-- ----| Question Content Container |---- -->
         <ComparisonContainer
+            v-if="isQuestionLoaded"
             class="mt-4"
             :showHighlight="showHighLight"
             containerName="Question"

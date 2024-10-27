@@ -1,36 +1,11 @@
 <script>
 import ShowSkill from '../components/ShowSkill.vue';
-// Import the store.
-import { useSkillsStore } from '../../stores/SkillsStore';
-import { useUsersStore } from '../../stores/UsersStore';
 
 export default {
-    setup() {
-        const skillsStore = useSkillsStore();
-        const userDetailsStore = useUsersStore();
-        return {
-            skillsStore,
-            userDetailsStore
-        };
-    },
     data() {
         return {
-            skillId: this.$route.params.skillId,
-            bannerImage: null
+            skillId: this.$route.params.skillId
         };
-    },
-    async mounted() {
-        // Call the API to get list of skills.
-        if (this.skillsStore.skillsList.length == 0) {
-            await this.skillsStore.getSkillsList();
-        }
-
-        // Find the correct skill path (first ancestor skill), and level, to choose the banner img file.
-        for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            if (this.skillId == this.skillsStore.skillsList[i].id) {
-                this.bannerImage = this.skillsStore.skillsList[i].banner_image;
-            }
-        }
     },
     components: {
         ShowSkill
@@ -44,11 +19,8 @@ export default {
             <ShowSkill />
         </div>
         <div id="banner">
-            <!--TODO: Assign banner dynamically -->
-            <img v-bind:src="bannerImage" class="img-fluid" />
-            <!-- Show a static img if skill have no banner image -->
+            <!-- Banner image -->
             <img
-                v-if="!bannerImage"
                 src="/images/banners/institute-collins-2.png"
                 class="img-fluid"
             />
