@@ -6,10 +6,12 @@ export default {
         return {};
     },
     components: {},
-    async created() {},
+    async created() {
+        await this.getNewSkillsAwaitingApproval();
+    },
     methods: {
-        async getNewSkillsSubmittedForApproval() {
-            await fetch('/skills/submitted-for-review/list')
+        async getNewSkillsAwaitingApproval() {
+            await fetch('/new-skills-awaiting-approval/list')
                 .then(function (response) {
                     return response.json();
                 })
