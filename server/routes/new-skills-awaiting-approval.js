@@ -44,6 +44,31 @@ router.get('/list', (req, res, next) => {
 });
 
 /**
+ * Show Item
+ *
+ * @return response()
+ */
+router.get('/show/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT * 
+            FROM new_skills_awaiting_approval
+            WHERE id = ${req.params.id};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0]);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * Submit New Skill For Review
  *
  */
