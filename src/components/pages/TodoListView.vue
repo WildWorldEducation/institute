@@ -6,7 +6,7 @@ import { useSettingsStore } from '../../stores/SettingsStore';
 import CheckStudentQuestions from '../components/todo/student-question/CheckStudentQuestions.vue';
 import ContentEditsList from '../components/todo/content-edit/ContentEditsList.vue';
 import ContentFlagsView from './ContentFlagsView.vue';
-import NewSkillsList from '../components/todo/new-skills/NewSkillsList.vue';
+import NewSkillsAwaitingApprovalList from '../components/todo/new-skills-awaiting-approval/NewSkillsAwaitingApprovalList.vue';
 
 export default {
     setup() {
@@ -24,7 +24,7 @@ export default {
         ContentEditsList,
         PageNav,
         ContentFlagsView,
-        NewSkillsList
+        NewSkillsAwaitingApprovalList
     },
     computed: {},
     async mounted() {
@@ -70,7 +70,7 @@ export default {
                     <ContentFlagsView />
                 </div>
                 <div v-if="activeContent === 'newSkillsList'">
-                    <NewSkillsList />
+                    <NewSkillsAwaitingApprovalList />
                 </div>
             </div>
         </div>
