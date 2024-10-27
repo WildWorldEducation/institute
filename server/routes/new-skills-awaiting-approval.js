@@ -102,5 +102,32 @@ router.post(
     }
 );
 
+/**
+ * Delete skill submitted for review.
+ *
+ * @return response()
+ */
+router.delete('/:id', (req, res, next) => {
+    if (req.session.userName) {
+        const deleteQuery = `DELETE 
+                             FROM new_skills_awaiting_approval
+                             WHERE id = ${conn.escape(req.params.id)}`;
+
+        conn.query(deleteQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;

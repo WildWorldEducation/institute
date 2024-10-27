@@ -44,6 +44,81 @@ export default {
 
                     this.newSkillAwaitingApproval = data;
                 });
+        },
+        dismissSkill() {
+            if (confirm('Delete this potential skill?')) {
+                const result = fetch(
+                    '/new-skills-awaiting-approval/' + this.id,
+                    {
+                        method: 'DELETE'
+                    }
+                );
+
+                if (result.error) {
+                    console.log(result.error);
+                }
+
+                this.$router.back();
+            }
+        },
+        editSkill() {
+            this.showEditMastery = true;
+            this.isEditMode = true;
+            this.$parent.disableBtn = true;
+            nextTick(() => {
+                $('#summernote')
+                    .summernote({
+                        toolbar: [
+                            // [groupName, [list of button]]
+                            ['style', ['bold', 'italic', 'underline', 'clear']],
+                            [
+                                'font',
+                                ['strikethrough', 'superscript', 'subscript']
+                            ],
+                            ['fontsize', ['fontsize']],
+                            ['color', ['color']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['height', ['height']]
+                        ]
+                    })
+                    .next()
+                    .find('.note-editable')
+                    .attr('contenteditable', true);
+            });
+        },
+        saveSkill() {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    mastery_requirements: this.skillEdit.mastery_requirements,
+                    icon_image: this.skillEdit.icon_image,
+                    banner_image: this.skillEdit.banner_image,
+                    comment: this.comment,
+                    edit: this.edited
+                })
+            };
+
+            var url =
+                '/skills/' + this.skillEdit.skill_id + '/edit-for-review/save';
+            fetch(url, requestOptions).then(() => {
+                this.$router.back();
+            });
+
+            // Delete it afterwards.
+            const result = fetch(
+                '/skills/submitted-for-review/' +
+                    this.skillId +
+                    '/' +
+                    this.userId,
+                {
+                    method: 'DELETE'
+                }
+            );
+
+            if (result.error) {
+                console.log(result.error);
+            }
         }
     }
 };
@@ -150,8 +225,17 @@ export default {
                     </div>
                 </div>
             </div>
+            <p>&nbsp;</p>
+            <div class="d-flex justify-content-end gap-3">
+                <button class="btn red-btn" @click="dismissSkill()">
+                    Dismiss
+                </button>
+                <button class="btn purple-btn" @click="editSkill()">
+                    Edit
+                </button>
+                <button class="btn green-btn" @click="saveSkill()">Save</button>
+            </div>
         </div>
-        <p>&nbsp;</p>
     </div>
 </template>
 
@@ -162,8 +246,6 @@ export default {
     background-color: white;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
 .skill-name {
