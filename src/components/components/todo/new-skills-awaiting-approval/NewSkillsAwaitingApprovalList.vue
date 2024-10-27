@@ -34,7 +34,10 @@ export default {
         <h2 class="ps-3 mt-2 page-title">Approve New Skills</h2>
         <ul>
             <li v-for="potentialNewSkill in newSkillsAwaitingApproval">
-                {{ potentialNewSkill.name }}
+                <router-link
+                    :to="'new-skill-awaiting-approval/' + potentialNewSkill.id"
+                    >{{ potentialNewSkill.name }}</router-link
+                >
             </li>
         </ul>
     </div>
