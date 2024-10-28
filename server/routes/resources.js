@@ -47,13 +47,12 @@ router.get('/list', (req, res, next) => {
  */
 router.post('/add/:skillId', (req, res, next) => {
     if (req.session.userName) {
-        // No need to escape single quotes for SQL to accept,
-        // as using '?'.
         // Add data.
         let data = {
             skill_id: req.params.skillId,
             user_id: req.body.userId,
-            content: req.body.editordata
+            content: req.body.editordata,
+            is_human_edited: 1
         };
 
         // Check that source is not in the list of blocked domains.
@@ -210,9 +209,10 @@ router.put('/edit/:id', (req, res, next) => {
                         req.session.role == 'admin' ||
                         req.session.role == 'editor'
                     ) {
-                        // Edit the post.
+                        // Edit the source.
                         let sqlQuery2 = `UPDATE resources 
-                            SET content= ${conn.escape(req.body.editordata)}
+                            SET content= ${conn.escape(req.body.editordata)},
+                            is_human_edited = 1
                             WHERE id= ${conn.escape(req.params.id)};`;
 
                         conn.query(sqlQuery2, (err) => {
