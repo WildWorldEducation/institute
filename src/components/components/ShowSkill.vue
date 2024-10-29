@@ -466,40 +466,36 @@ export default {
                             />
                         </a>
                         <!-- Grade level -->
-                        <div class="mt-3" style="color: #a48be6">
-                            Level:
-                            <strong>
-                                <!-- <div class="h1-title">Level</div> -->
-                                <span v-if="skill.level == 'grade_school'"
-                                    >Grade School</span
-                                >
-                                <span v-else-if="skill.level == 'middle_school'"
-                                    >Middle School</span
-                                >
-                                <span v-else-if="skill.level == 'high_school'"
-                                    >High School</span
-                                >
-                                <span v-else-if="skill.level == 'college'"
-                                    >College</span
-                                >
-                                <span v-else-if="skill.level == 'phd'"
-                                    >PHD</span
-                                >
-                            </strong>
+                        <div class="mt-2">
+                            <h2 class="h4 title">Level</h2>
+                            <!-- <div class="h1-title">Level</div> -->
+                            <span v-if="skill.level == 'grade_school'"
+                                >Grade School</span
+                            >
+                            <span v-else-if="skill.level == 'middle_school'"
+                                >Middle School</span
+                            >
+                            <span v-else-if="skill.level == 'high_school'"
+                                >High School</span
+                            >
+                            <span v-else-if="skill.level == 'college'"
+                                >College</span
+                            >
+                            <span v-else-if="skill.level == 'phd'">PHD</span>
                         </div>
                         <span v-if="skill.type == 'super'"
                             >This assessment will draw questions from its
                             cluster nodes' question banks.</span
                         >
-                        <p>
-                            Author:
+                        <div class="mt-2">
+                            <h2 class="h4 title">Author</h2>
                             <span v-if="skill.is_human_edited == 1">
-                                This skill has been edited by a human.
+                                This page has been edited by a human
                             </span>
                             <span v-else>
-                                This skill has been written totally by an AI.
+                                This page has been written totally by an AI
                             </span>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -603,6 +599,7 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-align: center;
 }
 
 .skill-name {
@@ -624,6 +621,11 @@ export default {
     font-size: 30px;
     font-weight: 700;
     margin-bottom: 5px;
+}
+
+.title {
+    color: #a48be6;
+    font-weight: 700;
 }
 
 .mastery-requirements {
