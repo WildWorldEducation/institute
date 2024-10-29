@@ -127,7 +127,7 @@ export default {
                         class="user-name-div d-flex justify-content-between w-100"
                     >
                         <span class="user-name-text">
-                            {{ post.username }} {{ post.is_human_edited }}
+                            {{ post.username }}
                         </span>
                     </div>
                     <!-- Author Icon -->
