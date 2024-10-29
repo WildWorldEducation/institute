@@ -769,7 +769,7 @@ export default {
                                     {{ question.question }}
                                 </div>
                             </div>
-                            <div class="d-flex">
+                            <div class="d-flex justify-content-end">
                                 <!-- Author Icon -->
                                 <div
                                     v-if="question.is_human_edited"
@@ -1277,7 +1277,6 @@ export default {
 
     .flagging-icon {
         margin-right: 0px;
-        margin-left: auto;
     }
 }
 
