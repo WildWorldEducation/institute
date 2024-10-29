@@ -491,6 +491,15 @@ export default {
                             >This assessment will draw questions from its
                             cluster nodes' question banks.</span
                         >
+                        <p>
+                            Author:
+                            <span v-if="skill.is_human_edited == 1">
+                                This skill has been edited by a human.
+                            </span>
+                            <span v-else>
+                                This skill has been written totally by an AI.
+                            </span>
+                        </p>
                     </div>
                 </div>
             </div>
