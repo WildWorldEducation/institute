@@ -494,7 +494,6 @@ export default {
                                 v-if="skill.is_human_edited"
                                 b-tooltip.hover
                                 title="This page was written or edited by a human"
-                                class="author-icon"
                                 style="height: 50px"
                             >
                                 <svg
@@ -513,7 +512,6 @@ export default {
                                 v-else
                                 b-tooltip.hover
                                 title="This page was written by an AI"
-                                class="author-icon"
                                 style="height: 50px"
                             >
                                 <svg
