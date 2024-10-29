@@ -1194,7 +1194,7 @@ router.get('/:id/resources', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `SELECT resources.id, resources.user_id, resources.skill_id, resources.content,
-resources.created_at, users.username, users.avatar  
+resources.created_at, resources.is_human_edited, users.username, users.avatar  
 FROM resources
 JOIN users ON resources.user_id = users.id
 WHERE skill_id= ${conn.escape(req.params.id)}
