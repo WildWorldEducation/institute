@@ -89,7 +89,7 @@ export default {
                     this.studentQuestionId
                 );
                 // Return to hub page.
-                router.push({ name: 'hub' });
+                router.go(-1);
             }
         },
         saveToQuestionBank() {
