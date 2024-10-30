@@ -22,24 +22,22 @@ export default {
             skillId: this.$route.params.id,
             // bind object
             question: {
-                question: '',
-                correctAnswer: '',
-                incorrectAnswer1: '',
-                incorrectAnswer2: '',
-                incorrectAnswer3: '',
-                incorrectAnswer4: '',
-                question: '',
-                explanation: ''
+                name: '',
+                text: '',
+                explanation: '',
+                correct_answer: 1, // The default correct answer is the first one
+                is_random: false
             },
+            answers: [
+                { text: '' }, // Answer 1
+                { text: '' } // Answer 2
+            ],
             // validate object
             validate: {
                 validated: false,
+                name: false,
                 question: false,
-                correctAnswer: false,
-                incorrectAnswer1: false,
-                incorrectAnswer2: false,
-                incorrectAnswer3: false,
-                incorrectAnswer4: false,
+                answer: false,
                 explanation: false
             },
             studentId: null,
@@ -189,12 +187,33 @@ export default {
                             Thank you for submitting your question.
                         </div>
                     </div>
+                    <!-- Form for question -->
+                    <div class="mb-3">
+                        <label for="question_name" class="form-label"
+                            >Question Name</label
+                        >
+                        <input
+                            v-model="question.name"
+                            type="text"
+                            class="form-control"
+                            id="question_name"
+                        />
+                        <div
+                            v-if="
+                                validate.name &&
+                                (question.name === '' || question.name === null)
+                            "
+                            class="form-validate"
+                        >
+                            please enter a question name !
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label for="last_name" class="form-label"
                             >Question</label
                         >
                         <textarea
-                            v-model="question.question"
+                            v-model="question.text"
                             rows="1"
                             class="form-control"
                         >
@@ -202,109 +221,109 @@ export default {
                         <div
                             v-if="
                                 validate.question &&
-                                (question.question === '' ||
-                                    question.question === null)
+                                (question.text === '' || question.text === null)
                             "
-                            :class="['form-validate', { shake: reshake }]"
-                            @animationend="reshake = false"
+                            class="form-validate"
                         >
                             please enter a question content !
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Correct answer</label>
-                        <input
-                            v-model="question.correctAnswer"
-                            type="text"
-                            class="form-control"
-                        />
+                    <div
+                        v-for="(answer, index) in answers"
+                        :key="index"
+                        class="mb-3"
+                    >
+                        <label class="form-label"
+                            >Answer {{ index + 1 }}:</label
+                        >
+                        <div class="d-flex answer-option">
+                            <input
+                                v-model="answer.text"
+                                :id="'answer' + (index + 1)"
+                                placeholder="Enter answer option"
+                                type="text"
+                                class="form-control"
+                            />
+                            <!-- Remove Answer Button (visible only if more than 2 answers) -->
+                            <button
+                                v-if="answers.length > 2"
+                                @click="removeAnswer(index)"
+                                data-v-ea3cd1bf=""
+                                type="button"
+                                class="btn btn red-btn p-2"
+                                title="Delete answer"
+                            >
+                                <svg
+                                    data-v-ea3cd1bf=""
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="15"
+                                    height="15"
+                                    fill="white"
+                                >
+                                    <path
+                                        data-v-ea3cd1bf=""
+                                        d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"
+                                    ></path>
+                                </svg>
+                            </button>
+                        </div>
                         <div
-                            v-if="
-                                validate.correctAnswer &&
-                                (question.correctAnswer === '' ||
-                                    question.correctAnswer === null)
-                            "
-                            :class="['form-validate', { shake: reshake }]"
-                            @animationend="reshake = false"
+                            v-if="validate.validated && answer.text === ''"
+                            class="form-validate"
                         >
                             please enter a correct answer !
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Wrong answer 1</label>
-                        <input
-                            v-model="question.incorrectAnswer1"
-                            type="text"
-                            class="form-control"
-                        />
-                        <div
-                            v-if="
-                                validate.incorrectAnswer1 &&
-                                (question.incorrectAnswer1 === '' ||
-                                    question.incorrectAnswer1 === null)
-                            "
-                            :class="['form-validate', { shake: reshake }]"
-                            @animationend="reshake = false"
-                        >
-                            please enter incorrect answer 1 !
+                        <!-- Correct Answer Radio Button -->
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                :id="'correct' + (index + 1)"
+                                name="correctAnswer"
+                                :value="index + 1"
+                                v-model="question.correct_answer"
+                            />
+                            <label :for="'correct' + (index + 1)" class=""
+                                >Set as correct</label
+                            >
                         </div>
                     </div>
+
+                    <!-- Add Answer Button (max 5 answers) -->
                     <div class="mb-3">
-                        <label class="form-label">Wrong answer 2</label>
-                        <input
-                            v-model="question.incorrectAnswer2"
-                            type="text"
-                            class="form-control"
-                        />
-                        <div
-                            v-if="
-                                validate.incorrectAnswer2 &&
-                                (question.incorrectAnswer2 === '' ||
-                                    question.incorrectAnswer2 === null)
-                            "
-                            :class="['form-validate', { shake: reshake }]"
-                            @animationend="reshake = false"
+                        <button
+                            v-if="answers.length < 5"
+                            @click="addAnswer"
+                            class="btn purple-btn"
                         >
-                            please enter incorrect answer 2 !
-                        </div>
+                            <svg
+                                width="20"
+                                height="20"
+                                fill="#ffffff"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                />
+                            </svg>
+                            Add Answer
+                        </button>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Wrong answer 3</label>
+
+                    <!-- Random Order Toggle -->
+                    <div class="mb-3 form-check">
                         <input
-                            v-model="question.incorrectAnswer3"
-                            type="text"
-                            class="form-control"
+                            type="checkbox"
+                            id="randomOrder"
+                            v-model="question.is_random"
+                            class="form-check-input"
                         />
-                        <div
-                            v-if="
-                                validate.incorrectAnswer3 &&
-                                (question.incorrectAnswer3 === '' ||
-                                    question.incorrectAnswer3 === null)
-                            "
-                            :class="['form-validate', { shake: reshake }]"
-                            @animationend="reshake = false"
+                        <label for="randomOrder" class="form-check-label"
+                            >Show answers in random order</label
                         >
-                            please enter incorrect answer 3 !
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Wrong answer 4</label>
-                        <input
-                            v-model="question.incorrectAnswer4"
-                            type="text"
-                            class="form-control"
-                        />
-                        <div
-                            v-if="
-                                validate.incorrectAnswer4 &&
-                                (question.incorrectAnswer4 === '' ||
-                                    question.incorrectAnswer4 === null)
-                            "
-                            :class="['form-validate  ', { shake: reshake }]"
-                            @animationend="reshake = false"
-                        >
-                            please enter incorrect answer 4 !
-                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Explanation</label>
@@ -319,12 +338,12 @@ export default {
                                 (question.explanation === '' ||
                                     question.explanation === null)
                             "
-                            :class="['form-validate ', { shake: reshake }]"
-                            @animationend="reshake = false"
+                            class="form-validate"
                         >
                             please enter a explanation !
                         </div>
                     </div>
+
                     <div class="d-flex justify-content-end gap-4">
                         <!-- Show a warning if user already submitted else submit as normal -->
                         <button
