@@ -152,23 +152,28 @@ router.get('/mc/show/:id', (req, res, next) => {
                     text: results[0].question,
                     explanation: results[0].explanation,
                     correct_answer: results[0].correct_answer,
-                    is_random: results[0].is_random ? true : false,
-                }
+                    is_random: results[0].is_random ? true : false
+                };
 
                 let answers = [
-                    {text: results[0].answer_1},
-                    {text: results[0].answer_2}
-                ]
-                if(results[0].answer_3){
-                    answers.push({text: results[0].answer_3})
+                    { text: results[0].answer_1 },
+                    { text: results[0].answer_2 }
+                ];
+                if (results[0].answer_3) {
+                    answers.push({ text: results[0].answer_3 });
                 }
-                if(results[0].answer_4){
-                    answers.push({text: results[0].answer_4})
+                if (results[0].answer_4) {
+                    answers.push({ text: results[0].answer_4 });
                 }
-                if(results[0].answer_5){
-                    answers.push({text: results[0].answer_5})
+                if (results[0].answer_5) {
+                    answers.push({ text: results[0].answer_5 });
                 }
-                res.json({skill_name: results[0].skill_name, skill_level: results[0].skill_level, question: question, answers: answers});
+                res.json({
+                    skill_name: results[0].skill_name,
+                    skill_level: results[0].skill_level,
+                    question: question,
+                    answers: answers
+                });
             } catch (err) {
                 next(err);
             }
@@ -298,7 +303,7 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
         SET ?
         WHERE id = ${conn.escape(req.params.id)};`;
 
-        conn.query(sqlQuery, data,  (err, results) => {
+        conn.query(sqlQuery, data, (err, results) => {
             try {
                 if (err) {
                     throw err;
@@ -430,25 +435,25 @@ router.get(
                         text: results[0].question,
                         explanation: results[0].explanation,
                         correct_answer: results[0].correct_answer,
-                        is_random: results[0].is_random ? true : false,
-                    }
-    
+                        is_random: results[0].is_random ? true : false
+                    };
+
                     let answers = [
-                        {text: results[0].answer_1},
-                        {text: results[0].answer_2}
-                    ]
-                    if(results[0].answer_3){
-                        answers.push({text: results[0].answer_3})
+                        { text: results[0].answer_1 },
+                        { text: results[0].answer_2 }
+                    ];
+                    if (results[0].answer_3) {
+                        answers.push({ text: results[0].answer_3 });
                     }
-                    if(results[0].answer_4){
-                        answers.push({text: results[0].answer_4})
+                    if (results[0].answer_4) {
+                        answers.push({ text: results[0].answer_4 });
                     }
-                    if(results[0].answer_5){
-                        answers.push({text: results[0].answer_5})
+                    if (results[0].answer_5) {
+                        answers.push({ text: results[0].answer_5 });
                     }
                     res.json({
                         comment: results[0].comment,
-                        question: question, 
+                        question: question,
                         answers: answers
                     });
                 } catch (err) {
@@ -1132,8 +1137,6 @@ router.get('/image/list', (req, res, next) => {
  */
 router.post('/mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
-        // No need to escape single quotes for SQL to accept,
-        // as using '?'.
         // Add data.
         let data = {};
         data = {
@@ -1389,19 +1392,19 @@ router.get('/student-mc-questions/full-data-list', (req, res, next) => {
  */
 router.post('/student-mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
-        // No need to escape single quotes for SQL to accept,
-        // as using '?'.
         // Add data.
         let data = {};
         data = {
-            question: req.body.question,
-            correct_answer: req.body.correct_answer,
-            incorrect_answer_1: req.body.incorrect_answer_1,
-            incorrect_answer_2: req.body.incorrect_answer_2,
-            incorrect_answer_3: req.body.incorrect_answer_3,
-            incorrect_answer_4: req.body.incorrect_answer_4,
-            explanation: req.body.explanation,
+            question: req.body.question.text,
+            correct_answer: req.body.question.correct_answer,
+            answer_1: req.body.answers[0].text,
+            answer_2: req.body.answers[1].text,
+            answer_3: req.body.answers[2]?.text || null,
+            answer_4: req.body.answers[3]?.text || null,
+            answer_5: req.body.answers[4]?.text || null,
+            explanation: req.body.question.explanation,
             skill_id: req.body.skill_id,
+            is_random: req.body.question.is_random,
             student_id: req.body.student_id
         };
 

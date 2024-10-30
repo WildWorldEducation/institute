@@ -22,7 +22,6 @@ export default {
             skillId: this.$route.params.id,
             // bind object
             question: {
-                name: '',
                 text: '',
                 explanation: '',
                 correct_answer: 1, // The default correct answer is the first one
@@ -52,53 +51,20 @@ export default {
     methods: {
         Submit() {
             this.studentId = this.userDetailsStore.userId;
+
             // Reset the validate flag before re-checking
             this.validate.validated = false;
-            // Check data before fetching
-            if (
-                this.question.question === '' ||
-                this.question.question === null
-            ) {
+
+            if (this.question.text === '' || this.question.text === null) {
                 this.validate.question = true;
                 this.validate.validated = true;
             }
-            if (
-                this.question.correctAnswer === '' ||
-                this.question.correctAnswer === null
-            ) {
-                this.validate.correctAnswer = true;
-                this.validate.validated = true;
-            }
-            if (
-                this.question.incorrectAnswer1 === '' ||
-                this.question.incorrectAnswer1 === null
-            ) {
-                this.validate.incorrectAnswer1 = true;
-                this.validate.validated = true;
-            }
-            if (
-                this.question.incorrectAnswer2 === '' ||
-                this.question.incorrectAnswer2 === null
-            ) {
-                this.validate.incorrectAnswer2 = true;
-                this.validate.validated = true;
-            }
 
-            if (
-                this.question.incorrectAnswer3 === '' ||
-                this.question.incorrectAnswer3 === null
-            ) {
-                this.validate.incorrectAnswer3 = true;
-                this.validate.validated = true;
-            }
-
-            if (
-                this.question.incorrectAnswer4 === '' ||
-                this.question.incorrectAnswer4 === null
-            ) {
-                this.validate.incorrectAnswer4 = true;
-                this.validate.validated = true;
-            }
+            this.answers.forEach((element) => {
+                if (element.text == '') {
+                    this.validate.validated = true;
+                }
+            });
 
             if (
                 this.question.explanation === '' ||
@@ -118,13 +84,8 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    question: this.question.question,
-                    correct_answer: this.question.correctAnswer,
-                    incorrect_answer_1: this.question.incorrectAnswer1,
-                    incorrect_answer_2: this.question.incorrectAnswer2,
-                    incorrect_answer_3: this.question.incorrectAnswer3,
-                    incorrect_answer_4: this.question.incorrectAnswer4,
-                    explanation: this.question.explanation,
+                    question: this.question,
+                    answers: this.answers,
                     skill_id: this.skillId,
                     student_id: this.studentId
                 })
@@ -147,6 +108,20 @@ export default {
         skipAddingQuestion() {
             this.questionSubmitted = true;
             window.scrollTo(0, 0);
+        },
+        addAnswer() {
+            if (this.answers.length < 5) {
+                this.answers.push({ text: '' });
+            }
+        },
+        removeAnswer(index) {
+            if (this.answers.length > 2) {
+                this.answers.splice(index, 1);
+                // Adjust correct answer selection if necessary
+                if (this.question.correct_answer > this.answers.length) {
+                    this.question.correct_answer = this.answers.length;
+                }
+            }
         }
     }
 };
@@ -188,26 +163,6 @@ export default {
                         </div>
                     </div>
                     <!-- Form for question -->
-                    <div class="mb-3">
-                        <label for="question_name" class="form-label"
-                            >Question Name</label
-                        >
-                        <input
-                            v-model="question.name"
-                            type="text"
-                            class="form-control"
-                            id="question_name"
-                        />
-                        <div
-                            v-if="
-                                validate.name &&
-                                (question.name === '' || question.name === null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter a question name !
-                        </div>
-                    </div>
                     <div class="mb-3">
                         <label for="last_name" class="form-label"
                             >Question</label
