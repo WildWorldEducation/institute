@@ -1,12 +1,15 @@
 <script>
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useUsersStore } from '../../stores/UsersStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const usersStore = useUsersStore();
 
         return {
-            skillsStore
+            skillsStore,
+            usersStore
         };
     },
     data() {
@@ -15,9 +18,11 @@ export default {
             newSkillAwaitingApproval: {}
         };
     },
-    created() {
+    async created() {
         if (this.skillsStore.skillsList.length == 0)
-            this.skillsStore.getSkillsList();
+            await this.skillsStore.getSkillsList();
+        if (this.usersStore.users.length == 0) await this.usersStore.getUsers();
+
         this.getNewSkillAwaitingApproval();
     },
     methods: {
@@ -27,9 +32,10 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
+                    this.newSkillAwaitingApproval = data;
                     // Change wording for type.
-                    if (data.type == 'domain') {
-                        data.type = 'category';
+                    if (this.newSkillAwaitingApproval.type == 'domain') {
+                        this.newSkillAwaitingApproval.type = 'category';
                     }
                     // Get parent name.
                     for (
@@ -37,12 +43,24 @@ export default {
                         i < this.skillsStore.skillsList.length;
                         i++
                     ) {
-                        if (this.skillsStore.skillsList[i].id == data.parent) {
-                            data.parent = this.skillsStore.skillsList[i].name;
+                        if (
+                            this.skillsStore.skillsList[i].id ==
+                            this.newSkillAwaitingApproval.parent
+                        ) {
+                            this.newSkillAwaitingApproval.parent =
+                                this.skillsStore.skillsList[i].name;
                         }
                     }
-
-                    this.newSkillAwaitingApproval = data;
+                    // Get user's name.
+                    for (let i = 0; i < this.usersStore.users.length; i++) {
+                        if (
+                            this.usersStore.users[i].id ==
+                            this.newSkillAwaitingApproval.user_id
+                        ) {
+                            this.newSkillAwaitingApproval.userName =
+                                this.usersStore.users[i].username;
+                        }
+                    }
                 });
         },
         dismissSkill() {
@@ -130,6 +148,11 @@ export default {
         <img src="/images/banners/institute-collins-2.png" class="img-fluid" />
     </div>
     <div class="container mt-3">
+        <p id="user-alert">
+            Skill submitted by {{ newSkillAwaitingApproval.userName }}
+        </p>
+    </div>
+    <div class="container mt-3">
         <div id="skill-info-container">
             <!-- Name -->
             <div>
@@ -166,61 +189,55 @@ export default {
                             class="rounded img-fluid"
                         />
                         <!-- Parent -->
-                        <div class="mt-3" style="color: #a48be6">
-                            Parent:
-                            <strong>{{
-                                newSkillAwaitingApproval.parent
-                            }}</strong>
+                        <div class="mt-3">
+                            <h2 class="h4 title">Parent</h2>
+                            {{ newSkillAwaitingApproval.parent }}
                         </div>
                         <!-- Type -->
-                        <div class="mt-3" style="color: #a48be6">
-                            Type:
-                            <strong>{{ newSkillAwaitingApproval.type }}</strong>
+                        <div class="mt-3">
+                            <h2 class="h4 title">Type</h2>
+                            {{ newSkillAwaitingApproval.type }}
                         </div>
                         <!-- Grade level -->
                         <div
                             class="mt-3"
-                            style="color: #a48be6"
                             v-if="newSkillAwaitingApproval.type != 'category'"
                         >
-                            Level:
-                            <strong>
-                                <!-- <div class="h1-title">Level</div> -->
-                                <span
-                                    v-if="
-                                        newSkillAwaitingApproval.level ==
-                                        'grade_school'
-                                    "
-                                    >Grade School</span
-                                >
-                                <span
-                                    v-else-if="
-                                        newSkillAwaitingApproval.level ==
-                                        'middle_school'
-                                    "
-                                    >Middle School</span
-                                >
-                                <span
-                                    v-else-if="
-                                        newSkillAwaitingApproval.level ==
-                                        'high_school'
-                                    "
-                                    >High School</span
-                                >
-                                <span
-                                    v-else-if="
-                                        newSkillAwaitingApproval.level ==
-                                        'college'
-                                    "
-                                    >College</span
-                                >
-                                <span
-                                    v-else-if="
-                                        newSkillAwaitingApproval.level == 'phd'
-                                    "
-                                    >PHD</span
-                                >
-                            </strong>
+                            <h2 class="h4 title">Level</h2>
+                            <!-- <div class="h1-title">Level</div> -->
+                            <span
+                                v-if="
+                                    newSkillAwaitingApproval.level ==
+                                    'grade_school'
+                                "
+                                >Grade School</span
+                            >
+                            <span
+                                v-else-if="
+                                    newSkillAwaitingApproval.level ==
+                                    'middle_school'
+                                "
+                                >Middle School</span
+                            >
+                            <span
+                                v-else-if="
+                                    newSkillAwaitingApproval.level ==
+                                    'high_school'
+                                "
+                                >High School</span
+                            >
+                            <span
+                                v-else-if="
+                                    newSkillAwaitingApproval.level == 'college'
+                                "
+                                >College</span
+                            >
+                            <span
+                                v-else-if="
+                                    newSkillAwaitingApproval.level == 'phd'
+                                "
+                                >PHD</span
+                            >
                         </div>
                     </div>
                 </div>
@@ -282,6 +299,12 @@ export default {
     background-color: #f2edff;
     border-radius: 12px;
     padding: 30px;
+}
+
+#user-alert {
+    background-color: #f2edff;
+    border-radius: 12px;
+    padding: 15px 30px;
 }
 
 .purple-btn {
@@ -346,10 +369,6 @@ export default {
 
 /* Specific phone view css */
 @media (max-width: 576px) {
-    h2 {
-        text-align: center;
-    }
-
     h1 {
         font-size: 2.5rem;
     }
@@ -385,5 +404,10 @@ export default {
     #skill-info-container {
         padding: 15px;
     }
+}
+
+.title {
+    color: #a48be6;
+    font-weight: 700;
 }
 </style>

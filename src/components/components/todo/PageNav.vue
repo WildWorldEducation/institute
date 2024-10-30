@@ -1,6 +1,14 @@
 <script>
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+
 export default {
-    setup() {},
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+
+        return {
+            userDetailsStore
+        };
+    },
     data() {
         return {
             showNavBar: true,
@@ -112,6 +120,10 @@ export default {
                     >
                 </button>
                 <button
+                    v-if="
+                        userDetailsStore.username == 'userDetailsStore' ||
+                        userDetailsStore.role == 'admin'
+                    "
                     :class="[
                         'nav-item-tile',
                         activeContent === 'flagList'
