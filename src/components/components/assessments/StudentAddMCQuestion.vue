@@ -180,7 +180,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a question content !
+                            please enter a question !
                         </div>
                     </div>
                     <div

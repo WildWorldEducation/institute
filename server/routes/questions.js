@@ -1358,6 +1358,57 @@ router.get('/student-mc-questions/list', (req, res, next) => {
 });
 
 /**
+ * Get One Student MC Question
+ */
+router.get('/student-mc-questions/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `
+        SELECT *
+        FROM student_mc_questions
+        WHERE id = ${req.params.id};
+        `;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let question = {
+                    skill_id: results[0].skill_id,
+                    student_id: results[0].student_id,
+                    name: results[0].name,
+                    text: results[0].question,
+                    explanation: results[0].explanation,
+                    correct_answer: results[0].correct_answer,
+                    is_random: results[0].is_random ? true : false
+                };
+
+                let answers = [
+                    { text: results[0].answer_1 },
+                    { text: results[0].answer_2 }
+                ];
+                if (results[0].answer_3) {
+                    answers.push({ text: results[0].answer_3 });
+                }
+                if (results[0].answer_4) {
+                    answers.push({ text: results[0].answer_4 });
+                }
+                if (results[0].answer_5) {
+                    answers.push({ text: results[0].answer_5 });
+                }
+                res.json({
+                    question: question,
+                    answers: answers
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * List Student MC Questions full data
  */
 router.get('/student-mc-questions/full-data-list', (req, res, next) => {

@@ -13,7 +13,7 @@ export default {
         return {
             questionId: this.$route.params.id,
             question: {},
-            answers:[],
+            answers: [],
             // validate object
             validate: {
                 validated: false,
@@ -40,7 +40,9 @@ export default {
                     this.question = data.question;
                     this.answers = data.answers;
                     this.originalQuestion = { ...data.question };
-                    this.originalAnswers = JSON.parse(JSON.stringify(data.answers));
+                    this.originalAnswers = JSON.parse(
+                        JSON.stringify(data.answers)
+                    );
                 });
         },
         // If edit is from an admin or editor.
@@ -58,14 +60,14 @@ export default {
             fetch(url, requestOptions).then(() => {
                 // Delete flag if exist
                 let dismissFlagId = this.$route.query.dismissFlagId;
-                if(dismissFlagId){
+                if (dismissFlagId) {
                     fetch('/content-flags/' + dismissFlagId, {
                         method: 'DELETE'
-                    }).finally(()=>{
+                    }).finally(() => {
                         alert('Question edited successfully.');
                         this.$router.back();
                     });
-                }else{
+                } else {
                     alert('Question edited successfully.');
                     this.$router.back();
                 }
@@ -101,16 +103,13 @@ export default {
                 this.validate.validated = true;
             }
 
-            if (
-                this.question.text === '' ||
-                this.question.text === null
-            ) {
+            if (this.question.text === '' || this.question.text === null) {
                 this.validate.question = true;
                 this.validate.validated = true;
             }
 
-            this.answers.forEach(element => {
-                if(element.text == ''){
+            this.answers.forEach((element) => {
+                if (element.text == '') {
                     this.validate.validated = true;
                 }
             });
@@ -141,7 +140,7 @@ export default {
         },
         addAnswer() {
             if (this.answers.length < 5) {
-                this.answers.push({ text: "" });
+                this.answers.push({ text: '' });
             }
         },
         removeAnswer(index) {
@@ -149,7 +148,7 @@ export default {
                 this.answers.splice(index, 1);
                 // Adjust correct answer selection if necessary
                 if (this.question.correct_answer > this.answers.length) {
-                this.question.correct_answer = this.answers.length;
+                    this.question.correct_answer = this.answers.length;
                 }
             }
         }
@@ -157,8 +156,10 @@ export default {
     computed: {
         isFormChanged() {
             return (
-                JSON.stringify(this.originalQuestion) != JSON.stringify(this.question) ||
-                JSON.stringify(this.originalAnswers) != JSON.stringify(this.answers)
+                JSON.stringify(this.originalQuestion) !=
+                    JSON.stringify(this.question) ||
+                JSON.stringify(this.originalAnswers) !=
+                    JSON.stringify(this.answers)
             );
         }
     }
@@ -215,16 +216,21 @@ export default {
                         <div
                             v-if="
                                 validate.question &&
-                                (question.text === '' ||
-                                    question.text === null)
+                                (question.text === '' || question.text === null)
                             "
                             class="form-validate"
                         >
-                            please enter a question content !
+                            please enter a question !
                         </div>
                     </div>
-                    <div v-for="(answer, index) in answers" :key="index" class="mb-3">
-                        <label class="form-label">Answer {{ index + 1 }}:</label>
+                    <div
+                        v-for="(answer, index) in answers"
+                        :key="index"
+                        class="mb-3"
+                    >
+                        <label class="form-label"
+                            >Answer {{ index + 1 }}:</label
+                        >
                         <div class="d-flex answer-option">
                             <input
                                 v-model="answer.text"
@@ -234,14 +240,31 @@ export default {
                                 class="form-control"
                             />
                             <!-- Remove Answer Button (visible only if more than 2 answers) -->
-                            <button v-if="answers.length > 2" @click="removeAnswer(index)" data-v-ea3cd1bf="" type="button" class="btn btn red-btn p-2" title="Delete answer">
-                                <svg data-v-ea3cd1bf="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="15" height="15" fill="white"><path data-v-ea3cd1bf="" d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"></path></svg>
+                            <button
+                                v-if="answers.length > 2"
+                                @click="removeAnswer(index)"
+                                data-v-ea3cd1bf=""
+                                type="button"
+                                class="btn btn red-btn p-2"
+                                title="Delete answer"
+                            >
+                                <svg
+                                    data-v-ea3cd1bf=""
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="15"
+                                    height="15"
+                                    fill="white"
+                                >
+                                    <path
+                                        data-v-ea3cd1bf=""
+                                        d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"
+                                    ></path>
+                                </svg>
                             </button>
                         </div>
                         <div
-                            v-if="
-                                validate.validated && answer.text === ''
-                            "
+                            v-if="validate.validated && answer.text === ''"
                             class="form-validate"
                         >
                             please enter a correct answer !
@@ -249,17 +272,18 @@ export default {
                         <!-- Correct Answer Radio Button -->
                         <div class="form-check">
                             <input
-                            class="form-check-input"
-                            type="radio"
-                            :id="'correct' + (index + 1)"
-                            name="correctAnswer"
-                            :value="index + 1"
-                            v-model="question.correct_answer"
+                                class="form-check-input"
+                                type="radio"
+                                :id="'correct' + (index + 1)"
+                                name="correctAnswer"
+                                :value="index + 1"
+                                v-model="question.correct_answer"
                             />
-                            <label :for="'correct' + (index + 1)" class="">Set as correct</label>
+                            <label :for="'correct' + (index + 1)" class=""
+                                >Set as correct</label
+                            >
                         </div>
                     </div>
-
                     <!-- Add Answer Button (max 5 answers) -->
                     <div class="mb-3">
                         <button
@@ -267,11 +291,21 @@ export default {
                             @click="addAnswer"
                             class="btn purple-btn"
                         >
-                            <svg width="20" height="20" fill="#ffffff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. --><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>
+                            <svg
+                                width="20"
+                                height="20"
+                                fill="#ffffff"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                            >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                />
+                            </svg>
                             Add Answer
                         </button>
                     </div>
-
                     <!-- Random Order Toggle -->
                     <div class="mb-3 form-check">
                         <input
@@ -280,7 +314,9 @@ export default {
                             v-model="question.is_random"
                             class="form-check-input"
                         />
-                        <label for="randomOrder" class="form-check-label">Show answers in random order</label>
+                        <label for="randomOrder" class="form-check-label"
+                            >Show answers in random order</label
+                        >
                     </div>
 
                     <div class="mb-3">
@@ -298,7 +334,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a explanation !
+                            please enter an explanation !
                         </div>
                     </div>
                     <!--Optional comment if this is a student/instructor submitting an edit for review --->
@@ -368,7 +404,7 @@ export default {
 </template>
 
 <style scoped>
-.answer-option{
+.answer-option {
     gap: 3px;
 }
 .red-btn {
