@@ -245,7 +245,8 @@ router.put('/mc/:id/edit', (req, res, next) => {
             answer_4: req.body.answers[3]?.text || null,
             answer_5: req.body.answers[4]?.text || null,
             explanation: req.body.question.explanation,
-            is_random: req.body.question.is_random
+            is_random: req.body.question.is_random,
+            is_human_edited: 1
         };
         let sqlQuery = `UPDATE mc_questions 
         SET ?
@@ -282,7 +283,7 @@ router.put('/mc/:id/edit', (req, res, next) => {
  *
  * @return response()
  */
-// Edit MC questions
+// Approve MC question edit
 router.put('/mc/:id/approve-edits', (req, res, next) => {
     if (req.session.userName) {
         // Add data.
@@ -297,7 +298,8 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
             answer_4: req.body.answers[3]?.text || null,
             answer_5: req.body.answers[4]?.text || null,
             explanation: req.body.question.explanation,
-            is_random: req.body.question.is_random
+            is_random: req.body.question.is_random,
+            is_human_edited: 1
         };
         let sqlQuery = `UPDATE mc_questions 
         SET ?
@@ -702,7 +704,8 @@ router.put('/essay/:id/edit', (req, res, next) => {
         // Add data.
         let sqlQuery = `UPDATE essay_questions 
             SET name= ${conn.escape(req.body.name)}, 
-            question = ${conn.escape(req.body.question)} 
+            question = ${conn.escape(req.body.question)},
+            is_human_edited = 1 
             WHERE id = ${conn.escape(req.params.id)};`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -734,14 +737,15 @@ router.put('/essay/:id/edit', (req, res, next) => {
 });
 
 /**
- * update essay question
+ * Approve essay question edit submitted for review.
  */
 router.put('/essay/:id/approve-edits', (req, res, next) => {
     if (req.session.userName) {
         // Add data.
         let sqlQuery = `UPDATE essay_questions 
         SET name= ${conn.escape(req.body.name)}, 
-        question = ${conn.escape(req.body.question)} 
+        question = ${conn.escape(req.body.question)},
+        is_human_edited = 1 
         WHERE id = ${conn.escape(req.params.id)};`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -859,7 +863,8 @@ router.put('/image/:id/edit', (req, res, next) => {
         let sqlQuery = `UPDATE image_questions 
         SET name= ${conn.escape(req.body.name)}, 
         question = ${conn.escape(req.body.question)}, 
-        num_images_required = ${conn.escape(req.body.num_images_required)}
+        num_images_required = ${conn.escape(req.body.num_images_required)},
+        is_human_edited = 1
         WHERE id = ${conn.escape(req.params.id)};`;
 
         conn.query(sqlQuery, (err) => {
@@ -989,7 +994,7 @@ router.get('/:skillId/multiple-choice', (req, res, next) => {
 });
 
 /**
- * update image question
+ * Approve image question edit submitted for review.
  */
 router.put('/image/:id/approve-edits', (req, res, next) => {
     if (req.session.userName) {
@@ -997,7 +1002,8 @@ router.put('/image/:id/approve-edits', (req, res, next) => {
         let sqlQuery = `UPDATE image_questions 
         SET name= ${conn.escape(req.body.name)}, 
         question = ${conn.escape(req.body.question)}, 
-        num_images_required = ${conn.escape(req.body.num_images_required)}
+        num_images_required = ${conn.escape(req.body.num_images_required)},
+        is_human_edited = 1
         WHERE id = ${conn.escape(req.params.id)};`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -1150,7 +1156,8 @@ router.post('/mc-questions/add', (req, res, next) => {
             answer_5: req.body.answers[4]?.text || null,
             explanation: req.body.question.explanation,
             skill_id: req.body.skill_id,
-            is_random: req.body.question.is_random
+            is_random: req.body.question.is_random,
+            is_human_edited: 1
         };
         let sqlQuery = 'INSERT INTO mc_questions SET ?';
         conn.query(sqlQuery, data, (err, results) => {
@@ -1188,15 +1195,14 @@ router.post('/mc-questions/add', (req, res, next) => {
  */
 router.post('/essay-questions/add', (req, res, next) => {
     if (req.session.userName) {
-        // No need to escape single quotes for SQL to accept,
-        // as using '?'.
         // Add data.
         let data = {};
         data = {
             name: req.body.name,
             question: req.body.question,
             skill_id: req.body.skill_id,
-            answer_type: req.body.answer_type
+            answer_type: req.body.answer_type,
+            is_human_edited: 1
         };
 
         let sqlQuery = 'INSERT INTO essay_questions SET ?';
@@ -1242,7 +1248,8 @@ router.post('/image-questions/add', (req, res, next) => {
             name: req.body.name,
             question: req.body.question,
             skill_id: req.body.skill_id,
-            num_images_required: req.body.num_images_required
+            num_images_required: req.body.num_images_required,
+            is_human_edited: 1
         };
 
         let sqlQuery = 'INSERT INTO image_questions SET ?';
@@ -1439,7 +1446,7 @@ router.get('/student-mc-questions/full-data-list', (req, res, next) => {
 });
 
 /**
- * Add Student MC Questions
+ * Add Student MC Questions submitted for review
  */
 router.post('/student-mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
@@ -1721,7 +1728,7 @@ router.post('/mark-image-question', async (req, res, next) => {
 });
 
 /**
- * Mark images.
+ * Mark images questions.
  */
 async function aiMarkImageQuestionAnswer(question, answer, level) {
     let prompt = `Please check if '${answer}' answers the question '${question}' correctly.

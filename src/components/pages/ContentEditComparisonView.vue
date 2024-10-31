@@ -76,6 +76,11 @@ export default {
     font-weight: 600;
 }
 
+.img-fluid {
+    height: auto;
+    width: 100%;
+}
+
 h2 {
     color: #a48be6;
     font-size: 30px;

@@ -89,7 +89,7 @@ const router = createRouter({
             path: '/skills/add',
             name: 'add-skill',
             component: () => import('../components/pages/AddSkillView.vue'),
-            meta: { requiresAuth: true, roles: ['admin', 'editor'] }
+            meta: { requiresAuth: true }
         },
         {
             path: '/skills/edit/:skillUrl',
@@ -342,6 +342,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+    // Title tag.
     const baseTitle = 'The Collins Institute';
     if (to.meta.title) {
         document.title = `${to.meta.title} - ${baseTitle}`;
@@ -355,6 +356,21 @@ router.beforeEach(async (to, from, next) => {
     }
     const sessionDetailsStore = useSessionDetailsStore();
     const userDetailsStore = useUserDetailsStore();
+
+    // SEO: canoncial tag.
+    let link = document.createElement('link');
+    link.rel = 'canonical';
+    document.head.appendChild(link);
+    let baseURL = 'https://parrhesia.io';
+
+    // Check if skill page is a copy (ie appears more than once in the tree)
+    let isCopy = to.href.includes('_copy');
+    if (isCopy) {
+        let originalPage = to.href.replace('_copy', '');
+        link.href = baseURL + originalPage;
+    } else {
+        link.href = baseURL + to.href;
+    }
 
     // Check if the user is logged in and fetch session details if not
     if (!sessionDetailsStore.isLoggedIn) {
@@ -443,6 +459,7 @@ router.beforeEach(async (to, from, next) => {
     }
 });
 
+// Scroll to top of page.
 router.afterEach((to, from, next) => {
     window.scrollTo(0, 0);
 });

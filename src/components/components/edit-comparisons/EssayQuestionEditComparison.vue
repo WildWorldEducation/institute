@@ -1,6 +1,9 @@
 <script>
-import diff from 'fast-diff';
 import CompareString from './CompareString.vue';
+import DiffWordsDropDown from './DiffWordsDropDown.vue';
+import ComparisonContainer from './ComparisonContainer.vue';
+import { nextTick } from 'vue';
+
 export default {
     setup() {},
     data() {
@@ -13,26 +16,16 @@ export default {
             isEditMode: false,
             edited: false,
             showHighLight: true,
-            showQuestionChange: true,
-            showNameChange: true,
-            changed: {
-                name: false,
-                question: false
-            },
-            changeCount: {
-                questionAdd: 0,
-                questionRemove: 0,
-                nameAdd: 0,
-                nameRemove: 0
-            },
-            tempEssayEdit: null
+            tempEssayEdit: null,
+            // wait for API call
+            isQuestionLoaded: false
         };
     },
-    components: { CompareString },
+    components: { CompareString, DiffWordsDropDown, ComparisonContainer },
     async created() {
         await this.getEssayQuestionEdit();
         await this.getEssayQuestion();
-        this.compareEdit();
+
         // Auto size text area to show all text without scroll bar.
         const tx = document.getElementsByTagName('textarea');
         for (let i = 0; i < tx.length; i++) {
@@ -68,7 +61,6 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     this.essayQuestionEdit = data;
                     this.comment = data.comment;
                 });
@@ -79,8 +71,8 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     this.essayQuestion = data;
+                    this.isQuestionLoaded = true;
                 });
         },
         edit() {
@@ -133,6 +125,17 @@ export default {
                 this.$router.back();
             }
         },
+        updateTempData(type, value) {
+            switch (type) {
+                case 'essay_name':
+                    this.tempEssayEdit.name = value;
+                    break;
+                case 'essay_question':
+                    this.tempEssayEdit.question = value;
+                default:
+                    break;
+            }
+        },
         editMode() {
             this.isEditMode = true;
         },
@@ -170,59 +173,14 @@ export default {
                 console.log(result.error);
             }
         },
-        // --- Compare all aspect of two question --- //
-        compareEdit() {
-            // --- Name Compare
-            if (
-                this.essayQuestion.name !== this.essayQuestionEdit.name ||
-                this.isEditMode
-            ) {
-                // find the difference between two string
-                this.changed.name = diff(
-                    this.essayQuestion.name,
-                    this.essayQuestionEdit.name
-                );
-                // counting add and remove token in string diff array
-                this.changeCount.nameAdd = this.changed.name.filter((e) => {
-                    return e[0] === 1;
-                }).length;
 
-                this.changeCount.nameRemove = this.changed.name.filter((e) => {
-                    return e[0] === -1;
-                }).length;
-            }
-            // --- Question Content
-            if (
-                this.essayQuestion.question !==
-                    this.essayQuestionEdit.question ||
-                this.isEditMode
-            ) {
-                // find the difference between two string
-                this.changed.question = diff(
-                    this.essayQuestion.question,
-                    this.essayQuestionEdit.question
-                );
-                // counting add and remove token in string diff array
-                this.changeCount.questionAdd = this.changed.question.filter(
-                    (e) => {
-                        return e[0] === 1;
-                    }
-                ).length;
-
-                this.changeCount.questionRemove = this.changed.question.filter(
-                    (e) => {
-                        return e[0] === -1;
-                    }
-                ).length;
-            }
-        },
         applyEditChange() {
-            this.compareEdit();
             this.isEditMode = false;
             this.$parent.disableBtn = false;
             this.edited = true;
             this.essayQuestionEdit = this.tempEssayEdit;
         },
+
         cancelEditChange() {
             this.isEditMode = false;
             this.$parent.disableBtn = false;
@@ -239,16 +197,16 @@ export default {
         </div>
         <!-- General Skill Info -->
         <div class="d-flex flex-column gap-2 mb-3">
-            <div class="d-flex gap-2 align-items-center">
-                <div class="compare-container-tile">Skill:</div>
+            <h1 class="d-flex gap-2 align-items-center header-tile">
+                <div class="major-text">Skill:</div>
                 <div class="minor-text">{{ essayQuestion.skill_name }}</div>
-            </div>
-            <div class="d-flex gap-2 align-items-center">
-                <div class="compare-container-tile">Level:</div>
+            </h1>
+            <h1 class="d-flex gap-2 align-items-center header-tile">
+                <div class="major-text">Level:</div>
                 <div class="minor-text capitalize">
                     {{ toTileCase(essayQuestion.skill_level) }}
                 </div>
-            </div>
+            </h1>
         </div>
         <!-- Show / Hide hight light button -->
         <div class="d-flex flex-row-reverse my-3">
@@ -286,265 +244,32 @@ export default {
             </div>
         </div>
         <!-- ----| Question Name |---- -->
-        <div class="compare-container">
-            <div class="d-flex align-items-center">
-                <h2 class="compare-container-tile mb-3">Name</h2>
-                <div
-                    @click="showNameChange = !showNameChange"
-                    :class="[
-                        showNameChange ? 'expand-arrow' : 'minimize-arrow'
-                    ]"
-                    b-on-hover
-                    :title="showNameChange ? 'minimize' : 'expand'"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="16"
-                        heigh="16"
-                        fill="#475569"
-                    >
-                        <path
-                            d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
-                        />
-                    </svg>
-                </div>
-            </div>
-            <!-- Compare Content -->
-            <Transition name="dropdown">
-                <div v-if="showNameChange && !isEditMode">
-                    <div class="d-flex flex-column">
-                        <div class="d-flex flex-row-reverse gap-4 mb-3">
-                            <div class="add-count">
-                                <span class="plus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#1aa375"
-                                    >
-                                        <path
-                                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.nameAdd }} addition
-                            </div>
-                            <div class="remove-count">
-                                <span class="minus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#ea6c6c"
-                                    >
-                                        <path
-                                            d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.nameRemove }} removal
-                            </div>
-                        </div>
-                        <div class="d-flex flex-lg-row flex-column">
-                            <!-- Old Banner -->
-                            <div class="old-container general-container">
-                                <div class="container-tile">Original</div>
-                                <div class="container-content">
-                                    {{ essayQuestion.name }}
-                                </div>
-                            </div>
-                            <!-- Long arrow pointing right -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="50"
-                                height="50"
-                                fill="#ac90e8"
-                                class="d-none d-lg-block my-auto mx-1"
-                            >
-                                <path
-                                    d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
-                                />
-                            </svg>
-                            <!-- Long arrow pointing down on tablet and mobile-->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 320 512"
-                                fill="#ac90e8"
-                                height="50"
-                                width="50"
-                                class="mx-auto my-2 d-lg-none"
-                            >
-                                <path
-                                    d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
-                                />
-                            </svg>
-                            <div class="new-container general-container">
-                                <div class="container-tile">Changed</div>
-                                <div class="container-content">
-                                    <CompareString
-                                        v-if="changed.name && showHighLight"
-                                        :diffString="changed.name"
-                                    />
-                                    <div
-                                        v-else-if="
-                                            changed.name && !showHighLight
-                                        "
-                                    >
-                                        {{ essayQuestionEdit.name }}
-                                    </div>
-                                    <div v-else>No changed Happened</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-            <!-- Editable Text area -->
-            <Transition name="dropdown">
-                <div v-if="showNameChange && isEditMode">
-                    <div class="d-flex flex-column">
-                        <textarea
-                            class="editable-text-area"
-                            v-model="tempEssayEdit.name"
-                        ></textarea>
-                    </div>
-                </div>
-            </Transition>
-        </div>
+        <ComparisonContainer
+            v-if="isQuestionLoaded"
+            :showHighlight="showHighLight"
+            containerName="Name"
+            :originalData="essayQuestion.name"
+            :newData="essayQuestionEdit.name"
+            :isEditMode="isEditMode"
+            type="essay_name"
+            :updateTempData="updateTempData"
+            :singleComponent="true"
+        />
+
         <!-- ----| Question Content Container |---- -->
-        <div class="compare-container mt-5">
-            <div class="d-flex align-items-center">
-                <h2 class="compare-container-tile mb-3">Question</h2>
-                <div
-                    @click="showQuestionChange = !showQuestionChange"
-                    :class="[
-                        showQuestionChange ? 'expand-arrow' : 'minimize-arrow'
-                    ]"
-                    b-on-hover
-                    :title="showQuestionChange ? 'minimize' : 'expand'"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="16"
-                        heigh="16"
-                        fill="#475569"
-                    >
-                        <path
-                            d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
-                        />
-                    </svg>
-                </div>
-            </div>
-            <!-- Compare Content -->
-            <Transition name="dropdown">
-                <div v-if="showQuestionChange && !isEditMode">
-                    <div class="d-flex flex-column">
-                        <div class="d-flex flex-row-reverse gap-4 mb-3">
-                            <div class="add-count">
-                                <span class="plus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#1aa375"
-                                    >
-                                        <path
-                                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.questionAdd }} addition
-                            </div>
-                            <div class="remove-count">
-                                <span class="minus-icon">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                        height="15"
-                                        width="15"
-                                        fill="#ea6c6c"
-                                    >
-                                        <path
-                                            d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                                        />
-                                    </svg>
-                                </span>
-                                {{ changeCount.questionRemove }} removal
-                            </div>
-                        </div>
-                        <div class="d-flex flex-lg-row flex-column">
-                            <!-- Old Banner -->
-                            <div class="old-container general-container">
-                                <div class="container-tile">Original</div>
-                                <div class="container-content">
-                                    {{ essayQuestion.question }}
-                                </div>
-                            </div>
-                            <!-- Long arrow pointing right -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="50"
-                                height="50"
-                                fill="#ac90e8"
-                                class="d-none d-lg-block my-auto mx-1"
-                            >
-                                <path
-                                    d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
-                                />
-                            </svg>
-                            <!-- Long arrow pointing down on tablet and mobile-->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 320 512"
-                                fill="#ac90e8"
-                                height="50"
-                                width="50"
-                                class="mx-auto my-2 d-lg-none"
-                            >
-                                <path
-                                    d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
-                                />
-                            </svg>
-                            <div class="new-container general-container">
-                                <div class="container-tile">Changed</div>
-                                <div class="container-content">
-                                    <CompareString
-                                        v-if="changed.question && showHighLight"
-                                        :diffString="changed.question"
-                                    />
-                                    <div
-                                        v-else-if="
-                                            changed.question && !showHighLight
-                                        "
-                                    >
-                                        {{ essayQuestionEdit.question }}
-                                    </div>
-                                    <div v-else>No changed Happened</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-            <!-- Editable Text area -->
-            <Transition name="dropdown">
-                <div v-if="showQuestionChange && isEditMode">
-                    <div class="d-flex flex-column">
-                        <textarea
-                            class="editable-text-area"
-                            v-model="tempEssayEdit.question"
-                        ></textarea>
-                    </div>
-                </div>
-            </Transition>
-        </div>
+        <ComparisonContainer
+            v-if="isQuestionLoaded"
+            class="mt-4"
+            :showHighlight="showHighLight"
+            containerName="Question"
+            :originalData="essayQuestion.question"
+            :newData="essayQuestionEdit.question"
+            :isEditMode="isEditMode"
+            type="essay_question"
+            :updateTempData="updateTempData"
+            :singleComponent="true"
+        />
+
         <!-- ----| Buttons Only Shows when User Edit question |---- -->
         <div v-if="isEditMode" class="d-flex flex-row-reverse gap-3">
             <div
@@ -596,7 +321,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 .page-title {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
@@ -611,29 +336,15 @@ export default {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
-.compare-container-tile {
-    color: #a48be7;
+.header-tile {
+    color: #475569;
+    font-size: 18px;
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 22px;
+    font-weight: 500;
 }
 
-.old-container {
-    position: relative;
-    background-color: white;
-    border: 1px solid rgb(163, 42, 42);
-    border-radius: 10px;
-    padding: 10px 15px;
-    color: rgb(163, 42, 42);
-}
-
-.new-container {
-    position: relative;
-    background-color: white;
-    border: 1px solid rgb(46, 126, 38);
-    border-radius: 10px;
-    padding: 10px 15px;
-    color: rgb(46, 126, 38);
+.major-text {
+    color: #a48be7;
 }
 
 .container-tile {
@@ -646,6 +357,7 @@ export default {
     background-color: white;
 }
 
+/* Rotate animation */
 @keyframes rotation {
     from {
         transform: rotate(0deg);
@@ -664,105 +376,6 @@ export default {
     to {
         transform: rotate(0deg);
     }
-}
-
-/* Slide down animation */
-@keyframes slide {
-    0% {
-        opacity: 0;
-        transform: scaleY(0);
-    }
-
-    100% {
-        opacity: 1;
-        transform: scaleY(1);
-    }
-}
-.dropdown-enter-active {
-    transform-origin: top center;
-    animation: slide 0.2s;
-}
-.dropdown-leave-active {
-    transform-origin: top center;
-    animation: slide 0.2s reverse;
-}
-
-/* End of sliding animation */
-.general-container {
-    width: 100%;
-    height: 400;
-    display: flex;
-    justify-content: center;
-}
-
-.container-content {
-    color: black;
-    text-align: left;
-    width: 100%;
-    margin-top: 5px;
-    margin-left: 9px;
-}
-
-.expand-arrow {
-    margin-left: 5px;
-    margin-right: auto;
-    margin-bottom: 10px;
-    animation: rotation 0.2s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-    transform: translate3d(0, 0, 0);
-    cursor: pointer;
-}
-
-.minimize-arrow {
-    margin-left: 5px;
-    margin-right: auto;
-    margin-bottom: 20px;
-    animation: rotationBack 0.2s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-    transform: translate3d(0, 0, 0);
-    cursor: pointer;
-}
-
-.add-count {
-    color: #157a6e;
-    font-size: 16px;
-    font-weight: 500;
-    display: flex;
-    gap: 5px;
-}
-
-.remove-count {
-    color: #b12c2b;
-    font-size: 16px;
-    font-weight: 500;
-    display: flex;
-    gap: 5px;
-}
-
-.plus-icon {
-    background-color: #ccebe0;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0px 5px;
-}
-
-.editable-text-area {
-    border-radius: 5px;
-    border: 1px solid rgb(46, 126, 38);
-    padding: 5px 10px;
-}
-
-.editable-text-area:focus {
-    outline: none;
-}
-
-.minus-icon {
-    background-color: #f9d2d2;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0px 5px;
 }
 
 .comment-text {

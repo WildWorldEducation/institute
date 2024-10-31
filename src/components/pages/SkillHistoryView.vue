@@ -99,10 +99,7 @@ export default {
 
 <template>
     <div id="banner">
-        <img
-            v-bind:src="'/images/banners/skills-banner.png'"
-            class="img-fluid"
-        />
+        <img src="/images/banners/skills-banner.png" class="img-fluid" />
     </div>
     <div class="container">
         <h1>{{ skill.name }}: Revision history</h1>

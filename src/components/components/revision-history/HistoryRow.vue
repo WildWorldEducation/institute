@@ -31,6 +31,7 @@ export default {
             const plainTextPreviousMastery = this.extractContent(
                 this.revision.lastRevision?.mastery_requirements
             );
+
             const masteryDiff = diffWords(
                 plainTextPreviousMastery,
                 plainTextMastery

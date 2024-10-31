@@ -66,6 +66,7 @@ router.get('/:skillId/:versionNumber', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+
                 res.json(results[0]);
             } catch (err) {
                 next(err);
