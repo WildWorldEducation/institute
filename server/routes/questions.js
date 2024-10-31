@@ -440,27 +440,14 @@ router.get(
                         is_random: results[0].is_random ? true : false
                     };
 
-                    console.log(results);
-
                     let answers = [
                         { text: results[0].answer_1 },
-                        { text: results[0].answer_2 }
+                        { text: results[0].answer_2 },
+                        { text: results[0].answer_3 },
+                        { text: results[0].answer_4 },
+                        { text: results[0].answer_5 }
                     ];
-                    if (results[0].answer_3) {
-                        answers.push({ text: results[0].answer_3 });
-                    } else {
-                        answers.push('');
-                    }
-                    if (results[0].answer_4) {
-                        answers.push({ text: results[0].answer_4 });
-                    } else {
-                        answers.push('');
-                    }
-                    if (results[0].answer_5) {
-                        answers.push({ text: results[0].answer_5 });
-                    } else {
-                        answers.push('');
-                    }
+
                     res.json({
                         comment: results[0].comment,
                         question: question,

@@ -51,9 +51,6 @@ export default {
         },
         // --- Compare all aspect of two question --- //
         compareEdit() {
-            console.log(this.originalData);
-            console.log(this.newData);
-
             this.changedWords = diffWords(this.originalData, this.newData);
             // counting add and remove token in string diff array
             const countObj = this.countChangedWords(this.changedWords);

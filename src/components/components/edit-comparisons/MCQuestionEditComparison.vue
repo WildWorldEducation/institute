@@ -38,8 +38,8 @@ export default {
         await this.getEditedQuestion();
         await this.getOriginalQuestion();
 
-        // console.log('original question');
-        // console.log(this.originalQuestion);
+        console.log('original question');
+        console.log(this.originalQuestion);
         // console.log('original answer');
         // console.log(this.originalAnswers);
         for (let i = 0; i < this.numAnswerOptions; i++) {
@@ -47,8 +47,8 @@ export default {
                 this.originalAnswers[i] = '';
         }
 
-        // console.log('edited question');
-        // console.log(this.editedQuestion);
+        console.log('edited question');
+        console.log(this.editedQuestion);
         // console.log('edited answers');
         // console.log(this.editedAnswers);
         for (let i = 0; i < this.numAnswerOptions; i++) {
@@ -356,10 +356,22 @@ export default {
                 <hr />
             </div>
         </div>
+        <!-- Correct answer -->
+        <ComparisonContainer
+            containerName="Correct answer"
+            :originalData="originalQuestion.correct_answer"
+            :newData="editedQuestion.correct_answer"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="mc_correct_answer"
+            :singleComponent="false"
+            class="compare-container mt-5"
+        />
         <!-- ----| Explanation Compare Container -->
         <ComparisonContainer
             v-if="isQuestionLoaded"
-            class="mt-3"
+            class="mt-5"
             containerName="Explanation"
             :originalData="originalQuestion.explanation"
             :newData="editedQuestion.explanation"
