@@ -151,29 +151,27 @@ export default {
         revert(comment) {
             this.showCommentModal = false;
             this.showLoadingModal = true;
-            setTimeout(() => {
+
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    comment: comment
+                })
+            };
+            var url =
+                '/skill-history/' +
+                this.skill.id +
+                '/revert-to/' +
+                this.versionNumber;
+            fetch(url, requestOptions).then(async (res) => {
+                if (!res.ok) {
+                    this.loadingStatus = 'fails';
+                    return;
+                }
                 this.loadingStatus = 'success';
-            }, 4000);
-            // const requestOptions = {
-            //     method: 'PUT',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({
-            //         comment: comment
-            //     })
-            // };
-            // var url =
-            //     '/skill-history/' +
-            //     this.skill.id +
-            //     '/revert-to/' +
-            //     this.versionNumber;
-            // fetch(url, requestOptions).then(async (res) => {
-            //     if (!res.ok) {
-            //         this.loadingStatus = 'fails';
-            //         return;
-            //     }
-            //     this.loadingStatus = 'success';
-            //     await this.showSkillStore.findSkill(this.skillUrl);
-            // });
+                await this.showSkillStore.findSkill(this.skillUrl);
+            });
         },
         closeModal() {
             this.showCommentModal = false;
