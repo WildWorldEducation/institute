@@ -40,7 +40,8 @@ export default {
                     this.question = data.question;
                     this.answers = data.answers;
                     for (let i = 0; i < this.answers.length; i++) {
-                        this.answers[i].show = true;
+                        if (this.answers[i].text !== '')
+                            this.answers[i].show = true;
                     }
                     this.originalQuestion = { ...data.question };
                     this.originalAnswers = JSON.parse(
