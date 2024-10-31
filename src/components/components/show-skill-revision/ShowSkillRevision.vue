@@ -151,7 +151,6 @@ export default {
         revert(comment) {
             this.showCommentModal = false;
             this.showLoadingModal = true;
-
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
