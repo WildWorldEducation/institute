@@ -39,6 +39,9 @@ export default {
                 .then((data) => {
                     this.question = data.question;
                     this.answers = data.answers;
+                    for (let i = 0; i < this.answers.length; i++) {
+                        this.answers[i].show = true;
+                    }
                     this.originalQuestion = { ...data.question };
                     this.originalAnswers = JSON.parse(
                         JSON.stringify(data.answers)
@@ -85,7 +88,6 @@ export default {
                     comment: this.comment
                 })
             };
-
             var url = '/questions/mc/' + this.questionId + '/edit-for-review';
             fetch(url, requestOptions).then(() => {
                 alert(
@@ -109,7 +111,7 @@ export default {
             }
 
             this.answers.forEach((element) => {
-                if (element.text == '') {
+                if (element.text == '' && element.show == true) {
                     this.validate.validated = true;
                 }
             });
@@ -138,18 +140,16 @@ export default {
         closeTab() {
             window.close();
         },
-        addAnswer() {
+        addAnswer(index) {
             if (this.answers.length < 5) {
-                this.answers.push({ text: '' });
+                this.answers[index].text = '';
+                this.answers[index].show = true;
             }
         },
         removeAnswer(index) {
             if (this.answers.length > 2) {
-                this.answers.splice(index, 1);
-                // Adjust correct answer selection if necessary
-                if (this.question.correct_answer > this.answers.length) {
-                    this.question.correct_answer = this.answers.length;
-                }
+                this.answers[index].text = '';
+                this.answers[index].show = false;
             }
         }
     },
@@ -225,6 +225,7 @@ export default {
                     </div>
                     <div
                         v-for="(answer, index) in answers"
+                        v-show="answer.show"
                         :key="index"
                         class="mb-3"
                     >

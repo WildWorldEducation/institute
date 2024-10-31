@@ -354,9 +354,9 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
             correct_answer: req.body.question.correct_answer,
             answer_1: req.body.answers[0].text,
             answer_2: req.body.answers[1].text,
-            answer_3: req.body.answers[2]?.text || null,
-            answer_4: req.body.answers[3]?.text || null,
-            answer_5: req.body.answers[4]?.text || null,
+            answer_3: req.body.answers[2].text,
+            answer_4: req.body.answers[3].text,
+            answer_5: req.body.answers[4].text,
             explanation: req.body.question.explanation,
             is_random: req.body.question.is_random
         };
@@ -368,9 +368,9 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
             correct_answer: req.body.question.correct_answer,
             answer_1: req.body.answers[0].text,
             answer_2: req.body.answers[1].text,
-            answer_3: req.body.answers[2]?.text || null,
-            answer_4: req.body.answers[3]?.text || null,
-            answer_5: req.body.answers[4]?.text || null,
+            answer_3: req.body.answers[2]?.text,
+            answer_4: req.body.answers[3]?.text,
+            answer_5: req.body.answers[4]?.text,
             explanation: req.body.question.explanation,
             is_random: req.body.question.is_random
         };
@@ -440,18 +440,26 @@ router.get(
                         is_random: results[0].is_random ? true : false
                     };
 
+                    console.log(results);
+
                     let answers = [
                         { text: results[0].answer_1 },
                         { text: results[0].answer_2 }
                     ];
                     if (results[0].answer_3) {
                         answers.push({ text: results[0].answer_3 });
+                    } else {
+                        answers.push('');
                     }
                     if (results[0].answer_4) {
                         answers.push({ text: results[0].answer_4 });
+                    } else {
+                        answers.push('');
                     }
                     if (results[0].answer_5) {
                         answers.push({ text: results[0].answer_5 });
+                    } else {
+                        answers.push('');
                     }
                     res.json({
                         comment: results[0].comment,

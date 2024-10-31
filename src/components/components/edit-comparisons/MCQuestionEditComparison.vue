@@ -1,7 +1,6 @@
 <script>
 import CompareString from './CompareString.vue';
 import { nextTick } from 'vue';
-import { diffWords } from 'diff';
 import DiffWordsDropDown from './DiffWordsDropDown.vue';
 import ComparisonContainer from './ComparisonContainer.vue';
 
@@ -11,10 +10,10 @@ export default {
         return {
             mcQuestionId: this.$route.params.contentId,
             userId: this.$route.params.userId,
-            mcQuestion: {},
-            mcQuestionEdit: {},
-            answers: [],
-            answersEdit: [],
+            originalQuestion: {},
+            originalAnswers: [],
+            editedQuestion: {},
+            editedAnswers: [],
             skill_name: null,
             skill_level: null,
             tempMcQuestionEdit: ['', '', '', '', ''],
@@ -24,7 +23,10 @@ export default {
             edited: false,
             showHighLight: true,
             // wait for API call
-            isQuestionLoaded: false
+            isQuestionLoaded: false,
+            numAnswerOptions: null,
+            skillName: '',
+            skillLevel: null
         };
     },
     components: {
@@ -33,11 +35,32 @@ export default {
         ComparisonContainer
     },
     async created() {
-        await this.getMCQuestionEdit();
-        await this.getMCQuestion();
+        await this.getEditedQuestion();
+        await this.getOriginalQuestion();
+
+        // console.log('original question');
+        // console.log(this.originalQuestion);
+        // console.log('original answer');
+        // console.log(this.originalAnswers);
+        for (let i = 0; i < this.numAnswerOptions; i++) {
+            if (typeof this.originalAnswers[i] == 'undefined')
+                this.originalAnswers[i] = '';
+        }
+
+        // console.log('edited question');
+        // console.log(this.editedQuestion);
+        // console.log('edited answers');
+        // console.log(this.editedAnswers);
+        for (let i = 0; i < this.numAnswerOptions; i++) {
+            if (typeof this.editedAnswers[i] == 'undefined')
+                this.editedAnswers[i] = '';
+        }
+
+        // Can now render
+        this.isQuestionLoaded = true;
     },
     methods: {
-        async getMCQuestionEdit() {
+        async getEditedQuestion() {
             await fetch(
                 '/questions/mc/submitted-for-review/' +
                     this.mcQuestionId +
@@ -48,24 +71,36 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
+                    // Get the comment from the edit
                     this.comment = data.comment;
-                    this.mcQuestionEdit = data.question;
-                    this.answersEdit = data.answers;
-                    console.log('answersEdit');
-                    console.log(this.answersEdit);
+                    // The original question.
+                    this.editedQuestion = data.question;
+                    // The original answers.
+                    console.log(data.answers);
+                    this.editedAnswers = data.answers.map((a) => a.text);
+                    // Working out number of answers.
+                    this.numAnswerOptions = data.answers.length;
                 });
         },
-        async getMCQuestion() {
+        async getOriginalQuestion() {
             await fetch('/questions/mc/show/' + this.mcQuestionId)
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => {
-                    this.mcQuestion = data;
-                    this.isQuestionLoaded = true;
+                    // Skill name and level.
+                    this.skillName = data.skill_name;
+                    this.skillLevel = data.skill_level;
+                    // Original question object
+                    this.originalQuestion = data.question;
+                    // Original answers text
+                    console.log(data.answers);
+                    this.originalAnswers = data.answers.map((a) => a.text);
 
-                    console.log('this.mcQuestion');
-                    console.log(this.mcQuestion);
+                    // Check whether original or new answers array is longer. Need to show the longer one.
+                    if (this.originalAnswers.length > this.numAnswerOptions) {
+                        this.numAnswerOptions = this.originalAnswers.length;
+                    }
                 });
         },
         dismissEdit() {
@@ -90,8 +125,10 @@ export default {
         },
         edit() {
             // initiate a temp data of mc question edit
-            this.tempMcQuestionEdit = { ...this.mcQuestionEdit };
-            this.tempAnswersEdit = JSON.parse(JSON.stringify(this.answersEdit));
+            this.tempMcQuestionEdit = { ...this.editedQuestion };
+            this.tempAnswersEdit = JSON.parse(
+                JSON.stringify(this.editedAnswers)
+            );
             this.isEditMode = true;
             this.$parent.disableBtn = true;
             // Auto size text area to show all text without scroll bar in next tick where the text area will appear.
@@ -124,15 +161,15 @@ export default {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    question: this.mcQuestionEdit,
-                    answers: this.answersEdit,
+                    question: this.editedQuestion,
+                    answers: this.editedAnswers,
                     edit: this.edited
                 })
             };
 
             var url =
                 '/questions/mc/' +
-                this.mcQuestionEdit.mc_question_id +
+                this.editedQuestion.mc_question_id +
                 '/approve-edits';
 
             fetch(url, requestOptions).then(() => {
@@ -158,8 +195,10 @@ export default {
             this.edited = true;
             this.isEditMode = false;
             this.$parent.disableBtn = false;
-            this.mcQuestionEdit = { ...this.tempMcQuestionEdit };
-            this.answersEdit = JSON.parse(JSON.stringify(this.tempAnswersEdit));
+            this.editedQuestion = { ...this.tempMcQuestionEdit };
+            this.editedAnswers = JSON.parse(
+                JSON.stringify(this.tempAnswersEdit)
+            );
             this.compareEdit();
         },
         cancelEditMcQuestion() {
@@ -225,30 +264,30 @@ export default {
 
 <template>
     <div class="container mt-4 mb-4">
-        <h1 ref="pageTile" class="page-title">MC Question Change Comparison</h1>
+        <h1 ref="pageTile" class="page-title">Compare Changes</h1>
         <hr />
-        <!-- ---General info of skills -->
+        <!-- Name and Level of Skill -->
         <div class="d-flex flex-column gap-2 mb-3">
             <h1 class="d-flex gap-2 align-items-end header-tile">
                 <div class="major-text">Skill:</div>
                 <div class="minor-text">
-                    {{ toTileCase(mcQuestion.skill_name) }}
+                    {{ toTileCase(skillName) }}
                 </div>
             </h1>
             <h1 class="d-flex gap-2 align-items-end header-tile">
                 <div class="major-text">Level:</div>
                 <div class="minor-text">
-                    {{ toTileCase(mcQuestion.skill_level) }}
+                    {{ toTileCase(skillLevel) }}
                 </div>
             </h1>
         </div>
-        <!-- ----Show and hide High light Button-->
+        <!-- ----Show and hide Highlight button-->
         <div class="d-flex flex-row-reverse my-3">
             <div
                 class="btn green-btn d-flex align-items-center"
                 @click="showHighLight = !showHighLight"
             >
-                {{ showHighLight ? 'Hide' : 'Show' }} Hight Light
+                {{ showHighLight ? 'Hide' : 'Show' }} highlight
                 <svg
                     v-if="showHighLight"
                     xmlns="http://www.w3.org/2000/svg"
@@ -277,12 +316,12 @@ export default {
                 </svg>
             </div>
         </div>
-        <!-- ----| Question Compare Container |---- -->
+        <!-- Compare Question Container -->
         <ComparisonContainer
             v-if="isQuestionLoaded"
             containerName="Question"
-            :originalData="mcQuestion.question.text"
-            :newData="mcQuestionEdit.text"
+            :originalData="originalQuestion.text"
+            :newData="editedQuestion.text"
             :showHighlight="showHighLight"
             :isEditMode="isEditMode"
             :updateTempData="updateTempData"
@@ -290,18 +329,18 @@ export default {
             :singleComponent="true"
         />
 
-        <!-- ----| Answers Compare Container |---- -->
+        <!-- Compare Answers Container -->
 
         <div class="compare-container mt-5">
             <div
-                v-for="(answer, index) in mcQuestion.answers"
+                v-for="(answer, index) in numAnswerOptions"
                 v-if="isQuestionLoaded"
             >
                 <!-- Answers -->
                 <ComparisonContainer
                     containerName="Correct Answer"
-                    :originalData="answer.text"
-                    :newData="answersEdit[index].text"
+                    :originalData="originalAnswers[index]"
+                    :newData="editedAnswers[index]"
                     :showHighlight="showHighLight"
                     :isEditMode="isEditMode"
                     :updateTempData="updateTempData"
@@ -312,72 +351,18 @@ export default {
                     <hr />
                 </div>
             </div>
-            <!-- --Incorrect Answer 1-- -->
-            <!-- <ComparisonContainer
-                v-if="isQuestionLoaded"
-                containerName="Incorrect Answer 1"
-                :originalData="mcQuestion.incorrect_answer_1"
-                :newData="mcQuestionEdit.incorrect_answer_1"
-                :showHighlight="showHighLight"
-                :isEditMode="isEditMode"
-                :updateTempData="updateTempData"
-                type="mc_incorrect_answer_1"
-                :singleComponent="false"
-            />
-            <div class="my-4">
-                <hr />
-            </div> -->
-            <!-- --Incorrect Answer 2-- -->
-            <!-- <ComparisonContainer
-                v-if="isQuestionLoaded"
-                containerName="Incorrect Answer 2"
-                :originalData="mcQuestion.incorrect_answer_2"
-                :newData="mcQuestionEdit.incorrect_answer_2"
-                :showHighlight="showHighLight"
-                :isEditMode="isEditMode"
-                :updateTempData="updateTempData"
-                type="mc_incorrect_answer_2"
-                :singleComponent="false"
-            />
-
-            <div class="my-4">
-                <hr />
-            </div> -->
-            <!-- --Incorrect Answer 3-- -->
-            <!-- <ComparisonContainer
-                v-if="isQuestionLoaded"
-                containerName="Incorrect Answer 3"
-                :originalData="mcQuestion.incorrect_answer_3"
-                :newData="mcQuestionEdit.incorrect_answer_3"
-                :showHighlight="showHighLight"
-                :isEditMode="isEditMode"
-                :updateTempData="updateTempData"
-                type="mc_incorrect_answer_3"
-                :singleComponent="false"
-            />
 
             <div class="my-4">
                 <hr />
             </div>
-            <ComparisonContainer
-                v-if="isQuestionLoaded"
-                containerName="Incorrect Answer 4"
-                :originalData="mcQuestion.incorrect_answer_4"
-                :newData="mcQuestionEdit.incorrect_answer_4"
-                :showHighlight="showHighLight"
-                :isEditMode="isEditMode"
-                :updateTempData="updateTempData"
-                type="mc_incorrect_answer_4"
-                :singleComponent="false"
-            /> -->
         </div>
         <!-- ----| Explanation Compare Container -->
         <ComparisonContainer
             v-if="isQuestionLoaded"
             class="mt-3"
             containerName="Explanation"
-            :originalData="mcQuestion.explanation"
-            :newData="mcQuestionEdit.explanation"
+            :originalData="originalQuestion.explanation"
+            :newData="editedQuestion.explanation"
             :showHighlight="showHighLight"
             :isEditMode="isEditMode"
             :updateTempData="updateTempData"
