@@ -338,7 +338,7 @@ export default {
             >
                 <!-- Answers -->
                 <ComparisonContainer
-                    containerName="Correct Answer"
+                    :containerName="'Answer option ' + (index + 1)"
                     :originalData="originalAnswers[index]"
                     :newData="editedAnswers[index]"
                     :showHighlight="showHighLight"
