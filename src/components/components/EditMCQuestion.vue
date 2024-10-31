@@ -40,8 +40,7 @@ export default {
                     this.question = data.question;
                     this.answers = data.answers;
                     for (let i = 0; i < this.answers.length; i++) {
-                        if (this.answers[i].text !== '')
-                            this.answers[i].show = true;
+                        this.answers[i].show = true;
                     }
                     this.originalQuestion = { ...data.question };
                     this.originalAnswers = JSON.parse(
@@ -141,16 +140,18 @@ export default {
         closeTab() {
             window.close();
         },
-        addAnswer(index) {
+        addAnswer() {
             if (this.answers.length < 5) {
-                this.answers[index].text = '';
-                this.answers[index].show = true;
+                // this.answers[index].text = '';
+                // this.answers[index].show = true;
+                this.answers.push({ text: '' });
             }
         },
         removeAnswer(index) {
             if (this.answers.length > 2) {
-                this.answers[index].text = '';
-                this.answers[index].show = false;
+                this.answers.splice(index, 1);
+                // this.answers[index].text = '';
+                // this.answers[index].show = false;
             }
         }
     },
@@ -290,7 +291,7 @@ export default {
                     <div class="mb-3">
                         <button
                             v-if="answers.length < 5"
-                            @click="addAnswer"
+                            @click="addAnswer()"
                             class="btn purple-btn"
                         >
                             <svg
