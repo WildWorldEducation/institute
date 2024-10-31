@@ -6,17 +6,20 @@ import ConfirmModal from './components/ConfirmModal.vue';
 import CommentModal from './components/CommentModal.vue';
 import CompareWithDropdown from './components/CompareWithDropdown.vue';
 import CompareWithContent from './components/CompareWithContent.vue';
+import { useShowSkillStore } from '../../../stores/ShowSkillStore.js';
+import LoadingModal from './components/LoadingModal.vue';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const skillsStore = useSkillsStore();
         const usersStore = useUsersStore();
-
+        const showSkillStore = useShowSkillStore();
         return {
             userDetailsStore,
             skillsStore,
-            usersStore
+            usersStore,
+            showSkillStore
         };
     },
     data() {
@@ -26,20 +29,22 @@ export default {
             skillRevision: {},
             skillRevisionHistory: [],
             currentVersionNumber: null,
-            revertComment: '',
             isCurrentVersion: false,
             showConfirmModal: false,
             showCommentModal: false,
+            showLoadingModal: false,
             skill: {},
             compareWithRevision: null,
-            currentCompareWithRevision: null
+            currentCompareWithRevision: null,
+            loadingStatus: ''
         };
     },
     components: {
         ConfirmModal,
         CommentModal,
         CompareWithDropdown,
-        CompareWithContent
+        CompareWithContent,
+        LoadingModal
     },
     async mounted() {
         // Get list of skills.
@@ -131,7 +136,6 @@ export default {
                 );
                 return { ...revision, user_name: author.username };
             });
-            console.log(this.skillRevisionHistory);
         },
         confirmRevert() {
             this.showConfirmModal = true;
@@ -144,12 +148,14 @@ export default {
             this.closeModal();
             this.showCommentModal = true;
         },
-        revert() {
+        revert(comment) {
+            this.showCommentModal = false;
+            this.showLoadingModal = true;
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    comment: this.revertComment
+                    comment: comment
                 })
             };
             var url =
@@ -157,7 +163,8 @@ export default {
                 this.skill.id +
                 '/revert-to/' +
                 this.versionNumber;
-            fetch(url, requestOptions).then(() => {
+            fetch(url, requestOptions).then(async () => {
+                await this.showSkillStore.findSkill(this.skillUrl);
                 this.$router.push('/skills/' + this.skill.url);
             });
         },
@@ -304,6 +311,10 @@ export default {
         :showCommentModal="showCommentModal"
         :closeModal="closeModal"
         :revert="revert"
+    />
+    <LoadingModal
+        :showLoadingModal="showLoadingModal"
+        :loadingStatus="loadingStatus"
     />
 </template>
 

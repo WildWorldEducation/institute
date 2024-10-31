@@ -11,6 +11,28 @@ router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
 
+/*
+/AWS S3 images
+*/
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+// S3 needs access to the .env variables
+require('dotenv').config();
+const skillInfoboxImagesBucketName =
+    process.env.S3_SKILL_INFOBOX_IMAGE_BUCKET_NAME;
+const skillInfoboxImageThumbnailsBucketName =
+    process.env.S3_SKILL_INFOBOX_IMAGE_THUMBNAILS_BUCKET_NAME;
+const bucketRegion = process.env.S3_BUCKET_REGION;
+const accessKeyId = process.env.S3_ACCESS_KEY_ID;
+const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
+const s3 = new S3Client({
+    credentials: {
+        accessKeyId: accessKeyId,
+        secretAccessKey: accessSecretKey
+    },
+    region: bucketRegion
+});
+const sharp = require('sharp');
+
 //Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
 const checkRoleHierarchy = require('../middlewares/roleMiddleware');
@@ -100,6 +122,7 @@ router.put(
                         throw err;
                     }
                     skillRevision = results[0];
+
                     // Get the current skill.
                     let getCurrentSkillSqlQuery = `SELECT * 
                     FROM skills 
@@ -120,7 +143,7 @@ router.put(
                             // Insert the current skill into the skill history.
                             let addNewRevisionSqlQuery = `
                             INSERT INTO skill_history
-                            (id, version_number, user_id, name, description, icon_image, banner_image,
+                            (id, version_number, user_id, name, description, icon_image,
                             mastery_requirements, level, skill_history.order, comment)
                             VALUES
                             (${conn.escape(skillRevision.id)},
@@ -130,8 +153,7 @@ router.put(
                                 skillRevision.name
                             )},                    
                             ${conn.escape(skillRevision.description)},
-                            ${conn.escape(currentSkill.icon_image)},
-                            ${conn.escape(currentSkill.banner_image)},
+                            ${conn.escape(skillRevision.icon_image.length > 0 ? skillRevision.icon_image : currentSkill.icon_image)},
                             ${conn.escape(
                                 skillRevision.mastery_requirements
                             )},                    
@@ -172,16 +194,72 @@ router.put(
                                     )}, 
                                     version_number = ${conn.escape(
                                         versionNumber
-                                    )}, 
+                                    )},
+                                    
                                     edited_date = current_timestamp
                                     WHERE id = ${conn.escape(
                                         req.params.skillId
                                     )};`;
 
-                                    conn.query(updateRecordSQLQuery, (err) => {
+                                    conn.query(updateRecordSQLQuery, async (err) => {
                                         try {
                                             if (err) {
+                                                console.error(err)
                                                 throw err;
+                                            }
+                                            /*
+                                            * Send icon image to S3
+                                            */
+
+                                            if (skillRevision.icon_image.length > 1) {
+                                                // Get file from Base64 encoding (client sends as base64)
+                                                let fileData = Buffer.from(
+                                                    skillRevision.icon_image.replace(
+                                                        /^data:image\/\w+;base64,/,
+                                                        ''
+                                                    ),
+                                                    'base64'
+                                                );
+
+                                                let url = currentSkill.url;
+
+                                                let fullSizeData = {
+                                                    // The name it will be saved as on S3
+                                                    Key: url,
+                                                    // The image
+                                                    Body: fileData,
+                                                    ContentEncoding: 'base64',
+                                                    ContentType: 'image/jpeg',
+                                                    // The S3 bucket
+                                                    Bucket: skillInfoboxImagesBucketName
+                                                };
+
+                                                // Send to the bucket.
+                                                const fullSizeCommand = new PutObjectCommand(
+                                                    fullSizeData
+                                                );
+                                                await s3.send(fullSizeCommand);
+
+                                                const thumbnailFileData = await sharp(fileData)
+                                                    .resize({ width: 330 })
+                                                    .toBuffer();
+
+                                                let thumbnailData = {
+                                                    // The name it will be saved as on S3
+                                                    Key: url,
+                                                    // The image
+                                                    Body: thumbnailFileData,
+                                                    ContentEncoding: 'base64',
+                                                    ContentType: 'image/jpeg',
+                                                    // The S3 bucket
+                                                    Bucket: skillInfoboxImageThumbnailsBucketName
+                                                };
+
+                                                // Send to the bucket.
+                                                const thumbnailCommand = new PutObjectCommand(
+                                                    thumbnailData
+                                                );
+                                                await s3.send(thumbnailCommand);
                                             }
                                             res.end();
                                         } catch (err) {

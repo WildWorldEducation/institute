@@ -7,6 +7,7 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
+import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 
 // Import Custom Components
 import FlagModals from './FlagModals.vue';
@@ -23,6 +24,7 @@ export default {
         const skillTreeStore = useSkillTreeStore();
         const userSkillsStore = useUserSkillsStore();
         const sessionDetailsStore = useSessionDetailsStore();
+        const showSkillStore = useShowSkillStore();
 
         // If method hasnt been run before.
         if (tagsStore.tagsList.length == 0) {
@@ -37,7 +39,8 @@ export default {
             skillsStore,
             skillTreeStore,
             userSkillsStore,
-            sessionDetailsStore
+            sessionDetailsStore,
+            showSkillStore
         };
     },
     data() {
@@ -74,9 +77,12 @@ export default {
     },
     methods: {
         async getSkill() {
-            // Load the skill data
-            const res = await fetch('/skills/url/' + this.skillUrl);
-            this.skill = await res.json();
+            // // Load the skill data
+            // const res = await fetch('/skills/url/' + this.skillUrl);
+            // this.skill = await res.json();
+            await this.showSkillStore.findSkill(this.skillUrl);
+            this.skill = this.showSkillStore.skill;
+
             this.skillId = this.skill.id;
 
             // Meta title for SEO
