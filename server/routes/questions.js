@@ -157,17 +157,12 @@ router.get('/mc/show/:id', (req, res, next) => {
 
                 let answers = [
                     { text: results[0].answer_1 },
-                    { text: results[0].answer_2 }
+                    { text: results[0].answer_2 },
+                    { text: results[0].answer_3 },
+                    { text: results[0].answer_4 },
+                    { text: results[0].answer_5 }
                 ];
-                if (results[0].answer_3) {
-                    answers.push({ text: results[0].answer_3 });
-                }
-                if (results[0].answer_4) {
-                    answers.push({ text: results[0].answer_4 });
-                }
-                if (results[0].answer_5) {
-                    answers.push({ text: results[0].answer_5 });
-                }
+
                 res.json({
                     skill_name: results[0].skill_name,
                     skill_level: results[0].skill_level,
@@ -241,9 +236,9 @@ router.put('/mc/:id/edit', (req, res, next) => {
             correct_answer: req.body.question.correct_answer,
             answer_1: req.body.answers[0].text,
             answer_2: req.body.answers[1].text,
-            answer_3: req.body.answers[2]?.text || null,
-            answer_4: req.body.answers[3]?.text || null,
-            answer_5: req.body.answers[4]?.text || null,
+            answer_3: req.body.answers[2].text,
+            answer_4: req.body.answers[3].text,
+            answer_5: req.body.answers[4].text,
             explanation: req.body.question.explanation,
             is_random: req.body.question.is_random,
             is_human_edited: 1
