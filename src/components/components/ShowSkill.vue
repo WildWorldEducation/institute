@@ -66,6 +66,7 @@ export default {
 
     async created() {
         await this.getSkill();
+        this.updateMetaDescription(this.skill.description);
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
             await this.getUserSkills();
@@ -199,7 +200,18 @@ export default {
         },
         imageUrlAlternative(event) {
             event.target.src = '/images/skill-avatar/recurso.png';
-        }
+        },
+        updateMetaDescription(description) {
+            let meta = document.querySelector('meta[name="description"]');
+            if (meta) {
+                meta.setAttribute('content', description);
+            } else {
+                meta = document.createElement('meta');
+                meta.name = 'description';
+                meta.content = description;
+                document.head.appendChild(meta);
+            }
+        },
     },
     /**
      * Because in Vue when only the params change the component instance will NOT be load
