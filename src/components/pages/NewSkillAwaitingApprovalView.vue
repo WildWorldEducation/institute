@@ -79,31 +79,6 @@ export default {
                 this.$router.back();
             }
         },
-        editSkill() {
-            this.showEditMastery = true;
-            this.isEditMode = true;
-            this.$parent.disableBtn = true;
-            nextTick(() => {
-                $('#summernote')
-                    .summernote({
-                        toolbar: [
-                            // [groupName, [list of button]]
-                            ['style', ['bold', 'italic', 'underline', 'clear']],
-                            [
-                                'font',
-                                ['strikethrough', 'superscript', 'subscript']
-                            ],
-                            ['fontsize', ['fontsize']],
-                            ['color', ['color']],
-                            ['para', ['ul', 'ol', 'paragraph']],
-                            ['height', ['height']]
-                        ]
-                    })
-                    .next()
-                    .find('.note-editable')
-                    .attr('contenteditable', true);
-            });
-        },
         saveSkill() {
             const requestOptions = {
                 method: 'PUT',
@@ -247,9 +222,12 @@ export default {
                 <button class="btn red-btn" @click="dismissSkill()">
                     Dismiss
                 </button>
-                <button class="btn purple-btn" @click="editSkill()">
+                <router-link
+                    class="btn purple-btn"
+                    :to="'/new-skill-awaiting-approval/edit/' + id"
+                >
                     Edit
-                </button>
+                </router-link>
                 <button class="btn green-btn" @click="saveSkill()">Save</button>
             </div>
         </div>

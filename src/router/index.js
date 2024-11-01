@@ -340,6 +340,14 @@ const router = createRouter({
                 import('../components/pages/NewSkillAwaitingApprovalView.vue')
         },
         {
+            path: '/new-skill-awaiting-approval/edit/:id',
+            name: 'edit-new-skill-awaiting-approval',
+            component: () =>
+                import(
+                    '../components/pages/EditNewSkillAwaitingApprovalView.vue'
+                )
+        },
+        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')
