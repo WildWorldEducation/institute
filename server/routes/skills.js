@@ -1308,8 +1308,6 @@ router.post(
     (req, res, next) => {
         if (req.session.userName) {
             // For each question.
-            // No need to escape single quotes for SQL to accept,
-            // as using '?'.
             // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
             for (let i = 0; i < req.body.questionArray.length; i++) {
                 // Add skill.
