@@ -174,195 +174,210 @@ export default {
     <div class="container mt-3">
         <h1>Add Multiple Choice Question</h1>
         <!-- Drop down zone for csv file input-->
-        <div class="row mt-5">
-            <div
-                class="dropzone-container mx-lg-3 my-2"
-                @dragover="dragover"
-                @dragleave="dragleave"
-                @drop="drop"
-                :style="isDragging && 'border-color: #8f7bd6;'"
-            >
-                <input
-                    type="file"
-                    multiple
-                    name="file"
-                    id="fileInput"
-                    class="hidden-input"
-                    @change="onChange"
-                    ref="file"
-                    accept=".csv, .txt"
-                />
-                <label for="fileInput" class="file-label">
-                    <div v-if="isDragging">Release to drop files here.</div>
-                    <div v-else>
-                        Drop files here or
-                        <span id="click-here-label">click here</span> to upload
-                        CSV and TXT file.
-                    </div>
-                </label>
-                <!-- List file that uploaded and their size -->
-                <!-- PC styling -->
+        <div>
+            <div class="row mt-5">
                 <div
-                    class="preview-container mt-4 row gap-2 d-none d-lg-flex"
-                    v-if="files.length"
+                    class="dropzone-container mx-lg-3 my-2"
+                    @dragover="dragover"
+                    @dragleave="dragleave"
+                    @drop="drop"
+                    :style="isDragging && 'border-color: #8f7bd6;'"
                 >
-                    <div
-                        v-for="file in files"
-                        :key="file.name"
-                        class="preview-card col-3 d-flex justify-content-between"
-                    >
-                        <div>
-                            <!-- For each type of file we will display difference icon -->
-                            <!-- CSV ICON -->
-                            <svg
-                                v-if="file.type == 'text/csv'"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                fill="green"
-                                width="60"
-                                height="60"
-                            >
-                                <path
-                                    d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V304H176c-35.3 0-64 28.7-64 64V512H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM200 352h16c22.1 0 40 17.9 40 40v8c0 8.8-7.2 16-16 16s-16-7.2-16-16v-8c0-4.4-3.6-8-8-8H200c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8v-8c0-8.8 7.2-16 16-16s16 7.2 16 16v8c0 22.1-17.9 40-40 40H200c-22.1 0-40-17.9-40-40V392c0-22.1 17.9-40 40-40zm133.1 0H368c8.8 0 16 7.2 16 16s-7.2 16-16 16H333.1c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1H304c-8.8 0-16-7.2-16-16s7.2-16 16-16h42.9c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16v31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66V368c0-8.8 7.2-16 16-16s16 7.2 16 16v31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6V368c0-8.8 7.2-16 16-16z"
-                                />
-                            </svg>
-                            <!-- PLAIN TEXT ICON -->
-                            <svg
-                                v-if="file.type == 'text/plain'"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="60"
-                                height="60"
-                                fill="grey"
-                            >
-                                <path
-                                    d="M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120z"
-                                />
-                            </svg>
-                            <p class="">
-                                {{ file.name }}
-                                ({{ Math.round(file.size / 1000) + 'kb' }})
-                            </p>
+                    <input
+                        type="file"
+                        multiple
+                        name="file"
+                        id="fileInput"
+                        class="hidden-input"
+                        @change="onChange"
+                        ref="file"
+                        accept=".csv, .txt"
+                    />
+                    <label for="fileInput" class="file-label">
+                        <div v-if="isDragging">Release to drop files here.</div>
+                        <div v-else>
+                            Drop files here or
+                            <span id="click-here-label">click here</span> to
+                            upload CSV and TXT file.
                         </div>
-                        <div>
-                            <button
-                                class="ms-2 btn btn-danger"
-                                @click="remove(files.indexOf(file), file.name)"
-                                title="Remove file"
-                            >
+                    </label>
+                    <!-- List file that uploaded and their size -->
+                    <!-- PC styling -->
+                    <div
+                        class="preview-container mt-4 row gap-2 d-none d-lg-flex"
+                        v-if="files.length"
+                    >
+                        <div
+                            v-for="file in files"
+                            :key="file.name"
+                            class="preview-card col-3 d-flex justify-content-between"
+                        >
+                            <div>
+                                <!-- For each type of file we will display difference icon -->
+                                <!-- CSV ICON -->
                                 <svg
+                                    v-if="file.type == 'text/csv'"
                                     xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                    fill="white"
-                                    width="16"
-                                    height="16"
+                                    viewBox="0 0 512 512"
+                                    fill="green"
+                                    width="60"
+                                    height="60"
                                 >
                                     <path
-                                        d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                        d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V304H176c-35.3 0-64 28.7-64 64V512H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM200 352h16c22.1 0 40 17.9 40 40v8c0 8.8-7.2 16-16 16s-16-7.2-16-16v-8c0-4.4-3.6-8-8-8H200c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8v-8c0-8.8 7.2-16 16-16s16 7.2 16 16v8c0 22.1-17.9 40-40 40H200c-22.1 0-40-17.9-40-40V392c0-22.1 17.9-40 40-40zm133.1 0H368c8.8 0 16 7.2 16 16s-7.2 16-16 16H333.1c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1H304c-8.8 0-16-7.2-16-16s7.2-16 16-16h42.9c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16v31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66V368c0-8.8 7.2-16 16-16s16 7.2 16 16v31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6V368c0-8.8 7.2-16 16-16z"
                                     />
                                 </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Warning for duplicate file -->
-                    <div class="validate-line mt-3" v-if="duplicates.length">
-                        You have add duplicate csv files. Please remove the
-                        duplicate file for
-                        <span v-for="file in duplicates" :key="file"
-                            >{{ file }}, &ThinSpace;
-                        </span>
-                    </div>
-                    <!-- warning for missing fields -->
-                    <div class="validate-line mt-3" v-if="missingFields.length">
-                        Please check your CSVs files:
-                        <div v-for="file in missingFields" :key="file">
-                            File: {{ file.fileName }} at Line
-                            {{ file.line }} have
-                            {{ file.numberOfMissingField }}
-                            {{ file.missingType }} field than default.
-                            &ThinSpace;
-                        </div>
-                    </div>
-                </div>
-                <!-- Phone Styling -->
-                <div
-                    class="preview-container mt-4 row gap-2 d-lg-none"
-                    v-if="files.length"
-                >
-                    <div
-                        v-for="file in files"
-                        :key="file.name"
-                        class="preview-card col-10 d-flex justify-content-between"
-                    >
-                        <div>
-                            <!-- For each type of file we will display difference icon -->
-                            <!-- CSV ICON -->
-                            <svg
-                                v-if="file.type == 'text/csv'"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                fill="green"
-                                width="60"
-                                height="60"
-                            >
-                                <path
-                                    d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V304H176c-35.3 0-64 28.7-64 64V512H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM200 352h16c22.1 0 40 17.9 40 40v8c0 8.8-7.2 16-16 16s-16-7.2-16-16v-8c0-4.4-3.6-8-8-8H200c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8v-8c0-8.8 7.2-16 16-16s16 7.2 16 16v8c0 22.1-17.9 40-40 40H200c-22.1 0-40-17.9-40-40V392c0-22.1 17.9-40 40-40zm133.1 0H368c8.8 0 16 7.2 16 16s-7.2 16-16 16H333.1c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1H304c-8.8 0-16-7.2-16-16s7.2-16 16-16h42.9c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16v31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66V368c0-8.8 7.2-16 16-16s16 7.2 16 16v31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6V368c0-8.8 7.2-16 16-16z"
-                                />
-                            </svg>
-                            <!-- PLAIN TEXT ICON -->
-                            <svg
-                                v-if="file.type == 'text/plain'"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="60"
-                                height="60"
-                                fill="grey"
-                            >
-                                <path
-                                    d="M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120z"
-                                />
-                            </svg>
-                            <p class="">
-                                {{ file.name }}
-                                ({{ Math.round(file.size / 1000) + 'kb' }})
-                            </p>
-                        </div>
-                        <div>
-                            <button
-                                class="btn btn-danger"
-                                @click="remove(files.indexOf(file), file.name)"
-                                title="Remove file"
-                            >
+                                <!-- PLAIN TEXT ICON -->
                                 <svg
+                                    v-if="file.type == 'text/plain'"
                                     xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                    fill="white"
-                                    width="12"
-                                    height="12"
+                                    viewBox="0 0 512 512"
+                                    width="60"
+                                    height="60"
+                                    fill="grey"
                                 >
                                     <path
-                                        d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                        d="M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120z"
                                     />
                                 </svg>
-                            </button>
+                                <p class="">
+                                    {{ file.name }}
+                                    ({{ Math.round(file.size / 1000) + 'kb' }})
+                                </p>
+                            </div>
+                            <div>
+                                <button
+                                    class="ms-2 btn btn-danger"
+                                    @click="
+                                        remove(files.indexOf(file), file.name)
+                                    "
+                                    title="Remove file"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 448 512"
+                                        fill="white"
+                                        width="16"
+                                        height="16"
+                                    >
+                                        <path
+                                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Warning for duplicate file -->
+                        <div
+                            class="validate-line mt-3"
+                            v-if="duplicates.length"
+                        >
+                            You have add duplicate csv files. Please remove the
+                            duplicate file for
+                            <span v-for="file in duplicates" :key="file"
+                                >{{ file }}, &ThinSpace;
+                            </span>
+                        </div>
+                        <!-- warning for missing fields -->
+                        <div
+                            class="validate-line mt-3"
+                            v-if="missingFields.length"
+                        >
+                            Please check your CSVs files:
+                            <div v-for="file in missingFields" :key="file">
+                                File: {{ file.fileName }} at Line
+                                {{ file.line }} have
+                                {{ file.numberOfMissingField }}
+                                {{ file.missingType }} field than default.
+                                &ThinSpace;
+                            </div>
                         </div>
                     </div>
-                    <!-- warning for missing fields -->
-                    <div class="validate-line mt-3" v-if="missingFields.length">
-                        Please check your CSVs files:
-                        <div v-for="file in missingFields" :key="file">
-                            File: {{ file.fileName }} at Line
-                            {{ file.line }} have
-                            {{ file.numberOfMissingField }}
-                            {{ file.missingType }} field than default.
-                            &ThinSpace;
+                    <!-- Phone Styling -->
+                    <div
+                        class="preview-container mt-4 row gap-2 d-lg-none"
+                        v-if="files.length"
+                    >
+                        <div
+                            v-for="file in files"
+                            :key="file.name"
+                            class="preview-card col-10 d-flex justify-content-between"
+                        >
+                            <div>
+                                <!-- For each type of file we will display difference icon -->
+                                <!-- CSV ICON -->
+                                <svg
+                                    v-if="file.type == 'text/csv'"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    fill="green"
+                                    width="60"
+                                    height="60"
+                                >
+                                    <path
+                                        d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V304H176c-35.3 0-64 28.7-64 64V512H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM200 352h16c22.1 0 40 17.9 40 40v8c0 8.8-7.2 16-16 16s-16-7.2-16-16v-8c0-4.4-3.6-8-8-8H200c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8v-8c0-8.8 7.2-16 16-16s16 7.2 16 16v8c0 22.1-17.9 40-40 40H200c-22.1 0-40-17.9-40-40V392c0-22.1 17.9-40 40-40zm133.1 0H368c8.8 0 16 7.2 16 16s-7.2 16-16 16H333.1c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1H304c-8.8 0-16-7.2-16-16s7.2-16 16-16h42.9c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16v31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66V368c0-8.8 7.2-16 16-16s16 7.2 16 16v31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6V368c0-8.8 7.2-16 16-16z"
+                                    />
+                                </svg>
+                                <!-- PLAIN TEXT ICON -->
+                                <svg
+                                    v-if="file.type == 'text/plain'"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="60"
+                                    height="60"
+                                    fill="grey"
+                                >
+                                    <path
+                                        d="M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120z"
+                                    />
+                                </svg>
+                                <p class="">
+                                    {{ file.name }}
+                                    ({{ Math.round(file.size / 1000) + 'kb' }})
+                                </p>
+                            </div>
+                            <div>
+                                <button
+                                    class="btn btn-danger"
+                                    @click="
+                                        remove(files.indexOf(file), file.name)
+                                    "
+                                    title="Remove file"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 448 512"
+                                        fill="white"
+                                        width="12"
+                                        height="12"
+                                    >
+                                        <path
+                                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- warning for missing fields -->
+                        <div
+                            class="validate-line mt-3"
+                            v-if="missingFields.length"
+                        >
+                            Please check your CSVs files:
+                            <div v-for="file in missingFields" :key="file">
+                                File: {{ file.fileName }} at Line
+                                {{ file.line }} have
+                                {{ file.numberOfMissingField }}
+                                {{ file.missingType }} field than default.
+                                &ThinSpace;
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="mt-3">
-            <div class="btn purple-btn" @click="Submit()">Submit</div>
+            <div class="mt-3">
+                <div class="btn purple-btn" @click="Submit()">Submit</div>
+            </div>
         </div>
         <div class="row mt-4">
             <div class="col-sm-4">
