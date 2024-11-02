@@ -1285,108 +1285,115 @@ router.get('/:id/image-questions/list', (req, res, next) => {
  *
  * @return response()
  */
-router.post('/:id/mc-questions/add', (req, res, next) => {
-    if (req.session.userName) {
-        // No need to escape single quotes for SQL to accept,
-        // as using '?'.
-        // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
-        // For each question.
-        for (let i = 0; i < req.body.questionArray.length; i++) {
-            // Add the questions.
-            let data = {};
-            data = {
-                name: req.body.questionArray[i].name.trim(),
-                question: req.body.questionArray[i].question.trim(),
-                correct_answer: req.body.questionArray[i].correct_answer.trim(),
-                incorrect_answer_1:
-                    req.body.questionArray[i].incorrect_answer_1.trim(),
-                incorrect_answer_2:
-                    req.body.questionArray[i].incorrect_answer_2.trim(),
-                incorrect_answer_3:
-                    req.body.questionArray[i].incorrect_answer_3.trim(),
-                incorrect_answer_4:
-                    req.body.questionArray[i].incorrect_answer_4.trim(),
-                explanation: req.body.questionArray[i].explanation.trim(),
-                skill_id: req.params.id
-            };
-            let sqlQuery = 'INSERT INTO mc_questions SET ?';
-            conn.query(sqlQuery, data, (err, results) => {
-                try {
-                    if (err) {
-                        throw err;
-                    } else {
-                        // add bulk-create mc_question to user_actions
-                        const actionData = {
-                            action: 'bulk-create',
-                            content_type: 'mc_question',
-                            content_id: results.insertId,
-                            user_id: req.session.userId
-                        };
-                        const addActionQuery = `INSERT INTO user_actions SET ?`;
-                        conn.query(addActionQuery, actionData, (err) => {
-                            if (err) {
-                                throw err;
-                            } else {
-                                res.end();
-                            }
-                        });
+router.post(
+    '/:id/mc-questions/add',
+    isAuthenticated,
+    isAdmin,
+    (req, res, next) => {
+        if (req.session.userName) {
+            // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
+            // For each question.
+            for (let i = 0; i < req.body.questionArray.length; i++) {
+                // Add the questions.
+                let data = {};
+                data = {
+                    name: req.body.questionArray[i].name.trim(),
+                    question: req.body.questionArray[i].question.trim(),
+                    correct_answer:
+                        req.body.questionArray[i].correct_answer.trim(),
+                    incorrect_answer_1:
+                        req.body.questionArray[i].incorrect_answer_1.trim(),
+                    incorrect_answer_2:
+                        req.body.questionArray[i].incorrect_answer_2.trim(),
+                    incorrect_answer_3:
+                        req.body.questionArray[i].incorrect_answer_3.trim(),
+                    incorrect_answer_4:
+                        req.body.questionArray[i].incorrect_answer_4.trim(),
+                    explanation: req.body.questionArray[i].explanation.trim(),
+                    skill_id: req.params.id
+                };
+                let sqlQuery = 'INSERT INTO mc_questions SET ?';
+                conn.query(sqlQuery, data, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        } else {
+                            // add bulk-create mc_question to user_actions
+                            const actionData = {
+                                action: 'bulk-create',
+                                content_type: 'mc_question',
+                                content_id: results.insertId,
+                                user_id: req.session.userId
+                            };
+                            const addActionQuery = `INSERT INTO user_actions SET ?`;
+                            conn.query(addActionQuery, actionData, (err) => {
+                                if (err) {
+                                    throw err;
+                                } else {
+                                    res.end();
+                                }
+                            });
+                        }
+                    } catch (err) {
+                        next(err);
                     }
-                } catch (err) {
-                    next(err);
-                }
-            });
+                });
+            }
+        } else {
+            res.redirect('/login');
         }
-    } else {
-        res.redirect('/login');
     }
-});
+);
 
 /**
  * Create New Essay Questions
  * From CSV file.
  * @return response()
  */
-router.post('/:id/essay-questions/add', (req, res, next) => {
-    if (req.session.userName) {
-        // For each question.
-        // No need to escape single quotes for SQL to accept,
-        // as using '?'.
-        // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
-        for (let i = 0; i < req.body.questionArray.length; i++) {
-            // Add skill.
-            let data = {};
-            data = {
-                name: req.body.questionArray[i].name.trim(),
-                question: req.body.questionArray[i].question.trim(),
-                skill_id: req.params.id
-            };
-            let sqlQuery = 'INSERT INTO essay_questions SET ?';
-            query = conn.query(sqlQuery, data, (err, results) => {
-                try {
-                    if (err) {
-                        throw err;
-                    } else {
-                        const actionData = {
-                            action: 'bulk-create',
-                            content_id: results.insertId,
-                            content_type: 'essay_question',
-                            user_id: req.session.userId
-                        };
-                        const addActionQuery = `INSERT INTO user_actions SET ?`;
-                        conn.query(addActionQuery, actionData, (err) => {
-                            if (err) throw err;
-                            else res.end();
-                        });
+router.post(
+    '/:id/essay-questions/add',
+    isAuthenticated,
+    isAdmin,
+    (req, res, next) => {
+        if (req.session.userName) {
+            // For each question.
+            // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
+            for (let i = 0; i < req.body.questionArray.length; i++) {
+                // Add skill.
+                let data = {};
+                data = {
+                    name: req.body.questionArray[i].name.trim(),
+                    question: req.body.questionArray[i].question.trim(),
+                    skill_id: req.params.id
+                };
+                let sqlQuery = 'INSERT INTO essay_questions SET ?';
+                query = conn.query(sqlQuery, data, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        } else {
+                            const actionData = {
+                                action: 'bulk-create',
+                                content_id: results.insertId,
+                                content_type: 'essay_question',
+                                user_id: req.session.userId
+                            };
+                            const addActionQuery = `INSERT INTO user_actions SET ?`;
+                            conn.query(addActionQuery, actionData, (err) => {
+                                if (err) throw err;
+                                else res.end();
+                            });
+                        }
+                    } catch (err) {
+                        next(err);
                     }
-                } catch (err) {
-                    next(err);
-                }
-            });
+                });
+            }
+        } else {
+            res.redirect('/login');
         }
-    } else {
-        res.redirect('/login');
     }
-});
+);
 
 // For the search feature on the Collapsable Skill Tree.
 router.get('/name-list', (req, res, next) => {
