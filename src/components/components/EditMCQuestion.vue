@@ -182,6 +182,9 @@ export default {
                 <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
+        <p class="mt-2">
+            <em>Note: blank questions will not display in the quiz.</em>
+        </p>
         <div class="main-content-container container-fluid mt-4">
             <div class="row p-0">
                 <div id="form-container" class="col-lg-7 p-4">
