@@ -179,6 +179,9 @@ export default {
         },
         updateCompareWithRevision(revision) {
             this.compareWithRevision = revision;
+        },
+        imageUrlAlternative(event) {
+            event.target.src = '/images/skill-avatar/recurso.png';
         }
     }
 };
@@ -243,15 +246,21 @@ export default {
                         <div v-html="skillRevision.mastery_requirements"></div>
                     </div>
                     <div class="info-box p-2 mb-2">
-                        <img
-                            :src="
+                        <a
+                            :href="
+                                'https://institute-skill-infobox-images.s3.amazonaws.com/' +
                                 skillRevision.icon_image
-                                    ? skillRevision.icon_image
-                                    : '/images/skill-avatar/recurso.png'
                             "
-                            @error="imageUrlAlternative"
-                            class="rounded img-fluid"
-                        />
+                        >
+                            <img
+                                :src="
+                                    'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+                                    skillRevision.icon_image
+                                "
+                                @error="imageUrlAlternative"
+                                class="rounded img-fluid"
+                            />
+                        </a>
                         <!-- Grade level -->
                         <div class="mt-3" style="color: #a48be6">
                             Level:
