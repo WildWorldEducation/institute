@@ -14,7 +14,7 @@ export default {
                 case 'success':
                     setTimeout(() => {
                         this.$router.push('/skills/' + this.skillUrl);
-                    }, 4000);
+                    }, 5500);
                     return 'success';
                 default:
                     return 'waiting';

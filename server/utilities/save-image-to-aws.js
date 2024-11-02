@@ -1,5 +1,5 @@
 // S3 needs access to the .env variables
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, CopyObjectCommand, waitUntilObjectExists, } = require('@aws-sdk/client-s3');
 require('dotenv').config();
 const skillInfoboxImagesBucketName =
     process.env.S3_SKILL_INFOBOX_IMAGE_BUCKET_NAME;
@@ -40,8 +40,6 @@ const saveIconToAWS = async (iconImage, skillUrl, editUUID) => {
 
 
     const imageName = `${skillUrl}${editUUID ? `_${editUUID}` : ''}`;
-    console.log('Save image with name: ')
-    console.log(imageName)
     let fullSizeData = {
         // The name it will be saved as on S3
         Key: imageName,
@@ -82,5 +80,38 @@ const saveIconToAWS = async (iconImage, skillUrl, editUUID) => {
 
     return imageName
 }
+/**
+ * Copy an image with another image that already stored in AWS
+ *
+ * @param {*} sourceImageURL - key of the image you want to copy
+ * @param {*} destinationImageURL - key of the image needed to update with the copy
+ */
+const updateSkillIcon = async (sourceImageURL, destinationImageURL) => {
+    try {
+        // Copy Icon 
+        await s3.send(
+            new CopyObjectCommand({
+                CopySource: `${skillInfoboxImagesBucketName}/${sourceImageURL}`,
+                Bucket: skillInfoboxImagesBucketName,
+                Key: destinationImageURL,
+            }),
+        );
 
-module.exports = { saveIconToAWS }
+
+        // Copy Thumbnail
+        await s3.send(
+            new CopyObjectCommand({
+                CopySource: `${skillInfoboxImageThumbnailsBucketName}/${sourceImageURL}`,
+                Bucket: skillInfoboxImageThumbnailsBucketName,
+                Key: destinationImageURL,
+            }),
+        )
+
+        // Copy Thumbnails
+    } catch (err) {
+        console.error(err);
+    }
+
+}
+
+module.exports = { saveIconToAWS, updateSkillIcon }
