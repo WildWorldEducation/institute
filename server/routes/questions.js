@@ -247,7 +247,7 @@ router.put('/mc/:id/edit', (req, res, next) => {
         SET ?
         WHERE id = ${conn.escape(req.params.id)};`;
 
-        conn.query(sqlQuery, data, (err, results) => {
+        conn.query(sqlQuery, data, (err) => {
             try {
                 if (err) {
                     throw err;
@@ -363,9 +363,9 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
             correct_answer: req.body.question.correct_answer,
             answer_1: req.body.answers[0].text,
             answer_2: req.body.answers[1].text,
-            answer_3: req.body.answers[2]?.text,
-            answer_4: req.body.answers[3]?.text,
-            answer_5: req.body.answers[4]?.text,
+            answer_3: req.body.answers[2].text,
+            answer_4: req.body.answers[3].text,
+            answer_5: req.body.answers[4].text,
             explanation: req.body.question.explanation,
             is_random: req.body.question.is_random
         };
@@ -1446,9 +1446,9 @@ router.post('/student-mc-questions/add', (req, res, next) => {
             correct_answer: req.body.question.correct_answer,
             answer_1: req.body.answers[0].text,
             answer_2: req.body.answers[1].text,
-            answer_3: req.body.answers[2]?.text || null,
-            answer_4: req.body.answers[3]?.text || null,
-            answer_5: req.body.answers[4]?.text || null,
+            answer_3: req.body.answers[2].text,
+            answer_4: req.body.answers[3].text,
+            answer_5: req.body.answers[4].text,
             explanation: req.body.question.explanation,
             skill_id: req.body.skill_id,
             is_random: req.body.question.is_random,
