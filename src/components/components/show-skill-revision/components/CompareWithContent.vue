@@ -29,14 +29,9 @@ export default {
                 this.compareWithRevision.name
             );
 
-            const imageDiff =
-                this.viewingRevision.icon_image !==
-                this.compareWithRevision.icon_image;
-
             return {
                 masteryDiff: masteryDiff,
                 nameDiff: nameDiff,
-                imageDiff: imageDiff,
                 skillData: this.compareWithRevision,
                 currentViewingRevision: this.viewingRevision
             };
@@ -139,17 +134,24 @@ export default {
                 </div>
                 <div class="info-box p-2 mb-2">
                     <div v-if="compareData.imageDiff">
-                        Changed Icon Image to:
+                        Icon Image Of Version
+                        {{ compareData.skillData.version_number }}
                     </div>
-                    <img
-                        :src="
+                    <a
+                        :href="
+                            'https://institute-skill-infobox-images.s3.amazonaws.com/' +
                             compareData.skillData.icon_image
-                                ? compareData.skillData.icon_image
-                                : '/images/skill-avatar/recurso.png'
                         "
-                        @error="imageUrlAlternative"
-                        class="rounded img-fluid"
-                    />
+                    >
+                        <img
+                            :src="
+                                'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+                                compareData.skillData.icon_image
+                            "
+                            @error="imageUrlAlternative"
+                            class="rounded img-fluid"
+                        />
+                    </a>
                     <!-- Grade level -->
                     <div class="mt-3" style="color: #a48be6">
                         Level:

@@ -178,6 +178,9 @@ export default {
             this.showLoadingModal = false;
         },
         updateCompareWithRevision(revision) {
+            if (revision.version_number === this.skillRevision.version_number) {
+                return;
+            }
             this.compareWithRevision = revision;
         },
         imageUrlAlternative(event) {
