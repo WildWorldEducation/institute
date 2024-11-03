@@ -97,7 +97,6 @@ const updateSkillIcon = async (sourceImageURL, destinationImageURL) => {
             }),
         );
 
-
         // Copy Thumbnail
         await s3.send(
             new CopyObjectCommand({

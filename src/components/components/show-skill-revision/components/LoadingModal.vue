@@ -14,7 +14,7 @@ export default {
                 case 'success':
                     setTimeout(() => {
                         this.$router.push('/skills/' + this.skillUrl);
-                    }, 5500);
+                    }, 2500);
                     return 'success';
                 default:
                     return 'waiting';
@@ -57,11 +57,6 @@ export default {
                     Revert Success
                 </div>
                 <div>You will go back to skill forum soon.</div>
-                <div>
-                    (Please Press
-                    <span class="keyboard-shortcut">Ctrl + Shift + R</span> if
-                    icon image does not changed )
-                </div>
             </div>
             <div class="d-flex flex-column" v-if="revertResult === 'fails'">
                 <div class="d-flex fails-text align-items-center">
