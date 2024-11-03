@@ -58,8 +58,9 @@ export default {
                 </div>
                 <div>You will go back to skill forum soon.</div>
                 <div>
-                    (Please close and reopen skill forum if icon image does not
-                    changed )
+                    (Please Press
+                    <span class="keyboard-shortcut">Ctrl + Shift + R</span> if
+                    icon image does not changed )
                 </div>
             </div>
             <div class="d-flex flex-column" v-if="revertResult === 'fails'">
@@ -106,6 +107,13 @@ export default {
 
 .fails-text {
     color: #dc2626;
+}
+
+.keyboard-shortcut {
+    color: #74a4c4;
+    background-color: #dce4ec;
+    border-radius: 5px;
+    padding: 0px 5px;
 }
 
 /* Style Specific On Phone */
