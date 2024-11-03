@@ -6,6 +6,7 @@ import { useSkillTagsStore } from '../../stores/SkillTagsStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 import { useRouter } from 'vue-router';
+import LoadingModal from './skill-edit/loadingModal.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -97,7 +98,9 @@ export default {
             orderArray: Array.from({ length: 20 }, (_, i) => i + 1),
             comment: '',
             isAnotherInstanceOfExistingSkill: false,
-            randomNum: 0
+            randomNum: 0,
+            loadingStatus: '',
+            showLoadingModal: false
         };
     },
     async mounted() {
@@ -268,6 +271,7 @@ export default {
         },
         // If edit is from an admin or editor.
         Submit() {
+            this.showLoadingModal = true;
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
                 var hasSubSkills = false;
@@ -282,6 +286,7 @@ export default {
                 if (hasSubSkills) {
                     this.validate.superValidate = true;
                     this.validate.violated = true;
+                    this.closeModal();
                     alert(
                         'Please delete outer cluster nodes belonging to the skill, before changing its type.'
                     );
@@ -297,6 +302,7 @@ export default {
                 if (this.skill.parent == 0) {
                     this.validate.orphan = true;
                     this.validate.violated = true;
+                    this.closeModal();
                     alert('cluster nodes must have a parent');
                 }
                 for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
@@ -312,6 +318,7 @@ export default {
                     ) {
                         this.validate.noChild = true;
                         this.validate.violated = true;
+                        this.closeModal();
                         alert(
                             "please delete this node's child skills, before changing it to a cluster child skill"
                         );
@@ -336,6 +343,7 @@ export default {
 
             // We End function here if any of the validate is violated
             if (this.validate.violated) {
+                this.closeModal();
                 return;
             }
 
@@ -362,9 +370,14 @@ export default {
 
             var url = '/skills/' + this.skill.id + '/edit';
             fetch(url, requestOptions)
-                .then(() => {
-                    this.skillsStore.getNestedSkillsList();
-                    this.SubmitFilters();
+                .then((res) => {
+                    if (res.ok) {
+                        this.loadingStatus = 'success';
+                        this.skillsStore.getNestedSkillsList();
+                        this.SubmitFilters();
+                    } else {
+                        this.loadingStatus = 'fails';
+                    }
                 })
                 .then(() => {
                     // Delete flag if exist
@@ -479,7 +492,13 @@ export default {
             } else {
                 this.step2Confirm = false;
             }
+        },
+        closeModal() {
+            this.showLoadingModal = false;
         }
+    },
+    components: {
+        LoadingModal
     }
 };
 </script>
@@ -1162,6 +1181,12 @@ export default {
             </div>
         </div>
     </div>
+    <LoadingModal
+        :skillUrl="skillUrl"
+        :loadingStatus="loadingStatus"
+        :showLoadingModal="showLoadingModal"
+        :closeModal="closeModal"
+    />
 </template>
 
 <style scoped>
