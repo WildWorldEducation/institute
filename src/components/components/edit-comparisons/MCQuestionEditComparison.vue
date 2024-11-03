@@ -24,7 +24,7 @@ export default {
             showHighLight: true,
             // wait for API call
             isQuestionLoaded: false,
-            numAnswerOptions: null,
+            numAnswerOptions: 5,
             skillName: '',
             skillLevel: null
         };
@@ -42,19 +42,19 @@ export default {
         console.log(this.originalQuestion);
         // console.log('original answer');
         // console.log(this.originalAnswers);
-        for (let i = 0; i < this.numAnswerOptions; i++) {
-            if (typeof this.originalAnswers[i] == 'undefined')
-                this.originalAnswers[i] = '';
-        }
+        // for (let i = 0; i < this.numAnswerOptions; i++) {
+        //     if (typeof this.originalAnswers[i] == 'undefined')
+        //         this.originalAnswers[i] = '';
+        // }
 
         console.log('edited question');
         console.log(this.editedQuestion);
         // console.log('edited answers');
         // console.log(this.editedAnswers);
-        for (let i = 0; i < this.numAnswerOptions; i++) {
-            if (typeof this.editedAnswers[i] == 'undefined')
-                this.editedAnswers[i] = '';
-        }
+        // for (let i = 0; i < this.numAnswerOptions; i++) {
+        //     if (typeof this.editedAnswers[i] == 'undefined')
+        //         this.editedAnswers[i] = '';
+        // }
 
         // Can now render
         this.isQuestionLoaded = true;
@@ -76,10 +76,10 @@ export default {
                     // The original question.
                     this.editedQuestion = data.question;
                     // The original answers.
-                    console.log(data.answers);
+                    //console.log(data.answers);
                     this.editedAnswers = data.answers.map((a) => a.text);
                     // Working out number of answers.
-                    this.numAnswerOptions = data.answers.length;
+                    // this.numAnswerOptions = data.answers.length;
                 });
         },
         async getOriginalQuestion() {
@@ -94,13 +94,13 @@ export default {
                     // Original question object
                     this.originalQuestion = data.question;
                     // Original answers text
-                    console.log(data.answers);
+                    //console.log(data.answers);
                     this.originalAnswers = data.answers.map((a) => a.text);
 
                     // Check whether original or new answers array is longer. Need to show the longer one.
-                    if (this.originalAnswers.length > this.numAnswerOptions) {
-                        this.numAnswerOptions = this.originalAnswers.length;
-                    }
+                    // if (this.originalAnswers.length > this.numAnswerOptions) {
+                    //     this.numAnswerOptions = this.originalAnswers.length;
+                    // }
                 });
         },
         dismissEdit() {
@@ -215,7 +215,7 @@ export default {
         },
         updateTempData(type, value) {
             switch (type) {
-                case 'mc_question':
+                case 'question':
                     this.tempMcQuestionEdit.question = value;
                     break;
                 case 'mc_correct_answer':
@@ -330,13 +330,11 @@ export default {
         />
 
         <!-- Compare Answers Container -->
-
         <div class="compare-container mt-5">
             <div
                 v-for="(answer, index) in numAnswerOptions"
                 v-if="isQuestionLoaded"
             >
-                <!-- Answers -->
                 <ComparisonContainer
                     :containerName="'Answer option ' + (index + 1)"
                     :originalData="originalAnswers[index]"
@@ -356,11 +354,26 @@ export default {
                 <hr />
             </div>
         </div>
+
         <!-- Correct answer -->
         <ComparisonContainer
+            v-if="isQuestionLoaded"
             containerName="Correct answer"
-            :originalData="originalQuestion.correct_answer"
-            :newData="editedQuestion.correct_answer"
+            :originalData="originalQuestion.correct_answer.toString()"
+            :newData="editedQuestion.correct_answer.toString()"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            type="correct_answer"
+            :singleComponent="true"
+            class="compare-container mt-5"
+        />
+
+        <!-- Is Random -->
+        <ComparisonContainer
+            v-if="isQuestionLoaded"
+            containerName="Is Random"
+            :originalData="originalQuestion.is_random.toString()"
+            :newData="editedQuestion.is_random.toString()"
             :showHighlight="showHighLight"
             :isEditMode="isEditMode"
             :updateTempData="updateTempData"
@@ -368,6 +381,7 @@ export default {
             :singleComponent="false"
             class="compare-container mt-5"
         />
+
         <!-- ----| Explanation Compare Container -->
         <ComparisonContainer
             v-if="isQuestionLoaded"
