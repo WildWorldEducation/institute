@@ -1133,7 +1133,6 @@ router.get('/image/list', (req, res, next) => {
  */
 router.post('/mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
-        // Add data.
         let data = {};
         data = {
             name: req.body.question.name,
@@ -1141,9 +1140,9 @@ router.post('/mc-questions/add', (req, res, next) => {
             correct_answer: req.body.question.correct_answer,
             answer_1: req.body.answers[0].text,
             answer_2: req.body.answers[1].text,
-            answer_3: req.body.answers[2]?.text || null,
-            answer_4: req.body.answers[3]?.text || null,
-            answer_5: req.body.answers[4]?.text || null,
+            answer_3: req.body.answers[2].text,
+            answer_4: req.body.answers[3].text,
+            answer_5: req.body.answers[4].text,
             explanation: req.body.question.explanation,
             skill_id: req.body.skill_id,
             is_random: req.body.question.is_random,
