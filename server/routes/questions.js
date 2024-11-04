@@ -287,11 +287,11 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
             name: req.body.question.name,
             question: req.body.question.text,
             correct_answer: req.body.question.correct_answer,
-            answer_1: req.body.answers[0].text,
-            answer_2: req.body.answers[1].text,
-            answer_3: req.body.answers[2]?.text || null,
-            answer_4: req.body.answers[3]?.text || null,
-            answer_5: req.body.answers[4]?.text || null,
+            answer_1: req.body.answers[0],
+            answer_2: req.body.answers[1],
+            answer_3: req.body.answers[2],
+            answer_4: req.body.answers[3],
+            answer_5: req.body.answers[4],
             explanation: req.body.question.explanation,
             is_random: req.body.question.is_random,
             is_human_edited: 1
@@ -300,7 +300,7 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
         SET ?
         WHERE id = ${conn.escape(req.params.id)};`;
 
-        conn.query(sqlQuery, data, (err, results) => {
+        conn.query(sqlQuery, data, (err) => {
             try {
                 if (err) {
                     throw err;
