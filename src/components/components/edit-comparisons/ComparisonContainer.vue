@@ -249,6 +249,33 @@ export default {
                         <option value="4">4</option>
                         <option value="5">5</option>
                     </select>
+                    <div v-if="type == 'is_random'">
+                        <p>
+                            <label>true</label>
+                            <input
+                                class="ms-2"
+                                v-model="textEditData"
+                                @change="
+                                    updateTempData(this.type, this.textEditData)
+                                "
+                                type="radio"
+                                :value="true"
+                            />
+                        </p>
+
+                        <p>
+                            <label>false</label>
+                            <input
+                                class="ms-2"
+                                v-model="textEditData"
+                                @change="
+                                    updateTempData(this.type, this.textEditData)
+                                "
+                                :value="false"
+                                type="radio"
+                            />
+                        </p>
+                    </div>
                 </div>
             </div>
         </Transition>
