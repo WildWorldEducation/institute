@@ -54,11 +54,6 @@ export default {
                     Revert Success
                 </div>
                 <div>You will go back to skill forum soon.</div>
-                <div>
-                    (Please Press
-                    <span class="keyboard-shortcut">Ctrl + Shift + R</span> if
-                    icon image does not changed )
-                </div>
             </div>
             <div class="d-flex flex-column" v-if="revertResult === 'fails'">
                 <div class="d-flex fails-text align-items-center">

@@ -43,12 +43,12 @@ export default {
         >
             <button @click="showDropDown = !showDropDown" class="dropdown-btn">
                 <div class="d-flex">
-                    Compare With -
+                    <div>Compare With -</div>
                     <div v-if="!compareWithVersion">none</div>
                     <div v-else>
-                        <div class="d-flex ms-2 d-none d-md-block">
+                        <div class="d-flex d-none d-md-block ms-1">
                             Version
-                            <span class="revision-strong-text ms-2">{{
+                            <span class="revision-strong-text">{{
                                 compareWithVersion.version_number
                             }}</span
                             >, Edit Date:
@@ -57,7 +57,7 @@ export default {
                                     formatDate(compareWithVersion.edited_date)
                                 }} </span
                             >, by
-                            <span class="revision-strong-text ms-2">
+                            <span class="revision-strong-text">
                                 {{ compareWithVersion.user_name }}
                             </span>
                         </div>

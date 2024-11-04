@@ -245,7 +245,7 @@ export default {
                     />
                 </div>
                 <!-- A line divide -->
-                <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
+                <hr class="border border-1 opacity-100 hr" />
                 <div class="d-flex flex-column-reverse flex-md-row gap-4">
                     <div class="mastery-requirements">
                         <div v-html="skillRevision.mastery_requirements"></div>
