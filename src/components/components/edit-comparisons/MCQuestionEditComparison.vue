@@ -37,17 +37,7 @@ export default {
     async created() {
         await this.getEditedQuestion();
         await this.getOriginalQuestion();
-
-        // console.log('original question');
-        // console.log(this.originalQuestion);
-        // console.log('original answer');
-        // console.log(this.originalAnswers);
-
-        // console.log('edited question');
-        // console.log(this.editedQuestion);
-        // console.log('edited answers');
-        // console.log(this.editedAnswers);
-
+        
         // Can now render
         this.isQuestionLoaded = true;
     },
