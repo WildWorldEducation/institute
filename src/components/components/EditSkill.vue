@@ -100,7 +100,8 @@ export default {
             isAnotherInstanceOfExistingSkill: false,
             randomNum: 0,
             loadingStatus: '',
-            showLoadingModal: false
+            showLoadingModal: false,
+            originalSkill: {}
         };
     },
     async mounted() {
@@ -136,12 +137,12 @@ export default {
                 })
                 .then((data) => {
                     this.skill = data;
+                    this.originalSkill = { ...data };
                     if (this.skill.is_copy_of_skill_id != null) {
                         this.isAnotherInstanceOfExistingSkill = true;
                     }
                 })
                 .then(() => {
-                    //this.iconImage = this.skill.icon_image;
                     this.randomNum = Math.random();
 
                     if (
@@ -168,7 +169,13 @@ export default {
                                 ['table', ['table']],
                                 ['insert', ['link']],
                                 ['view', ['fullscreen', 'codeview', 'help']]
-                            ]
+                            ],
+                            callbacks: {
+                                // To determine if content has changed, to unlock the "Submit" button.
+                                onChange: (contents) => {
+                                    this.skill.mastery_requirements = contents;
+                                }
+                            }
                         })
                         .summernote('code', this.skill.mastery_requirements);
                     // Background for fullscreen view.
@@ -499,6 +506,19 @@ export default {
     },
     components: {
         LoadingModal
+    },
+    computed: {
+        isFormChanged() {
+            return (
+                this.skill.name !== this.originalSkill.name ||
+                this.skill.parent !== this.originalSkill.parent ||
+                this.iconImage !== '' ||
+                this.skill.type !== this.originalSkill.type ||
+                this.skill.level !== this.originalSkill.level ||
+                this.skill.mastery_requirements !==
+                    this.originalSkill.mastery_requirements
+            );
+        }
     }
 };
 </script>
@@ -1071,6 +1091,7 @@ export default {
                             userDetailsStore.role == 'admin' ||
                             userDetailsStore.role == 'editor'
                         "
+                        :disabled="!isFormChanged"
                         class="btn purple-btn"
                         @click="Submit()"
                     >
@@ -1095,6 +1116,7 @@ export default {
                             userDetailsStore.role == 'student'
                         "
                         class="btn purple-btn"
+                        :disabled="!isFormChanged"
                         @click="SubmitForReview()"
                     >
                         <div class="d-none d-md-block">Submit for review</div>

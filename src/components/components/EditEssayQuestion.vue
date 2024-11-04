@@ -35,7 +35,6 @@ export default {
                 .then((data) => {
                     this.question = data;
                     this.originalQuestion = { ...data };
-                    console.log(this.question);
                 });
         },
         // If edit is from an admin or editor.
@@ -53,13 +52,13 @@ export default {
             fetch(url, requestOptions).then(() => {
                 // Delete flag if exist
                 let dismissFlagId = this.$route.query.dismissFlagId;
-                if(dismissFlagId){
+                if (dismissFlagId) {
                     fetch('/content-flags/' + dismissFlagId, {
                         method: 'DELETE'
-                    }).finally(()=>{
+                    }).finally(() => {
                         this.$router.back();
                     });
-                }else{
+                } else {
                     this.$router.back();
                 }
             });

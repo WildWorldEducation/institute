@@ -749,7 +749,8 @@ router.put(
                         level = ${conn.escape(req.body.level)}, 
                         skills.order = ${conn.escape(req.body.order)}, 
                         version_number = ${conn.escape(versionNumber)}, 
-                        edited_date = current_timestamp
+                        edited_date = current_timestamp, 
+                        is_human_edited = 1
                         WHERE id = ${conn.escape(req.params.id)};`;
 
                     conn.query(updateRecordSQLQuery, async (err, results) => {
@@ -913,58 +914,61 @@ router.put(
                             /*
                              * Send icon image to S3
                              */
-                            // Get file from Base64 encoding (client sends as base64)
-                            let fileData = Buffer.from(
-                                req.body.icon_image.replace(
-                                    /^data:image\/\w+;base64,/,
-                                    ''
-                                ),
-                                'base64'
-                            );
+                            if (req.body.icon_image.length > 1) {
+                                // Get file from Base64 encoding (client sends as base64)
+                                let fileData = Buffer.from(
+                                    req.body.icon_image.replace(
+                                        /^data:image\/\w+;base64,/,
+                                        ''
+                                    ),
+                                    'base64'
+                                );
 
-                            let fullSizeData = {
-                                // The name it will be saved as on S3
-                                Key: url,
-                                // The image
-                                Body: fileData,
-                                ContentEncoding: 'base64',
-                                ContentType: 'image/jpeg',
-                                // The S3 bucket
-                                Bucket: skillInfoboxImagesBucketName
-                            };
+                                let fullSizeData = {
+                                    // The name it will be saved as on S3
+                                    Key: url,
+                                    // The image
+                                    Body: fileData,
+                                    ContentEncoding: 'base64',
+                                    ContentType: 'image/jpeg',
+                                    // The S3 bucket
+                                    Bucket: skillInfoboxImagesBucketName
+                                };
 
-                            // Send to the bucket.
-                            const fullSizeCommand = new PutObjectCommand(
-                                fullSizeData
-                            );
-                            await s3.send(fullSizeCommand);
+                                // Send to the bucket.
+                                const fullSizeCommand = new PutObjectCommand(
+                                    fullSizeData
+                                );
+                                await s3.send(fullSizeCommand);
 
-                            const thumbnailFileData = await sharp(fileData)
-                                .resize({ width: 330 })
-                                .toBuffer();
+                                const thumbnailFileData = await sharp(fileData)
+                                    .resize({ width: 330 })
+                                    .toBuffer();
 
-                            let thumbnailData = {
-                                // The name it will be saved as on S3
-                                Key: url,
-                                // The image
-                                Body: thumbnailFileData,
-                                ContentEncoding: 'base64',
-                                ContentType: 'image/jpeg',
-                                // The S3 bucket
-                                Bucket: skillInfoboxImageThumbnailsBucketName
-                            };
+                                let thumbnailData = {
+                                    // The name it will be saved as on S3
+                                    Key: url,
+                                    // The image
+                                    Body: thumbnailFileData,
+                                    ContentEncoding: 'base64',
+                                    ContentType: 'image/jpeg',
+                                    // The S3 bucket
+                                    Bucket: skillInfoboxImageThumbnailsBucketName
+                                };
 
-                            // Send to the bucket.
-                            const thumbnailCommand = new PutObjectCommand(
-                                thumbnailData
-                            );
-                            await s3.send(thumbnailCommand);
+                                // Send to the bucket.
+                                const thumbnailCommand = new PutObjectCommand(
+                                    thumbnailData
+                                );
+                                await s3.send(thumbnailCommand);
+                            }
 
                             // Update record in skill table.
                             let updateRecordSQLQuery = `UPDATE skills SET 
                             mastery_requirements = ${conn.escape(
                                 req.body.mastery_requirements
-                            )},                                                        
+                            )},      
+                            is_human_edited = 1,                                                  
                             version_number = ${conn.escape(
                                 versionNumber
                             )}                               
@@ -1150,7 +1154,7 @@ router.get('/:id/resources', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `SELECT resources.id, resources.user_id, resources.skill_id, resources.content,
-resources.created_at, users.username, users.avatar  
+resources.created_at, resources.is_human_edited, users.username, users.avatar  
 FROM resources
 JOIN users ON resources.user_id = users.id
 WHERE skill_id= ${conn.escape(req.params.id)}
@@ -1241,108 +1245,115 @@ router.get('/:id/image-questions/list', (req, res, next) => {
  *
  * @return response()
  */
-router.post('/:id/mc-questions/add', (req, res, next) => {
-    if (req.session.userName) {
-        // No need to escape single quotes for SQL to accept,
-        // as using '?'.
-        // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
-        // For each question.
-        for (let i = 0; i < req.body.questionArray.length; i++) {
-            // Add the questions.
-            let data = {};
-            data = {
-                name: req.body.questionArray[i].name.trim(),
-                question: req.body.questionArray[i].question.trim(),
-                correct_answer: req.body.questionArray[i].correct_answer.trim(),
-                incorrect_answer_1:
-                    req.body.questionArray[i].incorrect_answer_1.trim(),
-                incorrect_answer_2:
-                    req.body.questionArray[i].incorrect_answer_2.trim(),
-                incorrect_answer_3:
-                    req.body.questionArray[i].incorrect_answer_3.trim(),
-                incorrect_answer_4:
-                    req.body.questionArray[i].incorrect_answer_4.trim(),
-                explanation: req.body.questionArray[i].explanation.trim(),
-                skill_id: req.params.id
-            };
-            let sqlQuery = 'INSERT INTO mc_questions SET ?';
-            conn.query(sqlQuery, data, (err, results) => {
-                try {
-                    if (err) {
-                        throw err;
-                    } else {
-                        // add bulk-create mc_question to user_actions
-                        const actionData = {
-                            action: 'bulk-create',
-                            content_type: 'mc_question',
-                            content_id: results.insertId,
-                            user_id: req.session.userId
-                        };
-                        const addActionQuery = `INSERT INTO user_actions SET ?`;
-                        conn.query(addActionQuery, actionData, (err) => {
-                            if (err) {
-                                throw err;
-                            } else {
-                                res.end();
-                            }
-                        });
+router.post(
+    '/:id/mc-questions/add',
+    isAuthenticated,
+    isAdmin,
+    (req, res, next) => {
+        if (req.session.userName) {
+            // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
+            // For each question.
+            for (let i = 0; i < req.body.questionArray.length; i++) {
+                // Add the questions.
+                let data = {};
+                data = {
+                    name: req.body.questionArray[i].name.trim(),
+                    question: req.body.questionArray[i].question.trim(),
+                    correct_answer:
+                        req.body.questionArray[i].correct_answer.trim(),
+                    incorrect_answer_1:
+                        req.body.questionArray[i].incorrect_answer_1.trim(),
+                    incorrect_answer_2:
+                        req.body.questionArray[i].incorrect_answer_2.trim(),
+                    incorrect_answer_3:
+                        req.body.questionArray[i].incorrect_answer_3.trim(),
+                    incorrect_answer_4:
+                        req.body.questionArray[i].incorrect_answer_4.trim(),
+                    explanation: req.body.questionArray[i].explanation.trim(),
+                    skill_id: req.params.id
+                };
+                let sqlQuery = 'INSERT INTO mc_questions SET ?';
+                conn.query(sqlQuery, data, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        } else {
+                            // add bulk-create mc_question to user_actions
+                            const actionData = {
+                                action: 'bulk-create',
+                                content_type: 'mc_question',
+                                content_id: results.insertId,
+                                user_id: req.session.userId
+                            };
+                            const addActionQuery = `INSERT INTO user_actions SET ?`;
+                            conn.query(addActionQuery, actionData, (err) => {
+                                if (err) {
+                                    throw err;
+                                } else {
+                                    res.end();
+                                }
+                            });
+                        }
+                    } catch (err) {
+                        next(err);
                     }
-                } catch (err) {
-                    next(err);
-                }
-            });
+                });
+            }
+        } else {
+            res.redirect('/login');
         }
-    } else {
-        res.redirect('/login');
     }
-});
+);
 
 /**
  * Create New Essay Questions
  * From CSV file.
  * @return response()
  */
-router.post('/:id/essay-questions/add', (req, res, next) => {
-    if (req.session.userName) {
-        // For each question.
-        // No need to escape single quotes for SQL to accept,
-        // as using '?'.
-        // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
-        for (let i = 0; i < req.body.questionArray.length; i++) {
-            // Add skill.
-            let data = {};
-            data = {
-                name: req.body.questionArray[i].name.trim(),
-                question: req.body.questionArray[i].question.trim(),
-                skill_id: req.params.id
-            };
-            let sqlQuery = 'INSERT INTO essay_questions SET ?';
-            query = conn.query(sqlQuery, data, (err, results) => {
-                try {
-                    if (err) {
-                        throw err;
-                    } else {
-                        const actionData = {
-                            action: 'bulk-create',
-                            content_id: results.insertId,
-                            content_type: 'essay_question',
-                            user_id: req.session.userId
-                        };
-                        const addActionQuery = `INSERT INTO user_actions SET ?`;
-                        conn.query(addActionQuery, actionData, (err) => {
-                            if (err) throw err;
-                            else res.end();
-                        });
+router.post(
+    '/:id/essay-questions/add',
+    isAuthenticated,
+    isAdmin,
+    (req, res, next) => {
+        if (req.session.userName) {
+            // For each question.
+            // Trim whitespace off the CSVs (Generative AI adds whitespace to the questions).
+            for (let i = 0; i < req.body.questionArray.length; i++) {
+                // Add skill.
+                let data = {};
+                data = {
+                    name: req.body.questionArray[i].name.trim(),
+                    question: req.body.questionArray[i].question.trim(),
+                    skill_id: req.params.id
+                };
+                let sqlQuery = 'INSERT INTO essay_questions SET ?';
+                query = conn.query(sqlQuery, data, (err, results) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        } else {
+                            const actionData = {
+                                action: 'bulk-create',
+                                content_id: results.insertId,
+                                content_type: 'essay_question',
+                                user_id: req.session.userId
+                            };
+                            const addActionQuery = `INSERT INTO user_actions SET ?`;
+                            conn.query(addActionQuery, actionData, (err) => {
+                                if (err) throw err;
+                                else res.end();
+                            });
+                        }
+                    } catch (err) {
+                        next(err);
                     }
-                } catch (err) {
-                    next(err);
-                }
-            });
+                });
+            }
+        } else {
+            res.redirect('/login');
         }
-    } else {
-        res.redirect('/login');
     }
-});
+);
 
 // For the search feature on the Collapsable Skill Tree.
 router.get('/name-list', (req, res, next) => {
