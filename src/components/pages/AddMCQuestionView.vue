@@ -44,7 +44,7 @@ export default {
             }
 
             this.answers.forEach((element) => {
-                if (element.text == '') {
+                if (element.show == true && element.text == '') {
                     this.validate.validated = true;
                 }
             });
@@ -92,10 +92,16 @@ export default {
         removeAnswer() {
             if (this.answers[4].show == true) {
                 this.answers[4].show = false;
+                if (this.question.correct_answer == 5)
+                    this.question.correct_answer = 4;
             } else if (this.answers[3].show == true) {
                 this.answers[3].show = false;
+                if (this.question.correct_answer == 4)
+                    this.question.correct_answer = 3;
             } else if (this.answers[2].show == true) {
                 this.answers[2].show = false;
+                if (this.question.correct_answer == 3)
+                    this.question.correct_answer = 2;
             }
         }
     }
@@ -133,7 +139,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a question name !
+                            please name the question!
                         </div>
                     </div>
                     <div class="mb-3">
@@ -153,7 +159,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a question content !
+                            please enter a question!
                         </div>
                     </div>
                     <div
@@ -178,7 +184,7 @@ export default {
                             v-if="validate.validated && answer.text === ''"
                             class="form-validate"
                         >
-                            please enter a correct answer !
+                            please enter an answer!
                         </div>
                         <!-- Correct Answer Radio Button -->
                         <div class="form-check">
@@ -269,7 +275,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a explanation !
+                            please enter an explanation!
                         </div>
                     </div>
 
