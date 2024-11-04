@@ -409,7 +409,6 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
 router.get(
     '/mc/submitted-for-review/:mcQuestionId/:userId',
     (req, res, next) => {
-        let mcQuestion;
         if (req.session.userName) {
             res.setHeader('Content-Type', 'application/json');
             // Get skill.

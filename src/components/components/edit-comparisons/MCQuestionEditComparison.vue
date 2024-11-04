@@ -38,23 +38,15 @@ export default {
         await this.getEditedQuestion();
         await this.getOriginalQuestion();
 
-        console.log('original question');
-        console.log(this.originalQuestion);
+        // console.log('original question');
+        // console.log(this.originalQuestion);
         // console.log('original answer');
         // console.log(this.originalAnswers);
-        // for (let i = 0; i < this.numAnswerOptions; i++) {
-        //     if (typeof this.originalAnswers[i] == 'undefined')
-        //         this.originalAnswers[i] = '';
-        // }
 
-        console.log('edited question');
-        console.log(this.editedQuestion);
+        // console.log('edited question');
+        // console.log(this.editedQuestion);
         // console.log('edited answers');
         // console.log(this.editedAnswers);
-        // for (let i = 0; i < this.numAnswerOptions; i++) {
-        //     if (typeof this.editedAnswers[i] == 'undefined')
-        //         this.editedAnswers[i] = '';
-        // }
 
         // Can now render
         this.isQuestionLoaded = true;
@@ -76,7 +68,6 @@ export default {
                     // The original question.
                     this.editedQuestion = data.question;
                     // The original answers.
-                    //console.log(data.answers);
                     this.editedAnswers = data.answers.map((a) => a.text);
                     // Working out number of answers.
                     // this.numAnswerOptions = data.answers.length;
@@ -94,13 +85,7 @@ export default {
                     // Original question object
                     this.originalQuestion = data.question;
                     // Original answers text
-                    //console.log(data.answers);
                     this.originalAnswers = data.answers.map((a) => a.text);
-
-                    // Check whether original or new answers array is longer. Need to show the longer one.
-                    // if (this.originalAnswers.length > this.numAnswerOptions) {
-                    //     this.numAnswerOptions = this.originalAnswers.length;
-                    // }
                 });
         },
         dismissEdit() {
@@ -126,9 +111,7 @@ export default {
         edit() {
             // initiate a temp data of mc question edit
             this.tempMcQuestionEdit = { ...this.editedQuestion };
-            this.tempAnswersEdit = JSON.parse(
-                JSON.stringify(this.editedAnswers)
-            );
+            this.tempAnswersEdit = this.editedAnswers;
             this.isEditMode = true;
             this.$parent.disableBtn = true;
             // Auto size text area to show all text without scroll bar in next tick where the text area will appear.
@@ -196,10 +179,9 @@ export default {
             this.isEditMode = false;
             this.$parent.disableBtn = false;
             this.editedQuestion = { ...this.tempMcQuestionEdit };
-            this.editedAnswers = JSON.parse(
-                JSON.stringify(this.tempAnswersEdit)
-            );
-            this.compareEdit();
+            this.editedAnswers = this.tempAnswersEdit;
+
+            //this.compareEdit();
         },
         cancelEditMcQuestion() {
             this.isEditMode = false;
@@ -216,22 +198,28 @@ export default {
         updateTempData(type, value) {
             switch (type) {
                 case 'question':
-                    this.tempMcQuestionEdit.question = value;
+                    this.tempMcQuestionEdit.text = value;
                     break;
-                case 'mc_correct_answer':
+                case 'answer_1':
+                    this.tempAnswersEdit[0] = value;
+                    break;
+                case 'answer_2':
+                    this.tempAnswersEdit[1] = value;
+                    break;
+                case 'answer_3':
+                    this.tempAnswersEdit[2] = value;
+                    break;
+                case 'answer_4':
+                    this.tempAnswersEdit[3] = value;
+                    break;
+                case 'answer_5':
+                    this.tempAnswersEdit[4] = value;
+                    break;
+                case 'is_random':
+                    this.tempMcQuestionEdit.is_random = value;
+                    break;
+                case 'correct_answer':
                     this.tempMcQuestionEdit.correct_answer = value;
-                    break;
-                case 'mc_incorrect_answer_1':
-                    this.tempMcQuestionEdit.incorrect_answer_1 = value;
-                    break;
-                case 'mc_incorrect_answer_2':
-                    this.tempMcQuestionEdit.incorrect_answer_2 = value;
-                    break;
-                case 'mc_incorrect_answer_3':
-                    this.tempMcQuestionEdit.incorrect_answer_3 = value;
-                    break;
-                case 'mc_incorrect_answer_4':
-                    this.tempMcQuestionEdit.incorrect_answer_4 = value;
                     break;
                 case 'explanation':
                     this.tempMcQuestionEdit.explanation = value;
@@ -239,25 +227,26 @@ export default {
                 default:
                     break;
             }
-        },
-        addAnswer() {
-            if (this.tempAnswersEdit.length < 5) {
-                this.tempAnswersEdit.push({ text: '' });
-            }
-        },
-        removeAnswer(index) {
-            if (this.tempAnswersEdit.length > 2) {
-                this.tempAnswersEdit.splice(index, 1);
-                // Adjust correct answer selection if necessary
-                if (
-                    this.tempMcQuestionEdit.correct_answer >
-                    this.tempAnswersEdit.length
-                ) {
-                    this.tempMcQuestionEdit.correct_answer =
-                        this.tempAnswersEdit.length;
-                }
-            }
         }
+        // TODO later
+        // addAnswer() {
+        //     if (this.tempAnswersEdit.length < 5) {
+        //         this.tempAnswersEdit.push({ text: '' });
+        //     }
+        // },
+        // removeAnswer(index) {
+        //     if (this.tempAnswersEdit.length > 2) {
+        //         this.tempAnswersEdit.splice(index, 1);
+        //         // Adjust correct answer selection if necessary
+        //         if (
+        //             this.tempMcQuestionEdit.correct_answer >
+        //             this.tempAnswersEdit.length
+        //         ) {
+        //             this.tempMcQuestionEdit.correct_answer =
+        //                 this.tempAnswersEdit.length;
+        //         }
+        //     }
+        // }
     }
 };
 </script>
@@ -325,34 +314,89 @@ export default {
             :showHighlight="showHighLight"
             :isEditMode="isEditMode"
             :updateTempData="updateTempData"
-            type="mc_question"
+            type="question"
             :singleComponent="true"
         />
 
         <!-- Compare Answers Container -->
-        <div class="compare-container mt-5">
-            <div
-                v-for="(answer, index) in numAnswerOptions"
-                v-if="isQuestionLoaded"
-            >
-                <ComparisonContainer
-                    :containerName="'Answer option ' + (index + 1)"
-                    :originalData="originalAnswers[index]"
-                    :newData="editedAnswers[index]"
-                    :showHighlight="showHighLight"
-                    :isEditMode="isEditMode"
-                    :updateTempData="updateTempData"
-                    type="mc_correct_answer"
-                    :singleComponent="false"
-                />
-                <div class="my-4">
-                    <hr />
-                </div>
-            </div>
+        <ComparisonContainer
+            class="compare-container mt-5"
+            containerName="Answer option 1"
+            v-if="isQuestionLoaded"
+            :originalData="originalAnswers[0]"
+            :newData="editedAnswers[0]"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="answer_1"
+            :singleComponent="true"
+        />
+        <div class="my-4">
+            <hr />
+        </div>
 
-            <div class="my-4">
-                <hr />
-            </div>
+        <ComparisonContainer
+            class="compare-container mt-5"
+            containerName="Answer option 2"
+            v-if="isQuestionLoaded"
+            :originalData="originalAnswers[1]"
+            :newData="editedAnswers[1]"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="answer_2"
+            :singleComponent="true"
+        />
+        <div class="my-4">
+            <hr />
+        </div>
+
+        <ComparisonContainer
+            class="compare-container mt-5"
+            containerName="Answer option 3"
+            v-if="isQuestionLoaded"
+            :originalData="originalAnswers[2]"
+            :newData="editedAnswers[2]"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="answer_3"
+            :singleComponent="true"
+        />
+        <div class="my-4">
+            <hr />
+        </div>
+
+        <ComparisonContainer
+            class="compare-container mt-5"
+            containerName="Answer option 4"
+            v-if="isQuestionLoaded"
+            :originalData="originalAnswers[3]"
+            :newData="editedAnswers[3]"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="answer_4"
+            :singleComponent="true"
+        />
+        <div class="my-4">
+            <hr />
+        </div>
+
+        <ComparisonContainer
+            class="compare-container mt-5"
+            containerName="Answer option 5"
+            v-if="isQuestionLoaded"
+            :originalData="originalAnswers[4]"
+            :newData="editedAnswers[4]"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="answer_5"
+            :singleComponent="true"
+        />
+        <div class="my-4">
+            <hr />
         </div>
 
         <!-- Correct answer -->
@@ -363,6 +407,7 @@ export default {
             :newData="editedQuestion.correct_answer.toString()"
             :showHighlight="showHighLight"
             :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
             type="correct_answer"
             :singleComponent="true"
             class="compare-container mt-5"
@@ -377,7 +422,7 @@ export default {
             :showHighlight="showHighLight"
             :isEditMode="isEditMode"
             :updateTempData="updateTempData"
-            type="mc_correct_answer"
+            type="is_random"
             :singleComponent="false"
             class="compare-container mt-5"
         />
