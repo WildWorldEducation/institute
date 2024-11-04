@@ -232,10 +232,23 @@ export default {
             <div v-if="show && showingData.isEditMode">
                 <div class="d-flex flex-column">
                     <textarea
+                        v-if="type != 'correct_answer' && type != 'is_random'"
                         class="editable-text-area"
                         v-model="textEditData"
                         @input="updateTempData(this.type, this.textEditData)"
                     ></textarea>
+                    <select
+                        v-if="type == 'correct_answer'"
+                        class=""
+                        v-model="textEditData"
+                        @change="updateTempData(this.type, this.textEditData)"
+                    >
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
                 </div>
             </div>
         </Transition>
