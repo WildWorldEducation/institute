@@ -146,7 +146,29 @@ router.get('/mc/show/:id', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                res.json(results[0]);
+
+                let question = {
+                    name: results[0].name,
+                    text: results[0].question,
+                    explanation: results[0].explanation,
+                    correct_answer: results[0].correct_answer,
+                    is_random: results[0].is_random ? true : false
+                };
+
+                let answers = [
+                    { text: results[0].answer_1 },
+                    { text: results[0].answer_2 },
+                    { text: results[0].answer_3 },
+                    { text: results[0].answer_4 },
+                    { text: results[0].answer_5 }
+                ];
+
+                res.json({
+                    skill_name: results[0].skill_name,
+                    skill_level: results[0].skill_level,
+                    question: question,
+                    answers: answers
+                });
             } catch (err) {
                 next(err);
             }
@@ -207,21 +229,25 @@ router.get('/image/show/:id', (req, res) => {
 router.put('/mc/:id/edit', (req, res, next) => {
     if (req.session.userName) {
         // Add data.
+        let data = {};
+        data = {
+            name: req.body.question.name,
+            question: req.body.question.text,
+            correct_answer: req.body.question.correct_answer,
+            answer_1: req.body.answers[0].text,
+            answer_2: req.body.answers[1].text,
+            answer_3: req.body.answers[2].text,
+            answer_4: req.body.answers[3].text,
+            answer_5: req.body.answers[4].text,
+            explanation: req.body.question.explanation,
+            is_random: req.body.question.is_random,
+            is_human_edited: 1
+        };
         let sqlQuery = `UPDATE mc_questions 
-        SET name= ${conn.escape(req.body.name)}, 
-        question = ${conn.escape(req.body.question)}, 
-        correct_answer = ${conn.escape(req.body.correct_answer)}, 
-        incorrect_answer_1 = ${conn.escape(req.body.incorrect_answer_1)}, 
-        incorrect_answer_2 = ${conn.escape(
-            req.body.incorrect_answer_2
-        )},            
-        incorrect_answer_3 = ${conn.escape(req.body.incorrect_answer_3)}, 
-        incorrect_answer_4 = ${conn.escape(req.body.incorrect_answer_4)},
-        explanation = ${conn.escape(req.body.explanation)},
-        is_human_edited = 1
+        SET ?
         WHERE id = ${conn.escape(req.params.id)};`;
 
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, data, (err) => {
             try {
                 if (err) {
                     throw err;
@@ -256,21 +282,25 @@ router.put('/mc/:id/edit', (req, res, next) => {
 router.put('/mc/:id/approve-edits', (req, res, next) => {
     if (req.session.userName) {
         // Add data.
+        let data = {};
+        data = {
+            name: req.body.question.name,
+            question: req.body.question.text,
+            correct_answer: req.body.question.correct_answer,
+            answer_1: req.body.answers[0],
+            answer_2: req.body.answers[1],
+            answer_3: req.body.answers[2],
+            answer_4: req.body.answers[3],
+            answer_5: req.body.answers[4],
+            explanation: req.body.question.explanation,
+            is_random: req.body.question.is_random,
+            is_human_edited: 1
+        };
         let sqlQuery = `UPDATE mc_questions 
-        SET name= ${conn.escape(req.body.name)}, 
-        question = ${conn.escape(req.body.question)}, 
-        correct_answer = ${conn.escape(req.body.correct_answer)}, 
-        incorrect_answer_1 = ${conn.escape(req.body.incorrect_answer_1)}, 
-        incorrect_answer_2 = ${conn.escape(
-            req.body.incorrect_answer_2
-        )},            
-        incorrect_answer_3 = ${conn.escape(req.body.incorrect_answer_3)}, 
-        incorrect_answer_4 = ${conn.escape(req.body.incorrect_answer_4)},
-        explanation = ${conn.escape(req.body.explanation)},
-        is_human_edited = 1
+        SET ?
         WHERE id = ${conn.escape(req.params.id)};`;
 
-        conn.query(sqlQuery, (err, results) => {
+        conn.query(sqlQuery, data, (err) => {
             try {
                 if (err) {
                     throw err;
@@ -309,33 +339,39 @@ router.put('/mc/:id/approve-edits', (req, res, next) => {
 router.post('/mc/:id/edit-for-review', (req, res, next) => {
     if (req.session.userName) {
         // Add data.
-        let sqlQuery = `INSERT INTO mc_questions_awaiting_approval (mc_question_id, user_id, name, question, correct_answer,
-            incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, incorrect_answer_4, explanation, comment)
-            VALUES (${conn.escape(req.params.id)}, 
-            ${conn.escape(req.body.userId)}, 
-            ${conn.escape(req.body.name)}, 
-            ${conn.escape(req.body.question)}, 
-            ${conn.escape(req.body.correct_answer)}, 
-            ${conn.escape(req.body.incorrect_answer_1)}, 
-            ${conn.escape(req.body.incorrect_answer_2)}, 
-            ${conn.escape(req.body.incorrect_answer_3)}, 
-            ${conn.escape(req.body.incorrect_answer_4)}, 
-            ${conn.escape(req.body.explanation)}, 
-            ${conn.escape(req.body.comment)})
-            
-            ON DUPLICATE KEY
-            UPDATE name = ${conn.escape(req.body.name)}, 
-            date = CURRENT_TIMESTAMP(), 
-            question = ${conn.escape(req.body.question)}, 
-            correct_answer = ${conn.escape(req.body.correct_answer)}, 
-            incorrect_answer_1 = ${conn.escape(req.body.incorrect_answer_1)},
-            incorrect_answer_2 = ${conn.escape(req.body.incorrect_answer_2)}, 
-            incorrect_answer_3 = ${conn.escape(req.body.incorrect_answer_3)}, 
-            incorrect_answer_4 = ${conn.escape(req.body.incorrect_answer_4)}, 
-            explanation = ${conn.escape(req.body.explanation)}, 
-            comment = ${conn.escape(req.body.comment)};`;
+        let data = {};
+        data = {
+            mc_question_id: req.params.id,
+            user_id: req.body.userId,
+            comment: req.body.comment,
+            name: req.body.question.name,
+            question: req.body.question.text,
+            correct_answer: req.body.question.correct_answer,
+            answer_1: req.body.answers[0].text,
+            answer_2: req.body.answers[1].text,
+            answer_3: req.body.answers[2].text,
+            answer_4: req.body.answers[3].text,
+            answer_5: req.body.answers[4].text,
+            explanation: req.body.question.explanation,
+            is_random: req.body.question.is_random
+        };
+        let data2 = {};
+        data2 = {
+            comment: req.body.comment,
+            name: req.body.question.name,
+            question: req.body.question.text,
+            correct_answer: req.body.question.correct_answer,
+            answer_1: req.body.answers[0].text,
+            answer_2: req.body.answers[1].text,
+            answer_3: req.body.answers[2].text,
+            answer_4: req.body.answers[3].text,
+            answer_5: req.body.answers[4].text,
+            explanation: req.body.question.explanation,
+            is_random: req.body.question.is_random
+        };
+        let sqlQuery = `INSERT INTO mc_questions_awaiting_approval SET ? ON DUPLICATE KEY UPDATE ?, date = CURRENT_TIMESTAMP();`;
 
-        conn.query(sqlQuery, (err) => {
+        conn.query(sqlQuery, [data, data2], (err) => {
             try {
                 if (err) {
                     throw err;
@@ -373,7 +409,6 @@ router.post('/mc/:id/edit-for-review', (req, res, next) => {
 router.get(
     '/mc/submitted-for-review/:mcQuestionId/:userId',
     (req, res, next) => {
-        let mcQuestion;
         if (req.session.userName) {
             res.setHeader('Content-Type', 'application/json');
             // Get skill.
@@ -389,8 +424,29 @@ router.get(
                     if (err) {
                         throw err;
                     }
-                    mcQuestion = results[0];
-                    res.json(mcQuestion);
+
+                    let question = {
+                        mc_question_id: results[0].mc_question_id,
+                        name: results[0].name,
+                        text: results[0].question,
+                        explanation: results[0].explanation,
+                        correct_answer: results[0].correct_answer,
+                        is_random: results[0].is_random ? true : false
+                    };
+
+                    let answers = [
+                        { text: results[0].answer_1 },
+                        { text: results[0].answer_2 },
+                        { text: results[0].answer_3 },
+                        { text: results[0].answer_4 },
+                        { text: results[0].answer_5 }
+                    ];
+
+                    res.json({
+                        comment: results[0].comment,
+                        question: question,
+                        answers: answers
+                    });
                 } catch (err) {
                     next(err);
                 }
@@ -1076,21 +1132,21 @@ router.get('/image/list', (req, res, next) => {
  */
 router.post('/mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
-        // Add data.
         let data = {};
         data = {
-            name: req.body.name,
-            question: req.body.question,
-            correct_answer: req.body.correct_answer,
-            incorrect_answer_1: req.body.incorrect_answer_1,
-            incorrect_answer_2: req.body.incorrect_answer_2,
-            incorrect_answer_3: req.body.incorrect_answer_3,
-            incorrect_answer_4: req.body.incorrect_answer_4,
-            explanation: req.body.explanation,
+            name: req.body.question.name,
+            question: req.body.question.text,
+            correct_answer: req.body.question.correct_answer,
+            answer_1: req.body.answers[0].text,
+            answer_2: req.body.answers[1].text,
+            answer_3: req.body.answers[2].text,
+            answer_4: req.body.answers[3].text,
+            answer_5: req.body.answers[4].text,
+            explanation: req.body.question.explanation,
             skill_id: req.body.skill_id,
+            is_random: req.body.question.is_random,
             is_human_edited: 1
         };
-
         let sqlQuery = 'INSERT INTO mc_questions SET ?';
         conn.query(sqlQuery, data, (err, results) => {
             try {
@@ -1297,6 +1353,57 @@ router.get('/student-mc-questions/list', (req, res, next) => {
 });
 
 /**
+ * Get One Student MC Question
+ */
+router.get('/student-mc-questions/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `
+        SELECT *
+        FROM student_mc_questions
+        WHERE id = ${req.params.id};
+        `;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let question = {
+                    skill_id: results[0].skill_id,
+                    student_id: results[0].student_id,
+                    name: results[0].name,
+                    text: results[0].question,
+                    explanation: results[0].explanation,
+                    correct_answer: results[0].correct_answer,
+                    is_random: results[0].is_random ? true : false
+                };
+
+                let answers = [
+                    { text: results[0].answer_1 },
+                    { text: results[0].answer_2 }
+                ];
+                if (results[0].answer_3) {
+                    answers.push({ text: results[0].answer_3 });
+                }
+                if (results[0].answer_4) {
+                    answers.push({ text: results[0].answer_4 });
+                }
+                if (results[0].answer_5) {
+                    answers.push({ text: results[0].answer_5 });
+                }
+                res.json({
+                    question: question,
+                    answers: answers
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * List Student MC Questions full data
  */
 router.get('/student-mc-questions/full-data-list', (req, res, next) => {
@@ -1331,19 +1438,19 @@ router.get('/student-mc-questions/full-data-list', (req, res, next) => {
  */
 router.post('/student-mc-questions/add', (req, res, next) => {
     if (req.session.userName) {
-        // No need to escape single quotes for SQL to accept,
-        // as using '?'.
         // Add data.
         let data = {};
         data = {
-            question: req.body.question,
-            correct_answer: req.body.correct_answer,
-            incorrect_answer_1: req.body.incorrect_answer_1,
-            incorrect_answer_2: req.body.incorrect_answer_2,
-            incorrect_answer_3: req.body.incorrect_answer_3,
-            incorrect_answer_4: req.body.incorrect_answer_4,
-            explanation: req.body.explanation,
+            question: req.body.question.text,
+            correct_answer: req.body.question.correct_answer,
+            answer_1: req.body.answers[0].text,
+            answer_2: req.body.answers[1].text,
+            answer_3: req.body.answers[2].text,
+            answer_4: req.body.answers[3].text,
+            answer_5: req.body.answers[4].text,
+            explanation: req.body.question.explanation,
             skill_id: req.body.skill_id,
+            is_random: req.body.question.is_random,
             student_id: req.body.student_id
         };
 

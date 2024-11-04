@@ -204,13 +204,13 @@ export default {
             <!-- The label indicate user answer right or wrong -->
             <div
                 :class="
-                    question.userAnswer === 1 || question.isCorrect == true
+                    question.userAnswer == question.correct_answer || question.isCorrect == true
                         ? 'correct-label'
                         : 'wrong-label'
                 "
             >
                 {{
-                    question.userAnswer === 1 || question.isCorrect == true
+                    question.userAnswer == question.correct_answer || question.isCorrect == true
                         ? 'Correct !!'
                         : 'Incorrect !!'
                 }}
@@ -231,7 +231,7 @@ export default {
                         <div
                             :class="[
                                 'my-auto mx-2 me-4 answer-option ',
-                                answerOption.index == 1
+                                answerOption.index == question.correct_answer
                                     ? ' correct-answer'
                                     : question.userAnswer == answerOption.index
                                     ? 'user-answer'
@@ -242,8 +242,8 @@ export default {
                             <!-- show this extra text if it the correct answer and user answer is wrong -->
                             <span
                                 v-if="
-                                    answerOption.index == 1 &&
-                                    question.userAnswer !== 1
+                                    answerOption.index == question.correct_answer &&
+                                    question.userAnswer !== question.correct_answer
                                 "
                                 class="correct-indicate"
                             >
@@ -252,7 +252,7 @@ export default {
                             <!-- show user answer text if it user answer -->
                             <span
                                 v-if="
-                                    answerOption.index !== 1 &&
+                                    answerOption.index !== question.correct_answer &&
                                     question.userAnswer == answerOption.index
                                 "
                                 class="user-answer-indicate"
@@ -262,8 +262,8 @@ export default {
                             <!-- congrats if student answer is correct -->
                             <span
                                 v-if="
-                                    answerOption.index == 1 &&
-                                    question.userAnswer == 1
+                                    answerOption.index == question.correct_answer &&
+                                    question.userAnswer == question.correct_answer
                                 "
                                 class="correct-indicate"
                             >
@@ -274,12 +274,12 @@ export default {
                             type="radio"
                             name="nodeType"
                             :value="answerOption.index"
-                            :disabled="answerOption.index != 1"
+                            :disabled="answerOption.index != question.correct_answer"
                         />
                         <div class="control_indicator">
                             <!-- Check if this is the correct answer -->
                             <div
-                                v-if="answerOption.index == 1"
+                                v-if="answerOption.index == question.correct_answer"
                                 class="checked"
                             ></div>
                         </div>
