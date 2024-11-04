@@ -155,7 +155,7 @@ router.put(
                                 skillRevision.name
                             )},                    
                             ${conn.escape(skillRevision.description)},
-                            ${conn.escape(skillRevision.icon_image.length > 0 ? skillRevision.icon_image : currentSkill.icon_image)},
+                            ${conn.escape(skillRevision.icon_image)},
                             ${conn.escape(
                                 skillRevision.mastery_requirements
                             )},                    
@@ -209,8 +209,10 @@ router.put(
                                                 console.error(err)
                                                 throw err;
                                             }
-                                            // Update skill Icon with revert version
-                                            await updateSkillIcon(skillRevision.icon_image, currentSkill.url)
+                                            if (skillRevision.icon_image) {
+                                                // Update skill Icon with revert version
+                                                await updateSkillIcon(skillRevision.icon_image, currentSkill.url)
+                                            }
                                             res.end();
                                         } catch (err) {
                                             next(err);
