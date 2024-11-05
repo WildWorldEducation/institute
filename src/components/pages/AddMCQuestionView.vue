@@ -79,7 +79,6 @@ export default {
                     this.$router.go(-1);
                 });
         },
-        // TODO add for next task.
         addAnswer() {
             if (this.answers[2].show == false) {
                 this.answers[2].show = true;
