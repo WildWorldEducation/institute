@@ -17,7 +17,8 @@ export default {
                 name: null,
                 image: null,
                 firstAncestorId: null,
-                levelInHierarchy: null
+                levelInHierarchy: null,
+                url: ''
             }
         };
     },
@@ -32,6 +33,7 @@ export default {
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
             if (this.skillId == this.skillsStore.skillsList[i].id) {
                 this.skill.name = this.skillsStore.skillsList[i].name;
+                this.skill.url = this.skillsStore.skillsList[i].url;
                 this.skill.image = this.skillsStore.skillsList[i].image;
                 this.skill.firstAncestorId =
                     this.skillsStore.skillsList[i].first_ancestor;
@@ -61,7 +63,10 @@ export default {
                 <img
                     id="skill-icon"
                     v-else
-                    src="/images/skill-avatar/recurso.png"
+                    :src="
+                        'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+                        skill.url
+                    "
                     alt="default skill icon"
                 />
                 <div
@@ -104,6 +109,10 @@ export default {
 .img-fluid {
     width: 100% !important;
     height: auto;
+}
+#skill-icon {
+    width: 152px;
+    border-radius: 10px;
 }
 
 /*Style for Mobile Devices */
