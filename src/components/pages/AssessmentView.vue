@@ -34,16 +34,15 @@ export default {
             if (this.skillId == this.skillsStore.skillsList[i].id) {
                 this.skill.name = this.skillsStore.skillsList[i].name;
                 this.skill.url = this.skillsStore.skillsList[i].url;
-                this.skill.image = this.skillsStore.skillsList[i].image;
-                this.skill.firstAncestorId =
-                    this.skillsStore.skillsList[i].first_ancestor;
-                this.skill.levelInHierarchy =
-                    this.skillsStore.skillsList[i].hierarchy_level;
             }
         }
     },
     components: {
         Assessment
+    },
+    imageUrlAlternative(event) {
+        console.log('test');
+        event.target.src = '/images/skill-avatar/recurso.png';
     }
 };
 </script>
@@ -58,16 +57,14 @@ export default {
     <div class="container mt-3">
         <div class="d-flex justify-content-md-between justify-content-center">
             <div class="d-flex flex-column flex-md-row">
-                <!-- Display a default skill icon if the current skill doesn`t have one -->
-                <img v-if="this.skill.image" :src="this.skill.image" />
                 <img
                     id="skill-icon"
-                    v-else
                     :src="
                         'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
                         skill.url
                     "
-                    alt="default skill icon"
+                    @error="imageUrlAlternative"
+                    class="rounded"
                 />
                 <div
                     id="assessment-skill-name"
@@ -111,7 +108,7 @@ export default {
     height: auto;
 }
 #skill-icon {
-    width: 152px;
+    width: 200px;
     border-radius: 10px;
 }
 
