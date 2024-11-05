@@ -147,7 +147,8 @@ export default {
                 })
                 .then((data) => {
                     // Add the new questions to the existing questions.
-                    this.mcQuestions = this.mcQuestions.concat(data);console.log(data)
+                    this.mcQuestions = this.mcQuestions.concat(data);
+                    console.log(data);
                 })
                 .then(() => {
                     // Add field to elements, for the user's answer.
@@ -167,45 +168,47 @@ export default {
                         //     option: this.mcQuestions[i].answer_1,
                         //     index: 2
                         // });
-                        if(this.mcQuestions[i].answer_1){
+                        if (this.mcQuestions[i].answer_1) {
                             answerOptions.push({
                                 option: this.mcQuestions[i].answer_1,
                                 index: 1
                             });
                         }
-                        if(this.mcQuestions[i].answer_2){
+                        if (this.mcQuestions[i].answer_2) {
                             answerOptions.push({
                                 option: this.mcQuestions[i].answer_2,
                                 index: 2
                             });
                         }
-                        if(this.mcQuestions[i].answer_3){
+                        if (this.mcQuestions[i].answer_3) {
                             answerOptions.push({
                                 option: this.mcQuestions[i].answer_3,
+                                show: this.mcQuestions[i].show_answer_3,
                                 index: 3
                             });
                         }
-                        if(this.mcQuestions[i].answer_4){
+                        if (this.mcQuestions[i].answer_4) {
                             answerOptions.push({
                                 option: this.mcQuestions[i].answer_4,
+                                show: this.mcQuestions[i].show_answer_4,
                                 index: 4
                             });
                         }
-                        if(this.mcQuestions[i].answer_5){
+                        if (this.mcQuestions[i].answer_5) {
                             answerOptions.push({
                                 option: this.mcQuestions[i].answer_5,
+                                show: this.mcQuestions[i].show_answer_5,
                                 index: 5
                             });
                         }
-                        
-                        
+
                         // Shuffle the questions if is_random.
-                        if(this.mcQuestions[i].is_random){
+                        if (this.mcQuestions[i].is_random) {
                             answerOptions = answerOptions.sort(
                                 (a, b) => 0.5 - Math.random()
                             );
                         }
-                        
+
                         // Make sure that is one option is "All of the above",
                         // It is at the bottom.
                         for (let i = 0; i < answerOptions.length; i++) {
@@ -440,7 +443,10 @@ export default {
                 // Tally the score.
                 if (this.questions[i].questionType == 'mc') {
                     this.numMCQuestions++;
-                    if (this.questions[i].userAnswer == this.questions[i].correct_answer) {
+                    if (
+                        this.questions[i].userAnswer ==
+                        this.questions[i].correct_answer
+                    ) {
                         this.score++;
                     }
                 } else if (this.questions[i].questionType == 'essay') {
@@ -862,6 +868,7 @@ export default {
                                 v-for="(
                                     answerOption, index
                                 ) in question.answerOptions"
+                                v-show="index > 2 || answerOption.show == 1"
                                 class="form-check my-3"
                             >
                                 <label class="control control-checkbox">

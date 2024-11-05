@@ -246,8 +246,11 @@ router.put('/mc/:id/edit', (req, res, next) => {
             answer_1: req.body.answers[0].text,
             answer_2: req.body.answers[1].text,
             answer_3: req.body.answers[2].text,
+            show_answer_3: req.body.answers[2].show,
             answer_4: req.body.answers[3].text,
+            show_answer_4: req.body.answers[3].show,
             answer_5: req.body.answers[4].text,
+            show_answer_5: req.body.answers[4].show,
             explanation: req.body.question.explanation,
             is_random: req.body.question.is_random,
             is_human_edited: 1
@@ -1159,8 +1162,6 @@ router.post('/mc-questions/add', (req, res, next) => {
             is_random: req.body.question.is_random,
             is_human_edited: 1
         };
-
-        console.log(data);
 
         let sqlQuery = 'INSERT INTO mc_questions SET ?';
         conn.query(sqlQuery, data, (err, results) => {

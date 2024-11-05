@@ -43,8 +43,8 @@ export default {
                     this.question = data.question;
                     this.answers = data.answers;
                     // Temporary variables, for variable answer option length.
-                    this.answers[0].show = true;
-                    this.answers[1].show = true;
+                    this.answers[0].show = 1;
+                    this.answers[1].show = 1;
                     this.originalQuestion = { ...data.question };
                     this.originalAnswers = JSON.parse(
                         JSON.stringify(data.answers)
@@ -144,25 +144,25 @@ export default {
             window.close();
         },
         addAnswer() {
-            if (this.answers[2].show == false) {
-                this.answers[2].show = true;
-            } else if (this.answers[3].show == false) {
-                this.answers[3].show = true;
-            } else if (this.answers[4].show == false) {
-                this.answers[4].show = true;
+            if (this.answers[2].show == 0) {
+                this.answers[2].show = 1;
+            } else if (this.answers[3].show == 0) {
+                this.answers[3].show = 1;
+            } else if (this.answers[4].show == 0) {
+                this.answers[4].show = 1;
             }
         },
         removeAnswer() {
-            if (this.answers[4].show == true) {
-                this.answers[4].show = false;
+            if (this.answers[4].show == 1) {
+                this.answers[4].show = 0;
                 if (this.question.correct_answer == 5)
                     this.question.correct_answer = 4;
-            } else if (this.answers[3].show == true) {
-                this.answers[3].show = false;
+            } else if (this.answers[3].show == 1) {
+                this.answers[3].show = 0;
                 if (this.question.correct_answer == 4)
                     this.question.correct_answer = 3;
-            } else if (this.answers[2].show == true) {
-                this.answers[2].show = false;
+            } else if (this.answers[2].show == 1) {
+                this.answers[2].show = 0;
                 if (this.question.correct_answer == 3)
                     this.question.correct_answer = 2;
             }
