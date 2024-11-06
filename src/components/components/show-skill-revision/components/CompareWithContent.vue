@@ -72,10 +72,7 @@ export default {
                     class="alert alert-warning d-flex gap-2 align-items-center"
                     role="alert"
                 >
-                    <div
-                        v-if="!isCurrentVersion"
-                        class="d-flex flex-column ms-2"
-                    >
+                    <div class="d-flex flex-column ms-2">
                         <p>
                             <strong>You are comparing:</strong>
                             <span>
