@@ -15,7 +15,8 @@ export default {
             skillUrl: this.$route.params.skillUrl,
             skill: {},
             skillRevisions: [],
-            currentVersionNumber: null
+            currentVersionNumber: null,
+            isLoaded: false
         };
     },
     components: { HistoryRow, HistoryRowTabletPhone },
@@ -93,6 +94,7 @@ export default {
                         this.skillRevisions[i + 1];
                 }
             }
+            this.isLoaded = true;
         }
     }
 };
@@ -107,6 +109,7 @@ export default {
         <hr />
         <div class="d-none d-lg-flex flex-column">
             <HistoryRow
+                v-if="isLoaded"
                 v-for="revision in skillRevisions"
                 :revision="revision"
                 :skill="skill"
@@ -114,6 +117,7 @@ export default {
         </div>
         <div class="d-flex d-lg-none flex-column">
             <HistoryRowTabletPhone
+                v-if="isLoaded"
                 v-for="revision in skillRevisions"
                 :revision="revision"
                 :skill="skill"
