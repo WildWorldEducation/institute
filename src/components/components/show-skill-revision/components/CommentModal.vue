@@ -15,7 +15,7 @@ export default {
                     rows="5"
                     cols="33"
                     autofocus
-                    v-model="revertComment"
+                    v-model="$parent.revertComment"
                 >
                 </textarea>
                 <!-- Suggest template -->
@@ -71,6 +71,38 @@ export default {
 </template>
 
 <style scoped>
+/* The Warning Modal */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 670px;
+    /* Could be more or less, depending on screen size */
+}
+
 .revert-comment {
     outline: none;
     border-radius: 8px;
@@ -83,5 +115,39 @@ export default {
 
 .revert-comment:focus {
     outline: none;
+}
+
+.green-btn {
+    background-color: #36c1af;
+    color: white;
+    border: 1px solid #2ca695;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+
+.green-btn:hover {
+    background-color: #65e0a5;
+}
+
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    border: 1px solid #d33622;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    height: fit-content;
+}
+
+.red-btn:hover {
+    background-color: #cc3535;
 }
 </style>
