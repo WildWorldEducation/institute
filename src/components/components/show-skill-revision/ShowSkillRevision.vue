@@ -126,7 +126,7 @@ export default {
             const skillRevisionsResult = await res.json();
 
             this.skillRevisionHistory = skillRevisionsResult.map((revision) => {
-                const author = this.usersStore.users.find(
+                const author = this.usersStore.usersIncludedDeleted.find(
                     (o) => o.id === revision.user_id
                 );
                 return { ...revision, user_name: author.username };

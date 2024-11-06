@@ -72,7 +72,7 @@ export default {
 
                 // -----------------------
                 // Prep the users data.
-                let user = this.usersStore.users.find(
+                let user = this.usersStore.usersIncludedDeleted.find(
                     (o) => o.id === this.skillRevisions[i].user_id
                 );
                 this.skillRevisions[i].username = user.username;
