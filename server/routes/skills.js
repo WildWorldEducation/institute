@@ -11,6 +11,7 @@ router.use(bodyParser.json());
 /*
 /AWS S3 images
 */
+const sharp = require('sharp');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 // S3 needs access to the .env variables
 require('dotenv').config();
