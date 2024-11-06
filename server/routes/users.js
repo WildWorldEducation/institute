@@ -578,28 +578,6 @@ router.get('/instructor/:studentId', (req, res, next) => {
     }
 });
 
-// TODO: delete this.
-// Get the user id from the username (used in the skill tree routes).
-// router.get('/showId/:username', (req, res, next) => {
-//     if (req.session.userName) {
-//         res.setHeader('Content-Type', 'application/json');
-//         let sqlQuery = `SELECT id
-//             FROM users
-//             WHERE username = ${conn.escape(req.params.username)};`;
-
-//         conn.query(sqlQuery, (err, results) => {
-//             try {
-//                 if (err) {
-//                     throw err;
-//                 }
-//                 res.json(results[0].id);
-//             } catch (err) {
-//                 next(err);
-//             }
-//         });
-//     }
-// });
-
 /**
  * Delete User using binary flag
  *
