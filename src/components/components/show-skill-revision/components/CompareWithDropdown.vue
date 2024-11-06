@@ -4,8 +4,7 @@ import dayjs from 'dayjs';
 export default {
     data() {
         return {
-            showDropDown: false,
-            skillRevisionHistoryMinusCurrentRevision: []
+            showDropDown: false
         };
     },
     props: [
@@ -32,18 +31,19 @@ export default {
             return this.compareWithRevision;
         },
         skillRevisionHistoryMinusCurrentRevision() {
+            let abridgedSkillRevisionHistory = [];
             for (let i = 0; i < this.skillRevisionHistory.length; i++) {
                 if (
                     this.skillRevisionHistory[i].version_number !=
                     this.currentShowingVersion
                 ) {
-                    this.skillRevisionHistoryMinusCurrentRevision.push(
+                    abridgedSkillRevisionHistory.push(
                         this.skillRevisionHistory[i]
                     );
                 }
             }
 
-            return this.skillRevisionHistoryMinusCurrentRevision;
+            return abridgedSkillRevisionHistory;
         }
     }
 };
