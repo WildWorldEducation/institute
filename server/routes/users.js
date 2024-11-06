@@ -473,6 +473,26 @@ router.get('/list', isAuthenticated, (req, res, next) => {
     }
 });
 
+// All users.
+router.get('/list-including-deleted', isAuthenticated, (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
+        FROM users`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
 // All editors.
 router.get(
     '/editors/list',
@@ -577,7 +597,6 @@ router.get('/instructor/:studentId', (req, res, next) => {
         res.redirect('/login');
     }
 });
-
 /**
  * Delete User using binary flag
  *
