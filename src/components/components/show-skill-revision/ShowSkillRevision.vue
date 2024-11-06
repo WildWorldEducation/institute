@@ -231,13 +231,11 @@ export default {
                 <div class="d-flex flex-column-reverse flex-md-row">
                     <!-- Mastery Requirements -->
                     <div class="col-md-8 order-2 order-md-1">
-                        <div v-if="skill.type != 'domain'">
-                            <div class="d-flex flex-column">
-                                <div class="mastery-requirements">
-                                    <div
-                                        v-html="skill.mastery_requirements"
-                                    ></div>
-                                </div>
+                        <div class="d-flex flex-column">
+                            <div class="mastery-requirements">
+                                <div
+                                    v-html="skillRevision.mastery_requirements"
+                                ></div>
                             </div>
                         </div>
                     </div>
