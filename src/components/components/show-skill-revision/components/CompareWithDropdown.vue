@@ -43,15 +43,15 @@ export default {
         >
             <button @click="showDropDown = !showDropDown" class="dropdown-btn">
                 <div class="d-flex">
-                    Compare With -
+                    Compare with:&nbsp;
                     <div v-if="!compareWithVersion">none</div>
                     <div v-else>
                         <div class="d-flex ms-2 d-none d-md-block">
-                            Version
+                            version
                             <span class="revision-strong-text ms-2">{{
                                 compareWithVersion.version_number
                             }}</span
-                            >, Edit Date:
+                            >, edit date:
                             <span class="revision-strong-text">
                                 {{
                                     formatDate(compareWithVersion.edited_date)
@@ -103,7 +103,7 @@ export default {
                             <span class="revision-strong-text">{{
                                 revision.version_number
                             }}</span
-                            >, Edit Date:
+                            >, edit date:
                             <span class="revision-strong-text">
                                 {{ formatDate(revision.edited_date) }} </span
                             >, by
@@ -116,7 +116,7 @@ export default {
                             <span class="revision-strong-text">{{
                                 revision.version_number
                             }}</span>
-                            , Edit Date:
+                            , edit date:
                             <span class="revision-strong-text">
                                 {{ formatDatePhone(revision.edited_date) }}
                             </span>

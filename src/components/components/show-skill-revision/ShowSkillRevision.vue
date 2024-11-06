@@ -131,7 +131,6 @@ export default {
                 );
                 return { ...revision, user_name: author.username };
             });
-            console.log(this.skillRevisionHistory);
         },
         confirmRevert() {
             this.showConfirmModal = true;
@@ -222,7 +221,7 @@ export default {
                 </div>
                 <!-- A line divide -->
                 <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
-                <div class="d-flex flex-column-reverse flex-md-row gap-4">
+                <div class="d-flex flex-column-reverse flex-md-row">
                     <!-- Mastery Requirements -->
                     <div class="col-md-8 order-2 order-md-1">
                         <div v-if="skill.type != 'domain'">

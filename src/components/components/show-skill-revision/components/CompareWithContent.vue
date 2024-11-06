@@ -130,26 +130,27 @@ export default {
                 />
             </div>
             <!-- A line divide -->
-            <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
+            <hr class="border border-1 opacity-0 hr mt-md-4 mt-5" />
             <div class="d-flex flex-column-reverse flex-md-row gap-4">
                 <div class="mastery-requirements">
                     <div v-html="compareData.masteryDiff"></div>
                 </div>
-                <div class="info-box p-2 mb-2">
-                    <div v-if="compareData.imageDiff">Icon image was:</div>
-                    <img
-                        :src="
-                            compareData.skillData.icon_image
-                                ? compareData.skillData.icon_image
-                                : '/images/skill-avatar/recurso.png'
-                        "
-                        @error="imageUrlAlternative"
-                        class="rounded img-fluid"
-                    />
-                    <!-- Grade level -->
-                    <div class="mt-3" style="color: #a48be6">
-                        Level:
-                        <strong>
+                <!-- Infobox -->
+                <div class="col-md-4 order-1 order-md-2">
+                    <div class="info-box p-2 mb-2">
+                        <!-- AWS S3 hosted feature image -->
+                        <!-- Show a default skill avatar if skill not have image yet -->
+                        <img
+                            :src="
+                                compareData.skillData.icon_image
+                                    ? compareData.skillData.icon_image
+                                    : '/images/skill-avatar/recurso.png'
+                            "
+                            class="rounded img-fluid"
+                        />
+                        <!-- Grade level -->
+                        <div class="mt-2">
+                            <h2 class="h4 title">Level</h2>
                             <span
                                 v-if="
                                     compareData.skillData.level ==
@@ -180,7 +181,7 @@ export default {
                                 v-else-if="compareData.skillData.level == 'phd'"
                                 >PHD</span
                             >
-                        </strong>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,6 +200,11 @@ export default {
 </template>
 
 <style scoped>
+.title {
+    color: #a48be6;
+    font-weight: 700;
+}
+
 #skill-info-container {
     background-color: #f2edff;
     border-radius: 12px;
@@ -308,8 +314,9 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 35%;
     height: fit-content;
+    border: 1px solid #a2a9b1;
+    text-align: center;
 }
 
 :deep(ins) {
