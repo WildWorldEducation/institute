@@ -477,7 +477,7 @@ router.get('/list', isAuthenticated, (req, res, next) => {
 router.get('/list-including-deleted', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
+        let sqlQuery = `SELECT id, username 
         FROM users`;
 
         conn.query(sqlQuery, (err, results) => {
