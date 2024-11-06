@@ -176,7 +176,7 @@ export default {
                     <h1 class="skill-name">
                         {{ skill.name }}
                         <span class="revision-version"
-                            >(Ver: {{ skillRevision.version_number }})</span
+                            >(revision {{ skillRevision.version_number }})</span
                         >
                     </h1>
                 </div>

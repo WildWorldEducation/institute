@@ -4,7 +4,8 @@ import dayjs from 'dayjs';
 export default {
     data() {
         return {
-            showDropDown: false
+            showDropDown: false,
+            skillRevisionHistoryMinusCurrentRevision: []
         };
     },
     props: [
@@ -29,6 +30,20 @@ export default {
         compareWithVersion() {
             if (!this.compareWithRevision) return false;
             return this.compareWithRevision;
+        },
+        skillRevisionHistoryMinusCurrentRevision() {
+            for (let i = 0; i < this.skillRevisionHistory.length; i++) {
+                if (
+                    this.skillRevisionHistory[i].version_number !=
+                    this.currentShowingVersion
+                ) {
+                    this.skillRevisionHistoryMinusCurrentRevision.push(
+                        this.skillRevisionHistory[i]
+                    );
+                }
+            }
+
+            return this.skillRevisionHistoryMinusCurrentRevision;
         }
     }
 };
@@ -91,7 +106,7 @@ export default {
             <Transition name="dropdown">
                 <div v-if="showDropDown" class="history-versions-dropdown">
                     <div
-                        v-for="revision in skillRevisionHistory"
+                        v-for="revision in skillRevisionHistoryMinusCurrentRevision"
                         class="revision-row d-flex flex-column flex-lg-row align-items-lg-center align-items-start justify-content-start"
                         @click="
                             updateCompareWithRevision(revision);
