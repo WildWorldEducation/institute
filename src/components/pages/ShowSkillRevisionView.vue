@@ -44,11 +44,7 @@ export default {
             <ShowSkillRevision />
         </div>
         <div id="banner">
-            <!--TODO: Assign banner dynamically -->
-            <img v-bind:src="bannerImage" class="img-fluid" />
-            <!-- Show a static img if skill have no banner image -->
             <img
-                v-if="!bannerImage"
                 src="/images/banners/institute-collins-2.png"
                 class="img-fluid"
             />
