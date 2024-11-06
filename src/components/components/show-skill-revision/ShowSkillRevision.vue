@@ -131,7 +131,6 @@ export default {
                 );
                 return { ...revision, user_name: author.username };
             });
-            console.log(this.skillRevisionHistory);
         },
         confirmRevert() {
             this.showConfirmModal = true;
@@ -177,7 +176,7 @@ export default {
                     <h1 class="skill-name">
                         {{ skill.name }}
                         <span class="revision-version"
-                            >(Ver: {{ skillRevision.version_number }})</span
+                            >(revision {{ skillRevision.version_number }})</span
                         >
                     </h1>
                 </div>
@@ -222,24 +221,35 @@ export default {
                 </div>
                 <!-- A line divide -->
                 <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
-                <div class="d-flex flex-column-reverse flex-md-row gap-4">
-                    <div class="mastery-requirements">
-                        <div v-html="skillRevision.mastery_requirements"></div>
+                <div class="d-flex flex-column-reverse flex-md-row">
+                    <!-- Mastery Requirements -->
+                    <div class="col-md-8 order-2 order-md-1">
+                        <div v-if="skill.type != 'domain'">
+                            <div class="d-flex flex-column">
+                                <div class="mastery-requirements">
+                                    <div
+                                        v-html="skill.mastery_requirements"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="info-box p-2 mb-2">
-                        <img
-                            :src="
-                                skillRevision.icon_image
-                                    ? skillRevision.icon_image
-                                    : '/images/skill-avatar/recurso.png'
-                            "
-                            @error="imageUrlAlternative"
-                            class="rounded img-fluid"
-                        />
-                        <!-- Grade level -->
-                        <div class="mt-3" style="color: #a48be6">
-                            Level:
-                            <strong>
+                    <!-- Infobox -->
+                    <div class="col-md-4 order-1 order-md-2">
+                        <div class="info-box p-2 mb-2">
+                            <!-- AWS S3 hosted feature image -->
+                            <!-- Show a default skill avatar if skill not have image yet -->
+                            <img
+                                :src="
+                                    skillRevision.icon_image
+                                        ? skillRevision.icon_image
+                                        : '/images/skill-avatar/recurso.png'
+                                "
+                                class="rounded img-fluid"
+                            />
+                            <!-- Grade level -->
+                            <div class="mt-2">
+                                <h2 class="h4 title">Level</h2>
                                 <span v-if="skill.level == 'grade_school'"
                                     >Grade School</span
                                 >
@@ -255,10 +265,11 @@ export default {
                                 <span v-else-if="skill.level == 'phd'"
                                     >PHD</span
                                 >
-                            </strong>
+                            </div>
                         </div>
                     </div>
                 </div>
+
                 <button
                     v-if="
                         !isCurrentVersion &&
@@ -308,6 +319,22 @@ export default {
 </template>
 
 <style scoped>
+.info-box {
+    border: 1px solid #a2a9b1;
+    color: black;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.title {
+    color: #a48be6;
+    font-weight: 700;
+}
+
 /* The Warning Modal */
 :deep(.modal) {
     display: block;
@@ -452,7 +479,6 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 35%;
     height: fit-content;
 }
 

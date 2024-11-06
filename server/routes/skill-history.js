@@ -15,6 +15,28 @@ const conn = require('../config/db');
 const isAuthenticated = require('../middlewares/authMiddleware');
 const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 
+/*
+/AWS S3 images
+*/
+const sharp = require('sharp');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+// S3 needs access to the .env variables
+require('dotenv').config();
+const skillInfoboxImagesBucketName =
+    process.env.S3_SKILL_INFOBOX_IMAGE_BUCKET_NAME;
+const skillInfoboxImageThumbnailsBucketName =
+    process.env.S3_SKILL_INFOBOX_IMAGE_THUMBNAILS_BUCKET_NAME;
+const bucketRegion = process.env.S3_BUCKET_REGION;
+const accessKeyId = process.env.S3_ACCESS_KEY_ID;
+const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
+const s3 = new S3Client({
+    credentials: {
+        accessKeyId: accessKeyId,
+        secretAccessKey: accessSecretKey
+    },
+    region: bucketRegion
+});
+
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -84,7 +106,7 @@ router.put(
     '/:skillId/revert-to/:versionNumber',
     isAuthenticated,
     checkRoleHierarchy('editor'),
-    (req, res, next) => {
+    async (req, res, next) => {
         if (req.session.userName) {
             let skillRevision = {};
             let currentSkill = {};
@@ -94,7 +116,7 @@ router.put(
             WHERE id = ${conn.escape(req.params.skillId)}
             AND version_number = ${conn.escape(req.params.versionNumber)};`;
 
-            conn.query(getSkillRevisionSqlQuery, (err, results) => {
+            conn.query(getSkillRevisionSqlQuery, async (err, results) => {
                 try {
                     if (err) {
                         throw err;
@@ -105,22 +127,25 @@ router.put(
                     FROM skills 
                     WHERE id = ${conn.escape(req.params.skillId)};`;
 
-                    conn.query(getCurrentSkillSqlQuery, (err, results) => {
-                        try {
-                            if (err) {
-                                throw err;
-                            }
-                            currentSkill = results[0];
+                    conn.query(
+                        getCurrentSkillSqlQuery,
+                        async (err, results) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                }
+                                currentSkill = results[0];
 
-                            // Prep data.
-                            let type = currentSkill.type;
-                            let parent = currentSkill.parent;
-                            let versionNumber = currentSkill.version_number + 1;
+                                // Prep data.
+                                let type = currentSkill.type;
+                                let parent = currentSkill.parent;
+                                let versionNumber =
+                                    currentSkill.version_number + 1;
 
-                            // Insert the current skill into the skill history.
-                            let addNewRevisionSqlQuery = `
+                                // Insert the current skill into the skill history.
+                                let addNewRevisionSqlQuery = `
                             INSERT INTO skill_history
-                            (id, version_number, user_id, name, description, icon_image, banner_image,
+                            (id, version_number, user_id, name, description, icon_image,
                             mastery_requirements, level, skill_history.order, comment)
                             VALUES
                             (${conn.escape(skillRevision.id)},
@@ -130,8 +155,9 @@ router.put(
                                 skillRevision.name
                             )},                    
                             ${conn.escape(skillRevision.description)},
-                            ${conn.escape(currentSkill.icon_image)},
-                            ${conn.escape(currentSkill.banner_image)},
+                            ${conn.escape(
+                                currentSkill.icon_image
+                            )},                            
                             ${conn.escape(
                                 skillRevision.mastery_requirements
                             )},                    
@@ -141,25 +167,81 @@ router.put(
                             ${conn.escape(skillRevision.order)},
                             ${conn.escape(req.body.comment)});`;
 
-                            conn.query(addNewRevisionSqlQuery, (err) => {
-                                try {
-                                    if (err) {
-                                        throw err;
-                                    }
+                                conn.query(
+                                    addNewRevisionSqlQuery,
+                                    async (err) => {
+                                        try {
+                                            if (err) {
+                                                throw err;
+                                            }
 
-                                    // Update record in skill table.
-                                    let updateRecordSQLQuery = `UPDATE skills SET name =
+                                            let image =
+                                                skillRevision.icon_image;
+
+                                            /*
+                                             * Send icon image to S3
+                                             */
+                                            if (image.length > 1) {
+                                                // Get file from Base64 encoding (client sends as base64)
+                                                let fileData = Buffer.from(
+                                                    image.replace(
+                                                        /^data:image\/\w+;base64,/,
+                                                        ''
+                                                    ),
+                                                    'base64'
+                                                );
+
+                                                let url = currentSkill.url;
+
+                                                let fullSizeData = {
+                                                    // The name it will be saved as on S3
+                                                    Key: url,
+                                                    // The image
+                                                    Body: fileData,
+                                                    ContentEncoding: 'base64',
+                                                    ContentType: 'image/jpeg',
+                                                    // The S3 bucket
+                                                    Bucket: skillInfoboxImagesBucketName
+                                                };
+
+                                                // Send to the bucket.
+                                                const fullSizeCommand =
+                                                    new PutObjectCommand(
+                                                        fullSizeData
+                                                    );
+                                                await s3.send(fullSizeCommand);
+
+                                                const thumbnailFileData =
+                                                    await sharp(fileData)
+                                                        .resize({ width: 330 })
+                                                        .toBuffer();
+
+                                                let thumbnailData = {
+                                                    // The name it will be saved as on S3
+                                                    Key: url,
+                                                    // The image
+                                                    Body: thumbnailFileData,
+                                                    ContentEncoding: 'base64',
+                                                    ContentType: 'image/jpeg',
+                                                    // The S3 bucket
+                                                    Bucket: skillInfoboxImageThumbnailsBucketName
+                                                };
+
+                                                // Send to the bucket.
+                                                const thumbnailCommand =
+                                                    new PutObjectCommand(
+                                                        thumbnailData
+                                                    );
+                                                await s3.send(thumbnailCommand);
+                                            }
+
+                                            // Update record in skill table.
+                                            let updateRecordSQLQuery = `UPDATE skills SET name =
                                     ${conn.escape(skillRevision.name)}, 
                                     parent = ${conn.escape(parent)},
                                     description = ${conn.escape(
                                         skillRevision.description
-                                    )}, 
-                                    icon_image = ${conn.escape(
-                                        currentSkill.icon_image
-                                    )}, 
-                                    banner_image = ${conn.escape(
-                                        currentSkill.banner_image
-                                    )}, 
+                                    )},                                   
                                     mastery_requirements = ${conn.escape(
                                         skillRevision.mastery_requirements
                                     )}, 
@@ -178,24 +260,29 @@ router.put(
                                         req.params.skillId
                                     )};`;
 
-                                    conn.query(updateRecordSQLQuery, (err) => {
-                                        try {
-                                            if (err) {
-                                                throw err;
-                                            }
-                                            res.end();
+                                            conn.query(
+                                                updateRecordSQLQuery,
+                                                (err) => {
+                                                    try {
+                                                        if (err) {
+                                                            throw err;
+                                                        }
+                                                        res.end();
+                                                    } catch (err) {
+                                                        next(err);
+                                                    }
+                                                }
+                                            );
                                         } catch (err) {
                                             next(err);
                                         }
-                                    });
-                                } catch (err) {
-                                    next(err);
-                                }
-                            });
-                        } catch (err) {
-                            next(err);
+                                    }
+                                );
+                            } catch (err) {
+                                next(err);
+                            }
                         }
-                    });
+                    );
                 } catch (err) {
                     next(err);
                 }

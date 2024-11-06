@@ -72,53 +72,48 @@ export default {
                     class="alert alert-warning d-flex gap-2 align-items-center"
                     role="alert"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="24"
-                        height="24"
-                    >
-                        <path
-                            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480L40 480c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
-                        />
-                    </svg>
-                    <div
-                        v-if="!isCurrentVersion"
-                        class="d-flex flex-column ms-2"
-                    >
-                        You Are Comparing:
-                        <div>
-                            - Revision
-                            {{
-                                compareData.currentViewingRevision
-                                    .version_number
-                            }}
-                            edited by
-                            {{ compareData.currentViewingRevision.userName }} at
-                            <span class="warning-date">
+                    <div class="d-flex flex-column ms-2">
+                        <p>
+                            <strong>You are comparing:</strong>
+                            <span>
+                                Revision
                                 {{
-                                    formatDate(
-                                        compareData.currentViewingRevision
-                                            .edited_date
-                                    )
-                                }}</span
-                            >
-                        </div>
-                        <div>With</div>
+                                    compareData.currentViewingRevision
+                                        .version_number
+                                }}
+                                edited by
+                                <em>{{
+                                    compareData.currentViewingRevision.userName
+                                }}</em>
+                                on
+                                <span class="warning-date">
+                                    {{
+                                        formatDate(
+                                            compareData.currentViewingRevision
+                                                .edited_date
+                                        )
+                                    }}</span
+                                >
+                            </span>
+                        </p>
+                        <p>
+                            <strong>with:</strong>
 
-                        <div>
-                            - Revision
-                            {{ compareData.skillData.version_number }}
-                            edited by
-                            {{ compareData.skillData.user_name }} at
-                            <span class="warning-date">
-                                {{
-                                    formatDate(
-                                        compareData.skillData?.edited_date
-                                    )
-                                }}</span
-                            >
-                        </div>
+                            <span>
+                                Revision
+                                {{ compareData.skillData.version_number }}
+                                edited by
+                                <em>{{ compareData.skillData.user_name }}</em>
+                                on
+                                <span class="warning-date">
+                                    {{
+                                        formatDate(
+                                            compareData.skillData?.edited_date
+                                        )
+                                    }}</span
+                                >
+                            </span>
+                        </p>
                     </div>
                 </div>
 
@@ -132,28 +127,27 @@ export default {
                 />
             </div>
             <!-- A line divide -->
-            <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
+            <hr class="border border-1 opacity-0 hr mt-md-4 mt-5" />
             <div class="d-flex flex-column-reverse flex-md-row gap-4">
                 <div class="mastery-requirements">
                     <div v-html="compareData.masteryDiff"></div>
                 </div>
-                <div class="info-box p-2 mb-2">
-                    <div v-if="compareData.imageDiff">
-                        Changed Icon Image to:
-                    </div>
-                    <img
-                        :src="
-                            compareData.skillData.icon_image
-                                ? compareData.skillData.icon_image
-                                : '/images/skill-avatar/recurso.png'
-                        "
-                        @error="imageUrlAlternative"
-                        class="rounded img-fluid"
-                    />
-                    <!-- Grade level -->
-                    <div class="mt-3" style="color: #a48be6">
-                        Level:
-                        <strong>
+                <!-- Infobox -->
+                <div class="col-md-4 order-1 order-md-2">
+                    <div class="info-box p-2 mb-2">
+                        <!-- AWS S3 hosted feature image -->
+                        <!-- Show a default skill avatar if skill not have image yet -->
+                        <img
+                            :src="
+                                compareData.skillData.icon_image
+                                    ? compareData.skillData.icon_image
+                                    : '/images/skill-avatar/recurso.png'
+                            "
+                            class="rounded img-fluid"
+                        />
+                        <!-- Grade level -->
+                        <div class="mt-2">
+                            <h2 class="h4 title">Level</h2>
                             <span
                                 v-if="
                                     compareData.skillData.level ==
@@ -184,7 +178,7 @@ export default {
                                 v-else-if="compareData.skillData.level == 'phd'"
                                 >PHD</span
                             >
-                        </strong>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -192,20 +186,8 @@ export default {
                 class="btn purple-btn mt-4"
                 @click="updateCompareWithRevision(null)"
             >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    fill="white"
-                    height="25"
-                    width="25"
-                    class="me-2"
-                >
-                    <path
-                        d="M48.5 224L40 224c-13.3 0-24-10.7-24-24L16 72c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2L98.6 96.6c87.6-86.5 228.7-86.2 315.8 1c87.5 87.5 87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3c-62.2-62.2-162.7-62.5-225.3-1L185 183c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8L48.5 224z"
-                    />
-                </svg>
                 <div>
-                    Go Back To version:
+                    Go to version
                     {{ compareData.currentViewingRevision.version_number }}
                 </div>
             </button>
@@ -215,6 +197,11 @@ export default {
 </template>
 
 <style scoped>
+.title {
+    color: #a48be6;
+    font-weight: 700;
+}
+
 #skill-info-container {
     background-color: #f2edff;
     border-radius: 12px;
@@ -324,8 +311,9 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 35%;
     height: fit-content;
+    border: 1px solid #a2a9b1;
+    text-align: center;
 }
 
 :deep(ins) {
