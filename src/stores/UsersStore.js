@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 export const useUsersStore = defineStore('users', {
     state: () => ({
         users: [],
-        usersIncludedDeleted: [],
+        usersIncludingDeleted: [],
         instructors: [],
         editors: []
     }),
@@ -13,10 +13,10 @@ export const useUsersStore = defineStore('users', {
             const data = await result.json();
             this.users = data;
         },
-        async getUsersIncludedDeleted() {
+        async getUsersIncludingDeleted() {
             const result = await fetch('/users/list-including-deleted');
             const data = await result.json();
-            this.usersIncludedDeleted = data;
+            this.usersIncludingDeleted = data;
         },
         async getInstructors() {
             const result = await fetch('/users/instructors/list');

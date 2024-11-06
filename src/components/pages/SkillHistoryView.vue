@@ -20,7 +20,8 @@ export default {
     },
     components: { HistoryRow, HistoryRowTabletPhone },
     async created() {
-        if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
+        if (this.usersStore.usersIncludingDeleted.length < 1)
+            await this.usersStore.getUsersIncludingDeleted();
         await this.getSkill();
     },
     async mounted() {},
@@ -72,7 +73,7 @@ export default {
 
                 // -----------------------
                 // Prep the users data.
-                let user = this.usersStore.usersIncludedDeleted.find(
+                let user = this.usersStore.usersIncludingDeleted.find(
                     (o) => o.id === this.skillRevisions[i].user_id
                 );
                 this.skillRevisions[i].username = user.username;

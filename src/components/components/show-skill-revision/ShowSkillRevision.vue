@@ -47,8 +47,8 @@ export default {
             await this.skillsStore.getSkillsList();
         }
         // Get list of users.
-        if (this.usersStore.users.length == 0) {
-            await this.usersStore.getUsers();
+        if (this.usersStore.usersIncludingDeleted.length == 0) {
+            await this.usersStore.getUsersIncludingDeleted();
         }
         await this.getSkill();
         await this.getSkillRevisionHistory();
@@ -86,10 +86,17 @@ export default {
             }
 
             // Get name of user that made the revision.
-            for (let i = 0; i < this.usersStore.users.length; i++) {
-                if (this.usersStore.users[i].id == this.skillRevision.user_id) {
+            for (
+                let i = 0;
+                i < this.usersStore.usersIncludingDeleted.length;
+                i++
+            ) {
+                if (
+                    this.usersStore.usersIncludingDeleted[i].id ==
+                    this.skillRevision.user_id
+                ) {
                     this.skillRevision.userName =
-                        this.usersStore.users[i].username;
+                        this.usersStore.usersIncludingDeleted[i].username;
                 }
             }
 
@@ -126,7 +133,7 @@ export default {
             const skillRevisionsResult = await res.json();
 
             this.skillRevisionHistory = skillRevisionsResult.map((revision) => {
-                const author = this.usersStore.usersIncludedDeleted.find(
+                const author = this.usersStore.usersIncludingDeleted.find(
                     (o) => o.id === revision.user_id
                 );
                 return { ...revision, user_name: author.username };
