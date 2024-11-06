@@ -237,25 +237,21 @@ export default {
                             class="rounded img-fluid"
                         />
                         <!-- Grade level -->
-                        <div class="mt-3" style="color: #a48be6">
-                            Level:
-                            <strong>
-                                <span v-if="skill.level == 'grade_school'"
-                                    >Grade School</span
-                                >
-                                <span v-else-if="skill.level == 'middle_school'"
-                                    >Middle School</span
-                                >
-                                <span v-else-if="skill.level == 'high_school'"
-                                    >High School</span
-                                >
-                                <span v-else-if="skill.level == 'college'"
-                                    >College</span
-                                >
-                                <span v-else-if="skill.level == 'phd'"
-                                    >PHD</span
-                                >
-                            </strong>
+                        <div class="mt-3">
+                            <h2 class="h4 title">Level</h2>
+                            <span v-if="skill.level == 'grade_school'"
+                                >Grade School</span
+                            >
+                            <span v-else-if="skill.level == 'middle_school'"
+                                >Middle School</span
+                            >
+                            <span v-else-if="skill.level == 'high_school'"
+                                >High School</span
+                            >
+                            <span v-else-if="skill.level == 'college'"
+                                >College</span
+                            >
+                            <span v-else-if="skill.level == 'phd'">PHD</span>
                         </div>
                     </div>
                 </div>
@@ -308,6 +304,11 @@ export default {
 </template>
 
 <style scoped>
+.title {
+    color: #a48be6;
+    font-weight: 700;
+}
+
 /* The Warning Modal */
 :deep(.modal) {
     display: block;

@@ -464,7 +464,6 @@ export default {
                         <!-- Grade level -->
                         <div class="mt-2">
                             <h2 class="h4 title">Level</h2>
-                            <!-- <div class="h1-title">Level</div> -->
                             <span v-if="skill.level == 'grade_school'"
                                 >Grade School</span
                             >
