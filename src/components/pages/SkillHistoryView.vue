@@ -95,6 +95,7 @@ export default {
                 }
             }
             this.isLoaded = true;
+            console.log(this.isLoaded);
         }
     }
 };
