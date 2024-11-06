@@ -26,11 +26,11 @@ export default {
                 is_random: false
             },
             answers: [
-                { text: '' }, // Answer 1
-                { text: '' }, // Answer 2
-                { text: '' }, // Answer 3
-                { text: '' }, // Answer 4
-                { text: '' } // Answer 5
+                { text: '', show: true }, // Answer 1
+                { text: '', show: true }, // Answer 2
+                { text: '', show: true }, // Answer 3
+                { text: '', show: true }, // Answer 4
+                { text: '', show: true } // Answer 5
             ],
             // validate object
             validate: {
