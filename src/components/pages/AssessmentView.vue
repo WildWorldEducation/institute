@@ -40,9 +40,10 @@ export default {
     components: {
         Assessment
     },
-    imageUrlAlternative(event) {
-        console.log('test');
-        event.target.src = '/images/skill-avatar/recurso.png';
+    methods:{
+        imageUrlAlternative(event) {
+            event.target.src = '/images/skill-avatar/recurso.png';
+        }
     }
 };
 </script>
@@ -63,12 +64,12 @@ export default {
                         'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
                         skill.url
                     "
-                    @error="imageUrlAlternative"
+                    :onerror="imageUrlAlternative"
                     class="rounded"
                 />
                 <div
                     id="assessment-skill-name"
-                    class="ms-3 d-flex justify-content-end"
+                    class="ms-3 d-flex justify-content-md-end text-center justify-content-center"
                 >
                     {{ this.skill.name }} Quiz
                 </div>
