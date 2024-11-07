@@ -147,7 +147,7 @@ export default {
                 })
                 .then((data) => {
                     // Add the new questions to the existing questions.
-                    this.mcQuestions = this.mcQuestions.concat(data);console.log(data)
+                    this.mcQuestions = this.mcQuestions.concat(data);
                 })
                 .then(() => {
                     // Add field to elements, for the user's answer.
