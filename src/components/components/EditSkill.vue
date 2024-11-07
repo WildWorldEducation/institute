@@ -140,19 +140,10 @@ export default {
                     }
                 })
                 .then(() => {
-                    this.randomNum = Math.random();
-
-                    if (
-                        typeof document
-                            .getElementById('originalImage')
-                            .getAttribute('src').src !== 'undefined'
-                    ) {
-                        this.iconImage = document
-                            .getElementById('originalImage')
-                            .getAttribute('src');
-                    } else {
-                        this.iconImage = '';
-                    }
+                    // Get the current image.
+                    this.iconImage = document
+                        .getElementById('originalImage')
+                        .getAttribute('src');
 
                     $('#summernote')
                         .summernote({
@@ -227,22 +218,20 @@ export default {
             this.router.push('/skills');
         },
         // For image upload.
-        onFileChange(e, type) {
+        onFileChange(e) {
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length) return;
-            this.createImage(files[0], type);
+            this.createImage(files[0]);
         },
-        createImage(file, type) {
+        createImage(file) {
             var image = new Image();
             var reader = new FileReader();
             var vm = this;
 
             reader.onload = (e) => {
                 vm.image = e.target.result;
-                if (type == 'icon') {
-                    this.iconImage = e.target.result;
-                    this.skill.icon_image = this.iconImage;
-                }
+                this.iconImage = e.target.result;
+                this.skill.icon_image = this.iconImage;
             };
             reader.readAsDataURL(file);
         },
@@ -255,6 +244,8 @@ export default {
             if (type == 'icon') {
                 this.iconImage = '';
             }
+
+           
         },
         SubmitFilters() {
             // 1 delete the existing filters.
@@ -876,9 +867,7 @@ export default {
                             class="d-none"
                             :src="
                                 'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                                skillUrl +
-                                '?' +
-                                randomNum
+                                skillUrl
                             "
                         />
                     </div>
