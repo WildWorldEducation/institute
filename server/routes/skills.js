@@ -6,6 +6,7 @@ Middleware
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
+const fs = require('node:fs/promises');
 router.use(bodyParser.json());
 
 /*
@@ -182,11 +183,11 @@ router.post(
                             1,
                             ${conn.escape(req.session.userId)},
                             ${conn.escape(
-                                req.body.name
-                            )},                           
+                                    req.body.name
+                                )},                           
                             ${conn.escape(
-                                req.body.description
-                            )},                                                      
+                                    req.body.description
+                                )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -286,8 +287,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-                              req.body.skillToBeCopied.id
-                          )} AND skills.is_deleted = 0;`;
+            req.body.skillToBeCopied.id
+        )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -545,8 +546,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-                        req.params.skillUrl
-                    )} AND s.is_deleted = 0`;
+        req.params.skillUrl
+    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -715,8 +716,8 @@ router.put(
                     ${conn.escape(req.body.description)},
                     ${conn.escape(req.body.icon_image)},
                     ${conn.escape(
-                        req.body.mastery_requirements
-                    )},                    
+                req.body.mastery_requirements
+            )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
@@ -787,11 +788,11 @@ router.put(
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(
-                            req.body.description
-                        )},                         
+                        req.body.description
+                    )},                         
                         mastery_requirements = ${conn.escape(
-                            req.body.mastery_requirements
-                        )}, 
+                        req.body.mastery_requirements
+                    )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)}, 
                         skills.order = ${conn.escape(req.body.order)}, 
@@ -854,8 +855,8 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-             req.body.mastery_requirements
-         )}, 
+            req.body.mastery_requirements
+        )}, 
          date = CURRENT_TIMESTAMP(), 
          icon_image = ${conn.escape(req.body.icon_image)},          
          comment = ${conn.escape(req.body.comment)};`;
@@ -1021,11 +1022,10 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${
-                                                    req.body.edit
-                                                        ? 'edit_and_approve'
-                                                        : 'approve'
-                                                }`,
+                                                userAction: `${req.body.edit
+                                                    ? 'edit_and_approve'
+                                                    : 'approve'
+                                                    }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -1639,4 +1639,149 @@ router.get('/name-list-old', (req, res, next) => {
     });
 });
 
+
+router.get('/count-total-skill-words', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = 'SELECT skills.`name` FROM skills';
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                let wordsCount = 0
+                results.forEach(result => {
+                    wordsCount = wordsCount + result.name.length;
+                })
+                console.log('words count: ' + wordsCount)
+                res.json({ wordsCount: wordsCount });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+// Using ChatGPT.
+// Import OpenAI package.
+const { OpenAI } = require('openai');
+// Include API key.
+// To access the .env file.
+require('dotenv').config();
+const openai = new OpenAI({
+    apiKey: process.env.VECTOR_OPEN_API_KEY
+});
+var vectorList = require('../../vector.json');
+
+const getVectorData = async (skillData, rowData) => {
+    const response = await openai.embeddings.create({
+        model: 'text-embedding-3-small',
+        input: skillData.name,
+        dimensions: 720
+    });
+    console.log(response);
+    const skillWithVector = {
+        id: skillData.id,
+        name: skillData.name,
+        vector: response.data[0].embedding
+    }
+    rowData.rows.push(skillWithVector);
+
+}
+
+const insertSkillsVectorIntoDataBase = (skillVector) => {
+    let sqlQuery = `INSERT INTO skills_vector (skill_id, skill_name, embedding)
+                   VALUES ('${skillVector.id}',
+                   '${skillVector.name}',
+                   VEC_FromText('[${skillVector.vector}]'))`
+    conn.query(sqlQuery, (err, results) => {
+        if (err) {
+            console.error(err)
+            throw err
+        }
+        console.log(results)
+    })
+}
+
+router.get('/skill-vectorization', isAuthenticated, async (req, res, next) => {
+    try {
+        const rowData = {
+            rows: []
+        }
+        // get skill name list
+        let sqlQuery = 'SELECT * FROM skills';
+        conn.query(sqlQuery, async (err, results) => {
+            if (err) {
+                throw err;
+            }
+            const promises = [];
+            // We use text-embedding-3-small model to make vector data from skill name
+            for (let index = 0; index < 4; index++) {
+                const element = results[index];
+                promises.push(getVectorData(element, rowData))
+            }
+
+            Promise.all(promises)
+                .then(async () => {
+                    console.log(rowData)
+                    const content = JSON.stringify(rowData)
+                    await fs.writeFile('./vector.json', content);
+                    res.json(content);
+                })
+                .catch((e) => {
+                    throw e
+                });
+        })
+    } catch (err) {
+        res.status = 500;
+        console.log(err);
+        res.json({ mess: 'fails' })
+    }
+})
+
+router.get('/insert-vectors-to-db', async (req, res) => {
+    try {
+        const promises = [];
+        vectorList.rows.forEach(skillVector => {
+            promises.push(insertSkillsVectorIntoDataBase(skillVector))
+        })
+        Promise.all(promises).then(
+            res.json({ mess: 'seem good' })
+        )
+
+    } catch (error) {
+        res.status = 500
+        res.end
+        console.error(error)
+    }
+})
+
+router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
+    try {
+        const response = await openai.embeddings.create({
+            model: 'text-embedding-3-small',
+            input: req.body.input,
+            dimensions: 720
+        });
+        console.log(response.data)
+        const inputVector = response.data[0].embedding
+        let sqlQuery = `SELECT *
+                    FROM skills_vector
+                    ORDER BY VEC_DISTANCE(skills_vector.embedding,
+                          VEC_FromText('${inputVector}'))
+                    LIMIT 2`
+        conn.query(sqlQuery, (err, results) => {
+            if (err) {
+
+                throw err
+            }
+            console.log(results)
+            res.json(results)
+        })
+    } catch (error) {
+        console.error(error)
+        res.status = 500;
+        res.end
+    }
+})
 module.exports = router;
