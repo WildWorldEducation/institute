@@ -1638,6 +1638,7 @@ const openai = new OpenAI({
 var vectorList = require('../../vector.json');
 
 const getVectorData = async (skillData, rowData) => {
+    console.log('handle ' + skillData.name)
     const response = await openai.embeddings.create({
         model: 'text-embedding-3-small',
         input: skillData.name,
@@ -1650,13 +1651,13 @@ const getVectorData = async (skillData, rowData) => {
         vector: response.data[0].embedding
     }
     rowData.rows.push(skillWithVector);
-
 }
 
 const insertSkillsVectorIntoDataBase = (skillVector) => {
+
     let sqlQuery = `INSERT INTO skills_vector (skill_id, skill_name, embedding)
                    VALUES ('${skillVector.id}',
-                   '${skillVector.name}',
+                   ${conn.escape(skillVector.name)},
                    VEC_FromText('[${skillVector.vector}]'))`
     conn.query(sqlQuery, (err, results) => {
         if (err) {
@@ -1679,18 +1680,21 @@ router.get('/skill-vectorization', isAuthenticated, async (req, res, next) => {
                 throw err;
             }
             const promises = [];
+            console.log(results.length)
             // We use text-embedding-3-small model to make vector data from skill name
-            for (let index = 0; index < 4; index++) {
+            for (let index = 0; index < results.length; index++) {
                 const element = results[index];
+
                 promises.push(getVectorData(element, rowData))
             }
+            res.json(results)
 
             Promise.all(promises)
                 .then(async () => {
                     console.log(rowData)
                     const content = JSON.stringify(rowData)
                     await fs.writeFile('./vector.json', content);
-                    res.json(content);
+                    res.json('all done check vector.json : ');
                 })
                 .catch((e) => {
                     throw e
@@ -1705,6 +1709,7 @@ router.get('/skill-vectorization', isAuthenticated, async (req, res, next) => {
 
 router.get('/insert-vectors-to-db', async (req, res) => {
     try {
+        console.log(vectorList.rows.length)
         const promises = [];
         vectorList.rows.forEach(skillVector => {
             promises.push(insertSkillsVectorIntoDataBase(skillVector))
@@ -1727,19 +1732,21 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
             input: req.body.input,
             dimensions: 720
         });
+        console.log(req.body.input)
         console.log(response.data)
         const inputVector = response.data[0].embedding
         let sqlQuery = `SELECT *
                     FROM skills_vector
                     ORDER BY VEC_DISTANCE(skills_vector.embedding,
-                          VEC_FromText('${inputVector}'))
-                    LIMIT 2`
+                          VEC_FromText('[${inputVector}]'))
+                    LIMIT 10`
+        console.log(sqlQuery)
         conn.query(sqlQuery, (err, results) => {
             if (err) {
 
                 throw err
             }
-            console.log(results)
+
             res.json(results)
         })
     } catch (error) {
