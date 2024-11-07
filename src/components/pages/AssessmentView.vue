@@ -17,7 +17,8 @@ export default {
                 name: null,
                 image: null,
                 firstAncestorId: null,
-                levelInHierarchy: null
+                levelInHierarchy: null,
+                url: ''
             }
         };
     },
@@ -32,16 +33,17 @@ export default {
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
             if (this.skillId == this.skillsStore.skillsList[i].id) {
                 this.skill.name = this.skillsStore.skillsList[i].name;
-                this.skill.image = this.skillsStore.skillsList[i].image;
-                this.skill.firstAncestorId =
-                    this.skillsStore.skillsList[i].first_ancestor;
-                this.skill.levelInHierarchy =
-                    this.skillsStore.skillsList[i].hierarchy_level;
+                this.skill.url = this.skillsStore.skillsList[i].url;
             }
         }
     },
     components: {
         Assessment
+    },
+    methods:{
+        imageUrlAlternative(event) {
+            event.target.src = '/images/skill-avatar/recurso.png';
+        }
     }
 };
 </script>
@@ -56,17 +58,18 @@ export default {
     <div class="container mt-3">
         <div class="d-flex justify-content-md-between justify-content-center">
             <div class="d-flex flex-column flex-md-row">
-                <!-- Display a default skill icon if the current skill doesn`t have one -->
-                <img v-if="this.skill.image" :src="this.skill.image" />
                 <img
                     id="skill-icon"
-                    v-else
-                    src="/images/skill-avatar/recurso.png"
-                    alt="default skill icon"
+                    :src="
+                        'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+                        skill.url
+                    "
+                    :onerror="imageUrlAlternative"
+                    class="rounded"
                 />
                 <div
                     id="assessment-skill-name"
-                    class="ms-3 d-flex justify-content-end"
+                    class="ms-3 d-flex justify-content-md-end text-center justify-content-center"
                 >
                     {{ this.skill.name }} Quiz
                 </div>
@@ -104,6 +107,10 @@ export default {
 .img-fluid {
     width: 100% !important;
     height: auto;
+}
+#skill-icon {
+    width: 200px;
+    border-radius: 10px;
 }
 
 /*Style for Mobile Devices */
