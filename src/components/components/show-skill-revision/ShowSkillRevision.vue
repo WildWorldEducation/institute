@@ -6,17 +6,20 @@ import ConfirmModal from './components/ConfirmModal.vue';
 import CommentModal from './components/CommentModal.vue';
 import CompareWithDropdown from './components/CompareWithDropdown.vue';
 import CompareWithContent from './components/CompareWithContent.vue';
+import { useShowSkillStore } from '../../../stores/ShowSkillStore.js';
+import LoadingModal from './components/LoadingModal.vue';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
         const skillsStore = useSkillsStore();
         const usersStore = useUsersStore();
-
+        const showSkillStore = useShowSkillStore();
         return {
             userDetailsStore,
             skillsStore,
-            usersStore
+            usersStore,
+            showSkillStore
         };
     },
     data() {
@@ -26,20 +29,22 @@ export default {
             skillRevision: {},
             skillRevisionHistory: [],
             currentVersionNumber: null,
-            revertComment: '',
             isCurrentVersion: false,
             showConfirmModal: false,
             showCommentModal: false,
+            showLoadingModal: false,
             skill: {},
             compareWithRevision: null,
-            currentCompareWithRevision: null
+            currentCompareWithRevision: null,
+            loadingStatus: ''
         };
     },
     components: {
         ConfirmModal,
         CommentModal,
         CompareWithDropdown,
-        CompareWithContent
+        CompareWithContent,
+        LoadingModal
     },
     async mounted() {
         // Get list of skills.
@@ -150,12 +155,14 @@ export default {
             this.closeModal();
             this.showCommentModal = true;
         },
-        revert() {
+        revert(comment) {
+            this.showCommentModal = false;
+            this.showLoadingModal = true;
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    comment: this.revertComment
+                    comment: comment
                 })
             };
             var url =
@@ -163,12 +170,30 @@ export default {
                 this.skill.id +
                 '/revert-to/' +
                 this.versionNumber;
-            fetch(url, requestOptions).then(() => {
-                this.$router.push('/skills/' + this.skill.url);
+            fetch(url, requestOptions).then(async (res) => {
+                if (!res.ok) {
+                    this.loadingStatus = 'fails';
+                    return;
+                }
+                this.loadingStatus = 'success';
+                await this.showSkillStore.findSkill(this.skillUrl);
             });
         },
+        closeModal() {
+            this.showCommentModal = false;
+            this.showConfirmModal = false;
+            this.showLoadingModal = false;
+        },
         updateCompareWithRevision(revision) {
+            if (
+                revision?.version_number === this.skillRevision.version_number
+            ) {
+                return;
+            }
             this.compareWithRevision = revision;
+        },
+        imageUrlAlternative(event) {
+            event.target.src = '/images/skill-avatar/recurso.png';
         }
     }
 };
@@ -228,30 +253,57 @@ export default {
                 </div>
                 <!-- A line divide -->
                 <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
-                <div class="d-flex flex-column-reverse flex-md-row">
+                <div class="d-flex flex-column-reverse flex-md-row gap-4">
                     <!-- Mastery Requirements -->
-                    <div class="col-md-8 order-2 order-md-1">
-                        <div class="d-flex flex-column">
-                            <div class="mastery-requirements">
-                                <div
-                                    v-html="skillRevision.mastery_requirements"
-                                ></div>
-                            </div>
+                    <!-- <div class="col-md-8 order-2 order-md-1"> -->
+                    <div class="d-flex flex-column">
+                        <div class="mastery-requirements">
+                            <div
+                                v-html="skillRevision.mastery_requirements"
+                            ></div>
                         </div>
                     </div>
+                    <!-- </div> -->
                     <!-- Infobox -->
                     <div class="col-md-4 order-1 order-md-2">
                         <div class="info-box p-2 mb-2">
                             <!-- AWS S3 hosted feature image -->
                             <!-- Show a default skill avatar if skill not have image yet -->
-                            <img
-                                :src="
+                            <a
+                                v-if="skillRevision.icon_image"
+                                :href="
+                                    'https://institute-skill-infobox-images.s3.amazonaws.com/' +
                                     skillRevision.icon_image
-                                        ? skillRevision.icon_image
-                                        : '/images/skill-avatar/recurso.png'
                                 "
-                                class="rounded img-fluid"
-                            />
+                            >
+                                <img
+                                    :src="
+                                        'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+                                        skillRevision.icon_image
+                                    "
+                                    class="rounded img-fluid"
+                                />
+                            </a>
+                            <div
+                                class="d-flex flex-column align-items-center"
+                                v-else
+                            >
+                                <div class="no-image-warn">
+                                    Version
+                                    {{ skillRevision.version_number }} Does Not
+                                    Change Icon Image.
+                                </div>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512"
+                                    width="80"
+                                    height="80"
+                                >
+                                    <path
+                                        d="M448 80c8.8 0 16 7.2 16 16l0 319.8-5-6.5-136-176c-4.5-5.9-11.6-9.3-19-9.3s-14.4 3.4-19 9.3L202 340.7l-30.5-42.7C167 291.7 159.8 288 152 288s-15 3.7-19.5 10.1l-80 112L48 416.3l0-.3L48 96c0-8.8 7.2-16 16-16l384 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zm80 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"
+                                    />
+                                </svg>
+                            </div>
                             <!-- Grade level -->
                             <div class="mt-2">
                                 <h2 class="h4 title">Level</h2>
@@ -320,6 +372,12 @@ export default {
         :showCommentModal="showCommentModal"
         :closeModal="closeModal"
         :revert="revert"
+    />
+    <LoadingModal
+        :skillUrl="skillUrl"
+        :showLoadingModal="showLoadingModal"
+        :loadingStatus="loadingStatus"
+        :closeModal="closeModal"
     />
 </template>
 
@@ -484,6 +542,10 @@ export default {
     align-items: center;
     justify-content: center;
     height: fit-content;
+}
+
+.no-image-warn {
+    color: #a16207;
 }
 
 /* Style Specific On Phone */

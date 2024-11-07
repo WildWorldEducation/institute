@@ -1,6 +1,11 @@
 <script>
 export default {
-    props: ['showCommentModal', 'closeModal', 'revert']
+    props: ['showCommentModal', 'closeModal', 'revert'],
+    data() {
+        return {
+            revertComment: ''
+        };
+    }
 };
 </script>
 
@@ -48,7 +53,7 @@ export default {
                 <button
                     type="button"
                     class="btn green-btn modal-btn"
-                    @click="revert"
+                    @click="revert(revertComment)"
                 >
                     <span class="d-none d-md-block"> Submit </span>
                     <!-- Tick icon Only show when in Phone View -->
