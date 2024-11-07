@@ -61,9 +61,9 @@ export default {
                     Compare with:&nbsp;
                     <div v-if="!compareWithVersion">none</div>
                     <div v-else>
-                        <div class="d-flex ms-2 d-none d-md-block">
-                            version
-                            <span class="revision-strong-text ms-2">{{
+                        <div class="d-flex d-none d-md-block ms-1">
+                            Version
+                            <span class="revision-strong-text">{{
                                 compareWithVersion.version_number
                             }}</span
                             >, edit date:
@@ -72,7 +72,7 @@ export default {
                                     formatDate(compareWithVersion.edited_date)
                                 }} </span
                             >, by
-                            <span class="revision-strong-text ms-2">
+                            <span class="revision-strong-text">
                                 {{ compareWithVersion.user_name }}
                             </span>
                         </div>

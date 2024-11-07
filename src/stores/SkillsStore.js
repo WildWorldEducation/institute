@@ -69,5 +69,14 @@ export const useSkillsStore = defineStore('skills', {
             this.getNestedSkillsList();
         },
 
+        async findSkill(url) {
+            if (this.skillsList.length < 1) {
+                await this.getSkillsList();
+            }
+            const skill = this.skillsList.find((element) => { return element.url === url }
+            )
+            return skill
+        }
+
     }
 });

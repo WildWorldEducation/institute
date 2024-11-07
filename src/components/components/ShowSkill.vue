@@ -7,6 +7,7 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
+import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 
 // Import Custom Components
 import FlagModals from './FlagModals.vue';
@@ -23,6 +24,7 @@ export default {
         const skillTreeStore = useSkillTreeStore();
         const userSkillsStore = useUserSkillsStore();
         const sessionDetailsStore = useSessionDetailsStore();
+        const showSkillStore = useShowSkillStore();
 
         // If method hasnt been run before.
         if (tagsStore.tagsList.length == 0) {
@@ -37,7 +39,8 @@ export default {
             skillsStore,
             skillTreeStore,
             userSkillsStore,
-            sessionDetailsStore
+            sessionDetailsStore,
+            showSkillStore
         };
     },
     data() {
@@ -56,7 +59,8 @@ export default {
             showAncestorLink: false,
             isMobileCheck: window.innerWidth,
             showConfirmModal: false,
-            isSkillLoaded: false
+            isSkillLoaded: false,
+            randomNum: 0
         };
     },
     components: {
@@ -74,9 +78,12 @@ export default {
     },
     methods: {
         async getSkill() {
-            // Load the skill data
-            const res = await fetch('/skills/url/' + this.skillUrl);
-            this.skill = await res.json();
+            // solution for image to be changed when we change it from AWS
+            this.randomNum = Math.random();
+            // // Load the skill data
+            await this.showSkillStore.findSkill(this.skillUrl);
+            this.skill = this.showSkillStore.skill;
+
             this.skillId = this.skill.id;
 
             // Meta title for SEO
@@ -445,17 +452,21 @@ export default {
                 <div class="col-md-4 order-1 order-md-2">
                     <div class="info-box p-2 mb-2">
                         <!-- AWS S3 hosted feature image -->
-                        <!-- Show a default skill avatar if skill not have image yet -->
+                        <!-- Using random number otherwise url doesnt change (cache)-->
                         <a
                             :href="
                                 'https://institute-skill-infobox-images.s3.amazonaws.com/' +
-                                skillUrl
+                                skillUrl +
+                                '?' +
+                                randomNum
                             "
                         >
                             <img
                                 :src="
                                     'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                                    skillUrl
+                                    skillUrl +
+                                    '?' +
+                                    randomNum
                                 "
                                 @error="imageUrlAlternative"
                                 class="rounded img-fluid"
