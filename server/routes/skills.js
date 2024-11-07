@@ -8,7 +8,6 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const fs = require('node:fs/promises');
 router.use(bodyParser.json());
-
 /*
 /AWS S3 images
 */
@@ -29,6 +28,8 @@ const s3 = new S3Client({
     },
     region: bucketRegion
 });
+const sharp = require('sharp');
+const dayjs = require('dayjs');
 
 // DB
 const conn = require('../config/db');
@@ -38,6 +39,9 @@ const isAuthenticated = require('../middlewares/authMiddleware');
 const isAdmin = require('../middlewares/adminMiddleware');
 const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 const { recordUserAction } = require('../utilities/record-user-action');
+
+// Helper Function
+const { saveIconToAWS } = require('../utilities/save-image-to-aws');
 
 /*------------------------------------------
 --------------------------------------------
@@ -699,10 +703,19 @@ router.put(
     '/:id/edit',
     isAuthenticated,
     checkRoleHierarchy('editor'),
-    (req, res, next) => {
+    async (req, res, next) => {
         if (req.session.userName) {
             // Add new record to the skills_versions table.
             let versionNumber = req.body.version_number + 1;
+            let url = req.body.url;
+
+            const uuidDate = Date.now();
+            // Save edit icon to AWS
+            const iconUrl = await saveIconToAWS(
+                req.body.icon_image,
+                url,
+                uuidDate
+            );
 
             let addVersionHistoryInsertSQLQuery = `
                     INSERT INTO skill_history
@@ -714,72 +727,17 @@ router.put(
                     ${conn.escape(req.session.userId)},
                     ${conn.escape(req.body.name)},                    
                     ${conn.escape(req.body.description)},
-                    ${conn.escape(req.body.icon_image)},
+                    ${conn.escape(iconUrl)},
                     ${conn.escape(
                 req.body.mastery_requirements
             )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
-
             conn.query(addVersionHistoryInsertSQLQuery, async (err) => {
                 try {
                     if (err) {
                         throw err;
-                    }
-
-                    /*
-                     * Send icon image to S3
-                     */
-                    if (req.body.icon_image.length > 1) {
-                        // Get file from Base64 encoding (client sends as base64)
-                        let fileData = Buffer.from(
-                            req.body.icon_image.replace(
-                                /^data:image\/\w+;base64,/,
-                                ''
-                            ),
-                            'base64'
-                        );
-
-                        let url = req.body.url;
-
-                        let fullSizeData = {
-                            // The name it will be saved as on S3
-                            Key: url,
-                            // The image
-                            Body: fileData,
-                            ContentEncoding: 'base64',
-                            ContentType: 'image/jpeg',
-                            // The S3 bucket
-                            Bucket: skillInfoboxImagesBucketName
-                        };
-
-                        // Send to the bucket.
-                        const fullSizeCommand = new PutObjectCommand(
-                            fullSizeData
-                        );
-                        await s3.send(fullSizeCommand);
-
-                        const thumbnailFileData = await sharp(fileData)
-                            .resize({ width: 330 })
-                            .toBuffer();
-
-                        let thumbnailData = {
-                            // The name it will be saved as on S3
-                            Key: url,
-                            // The image
-                            Body: thumbnailFileData,
-                            ContentEncoding: 'base64',
-                            ContentType: 'image/jpeg',
-                            // The S3 bucket
-                            Bucket: skillInfoboxImageThumbnailsBucketName
-                        };
-
-                        // Send to the bucket.
-                        const thumbnailCommand = new PutObjectCommand(
-                            thumbnailData
-                        );
-                        await s3.send(thumbnailCommand);
                     }
 
                     // Update record in skill table.
@@ -801,11 +759,16 @@ router.put(
                         is_human_edited = 1
                         WHERE id = ${conn.escape(req.params.id)};`;
 
-                    conn.query(updateRecordSQLQuery, (err, results) => {
+                    conn.query(updateRecordSQLQuery, async (err, results) => {
                         try {
                             if (err) {
                                 throw err;
                             } else {
+                                // Update new Icon to if user changed it
+
+                                // Save edit icon to AWS
+                                await saveIconToAWS(req.body.icon_image, url);
+
                                 // add edit (update) action into user_actions table
                                 const actionData = {
                                     action: 'update',
@@ -829,6 +792,7 @@ router.put(
                         }
                     });
                 } catch (err) {
+                    console.error(err);
                     next(err);
                 }
             });
