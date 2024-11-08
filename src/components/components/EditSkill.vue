@@ -143,11 +143,6 @@ export default {
                     }
                 })
                 .then(() => {
-                    // Get the current image.
-                    this.iconImage = document
-                        .getElementById('originalImage')
-                        .getAttribute('src');
-
                     $('#summernote')
                         .summernote({
                             disableDragAndDrop: true,
