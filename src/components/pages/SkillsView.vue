@@ -70,15 +70,11 @@ export default {
             });
             this.resultsSkills = highlightedResult;
         },
-        handleChooseResult(result) {
-            this.resultsSkills = [];
-            this.searchText = result.name;
-            this.chooseResult = result;
-            this.$refs.skillList.findNode(result.name);
-        },
         clearResults() {
             this.$refs.skillList.path = [];
-            this.resultsSkills = [];
+        },
+        findNode(skillName) {
+            this.$refs.skillList.findNode(skillName);
         }
     },
     watch: {
@@ -151,8 +147,9 @@ export default {
                 <div class="search-mobile-row">
                     <!-- Search Feature -->
                     <CollapsibleTreeSearchBar
-                        :handleChooseResult
+                        :findNode="findNode"
                         :nameList="nameList"
+                        :clearResults="clearResults"
                     />
                 </div>
             </div>
@@ -220,8 +217,9 @@ export default {
                         </div> -->
                         <!-- Search Feature -->
                         <CollapsibleTreeSearchBar
-                            :handleChooseResult
+                            :findNode="findNode"
                             :nameList="nameList"
+                            :clearResults="clearResults"
                         />
                     </div>
                 </div>

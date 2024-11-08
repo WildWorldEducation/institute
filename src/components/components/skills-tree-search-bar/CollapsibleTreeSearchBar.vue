@@ -3,7 +3,7 @@ import { mode } from 'd3';
 import LoadingSpinner from '../share-components/LoadingSpinner.vue';
 
 export default {
-    props: ['handleChooseResult', 'nameList'],
+    props: ['findNode', 'nameList', 'clearResults'],
     data: () => {
         return {
             resultsSkills: [],
@@ -50,6 +50,12 @@ export default {
             if (this.searchMode === 'key word') {
                 this.getKeyWordResults(searchText.toLowerCase());
             }
+        },
+        handleChooseResult(result) {
+            this.resultsSkills = [];
+            this.searchText = result.name;
+            this.chooseResult = result;
+            this.findNode(result.name);
         }
     },
     components: {
@@ -67,6 +73,7 @@ export default {
                     this.handleSearchTextChange(newVal);
                 }
                 if (newVal.length === 0) {
+                    this.resultsSkills = [];
                     this.clearResults();
                 }
             }
@@ -118,6 +125,8 @@ export default {
     flex-direction: column;
     border: 1px solid #dce2f2;
     border-radius: 8px;
+    width: 450px;
+    margin-right: 35px;
 }
 
 .have-results {
