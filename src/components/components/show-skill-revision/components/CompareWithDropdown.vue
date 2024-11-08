@@ -29,6 +29,21 @@ export default {
         compareWithVersion() {
             if (!this.compareWithRevision) return false;
             return this.compareWithRevision;
+        },
+        skillRevisionHistoryMinusCurrentRevision() {
+            let abridgedSkillRevisionHistory = [];
+            for (let i = 0; i < this.skillRevisionHistory.length; i++) {
+                if (
+                    this.skillRevisionHistory[i].version_number !=
+                    this.currentShowingVersion
+                ) {
+                    abridgedSkillRevisionHistory.push(
+                        this.skillRevisionHistory[i]
+                    );
+                }
+            }
+
+            return abridgedSkillRevisionHistory;
         }
     }
 };
@@ -43,21 +58,21 @@ export default {
         >
             <button @click="showDropDown = !showDropDown" class="dropdown-btn">
                 <div class="d-flex">
-                    Compare With -
+                    Compare with:&nbsp;
                     <div v-if="!compareWithVersion">none</div>
                     <div v-else>
-                        <div class="d-flex ms-2 d-none d-md-block">
+                        <div class="d-flex d-none d-md-block ms-1">
                             Version
-                            <span class="revision-strong-text ms-2">{{
+                            <span class="revision-strong-text">{{
                                 compareWithVersion.version_number
                             }}</span
-                            >, Edit Date:
+                            >, edit date:
                             <span class="revision-strong-text">
                                 {{
                                     formatDate(compareWithVersion.edited_date)
                                 }} </span
                             >, by
-                            <span class="revision-strong-text ms-2">
+                            <span class="revision-strong-text">
                                 {{ compareWithVersion.user_name }}
                             </span>
                         </div>
@@ -91,7 +106,7 @@ export default {
             <Transition name="dropdown">
                 <div v-if="showDropDown" class="history-versions-dropdown">
                     <div
-                        v-for="revision in skillRevisionHistory"
+                        v-for="revision in skillRevisionHistoryMinusCurrentRevision"
                         class="revision-row d-flex flex-column flex-lg-row align-items-lg-center align-items-start justify-content-start"
                         @click="
                             updateCompareWithRevision(revision);
@@ -103,7 +118,7 @@ export default {
                             <span class="revision-strong-text">{{
                                 revision.version_number
                             }}</span
-                            >, Edit Date:
+                            >, edit date:
                             <span class="revision-strong-text">
                                 {{ formatDate(revision.edited_date) }} </span
                             >, by
@@ -116,7 +131,7 @@ export default {
                             <span class="revision-strong-text">{{
                                 revision.version_number
                             }}</span>
-                            , Edit Date:
+                            , edit date:
                             <span class="revision-strong-text">
                                 {{ formatDatePhone(revision.edited_date) }}
                             </span>

@@ -159,30 +159,53 @@ export default {
                     // Create answer options.
                     for (let i = 0; i < this.mcQuestions.length; i++) {
                         var answerOptions = [];
-                        answerOptions.push({
-                            option: this.mcQuestions[i].correct_answer,
-                            index: 1
-                        });
-                        answerOptions.push({
-                            option: this.mcQuestions[i].incorrect_answer_1,
-                            index: 2
-                        });
-                        answerOptions.push({
-                            option: this.mcQuestions[i].incorrect_answer_2,
-                            index: 3
-                        });
-                        answerOptions.push({
-                            option: this.mcQuestions[i].incorrect_answer_3,
-                            index: 4
-                        });
-                        answerOptions.push({
-                            option: this.mcQuestions[i].incorrect_answer_4,
-                            index: 5
-                        });
-                        // Shuffle the questions.
-                        answerOptions = answerOptions.sort(
-                            (a, b) => 0.5 - Math.random()
-                        );
+                        // answerOptions.push({
+                        //     option: this.mcQuestions[i].answer_5,
+                        //     index: 1
+                        // });
+                        // answerOptions.push({
+                        //     option: this.mcQuestions[i].answer_1,
+                        //     index: 2
+                        // });
+                        if(this.mcQuestions[i].answer_1){
+                            answerOptions.push({
+                                option: this.mcQuestions[i].answer_1,
+                                index: 1
+                            });
+                        }
+                        if(this.mcQuestions[i].answer_2){
+                            answerOptions.push({
+                                option: this.mcQuestions[i].answer_2,
+                                index: 2
+                            });
+                        }
+                        if(this.mcQuestions[i].answer_3){
+                            answerOptions.push({
+                                option: this.mcQuestions[i].answer_3,
+                                index: 3
+                            });
+                        }
+                        if(this.mcQuestions[i].answer_4){
+                            answerOptions.push({
+                                option: this.mcQuestions[i].answer_4,
+                                index: 4
+                            });
+                        }
+                        if(this.mcQuestions[i].answer_5){
+                            answerOptions.push({
+                                option: this.mcQuestions[i].answer_5,
+                                index: 5
+                            });
+                        }
+                        
+                        
+                        // Shuffle the questions if is_random.
+                        if(this.mcQuestions[i].is_random){
+                            answerOptions = answerOptions.sort(
+                                (a, b) => 0.5 - Math.random()
+                            );
+                        }
+                        
                         // Make sure that is one option is "All of the above",
                         // It is at the bottom.
                         for (let i = 0; i < answerOptions.length; i++) {
@@ -417,7 +440,7 @@ export default {
                 // Tally the score.
                 if (this.questions[i].questionType == 'mc') {
                     this.numMCQuestions++;
-                    if (this.questions[i].userAnswer == 1) {
+                    if (this.questions[i].userAnswer == this.questions[i].correct_answer) {
                         this.score++;
                     }
                 } else if (this.questions[i].questionType == 'essay') {

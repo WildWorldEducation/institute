@@ -1,7 +1,6 @@
 <script>
 import CompareString from './CompareString.vue';
 import { nextTick } from 'vue';
-import { diffWords } from 'diff';
 import DiffWordsDropDown from './DiffWordsDropDown.vue';
 import ComparisonContainer from './ComparisonContainer.vue';
 
@@ -11,15 +10,23 @@ export default {
         return {
             mcQuestionId: this.$route.params.contentId,
             userId: this.$route.params.userId,
-            mcQuestion: {},
-            mcQuestionEdit: {},
-            tempMcQuestionEdit: {},
+            originalQuestion: {},
+            originalAnswers: [],
+            editedQuestion: {},
+            editedAnswers: [],
+            skill_name: null,
+            skill_level: null,
+            tempMcQuestionEdit: ['', '', '', '', ''],
+            tempAnswersEdit: [],
             comment: '',
             isEditMode: false,
             edited: false,
             showHighLight: true,
             // wait for API call
-            isQuestionLoaded: false
+            isQuestionLoaded: false,
+            numAnswerOptions: 5,
+            skillName: '',
+            skillLevel: null
         };
     },
     components: {
@@ -28,11 +35,14 @@ export default {
         ComparisonContainer
     },
     async created() {
-        await this.getMCQuestionEdit();
-        await this.getMCQuestion();
+        await this.getEditedQuestion();
+        await this.getOriginalQuestion();
+        
+        // Can now render
+        this.isQuestionLoaded = true;
     },
     methods: {
-        async getMCQuestionEdit() {
+        async getEditedQuestion() {
             await fetch(
                 '/questions/mc/submitted-for-review/' +
                     this.mcQuestionId +
@@ -43,18 +53,29 @@ export default {
                     return response.json();
                 })
                 .then((data) => {
+                    // Get the comment from the edit
                     this.comment = data.comment;
-                    this.mcQuestionEdit = data;
+                    // The original question.
+                    this.editedQuestion = data.question;
+                    // The original answers.
+                    this.editedAnswers = data.answers.map((a) => a.text);
+                    // Working out number of answers.
+                    // this.numAnswerOptions = data.answers.length;
                 });
         },
-        async getMCQuestion() {
+        async getOriginalQuestion() {
             await fetch('/questions/mc/show/' + this.mcQuestionId)
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => {
-                    this.mcQuestion = data;
-                    this.isQuestionLoaded = true;
+                    // Skill name and level.
+                    this.skillName = data.skill_name;
+                    this.skillLevel = data.skill_level;
+                    // Original question object
+                    this.originalQuestion = data.question;
+                    // Original answers text
+                    this.originalAnswers = data.answers.map((a) => a.text);
                 });
         },
         dismissEdit() {
@@ -79,7 +100,8 @@ export default {
         },
         edit() {
             // initiate a temp data of mc question edit
-            this.tempMcQuestionEdit = this.mcQuestionEdit;
+            this.tempMcQuestionEdit = { ...this.editedQuestion };
+            this.tempAnswersEdit = this.editedAnswers;
             this.isEditMode = true;
             this.$parent.disableBtn = true;
             // Auto size text area to show all text without scroll bar in next tick where the text area will appear.
@@ -112,22 +134,15 @@ export default {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: this.mcQuestionEdit.name,
-                    question: this.mcQuestionEdit.question,
-                    correct_answer: this.mcQuestionEdit.correct_answer,
-                    incorrect_answer_1: this.mcQuestionEdit.incorrect_answer_1,
-                    incorrect_answer_2: this.mcQuestionEdit.incorrect_answer_2,
-                    incorrect_answer_3: this.mcQuestionEdit.incorrect_answer_3,
-                    incorrect_answer_4: this.mcQuestionEdit.incorrect_answer_4,
-                    correct_answer: this.mcQuestionEdit.correct_answer,
-                    explanation: this.mcQuestionEdit.explanation,
+                    question: this.editedQuestion,
+                    answers: this.editedAnswers,
                     edit: this.edited
                 })
             };
 
             var url =
                 '/questions/mc/' +
-                this.mcQuestionEdit.mc_question_id +
+                this.editedQuestion.mc_question_id +
                 '/approve-edits';
 
             fetch(url, requestOptions).then(() => {
@@ -153,7 +168,10 @@ export default {
             this.edited = true;
             this.isEditMode = false;
             this.$parent.disableBtn = false;
-            this.mcQuestionEdit = this.tempMcQuestionEdit;
+            this.editedQuestion = { ...this.tempMcQuestionEdit };
+            this.editedAnswers = this.tempAnswersEdit;
+
+            //this.compareEdit();
         },
         cancelEditMcQuestion() {
             this.isEditMode = false;
@@ -169,23 +187,29 @@ export default {
         },
         updateTempData(type, value) {
             switch (type) {
-                case 'mc_question':
-                    this.tempMcQuestionEdit.question = value;
+                case 'question':
+                    this.tempMcQuestionEdit.text = value;
                     break;
-                case 'mc_correct_answer':
+                case 'answer_1':
+                    this.tempAnswersEdit[0] = value;
+                    break;
+                case 'answer_2':
+                    this.tempAnswersEdit[1] = value;
+                    break;
+                case 'answer_3':
+                    this.tempAnswersEdit[2] = value;
+                    break;
+                case 'answer_4':
+                    this.tempAnswersEdit[3] = value;
+                    break;
+                case 'answer_5':
+                    this.tempAnswersEdit[4] = value;
+                    break;
+                case 'is_random':
+                    this.tempMcQuestionEdit.is_random = value;
+                    break;
+                case 'correct_answer':
                     this.tempMcQuestionEdit.correct_answer = value;
-                    break;
-                case 'mc_incorrect_answer_1':
-                    this.tempMcQuestionEdit.incorrect_answer_1 = value;
-                    break;
-                case 'mc_incorrect_answer_2':
-                    this.tempMcQuestionEdit.incorrect_answer_2 = value;
-                    break;
-                case 'mc_incorrect_answer_3':
-                    this.tempMcQuestionEdit.incorrect_answer_3 = value;
-                    break;
-                case 'mc_incorrect_answer_4':
-                    this.tempMcQuestionEdit.incorrect_answer_4 = value;
                     break;
                 case 'explanation':
                     this.tempMcQuestionEdit.explanation = value;
@@ -194,36 +218,55 @@ export default {
                     break;
             }
         }
+        // TODO later
+        // addAnswer() {
+        //     if (this.tempAnswersEdit.length < 5) {
+        //         this.tempAnswersEdit.push({ text: '' });
+        //     }
+        // },
+        // removeAnswer(index) {
+        //     if (this.tempAnswersEdit.length > 2) {
+        //         this.tempAnswersEdit.splice(index, 1);
+        //         // Adjust correct answer selection if necessary
+        //         if (
+        //             this.tempMcQuestionEdit.correct_answer >
+        //             this.tempAnswersEdit.length
+        //         ) {
+        //             this.tempMcQuestionEdit.correct_answer =
+        //                 this.tempAnswersEdit.length;
+        //         }
+        //     }
+        // }
     }
 };
 </script>
 
 <template>
     <div class="container mt-4 mb-4">
-        <h1 ref="pageTile" class="page-title">MC Question Change Comparison</h1>
+        <h1 ref="pageTile" class="page-title">Compare Changes</h1>
         <hr />
-        <!-- ---General info of skills -->
+        <!-- Name and Level of Skill -->
         <div class="d-flex flex-column gap-2 mb-3">
             <h1 class="d-flex gap-2 align-items-end header-tile">
                 <div class="major-text">Skill:</div>
                 <div class="minor-text">
-                    {{ toTileCase(mcQuestion.skill_name) }}
+                    {{ toTileCase(skillName) }}
                 </div>
             </h1>
             <h1 class="d-flex gap-2 align-items-end header-tile">
                 <div class="major-text">Level:</div>
                 <div class="minor-text">
-                    {{ toTileCase(mcQuestion.skill_level) }}
+                    {{ toTileCase(skillLevel) }}
                 </div>
             </h1>
         </div>
-        <!-- ----Show and hide High light Button-->
+        <!-- ----Show and hide Highlight button-->
         <div class="d-flex flex-row-reverse my-3">
             <div
                 class="btn green-btn d-flex align-items-center"
                 @click="showHighLight = !showHighLight"
             >
-                {{ showHighLight ? 'Hide' : 'Show' }} Hight Light
+                {{ showHighLight ? 'Hide' : 'Show' }} highlight
                 <svg
                     v-if="showHighLight"
                     xmlns="http://www.w3.org/2000/svg"
@@ -252,103 +295,135 @@ export default {
                 </svg>
             </div>
         </div>
-        <!-- ----| Question Compare Container |---- -->
+        <!-- Compare Question Container -->
         <ComparisonContainer
             v-if="isQuestionLoaded"
             containerName="Question"
-            :originalData="mcQuestion.question"
-            :newData="mcQuestionEdit.question"
+            :originalData="originalQuestion.text"
+            :newData="editedQuestion.text"
             :showHighlight="showHighLight"
             :isEditMode="isEditMode"
             :updateTempData="updateTempData"
-            type="mc_question"
+            type="question"
             :singleComponent="true"
         />
 
-        <!-- ----| Answers Compare Container |---- -->
-
-        <div class="compare-container mt-5">
-            <!-- --Correct answer-- -->
-            <ComparisonContainer
-                v-if="isQuestionLoaded"
-                containerName="Correct Answer"
-                :originalData="mcQuestion.correct_answer"
-                :newData="mcQuestionEdit.correct_answer"
-                :showHighlight="showHighLight"
-                :isEditMode="isEditMode"
-                :updateTempData="updateTempData"
-                type="mc_correct_answer"
-                :singleComponent="false"
-            />
-            <div class="my-4">
-                <hr />
-            </div>
-            <!-- --Incorrect Answer 1-- -->
-            <ComparisonContainer
-                v-if="isQuestionLoaded"
-                containerName="Incorrect Answer 1"
-                :originalData="mcQuestion.incorrect_answer_1"
-                :newData="mcQuestionEdit.incorrect_answer_1"
-                :showHighlight="showHighLight"
-                :isEditMode="isEditMode"
-                :updateTempData="updateTempData"
-                type="mc_incorrect_answer_1"
-                :singleComponent="false"
-            />
-            <div class="my-4">
-                <hr />
-            </div>
-            <!-- --Incorrect Answer 2-- -->
-            <ComparisonContainer
-                v-if="isQuestionLoaded"
-                containerName="Incorrect Answer 2"
-                :originalData="mcQuestion.incorrect_answer_2"
-                :newData="mcQuestionEdit.incorrect_answer_2"
-                :showHighlight="showHighLight"
-                :isEditMode="isEditMode"
-                :updateTempData="updateTempData"
-                type="mc_incorrect_answer_2"
-                :singleComponent="false"
-            />
-
-            <div class="my-4">
-                <hr />
-            </div>
-            <!-- --Incorrect Answer 3-- -->
-            <ComparisonContainer
-                v-if="isQuestionLoaded"
-                containerName="Incorrect Answer 3"
-                :originalData="mcQuestion.incorrect_answer_3"
-                :newData="mcQuestionEdit.incorrect_answer_3"
-                :showHighlight="showHighLight"
-                :isEditMode="isEditMode"
-                :updateTempData="updateTempData"
-                type="mc_incorrect_answer_3"
-                :singleComponent="false"
-            />
-
-            <div class="my-4">
-                <hr />
-            </div>
-            <ComparisonContainer
-                v-if="isQuestionLoaded"
-                containerName="Incorrect Answer 4"
-                :originalData="mcQuestion.incorrect_answer_4"
-                :newData="mcQuestionEdit.incorrect_answer_4"
-                :showHighlight="showHighLight"
-                :isEditMode="isEditMode"
-                :updateTempData="updateTempData"
-                type="mc_incorrect_answer_4"
-                :singleComponent="false"
-            />
+        <!-- Compare Answers Container -->
+        <ComparisonContainer
+            class="compare-container mt-5"
+            containerName="Answer option 1"
+            v-if="isQuestionLoaded"
+            :originalData="originalAnswers[0]"
+            :newData="editedAnswers[0]"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="answer_1"
+            :singleComponent="true"
+        />
+        <div class="my-4">
+            <hr />
         </div>
+
+        <ComparisonContainer
+            class="compare-container mt-5"
+            containerName="Answer option 2"
+            v-if="isQuestionLoaded"
+            :originalData="originalAnswers[1]"
+            :newData="editedAnswers[1]"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="answer_2"
+            :singleComponent="true"
+        />
+        <div class="my-4">
+            <hr />
+        </div>
+
+        <ComparisonContainer
+            class="compare-container mt-5"
+            containerName="Answer option 3"
+            v-if="isQuestionLoaded"
+            :originalData="originalAnswers[2]"
+            :newData="editedAnswers[2]"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="answer_3"
+            :singleComponent="true"
+        />
+        <div class="my-4">
+            <hr />
+        </div>
+
+        <ComparisonContainer
+            class="compare-container mt-5"
+            containerName="Answer option 4"
+            v-if="isQuestionLoaded"
+            :originalData="originalAnswers[3]"
+            :newData="editedAnswers[3]"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="answer_4"
+            :singleComponent="true"
+        />
+        <div class="my-4">
+            <hr />
+        </div>
+
+        <ComparisonContainer
+            class="compare-container mt-5"
+            containerName="Answer option 5"
+            v-if="isQuestionLoaded"
+            :originalData="originalAnswers[4]"
+            :newData="editedAnswers[4]"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="answer_5"
+            :singleComponent="true"
+        />
+        <div class="my-4">
+            <hr />
+        </div>
+
+        <!-- Correct answer -->
+        <ComparisonContainer
+            v-if="isQuestionLoaded"
+            containerName="Correct answer"
+            :originalData="originalQuestion.correct_answer.toString()"
+            :newData="editedQuestion.correct_answer.toString()"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="correct_answer"
+            :singleComponent="true"
+            class="compare-container mt-5"
+        />
+
+        <!-- Is Random -->
+        <ComparisonContainer
+            v-if="isQuestionLoaded"
+            containerName="Is Random"
+            :originalData="originalQuestion.is_random.toString()"
+            :newData="editedQuestion.is_random.toString()"
+            :showHighlight="showHighLight"
+            :isEditMode="isEditMode"
+            :updateTempData="updateTempData"
+            type="is_random"
+            :singleComponent="false"
+            class="compare-container mt-5"
+        />
+
         <!-- ----| Explanation Compare Container -->
         <ComparisonContainer
             v-if="isQuestionLoaded"
-            class="mt-3"
+            class="mt-5"
             containerName="Explanation"
-            :originalData="mcQuestion.explanation"
-            :newData="mcQuestionEdit.explanation"
+            :originalData="originalQuestion.explanation"
+            :newData="editedQuestion.explanation"
             :showHighlight="showHighLight"
             :isEditMode="isEditMode"
             :updateTempData="updateTempData"
@@ -401,7 +476,7 @@ export default {
             <div class="d-flex flex-md-row flex-column gap-2">
                 <h2 class="compare-container-tile mb-3">Comment:</h2>
                 <div class="comment-text">
-                    {{ mcQuestionEdit.comment }}
+                    {{ this.comment }}
                 </div>
             </div>
         </div>
@@ -409,6 +484,10 @@ export default {
 </template>
 
 <style scoped>
+.my-8 {
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+}
 .page-title {
     color: #a48be7;
     font-family: 'Poppins', sans-serif;
