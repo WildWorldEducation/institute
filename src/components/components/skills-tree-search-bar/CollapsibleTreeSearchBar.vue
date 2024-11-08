@@ -3,11 +3,13 @@ import { mode } from 'd3';
 import LoadingSpinner from '../share-components/LoadingSpinner.vue';
 
 export default {
-    props: ['handleChooseResult'],
+    props: ['handleChooseResult', 'nameList'],
     data: () => {
         return {
             resultsSkills: [],
-            searchMode: 'key word'
+            searchMode: 'key word',
+            searchText: '',
+            chooseResult: null
         };
     },
     methods: {
@@ -45,8 +47,8 @@ export default {
             this.resultsSkills = highlightedResult;
         },
         handleSearchTextChange(searchText) {
-            if (mode === 'key word') {
-                this.getResults(searchText.toLowerCase());
+            if (this.searchMode === 'key word') {
+                this.getKeyWordResults(searchText.toLowerCase());
             }
         }
     },
@@ -138,9 +140,9 @@ export default {
     left: -1px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    border-bottom: 1px solid #989ba1;
-    border-right: 1px solid #989ba1;
-    border-left: 1px solid #989ba1;
+    border-bottom: 1px solid #dce2f2;
+    border-right: 1px solid #dce2f2;
+    border-left: 1px solid #dce2f2;
     background-color: white;
     max-height: 400px;
     overflow-y: auto;

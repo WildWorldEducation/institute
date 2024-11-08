@@ -150,7 +150,10 @@ export default {
                 </div>
                 <div class="search-mobile-row">
                     <!-- Search Feature -->
-                    <CollapsibleTreeSearchBar :handleChooseResult />
+                    <CollapsibleTreeSearchBar
+                        :handleChooseResult
+                        :nameList="nameList"
+                    />
                 </div>
             </div>
             <div id="tablet-and-up-legend">
@@ -174,7 +177,7 @@ export default {
                         class="col-12 col-lg-3 d-flex justify-content-center align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
                     >
                         <!-- Search Feature -->
-                        <div
+                        <!-- <div
                             :class="[
                                 'search-bar',
                                 resultsSkills.length > 0 && 'have-results'
@@ -214,7 +217,12 @@ export default {
                                     ></button>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
+                        <!-- Search Feature -->
+                        <CollapsibleTreeSearchBar
+                            :handleChooseResult
+                            :nameList="nameList"
+                        />
                     </div>
                 </div>
             </div>
