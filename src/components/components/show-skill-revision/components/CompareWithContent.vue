@@ -29,14 +29,9 @@ export default {
                 this.compareWithRevision.name
             );
 
-            const imageDiff =
-                this.viewingRevision.icon_image !==
-                this.compareWithRevision.icon_image;
-
             return {
                 masteryDiff: masteryDiff,
                 nameDiff: nameDiff,
-                imageDiff: imageDiff,
                 skillData: this.compareWithRevision,
                 currentViewingRevision: this.viewingRevision
             };
@@ -72,53 +67,48 @@ export default {
                     class="alert alert-warning d-flex gap-2 align-items-center"
                     role="alert"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="24"
-                        height="24"
-                    >
-                        <path
-                            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480L40 480c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
-                        />
-                    </svg>
-                    <div
-                        v-if="!isCurrentVersion"
-                        class="d-flex flex-column ms-2"
-                    >
-                        You Are Comparing:
-                        <div>
-                            - Revision
-                            {{
-                                compareData.currentViewingRevision
-                                    .version_number
-                            }}
-                            edited by
-                            {{ compareData.currentViewingRevision.userName }} at
-                            <span class="warning-date">
+                    <div class="d-flex flex-column ms-2">
+                        <p>
+                            <strong>You are comparing:</strong>
+                            <span>
+                                Revision
                                 {{
-                                    formatDate(
-                                        compareData.currentViewingRevision
-                                            .edited_date
-                                    )
-                                }}</span
-                            >
-                        </div>
-                        <div>With</div>
+                                    compareData.currentViewingRevision
+                                        .version_number
+                                }}
+                                edited by
+                                <em>{{
+                                    compareData.currentViewingRevision.userName
+                                }}</em>
+                                on
+                                <span class="warning-date">
+                                    {{
+                                        formatDate(
+                                            compareData.currentViewingRevision
+                                                .edited_date
+                                        )
+                                    }}</span
+                                >
+                            </span>
+                        </p>
+                        <p>
+                            <strong>with:</strong>
 
-                        <div>
-                            - Revision
-                            {{ compareData.skillData.version_number }}
-                            edited by
-                            {{ compareData.skillData.user_name }} at
-                            <span class="warning-date">
-                                {{
-                                    formatDate(
-                                        compareData.skillData?.edited_date
-                                    )
-                                }}</span
-                            >
-                        </div>
+                            <span>
+                                Revision
+                                {{ compareData.skillData.version_number }}
+                                edited by
+                                <em>{{ compareData.skillData.user_name }}</em>
+                                on
+                                <span class="warning-date">
+                                    {{
+                                        formatDate(
+                                            compareData.skillData?.edited_date
+                                        )
+                                    }}</span
+                                >
+                            </span>
+                        </p>
                     </div>
                 </div>
 
@@ -131,29 +121,60 @@ export default {
                     :compareWithRevision="compareWithRevision"
                 />
             </div>
+            <div class="space-between"></div>
             <!-- A line divide -->
-            <hr class="border border-1 opacity-100 hr mt-md-4 mt-5" />
+            <hr class="border border-1 opacity-100 hr" />
             <div class="d-flex flex-column-reverse flex-md-row gap-4">
                 <div class="mastery-requirements">
                     <div v-html="compareData.masteryDiff"></div>
                 </div>
-                <div class="info-box p-2 mb-2">
-                    <div v-if="compareData.imageDiff">
-                        Changed Icon Image to:
-                    </div>
-                    <img
-                        :src="
-                            compareData.skillData.icon_image
-                                ? compareData.skillData.icon_image
-                                : '/images/skill-avatar/recurso.png'
-                        "
-                        @error="imageUrlAlternative"
-                        class="rounded img-fluid"
-                    />
-                    <!-- Grade level -->
-                    <div class="mt-3" style="color: #a48be6">
-                        Level:
-                        <strong>
+                <!-- Infobox -->
+                <div class="col-md-4 order-1 order-md-2">
+                    <div class="info-box p-2 mb-2">
+                        <div v-if="compareData.skillData.icon_image">
+                            Icon Image Of Version
+                            {{ compareData.skillData.version_number }}
+                        </div>
+                        <a
+                            v-if="compareData.skillData.icon_image"
+                            :href="
+                                'https://institute-skill-infobox-images.s3.amazonaws.com/' +
+                                compareData.skillData.icon_image
+                            "
+                        >
+                            <img
+                                :src="
+                                    'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
+                                    compareData.skillData.icon_image
+                                "
+                                @error="imageUrlAlternative"
+                                class="rounded img-fluid"
+                            />
+                        </a>
+                        <div
+                            class="d-flex flex-column align-items-center"
+                            v-else
+                        >
+                            <div class="no-image-warn">
+                                Version
+                                {{ compareData.skillData.version_number }} Does
+                                Not Change Icon Image.
+                            </div>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                width="80"
+                                height="80"
+                            >
+                                <path
+                                    d="M448 80c8.8 0 16 7.2 16 16l0 319.8-5-6.5-136-176c-4.5-5.9-11.6-9.3-19-9.3s-14.4 3.4-19 9.3L202 340.7l-30.5-42.7C167 291.7 159.8 288 152 288s-15 3.7-19.5 10.1l-80 112L48 416.3l0-.3L48 96c0-8.8 7.2-16 16-16l384 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zm80 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"
+                                />
+                            </svg>
+                        </div>
+                        <!-- Grade level -->
+                        <div class="mt-3" style="color: #a48be6">
+                            <h2 class="h4 title">Level</h2>
+
                             <span
                                 v-if="
                                     compareData.skillData.level ==
@@ -184,37 +205,30 @@ export default {
                                 v-else-if="compareData.skillData.level == 'phd'"
                                 >PHD</span
                             >
-                        </strong>
+                        </div>
                     </div>
                 </div>
             </div>
-            <button
-                class="btn purple-btn mt-4"
-                @click="updateCompareWithRevision(null)"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    fill="white"
-                    height="25"
-                    width="25"
-                    class="me-2"
-                >
-                    <path
-                        d="M48.5 224L40 224c-13.3 0-24-10.7-24-24L16 72c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2L98.6 96.6c87.6-86.5 228.7-86.2 315.8 1c87.5 87.5 87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3c-62.2-62.2-162.7-62.5-225.3-1L185 183c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8L48.5 224z"
-                    />
-                </svg>
-                <div>
-                    Go Back To version:
-                    {{ compareData.currentViewingRevision.version_number }}
-                </div>
-            </button>
-            <p>&nbsp;</p>
         </div>
+        <button
+            class="btn purple-btn mt-4"
+            @click="updateCompareWithRevision(null)"
+        >
+            <div>
+                Go back to version
+                {{ compareData.currentViewingRevision.version_number }}
+            </div>
+        </button>
+        <p>&nbsp;</p>
     </div>
 </template>
 
 <style scoped>
+.title {
+    color: #a48be6;
+    font-weight: 700;
+}
+
 #skill-info-container {
     background-color: #f2edff;
     border-radius: 12px;
@@ -241,6 +255,10 @@ export default {
 
 .hr {
     border-color: #aea3ce !important;
+}
+
+.space-between {
+    min-height: 15px;
 }
 
 .purple-btn {
@@ -313,7 +331,6 @@ export default {
     padding-bottom: 10px;
     background-color: rgba(255, 255, 255, 0.692);
     border-radius: 5px;
-    width: 70%;
 }
 
 .info-box {
@@ -324,8 +341,9 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 35%;
     height: fit-content;
+    border: 1px solid #a2a9b1;
+    text-align: center;
 }
 
 :deep(ins) {
@@ -344,6 +362,10 @@ export default {
     text-decoration-color: #1e293b;
     white-space-collapse: collapse;
     margin: 0px 3px;
+}
+
+.no-image-warn {
+    color: #a16207;
 }
 
 /* Style Specific On Phone */

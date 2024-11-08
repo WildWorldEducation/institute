@@ -6,6 +6,7 @@ import { useSkillTagsStore } from '../../stores/SkillTagsStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 import { useRouter } from 'vue-router';
+import LoadingModal from './skill-edit/loadingModal.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -98,6 +99,8 @@ export default {
             comment: '',
             isAnotherInstanceOfExistingSkill: false,
             randomNum: 0,
+            loadingStatus: '',
+            showLoadingModal: false,
             originalSkill: {}
         };
     },
@@ -140,20 +143,6 @@ export default {
                     }
                 })
                 .then(() => {
-                    this.randomNum = Math.random();
-
-                    if (
-                        typeof document
-                            .getElementById('originalImage')
-                            .getAttribute('src').src !== 'undefined'
-                    ) {
-                        this.iconImage = document
-                            .getElementById('originalImage')
-                            .getAttribute('src');
-                    } else {
-                        this.iconImage = '';
-                    }
-
                     $('#summernote')
                         .summernote({
                             disableDragAndDrop: true,
@@ -227,22 +216,20 @@ export default {
             this.router.push('/skills');
         },
         // For image upload.
-        onFileChange(e, type) {
+        onFileChange(e) {
             var files = e.target.files || e.dataTransfer.files;
             if (!files.length) return;
-            this.createImage(files[0], type);
+            this.createImage(files[0]);
         },
-        createImage(file, type) {
+        createImage(file) {
             var image = new Image();
             var reader = new FileReader();
             var vm = this;
 
             reader.onload = (e) => {
                 vm.image = e.target.result;
-                if (type == 'icon') {
-                    this.iconImage = e.target.result;
-                    this.skill.icon_image = this.iconImage;
-                }
+                this.iconImage = e.target.result;
+                this.skill.icon_image = this.iconImage;
             };
             reader.readAsDataURL(file);
         },
@@ -275,6 +262,7 @@ export default {
         },
         // If edit is from an admin or editor.
         Submit() {
+            this.showLoadingModal = true;
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
                 var hasSubSkills = false;
@@ -289,6 +277,7 @@ export default {
                 if (hasSubSkills) {
                     this.validate.superValidate = true;
                     this.validate.violated = true;
+                    this.closeModal();
                     alert(
                         'Please delete outer cluster nodes belonging to the skill, before changing its type.'
                     );
@@ -304,6 +293,7 @@ export default {
                 if (this.skill.parent == 0) {
                     this.validate.orphan = true;
                     this.validate.violated = true;
+                    this.closeModal();
                     alert('cluster nodes must have a parent');
                 }
                 for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
@@ -319,6 +309,7 @@ export default {
                     ) {
                         this.validate.noChild = true;
                         this.validate.violated = true;
+                        this.closeModal();
                         alert(
                             "please delete this node's child skills, before changing it to a cluster child skill"
                         );
@@ -343,6 +334,7 @@ export default {
 
             // We End function here if any of the validate is violated
             if (this.validate.violated) {
+                this.closeModal();
                 return;
             }
 
@@ -369,9 +361,14 @@ export default {
 
             var url = '/skills/' + this.skill.id + '/edit';
             fetch(url, requestOptions)
-                .then(() => {
-                    this.skillsStore.getNestedSkillsList();
-                    this.SubmitFilters();
+                .then((res) => {
+                    if (res.ok) {
+                        this.loadingStatus = 'success';
+                        this.skillsStore.getNestedSkillsList();
+                        this.SubmitFilters();
+                    } else {
+                        this.loadingStatus = 'fails';
+                    }
                 })
                 .then(() => {
                     // Delete flag if exist
@@ -486,7 +483,13 @@ export default {
             } else {
                 this.step2Confirm = false;
             }
+        },
+        closeModal() {
+            this.showLoadingModal = false;
         }
+    },
+    components: {
+        LoadingModal
     },
     computed: {
         isFormChanged() {
@@ -876,9 +879,7 @@ export default {
                             class="d-none"
                             :src="
                                 'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                                skillUrl +
-                                '?' +
-                                randomNum
+                                skillUrl
                             "
                         />
                     </div>
@@ -1184,6 +1185,12 @@ export default {
             </div>
         </div>
     </div>
+    <LoadingModal
+        :skillUrl="skillUrl"
+        :loadingStatus="loadingStatus"
+        :showLoadingModal="showLoadingModal"
+        :closeModal="closeModal"
+    />
 </template>
 
 <style scoped>

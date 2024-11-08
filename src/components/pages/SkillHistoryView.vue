@@ -15,12 +15,14 @@ export default {
             skillUrl: this.$route.params.skillUrl,
             skill: {},
             skillRevisions: [],
-            currentVersionNumber: null
+            currentVersionNumber: null,
+            isLoaded: false
         };
     },
     components: { HistoryRow, HistoryRowTabletPhone },
     async created() {
-        if (this.usersStore.users.length < 1) await this.usersStore.getUsers();
+        if (this.usersStore.usersIncludingDeleted.length < 1)
+            await this.usersStore.getUsersIncludingDeleted();
         await this.getSkill();
     },
     async mounted() {},
@@ -72,7 +74,7 @@ export default {
 
                 // -----------------------
                 // Prep the users data.
-                let user = this.usersStore.users.find(
+                let user = this.usersStore.usersIncludingDeleted.find(
                     (o) => o.id === this.skillRevisions[i].user_id
                 );
                 this.skillRevisions[i].username = user.username;
@@ -92,6 +94,7 @@ export default {
                         this.skillRevisions[i + 1];
                 }
             }
+            this.isLoaded = true;
         }
     }
 };
@@ -106,6 +109,7 @@ export default {
         <hr />
         <div class="d-none d-lg-flex flex-column">
             <HistoryRow
+                v-if="isLoaded"
                 v-for="revision in skillRevisions"
                 :revision="revision"
                 :skill="skill"
@@ -113,6 +117,7 @@ export default {
         </div>
         <div class="d-flex d-lg-none flex-column">
             <HistoryRowTabletPhone
+                v-if="isLoaded"
                 v-for="revision in skillRevisions"
                 :revision="revision"
                 :skill="skill"
