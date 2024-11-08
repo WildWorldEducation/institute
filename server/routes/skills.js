@@ -1740,7 +1740,7 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
                     ORDER BY VEC_DISTANCE(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                     LIMIT 10`
-        console.log(sqlQuery)
+
         conn.query(sqlQuery, (err, results) => {
             if (err) {
 
