@@ -15,26 +15,35 @@ export default {
     methods: {
         getKeyWordResults(searchText) {
             let results = [];
-
+            // search only first work match if search text is less than three
+            if (searchText.length < 3) {
+                this.searchFirstWord(results, searchText);
+            }
+            // search for all word in skill name string if search text is greater than three
+            else {
+                this.searchWholeString(results, searchText);
+            }
+            this.resultsSkills = this.highlightingResult(results);
+        },
+        searchFirstWord(results, searchText) {
             this.nameList.forEach((element) => {
-                // search only first work match if search text is less than three
-                if (searchText.length < 3) {
-                    if (
-                        element.name
-                            .toLowerCase()
-                            .substring(0, searchText.length) === searchText
-                    ) {
-                        results.push(element);
-                    }
-                }
-                // search for all word in skill name string if search text is greater than three
-                else {
-                    if (element.name.toLowerCase().includes(searchText)) {
-                        results.push(element);
-                    }
+                if (
+                    element.name
+                        .toLowerCase()
+                        .substring(0, searchText.length) === searchText
+                ) {
+                    results.push(element);
                 }
             });
-
+        },
+        searchWholeString(results, searchText) {
+            this.nameList.forEach((element) => {
+                if (element.name.toLowerCase().includes(searchText)) {
+                    results.push(element);
+                }
+            });
+        },
+        highlightingResult(results) {
             // we highlight the part that match search text
             const highlightedResult = results.map((result) => {
                 const matchedRegex = new RegExp(`(${this.searchText})`, 'gi');
@@ -44,7 +53,29 @@ export default {
                 );
                 return { ...result, highlightedResult: newText };
             });
-            this.resultsSkills = highlightedResult;
+            return highlightedResult;
+        },
+        async getContextResults(searchText) {
+            this.waitForSever = true;
+            const url = `/skills//find-with-context`;
+            const requestOption = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    input: searchText
+                })
+            };
+            const res = await fetch(url, requestOption);
+            const ResResults = await res.json();
+            // We have to change the field in context result to match the key word results
+            const matchedResult = ResResults.map((resResult) => {
+                return {
+                    id: resResult.skill_id,
+                    name: resResult.skill_name
+                };
+            });
+            this.resultsSkills = this.highlightingResult(matchedResult);
+            this.waitForSever = false;
         },
         handleSearchTextChange(searchText) {
             if (this.searchMode === 'key word') {
@@ -105,6 +136,19 @@ export default {
                 placeholder="Skill Name"
                 v-model="searchText"
             />
+            <button class="robot-icon" @click="getContextResults(searchText)">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 512"
+                    height="20"
+                    width="20"
+                    fill="#0f172a"
+                >
+                    <path
+                        d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
+                    />
+                </svg>
+            </button>
         </div>
         <div class="position-relative">
             <div v-if="resultsSkills.length" class="search-results">
@@ -176,6 +220,15 @@ export default {
 
 .result-row:focus {
     border: 1px solid #133b61;
+}
+
+.robot-icon {
+    margin-left: auto;
+    margin-right: 5px;
+}
+
+.robot-icon:hover {
+    cursor: pointer;
 }
 
 /* Bigger devices ( Tablet ) */
