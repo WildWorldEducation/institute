@@ -144,27 +144,37 @@ export default {
             window.close();
         },
         addAnswer() {
-            if (this.answers[2].show == 0) {
-                this.answers[2].show = 1;
-            } else if (this.answers[3].show == 0) {
-                this.answers[3].show = 1;
-            } else if (this.answers[4].show == 0) {
-                this.answers[4].show = 1;
+            if (
+                this.userDetailsStore.role == 'admin' ||
+                this.userDetailsStore.role == 'editor'
+            ) {
+                if (this.answers[2].show == 0) {
+                    this.answers[2].show = 1;
+                } else if (this.answers[3].show == 0) {
+                    this.answers[3].show = 1;
+                } else if (this.answers[4].show == 0) {
+                    this.answers[4].show = 1;
+                }
             }
         },
         removeAnswer() {
-            if (this.answers[4].show == 1) {
-                this.answers[4].show = 0;
-                if (this.question.correct_answer == 5)
-                    this.question.correct_answer = 4;
-            } else if (this.answers[3].show == 1) {
-                this.answers[3].show = 0;
-                if (this.question.correct_answer == 4)
-                    this.question.correct_answer = 3;
-            } else if (this.answers[2].show == 1) {
-                this.answers[2].show = 0;
-                if (this.question.correct_answer == 3)
-                    this.question.correct_answer = 2;
+            if (
+                this.userDetailsStore.role == 'admin' ||
+                this.userDetailsStore.role == 'editor'
+            ) {
+                if (this.answers[4].show == 1) {
+                    this.answers[4].show = 0;
+                    if (this.question.correct_answer == 5)
+                        this.question.correct_answer = 4;
+                } else if (this.answers[3].show == 1) {
+                    this.answers[3].show = 0;
+                    if (this.question.correct_answer == 4)
+                        this.question.correct_answer = 3;
+                } else if (this.answers[2].show == 1) {
+                    this.answers[2].show = 0;
+                    if (this.question.correct_answer == 3)
+                        this.question.correct_answer = 2;
+                }
             }
         }
     },
@@ -283,7 +293,14 @@ export default {
                         </div>
                     </div>
 
-                    <div v-if="isLoaded" class="mb-3">
+                    <div
+                        v-if="
+                            isLoaded &&
+                            (this.userDetailsStore.role == 'admin' ||
+                                this.userDetailsStore.role == 'editor')
+                        "
+                        class="mb-3"
+                    >
                         <!-- Remove Answer Button (visible only if more than 2 answers) -->
                         <button
                             v-if="answers[2].show == true"
