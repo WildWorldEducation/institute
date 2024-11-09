@@ -1,1 +1,0 @@
-import{_ as e,o as n,c as o}from"./main-e6748f32.js";const _={},s={class:"loader"};function c(t,a,r,p,d,i){return n(),o("span",s)}const f=e(_,[["render",c],["__scopeId","data-v-266659bc"]]);export{f as L};
