@@ -1396,18 +1396,22 @@ router.get('/student-mc-questions/:id', (req, res, next) => {
                 };
 
                 let answers = [
-                    { text: results[0].answer_1 },
-                    { text: results[0].answer_2 }
+                    { text: results[0].answer_1, show: true },
+                    { text: results[0].answer_2, show: true },
+                    {
+                        text: results[0].answer_3,
+                        show: results[0].show_answer_3
+                    },
+                    {
+                        text: results[0].answer_4,
+                        show: results[0].show_answer_4
+                    },
+                    {
+                        text: results[0].answer_5,
+                        show: results[0].show_answer_5
+                    }
                 ];
-                if (results[0].answer_3) {
-                    answers.push({ text: results[0].answer_3 });
-                }
-                if (results[0].answer_4) {
-                    answers.push({ text: results[0].answer_4 });
-                }
-                if (results[0].answer_5) {
-                    answers.push({ text: results[0].answer_5 });
-                }
+
                 res.json({
                     question: question,
                     answers: answers
