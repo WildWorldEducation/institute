@@ -240,7 +240,7 @@ export default {
                         @click="removeAnswer()"
                         data-v-ea3cd1bf=""
                         type="button"
-                        class="btn btn red-btn p-2"
+                        class="btn red-btn p-2 mb-2"
                         title="Delete answer"
                     >
                         <svg
