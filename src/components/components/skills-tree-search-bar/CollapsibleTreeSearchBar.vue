@@ -75,25 +75,25 @@ export default {
         },
         async getContextResults(searchText) {
             this.waitForSever = true;
-            // const url = `/skills//find-with-context`;
-            // const requestOption = {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({
-            //         input: searchText
-            //     })
-            // };
-            // const res = await fetch(url, requestOption);
-            // const ResResults = await res.json();
-            // // We have to change the field in context result to match the key word results
-            // const matchedResult = ResResults.map((resResult) => {
-            //     return {
-            //         id: resResult.skill_id,
-            //         name: resResult.skill_name
-            //     };
-            // });
-            // this.resultsSkills = this.highlightingResult(matchedResult);
-            // this.waitForSever = false;
+            const url = `/skills//find-with-context`;
+            const requestOption = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    input: searchText
+                })
+            };
+            const res = await fetch(url, requestOption);
+            const ResResults = await res.json();
+            // We have to change the field in context result to match the key word results
+            const matchedResult = ResResults.map((resResult) => {
+                return {
+                    id: resResult.skill_id,
+                    name: resResult.skill_name
+                };
+            });
+            this.resultsSkills = this.highlightingResult(matchedResult);
+            this.waitForSever = false;
         },
         handleSearchTextChange(searchText) {
             if (this.searchMode === 'key word') {
