@@ -80,4 +80,19 @@ export default {
     right: 15px;
     top: -9px;
 }
+
+/* Bigger devices ( Tablet ) */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .tool-tip-base {
+        right: 0px;
+        top: 4px;
+    }
+}
+
+/* Phone view style */
+@media (max-width: 480px) {
+    .tool-tip-base {
+        top: 4px;
+    }
+}
 </style>

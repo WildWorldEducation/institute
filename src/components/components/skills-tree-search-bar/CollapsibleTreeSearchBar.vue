@@ -29,7 +29,12 @@ export default {
                 this.searchWholeString(results, searchText);
             }
             this.resultsSkills = this.highlightingResult(results);
-            if (this.resultsSkills.length === 0 && !this.toolTipStillShowing) {
+            if (
+                this.resultsSkills.length === 0 &&
+                !this.toolTipStillShowing &&
+                searchText.length > 0 &&
+                !this.chooseResult
+            ) {
                 this.handleShowAISuggestion();
             }
         },
@@ -278,14 +283,14 @@ export default {
 /* Bigger devices ( Tablet ) */
 @media (min-width: 481px) and (max-width: 1024px) {
     .search-bar {
-        width: 100%;
+        width: 90%;
     }
 }
 
-/* Tablet view style */
-@media (min-width: 481px) and (max-width: 1024px) {
+/* Phone view style */
+@media (max-width: 480px) {
     .search-bar {
-        width: 80%;
+        width: 96%;
         margin-left: auto;
         margin-right: auto;
     }
