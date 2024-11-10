@@ -1,6 +1,7 @@
 <script>
-import { mode } from 'd3';
 import LoadingSpinner from '../share-components/LoadingSpinner.vue';
+import AiExplainToolTip from './AiExplainToolTip.vue';
+import AiSearchSuggestToolTip from './AiSearchSuggestToolTip.vue';
 
 export default {
     props: ['findNode', 'nameList', 'clearResults'],
@@ -9,7 +10,11 @@ export default {
             resultsSkills: [],
             searchMode: 'key word',
             searchText: '',
-            chooseResult: null
+            chooseResult: null,
+            waitForSever: false,
+            showAiToolTip: false,
+            showSuggestAiSearchToolTip: false,
+            toolTipStillShowing: false
         };
     },
     methods: {
@@ -24,6 +29,19 @@ export default {
                 this.searchWholeString(results, searchText);
             }
             this.resultsSkills = this.highlightingResult(results);
+            if (this.resultsSkills.length === 0 && !this.toolTipStillShowing) {
+                this.handleShowAISuggestion();
+            }
+        },
+        handleShowAISuggestion() {
+            this.toolTipStillShowing = true;
+            setTimeout(() => {
+                this.showSuggestAiSearchToolTip = true;
+                setTimeout(() => {
+                    this.showSuggestAiSearchToolTip = false;
+                    this.toolTipStillShowing = false;
+                }, 8000);
+            }, 300);
         },
         searchFirstWord(results, searchText) {
             this.nameList.forEach((element) => {
@@ -57,25 +75,25 @@ export default {
         },
         async getContextResults(searchText) {
             this.waitForSever = true;
-            const url = `/skills//find-with-context`;
-            const requestOption = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    input: searchText
-                })
-            };
-            const res = await fetch(url, requestOption);
-            const ResResults = await res.json();
-            // We have to change the field in context result to match the key word results
-            const matchedResult = ResResults.map((resResult) => {
-                return {
-                    id: resResult.skill_id,
-                    name: resResult.skill_name
-                };
-            });
-            this.resultsSkills = this.highlightingResult(matchedResult);
-            this.waitForSever = false;
+            // const url = `/skills//find-with-context`;
+            // const requestOption = {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         input: searchText
+            //     })
+            // };
+            // const res = await fetch(url, requestOption);
+            // const ResResults = await res.json();
+            // // We have to change the field in context result to match the key word results
+            // const matchedResult = ResResults.map((resResult) => {
+            //     return {
+            //         id: resResult.skill_id,
+            //         name: resResult.skill_name
+            //     };
+            // });
+            // this.resultsSkills = this.highlightingResult(matchedResult);
+            // this.waitForSever = false;
         },
         handleSearchTextChange(searchText) {
             if (this.searchMode === 'key word') {
@@ -90,7 +108,9 @@ export default {
         }
     },
     components: {
-        LoadingSpinner
+        LoadingSpinner,
+        AiExplainToolTip,
+        AiSearchSuggestToolTip
     },
 
     watch: {
@@ -136,8 +156,14 @@ export default {
                 placeholder="Skill Name"
                 v-model="searchText"
             />
-            <button class="robot-icon" @click="getContextResults(searchText)">
+            <button
+                class="robot-icon"
+                @click="getContextResults(searchText)"
+                @mouseover="showAiToolTip = true"
+                @mouseleave="showAiToolTip = false"
+            >
                 <svg
+                    v-if="!waitForSever"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 640 512"
                     height="20"
@@ -148,7 +174,19 @@ export default {
                         d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
                     />
                 </svg>
+                <div class="loading-spinner-div">
+                    <LoadingSpinner
+                        v-if="waitForSever"
+                        height="22px"
+                        width="22px"
+                        borderWidth="3px"
+                    />
+                </div>
             </button>
+        </div>
+        <div class="position-relative">
+            <AiExplainToolTip v-if="showAiToolTip" />
+            <AiSearchSuggestToolTip v-if="showSuggestAiSearchToolTip" />
         </div>
         <div class="position-relative">
             <div v-if="resultsSkills.length" class="search-results">
@@ -225,10 +263,16 @@ export default {
 .robot-icon {
     margin-left: auto;
     margin-right: 5px;
+    background-color: inherit;
+    border: none;
 }
 
 .robot-icon:hover {
     cursor: pointer;
+}
+
+.loading-spinner-div {
+    height: fit-content !important;
 }
 
 /* Bigger devices ( Tablet ) */
