@@ -29,12 +29,13 @@ export default {
                 this.searchWholeString(results, searchText);
             }
             this.resultsSkills = this.highlightingResult(results);
+
             if (
                 this.resultsSkills.length === 0 &&
                 !this.toolTipStillShowing &&
-                searchText.length > 0 &&
-                !this.chooseResult
+                searchText.length > 0
             ) {
+                console.log(searchText.length);
                 this.handleShowAISuggestion();
             }
         },
@@ -44,9 +45,11 @@ export default {
                 this.showSuggestAiSearchToolTip = true;
                 setTimeout(() => {
                     this.showSuggestAiSearchToolTip = false;
-                    this.toolTipStillShowing = false;
-                }, 8000);
+                }, 5000);
             }, 300);
+            setTimeout(() => {
+                this.toolTipStillShowing = false;
+            }, 10000);
         },
         searchFirstWord(results, searchText) {
             this.nameList.forEach((element) => {
