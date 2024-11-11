@@ -1156,4 +1156,20 @@ function deleteDownVotedSources(index, sourcesToDelete, userId, respond) {
     });
 }
 
+//const { autoGenerateSource } =
+// /require('../utilities/auto-generate-sources').default;
+
+let aspect = 'Transition to Permanent Settlements';
+let description =
+    'Exploring reasons behind the shift from nomadic hunter-gatherer communities to permanent settlements, influenced by geographical, climatic, and environmental factors.';
+
+//autoGenerateSource(2043, 'high_school', aspect, description);
+
+let { Exa } = require('exa-js');
+//const thing = await import("./main.mjs");
+//import { Exa } from 'exa-js';
+
+const exa = new Exa('2ba8221a-e9fd-41d5-bdc0-46ac4a198f3a');
+console.log(exa);
+
 module.exports = router;
