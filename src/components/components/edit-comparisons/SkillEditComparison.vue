@@ -51,10 +51,10 @@ export default {
         }
 
         // // Render the Summernote content.
-        // $('#summernote').summernote(
-        //     'code',
-        //     this.skillEdit.mastery_requirements
-        // );
+        $('#summernote').summernote(
+            'code',
+            this.skillEdit.mastery_requirements
+        );
         // Disable editing.
         $('#summernote')
             .next()
