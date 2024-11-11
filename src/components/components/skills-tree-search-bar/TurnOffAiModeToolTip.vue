@@ -16,6 +16,7 @@ export default {
 <template>
     <div class="tool-tip-base">
         <div class="explain-tool-tip triangle-top-right">
+            <div>You are currently using AI to search the skill tree</div>
             <div class="tool-tip-text">
                 <div>
                     Click on the
@@ -33,11 +34,7 @@ export default {
                             />
                         </svg>
                     </span>
-                    Icon to search the skill tree using AI.
-                </div>
-                <div>
-                    It will find skills have similar context with your search
-                    text
+                    Again to turn off context search using AI
                 </div>
             </div>
         </div>

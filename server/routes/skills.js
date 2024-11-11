@@ -1604,27 +1604,6 @@ router.get('/name-list-old', (req, res, next) => {
 });
 
 
-router.get('/count-total-skill-words', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = 'SELECT skills.`name` FROM skills';
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                let wordsCount = 0
-                results.forEach(result => {
-                    wordsCount = wordsCount + result.name.length;
-                })
-                console.log('words count: ' + wordsCount)
-                res.json({ wordsCount: wordsCount });
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-});
 
 // Using ChatGPT.
 // Import OpenAI package.
@@ -1635,10 +1614,9 @@ require('dotenv').config();
 const openai = new OpenAI({
     apiKey: process.env.VECTOR_OPEN_API_KEY
 });
-var vectorList = require('../../vector.json');
+
 
 const getVectorData = async (skillData, rowData) => {
-    console.log('handle ' + skillData.name)
     const response = await openai.embeddings.create({
         model: 'text-embedding-3-small',
         input: skillData.name,
@@ -1732,21 +1710,18 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
             input: req.body.input,
             dimensions: 720
         });
-        console.log(req.body.input)
-        console.log(response.data)
+
         const inputVector = response.data[0].embedding
         let sqlQuery = `SELECT *
                     FROM skills_vector
                     ORDER BY VEC_DISTANCE(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
-                    LIMIT 10`
+                    LIMIT 25`
 
         conn.query(sqlQuery, (err, results) => {
             if (err) {
-
                 throw err
             }
-
             res.json(results)
         })
     } catch (error) {

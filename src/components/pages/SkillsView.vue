@@ -4,6 +4,7 @@ import SkillsListParent from '../components/SkillsListParent.vue';
 // Import the store
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import CollapsibleTreeSearchBar from '../components/skills-tree-search-bar/collapsibleTreeSearchBar.vue';
+import TestCollapsibleTreeSearch from '../components/skills-tree-search-bar/TestCollapsibleTreeSearch.vue';
 
 export default {
     setup() {
@@ -26,7 +27,8 @@ export default {
     },
     components: {
         SkillsListParent,
-        CollapsibleTreeSearchBar
+        CollapsibleTreeSearchBar,
+        TestCollapsibleTreeSearch
     },
     async created() {
         // Check if the view is in instructor mode (a student's skills being viewed by an instructor or admin)
@@ -174,49 +176,12 @@ export default {
                         class="col-12 col-lg-3 d-flex justify-content-center align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
                     >
                         <!-- Search Feature -->
-                        <!-- <div
-                            :class="[
-                                'search-bar',
-                                resultsSkills.length > 0 && 'have-results'
-                            ]"
-                        >
-                            <div class="d-flex align-items-center p-1">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    width="15"
-                                    height="15"
-                                    fill="#5f6368"
-                                    class="me-2"
-                                >
-                                    <path
-                                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-                                    />
-                                </svg>
-                                <input
-                                    id="skill-tree-search-text"
-                                    type="text"
-                                    class="skill-tree-input"
-                                    placeholder="Skill Name"
-                                    v-model="searchText"
-                                />
-                            </div>
-                            <div class="position-relative">
-                                <div
-                                    v-if="resultsSkills.length"
-                                    class="search-results"
-                                >
-                                    <button
-                                        @click="handleChooseResult(result)"
-                                        class="result-row"
-                                        v-for="result in resultsSkills"
-                                        v-html="result.highlightedResult"
-                                    ></button>
-                                </div>
-                            </div>
-                        </div> -->
-                        <!-- Search Feature -->
-                        <CollapsibleTreeSearchBar
+                        <!-- <CollapsibleTreeSearchBar
+                            :findNode="findNode"
+                            :nameList="nameList"
+                            :clearResults="clearResults"
+                        /> -->
+                        <TestCollapsibleTreeSearch
                             :findNode="findNode"
                             :nameList="nameList"
                             :clearResults="clearResults"
