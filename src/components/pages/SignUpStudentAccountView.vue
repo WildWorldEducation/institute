@@ -8,11 +8,12 @@ export default {
     },
     data() {
         return {
-            newStudent: {
+            newUser: {
                 id: null,
                 username: null,
                 email: null,
-                password: null
+                password: null,
+                accountType: 'student'
             },
             // Validate Object flag
             validate: {
@@ -49,18 +50,18 @@ export default {
     methods: {
         ValidateForm() {
             if (
-                this.newStudent.username == '' ||
-                this.newStudent.username == null
+                this.newUser.username == '' ||
+                this.newUser.username == null
             ) {
                 this.validate.username = true;
             } else if (
-                this.newStudent.email == '' ||
-                this.newStudent.email == null
+                this.newUser.email == '' ||
+                this.newUser.email == null
             ) {
                 this.validate.email = true;
             } else if (
-                this.newStudent.password == '' ||
-                this.newStudent.password == null
+                this.newUser.password == '' ||
+                this.newUser.password == null
             ) {
                 this.validate.password = true;
             }
@@ -73,7 +74,7 @@ export default {
         ValidateEmail() {
             if (
                 /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
-                    this.newStudent.email
+                    this.newUser.email
                 )
             ) {
                 this.validate.emailFormat = false;
@@ -86,14 +87,15 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username: this.newStudent.username,
+                    username: this.newUser.username,
                     first_name: '',
                     last_name: '',
-                    email: this.newStudent.email,
-                    password: this.newStudent.password
+                    email: this.newUser.email,
+                    password: this.newUser.password,
+                    account_type: this.newUser.accountType
                 })
             };
-            var url = '/users/new-student/add';
+            var url = '/users/new-user/add';
             fetch(url, requestOptions)
                 .then(function (response) {
                     return response.json();
@@ -111,6 +113,13 @@ export default {
         },
         toggleModal() {
             this.showVideoModal = false;
+        },
+        toggleAccountType(){
+            if(this.newUser.accountType === 'student'){
+                this.newUser.accountType = 'instructor'
+            }else{
+                this.newUser.accountType = 'student'
+            }
         }
     }
 };
@@ -142,13 +151,13 @@ export default {
                     height="72"
                 />
             </div>
-            <h1 class="h3 mb-3 font-weight-normal">Student Sign up</h1>
+            <h1 class="h3 mb-3 font-weight-normal">Sign up</h1>
 
             <div class="mt-3">
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">Username</label> -->
                     <input
-                        v-model="newStudent.username"
+                        v-model="newUser.username"
                         type="text"
                         placeholder="Username"
                         class="form-control"
@@ -157,8 +166,8 @@ export default {
                     <div
                         v-if="
                             validate.username &&
-                            (newStudent.username == '' ||
-                                newStudent.username == null)
+                            (newUser.username == '' ||
+                                newUser.username == null)
                         "
                         class="form-validate"
                     >
@@ -168,7 +177,7 @@ export default {
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">Email</label> -->
                     <input
-                        v-model="newStudent.email"
+                        v-model="newUser.email"
                         type="email"
                         placeholder="Email"
                         class="form-control"
@@ -178,7 +187,7 @@ export default {
                     <div
                         v-if="
                             validate.email &&
-                            (newStudent.email == '' || newStudent.email == null)
+                            (newUser.email == '' || newUser.email == null)
                         "
                         class="form-validate"
                     >
@@ -193,7 +202,7 @@ export default {
                     <div class="password-div">
                         <input
                             id="password-input"
-                            v-model="newStudent.password"
+                            v-model="newUser.password"
                             :type="passwordVisible ? 'text' : 'password'"
                             placeholder="Password"
                             class="form-control"
@@ -243,15 +252,24 @@ export default {
                     <div
                         v-if="
                             validate.password &&
-                            (newStudent.password == '' ||
-                                newStudent.password == null)
+                            (newUser.password == '' ||
+                                newUser.password == null)
                         "
                         class="form-validate"
                     >
                         please enter a password!
                     </div>
-                    <CheckPasswordComplexity :formData="newStudent" />
+                    <CheckPasswordComplexity :formData="newUser" />
                 </div>
+
+                <div :class="`toggle ${newUser.accountType == 'student' ? 'left' : 'right'}`" @click="toggleAccountType">
+                    <div class="cursor"></div>
+                    <div class="labels">
+                        <div class="label-left">Student</div>
+                        <div class="label-right">Instructor</div>
+                    </div>
+                </div>
+
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
                     Sign up
                 </button>
@@ -310,7 +328,7 @@ export default {
                             width="25"
                             height="25"
                         >
-                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
                                 d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
                                 fill="white"
@@ -516,5 +534,52 @@ h1 {
     font-size: 0.75rem;
     color: red;
     font-weight: 300;
+}
+
+.toggle{
+    border: #7f56d9 solid 1px;
+    width: 100%;
+    height: 40px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+.toggle .cursor{
+    height: 100%;
+    width: 50%;
+    background-color: #7f56d9;
+    position: absolute;
+    top: 0px;
+    transition: all ease 300ms;
+}
+.toggle.left .cursor{
+    left: 0px;
+}
+.toggle.right .cursor{
+    left: 50%;
+}
+.toggle .labels{
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+}
+.label-left, .label-right{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 50%;
+    color: #000000;
+}
+.toggle.left .label-left{
+    color: #ffffff;
+}
+.toggle.right .label-right{
+    color: #ffffff;
 }
 </style>

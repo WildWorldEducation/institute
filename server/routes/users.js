@@ -36,7 +36,7 @@ const { v7: uuidv7 } = require('uuid');
 const { unlockInitialSkills } = require('../utilities/unlock-initial-skills');
 const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
-router.post('/new-student/add', (req, res, next) => {
+router.post('/new-user/add', (req, res, next) => {
     // Providing default avatar.
     // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
     if (typeof req.body.avatar == 'undefined' || !req.body.avatar) {
@@ -53,7 +53,7 @@ router.post('/new-student/add', (req, res, next) => {
             email: req.body.email,
             avatar: req.body.avatar,
             password: hashedPassword,
-            role: 'student'
+            role: req.body.account_type == 'student' ? 'student' : 'instructor'
         };
 
         // Check if username or email address already exist.
