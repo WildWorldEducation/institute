@@ -99,11 +99,7 @@ export default {
     async mounted() {},
     methods: {
         ValidateForm() {
-            if (this.user.firstName == '' || this.user.firstName == null) {
-                this.validate.first_name = true;
-            } else if (this.user.lastName == '' || this.user.lastName == null) {
-                this.validate.last_name = true;
-            } else if (this.user.username == '' || this.user.username == null) {
+            if (this.user.username == '' || this.user.username == null) {
                 this.validate.username = true;
             } else if (this.user.email == '' || this.user.email == null) {
                 this.validate.email = true;
@@ -122,66 +118,50 @@ export default {
                 this.validate.emailFormat = true;
             }
         },
-        Submit() {
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    firstname: this.user.firstName,
-                    lastname: this.user.lastName,
-                    username: this.user.username,
-                    email: this.user.email,
-                    avatar: this.user.avatar,
-                    password: this.user.password,
-                    role: this.user.role
-                })
-            };
-            var url = '/users/add';
-            fetch(url, requestOptions)
-                .then(function (response) {
-                    return response.json();
-                })
-                .then((data) => {
-                    if (data.account == 'username already taken') {
-                        alert(data.account);
-                    } else if (data.account == 'email already taken') {
-                        alert(data.account);
-                    } else {
-                        alert('account created');
-                        this.usersStore.getUsers();
-                        router.push({ name: 'users' });
-                        this.isValidated = true;
-                    }
-                    // Get the new user's id number from the DB.
-                    this.newUserId = data.id;
-                })
-                // Make all relevant skills and domains available or mastered.
-                .then((data) => {
-                    if (this.isValidated) {
-                        for (let i = 0; i < this.firstLevelSkills.length; i++) {
-                            this.userSkillsStore.MakeMastered(
-                                this.newUserId,
-                                this.firstLevelSkills[i]
-                            );
-                        }
-                    }
-                })
-                // Assign the instructor.
-                .then((data) => {
-                    const requestOptions = {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            instructor_id: this.instructorId,
-                            student_id: this.newUserId
-                        })
-                    };
-                    var url = '/users/add/instructor';
-                    fetch(url, requestOptions);
-                })
-                .then(async (data) => {
-                    await this.instructorStudentsStore.getInstructorStudentsList();
+        async Submit() {
+            try {
+                const response = await fetch('/users/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: this.user.username,
+                        email: this.user.email,
+                        avatar: this.user.avatar,
+                        password: this.user.password,
+                        role: this.user.role
+                    })
                 });
+                const data = await response.json();
+                if ( data.username === 'username already taken' || data.email === 'email already taken') 
+                {
+                    alert(data.account);
+                    return;
+                }
+                alert('account created');
+                this.usersStore.getUsers();
+                this.$router.push({ name: 'users' });
+                this.isValidated = true;
+                this.newUserId = data.id;
+                 // Make all relevant skills and domains available or mastered if validated
+                if (this.isValidated) {
+                    this.firstLevelSkills.forEach((skill) =>
+                        this.userSkillsStore.MakeMastered(this.newUserId, skill)
+                    );
+                }
+                // Assign the instructor
+                await fetch('/users/add/instructor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        instructor_id: this.instructorId,
+                        student_id: this.newUserId
+                    })
+                });
+                // Update instructor's student list
+                await this.instructorStudentsStore.getInstructorStudentsList();
+            } catch (err) {
+                console.error('Error creating user ', err);
+            }
         },
         // For image upload.
         onFileChange(e) {
@@ -385,44 +365,6 @@ export default {
                 </div>
                 <div class="col-lg-4">
                     <div class="mb-3">
-                        <label for="first_name" class="form-label"
-                            >First Name</label
-                        >
-                        <input
-                            v-model="user.firstName"
-                            type="text"
-                            class="form-control"
-                        />
-                        <div
-                            v-if="
-                                validate.first_name &&
-                                (user.firstName == '' || user.firstName == null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter a first name!
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="last_name" class="form-label"
-                            >Last Name</label
-                        >
-                        <input
-                            v-model="user.lastName"
-                            type="text"
-                            class="form-control"
-                        />
-                        <div
-                            v-if="
-                                validate.last_name &&
-                                (user.lastName == '' || user.lastName == null)
-                            "
-                            class="form-validate"
-                        >
-                            please enter a last name!
-                        </div>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">Username</label>
                         <input
                             v-model="user.username"
@@ -436,7 +378,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            please enter a username!
+                            Please enter a username!
                         </div>
                     </div>
                     <div class="mb-3">
