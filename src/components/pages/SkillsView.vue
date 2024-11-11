@@ -3,8 +3,7 @@ import SkillsListParent from '../components/SkillsListParent.vue';
 
 // Import the store
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
-import CollapsibleTreeSearchBar from '../components/skills-tree-search-bar/collapsibleTreeSearchBar.vue';
-import TestCollapsibleTreeSearch from '../components/skills-tree-search-bar/TestCollapsibleTreeSearch.vue';
+import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 
 export default {
     setup() {
@@ -27,8 +26,7 @@ export default {
     },
     components: {
         SkillsListParent,
-        CollapsibleTreeSearchBar,
-        TestCollapsibleTreeSearch
+        SkillTreeSearchBar
     },
     async created() {
         // Check if the view is in instructor mode (a student's skills being viewed by an instructor or admin)
@@ -148,7 +146,12 @@ export default {
                 </div>
                 <div class="search-mobile-row">
                     <!-- Search Feature -->
-                    <CollapsibleTreeSearchBar
+                    <!-- <CollapsibleTreeSearchBar
+                        :findNode="findNode"
+                        :nameList="nameList"
+                        :clearResults="clearResults"
+                    /> -->
+                    <SkillTreeSearchBar
                         :findNode="findNode"
                         :nameList="nameList"
                         :clearResults="clearResults"
@@ -181,7 +184,7 @@ export default {
                             :nameList="nameList"
                             :clearResults="clearResults"
                         /> -->
-                        <TestCollapsibleTreeSearch
+                        <SkillTreeSearchBar
                             :findNode="findNode"
                             :nameList="nameList"
                             :clearResults="clearResults"

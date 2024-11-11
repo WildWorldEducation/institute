@@ -2,14 +2,13 @@
 import LoadingSpinner from '../share-components/LoadingSpinner.vue';
 import AiExplainToolTip from './AiExplainToolTip.vue';
 import AiSearchSuggestToolTip from './AiSearchSuggestToolTip.vue';
-import TurnOffAiModeToolTip from './TurnOffAiModeToolTip.vue';
 
 export default {
     props: ['findNode', 'nameList', 'clearResults'],
     data: () => {
         return {
             resultsSkills: [],
-            aiMode: false,
+            searchMode: 'key word',
             searchText: '',
             chooseResult: null,
             waitForSever: false,
@@ -36,7 +35,6 @@ export default {
                 !this.toolTipStillShowing &&
                 searchText.length > 0
             ) {
-                console.log(searchText.length);
                 this.handleShowAISuggestion();
             }
         },
@@ -105,10 +103,8 @@ export default {
             this.waitForSever = false;
         },
         handleSearchTextChange(searchText) {
-            if (!this.aiMode) {
+            if (this.searchMode === 'key word') {
                 this.getKeyWordResults(searchText.toLowerCase());
-            } else {
-                this.checkTextForAi(searchText.toLowerCase());
             }
         },
         handleChooseResult(result) {
@@ -116,23 +112,12 @@ export default {
             this.searchText = result.name;
             this.chooseResult = result;
             this.findNode(result.name);
-        },
-        checkTextForAi(searchText) {
-            // only context search if user end a word
-            if (
-                searchText.slice(-1) === ' ' &&
-                searchText.length > 3 &&
-                !this.waitForSever
-            ) {
-                this.getContextResults(searchText);
-            }
         }
     },
     components: {
         LoadingSpinner,
         AiExplainToolTip,
-        AiSearchSuggestToolTip,
-        TurnOffAiModeToolTip
+        AiSearchSuggestToolTip
     },
 
     watch: {
@@ -182,7 +167,7 @@ export default {
             />
             <button
                 class="robot-icon"
-                @click="aiMode = !aiMode"
+                @click="getContextResults(searchText)"
                 @mouseover="showAiToolTip = true"
                 @mouseleave="showAiToolTip = false"
             >
@@ -192,7 +177,7 @@ export default {
                     viewBox="0 0 640 512"
                     height="20"
                     width="20"
-                    :fill="aiMode ? '#0f172a' : '#cbd5e1'"
+                    fill="#0f172a"
                 >
                     <path
                         d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
@@ -209,8 +194,7 @@ export default {
             </button>
         </div>
         <div class="position-relative">
-            <AiExplainToolTip v-if="showAiToolTip && !aiMode" />
-            <TurnOffAiModeToolTip v-if="showAiToolTip && aiMode" />
+            <AiExplainToolTip v-if="showAiToolTip" />
             <AiSearchSuggestToolTip v-if="showSuggestAiSearchToolTip" />
         </div>
         <div class="position-relative">

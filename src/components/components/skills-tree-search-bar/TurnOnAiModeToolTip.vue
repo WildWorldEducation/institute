@@ -16,7 +16,7 @@ export default {
 <template>
     <div class="tool-tip-base">
         <div class="explain-tool-tip triangle-top-right">
-            <div>You are currently using AI to search the skill tree</div>
+            <div>You are currently search skill tree with key word.</div>
             <div class="tool-tip-text">
                 <div>
                     Click on the
@@ -26,7 +26,7 @@ export default {
                             viewBox="0 0 640 512"
                             height="20"
                             width="20"
-                            fill="#0f172a"
+                            fill="#cbd5e1"
                             class="mb-2"
                         >
                             <path
@@ -34,7 +34,7 @@ export default {
                             />
                         </svg>
                     </span>
-                    to turn off context search using AI
+                    to turn on context search using AI
                 </div>
             </div>
         </div>
