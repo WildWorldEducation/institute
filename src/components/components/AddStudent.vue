@@ -378,7 +378,7 @@ export default {
                             "
                             class="form-validate"
                         >
-                            Please enter an username!
+                            Please enter a username!
                         </div>
                     </div>
                     <div class="mb-3">
