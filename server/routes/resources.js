@@ -1158,9 +1158,9 @@ function deleteDownVotedSources(index, sourcesToDelete, userId, respond) {
 
 const { autoGenerateSource } = require('../utilities/auto-generate-sources');
 
-let aspect = 'Transition to Permanent Settlements';
+let aspect = 'Types of Settlement Patterns';
 let description =
-    'Exploring reasons behind the shift from nomadic hunter-gatherer communities to permanent settlements, influenced by geographical, climatic, and environmental factors.';
+    'Understanding different settlement patterns (linear, clustered, dispersed) and their relationships to landscape and resources.';
 
 autoGenerateSource(2043, 'high_school', aspect, description);
 
