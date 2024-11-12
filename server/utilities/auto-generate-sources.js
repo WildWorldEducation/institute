@@ -1,8 +1,5 @@
-//import Exa from 'exa-js';
-//import { Exa } from 'exa-js';
 const Exa = require('exa-js');
-console.log(Exa);
-const exa = new Exa(process.env.EXA_API_KEY);
+const exa = new Exa.default(process.env.EXA_API_KEY);
 /**
  *  Get source from Exa.AI
  *
