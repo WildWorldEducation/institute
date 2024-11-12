@@ -101,7 +101,7 @@ export default {
                 });
             d3.select(this.context.canvas).call(this.d3Zoom);
             // Zoom and move the tree to it initial position
-            this.defaultPosition();
+            this.resetPos();
         };
 
         // Listen for clicks on the main canvas
@@ -773,7 +773,7 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         // zoom and move the tree to it initial position
-        defaultPosition() {
+        resetPos() {
             d3.select(this.context.canvas)
                 .transition()
                 .duration(300)
@@ -786,32 +786,19 @@ export default {
         },
         // Find node with name include
         findNodeWithName(searchString) {
-            let results = [];
             // D3
-            //let breakLoop = false;
+            let breakLoop = false;
+            let resultNode = null;
             this.root.each(function (node) {
-                // search only first letter if search string is less than 2
-                if (searchString.length < 3) {
-                    if (
-                        node.data.skill_name
-                            .toLowerCase()
-                            .substring(0, searchString.length) === searchString
-                    ) {
-                        results.push(node);
-                    }
+                if (breakLoop) {
+                    return;
                 }
-                // search whole skill name if search text is greater than two
-                else {
-                    if (
-                        node.data.skill_name
-                            .toLowerCase()
-                            .includes(searchString)
-                    ) {
-                        results.push(node);
-                    }
+                if (node.data.skill_name === searchString) {
+                    resultNode = node;
+                    breakLoop = true;
                 }
             });
-            return results;
+            return resultNode;
         },
         // zoom and pan to a node
         goToLocation(node) {
