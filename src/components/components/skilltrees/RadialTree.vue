@@ -789,11 +789,13 @@ export default {
             // D3
             let breakLoop = false;
             let resultNode = null;
+
             this.root.each(function (node) {
                 if (breakLoop) {
                     return;
                 }
-                if (node.data.skill_name === searchString) {
+
+                if (node.data.skill_name.toLowerCase() === searchString) {
                     resultNode = node;
                     breakLoop = true;
                 }

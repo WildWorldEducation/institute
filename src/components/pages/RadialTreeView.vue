@@ -5,17 +5,15 @@ import RadialTree from '../components/skilltrees/RadialTree.vue';
 export default {
     setup() {},
     data() {
-        return {
-            searchText: '',
-            lastChooseResult: ''
-        };
+        return {};
     },
     components: { RadialTree, SkillTreeSearchBar },
     methods: {
         handleChooseResult(resultName) {
-            this.lastChooseResult = resultName;
             // Find the node with name
-            const node = this.$refs.childComponent.findNodeWithName(resultName);
+            const node = this.$refs.childComponent.findNodeWithName(
+                resultName.toLowerCase()
+            );
             if (!node) {
                 console.error('Cannot find node with name: ' + resultName);
                 return false;
