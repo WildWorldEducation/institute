@@ -28,69 +28,13 @@ export default {
         SkillsListParent,
         SkillTreeSearchBar
     },
-    async created() {
-        // Check if the view is in instructor mode (a student's skills being viewed by an instructor or admin)
-        this.isInstructorMode = typeof this.$route.params.studentId == 'string';
-        const url = `/skills/name-list`;
-        const res = await fetch(url);
-        const results = await res.json();
-        this.nameList = results;
-    },
+
     methods: {
-        getResults(searchText) {
-            let results = [];
-
-            this.nameList.forEach((element) => {
-                // search only first work match if search text is less than three
-                if (searchText.length < 3) {
-                    if (
-                        element.name
-                            .toLowerCase()
-                            .substring(0, searchText.length) === searchText
-                    ) {
-                        results.push(element);
-                    }
-                }
-                // search for all word in skill name string if search text is greater than three
-                else {
-                    if (element.name.toLowerCase().includes(searchText)) {
-                        results.push(element);
-                    }
-                }
-            });
-
-            // we highlight the part that match search text
-            const highlightedResult = results.map((result) => {
-                const matchedRegex = new RegExp(`(${this.searchText})`, 'gi');
-                const newText = result.name.replace(
-                    matchedRegex,
-                    '<span class="hightLight">$1</span>'
-                );
-                return { ...result, highlightedResult: newText };
-            });
-            this.resultsSkills = highlightedResult;
-        },
         clearResults() {
             this.$refs.skillList.path = [];
         },
         findNode(skillName) {
             this.$refs.skillList.findNode(skillName);
-        }
-    },
-    watch: {
-        // We use watcher instead of compute because we made API call
-        searchText: {
-            handler(newVal) {
-                // if
-                if (this.chooseResult) {
-                    this.chooseResult = null;
-                } else {
-                    this.getResults(newVal.toLowerCase());
-                }
-                if (newVal.length === 0) {
-                    this.clearResults();
-                }
-            }
         }
     }
 };
@@ -153,7 +97,6 @@ export default {
                     /> -->
                     <SkillTreeSearchBar
                         :findNode="findNode"
-                        :nameList="nameList"
                         :clearResults="clearResults"
                     />
                 </div>
@@ -186,7 +129,6 @@ export default {
                         /> -->
                         <SkillTreeSearchBar
                             :findNode="findNode"
-                            :nameList="nameList"
                             :clearResults="clearResults"
                         />
                     </div>

@@ -1,4 +1,5 @@
 <script>
+import { useSkillsStore } from '../../../stores/SkillsStore';
 import LoadingSpinner from '../share-components/LoadingSpinner.vue';
 import AiExplainToolTip from './AiExplainToolTip.vue';
 import AiSearchSuggestToolTip from './AiSearchSuggestToolTip.vue';
@@ -6,7 +7,13 @@ import TurnOffAiModeToolTip from './TurnOffAiModeToolTip.vue';
 import TurnOnAiModeToolTip from './TurnOnAiModeToolTip.vue';
 
 export default {
-    props: ['findNode', 'nameList', 'clearResults'],
+    setup() {
+        const skillsStore = useSkillsStore();
+        return {
+            skillsStore
+        };
+    },
+    props: ['findNode', 'clearResults'],
     data: () => {
         return {
             resultsSkills: [],
@@ -16,12 +23,17 @@ export default {
             waitForSever: false,
             showAiToolTip: false,
             showSuggestAiSearchToolTip: false,
-            toolTipStillShowing: false
+            toolTipStillShowing: false,
+            nameList: []
         };
+    },
+    async created() {
+        this.nameList = await this.skillsStore.getNameList();
     },
     methods: {
         getKeyWordResults(searchText) {
             let results = [];
+            console.log(this.nameList);
             // search only first work match if search text is less than three
             if (searchText.length < 3) {
                 this.searchFirstWord(results, searchText);
@@ -52,6 +64,7 @@ export default {
                 this.toolTipStillShowing = false;
             }, 10000);
         },
+
         searchFirstWord(results, searchText) {
             this.nameList.forEach((element) => {
                 if (
