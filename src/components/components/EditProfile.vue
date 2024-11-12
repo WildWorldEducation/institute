@@ -31,6 +31,7 @@ export default {
             firstName: this.userDetailsStore.firstName,
             lastName: this.userDetailsStore.lastName,
             instructorID: this.userDetailsStore.instructorId,
+            isGoogleAuth: this.userDetailsStore.isGoogleAuth,
             // get current instructor username for custom dropdown
             instructorName: this.userDetailsStore.instructorUsername,
             validate: {
@@ -487,6 +488,7 @@ export default {
                         type="email"
                         class="form-control"
                         @blur="ValidateEmail"
+                        :readonly="isGoogleAuth"
                     />
                     <div
                         v-if="validate.email && (email == '' || email == null)"
