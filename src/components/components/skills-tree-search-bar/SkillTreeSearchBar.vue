@@ -33,7 +33,6 @@ export default {
     methods: {
         getKeyWordResults(searchText) {
             let results = [];
-            console.log(this.nameList);
             // search only first work match if search text is less than three
             if (searchText.length < 3) {
                 this.searchFirstWord(results, searchText);

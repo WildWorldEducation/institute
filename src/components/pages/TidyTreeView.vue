@@ -39,8 +39,6 @@ export default {
             }
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
-            // also open the skill requirement mastery div
-            this.$refs.childComponent.showSkillPanelComponent(node);
         },
         expandAllNodesWarning() {
             this.showConfirmModal = true;
@@ -60,7 +58,6 @@ export default {
                 });
         },
         clearResult() {
-            this.$refs.childComponent.showSkillPanel = false;
             this.$refs.childComponent.resetPos();
         }
     }
