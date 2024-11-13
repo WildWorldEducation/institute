@@ -136,6 +136,7 @@ export default {
     border: 1px solid #7f56d9;
     background-color: #c8d7da;
     color: white;
+    overflow: hidden;
     padding: 16px, 28px, 16px, 28px;
     font-size: 1.25rem;
     font-weight: 400;
@@ -153,6 +154,7 @@ export default {
     border-radius: 8px;
     border: 1px solid #7f56d9;
     background-color: #a48be6;
+    overflow: hidden;
     color: white;
     padding: 16px, 28px, 16px, 28px;
     font-size: 1.25rem;
