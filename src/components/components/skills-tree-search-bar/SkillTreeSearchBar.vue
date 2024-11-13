@@ -1,16 +1,20 @@
 <script>
 import { useSkillsStore } from '../../../stores/SkillsStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import LoadingSpinner from '../share-components/LoadingSpinner.vue';
-import AiExplainToolTip from './AiExplainToolTip.vue';
-import AiSearchSuggestToolTip from './AiSearchSuggestToolTip.vue';
-import TurnOffAiModeToolTip from './TurnOffAiModeToolTip.vue';
-import TurnOnAiModeToolTip from './TurnOnAiModeToolTip.vue';
+import AiExplainToolTip from './tooltips/AiExplainToolTip.vue';
+import AiSearchSuggestToolTip from './tooltips/AiSearchSuggestToolTip.vue';
+import LoginWarningToolTip from './tooltips/LoginWarningToolTip.vue';
+import TurnOffAiModeToolTip from './tooltips/TurnOffAiModeToolTip.vue';
+import TurnOnAiModeToolTip from './tooltips/TurnOnAiModeToolTip.vue';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const userStore = useUserDetailsStore();
         return {
-            skillsStore
+            skillsStore,
+            userStore
         };
     },
     props: ['findNode', 'clearResults'],
@@ -24,11 +28,15 @@ export default {
             showAiToolTip: false,
             showSuggestAiSearchToolTip: false,
             toolTipStillShowing: false,
-            nameList: []
+            nameList: [],
+            isLogin: false
         };
     },
     async created() {
         this.nameList = await this.skillsStore.getNameList();
+        if (this.userStore.id) {
+            this.isLogin = true;
+        }
     },
     methods: {
         getKeyWordResults(searchText) {
@@ -119,7 +127,7 @@ export default {
         handleSearchTextChange(searchText) {
             if (!this.aiMode) {
                 this.getKeyWordResults(searchText.toLowerCase());
-            } else {
+            } else if (this.isLogin) {
                 this.checkTextForAi(searchText.toLowerCase());
             }
         },
@@ -145,14 +153,21 @@ export default {
         AiExplainToolTip,
         AiSearchSuggestToolTip,
         TurnOffAiModeToolTip,
-        TurnOnAiModeToolTip
+        TurnOnAiModeToolTip,
+        LoginWarningToolTip
     },
 
     watch: {
         // We use watcher instead of compute because we made API call
         searchText: {
             handler(newVal) {
-                // if
+                if (!this.isLogin) {
+                    this.showAiToolTip = true;
+                    setTimeout(() => {
+                        this.showAiToolTip = false;
+                    }, 2000);
+                    return false;
+                }
                 if (this.chooseResult) {
                     this.chooseResult = null;
                 } else {
@@ -221,10 +236,13 @@ export default {
                 </div>
             </button>
         </div>
-        <div class="position-relative">
+        <div v-if="isLogin" class="position-relative">
             <TurnOnAiModeToolTip v-if="showAiToolTip && !aiMode" />
             <TurnOffAiModeToolTip v-if="showAiToolTip && aiMode" />
             <AiSearchSuggestToolTip v-if="showSuggestAiSearchToolTip" />
+        </div>
+        <div v-else class="position-relative">
+            <LoginWarningToolTip v-if="showAiToolTip" />
         </div>
         <div class="position-relative">
             <div v-if="resultsSkills.length" class="search-results">

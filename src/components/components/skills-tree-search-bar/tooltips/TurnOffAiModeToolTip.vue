@@ -1,15 +1,11 @@
 <script>
-import LoadingSpinner from '../share-components/LoadingSpinner.vue';
-
 export default {
     props: ['showAiToolTip'],
     data: () => {
         return {};
     },
     methods: {},
-    components: {
-        LoadingSpinner
-    }
+    components: {}
 };
 </script>
 
