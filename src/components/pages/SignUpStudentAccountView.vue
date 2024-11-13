@@ -36,6 +36,7 @@ export default {
         let script = document.createElement('script');
         script.setAttribute('src', 'https://accounts.google.com/gsi/client');
         script.setAttribute('defer', '');
+        script.onload = this.initializeGoogleSignIn;
         document.head.appendChild(script);
 
         if (window.innerWidth < 800) {
@@ -120,6 +121,44 @@ export default {
             }else{
                 this.newUser.accountType = 'student'
             }
+        },
+        initializeGoogleSignIn() {
+            const clientId = '13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com'; // Replace with your actual client ID
+
+            // Initialize Google Sign-In
+            window.google.accounts.id.initialize({
+                client_id: clientId,
+                callback: this.handleCredentialResponse,
+            });
+
+            // Render the Google Sign-In button
+            window.google.accounts.id.renderButton(
+                this.$refs.googleSignInButton,
+                {
+                    theme: 'outline',
+                    size: 'large',
+                    width: '330',
+                    type: "standard",
+                    shape: "rectangular",
+                    logo_alignment: "left",
+                }
+            );
+        },
+
+        handleCredentialResponse(response) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `${this.isProduction ? 'https://parrhesia.io' : 'http://localhost:3000'}/google-student-signup-attempt?accountType=${this.newUser.accountType}`;
+            
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'credential';
+            input.value = response.credential;
+            form.appendChild(input);
+
+            document.body.appendChild(form);
+
+            form.submit();
         }
     }
 };
@@ -273,35 +312,7 @@ export default {
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
                     Sign up
                 </button>
-                <div
-                    v-if="isProduction == true"
-                    id="g_id_onload"
-                    data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
-                    data-context="signup"
-                    data-ux_mode="popup"
-                    data-login_uri="https://parrhesia.io/google-student-signup-attempt"
-                    data-auto_prompt="false"
-                ></div>
-                <div
-                    v-else
-                    id="g_id_onload"
-                    data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
-                    data-context="signup"
-                    data-ux_mode="popup"
-                    data-login_uri="http://localhost:3000/google-student-signup-attempt"
-                    data-auto_prompt="false"
-                ></div>
-
-                <div
-                    class="g_id_signin"
-                    data-type="standard"
-                    data-shape="rectangular"
-                    data-theme="outline"
-                    data-text="signup_with"
-                    data-size="large"
-                    data-logo_alignment="left"
-                    data-width="330"
-                ></div>
+                <div ref="googleSignInButton"></div>
                 <div class="mt-3 signup text-center">
                     Have an account?
                     <a href="/login" class="links">Login</a>
