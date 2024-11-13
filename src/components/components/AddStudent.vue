@@ -52,6 +52,7 @@ export default {
                 first_name: false,
                 last_name: false,
                 email: false,
+                username: false,
                 emailFormat: false,
                 password: false,
                 // this validate is fire when image profile upload is not square
@@ -370,6 +371,7 @@ export default {
                             v-model="user.username"
                             type="text"
                             class="form-control"
+                            @blur="ValidateForm"
                         />
                         <div
                             v-if="
