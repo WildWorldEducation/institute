@@ -966,7 +966,7 @@ function deleteDuplicateSources() {
                         }
                         console.log(
                             'Duplicate sources deleted: ' +
-                                duplicateSources.length
+                            duplicateSources.length
                         );
                     } catch (err) {
                         console.log(err);
@@ -1158,10 +1158,14 @@ function deleteDownVotedSources(index, sourcesToDelete, userId, respond) {
 
 const { autoGenerateSource } = require('../utilities/auto-generate-sources');
 
-let aspect = 'Types of Settlement Patterns';
-let description =
-    'Understanding different settlement patterns (linear, clustered, dispersed) and their relationships to landscape and resources.';
 
-autoGenerateSource(2043, 'high_school', aspect, description);
+
+router.get('/exa-source', (res, next) => {
+    let aspect = 'Types of Settlement Patterns';
+    let description =
+        'Understanding different settlement patterns (linear, clustered, dispersed) and their relationships to landscape and resources.';
+
+    autoGenerateSource(2043, 'high_school', aspect, description);
+})
 
 module.exports = router;
