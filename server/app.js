@@ -221,7 +221,8 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                     email: googleUserDetails.email,
                     role: googleUserDetails.role,
                     avatar: defaultAvatar,
-                    id: newStudentId
+                    id: newStudentId,
+                    is_google_auth: 1
                 };
 
                 let sqlQuery2 = 'INSERT INTO users SET ?';
@@ -308,7 +309,8 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
                     email: googleUserDetails.email,
                     role: 'editor',
                     avatar: defaultAvatar,
-                    id: newEditorId
+                    id: newEditorId,
+                    is_google_auth: 1
                 };
 
                 let sqlQuery2 = 'INSERT INTO users SET ?';
