@@ -171,6 +171,7 @@ app.get('/google-login-result', (req, res) => {
 // Sign up with Google.
 app.post('/google-student-signup-attempt', (req, res) => {
     googleUserDetails = jwt.decode(req.body.credential);
+    googleUserDetails.role = req.query.accountType;
     res.redirect('/google-student-signup-attempt');
 });
 
@@ -228,10 +229,10 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                     last_name: googleUserDetails.family_name,
                     username: googleUserDetails.email,
                     email: googleUserDetails.email,
-                    role: 'student',
+                    role: googleUserDetails.role,
                     avatar: defaultAvatar,
                     id: newStudentId,
-                    is_google_auth: true
+                    is_google_auth: 1
                 };
 
                 let sqlQuery2 = 'INSERT INTO users SET ?';
@@ -323,7 +324,7 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
                     role: 'editor',
                     avatar: defaultAvatar,
                     id: newEditorId,
-                    is_google_auth: true
+                    is_google_auth: 1
                 };
 
                 let sqlQuery2 = 'INSERT INTO users SET ?';

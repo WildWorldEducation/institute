@@ -8,11 +8,12 @@ export default {
     },
     data() {
         return {
-            newStudent: {
+            newUser: {
                 id: null,
                 username: null,
                 email: null,
-                password: null
+                password: null,
+                accountType: 'student'
             },
             // Validate Object flag
             validate: {
@@ -35,6 +36,7 @@ export default {
         let script = document.createElement('script');
         script.setAttribute('src', 'https://accounts.google.com/gsi/client');
         script.setAttribute('defer', '');
+        script.onload = this.initializeGoogleSignIn;
         document.head.appendChild(script);
 
         if (window.innerWidth < 800) {
@@ -49,18 +51,18 @@ export default {
     methods: {
         ValidateForm() {
             if (
-                this.newStudent.username == '' ||
-                this.newStudent.username == null
+                this.newUser.username == '' ||
+                this.newUser.username == null
             ) {
                 this.validate.username = true;
             } else if (
-                this.newStudent.email == '' ||
-                this.newStudent.email == null
+                this.newUser.email == '' ||
+                this.newUser.email == null
             ) {
                 this.validate.email = true;
             } else if (
-                this.newStudent.password == '' ||
-                this.newStudent.password == null
+                this.newUser.password == '' ||
+                this.newUser.password == null
             ) {
                 this.validate.password = true;
             }
@@ -73,7 +75,7 @@ export default {
         ValidateEmail() {
             if (
                 /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
-                    this.newStudent.email
+                    this.newUser.email
                 )
             ) {
                 this.validate.emailFormat = false;
@@ -86,14 +88,15 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    username: this.newStudent.username,
+                    username: this.newUser.username,
                     first_name: '',
                     last_name: '',
-                    email: this.newStudent.email,
-                    password: this.newStudent.password
+                    email: this.newUser.email,
+                    password: this.newUser.password,
+                    account_type: this.newUser.accountType
                 })
             };
-            var url = '/users/new-student/add';
+            var url = '/users/new-user/add';
             fetch(url, requestOptions)
                 .then(function (response) {
                     return response.json();
@@ -111,6 +114,51 @@ export default {
         },
         toggleModal() {
             this.showVideoModal = false;
+        },
+        toggleAccountType(){
+            if(this.newUser.accountType === 'student'){
+                this.newUser.accountType = 'instructor'
+            }else{
+                this.newUser.accountType = 'student'
+            }
+        },
+        initializeGoogleSignIn() {
+            const clientId = '13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com'; // Replace with your actual client ID
+
+            // Initialize Google Sign-In
+            window.google.accounts.id.initialize({
+                client_id: clientId,
+                callback: this.handleCredentialResponse,
+            });
+
+            // Render the Google Sign-In button
+            window.google.accounts.id.renderButton(
+                this.$refs.googleSignInButton,
+                {
+                    theme: 'outline',
+                    size: 'large',
+                    width: '330',
+                    type: "standard",
+                    shape: "rectangular",
+                    logo_alignment: "left",
+                }
+            );
+        },
+
+        handleCredentialResponse(response) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `${this.isProduction ? 'https://parrhesia.io' : 'http://localhost:3000'}/google-student-signup-attempt?accountType=${this.newUser.accountType}`;
+            
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'credential';
+            input.value = response.credential;
+            form.appendChild(input);
+
+            document.body.appendChild(form);
+
+            form.submit();
         }
     }
 };
@@ -142,13 +190,13 @@ export default {
                     height="72"
                 />
             </div>
-            <h1 class="h3 mb-3 font-weight-normal">Student Sign up</h1>
+            <h1 class="h3 mb-3 font-weight-normal">Sign up</h1>
 
             <div class="mt-3">
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">Username</label> -->
                     <input
-                        v-model="newStudent.username"
+                        v-model="newUser.username"
                         type="text"
                         placeholder="Username"
                         class="form-control"
@@ -157,8 +205,8 @@ export default {
                     <div
                         v-if="
                             validate.username &&
-                            (newStudent.username == '' ||
-                                newStudent.username == null)
+                            (newUser.username == '' ||
+                                newUser.username == null)
                         "
                         class="form-validate"
                     >
@@ -168,7 +216,7 @@ export default {
                 <div class="mb-3 text-start">
                     <!-- <label class="form-label">Email</label> -->
                     <input
-                        v-model="newStudent.email"
+                        v-model="newUser.email"
                         type="email"
                         placeholder="Email"
                         class="form-control"
@@ -178,7 +226,7 @@ export default {
                     <div
                         v-if="
                             validate.email &&
-                            (newStudent.email == '' || newStudent.email == null)
+                            (newUser.email == '' || newUser.email == null)
                         "
                         class="form-validate"
                     >
@@ -193,7 +241,7 @@ export default {
                     <div class="password-div">
                         <input
                             id="password-input"
-                            v-model="newStudent.password"
+                            v-model="newUser.password"
                             :type="passwordVisible ? 'text' : 'password'"
                             placeholder="Password"
                             class="form-control"
@@ -243,47 +291,28 @@ export default {
                     <div
                         v-if="
                             validate.password &&
-                            (newStudent.password == '' ||
-                                newStudent.password == null)
+                            (newUser.password == '' ||
+                                newUser.password == null)
                         "
                         class="form-validate"
                     >
                         please enter a password!
                     </div>
-                    <CheckPasswordComplexity :formData="newStudent" />
+                    <CheckPasswordComplexity :formData="newUser" />
                 </div>
+
+                <div :class="`toggle ${newUser.accountType == 'student' ? 'left' : 'right'}`" @click="toggleAccountType">
+                    <div class="cursor"></div>
+                    <div class="labels">
+                        <div class="label-left">Student</div>
+                        <div class="label-right">Instructor</div>
+                    </div>
+                </div>
+
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
                     Sign up
                 </button>
-                <div
-                    v-if="isProduction == true"
-                    id="g_id_onload"
-                    data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
-                    data-context="signup"
-                    data-ux_mode="popup"
-                    data-login_uri="https://parrhesia.io/google-student-signup-attempt"
-                    data-auto_prompt="false"
-                ></div>
-                <div
-                    v-else
-                    id="g_id_onload"
-                    data-client_id="13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com"
-                    data-context="signup"
-                    data-ux_mode="popup"
-                    data-login_uri="http://localhost:3000/google-student-signup-attempt"
-                    data-auto_prompt="false"
-                ></div>
-
-                <div
-                    class="g_id_signin"
-                    data-type="standard"
-                    data-shape="rectangular"
-                    data-theme="outline"
-                    data-text="signup_with"
-                    data-size="large"
-                    data-logo_alignment="left"
-                    data-width="330"
-                ></div>
+                <div ref="googleSignInButton"></div>
                 <div class="mt-3 signup text-center">
                     Have an account?
                     <a href="/login" class="links">Login</a>
@@ -516,5 +545,52 @@ h1 {
     font-size: 0.75rem;
     color: red;
     font-weight: 300;
+}
+
+.toggle{
+    border: #7f56d9 solid 1px;
+    width: 100%;
+    height: 40px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+.toggle .cursor{
+    height: 100%;
+    width: 50%;
+    background-color: #7f56d9;
+    position: absolute;
+    top: 0px;
+    transition: all ease 300ms;
+}
+.toggle.left .cursor{
+    left: 0px;
+}
+.toggle.right .cursor{
+    left: 50%;
+}
+.toggle .labels{
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+}
+.label-left, .label-right{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 50%;
+    color: #000000;
+}
+.toggle.left .label-left{
+    color: #ffffff;
+}
+.toggle.right .label-right{
+    color: #ffffff;
 }
 </style>
