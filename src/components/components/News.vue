@@ -55,9 +55,8 @@ export default {
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <div class="row border">
-            <div id="first-cell" class="col-lg-3 border col-md-6 news-cell">
+        <tr class="row border">
+            <td id="first-cell" class="col-lg-3 border col-md-6 news-cell">
               <p v-if="userDetailsStore.role != 'admin'">{{ news.news_1 }}</p>
               <textarea
                 v-else
@@ -66,8 +65,8 @@ export default {
                 class="form-control"
                 rows="3"
               ></textarea>
-            </div>
-            <div class="col-lg-3 col-md-6 border news-cell">
+            </td>
+            <td class="col-lg-3 col-md-6 border news-cell">
               <p v-if="userDetailsStore.role != 'admin'">{{ news.news_2 }}</p>
               <textarea
                 v-else
@@ -76,8 +75,8 @@ export default {
                 class="form-control"
                 rows="3"
               ></textarea>
-            </div>
-            <div class="col-lg-3 col-md-6 border news-cell">
+            </td>
+            <td class="col-lg-3 col-md-6 border news-cell">
               <p v-if="userDetailsStore.role != 'admin'">{{ news.news_3 }}</p>
               <textarea
                 v-else
@@ -86,8 +85,8 @@ export default {
                 class="form-control"
                 rows="3"
               ></textarea>
-            </div>
-            <div id="last-cell" class="col-lg-3 border col-md-6 news-cell">
+            </td>
+            <td id="last-cell" class="col-lg-3 border col-md-6 news-cell">
               <p v-if="userDetailsStore.role != 'admin'">{{ news.news_4 }}</p>
               <textarea
                 v-else
@@ -96,8 +95,7 @@ export default {
                 class="form-control"
                 rows="3"
               ></textarea>
-            </div>
-          </div>
+            </td>
         </tr>
       </tbody>
     </table>
