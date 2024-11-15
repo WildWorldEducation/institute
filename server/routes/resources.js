@@ -1166,6 +1166,7 @@ router.get('/exa-source', (res, next) => {
         'Understanding different settlement patterns (linear, clustered, dispersed) and their relationships to landscape and resources.';
 
     autoGenerateSource(2043, 'high_school', aspect, description);
+    res.json('ok');
 })
 
 module.exports = router;

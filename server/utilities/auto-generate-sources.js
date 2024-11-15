@@ -1,5 +1,24 @@
 const Exa = require('exa-js');
 const exa = new Exa.default(process.env.EXA_API_KEY);
+const aspectJSON = require('./open_ai.json');
+
+
+const exaGetSource = async (subjectName, aspect, aspectDescription, ageRange, level, resultsList) => {
+    const prompt = `Please provide a youtube video link on aspect ${aspect} of the subject
+    ${subjectName}, as described by ${aspectDescription}, aimed at ages ${ageRange}, and at a ${level} level.`;
+
+    const result = await exa.searchAndContents(prompt, {
+        type: 'neural',
+        useAutoprompt: true,
+        numResults: 3,
+        text: false
+    });
+    console.log(result)
+    resultsList.push(result)
+}
+
+
+
 /**
  *  Get source from Exa.AI
  *
@@ -40,18 +59,21 @@ const autoGenerateSource = async (
             level = 'PHD';
     }
 
-    const prompt = `Please provide a website or youtube video or paper on the subject
-    ${skillAspect}, as described by ${aspectDescription}, aimed at ages ${ageRange}, and at a ${level} level.`;
-
-    const result = await exa.searchAndContents(prompt, {
-        type: 'neural',
-        useAutoprompt: true,
-        numResults: 3,
-        text: false
-    });
-    console.log(result);
+    let promises = [];
+    const resultList = [];
+    const skillName = aspectJSON.subject
+    for (let index = 0; index < aspectJSON.core_aspects.length; index++) {
+        const description = aspectJSON.core_aspects[index].description;
+        const aspect = aspectJSON.core_aspects[index].aspect;
+        promises.push(exaGetSource(skillName, aspect, description, ageRange, level, resultList))
+    }
+    Promise.all(promises)
+        .then(async () => {
+            console.log('ok')
+        })
+        .catch((e) => {
+            console.error(e)
+        });
 };
-
-
 
 module.exports = { autoGenerateSource };

@@ -334,6 +334,14 @@ const router = createRouter({
                 )
         },
         {
+            path: '/test-exa-ai',
+            name: 'test',
+            component: () =>
+                import(
+                    '../components/pages/TEST_EXA_AI.vue'
+                )
+        },
+        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')

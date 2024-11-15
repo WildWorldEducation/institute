@@ -1,29 +1,25 @@
 {
-    "aspects": [
+    "subject": "Rock Types",
+    "core_aspects": [
         {
-            "name": "Evolutionary History",
-            "description": "Explores the origins and evolutionary pathways of dinosaurs and other extinct vertebrates.",
-            "purpose": "To understand how dinosaurs and extinct vertebrates evolved, including their relationships to modern species."
+            "aspect": "Igneous Rocks",
+            "description": "Formed from the cooling and solidification of magma or lava, igneous rocks can be found both above ground (like basalt) and below ground (like granite). They are typically hard and crystalline."
         },
         {
-            "name": "Anatomy and Physiology",
-            "description": "Examines the physical structures and biological functions of extinct vertebrates.",
-            "purpose": "To provide insight into how dinosaurs and other extinct species were adapted to their environments and lifestyles."
+            "aspect": "Sedimentary Rocks",
+            "description": "Created from the compaction and cementation of sediments over time, sedimentary rocks like limestone and sandstone often contain fossils and form in layers, usually in watery environments."
         },
         {
-            "name": "Fossil Evidence and Paleontology",
-            "description": "Studies fossil discoveries and the methods used to interpret extinct life forms.",
-            "purpose": "To teach students about fossil analysis techniques and how they reveal information about extinct organisms."
+            "aspect": "Metamorphic Rocks",
+            "description": "Formed when existing rocks are subjected to heat and pressure, metamorphic rocks like marble and slate have changed structure and mineral composition but remain solid."
         },
         {
-            "name": "Behavior and Ecology",
-            "description": "Investigates the behaviors, habitats, and ecological roles of dinosaurs and extinct vertebrates.",
-            "purpose": "To explore the ecosystems these species inhabited and how they interacted with their environments."
+            "aspect": "Rock Cycle",
+            "description": "The rock cycle explains how rocks transform from one type to another over time through processes like melting, cooling, erosion, and compaction, connecting igneous, sedimentary, and metamorphic rocks."
         },
         {
-            "name": "Extinction Events",
-            "description": "Analyzes the major extinction events that affected dinosaurs and other vertebrates.",
-            "purpose": "To understand the causes and consequences of mass extinctions and their impact on biodiversity through time."
+            "aspect": "Mineral Composition",
+            "description": "Each rock type is made of different minerals, which give rocks their color, hardness, and other properties. For example, quartz and feldspar are common in igneous rocks, while calcite is typical in sedimentary rocks."
         }
     ]
 }
