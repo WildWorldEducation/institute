@@ -1,19 +1,25 @@
 <script>
 export default {
+    data() {
+        return {
+            searchText: ''
+        };
+    },
     async mounted() {
         console.log('Component mounted');
-        fetch('/resources/exa-source').then(async function (response) {
-            console.log('fetched');
-            const result = await response.json();
-            console.log(result);
-        });
+        const res = await fetch('/resources/exa-source');
+        console.log(res);
+        const result = await res.json();
+        this.searchText = result;
     },
     methods: {}
 };
 </script>
 
 <template>
-    <div class="container-fluid h-100 p-0">HA HA HA</div>
+    <div class="container-fluid h-100 p-auto">
+        {{ JSON.stringify(searchText) }}
+    </div>
 </template>
 
 <style></style>

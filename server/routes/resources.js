@@ -1160,13 +1160,15 @@ const { autoGenerateSource } = require('../utilities/auto-generate-sources');
 
 
 
-router.get('/exa-source', (res, next) => {
-    let aspect = 'Types of Settlement Patterns';
-    let description =
-        'Understanding different settlement patterns (linear, clustered, dispersed) and their relationships to landscape and resources.';
+router.get('/exa-source', async (req, res, next) => {
+    if (req.session.userName) {
+        let aspect = 'Types of Settlement Patterns';
+        let description =
+            'Understanding different settlement patterns (linear, clustered, dispersed) and their relationships to landscape and resources.';
+        const result = await autoGenerateSource(2043, 'high_school', aspect, description);
 
-    autoGenerateSource(2043, 'high_school', aspect, description);
-    res.json('ok');
+        res.json(result);
+    }
 })
 
 module.exports = router;

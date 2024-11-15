@@ -1,5 +1,8 @@
 const Exa = require('exa-js');
 const exa = new Exa.default(process.env.EXA_API_KEY);
+// DB
+const conn = require('../config/db');
+
 const aspectJSON = require('./open_ai.json');
 
 
@@ -14,9 +17,24 @@ const exaGetSource = async (subjectName, aspect, aspectDescription, ageRange, le
         text: false
     });
     console.log(result)
-    resultsList.push(result)
+    resultsList.push({ ...result, aspect: aspect })
 }
 
+const insertIntoDataBase = async (skillName, skillAspect, url) => {
+    let sqlQuery = `INSERT INTO exa_ai_report (skill_name, skill_aspect, url)
+                    VALUES (${conn.escape(skillName)}, ${conn.escape(skillAspect)}, ${conn.escape(url)});`;
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            console.log(results)
+        } catch (err) {
+
+            console.err(err)
+        }
+    });
+}
 
 
 /**
@@ -67,13 +85,15 @@ const autoGenerateSource = async (
         const aspect = aspectJSON.core_aspects[index].aspect;
         promises.push(exaGetSource(skillName, aspect, description, ageRange, level, resultList))
     }
-    Promise.all(promises)
-        .then(async () => {
-            console.log('ok')
+    await Promise.all(promises);
+    let dbPromises = []
+    resultList.forEach(resultObj => {
+        resultObj.results.forEach(result => {
+            dbPromises.push(insertIntoDataBase(skillName, resultObj.aspect, result.url))
         })
-        .catch((e) => {
-            console.error(e)
-        });
+    })
+    await Promise.all(dbPromises)
+    return resultList
 };
 
 module.exports = { autoGenerateSource };
