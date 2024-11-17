@@ -1,5 +1,6 @@
 <script>
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
+import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 import TidyTree from '../components/skilltrees/TidyTree.vue';
 import TidyTreeNoAccount from '../components/skilltrees/TidyTreeNoAccount.vue';
 
@@ -23,19 +24,21 @@ export default {
     mounted() {
         this.GetGoogleLoginResult();
     },
-    components: { TidyTree, TidyTreeNoAccount },
+    components: { TidyTree, TidyTreeNoAccount, SkillTreeSearchBar },
     methods: {
         resetPos() {
             this.$refs.childComponent.resetPos();
         },
-        handleChooseResult(node) {
-            this.searchText = node.data.skill_name;
-            this.lastChooseResult = node.data.skill_name;
-
+        handleChooseResult(resultName) {
+            this.lastChooseResult = resultName;
+            // Find the node with name
+            const node = this.$refs.childComponent.findNodeWithName(resultName);
+            if (!node) {
+                console.error('Cannot find node with name: ' + resultName);
+                return false;
+            }
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
-            // also open the skill requirement mastery div
-            this.$refs.childComponent.showSkillPanelComponent(node);
         },
         expandAllNodesWarning() {
             this.showConfirmModal = true;
@@ -53,58 +56,9 @@ export default {
                     if (data.account == 'new account')
                         alert('Your account has been created!');
                 });
-        }
-    },
-    computed: {
-        findNodeResults() {
-            if (
-                this.lastChooseResult === this.searchText ||
-                this.searchText.length === 0
-            ) {
-                return [];
-            }
-            this.$refs.childComponent.showSkillPanel = false;
-            const results = this.$refs.childComponent.findNodeWithName(
-                this.searchText.toLocaleLowerCase()
-            );
-
-            const capitalizeText = (text, charIndex) =>
-                text &&
-                text.slice(0, charIndex) +
-                    text[charIndex].toUpperCase() +
-                    text.slice(charIndex + 1);
-
-            const highlightedResult = results.map((result) => {
-                const hightLightedText = result.data.skill_name
-                    .toLocaleLowerCase()
-                    .replace(
-                        this.searchText.toLocaleLowerCase(),
-                        `<span class="hightLight">${this.searchText}</span>`
-                    );
-
-                // index of first character if we have span at the head of the string is 25
-                const indexOfFirstChar = hightLightedText[0] === '<' ? 25 : 0;
-
-                return {
-                    ...result,
-                    // capitalize text better ui and ux
-                    highlightedResult: capitalizeText(
-                        hightLightedText,
-                        indexOfFirstChar
-                    )
-                };
-            });
-            return highlightedResult;
-        }
-    },
-    watch: {
-        searchText: {
-            handler(newVal) {
-                if (newVal === '') {
-                    this.$refs.childComponent.showSkillPanel = false;
-                    this.$refs.childComponent.resetPos();
-                }
-            }
+        },
+        clearResult() {
+            this.$refs.childComponent.resetPos();
         }
     }
 };
@@ -181,47 +135,10 @@ export default {
                 </div>
                 <div class="search-mobile-row">
                     <!-- Search feature -->
-                    <div
-                        :class="[
-                            'search-bar mt-3',
-                            findNodeResults.length > 0 && 'have-results'
-                        ]"
-                    >
-                        <div class="d-flex align-items-center p-1">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="15"
-                                height="15"
-                                fill="#5f6368"
-                                class="me-2"
-                            >
-                                <path
-                                    d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-                                />
-                            </svg>
-                            <input
-                                id="skill-tree-search-text"
-                                type="text"
-                                class="skill-tree-input"
-                                placeholder="Skill Name"
-                                v-model="searchText"
-                            />
-                        </div>
-                        <div class="position-relative">
-                            <div
-                                v-if="findNodeResults.length > 0"
-                                class="search-results"
-                            >
-                                <button
-                                    @click="handleChooseResult(result)"
-                                    class="result-row"
-                                    v-for="result in findNodeResults"
-                                    v-html="result.highlightedResult"
-                                ></button>
-                            </div>
-                        </div>
-                    </div>
+                    <SkillTreeSearchBar
+                        :findNode="handleChooseResult"
+                        :clearResults="clearResult"
+                    />
                 </div>
             </div>
             <div id="tablet-and-up-legend">
@@ -245,48 +162,11 @@ export default {
                         class="col-12 col-lg-4 d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
                     >
                         <!-- Search Feature -->
-                        <div
-                            :class="[
-                                'search-bar w-100',
-                                findNodeResults.length > 0 && 'have-results'
-                            ]"
-                        >
-                            <div class="d-flex align-items-center p-1">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    width="15"
-                                    height="15"
-                                    fill="#5f6368"
-                                    class="me-2"
-                                >
-                                    <path
-                                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-                                    />
-                                </svg>
-                                <input
-                                    id="skill-tree-search-text"
-                                    type="text"
-                                    class="skill-tree-input"
-                                    placeholder="Skill Name"
-                                    v-model="searchText"
-                                />
-                            </div>
-                            <div class="position-relative">
-                                <div
-                                    v-if="findNodeResults.length > 0"
-                                    class="search-results"
-                                >
-                                    <button
-                                        @click="handleChooseResult(result)"
-                                        class="result-row"
-                                        v-for="result in findNodeResults"
-                                        v-html="result.highlightedResult"
-                                    ></button>
-                                </div>
-                            </div>
-                        </div>
-
+                        <SkillTreeSearchBar
+                            :findNode="handleChooseResult"
+                            :clearResults="clearResult"
+                        />
+                        <!-- Reset Button -->
                         <button
                             id="reset-btn"
                             class="btn btn-primary me-1"
@@ -312,6 +192,7 @@ export default {
                                 />
                             </svg>
                         </button>
+                        <!-- Print Button -->
                         <button
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="btn legend-btn me-3"
