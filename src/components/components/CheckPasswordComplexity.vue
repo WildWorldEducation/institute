@@ -28,7 +28,9 @@ export default {
         body.addEventListener(
             'click',
             () => {
-                this.showCriteria = false;
+                if(this.$parent.validate.passwordComplex){
+                    this.showCriteria = false;
+                }
             },
             false
         );
@@ -192,10 +194,12 @@ export default {
                             this.criteriaFlag.predictable = false;
                         }
                     } else {
-                        this.showCriteria = false;
+                        if(this.$parent.validate.passwordComplex){
+                            this.showCriteria = false;
+                        }
                     }
                 } else {
-                    this.showCriteria = false;
+                    //this.showCriteria = false;
                 }
             },
             deep: true
