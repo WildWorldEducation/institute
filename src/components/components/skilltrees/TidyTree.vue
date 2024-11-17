@@ -787,33 +787,19 @@ export default {
         },
         // Find node with name include
         findNodeWithName(searchString) {
-            let results = [];
             // D3
-            //let breakLoop = false;
+            let breakLoop = false;
+            let resultNode = null;
             this.root.each(function (node) {
-                // search only first work match if search text is less than three
-                if (searchString.length < 3) {
-                    if (
-                        node.data.skill_name
-                            .toLowerCase()
-                            .substring(0, searchString.length) === searchString
-                    ) {
-                        results.push(node);
-                    }
+                if (breakLoop) {
+                    return;
                 }
-                // search for all word in skill name string if search text is greater than three
-                else {
-                    if (
-                        node.data.skill_name
-                            .toLowerCase()
-                            .includes(searchString)
-                    ) {
-                        results.push(node);
-                    }
+                if (node.data.skill_name === searchString) {
+                    resultNode = node;
+                    breakLoop = true;
                 }
             });
-
-            return results;
+            return resultNode;
         },
         toggleHideChildren(node) {
             var url =

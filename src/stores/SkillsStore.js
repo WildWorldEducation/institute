@@ -76,6 +76,14 @@ export const useSkillsStore = defineStore('skills', {
             const skill = this.skillsList.find((element) => { return element.url === url }
             )
             return skill
+        },
+
+        async getNameList() {
+            if (this.skillsList.length < 1) {
+                await this.getSkillsList()
+            }
+            const nameList = this.skillsList.map(skill => { return { name: skill.name } })
+            return nameList
         }
 
     }

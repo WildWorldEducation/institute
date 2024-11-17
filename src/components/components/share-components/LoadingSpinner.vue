@@ -1,5 +1,36 @@
 <script>
-export default {};
+export default {
+    props: ['width', 'height', 'color', 'borderWidth'],
+    data: () => {
+        const defaultHeight = '48px';
+        const defaultWidth = '48px';
+        const defaultColor = '#a48be6';
+        const defaultBorderWidth = '5px';
+        return {
+            widthCss: defaultHeight,
+            heightCss: defaultWidth,
+            colorCss: defaultColor,
+            borderWidthCss: defaultBorderWidth
+        };
+    },
+    created() {
+        if (this.width) {
+            this.widthCss = this.width;
+        }
+
+        if (this.height) {
+            this.heightCss = this.height;
+        }
+
+        if (this.color) {
+            this.colorCss = this.color;
+        }
+
+        if (this.borderWidth) {
+            this.borderWidthCss = this.borderWidth;
+        }
+    }
+};
 </script>
 
 <template>
@@ -8,10 +39,10 @@ export default {};
 
 <style scoped>
 .loader {
-    width: 48px;
-    height: 48px;
-    border: 5px solid #fff;
-    border-bottom-color: #a48be6;
+    width: v-bind(widthCss);
+    height: v-bind(heightCss);
+    border: v-bind(borderWidthCss) solid #fff;
+    border-bottom-color: v-bind(colorCss);
     border-radius: 50%;
     display: inline-block;
     box-sizing: border-box;
