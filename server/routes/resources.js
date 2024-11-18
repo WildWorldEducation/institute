@@ -1156,6 +1156,12 @@ function deleteDownVotedSources(index, sourcesToDelete, userId, respond) {
     });
 }
 
+
+// __________________________________________________________________________
+//
+// TEST EXA AI ROUTE
+// __________________________________________________________________________
+
 const { autoGenerateSource } = require('../utilities/auto-generate-sources');
 
 
@@ -1167,7 +1173,7 @@ router.get('/exa-source', async (req, res, next) => {
             'Understanding different settlement patterns (linear, clustered, dispersed) and their relationships to landscape and resources.';
         const result = await autoGenerateSource(2043, 'high_school', aspect, description);
 
-        res.json(result);
+        res.json({ mess: 'every thing is done' });
     }
 })
 

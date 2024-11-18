@@ -1,25 +1,27 @@
 {
-    "subject": "Rock Types",
+    "subject": "Linear Algebra",
+    "education": "High School",
+    "age_range": "14-18",
     "core_aspects": [
         {
-            "aspect": "Igneous Rocks",
-            "description": "Formed from the cooling and solidification of magma or lava, igneous rocks can be found both above ground (like basalt) and below ground (like granite). They are typically hard and crystalline."
+            "aspect": "Vectors and Vector Spaces",
+            "description": "Learn about vectors, their properties, and how they form spaces that follow specific rules of addition and scaling."
         },
         {
-            "aspect": "Sedimentary Rocks",
-            "description": "Created from the compaction and cementation of sediments over time, sedimentary rocks like limestone and sandstone often contain fossils and form in layers, usually in watery environments."
+            "aspect": "Matrices and Matrix Operations",
+            "description": "Understand matrices as grids of numbers used to solve equations and perform operations like addition, multiplication, and inversion."
         },
         {
-            "aspect": "Metamorphic Rocks",
-            "description": "Formed when existing rocks are subjected to heat and pressure, metamorphic rocks like marble and slate have changed structure and mineral composition but remain solid."
+            "aspect": "Linear Equations and Systems",
+            "description": "Explore methods like substitution, elimination, and matrix approaches to solve systems of linear equations."
         },
         {
-            "aspect": "Rock Cycle",
-            "description": "The rock cycle explains how rocks transform from one type to another over time through processes like melting, cooling, erosion, and compaction, connecting igneous, sedimentary, and metamorphic rocks."
+            "aspect": "Determinants and Their Uses",
+            "description": "Study determinants, which are scalar values used to determine if a matrix is invertible and solve equations geometrically."
         },
         {
-            "aspect": "Mineral Composition",
-            "description": "Each rock type is made of different minerals, which give rocks their color, hardness, and other properties. For example, quartz and feldspar are common in igneous rocks, while calcite is typical in sedimentary rocks."
+            "aspect": "Applications of Linear Algebra",
+            "description": "Discover real-world uses of linear algebra, such as in computer graphics, engineering, physics, and data science."
         }
     ]
 }

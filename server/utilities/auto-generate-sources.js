@@ -7,8 +7,8 @@ const aspectJSON = require('./open_ai.json');
 
 
 const exaGetSource = async (subjectName, aspect, aspectDescription, ageRange, level, resultsList) => {
-    const prompt = `Please provide a youtube video link on aspect ${aspect} of the subject
-    ${subjectName}, as described by ${aspectDescription}, aimed at ages ${ageRange}, and at a ${level} level.`;
+    const prompt = `Please provide youtube video, paper or web page link on aspect ${aspect} of the subject
+    ${subjectName}, aimed at ages ${ageRange}, and at a ${level} level.`;
 
     const result = await exa.searchAndContents(prompt, {
         type: 'neural',
@@ -30,7 +30,6 @@ const insertIntoDataBase = async (skillName, skillAspect, url) => {
             }
             console.log(results)
         } catch (err) {
-
             console.err(err)
         }
     });
@@ -53,37 +52,13 @@ const autoGenerateSource = async (
     skillAspect,
     aspectDescription
 ) => {
-    let ageRange = '';
-    let level = '';
-    switch (skillLevel) {
-        case 'grade_school':
-            ageRange = '5 - 10';
-            level = 'grade school';
-            break;
-        case 'middle_school':
-            ageRange = '11 - 14';
-            level = 'middle school';
-            break;
-        case 'high_school':
-            ageRange = '15 - 18';
-            level = 'high school';
-            break;
-        case 'college':
-            ageRange = '19 - 24';
-            level = 'college';
-            break;
-        case 'phd':
-            ageRange = 'over 24';
-            level = 'PHD';
-    }
-
     let promises = [];
     const resultList = [];
     const skillName = aspectJSON.subject
     for (let index = 0; index < aspectJSON.core_aspects.length; index++) {
         const description = aspectJSON.core_aspects[index].description;
         const aspect = aspectJSON.core_aspects[index].aspect;
-        promises.push(exaGetSource(skillName, aspect, description, ageRange, level, resultList))
+        promises.push(exaGetSource(skillName, aspect, description, aspectJSON.age_range, aspectJSON.education, resultList))
     }
     await Promise.all(promises);
     let dbPromises = []
