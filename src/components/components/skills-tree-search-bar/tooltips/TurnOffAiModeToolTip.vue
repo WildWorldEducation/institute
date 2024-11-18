@@ -33,6 +33,9 @@ export default {
                     <div>using AI</div>
                 </div>
             </div>
+            <div class="d-none d-lg-flex tooltip-small-text">
+                (You can also press enter while typing to switch mode)
+            </div>
         </div>
     </div>
 </template>
@@ -75,6 +78,11 @@ export default {
     border-right: 10px solid transparent;
     right: 15px;
     top: -9px;
+}
+
+.tooltip-small-text {
+    font-size: 13px;
+    color: #374151;
 }
 
 /* Bigger devices ( Tablet ) */
