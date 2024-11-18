@@ -151,6 +151,12 @@ export default {
             if (this.aiMode) {
                 this.checkTextForAi(this.searchText);
             }
+        },
+        handleEnterPress() {
+            this.aiMode = !this.aiMode;
+            if (this.aiMode) {
+                this.checkTextForAi(this.searchText);
+            }
         }
     },
     components: {
@@ -212,7 +218,7 @@ export default {
                 class="skill-tree-input"
                 placeholder="Skill Name"
                 v-model="searchText"
-                v-on:keyup.enter="aiMode && checkTextForAi(searchText)"
+                v-on:keyup.enter="handleEnterPress()"
             />
             <button
                 class="robot-icon"
