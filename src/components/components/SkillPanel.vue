@@ -18,12 +18,12 @@ export default {
         hideInfoPanel() {
             this.$parent.showSkillPanel = false;
         },
-        toggleChildNodes() {
-            if (this.skill.show_children == 0) {
-                this.$parent.toggleShowChildren(this.skill);
-            } else {
-                this.$parent.toggleHideChildren(this.skill);
-            }
+        toggleChildNodes(){
+            this.skill.show_children = 1 - this.skill.show_children;
+            const toggleMethod = this.skill.show_children === 1
+            ? this.$parent.toggleShowChildren
+            : this.$parent.toggleHideChildren
+            toggleMethod(this.skill)
         }
     }
 };
