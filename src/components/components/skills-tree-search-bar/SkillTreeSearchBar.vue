@@ -140,12 +140,16 @@ export default {
         },
         checkTextForAi(searchText) {
             // only context search if user end a word
-            if (
-                searchText.slice(-1) === ' ' &&
-                searchText.length > 3 &&
-                !this.waitForSever
-            ) {
+            if (searchText.length > 3 && !this.waitForSever) {
                 this.getContextResults(searchText);
+            }
+        },
+        handleRobotIconClick() {
+            this.aiMode = !this.aiMode;
+            console.log(this.aiMode);
+            console.log(this.searchText);
+            if (this.aiMode) {
+                this.checkTextForAi(this.searchText);
             }
         }
     },
@@ -208,10 +212,11 @@ export default {
                 class="skill-tree-input"
                 placeholder="Skill Name"
                 v-model="searchText"
+                v-on:keyup.enter="aiMode && checkTextForAi(searchText)"
             />
             <button
                 class="robot-icon"
-                @click="aiMode = !aiMode"
+                @click="handleRobotIconClick()"
                 @mouseover="showAiToolTip = true"
                 @mouseleave="showAiToolTip = false"
             >
