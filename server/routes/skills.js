@@ -42,7 +42,7 @@ const { recordUserAction } = require('../utilities/record-user-action');
 
 // Helper Function
 const { saveIconToAWS } = require('../utilities/save-image-to-aws');
-
+const { getVectorData, insertSkillsVectorIntoDataBase } = require('../utilities/vectorization-skill');
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -172,12 +172,20 @@ router.post(
                 } else {
                     // Get its id.
                     let sqlQuery2 = `SELECT LAST_INSERT_ID();`;
-                    conn.query(sqlQuery2, data, (err, results) => {
+                    conn.query(sqlQuery2, data, async (err, results) => {
                         const skillId = Object.values(results[0])[0];
                         try {
                             if (err) {
                                 throw err;
                             } else {
+                                // Add vector of skill into skill_vectors table
+                                const skillData = {
+                                    id: skillId,
+                                    name: req.body.name
+                                }
+                                const vectorData = await getVectorData(skillData);
+                                insertSkillsVectorIntoDataBase(vectorData);
+                                console.log('successful vectorize')
                                 // Add skill revision history (this is the first revision.)
                                 let revisionHistoryQuery = `INSERT INTO skill_history
                             (id, version_number, user_id, name, description,
@@ -232,9 +240,6 @@ router.post(
                         } catch (err) {
                             next(err);
                         }
-                    });
-                    res.json({
-                        result: 'skill added'
                     });
                 }
             } catch (err) {
@@ -1616,74 +1621,44 @@ const openai = new OpenAI({
 });
 
 
-const getVectorData = async (skillData, rowData) => {
-    const response = await openai.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: skillData.name,
-        dimensions: 720
-    });
-    console.log(response);
-    const skillWithVector = {
-        id: skillData.id,
-        name: skillData.name,
-        vector: response.data[0].embedding
-    }
-    rowData.rows.push(skillWithVector);
-}
+// router.get('/skills-vectorization', isAuthenticated, async (req, res, next) => {
+//     try {
+//         const rowData = {
+//             rows: []
+//         }
+//         // get skill name list
+//         let sqlQuery = 'SELECT * FROM skills';
+//         conn.query(sqlQuery, async (err, results) => {
+//             if (err) {
+//                 throw err;
+//             }
+//             const promises = [];
+//             console.log(results.length)
+//             // We use text-embedding-3-small model to make vector data from skill name
+//             for (let index = 0; index < results.length; index++) {
+//                 const element = results[index];
 
-const insertSkillsVectorIntoDataBase = (skillVector) => {
+//                 promises.push(getVectorData(element, rowData))
+//             }
+//             res.json(results)
 
-    let sqlQuery = `INSERT INTO skills_vector (skill_id, skill_name, embedding)
-                   VALUES ('${skillVector.id}',
-                   ${conn.escape(skillVector.name)},
-                   VEC_FromText('[${skillVector.vector}]'))`
-    conn.query(sqlQuery, (err, results) => {
-        if (err) {
-            console.error(err)
-            throw err
-        }
-        console.log(results)
-    })
-}
-
-router.get('/skill-vectorization', isAuthenticated, async (req, res, next) => {
-    try {
-        const rowData = {
-            rows: []
-        }
-        // get skill name list
-        let sqlQuery = 'SELECT * FROM skills';
-        conn.query(sqlQuery, async (err, results) => {
-            if (err) {
-                throw err;
-            }
-            const promises = [];
-            console.log(results.length)
-            // We use text-embedding-3-small model to make vector data from skill name
-            for (let index = 0; index < results.length; index++) {
-                const element = results[index];
-
-                promises.push(getVectorData(element, rowData))
-            }
-            res.json(results)
-
-            Promise.all(promises)
-                .then(async () => {
-                    console.log(rowData)
-                    const content = JSON.stringify(rowData)
-                    await fs.writeFile('./vector.json', content);
-                    res.json('all done check vector.json : ');
-                })
-                .catch((e) => {
-                    throw e
-                });
-        })
-    } catch (err) {
-        res.status = 500;
-        console.log(err);
-        res.json({ mess: 'fails' })
-    }
-})
+//             Promise.all(promises)
+//                 .then(async () => {
+//                     console.log(rowData)
+//                     const content = JSON.stringify(rowData)
+//                     await fs.writeFile('./vector.json', content);
+//                     res.json('all done check vector.json : ');
+//                 })
+//                 .catch((e) => {
+//                     throw e
+//                 });
+//         })
+//     } catch (err) {
+//         res.status = 500;
+//         console.log(err);
+//         res.json({ mess: 'fails' })
+//     }
+// })
 
 router.get('/insert-vectors-to-db', async (req, res) => {
     try {

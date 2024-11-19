@@ -16,7 +16,6 @@ export default {
             <div class="tool-tip-text">
                 <div class="d-flex flex-wrap">
                     <div>Click on the</div>
-
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 640 512"
