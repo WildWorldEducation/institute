@@ -36,6 +36,12 @@ const { v7: uuidv7 } = require('uuid');
 const { unlockInitialSkills } = require('../utilities/unlock-initial-skills');
 const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
+
+require('dotenv').config();
+const { saveUserAvatarToAWS } = require('../utilities/save-image-to-aws');
+const userAvatarImageThumbnailsBucketName = process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
+const userAvatarImagesBucketName = process.env.S3_USER_AVATAR_IMAGE_BUCKET_NAME;
+
 router.post('/new-user/add', (req, res, next) => {
     // Providing default avatar.
     // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
@@ -51,7 +57,6 @@ router.post('/new-user/add', (req, res, next) => {
         let data = {
             username: req.body.username,
             email: req.body.email,
-            avatar: req.body.avatar,
             password: hashedPassword,
             role: req.body.account_type == 'student' ? 'student' : 'instructor'
         };
@@ -132,6 +137,8 @@ router.post('/new-user/add', (req, res, next) => {
                                                 if (err) {
                                                     throw err;
                                                 } else {
+                                                    // Upload avatar to AWS
+                                                    saveUserAvatarToAWS(data.id, req.body.avatar);
                                                     let newStudentId = data.id;
                                                     // Create session to log the user in.
                                                     req.session.userId =
@@ -187,7 +194,6 @@ router.post('/new-editor/add', (req, res, next) => {
         let data = {
             username: req.body.username,
             email: req.body.email,
-            avatar: req.body.avatar,
             password: hashedPassword,
             role: 'editor'
         };
@@ -268,6 +274,8 @@ router.post('/new-editor/add', (req, res, next) => {
                                                 if (err) {
                                                     throw err;
                                                 } else {
+                                                    // Upload avatar to AWS
+                                                    saveUserAvatarToAWS(data.id, req.body.avatar);
                                                     let newEditorId = data.id;
                                                     // Create session to log the user in.
                                                     req.session.userId =
@@ -328,7 +336,6 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
             last_name: req.body.lastname,
             username: req.body.username,
             email: req.body.email,
-            avatar: req.body.avatar,
             role: req.body.role,
             password: hashedPassword
         };
@@ -401,6 +408,8 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                                 if (err) {
                                                     throw err;
                                                 } else {
+                                                    // Upload avatar to AWS
+                                                    saveUserAvatarToAWS(data.id, req.body.avatar);
                                                     let newUserId = data.id;
                                                     res.json({
                                                         account:
@@ -456,7 +465,7 @@ router.post(
 router.get('/list', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
+        let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
         FROM users
         WHERE is_deleted = 0;`;
 
@@ -501,7 +510,7 @@ router.get(
     (req, res, next) => {
         if (req.session.userName) {
             res.setHeader('Content-Type', 'application/json');
-            let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
+            let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
         FROM users
         WHERE role = 'editor'
         AND is_deleted = 0;`;
@@ -547,7 +556,7 @@ router.get('/show/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Select user.
         let sqlQuery = `
-    SELECT id, first_name, last_name, username, avatar, email, role, is_deleted, is_google_auth             
+    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth             
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
@@ -647,8 +656,7 @@ router.put(
             last_name = ${conn.escape(req.body.lastname)}, 
             username = ${conn.escape(req.body.username)}, 
             email = ${conn.escape(req.body.email)}, 
-            password = ${conn.escape(req.body.password)}, 
-            avatar = ${conn.escape(avatar)}, 
+            password = ${conn.escape(req.body.password)},
             role = ${conn.escape(req.body.role)} 
             WHERE id = ${conn.escape(req.params.id)};`;
 
@@ -656,6 +664,10 @@ router.put(
                 try {
                     if (err) {
                         throw err;
+                    }
+                    // Upload avatar to AWS
+                    if(avatar != ''){
+                        saveUserAvatarToAWS(req.params.id, avatar);
                     }
                     res.end();
                 } catch (err) {
@@ -729,6 +741,8 @@ router.put(
                 if (err) {
                     throw err;
                 }
+                // Upload avatar to AWS
+                saveUserAvatarToAWS(req.params.id, req.body.avatar);
                 res.end();
             } catch (err) {
                 next(err);
