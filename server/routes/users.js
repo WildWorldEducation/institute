@@ -132,13 +132,13 @@ router.post('/new-user/add', (req, res, next) => {
                                     conn.query(
                                         sqlQuery3,
                                         data,
-                                        (err, results) => {
+                                        async (err, results) => {
                                             try {
                                                 if (err) {
                                                     throw err;
                                                 } else {
                                                     // Upload avatar to AWS
-                                                    saveUserAvatarToAWS(data.id, req.body.avatar);
+                                                    await saveUserAvatarToAWS(data.id, req.body.avatar);
                                                     let newStudentId = data.id;
                                                     // Create session to log the user in.
                                                     req.session.userId =
@@ -269,13 +269,13 @@ router.post('/new-editor/add', (req, res, next) => {
                                     conn.query(
                                         sqlQuery3,
                                         data,
-                                        (err, results) => {
+                                        async (err, results) => {
                                             try {
                                                 if (err) {
                                                     throw err;
                                                 } else {
                                                     // Upload avatar to AWS
-                                                    saveUserAvatarToAWS(data.id, req.body.avatar);
+                                                    await saveUserAvatarToAWS(data.id, req.body.avatar);
                                                     let newEditorId = data.id;
                                                     // Create session to log the user in.
                                                     req.session.userId =
@@ -403,13 +403,13 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                     conn.query(
                                         sqlQuery3,
                                         data,
-                                        (err, results) => {
+                                        async (err, results) => {
                                             try {
                                                 if (err) {
                                                     throw err;
                                                 } else {
                                                     // Upload avatar to AWS
-                                                    saveUserAvatarToAWS(data.id, req.body.avatar);
+                                                    await saveUserAvatarToAWS(data.id, req.body.avatar);
                                                     let newUserId = data.id;
                                                     res.json({
                                                         account:
@@ -660,14 +660,14 @@ router.put(
             role = ${conn.escape(req.body.role)} 
             WHERE id = ${conn.escape(req.params.id)};`;
 
-            conn.query(sqlQuery, (err, results) => {
+            conn.query(sqlQuery, async (err, results) => {
                 try {
                     if (err) {
                         throw err;
                     }
                     // Upload avatar to AWS
                     if(avatar != ''){
-                        saveUserAvatarToAWS(req.params.id, avatar);
+                        await saveUserAvatarToAWS(req.params.id, avatar);
                     }
                     res.end();
                 } catch (err) {
@@ -736,13 +736,13 @@ router.put(
             email = ${conn.escape(req.body.email)}
             WHERE id = ${conn.escape(req.params.id)};`;
 
-        conn.query(sqlQuery, (err) => {
+        conn.query(sqlQuery, async (err) => {
             try {
                 if (err) {
                     throw err;
                 }
                 // Upload avatar to AWS
-                saveUserAvatarToAWS(req.params.id, req.body.avatar);
+                await saveUserAvatarToAWS(req.params.id, req.body.avatar);
                 res.end();
             } catch (err) {
                 next(err);

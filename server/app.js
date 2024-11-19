@@ -235,13 +235,13 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 };
 
                 let sqlQuery2 = 'INSERT INTO users SET ?';
-                conn.query(sqlQuery2, data, (err, results) => {
+                conn.query(sqlQuery2, data, async (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         } else {
                             // Upload avatar to AWS
-                            saveUserAvatarToAWS(data.id, defaultAvatar);
+                            await saveUserAvatarToAWS(data.id, defaultAvatar);
                             // Create session to log the user in.
                             req.session.userId = newStudentId;
                             req.session.userName = data.username;
@@ -328,13 +328,13 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
                 };
 
                 let sqlQuery2 = 'INSERT INTO users SET ?';
-                conn.query(sqlQuery2, data, (err, results) => {
+                conn.query(sqlQuery2, data, async (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         } else {
                             // Upload avatar to AWS
-                            saveUserAvatarToAWS(data.id, defaultAvatar);
+                            await saveUserAvatarToAWS(data.id, defaultAvatar);
                             // Create session to log the user in.
                             req.session.userId = newEditorId;
                             req.session.userName = data.username;
