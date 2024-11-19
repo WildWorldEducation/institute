@@ -50,6 +50,33 @@ export const useSkillTreeStore = defineStore('skillTree', {
             // API call for skill tree.
             const result = await fetch('/user-skills/' + studentId);
             this.studentSkills = await result.json();
+        },
+        truncateVerticalTree(level) {
+            console.log(level);
+            console.log(this.verticalTreeUserSkills);
+
+            // Need to go through nested list of user skills and
+            // filter them by grade level.
+            function truncateUserSkills(parentChildren) {
+                var i = parentChildren.length;
+                while (i--) {
+                    count++;
+
+                    if (typeof parentChildren[i] !== 'undefined') {
+                        /*
+                         * Run the above function again recursively.
+                         */
+                        if (
+                            parentChildren[i].children &&
+                            Array.isArray(parentChildren[i].children) &&
+                            parentChildren[i].children.length > 0
+                        )
+                            truncateUserSkills(parentChildren[i].children);
+                    }
+                }
+            }
+
+            //truncateUserSkills(userSkills);
         }
     }
 });

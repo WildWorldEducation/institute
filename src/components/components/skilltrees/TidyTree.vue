@@ -838,9 +838,7 @@ export default {
 
             // Duplicate super skill node, and make second one a child of the first.
             // Put all the subskills of the node in the second version.
-            // This is an attempt to show the subskills using only D3.
-            // Other options, such as having them circle around the super skill,
-            // like the D3 and Pixi version, were too complex.
+            // This is an attempt to show the subskills using D3.
             function moveSubSkills(parentChildren) {
                 var i = parentChildren.length;
                 while (i--) {
@@ -955,6 +953,9 @@ export default {
             fetch(url).then(() => {
                 this.reloadTree();
             });
+        },
+        truncateToGradeLevel(level) {
+            this.skillTreeStore.truncateVerticalTree(level);
         }
     }
 };

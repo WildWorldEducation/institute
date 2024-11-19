@@ -60,6 +60,7 @@ export default {
         clearResult() {
             this.$refs.childComponent.resetPos();
         }
+   
     }
 };
 </script>
@@ -74,18 +75,64 @@ export default {
                 <div class="legend row">
                     <div class="col-8">
                         <div class="col">
-                            <span class="grade-school"></span>Grade school
+                            <button
+                                class="btn"
+                                @click="
+                                    $refs.childComponent.truncateToGradeLevel(
+                                        'grade-school'
+                                    )
+                                "
+                            >
+                                <span class="grade-school"></span>Grade school
+                            </button>
                         </div>
                         <div class="col">
-                            <span class="middle-school"></span> Middle school
+                            <button
+                                class="btn"
+                                @click="
+                                    $refs.childComponent.truncateToGradeLevel(
+                                        'middle-school'
+                                    )
+                                "
+                            >
+                                <span class="middle-school"></span> Middle
+                                school
+                            </button>
                         </div>
                         <div class="col">
-                            <span class="high-school"></span> High school
+                            <button
+                                class="btn"
+                                @click="
+                                    $refs.childComponent.truncateToGradeLevel(
+                                        'high-school'
+                                    )
+                                "
+                            >
+                                <span class="high-school"></span> High school
+                            </button>
                         </div>
                         <div class="col">
-                            <span class="college"></span> College
+                            <button
+                                class="btn"
+                                @click="
+                                    $refs.childComponent.truncateToGradeLevel(
+                                        'college'
+                                    )
+                                "
+                            >
+                                <span class="college</button>"></span> College
+                            </button>
                         </div>
-                        <div class="col"><span class="phd"></span> PHD</div>
+                        <div
+                            class="col"
+                            @click="
+                                $refs.childComponent.truncateToGradeLevel('phd')
+                            "
+                        >
+                            <button class="btn">
+                                <span class="phd"></span> PHD
+                            </button>
+                        </div>
                     </div>
                     <div class="col-4 d-flex flex-column align-items-end">
                         <button
@@ -144,19 +191,62 @@ export default {
             <div id="tablet-and-up-legend">
                 <div class="legend row">
                     <div class="col d-flex align-items-center">
-                        <span class="grade-school"></span>Grade school
+                        <button
+                            class="btn"
+                            @click="
+                                $refs.childComponent.truncateToGradeLevel(
+                                    'grade-school'
+                                )
+                            "
+                        >
+                            <span class="grade-school"></span>Grade school
+                        </button>
                     </div>
                     <div class="col d-flex align-items-center">
-                        <span class="middle-school"></span> Middle school
+                        <button
+                            class="btn"
+                            @click="
+                                $refs.childComponent.truncateToGradeLevel(
+                                    'middle-school'
+                                )
+                            "
+                        >
+                            <span class="middle-school"></span> Middle school
+                        </button>
                     </div>
                     <div class="col d-flex align-items-center">
-                        <span class="high-school"></span> High school
+                        <button
+                            class="btn"
+                            @click="
+                                $refs.childComponent.truncateToGradeLevel(
+                                    'high-school'
+                                )
+                            "
+                        >
+                            <span class="high-school"></span> High school
+                        </button>
                     </div>
                     <div class="col d-flex align-items-center">
-                        <span class="college"></span> College
+                        <button
+                            class="btn"
+                            @click="
+                                $refs.childComponent.truncateToGradeLevel(
+                                    'college'
+                                )
+                            "
+                        >
+                            <span class="college"></span> College
+                        </button>
                     </div>
                     <div class="col d-flex align-items-center">
-                        <span class="phd"></span> PHD
+                        <button
+                            class="btn"
+                            @click="
+                                $refs.childComponent.truncateToGradeLevel('phd')
+                            "
+                        >
+                            <span class="phd"></span> PHD
+                        </button>
                     </div>
                     <div
                         class="col-12 col-lg-4 d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
