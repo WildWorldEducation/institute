@@ -28,7 +28,9 @@ export default {
         body.addEventListener(
             'click',
             () => {
-                this.showCriteria = false;
+                if(this.$parent.validate.passwordComplex){
+                    this.showCriteria = false;
+                }
             },
             false
         );
@@ -96,12 +98,14 @@ export default {
                     password
                         .toLowerCase()
                         .includes(this.formData.lastName.toLowerCase())) ||
-                password
-                    .toLowerCase()
-                    .includes(this.formData.username.toLowerCase()) ||
-                password
-                    .toLowerCase()
-                    .includes(this.formData.email.toLowerCase())
+                (this.formData.username &&
+                    password
+                        .toLowerCase()
+                        .includes(this.formData.username.toLowerCase())) ||
+                (this.formData.email &&
+                    password
+                        .toLowerCase()
+                        .includes(this.formData.email.toLowerCase()))
             ) {
                 this.criteriaFlag.predictable = true;
                 // if the password is predictable it strength return to 0
@@ -160,10 +164,16 @@ export default {
                         }
 
                         // Check predictable password
+
                         if (
-                            newVal.password
-                                .toLowerCase()
-                                .includes(newVal.username.toLowerCase()) ||
+                            (newVal.username &&
+                                newVal.password
+                                    .toLowerCase()
+                                    .includes(newVal.username.toLowerCase())) ||
+                            (newVal.email &&
+                                newVal.password
+                                    .toLowerCase()
+                                    .includes(newVal.email.toLowerCase())) ||
                             (newVal.firstName &&
                                 newVal.password
                                     .toLowerCase()
@@ -173,10 +183,7 @@ export default {
                             (newVal.lastName &&
                                 newVal.password
                                     .toLowerCase()
-                                    .includes(newVal.lastName.toLowerCase())) ||
-                            newVal.password
-                                .toLowerCase()
-                                .includes(newVal.email.toLowerCase())
+                                    .includes(newVal.lastName.toLowerCase()))
                         ) {
                             this.criteriaFlag.predictable = true;
                             // if the password is predictable it strength return to 0
@@ -187,10 +194,12 @@ export default {
                             this.criteriaFlag.predictable = false;
                         }
                     } else {
-                        this.showCriteria = false;
+                        if(this.$parent.validate.passwordComplex){
+                            this.showCriteria = false;
+                        }
                     }
                 } else {
-                    this.showCriteria = false;
+                    //this.showCriteria = false;
                 }
             },
             deep: true

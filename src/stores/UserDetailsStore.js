@@ -15,7 +15,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             email: null,
             userId: null,
             instructorId: null,
-            instructorUsername: null
+            instructorUsername: null,
+            isGoogleAuth: null
         };
     },
     actions: {
@@ -38,6 +39,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.role = data.role;
                 this.password = data.password;
                 this.email = data.email;
+                this.isGoogleAuth = data.is_google_auth;
 
                 if (this.role == 'student') {
                     await this.getInstructor();

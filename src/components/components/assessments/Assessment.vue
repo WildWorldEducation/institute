@@ -97,7 +97,7 @@ export default {
             }
         }
 
-        // find if student have an un-mark assessment before for this skill
+        // check if student has an un-marked assessment for this skill
         this.oldAssessment = assessments.find((assessment) => {
             return (
                 assessment.student_id === userDetails.userId &&
@@ -159,69 +159,42 @@ export default {
                     // Create answer options.
                     for (let i = 0; i < this.mcQuestions.length; i++) {
                         var answerOptions = [];
-                        // answerOptions.push({
-                        //     option: this.mcQuestions[i].answer_5,
-                        //     index: 1
-                        // });
-                        // answerOptions.push({
-                        //     option: this.mcQuestions[i].answer_1,
-                        //     index: 2
-                        // });
-                        if(this.mcQuestions[i].answer_1){
-                            answerOptions.push({
-                                option: this.mcQuestions[i].answer_1,
-                                index: 1
-                            });
-                        }
-                        if(this.mcQuestions[i].answer_2){
-                            answerOptions.push({
-                                option: this.mcQuestions[i].answer_2,
-                                index: 2
-                            });
-                        }
-                        if(this.mcQuestions[i].answer_3){
-                            answerOptions.push({
-                                option: this.mcQuestions[i].answer_3,
-                                index: 3
-                            });
-                        }
-                        if(this.mcQuestions[i].answer_4){
-                            answerOptions.push({
-                                option: this.mcQuestions[i].answer_4,
-                                index: 4
-                            });
-                        }
-                        if(this.mcQuestions[i].answer_5){
-                            answerOptions.push({
-                                option: this.mcQuestions[i].answer_5,
-                                index: 5
-                            });
-                        }
-                        
-                        
+
+                        answerOptions.push({
+                            option: this.mcQuestions[i].answer_1,
+                            index: 1
+                        });
+
+                        answerOptions.push({
+                            option: this.mcQuestions[i].answer_2,
+                            index: 2
+                        });
+
+                        answerOptions.push({
+                            option: this.mcQuestions[i].answer_3,
+                            show: this.mcQuestions[i].show_answer_3,
+                            index: 3
+                        });
+
+                        answerOptions.push({
+                            option: this.mcQuestions[i].answer_4,
+                            show: this.mcQuestions[i].show_answer_4,
+                            index: 4
+                        });
+
+                        answerOptions.push({
+                            option: this.mcQuestions[i].answer_5,
+                            show: this.mcQuestions[i].show_answer_5,
+                            index: 5
+                        });
+
                         // Shuffle the questions if is_random.
-                        if(this.mcQuestions[i].is_random){
+                        if (this.mcQuestions[i].is_random) {
                             answerOptions = answerOptions.sort(
                                 (a, b) => 0.5 - Math.random()
                             );
                         }
-                        
-                        // Make sure that is one option is "All of the above",
-                        // It is at the bottom.
-                        for (let i = 0; i < answerOptions.length; i++) {
-                            // Ignore case.
-                            if (
-                                answerOptions[i].option.toUpperCase() ==
-                                'all of the above'.toUpperCase()
-                            ) {
-                                function arrayMove(arr, fromIndex, toIndex) {
-                                    var element = arr[fromIndex];
-                                    arr.splice(fromIndex, 1);
-                                    arr.splice(toIndex, 0, element);
-                                }
-                                arrayMove(answerOptions, i, 4);
-                            }
-                        }
+
                         this.mcQuestions[i].answerOptions = answerOptions;
                     }
                 })
@@ -416,9 +389,13 @@ export default {
         },
         // Async because essay questions are marked on server.
         async Submit() {
+            this.UserAnswer()
+            if(!this.isAllQuestionsAnswered){
+                alert("Please answer all questions before submitting.")
+                return
+            }
             // get the time when user submit the assessment result for result page
             this.finishTime = new Date();
-
             // if the last answer is also an essay question we handle it just like with the next and previous
             if (this.questions[this.questionNumber].questionType == 'essay') {
                 // Get the answer
@@ -440,7 +417,10 @@ export default {
                 // Tally the score.
                 if (this.questions[i].questionType == 'mc') {
                     this.numMCQuestions++;
-                    if (this.questions[i].userAnswer == this.questions[i].correct_answer) {
+                    if (
+                        this.questions[i].userAnswer ==
+                        this.questions[i].correct_answer
+                    ) {
                         this.score++;
                     }
                 } else if (this.questions[i].questionType == 'essay') {
@@ -678,7 +658,7 @@ export default {
         },
         UserAnswer() {
             for (let i = 0; i < this.questions.length; i++) {
-                if (this.questions[i].userAnswer == null) {
+                if (this.questions[i].userAnswer == null || this.questions[i].userAnswer === '') {
                     this.isAllQuestionsAnswered = false;
                     return;
                 } else {
@@ -807,7 +787,7 @@ export default {
                                         height="22"
                                         style="opacity: 0.5"
                                     >
-                                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                         <path
                                             d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304l0 128c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-223.1L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6l29.7 0c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9 232 480c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-128-16 0z"
                                             fill="#8f7bd6"
@@ -827,7 +807,7 @@ export default {
                                         height="22"
                                         style="opacity: 0.5"
                                     >
-                                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                        <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                         <path
                                             d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
                                             fill="#8f7bd6"
@@ -858,10 +838,13 @@ export default {
 
                         <!-- Multiple Choice Question Answer Options-->
                         <div v-if="question.questionType == 'mc'">
+                            <!-- Allow for different number of answer options -->
                             <div
-                                v-for="(
-                                    answerOption, index
-                                ) in question.answerOptions"
+                                v-for="answerOption in question.answerOptions"
+                                v-show="
+                                    answerOption.index <= 2 ||
+                                    answerOption.show == 1
+                                "
                                 class="form-check my-3"
                             >
                                 <label class="control control-checkbox">

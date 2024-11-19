@@ -992,8 +992,8 @@ router.put(
                                             {
                                                 userId: req.session.userId,
                                                 userAction: `${req.body.edit
-                                                    ? 'edit_and_approve'
-                                                    : 'approve'
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
                                                     }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
@@ -1608,16 +1608,14 @@ router.get('/name-list-old', (req, res, next) => {
     });
 });
 
-
-
-// Using ChatGPT.
+// Advanced / Semantic Search Feature.
 // Import OpenAI package.
 const { OpenAI } = require('openai');
-// Include API key.
 // To access the .env file.
 require('dotenv').config();
+// Include API key.
 const openai = new OpenAI({
-    apiKey: process.env.VECTOR_OPEN_API_KEY
+    apiKey: process.env.OPENAI_API_KEY
 });
 
 
@@ -1664,19 +1662,16 @@ router.get('/insert-vectors-to-db', async (req, res) => {
     try {
         console.log(vectorList.rows.length)
         const promises = [];
-        vectorList.rows.forEach(skillVector => {
-            promises.push(insertSkillsVectorIntoDataBase(skillVector))
-        })
-        Promise.all(promises).then(
-            res.json({ mess: 'seem good' })
-        )
-
+        vectorList.rows.forEach((skillVector) => {
+            promises.push(insertSkillsVectorIntoDataBase(skillVector));
+        });
+        Promise.all(promises).then(res.json({ mess: 'seem good' }));
     } catch (error) {
-        res.status = 500
-        res.end
-        console.error(error)
+        res.status = 500;
+        res.end;
+        console.error(error);
     }
-})
+});
 
 router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
     try {
@@ -1686,23 +1681,24 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
             dimensions: 720
         });
 
-        const inputVector = response.data[0].embedding
+        const inputVector = response.data[0].embedding;
         let sqlQuery = `SELECT *
                     FROM skills_vector
                     ORDER BY VEC_DISTANCE(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
-                    LIMIT 25`
+                    LIMIT 25`;
 
         conn.query(sqlQuery, (err, results) => {
             if (err) {
-                throw err
+                throw err;
             }
-            res.json(results)
-        })
+            res.json(results);
+        });
     } catch (error) {
-        console.error(error)
+        console.error(error);
         res.status = 500;
-        res.end
+        res.end;
     }
-})
+});
+
 module.exports = router;

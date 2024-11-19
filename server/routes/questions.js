@@ -158,9 +158,18 @@ router.get('/mc/show/:id', (req, res, next) => {
                 let answers = [
                     { text: results[0].answer_1 },
                     { text: results[0].answer_2 },
-                    { text: results[0].answer_3 },
-                    { text: results[0].answer_4 },
-                    { text: results[0].answer_5 }
+                    {
+                        text: results[0].answer_3,
+                        show: results[0].show_answer_3
+                    },
+                    {
+                        text: results[0].answer_4,
+                        show: results[0].show_answer_4
+                    },
+                    {
+                        text: results[0].answer_5,
+                        show: results[0].show_answer_5
+                    }
                 ];
 
                 res.json({
@@ -237,8 +246,11 @@ router.put('/mc/:id/edit', (req, res, next) => {
             answer_1: req.body.answers[0].text,
             answer_2: req.body.answers[1].text,
             answer_3: req.body.answers[2].text,
+            show_answer_3: req.body.answers[2].show,
             answer_4: req.body.answers[3].text,
+            show_answer_4: req.body.answers[3].show,
             answer_5: req.body.answers[4].text,
+            show_answer_5: req.body.answers[4].show,
             explanation: req.body.question.explanation,
             is_random: req.body.question.is_random,
             is_human_edited: 1
@@ -1140,13 +1152,17 @@ router.post('/mc-questions/add', (req, res, next) => {
             answer_1: req.body.answers[0].text,
             answer_2: req.body.answers[1].text,
             answer_3: req.body.answers[2].text,
+            show_answer_3: req.body.answers[2].show,
             answer_4: req.body.answers[3].text,
+            show_answer_4: req.body.answers[3].show,
             answer_5: req.body.answers[4].text,
+            show_answer_5: req.body.answers[4].show,
             explanation: req.body.question.explanation,
             skill_id: req.body.skill_id,
             is_random: req.body.question.is_random,
             is_human_edited: 1
         };
+
         let sqlQuery = 'INSERT INTO mc_questions SET ?';
         conn.query(sqlQuery, data, (err, results) => {
             try {
@@ -1353,57 +1369,6 @@ router.get('/student-mc-questions/list', (req, res, next) => {
 });
 
 /**
- * Get One Student MC Question
- */
-router.get('/student-mc-questions/:id', (req, res, next) => {
-    if (req.session.userName) {
-        res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `
-        SELECT *
-        FROM student_mc_questions
-        WHERE id = ${req.params.id};
-        `;
-        conn.query(sqlQuery, (err, results) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-
-                let question = {
-                    skill_id: results[0].skill_id,
-                    student_id: results[0].student_id,
-                    name: results[0].name,
-                    text: results[0].question,
-                    explanation: results[0].explanation,
-                    correct_answer: results[0].correct_answer,
-                    is_random: results[0].is_random ? true : false
-                };
-
-                let answers = [
-                    { text: results[0].answer_1 },
-                    { text: results[0].answer_2 }
-                ];
-                if (results[0].answer_3) {
-                    answers.push({ text: results[0].answer_3 });
-                }
-                if (results[0].answer_4) {
-                    answers.push({ text: results[0].answer_4 });
-                }
-                if (results[0].answer_5) {
-                    answers.push({ text: results[0].answer_5 });
-                }
-                res.json({
-                    question: question,
-                    answers: answers
-                });
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-});
-
-/**
  * List Student MC Questions full data
  */
 router.get('/student-mc-questions/full-data-list', (req, res, next) => {
@@ -1446,8 +1411,11 @@ router.post('/student-mc-questions/add', (req, res, next) => {
             answer_1: req.body.answers[0].text,
             answer_2: req.body.answers[1].text,
             answer_3: req.body.answers[2].text,
+            show_answer_3: req.body.answers[2].show,
             answer_4: req.body.answers[3].text,
+            show_answer_4: req.body.answers[3].show,
             answer_5: req.body.answers[4].text,
+            show_answer_5: req.body.answers[4].show,
             explanation: req.body.question.explanation,
             skill_id: req.body.skill_id,
             is_random: req.body.question.is_random,
@@ -1482,6 +1450,61 @@ router.post('/student-mc-questions/add', (req, res, next) => {
         });
     } else {
         res.redirect('/login');
+    }
+});
+
+/**
+ * Get One Student MC Question
+ */
+router.get('/student-mc-questions/:id', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `
+        SELECT *
+        FROM student_mc_questions
+        WHERE id = ${req.params.id};
+        `;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let question = {
+                    skill_id: results[0].skill_id,
+                    student_id: results[0].student_id,
+                    name: results[0].name,
+                    text: results[0].question,
+                    explanation: results[0].explanation,
+                    correct_answer: results[0].correct_answer,
+                    is_random: results[0].is_random ? true : false
+                };
+
+                let answers = [
+                    { text: results[0].answer_1, show: true },
+                    { text: results[0].answer_2, show: true },
+                    {
+                        text: results[0].answer_3,
+                        show: results[0].show_answer_3
+                    },
+                    {
+                        text: results[0].answer_4,
+                        show: results[0].show_answer_4
+                    },
+                    {
+                        text: results[0].answer_5,
+                        show: results[0].show_answer_5
+                    }
+                ];
+
+                res.json({
+                    question: question,
+                    answers: answers
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
     }
 });
 
