@@ -501,7 +501,7 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
 
                         // Assign children to parent skills.
                         for (var i = 0; i < results.length; i++) {
-                            // Regular parent.
+                            // Check that not first level nodes.
                             if (
                                 results[i].parent != null &&
                                 results[i].parent != 0
