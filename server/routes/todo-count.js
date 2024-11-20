@@ -13,6 +13,7 @@ const conn = require('../config/db');
 // Middle Ware
 const isAuthenticated = require('../middlewares/authMiddleware');
 const todoPermission = require('../middlewares/users/todoPermissionMiddleware');
+const { isMasterEditor } = require('../utilities/checkUserAccount');
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -35,9 +36,9 @@ router.get('/total', isAuthenticated, todoPermission, (req, res, next) => {
                         (SELECT COUNT(*) FROM student_mc_questions) as student_question_count,
                         (SELECT COUNT(*) FROM content_flags) as content_flag_count`;
     // Get new skill awaiting approval count for admin and a special editor account
-    if (req.session.role === 'admin') {
+    if (req.session.role === 'admin' || isMasterEditor(req.session.userName)) {
         sqlQuery = `${sqlQuery},
-                    (SELECT COUNT(*) FROM new_skills_awaiting_approval) as new_skill_add_count`
+                    (SELECT COUNT(*) FROM new_skills_awaiting_approval) as new_skill_add_count`;
     }
 
     conn.query(sqlQuery, (err, results) => {
@@ -45,10 +46,6 @@ router.get('/total', isAuthenticated, todoPermission, (req, res, next) => {
             if (err) {
                 throw err;
             }
-            const resObj = {};
-            console.log(req.session)
-            console.log(results[0]);
-
             res.json(results[0]);
         } catch (err) {
             next(err);
