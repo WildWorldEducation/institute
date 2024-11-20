@@ -60,7 +60,8 @@ export default {
             showAnimation: false,
             showSkillPanel: false,
             resultNode: null,
-            clickMode: 'showPanel'
+            clickMode: 'showPanel',
+            truncateLevel: 'phd'
         };
     },
     components: {
@@ -825,10 +826,26 @@ export default {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills();
 
+            let userSkills = [];
+            if (this.truncateLevel == 'grade_school') {
+                userSkills =
+                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+            } else if (this.truncateLevel == 'middle_school') {
+                userSkills =
+                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+            } else if (this.truncateLevel == 'high_school') {
+                userSkills =
+                    this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+            } else if (this.truncateLevel == 'college') {
+                userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
+            } else {
+                userSkills = this.skillTreeStore.verticalTreeUserSkills;
+            }
+
             this.skill = {
                 name: 'SKILLS',
                 sprite: null,
-                children: this.skillTreeStore.verticalTreeUserSkills
+                children: userSkills
             };
 
             var skillsWithSubSkillsMoved = [];
@@ -954,8 +971,10 @@ export default {
                 this.reloadTree();
             });
         },
-        truncateToGradeLevel(level) {
-            this.skillTreeStore.truncateVerticalTree(level);
+        async truncateToGradeLevel(level) {
+            this.truncateLevel = level;
+            await this.skillTreeStore.getVerticalTreeUserSkills(level);
+            await this.reloadTree();
         }
     }
 };
