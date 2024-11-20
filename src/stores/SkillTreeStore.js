@@ -41,6 +41,8 @@ export const useSkillTreeStore = defineStore('skillTree', {
                     level
             );
 
+            // If the student clicks a button on the grade level key,
+            // this will truncate the tree to that level.
             if (level == 'grade_school') {
                 this.gradeSchoolVerticalTreeUserSkills = await result.json();
             } else if (level == 'middle_school') {
@@ -49,7 +51,9 @@ export const useSkillTreeStore = defineStore('skillTree', {
                 this.highSchoolVerticalTreeUserSkills = await result.json();
             } else if (level == 'college') {
                 this.collegeVerticalTreeUserSkills = await result.json();
-            } else this.verticalTreeUserSkills = await result.json();
+            }
+            // Default is all levels.
+            else this.verticalTreeUserSkills = await result.json();
         },
         // API call for Radial skill tree.
         async getUserSkillsSubSkillsSeparate() {

@@ -826,6 +826,8 @@ export default {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills();
 
+            // If the student clicks a button on the grade level key,
+            // this will truncate the tree to that level.
             let userSkills = [];
             if (this.truncateLevel == 'grade_school') {
                 userSkills =
@@ -971,6 +973,8 @@ export default {
                 this.reloadTree();
             });
         },
+        // If the student clicks a button on the grade level key,
+        // this will truncate the tree to that level.
         async truncateToGradeLevel(level) {
             this.truncateLevel = level;
             await this.skillTreeStore.getVerticalTreeUserSkills(level);
