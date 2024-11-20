@@ -390,6 +390,24 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
 // For Vertical Tree.
 router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
     if (req.session.userName) {
+        const level = req.query.level;
+        let levelsToShow =
+            "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        if (level == 'grade_school') {
+            levelsToShow = "'domain', 'grade_school'";
+        } else if (level == 'middle_school') {
+            levelsToShow = "'domain', 'grade_school', 'middle_school'";
+        } else if (level == 'high_school') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school'";
+        } else if (level == 'college') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school', 'college'";
+        } else if (level == 'phd') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        }
+
         res.setHeader('Content-Type', 'application/json');
         // Check if student is member of a cohort
         let isInCohortSQLQuery = `
@@ -417,6 +435,7 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
             WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
             AND is_filtered = 'available' 
             AND is_deleted = 0
+            AND level IN (${levelsToShow})
             AND skills.id NOT IN 
             (SELECT skill_id 
             FROM cohort_skill_filters
@@ -425,7 +444,9 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
             UNION
             SELECT skills.id, name, parent, "", "", type, level, skills.order as skillorder, display_name, is_copy_of_skill_id, url, ""
             FROM skills
-            WHERE skills.id NOT IN 
+            WHERE level IN (${levelsToShow})
+            AND
+            skills.id NOT IN 
             
             (SELECT skills.id
             FROM skills
@@ -433,14 +454,15 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
             ON skills.id = user_skills.skill_id
             WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
             AND is_filtered = 'available' 
-            AND is_deleted = 0
+            AND is_deleted = 0           
             AND skills.id NOT IN 
             (SELECT skill_id 
             FROM cohort_skill_filters
             WHERE cohort_id = ${conn.escape(cohortId)})    
-                
+                         
             ORDER BY skillorder, id;
             `;
+
                 conn.query(sqlQuery, (err, results) => {
                     try {
                         if (err) {
@@ -504,6 +526,7 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
 
                         let studentSkills = [];
                         for (var i = 0; i < results.length; i++) {
+                            //console.log(results[i].parent);
                             if (
                                 results[i].parent == null ||
                                 results[i].parent == 0

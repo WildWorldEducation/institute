@@ -60,7 +60,6 @@ export default {
         clearResult() {
             this.$refs.childComponent.resetPos();
         }
-   
     }
 };
 </script>
@@ -79,7 +78,7 @@ export default {
                                 class="btn"
                                 @click="
                                     $refs.childComponent.truncateToGradeLevel(
-                                        'grade-school'
+                                        'grade_school'
                                     )
                                 "
                             >
@@ -91,7 +90,7 @@ export default {
                                 class="btn"
                                 @click="
                                     $refs.childComponent.truncateToGradeLevel(
-                                        'middle-school'
+                                        'middle_school'
                                     )
                                 "
                             >
@@ -104,7 +103,7 @@ export default {
                                 class="btn"
                                 @click="
                                     $refs.childComponent.truncateToGradeLevel(
-                                        'high-school'
+                                        'high_school'
                                     )
                                 "
                             >
@@ -195,7 +194,7 @@ export default {
                             class="btn"
                             @click="
                                 $refs.childComponent.truncateToGradeLevel(
-                                    'grade-school'
+                                    'grade_school'
                                 )
                             "
                         >
@@ -207,7 +206,7 @@ export default {
                             class="btn"
                             @click="
                                 $refs.childComponent.truncateToGradeLevel(
-                                    'middle-school'
+                                    'middle_school'
                                 )
                             "
                         >
@@ -219,7 +218,7 @@ export default {
                             class="btn"
                             @click="
                                 $refs.childComponent.truncateToGradeLevel(
-                                    'high-school'
+                                    'high_school'
                                 )
                             "
                         >
