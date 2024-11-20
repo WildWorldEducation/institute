@@ -15,7 +15,8 @@ export default {
             todoCount: null,
             contentEditCount: 0,
             studentQuestionCount: 0,
-            contentFlagCount: 0
+            contentFlagCount: 0,
+            newSkillApproveCount: 0
         };
     },
     props: ['activeContent'],
@@ -37,6 +38,10 @@ export default {
             parseInt(this.todoCount.mc_question_edit_count) +
             parseInt(this.todoCount.essay_question_edit_count) +
             parseInt(this.todoCount.image_question_edit_count);
+
+        if (this.todoCount.new_skill_add_count) {
+            this.newSkillApproveCount = this.todoCount.new_skill_add_count;
+        }
     }
 };
 </script>
@@ -120,10 +125,7 @@ export default {
                     >
                 </button>
                 <button
-                    v-if="
-                        userDetailsStore.username == 'userDetailsStore' ||
-                        userDetailsStore.role == 'admin'
-                    "
+                    v-if="todoCount?.new_skill_add_count"
                     :class="[
                         'nav-item-tile',
                         activeContent === 'flagList'
@@ -134,10 +136,11 @@ export default {
                 >
                     Approve New Skills
                     <span
-                        class="badge bg-danger"
                         b-on-hover
-                        title="number of new skills that needed to checked"
-                    ></span>
+                        title="number of student questions that needed to approved"
+                        class="badge bg-danger"
+                        >{{ newSkillApproveCount }}</span
+                    >
                 </button>
             </div>
         </div>
@@ -149,7 +152,7 @@ export default {
             @click="showNavBar = true"
         >
             <div class="nav-col group"></div>
-            <button
+            <div
                 class="expand-icon-div group"
                 b-on-hover
                 title="Expand Nav Bar"
@@ -165,7 +168,7 @@ export default {
                         d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
                     />
                 </svg>
-            </button>
+            </div>
         </button>
     </Transition>
 </template>
