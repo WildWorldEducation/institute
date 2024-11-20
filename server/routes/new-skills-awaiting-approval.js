@@ -89,11 +89,12 @@ router.post(
 
         // Insert the new skill.
         let sqlQuery = `INSERT INTO new_skills_awaiting_approval SET ?;`;
-        conn.query(sqlQuery, data, (err) => {
+        conn.query(sqlQuery, data, (result, err) => {
             try {
                 if (err) {
                     throw err;
                 }
+                console.log(result)
                 res.end();
             } catch (err) {
                 next(err);
