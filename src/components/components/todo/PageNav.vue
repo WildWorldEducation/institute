@@ -128,7 +128,7 @@ export default {
                     v-if="todoCount?.new_skill_add_count"
                     :class="[
                         'nav-item-tile',
-                        activeContent === 'flagList'
+                        activeContent === 'newSkillsList'
                             ? 'active-item'
                             : 'nav-bar-item'
                     ]"

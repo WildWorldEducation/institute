@@ -1,14 +1,25 @@
 <script>
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
+import { useUsersStore } from '../../../../stores/UsersStore';
+
 export default {
-    setup() {},
+    setup() {
+        const usersStore = useUsersStore();
+        const userDetailsStore = useUserDetailsStore();
+        return { usersStore, userDetailsStore };
+    },
     data() {
         return {
             newSkillsAwaitingApproval: []
         };
     },
     components: {},
-    async created() {
+    async mounted() {
         await this.getNewSkillsAwaitingApproval();
+        if (this.usersStore.users.length < 1) {
+            await this.usersStore.getUsers();
+        }
+        await this.addUserNameToSkillArray();
     },
     methods: {
         async getNewSkillsAwaitingApproval() {
@@ -19,27 +30,25 @@ export default {
                 .then((data) => {
                     this.newSkillsAwaitingApproval = data;
                 });
+        },
+        async addUserNameToSkillArray() {
+            const resultArray = this.newSkillsAwaitingApproval.map((skill) => {
+                const user = this.usersStore.findUserById(skill.user_id);
+
+                return { ...skill, username: user.username };
+            });
+
+            this.newSkillsAwaitingApproval = resultArray;
         }
     }
 };
 </script>
 
 <template>
-    <div class="w-100">
-        <!-- Banner -->
-        <div id="banner">
-            <img src="/images/banners/general-banner.png" class="img-fluid" />
+    <div class="mt-3 table-div h-100">
+        <div v-for="skill in newSkillsAwaitingApproval">
+            {{ skill.name }}, {{ skill.username }}
         </div>
-        <!-- Page title -->
-        <h2 class="ps-3 mt-2 page-title">Approve New Skills</h2>
-        <ul>
-            <li v-for="potentialNewSkill in newSkillsAwaitingApproval">
-                <router-link
-                    :to="'new-skill-awaiting-approval/' + potentialNewSkill.id"
-                    >{{ potentialNewSkill.name }}</router-link
-                >
-            </li>
-        </ul>
     </div>
 </template>
 
