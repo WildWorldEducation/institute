@@ -780,6 +780,25 @@ router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
     }
 });
 
+// Choose skill tree truncate level
+router.put('/:userId/skill-tree-level', isAuthenticated, (req, res, next) => {
+    let sqlQuery = `UPDATE users
+            SET skill_tree_level = 
+            ${conn.escape(req.body.level)}            
+            WHERE id = ${conn.escape(req.params.userId)};`;
+
+    conn.query(sqlQuery, (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.end();
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });

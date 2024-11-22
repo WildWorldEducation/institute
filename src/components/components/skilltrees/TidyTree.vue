@@ -979,6 +979,20 @@ export default {
             this.truncateLevel = level;
             await this.skillTreeStore.getVerticalTreeUserSkills(level);
             await this.reloadTree();
+            this.saveSkillTreeGradeLevel();
+        },
+        saveSkillTreeGradeLevel() {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    level: this.truncateLevel
+                })
+            };
+
+            var url =
+                '/users/' + this.userDetailsStore.userId + '/skill-tree-level';
+            fetch(url, requestOptions).then;
         }
     }
 };
