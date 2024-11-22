@@ -270,7 +270,7 @@ export default {
             <!-- Expand/collapse all domain descendants button-->
             <button
                 class="btn me-2 ci-btn"
-                v-if="level == 'domain'"
+                v-if="type == 'domain'"
                 @click.stop="toggleExpandAll"
             >
                 <svg

@@ -60,7 +60,8 @@ export default {
             showAnimation: false,
             showSkillPanel: false,
             resultNode: null,
-            clickMode: 'showPanel'
+            clickMode: 'showPanel',
+            truncateLevel: 'phd'
         };
     },
     components: {
@@ -825,10 +826,28 @@ export default {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills();
 
+            // If the student clicks a button on the grade level key,
+            // this will truncate the tree to that level.
+            let userSkills = [];
+            if (this.truncateLevel == 'grade_school') {
+                userSkills =
+                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+            } else if (this.truncateLevel == 'middle_school') {
+                userSkills =
+                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+            } else if (this.truncateLevel == 'high_school') {
+                userSkills =
+                    this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+            } else if (this.truncateLevel == 'college') {
+                userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
+            } else {
+                userSkills = this.skillTreeStore.verticalTreeUserSkills;
+            }
+
             this.skill = {
                 name: 'SKILLS',
                 sprite: null,
-                children: this.skillTreeStore.verticalTreeUserSkills
+                children: userSkills
             };
 
             var skillsWithSubSkillsMoved = [];
@@ -838,9 +857,7 @@ export default {
 
             // Duplicate super skill node, and make second one a child of the first.
             // Put all the subskills of the node in the second version.
-            // This is an attempt to show the subskills using only D3.
-            // Other options, such as having them circle around the super skill,
-            // like the D3 and Pixi version, were too complex.
+            // This is an attempt to show the subskills using D3.
             function moveSubSkills(parentChildren) {
                 var i = parentChildren.length;
                 while (i--) {
@@ -955,6 +972,13 @@ export default {
             fetch(url).then(() => {
                 this.reloadTree();
             });
+        },
+        // If the student clicks a button on the grade level key,
+        // this will truncate the tree to that level.
+        async truncateToGradeLevel(level) {
+            this.truncateLevel = level;
+            await this.skillTreeStore.getVerticalTreeUserSkills(level);
+            await this.reloadTree();
         }
     }
 };
