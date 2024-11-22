@@ -171,12 +171,10 @@ export default {
                         '#ffffff'
                     );
                     // Levels
-                    if (this.skill.level != 'domain') {
-                        const skillResult = this.levels.find((level) => {
-                            return level.id === this.skill.level;
-                        });
-                        this.showLevel = skillResult.name;
-                    }
+                    const skillResult = this.levels.find((level) => {
+                        return level.id === this.skill.level;
+                    });
+                    this.showLevel = skillResult.name;
 
                     // Parent skill
                     if (this.skill.parent != 0) {
