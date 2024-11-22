@@ -101,7 +101,8 @@ export default {
             randomNum: 0,
             loadingStatus: '',
             showLoadingModal: false,
-            originalSkill: {}
+            originalSkill: {},
+            parentLevel: ''
         };
     },
     async mounted() {
@@ -262,6 +263,26 @@ export default {
         },
         // If edit is from an admin or editor.
         Submit() {
+            // Function to help compare level of parent and new skill.
+            // Constraint: Parent cannot be higher level than new skill
+            function levelToNumber(level) {
+                if (level == 'grade_school') return 1;
+                else if (level == 'middle_school') return 2;
+                else if (level == 'high_school') return 3;
+                else if (level == 'college') return 4;
+                else if (level == 'phd') return 5;
+            }
+            // Determine parent level.
+            let parentLevel = levelToNumber(this.parentLevel);
+            // Determine new node level.
+            let skillLevel = levelToNumber(this.skill.level);
+            if (parentLevel > skillLevel) {
+                alert(
+                    'Child nodes cannot have a lower grade level than parent nodes.'
+                );
+                return;
+            }
+
             this.showLoadingModal = true;
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
@@ -283,12 +304,8 @@ export default {
                     );
                 }
             }
-            // Domains cant get filters or levels.
-            if (this.skill.type == 'domain') {
-                this.skill.level = 'domain';
-
-                // For subskills.
-            } else if (this.skill.type == 'sub') {
+            // For subskills.
+            else if (this.skill.type == 'sub') {
                 // Make sure user has assigned a parent skill.
                 if (this.skill.parent == 0) {
                     this.validate.orphan = true;
@@ -434,6 +451,9 @@ export default {
             }
         },
         handleChooseSuggestSkill(skill) {
+            // Need to make sure skill level is not higher than parent level.
+            this.parentLevel = skill.level;
+
             // set form data
             this.skill.parent = skill.id;
             if (this.skill.type != 'sub') {
@@ -553,7 +573,7 @@ export default {
                 </div>
                 <!-- Skill level -->
                 <div class="row">
-                    <div v-if="skill.type != 'domain' && skill.type != 'sub'">
+                    <div v-if="skill.type != 'sub'">
                         <div class="col col-md-8 col-lg-5 mt-2">
                             <!-- Custom Dropdown -->
                             <label class="form-label">Level</label>
