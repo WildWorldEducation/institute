@@ -364,10 +364,6 @@ export default {
     margin: 0px 3px;
 }
 
-.no-image-warn {
-    color: #a16207;
-}
-
 /* Style Specific On Phone */
 @media (min-width: 0px) and (max-width: 576px) {
     .modal-content {
