@@ -1,4 +1,5 @@
 <script>
+import { RouterLink } from 'vue-router';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore.js';
 
@@ -123,9 +124,19 @@ export default {
         <img src="/images/banners/institute-collins-2.png" class="img-fluid" />
     </div>
     <div class="container mt-3">
-        <p id="user-alert">
-            Skill submitted by {{ newSkillAwaitingApproval.userName }}
-        </p>
+        <div
+            id="user-alert"
+            b-on-hoover
+            title="Click on the user name to see their user details"
+        >
+            <div>Submitted by</div>
+            <RouterLink
+                class="normal-text-link"
+                :to="`/users?username=${newSkillAwaitingApproval.userName}`"
+            >
+                {{ newSkillAwaitingApproval.userName }}
+            </RouterLink>
+        </div>
     </div>
     <div class="container mt-3">
         <div id="skill-info-container">
@@ -141,7 +152,7 @@ export default {
             <div class="row">
                 <!-- Mastery Requirements -->
                 <div
-                    class="col-md-8 order-2 order-md-1"
+                    class="col-md-8 order-2 order-md-1 info-box"
                     v-if="newSkillAwaitingApproval.type != 'category'"
                 >
                     <div class="d-flex flex-column">
@@ -158,11 +169,13 @@ export default {
                 <div class="col-md-4 order-1 order-md-2">
                     <div class="info-box p-2 mb-2">
                         <!-- feature image -->
-                        <!-- Show a default skill avatar if skill not have image yet -->
+
                         <img
+                            v-if="newSkillAwaitingApproval.icon_image"
                             :src="newSkillAwaitingApproval.icon_image"
                             class="rounded img-fluid"
                         />
+                        <div v-else>This skill have no icon image</div>
                         <!-- Parent -->
                         <div class="mt-3">
                             <h2 class="h4 title">Parent</h2>
@@ -235,12 +248,22 @@ export default {
 </template>
 
 <style scoped>
+.img-fluid {
+    width: 100%;
+}
+
 .info-box {
-    border: 1px solid #a2a9b1;
+    border-radius: 5px;
     color: black;
     background-color: white;
     display: flex;
     flex-direction: column;
+}
+
+.normal-text-link {
+    text-decoration: none;
+    color: inherit;
+    margin-left: 5px;
 }
 
 .skill-name {
@@ -280,9 +303,13 @@ export default {
 }
 
 #user-alert {
-    background-color: #f2edff;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #fef9c3;
     border-radius: 12px;
     padding: 15px 30px;
+    width: fit-content;
+    color: #ca8a04;
 }
 
 .purple-btn {

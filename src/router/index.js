@@ -340,6 +340,9 @@ const router = createRouter({
                 import('../components/pages/NewSkillAwaitingApprovalView.vue')
         },
         {
+            path: '/'
+        },
+        {
             path: '/new-skill-awaiting-approval/edit/:id',
             name: 'edit-new-skill-awaiting-approval',
             component: () =>

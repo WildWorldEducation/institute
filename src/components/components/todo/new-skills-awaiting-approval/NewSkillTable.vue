@@ -96,6 +96,9 @@ export default {
             };
             finalDate = finalDate.toLocaleDateString('en-US', options);
             return finalDate;
+        },
+        goToSkillDetail(item) {
+            this.$router.push(`/new-skill-awaiting-approval/${item.id}`);
         }
     },
     computed: {
@@ -141,7 +144,7 @@ export default {
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"
-            @click-row="console.log('got you')"
+            @click-row="goToSkillDetail"
             class="d-none d-md-block"
         >
             <!-- --- Loading Part --- -->
@@ -159,12 +162,12 @@ export default {
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"
-            @click-row="console.log('got you')"
+            @click-row="goToSkillDetail"
             class="d-md-none d-block"
         >
             <!-- --- Loading Part --- -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <LoadingSpinner />
             </template>
         </Vue3EasyDataTable>
         <!-- An Ugly hack to listen to row per page change -->
