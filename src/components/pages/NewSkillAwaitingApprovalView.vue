@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore.js';
+import ApproveNewSkillModal from '../components/newSkillDetails/modals/ApproveNewSkillModal.vue';
 
 export default {
     setup() {
@@ -16,7 +17,8 @@ export default {
     data() {
         return {
             id: this.$route.params.id,
-            newSkillAwaitingApproval: {}
+            newSkillAwaitingApproval: {},
+            showApproveModal: false
         };
     },
     async created() {
@@ -25,6 +27,9 @@ export default {
         if (this.usersStore.users.length == 0) await this.usersStore.getUsers();
 
         this.getNewSkillAwaitingApproval();
+    },
+    components: {
+        ApproveNewSkillModal
     },
     methods: {
         async getNewSkillAwaitingApproval() {
@@ -115,6 +120,12 @@ export default {
             if (result.error) {
                 console.log(result.error);
             }
+        },
+        handleSaveBtnClick() {
+            this.showApproveModal = true;
+        },
+        hideApproveModal() {
+            this.showApproveModal = false;
         }
     }
 };
@@ -269,10 +280,17 @@ export default {
                 >
                     Edit
                 </router-link>
-                <button class="btn green-btn" @click="saveSkill()">Save</button>
+                <button class="btn green-btn" @click="handleSaveBtnClick">
+                    Save
+                </button>
             </div>
         </div>
     </div>
+    <ApproveNewSkillModal
+        :showApproveModal="showApproveModal"
+        :approveSkill="saveSkill"
+        :closeModal="hideApproveModal"
+    />
 </template>
 
 <style scoped>
