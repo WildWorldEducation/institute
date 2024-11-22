@@ -3,6 +3,7 @@ import { RouterLink } from 'vue-router';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore.js';
 import ApproveNewSkillModal from '../components/newSkillDetails/modals/ApproveNewSkillModal.vue';
+import DismissModal from '../components/newSkillDetails/modals/DismissModal.vue';
 
 export default {
     setup() {
@@ -18,7 +19,8 @@ export default {
         return {
             id: this.$route.params.id,
             newSkillAwaitingApproval: {},
-            showApproveModal: false
+            showApproveModal: false,
+            showDisMissModal: false
         };
     },
     async created() {
@@ -29,7 +31,8 @@ export default {
         this.getNewSkillAwaitingApproval();
     },
     components: {
-        ApproveNewSkillModal
+        ApproveNewSkillModal,
+        DismissModal
     },
     methods: {
         async getNewSkillAwaitingApproval() {
@@ -72,20 +75,16 @@ export default {
                 });
         },
         dismissSkill() {
-            if (confirm('Delete this potential skill?')) {
-                const result = fetch(
-                    '/new-skills-awaiting-approval/' + this.id,
-                    {
-                        method: 'DELETE'
-                    }
-                );
+            console.log('DISMISS SKILL');
+            const result = fetch('/new-skills-awaiting-approval/' + this.id, {
+                method: 'DELETE'
+            });
 
-                if (result.error) {
-                    console.log(result.error);
-                }
-
-                this.$router.back();
+            if (result.error) {
+                console.log(result.error);
             }
+
+            this.$router.back();
         },
         saveSkill() {
             const requestOptions = {
@@ -126,6 +125,13 @@ export default {
         },
         hideApproveModal() {
             this.showApproveModal = false;
+        },
+        handleDisMissBtnClick() {
+            this.showDisMissModal = true;
+        },
+        hideDismissModal() {
+            console.log('hide dismiss modal');
+            this.showDisMissModal = false;
         }
     }
 };
@@ -271,7 +277,7 @@ export default {
             </div>
             <p>&nbsp;</p>
             <div class="d-flex justify-content-end gap-3">
-                <button class="btn red-btn" @click="dismissSkill()">
+                <button class="btn red-btn" @click="handleDisMissBtnClick">
                     Dismiss
                 </button>
                 <router-link
@@ -290,6 +296,11 @@ export default {
         :showApproveModal="showApproveModal"
         :approveSkill="saveSkill"
         :closeModal="hideApproveModal"
+    />
+    <DismissModal
+        :dismissSkill="dismissSkill"
+        :closeDismissModal="hideDismissModal"
+        :showDismissModal="showDisMissModal"
     />
 </template>
 
