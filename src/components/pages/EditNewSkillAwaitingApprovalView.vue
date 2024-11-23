@@ -314,32 +314,16 @@ export default {
                     order: this.skillAwaitingApproval.order,
                     version_number: this.skillAwaitingApproval.version_number,
                     comment: this.comment,
-                    url: this.skillAwaitingApproval.url
+                    url: this.skillAwaitingApproval.url,
+                    user_id: this.skillAwaitingApproval.user_id
                 })
             };
 
-            var url = '/skills/' + this.skillAwaitingApproval.id + '/edit';
-            fetch(url, requestOptions)
-                .then(() => {
-                    this.skillsStore.getNestedSkillsList();
-                })
-                .then(() => {
-                    // Delete flag if exist
-                    let dismissFlagId = this.$route.query.dismissFlagId;
-                    if (dismissFlagId) {
-                        fetch('/content-flags/' + dismissFlagId, {
-                            method: 'DELETE'
-                        }).finally(() => {
-                            this.$router.back();
-                        });
-                    } else if (this.skillAwaitingApproval.type == 'domain') {
-                        this.router.push('/skills');
-                    } else {
-                        this.$router.push(
-                            '/skills/' + this.skillAwaitingApproval.url
-                        );
-                    }
-                });
+            var url = '/new-skills-awaiting-approval/' + this.id;
+            fetch(url, requestOptions).then(() => {
+                // go back to approve skill details page
+                this.$router.push(`/new-skill-awaiting-approval/${this.id}`);
+            });
         },
         handleChooseSkillLevel(level) {
             this.showLevelDropDown = false;

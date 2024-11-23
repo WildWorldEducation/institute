@@ -215,5 +215,40 @@ router.post('/accept/:id', async (req, res, next) => {
     }
 });
 
+
+/**
+ * Delete skill submitted for review.
+ *
+ * @return response()
+ */
+router.put('/:id', (req, res, next) => {
+    if (req.session.userName) {
+        const updateQuery = `
+                             UPDATE new_skills_awaiting_approval
+                             SET name = ${conn.escape(req.body.name)},
+                                 parent = ${conn.escape(req.body.parent)},
+                                 mastery_requirements = ${conn.escape(req.body.mastery_requirements)},
+                                 icon_image = ${conn.escape(req.body.icon_image)},
+                                 type = ${conn.escape(req.body.type)},
+                                 level = ${conn.escape(req.body.level)},
+                                 user_id = ${conn.escape(req.body.user_id)}
+                             WHERE id = ${conn.escape(req.params.id)}`;
+        console.log(updateQuery)
+        conn.query(updateQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                console.error(err)
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 // Export the router for app to use.
 module.exports = router;
