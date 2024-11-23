@@ -71,8 +71,23 @@ export default {
         SkillPanel
     },
     async mounted() {
+        this.truncateLevel = this.userDetailsStore.skillTreeLevel;
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
-            await this.skillTreeStore.getVerticalTreeUserSkills();
+            await this.skillTreeStore.getVerticalTreeUserSkills(
+                this.truncateLevel
+            );
+        }
+        let userSkills = '';
+        if (this.truncateLevel == 'grade_school') {
+            userSkills = this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+        } else if (this.truncateLevel == 'middle_school') {
+            userSkills = this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+        } else if (this.truncateLevel == 'high_school') {
+            userSkills = this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+        } else if (this.truncateLevel == 'college') {
+            userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
+        } else {
+            userSkills = this.skillTreeStore.verticalTreeUserSkills;
         }
 
         // Specify the chart’s dimensions.
@@ -81,7 +96,7 @@ export default {
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillTreeStore.verticalTreeUserSkills
+            children: userSkills
         };
 
         this.getAlgorithm();
@@ -279,7 +294,13 @@ export default {
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
             const dx = 24;
-            const dy = this.width / (this.root.height + 1);
+            // Shorten lines based on truncate level.
+            let divideBy = 1;
+            if (this.truncateLevel == 'grade_school') divideBy = 5;
+            else if (this.truncateLevel == 'middle_school') divideBy = 4;
+            else if (this.truncateLevel == 'high_school') divideBy = 3;
+            else if (this.truncateLevel == 'college') divideBy = 2;
+            const dy = this.width / (this.root.height + 1) / divideBy;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -933,7 +954,13 @@ export default {
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
             const dx = 24;
-            const dy = this.width / (this.root.height + 1);
+            // Shorten lines based on truncate level.
+            let divideBy = 1;
+            if (this.truncateLevel == 'grade_school') divideBy = 5;
+            else if (this.truncateLevel == 'middle_school') divideBy = 4;
+            else if (this.truncateLevel == 'high_school') divideBy = 3;
+            else if (this.truncateLevel == 'college') divideBy = 2;
+            const dy = this.width / (this.root.height + 1) / divideBy;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -979,6 +1006,20 @@ export default {
             this.truncateLevel = level;
             await this.skillTreeStore.getVerticalTreeUserSkills(level);
             await this.reloadTree();
+            this.saveSkillTreeGradeLevel();
+        },
+        saveSkillTreeGradeLevel() {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    level: this.truncateLevel
+                })
+            };
+
+            var url =
+                '/users/' + this.userDetailsStore.userId + '/skill-tree-level';
+            fetch(url, requestOptions).then;
         }
     }
 };
