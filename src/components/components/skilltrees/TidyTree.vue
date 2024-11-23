@@ -71,8 +71,21 @@ export default {
         SkillPanel
     },
     async mounted() {
+        let level = this.userDetailsStore.skillTreeLevel;
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
-            await this.skillTreeStore.getVerticalTreeUserSkills();
+            await this.skillTreeStore.getVerticalTreeUserSkills(level);
+        }
+        let userSkills = '';
+        if (level == 'grade_school') {
+            userSkills = this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+        } else if (level == 'middle_school') {
+            userSkills = this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+        } else if (level == 'high_school') {
+            userSkills = this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+        } else if (level == 'college') {
+            userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
+        } else {
+            userSkills = this.skillTreeStore.verticalTreeUserSkills;
         }
 
         // Specify the chart’s dimensions.
@@ -81,7 +94,7 @@ export default {
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillTreeStore.verticalTreeUserSkills
+            children: userSkills
         };
 
         this.getAlgorithm();
