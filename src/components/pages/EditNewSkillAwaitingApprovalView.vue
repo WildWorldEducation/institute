@@ -422,6 +422,7 @@ export default {
             class="image-fluid"
         />
     </div>
+
     <div class="container mt-4 pb-5 px-3 px-md-0">
         <!-- Page Title -->
         <div class="row mt-5">
@@ -888,7 +889,10 @@ export default {
                 <div
                     class="d-flex justify-content-end gap-md-4 gap-1 align-items-end"
                 >
-                    <router-link class="btn red-btn" to="/skills">
+                    <router-link
+                        class="btn red-btn"
+                        :to="`/new-skill-awaiting-approval/${id}`"
+                    >
                         <div class="d-none d-md-block">Cancel</div>
                         <!-- Exit Icon-->
                         <svg
@@ -927,6 +931,10 @@ export default {
 </template>
 
 <style scoped>
+.image-fluid {
+    width: 100%;
+}
+
 .green-btn {
     background-color: #36c1af;
     color: white;
