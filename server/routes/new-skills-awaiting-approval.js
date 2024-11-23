@@ -233,7 +233,6 @@ router.put('/:id', (req, res, next) => {
                                  level = ${conn.escape(req.body.level)},
                                  user_id = ${conn.escape(req.body.user_id)}
                              WHERE id = ${conn.escape(req.params.id)}`;
-        console.log(updateQuery)
         conn.query(updateQuery, (err) => {
             try {
                 if (err) {
