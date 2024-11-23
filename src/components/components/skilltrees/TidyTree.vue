@@ -961,7 +961,6 @@ export default {
             else if (this.truncateLevel == 'high_school') divideBy = 3;
             else if (this.truncateLevel == 'college') divideBy = 2;
             const dy = this.width / (this.root.height + 1) / divideBy;
-            console.log(divideBy);
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
