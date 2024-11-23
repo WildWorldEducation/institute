@@ -6,6 +6,7 @@ import { useSkillTagsStore } from '../../stores/SkillTagsStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 import { useRouter } from 'vue-router';
+import SubmitEditNewSkillAwaitingForApprovalModal from '../components/newSkillDetails/modals/SubmitEditNewSkillAwaitingForApprovalModal.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -79,7 +80,7 @@ export default {
             validate: {
                 violated: false,
                 name: false,
-                description: false,
+
                 orphan: false,
                 superValidate: false,
                 noChild: false
@@ -92,8 +93,12 @@ export default {
             orderArray: Array.from({ length: 20 }, (_, i) => i + 1),
             comment: '',
             randomNum: 0,
-            originalSkill: {}
+            originalSkill: {},
+            showSubmitModal: false
         };
+    },
+    components: {
+        SubmitEditNewSkillAwaitingForApprovalModal
     },
     async mounted() {
         if (this.skillsStore.skillsList.length == 0) {
@@ -305,16 +310,12 @@ export default {
                 body: JSON.stringify({
                     name: this.skillAwaitingApproval.name,
                     parent: this.skillAwaitingApproval.parent,
-                    description: this.skillAwaitingApproval.description,
+
                     icon_image: this.iconImage,
                     mastery_requirements:
                         this.skillAwaitingApproval.mastery_requirements,
                     type: this.skillAwaitingApproval.type,
                     level: this.skillAwaitingApproval.level,
-                    order: this.skillAwaitingApproval.order,
-                    version_number: this.skillAwaitingApproval.version_number,
-                    comment: this.comment,
-                    url: this.skillAwaitingApproval.url,
                     user_id: this.skillAwaitingApproval.user_id
                 })
             };
@@ -394,6 +395,9 @@ export default {
             } else {
                 this.step2Confirm = false;
             }
+        },
+        closeSubmitModal() {
+            this.showSubmitModal = false;
         }
     }
 };
@@ -749,26 +753,6 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Description -->
-            <div v-if="userDetailsStore.role == 'admin'" class="row">
-                <div class="col">
-                    <div class="mb-3">
-                        <label for="description" class="form-label"
-                            >Description</label
-                        >
-                        <textarea
-                            v-model="skillAwaitingApproval.description"
-                            class="form-control"
-                            rows="2"
-                        ></textarea>
-                    </div>
-                    <div>
-                        <div v-if="validate.description" class="form-validate">
-                            please enter description for skill
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Mastery Requirement summernote -->
             <div v-if="skillAwaitingApproval.type != 'domain'" class="mb-3">
@@ -784,85 +768,6 @@ export default {
                     id="summernote"
                     rows="3"
                 ></textarea>
-            </div>
-
-            <!-- Order dropdown-->
-            <div v-if="userDetailsStore.role == 'admin'" class="row">
-                <div class="col col-md-8 col-lg-5 mt-2">
-                    <!-- Custom Dropdown -->
-                    <label class="form-label"
-                        >Order
-                        <span style="font-weight: 400"
-                            >(optional: 0 is default)</span
-                        ></label
-                    >
-                    <div class="d-flex flex-column position-relative">
-                        <div
-                            :class="[
-                                showOrderDropDown
-                                    ? 'custom-select-button-focus '
-                                    : 'custom-select-button '
-                            ]"
-                            @click="showOrderDropDown = !showOrderDropDown"
-                        >
-                            {{ skillAwaitingApproval.order }}
-                            <span>
-                                <svg
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 20 20"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M14.2929 8.70711C14.9229 8.07714 14.4767 7 13.5858 7H6.41421C5.52331 7 5.07714 8.07714 5.70711 8.70711L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929L14.2929 8.70711Z"
-                                        fill="#344054"
-                                    />
-                                </svg>
-                            </span>
-                        </div>
-                        <div
-                            v-if="showOrderDropDown"
-                            class="custom-dropdown-base"
-                        >
-                            <div
-                                v-for="order in orderArray"
-                                class="custom-dropdown-option"
-                                @click="handleChooseSkillOrder(order)"
-                            >
-                                {{ order }}
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End of custom dropdown -->
-                </div>
-            </div>
-
-            <!-- Comment -->
-            <div class="row">
-                <div class="col">
-                    <div class="mb-3">
-                        <label for="description" class="form-label"
-                            >Comment</label
-                        >
-                        <textarea
-                            v-model="comment"
-                            class="form-control"
-                            rows="2"
-                        ></textarea>
-                    </div>
-                    <!-- Reason validate message -->
-                    <div
-                        v-if="comment.length > 255"
-                        :class="[
-                            shake
-                                ? 'click-shake form-validate'
-                                : 'form-validate initial-shake'
-                        ]"
-                    >
-                        Your comment has too many words !!
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -892,7 +797,10 @@ export default {
                             />
                         </svg>
                     </router-link>
-                    <button class="btn purple-btn" @click="Submit()">
+                    <button
+                        class="btn purple-btn"
+                        @click="showSubmitModal = true"
+                    >
                         <div class="d-none d-md-block">Submit</div>
                         <!-- Pencil Into Square Icon -->
                         <svg
@@ -912,6 +820,11 @@ export default {
             </div>
         </div>
     </div>
+    <SubmitEditNewSkillAwaitingForApprovalModal
+        :showSubmitModal="showSubmitModal"
+        :submitSkill="Submit"
+        :closeModal="closeSubmitModal"
+    />
 </template>
 
 <style scoped>
