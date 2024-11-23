@@ -88,7 +88,8 @@ export default {
                     last_name: '',
                     email: this.newUser.email,
                     password: this.newUser.password,
-                    account_type: this.newUser.accountType
+                    account_type: this.newUser.accountType,
+                    skill_tree_level: this.newUser.skillTreeGradeLevel
                 })
             };
             var url = '/users/new-user/add';
@@ -300,18 +301,7 @@ export default {
                     </div>
                     <CheckPasswordComplexity :formData="newUser" />
                 </div>
-                <!-- Grade level -->
-                <div class="mb-3 text-start"></div>
-                <select
-                    class="form-select"
-                    v-model="newUser.skillTreeGradeLevel"
-                >
-                    <option value="grade_school">Grade School</option>
-                    <option value="middle_school">Middle School</option>
-                    <option value="high_school">High School</option>
-                    <option value="college">College</option>
-                    <option value="phd">PHD</option>
-                </select>
+
                 <!-- Choose instructor or student -->
                 <div
                     :class="`toggle ${
@@ -324,6 +314,23 @@ export default {
                         <div class="label-left">Student</div>
                         <div class="label-right">Instructor</div>
                     </div>
+                </div>
+
+                <!-- Grade level -->
+                <div
+                    v-if="newUser.accountType == 'student'"
+                    class="mb-3 text-start"
+                >
+                    <select
+                        class="form-select"
+                        v-model="newUser.skillTreeGradeLevel"
+                    >
+                        <option value="grade_school">Grade School</option>
+                        <option value="middle_school">Middle School</option>
+                        <option value="high_school">High School</option>
+                        <option value="college">College</option>
+                        <option value="phd">PHD</option>
+                    </select>
                 </div>
 
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">

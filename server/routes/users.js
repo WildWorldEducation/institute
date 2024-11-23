@@ -53,7 +53,8 @@ router.post('/new-user/add', (req, res, next) => {
             email: req.body.email,
             avatar: req.body.avatar,
             password: hashedPassword,
-            role: req.body.account_type == 'student' ? 'student' : 'instructor'
+            role: req.body.account_type == 'student' ? 'student' : 'instructor',
+            skill_tree_level: req.body.skill_tree_level
         };
 
         // Check if username or email address already exist.
