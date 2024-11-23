@@ -16,7 +16,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             userId: null,
             instructorId: null,
             instructorUsername: null,
-            isGoogleAuth: null
+            isGoogleAuth: null,
+            skillTreeLevel: 'phd'
         };
     },
     actions: {
@@ -40,6 +41,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.password = data.password;
                 this.email = data.email;
                 this.isGoogleAuth = data.is_google_auth;
+                this.skillTreeLevel = data.skill_tree_level;
 
                 if (this.role == 'student') {
                     await this.getInstructor();
