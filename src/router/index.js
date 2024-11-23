@@ -347,7 +347,14 @@ const router = createRouter({
             name: 'edit-new-skill-awaiting-approval',
             component: () =>
                 import(
-                    '../components/pages/EditNewSkillAwaitingApprovalView.vue'
+                    '../components/pages/EditNewSkillAwaitingApprovalView.vue')
+        },
+        {
+            path: '/test-ai-feature',
+            name: 'test ai feature',
+            component: () =>
+                import(
+                    '../components/pages/willBeDelete.vue'
                 )
         },
         {

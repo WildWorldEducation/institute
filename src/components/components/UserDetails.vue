@@ -252,6 +252,7 @@ export default {
     background-color: #e4ecf4;
     border-radius: 12px;
     padding: 33px 28px;
+    overflow: hidden;
 }
 
 #user-information label {
@@ -423,5 +424,22 @@ export default {
         margin-left: 10px !important;
         margin-right: auto !important;
     }
+}
+
+@media (min-width:1025px) {
+#user-information {
+      margin-left: auto;
+      margin-right: auto;
+      width:90% ;
+    }
+
+    #user-avatar {
+        width: 180px;
+        height: 180px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 12px;
+    }
+
 }
 </style>

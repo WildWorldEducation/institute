@@ -4,8 +4,14 @@ export const useSkillsStore = defineStore('skills', {
     state: () => ({
         nestedSkillsList: [],
         filteredNestedSkillsList: [],
+        // -- for grade level filter on Vertical Tree
+        gradeSchoolFilteredNestedSkillsList: [],
+        middleSchoolFilteredNestedSkillsList: [],
+        highSchoolFilteredNestedSkillsList: [],
+        collegeFilteredNestedSkillsList: [],
+        // ---
         skillsList: [],
-        findNodeLoading: false,
+        findNodeLoading: false
     }),
     actions: {
         // For 'Admin' role
@@ -14,11 +20,26 @@ export const useSkillsStore = defineStore('skills', {
             const data = await result.json();
             this.nestedSkillsList = data;
         },
-        // For 'Instructor' role
-        async getFilteredNestedSkillsList() {
-            const result = await fetch('/skills/filtered-nested-list');
+        // For 'Instructor' role / For guest mode of Vertical Tree
+        async getFilteredNestedSkillsList(level) {
+            const result = await fetch(
+                '/skills/filtered-nested-list?level=' + level
+            );
             const data = await result.json();
-            this.filteredNestedSkillsList = data;
+
+            // If the student clicks a button on the grade level key,
+            // this will truncate the tree to that level.
+            if (level == 'grade_school') {
+                this.gradeSchoolFilteredNestedSkillsList = data;
+            } else if (level == 'middle_school') {
+                this.middleSchoolFilteredNestedSkillsList = data;
+            } else if (level == 'high_school') {
+                this.highSchoolFilteredNestedSkillsList = data;
+            } else if (level == 'college') {
+                this.collegeFilteredNestedSkillsList = data;
+            }
+            // Default is all levels.
+            else this.filteredNestedSkillsList = data;
         },
         async getSkillsList() {
             const result = await fetch('/skills/list');
@@ -73,10 +94,20 @@ export const useSkillsStore = defineStore('skills', {
             if (this.skillsList.length < 1) {
                 await this.getSkillsList();
             }
-            const skill = this.skillsList.find((element) => { return element.url === url }
-            )
-            return skill
-        }
+            const skill = this.skillsList.find((element) => {
+                return element.url === url;
+            });
+            return skill;
+        },
 
+        async getNameList() {
+            if (this.skillsList.length < 1) {
+                await this.getSkillsList();
+            }
+            const nameList = this.skillsList.map((skill) => {
+                return { name: skill.name };
+            });
+            return nameList;
+        }
     }
 });

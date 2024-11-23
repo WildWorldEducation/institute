@@ -137,7 +137,7 @@ export default {
             </router-link>
             <!-- revision detail appear when user hover over the row -->
             <div>
-                <div class="position-relative anchor">
+                <div class="position-relative">
                     <Transition name="appear">
                         <div
                             class="revision-hover-detail"
@@ -326,7 +326,6 @@ export default {
 .revision-hover-detail {
     position: absolute;
     left: 15px;
-
     z-index: 100;
 }
 

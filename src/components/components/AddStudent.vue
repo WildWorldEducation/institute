@@ -52,6 +52,7 @@ export default {
                 first_name: false,
                 last_name: false,
                 email: false,
+                username: false,
                 emailFormat: false,
                 password: false,
                 // this validate is fire when image profile upload is not square
@@ -108,14 +109,15 @@ export default {
             }
         },
         ValidateEmail() {
-            if (
-                /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
-                    this.user.email
-                )
-            ) {
-                this.validate.emailFormat = false;
+            // Check if email field is empty
+            this.validate.email = !this.user.email;
+            // If email field is not empty, check if it matches a valid email format
+            if (this.user.email) {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                this.validate.emailFormat = !emailPattern.test(this.user.email);
             } else {
-                this.validate.emailFormat = true;
+                // Reset email format validation if email is empty
+                this.validate.emailFormat = false;
             }
         },
         async Submit() {
@@ -370,6 +372,7 @@ export default {
                             v-model="user.username"
                             type="text"
                             class="form-control"
+                            @blur="validate.username = !user.username"
                         />
                         <div
                             v-if="

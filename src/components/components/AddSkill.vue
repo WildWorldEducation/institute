@@ -78,7 +78,8 @@ export default {
             skillToBeCopied: null,
             parentOfNewInstance: null,
             showCopiedSkillModal: false,
-            showSkillTypeModal: false
+            showSkillTypeModal: false,
+            parentLevel: ''
         };
     },
     computed: {
@@ -210,10 +211,8 @@ export default {
                 this.validate.name = true;
                 this.validate.description = true;
             }
-            // Assign levels of domains and subskills automatically.
-            if (this.skill.type == 'domain') {
-                this.skill.level = 'domain';
-            } else if (this.skill.type == 'sub') {
+            // Assign levels of subskills automatically.
+            if (this.skill.type == 'sub') {
                 for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
                     if (
                         this.skill.parent == this.skillsStore.skillsList[i].id
@@ -261,6 +260,26 @@ export default {
         },
         async Submit() {
             let url = '/skills/add';
+
+            // Function to help compare level of parent and new skill.
+            // Constraint: Parent cannot be higher level than new skill
+            function levelToNumber(level) {
+                if (level == 'grade_school') return 1;
+                else if (level == 'middle_school') return 2;
+                else if (level == 'high_school') return 3;
+                else if (level == 'college') return 4;
+                else if (level == 'phd') return 5;
+            }
+            // Determine parent level.
+            let parentLevel = levelToNumber(this.parentLevel);
+            // Determine new node level.
+            let skillLevel = levelToNumber(this.skill.level);
+            if (parentLevel > skillLevel) {
+                alert(
+                    'Child nodes cannot have a lower grade level than parent nodes.'
+                );
+                return;
+            }
 
             // Get the Summernote HTML.
             this.skill.mastery_requirements =
@@ -335,11 +354,16 @@ export default {
                 });
             }
         },
+        // For selecting parent
         handleChooseSuggestSkill(skill) {
             //turn off the suggestion drop down
             this.parentInput.suggestSkills = [];
             // set form data
             this.skill.parent = skill.id;
+
+            // Need to make sure skill level is not higher than parent level.
+            this.parentLevel = skill.level;
+
             // set input text
             this.parentInput.inputText = skill.name;
         },
@@ -563,7 +587,7 @@ export default {
             </div>
             <!-- Skill level -->
             <div class="row">
-                <div v-if="skill.type != 'domain' && skill.type != 'sub'">
+                <div v-if="skill.type != 'sub'">
                     <div class="col col-md-8 col-lg-5 mt-2">
                         <!-- Custom Dropdown -->
                         <label class="form-label">Level</label>

@@ -56,7 +56,8 @@ export default {
             yPos: 0,
             showAnimation: false,
             showSkillPanel: false,
-            resultNode: null
+            resultNode: null,
+            truncateLevel: 'phd'
         };
     },
     components: {
@@ -458,7 +459,6 @@ export default {
             var col = 'rgb(' + ret.join(',') + ')';
             return col;
         },
-
         async printPDF() {
             // Build the SVG tree.
             await this.createSVGTree();
@@ -739,29 +739,153 @@ export default {
                 }
             });
             return results;
+        },
+        // If the student clicks a button on the grade level key,
+        // this will truncate the tree to that level.
+        async truncateToGradeLevel(level) {
+            this.truncateLevel = level;
+            await this.skillsStore.getFilteredNestedSkillsList(level);
+            await this.reloadTree();
+        },
+        async reloadTree() {
+            this.showSkillPanel = false;
+
+            // If the student clicks a button on the grade level key,
+            // this will truncate the tree to that level.
+            let skills = [];
+            if (this.truncateLevel == 'grade_school') {
+                skills = this.skillsStore.gradeSchoolFilteredNestedSkillsList;
+            } else if (this.truncateLevel == 'middle_school') {
+                skills = this.skillsStore.middleSchoolFilteredNestedSkillsList;
+            } else if (this.truncateLevel == 'high_school') {
+                skills = this.skillsStore.highSchoolFilteredNestedSkillsList;
+            } else if (this.truncateLevel == 'college') {
+                skills = this.skillsStore.collegeFilteredNestedSkillsList;
+            } else {
+                skills = this.skillsStore.filteredNestedSkillsList;
+            }
+
+            this.skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: skills
+            };
+
+            var skillsWithSubSkillsMoved = [];
+            skillsWithSubSkillsMoved = JSON.parse(
+                JSON.stringify(this.skill.children)
+            );
+
+            // Duplicate super skill node, and make second one a child of the first.
+            // Put all the subskills of the node in the second version.
+            // This is an attempt to show the subskills using D3.
+            function moveSubSkills(parentChildren) {
+                var i = parentChildren.length;
+                while (i--) {
+                    // If the skill is a super skill, and not an "end" super skill.
+                    if (
+                        parentChildren[i].type == 'super' &&
+                        parentChildren[i].position != 'end'
+                    ) {
+                        if (parentChildren[i].show_children) {
+                            if (parentChildren[i].show_children == 0) {
+                                return;
+                            }
+                        }
+                        // Separate the child nodes.
+                        var subSkills = [];
+                        var regularChildSkills = [];
+                        for (
+                            let j = 0;
+                            j < parentChildren[i].children.length;
+                            j++
+                        ) {
+                            if (parentChildren[i].children[j].type == 'sub') {
+                                subSkills.push(parentChildren[i].children[j]);
+                            } else {
+                                regularChildSkills.push(
+                                    parentChildren[i].children[j]
+                                );
+                            }
+                        }
+
+                        // Create a new child node, with the subskills in it.
+                        var superSkillEndNode = {
+                            name: parentChildren[i].name,
+                            type: 'super',
+                            position: 'end',
+                            children: subSkills
+                        };
+
+                        // Empty the child nodes.
+                        parentChildren[i].children = [];
+                        // Add the new node.
+                        parentChildren[i].children.push(superSkillEndNode);
+                        // Add the other child nodes, excluding subskills.
+                        for (let j = 0; j < regularChildSkills.length; j++) {
+                            parentChildren[i].children.push(
+                                regularChildSkills[j]
+                            );
+                        }
+                    }
+
+                    if (typeof parentChildren[i] !== 'undefined') {
+                        /*
+                         * Run the above function again recursively.
+                         */
+                        if (
+                            parentChildren[i].children &&
+                            Array.isArray(parentChildren[i].children) &&
+                            parentChildren[i].children.length > 0
+                        )
+                            moveSubSkills(parentChildren[i].children);
+                    }
+                }
+            }
+
+            moveSubSkills(skillsWithSubSkillsMoved);
+
+            this.data = {
+                skill_name: 'My skills',
+                children: skillsWithSubSkillsMoved
+            };
+
+            // Compute the tree height; this approach will allow the height of the
+            // SVG to scale according to the breadth (width) of the tree layout.
+            this.root = d3.hierarchy(this.data);
+            const dx = 24;
+            const dy = this.width / (this.root.height + 1);
+
+            // Create a tree layout.
+            this.tree = d3.tree().nodeSize([dx, dy]);
+
+            // Sort the tree and apply the layout.
+            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
+            this.tree(this.root);
+
+            this.zoomInD3(this.scale, this.panX, this.panY);
+
+            let translateX = 0;
+            let translateY = 0;
+            if (typeof node !== 'undefined') {
+                translateX =
+                    -node.y * this.scale +
+                    (window.innerWidth / (2 * this.scale)) * this.scale;
+                translateY =
+                    -node.x * this.scale +
+                    (window.innerHeight / (2 * this.scale)) * this.scale;
+            }
+
+            d3.select(this.context.canvas)
+                .transition()
+                .duration(1000)
+                .call(
+                    this.d3Zoom.transform,
+                    d3.zoomIdentity
+                        .translate(translateX, translateY)
+                        .scale(this.scale)
+                );
         }
-        // async showSkillPanelComponent(node) {
-        //     // We clicked on something, lets set the color of the node
-        //     // we also have access to the data associated with it, which in
-        //     // this case is just its original index in the data array.
-        //     node.renderCol = node.__pickColor;
-
-        //     //Update the display with some data
-        //     this.skill.name = node.data.skill_name;
-        //     this.skill.id = node.data.id;
-        //     this.skill.type = node.data.type;
-
-        //     // Get the mastery requirements data separately.
-        //     // Because this is so much data, we do not send it with the rest of the skill tree,
-        //     // or it will slow the load down too much.
-        //     const result = await fetch(
-        //         '/skills/mastery-requirements/' + this.skill.id
-        //     );
-        //     const masteryRequirements = await result.json();
-        //     this.skill.masteryRequirements = masteryRequirements;
-        //     // *** Preserve in case client want clamp instead of scroll
-        //     this.showSkillPanel = true;
-        // }
     }
 };
 </script>
