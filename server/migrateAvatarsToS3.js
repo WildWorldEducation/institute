@@ -1,3 +1,5 @@
+console.log('test');
+
 // S3 needs access to the .env variables
 const {
     S3Client,
@@ -111,20 +113,24 @@ const saveUserAvatarToAWS = async (userId, base64Image) => {
 };
 console.log(userAvatarImageThumbnailsBucketName);
 async function migrate() {
-    conn.query('SELECT id, avatar FROM users', async (err, results) => {
-        for (const user of results) {
-            if (user['avatar']) {
-                try {
-                    await saveUserAvatarToAWS(user['id'], user['avatar']);
-                    console.log(`User ${user['id']} avatar sent to S3.`);
-                } catch (error) {
-                    console.error(
-                        `Failed to upload user ${user['id']} avatar`,
-                        error
-                    );
+    conn.query(
+        `SELECT id, avatar 
+                FROM users`,
+        async (err, results) => {
+            for (const user of results) {
+                if (user['avatar']) {
+                    try {
+                        await saveUserAvatarToAWS(user['id'], user['avatar']);
+                        console.log(`User ${user['id']} avatar sent to S3.`);
+                    } catch (error) {
+                        console.error(
+                            `Failed to upload user ${user['id']} avatar`,
+                            error
+                        );
+                    }
                 }
             }
         }
-    });
+    );
 }
 migrate();
