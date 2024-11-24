@@ -137,9 +137,10 @@ app.get('/google-login-attempt', (req, res) => {
             }
             // Check if user exists.
             if (typeof results[0] !== 'undefined') {
-
                 // Mark the user as authenticating with Google.
-                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ${conn.escape(googleUserDetails.email)}`
+                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ${conn.escape(
+                    googleUserDetails.email
+                )}`;
                 conn.query(googleAuthQuery);
 
                 // Log user in.
@@ -204,7 +205,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 }
 
                 // Mark the user as authenticating with Google.
-                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ?`
+                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ?`;
                 conn.query(googleAuthQuery, [googleUserDetails.email]);
 
                 // Log user in.
@@ -297,7 +298,7 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
                 }
 
                 // Mark the user as authenticating with Google.
-                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ?`
+                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ?`;
                 conn.query(googleAuthQuery, [googleUserDetails.email]);
 
                 // Log user in.
