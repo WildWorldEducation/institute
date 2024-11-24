@@ -53,7 +53,8 @@ router.post('/new-user/add', (req, res, next) => {
             email: req.body.email,
             avatar: req.body.avatar,
             password: hashedPassword,
-            role: req.body.account_type == 'student' ? 'student' : 'instructor'
+            role: req.body.account_type == 'student' ? 'student' : 'instructor',
+            skill_tree_level: req.body.skill_tree_level
         };
 
         // Check if username or email address already exist.
@@ -547,7 +548,7 @@ router.get('/show/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Select user.
         let sqlQuery = `
-    SELECT id, first_name, last_name, username, avatar, email, role, is_deleted, is_google_auth             
+    SELECT id, first_name, last_name, username, avatar, email, role, is_deleted, is_google_auth, skill_tree_level             
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
@@ -778,6 +779,25 @@ router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
     } else {
         res.redirect('/login');
     }
+});
+
+// Choose skill tree truncate level
+router.put('/:userId/skill-tree-level', isAuthenticated, (req, res, next) => {
+    let sqlQuery = `UPDATE users
+            SET skill_tree_level = 
+            ${conn.escape(req.body.level)}            
+            WHERE id = ${conn.escape(req.params.userId)};`;
+
+    conn.query(sqlQuery, (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.end();
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 // router.get('*', (req, res) => {

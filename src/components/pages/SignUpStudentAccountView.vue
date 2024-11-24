@@ -13,7 +13,8 @@ export default {
                 username: null,
                 email: null,
                 password: null,
-                accountType: 'student'
+                accountType: 'student',
+                skillTreeGradeLevel: 'middle_school'
             },
             // Validate Object flag
             validate: {
@@ -50,15 +51,9 @@ export default {
     },
     methods: {
         ValidateForm() {
-            if (
-                this.newUser.username == '' ||
-                this.newUser.username == null
-            ) {
+            if (this.newUser.username == '' || this.newUser.username == null) {
                 this.validate.username = true;
-            } else if (
-                this.newUser.email == '' ||
-                this.newUser.email == null
-            ) {
+            } else if (this.newUser.email == '' || this.newUser.email == null) {
                 this.validate.email = true;
             } else if (
                 this.newUser.password == '' ||
@@ -93,7 +88,8 @@ export default {
                     last_name: '',
                     email: this.newUser.email,
                     password: this.newUser.password,
-                    account_type: this.newUser.accountType
+                    account_type: this.newUser.accountType,
+                    skill_tree_level: this.newUser.skillTreeGradeLevel
                 })
             };
             var url = '/users/new-user/add';
@@ -115,20 +111,21 @@ export default {
         toggleModal() {
             this.showVideoModal = false;
         },
-        toggleAccountType(){
-            if(this.newUser.accountType === 'student'){
-                this.newUser.accountType = 'instructor'
-            }else{
-                this.newUser.accountType = 'student'
+        toggleAccountType() {
+            if (this.newUser.accountType === 'student') {
+                this.newUser.accountType = 'instructor';
+            } else {
+                this.newUser.accountType = 'student';
             }
         },
         initializeGoogleSignIn() {
-            const clientId = '13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com'; // Replace with your actual client ID
+            const clientId =
+                '13191319610-qectaoi146ce1pm4v95jtgctsbtmqb3t.apps.googleusercontent.com'; // Replace with your actual client ID
 
             // Initialize Google Sign-In
             window.google.accounts.id.initialize({
                 client_id: clientId,
-                callback: this.handleCredentialResponse,
+                callback: this.handleCredentialResponse
             });
 
             // Render the Google Sign-In button
@@ -138,9 +135,9 @@ export default {
                     theme: 'outline',
                     size: 'large',
                     width: '330',
-                    type: "standard",
-                    shape: "rectangular",
-                    logo_alignment: "left",
+                    type: 'standard',
+                    shape: 'rectangular',
+                    logo_alignment: 'left'
                 }
             );
         },
@@ -148,8 +145,14 @@ export default {
         handleCredentialResponse(response) {
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = `${this.isProduction ? 'https://parrhesia.io' : 'http://localhost:3000'}/google-student-signup-attempt?accountType=${this.newUser.accountType}`;
-            
+            form.action = `${
+                this.isProduction
+                    ? 'https://parrhesia.io'
+                    : 'http://localhost:3000'
+            }/google-student-signup-attempt?accountType=${
+                this.newUser.accountType
+            }`;
+
             const input = document.createElement('input');
             input.type = 'hidden';
             input.name = 'credential';
@@ -205,8 +208,7 @@ export default {
                     <div
                         v-if="
                             validate.username &&
-                            (newUser.username == '' ||
-                                newUser.username == null)
+                            (newUser.username == '' || newUser.username == null)
                         "
                         class="form-validate"
                     >
@@ -291,8 +293,7 @@ export default {
                     <div
                         v-if="
                             validate.password &&
-                            (newUser.password == '' ||
-                                newUser.password == null)
+                            (newUser.password == '' || newUser.password == null)
                         "
                         class="form-validate"
                     >
@@ -301,12 +302,35 @@ export default {
                     <CheckPasswordComplexity :formData="newUser" />
                 </div>
 
-                <div :class="`toggle ${newUser.accountType == 'student' ? 'left' : 'right'}`" @click="toggleAccountType">
+                <!-- Choose instructor or student -->
+                <div
+                    :class="`toggle ${
+                        newUser.accountType == 'student' ? 'left' : 'right'
+                    }`"
+                    @click="toggleAccountType"
+                >
                     <div class="cursor"></div>
                     <div class="labels">
                         <div class="label-left">Student</div>
                         <div class="label-right">Instructor</div>
                     </div>
+                </div>
+
+                <!-- Grade level -->
+                <div
+                    v-if="newUser.accountType == 'student'"
+                    class="mb-3 text-start"
+                >
+                    <select
+                        class="form-select"
+                        v-model="newUser.skillTreeGradeLevel"
+                    >
+                        <option value="grade_school">Grade School</option>
+                        <option value="middle_school">Middle School</option>
+                        <option value="high_school">High School</option>
+                        <option value="college">College</option>
+                        <option value="phd">PHD</option>
+                    </select>
                 </div>
 
                 <button class="btn btn-dark mb-2" @click="ValidateForm()">
@@ -547,7 +571,7 @@ h1 {
     font-weight: 300;
 }
 
-.toggle{
+.toggle {
     border: #7f56d9 solid 1px;
     width: 100%;
     height: 40px;
@@ -557,7 +581,7 @@ h1 {
     cursor: pointer;
     overflow: hidden;
 }
-.toggle .cursor{
+.toggle .cursor {
     height: 100%;
     width: 50%;
     background-color: #7f56d9;
@@ -565,13 +589,13 @@ h1 {
     top: 0px;
     transition: all ease 300ms;
 }
-.toggle.left .cursor{
+.toggle.left .cursor {
     left: 0px;
 }
-.toggle.right .cursor{
+.toggle.right .cursor {
     left: 50%;
 }
-.toggle .labels{
+.toggle .labels {
     display: flex;
     position: absolute;
     width: 100%;
@@ -579,7 +603,8 @@ h1 {
     left: 0px;
     top: 0px;
 }
-.label-left, .label-right{
+.label-left,
+.label-right {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -587,10 +612,10 @@ h1 {
     width: 50%;
     color: #000000;
 }
-.toggle.left .label-left{
+.toggle.left .label-left {
     color: #ffffff;
 }
-.toggle.right .label-right{
+.toggle.right .label-right {
     color: #ffffff;
 }
 </style>
