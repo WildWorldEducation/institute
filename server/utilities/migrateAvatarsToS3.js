@@ -8,7 +8,7 @@ const {
     waitUntilObjectExists
 } = require('@aws-sdk/client-s3');
 require('dotenv').config();
-const conn = require('./config/db');
+const conn = require('../config/db');
 const userAvatarImageThumbnailsBucketName =
     process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
 const userAvatarImagesBucketName = process.env.S3_USER_AVATAR_IMAGE_BUCKET_NAME;
