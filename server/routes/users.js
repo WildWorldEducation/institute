@@ -39,8 +39,6 @@ const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
 
 require('dotenv').config();
 const { saveUserAvatarToAWS } = require('../utilities/save-image-to-aws');
-const userAvatarImageThumbnailsBucketName =
-    process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
 const userAvatarImagesBucketName = process.env.S3_USER_AVATAR_IMAGE_BUCKET_NAME;
 
 router.post('/new-user/add', (req, res, next) => {
