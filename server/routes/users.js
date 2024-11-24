@@ -39,7 +39,8 @@ const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
 
 require('dotenv').config();
 const { saveUserAvatarToAWS } = require('../utilities/save-image-to-aws');
-const userAvatarImageThumbnailsBucketName = process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
+const userAvatarImageThumbnailsBucketName =
+    process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
 const userAvatarImagesBucketName = process.env.S3_USER_AVATAR_IMAGE_BUCKET_NAME;
 
 router.post('/new-user/add', (req, res, next) => {
@@ -138,7 +139,10 @@ router.post('/new-user/add', (req, res, next) => {
                                                     throw err;
                                                 } else {
                                                     // Upload avatar to AWS
-                                                    await saveUserAvatarToAWS(data.id, req.body.avatar);
+                                                    await saveUserAvatarToAWS(
+                                                        data.id,
+                                                        req.body.avatar
+                                                    );
                                                     let newStudentId = data.id;
                                                     // Create session to log the user in.
                                                     req.session.userId =
@@ -275,7 +279,10 @@ router.post('/new-editor/add', (req, res, next) => {
                                                     throw err;
                                                 } else {
                                                     // Upload avatar to AWS
-                                                    await saveUserAvatarToAWS(data.id, req.body.avatar);
+                                                    await saveUserAvatarToAWS(
+                                                        data.id,
+                                                        req.body.avatar
+                                                    );
                                                     let newEditorId = data.id;
                                                     // Create session to log the user in.
                                                     req.session.userId =
@@ -409,7 +416,10 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                                     throw err;
                                                 } else {
                                                     // Upload avatar to AWS
-                                                    await saveUserAvatarToAWS(data.id, req.body.avatar);
+                                                    await saveUserAvatarToAWS(
+                                                        data.id,
+                                                        req.body.avatar
+                                                    );
                                                     let newUserId = data.id;
                                                     res.json({
                                                         account:
@@ -465,7 +475,9 @@ router.post(
 router.get('/list', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
+        // Note: avatar has query param to deal with image caching by browser,
+        // in case image is changed.
+        let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.us-east-1.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
         FROM users
         WHERE is_deleted = 0;`;
 
@@ -510,7 +522,9 @@ router.get(
     (req, res, next) => {
         if (req.session.userName) {
             res.setHeader('Content-Type', 'application/json');
-            let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
+            // Note: avatar has query param to deal with image caching by browser,
+            // in case image is changed.
+            let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.us-east-1.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
         FROM users
         WHERE role = 'editor'
         AND is_deleted = 0;`;
@@ -554,9 +568,10 @@ router.get('/instructors/list', (req, res, next) => {
 router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        // Select user.
+        // Note: avatar has query param to deal with image caching by browser,
+        // in case image is changed.
         let sqlQuery = `
-    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth             
+    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.us-east-1.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth             
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
@@ -666,7 +681,7 @@ router.put(
                         throw err;
                     }
                     // Upload avatar to AWS
-                    if(avatar != ''){
+                    if (avatar != '') {
                         await saveUserAvatarToAWS(req.params.id, avatar);
                     }
                     res.end();
