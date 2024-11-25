@@ -743,8 +743,7 @@ router.put(
     (req, res, next) => {
         let sqlQuery = `UPDATE users
             SET username = 
-            ${conn.escape(req.body.username)},
-            avatar = ${conn.escape(req.body.avatar)},
+            ${conn.escape(req.body.username)},           
             first_name = ${conn.escape(req.body.firstName)},
             last_name = ${conn.escape(req.body.lastName)},
             email = ${conn.escape(req.body.email)}
