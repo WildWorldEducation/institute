@@ -577,13 +577,64 @@ export default {
 }
 
 /* Bigger devices ( Tablet ) */
-@media (min-width: 481px) and (max-width: 1024px) {
+@media (min-width: 481px) and (max-width: 1023px) {
     #legend {
         height: 90px;
     }
 
     #mobile-legend {
         display: none;
+    }
+    .btn {
+        display: flex;
+        align-items: center;
+        gap: 8px; 
+        font-size: 14px; 
+        white-space: nowrap;
+    }
+    .btn span {
+        flex-shrink: 0;
+    }
+
+    #tablet-and-up-legend {
+        display: block;
+    }
+    .legend {
+        align-items: center;
+    }
+
+    .legend .col {
+        display: flex;
+    }
+    .legend span {
+        flex-shrink: 0;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+}
+
+
+/* Laptop devices (Laptop) */
+
+@media (min-width: 1024px) and (max-width: 1443px){
+    #legend {
+        height: 90px;
+    }
+
+    #mobile-legend {
+        display: none;
+    }
+    .btn {
+        display: flex;
+        align-items: center;
+        gap: 8px; 
+        font-size: 1rem; 
+        white-space: nowrap;
+    }
+    .btn span {
+        flex-shrink: 0;
     }
 
     #tablet-and-up-legend {
