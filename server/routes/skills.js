@@ -1195,7 +1195,7 @@ router.get('/:id/resources', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `SELECT resources.id, resources.user_id, resources.skill_id, resources.content,
-resources.created_at, resources.is_human_edited, users.username,  CONCAT('https://${userAvatarImageThumbnailsBucketName}.s3.us-east-1.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar
+resources.created_at, resources.is_human_edited, users.username,  CONCAT('https://${userAvatarImageThumbnailsBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar
 FROM resources
 JOIN users ON resources.user_id = users.id
 WHERE skill_id= ${conn.escape(req.params.id)}

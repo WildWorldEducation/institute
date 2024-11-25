@@ -40,7 +40,7 @@ const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
 require('dotenv').config();
 const { saveUserAvatarToAWS } = require('../utilities/save-image-to-aws');
 const userAvatarImagesBucketName = process.env.S3_USER_AVATAR_IMAGE_BUCKET_NAME;
-
+const bucketRegion = process.env.S3_BUCKET_REGION;
 router.post('/new-user/add', (req, res, next) => {
     // Providing default avatar.
     // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
@@ -476,7 +476,7 @@ router.get('/list', isAuthenticated, (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
-        let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.us-east-1.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
+        let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
         FROM users
         WHERE is_deleted = 0;`;
 
@@ -523,7 +523,7 @@ router.get(
             res.setHeader('Content-Type', 'application/json');
             // Note: avatar has query param to deal with image caching by browser,
             // in case image is changed.
-            let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.us-east-1.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
+            let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
         FROM users
         WHERE role = 'editor'
         AND is_deleted = 0;`;
@@ -570,7 +570,7 @@ router.get('/show/:id', (req, res, next) => {
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
         let sqlQuery = `
-    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.us-east-1.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, skill_tree_level             
+    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, skill_tree_level             
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
