@@ -18,6 +18,8 @@ const skillInfoboxImagesBucketName =
     process.env.S3_SKILL_INFOBOX_IMAGE_BUCKET_NAME;
 const skillInfoboxImageThumbnailsBucketName =
     process.env.S3_SKILL_INFOBOX_IMAGE_THUMBNAILS_BUCKET_NAME;
+const userAvatarImageThumbnailsBucketName =
+    process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 const accessKeyId = process.env.S3_ACCESS_KEY_ID;
 const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
@@ -42,7 +44,10 @@ const { recordUserAction } = require('../utilities/record-user-action');
 
 // Helper Function
 const { saveIconToAWS } = require('../utilities/save-image-to-aws');
-const { getVectorData, insertSkillsVectorIntoDataBase } = require('../utilities/vectorization-skill');
+const {
+    getVectorData,
+    insertSkillsVectorIntoDataBase
+} = require('../utilities/vectorization-skill');
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -182,10 +187,12 @@ router.post(
                                 const skillData = {
                                     id: skillId,
                                     name: req.body.name
-                                }
-                                const vectorData = await getVectorData(skillData);
+                                };
+                                const vectorData = await getVectorData(
+                                    skillData
+                                );
                                 insertSkillsVectorIntoDataBase(vectorData);
-                                console.log('successful vectorize')
+                                console.log('successful vectorize');
                                 // Add skill revision history (this is the first revision.)
                                 let revisionHistoryQuery = `INSERT INTO skill_history
                             (id, version_number, user_id, name, description,
@@ -195,11 +202,11 @@ router.post(
                             1,
                             ${conn.escape(req.session.userId)},
                             ${conn.escape(
-                                    req.body.name
-                                )},                           
+                                req.body.name
+                            )},                           
                             ${conn.escape(
-                                    req.body.description
-                                )},                                                      
+                                req.body.description
+                            )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -296,8 +303,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-            req.body.skillToBeCopied.id
-        )} AND skills.is_deleted = 0;`;
+                              req.body.skillToBeCopied.id
+                          )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -579,8 +586,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-        req.params.skillUrl
-    )} AND s.is_deleted = 0`;
+                        req.params.skillUrl
+                    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -758,8 +765,8 @@ router.put(
                     ${conn.escape(req.body.description)},
                     ${conn.escape(iconUrl)},
                     ${conn.escape(
-                req.body.mastery_requirements
-            )},                    
+                        req.body.mastery_requirements
+                    )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
@@ -775,11 +782,11 @@ router.put(
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(
-                        req.body.description
-                    )},                         
+                            req.body.description
+                        )},                         
                         mastery_requirements = ${conn.escape(
-                        req.body.mastery_requirements
-                    )}, 
+                            req.body.mastery_requirements
+                        )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)}, 
                         skills.order = ${conn.escape(req.body.order)}, 
@@ -848,8 +855,8 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-            req.body.mastery_requirements
-        )}, 
+             req.body.mastery_requirements
+         )}, 
          date = CURRENT_TIMESTAMP(), 
          icon_image = ${conn.escape(req.body.icon_image)},          
          comment = ${conn.escape(req.body.comment)};`;
@@ -1015,10 +1022,11 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${req.body.edit
+                                                userAction: `${
+                                                    req.body.edit
                                                         ? 'edit_and_approve'
                                                         : 'approve'
-                                                    }`,
+                                                }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -1187,7 +1195,7 @@ router.get('/:id/resources', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `SELECT resources.id, resources.user_id, resources.skill_id, resources.content,
-resources.created_at, resources.is_human_edited, users.username, users.avatar  
+resources.created_at, resources.is_human_edited, users.username,  CONCAT('https://${userAvatarImageThumbnailsBucketName}.s3.us-east-1.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar
 FROM resources
 JOIN users ON resources.user_id = users.id
 WHERE skill_id= ${conn.escape(req.params.id)}
@@ -1642,7 +1650,6 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-
 // router.get('/skills-vectorization', isAuthenticated, async (req, res, next) => {
 //     try {
 //         const rowData = {
@@ -1684,7 +1691,7 @@ const openai = new OpenAI({
 
 router.get('/insert-vectors-to-db', async (req, res) => {
     try {
-        console.log(vectorList.rows.length)
+        console.log(vectorList.rows.length);
         const promises = [];
         vectorList.rows.forEach((skillVector) => {
             promises.push(insertSkillsVectorIntoDataBase(skillVector));

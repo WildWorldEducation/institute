@@ -111,7 +111,7 @@ if (process.env.NODE_ENV === 'production') {
 } else {
     app.use('/', express.static(publicPath));
 }
-
+const { saveUserAvatarToAWS } = require('./utilities/save-image-to-aws');
 /*
  * Login
  */
@@ -137,9 +137,10 @@ app.get('/google-login-attempt', (req, res) => {
             }
             // Check if user exists.
             if (typeof results[0] !== 'undefined') {
-
                 // Mark the user as authenticating with Google.
-                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ${conn.escape(googleUserDetails.email)}`
+                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ${conn.escape(
+                    googleUserDetails.email
+                )}`;
                 conn.query(googleAuthQuery);
 
                 // Log user in.
@@ -204,7 +205,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 }
 
                 // Mark the user as authenticating with Google.
-                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ?`
+                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ?`;
                 conn.query(googleAuthQuery, [googleUserDetails.email]);
 
                 // Log user in.
@@ -229,18 +230,19 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                     last_name: googleUserDetails.family_name,
                     username: googleUserDetails.email,
                     email: googleUserDetails.email,
-                    role: googleUserDetails.role,
-                    avatar: defaultAvatar,
+                    role: googleUserDetails.role  || 'student',
                     id: newStudentId,
                     is_google_auth: 1
                 };
 
                 let sqlQuery2 = 'INSERT INTO users SET ?';
-                conn.query(sqlQuery2, data, (err, results) => {
+                conn.query(sqlQuery2, data, async (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         } else {
+                            // Upload avatar to AWS
+                            await saveUserAvatarToAWS(data.id, defaultAvatar);
                             // Create session to log the user in.
                             req.session.userId = newStudentId;
                             req.session.userName = data.username;
@@ -297,7 +299,7 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
                 }
 
                 // Mark the user as authenticating with Google.
-                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ?`
+                let googleAuthQuery = `UPDATE users SET is_google_auth = 1 WHERE email = ?`;
                 conn.query(googleAuthQuery, [googleUserDetails.email]);
 
                 // Log user in.
@@ -322,17 +324,18 @@ app.get('/google-editor-signup-attempt', (req, res, next) => {
                     username: googleUserDetails.email,
                     email: googleUserDetails.email,
                     role: 'editor',
-                    avatar: defaultAvatar,
                     id: newEditorId,
                     is_google_auth: 1
                 };
 
                 let sqlQuery2 = 'INSERT INTO users SET ?';
-                conn.query(sqlQuery2, data, (err, results) => {
+                conn.query(sqlQuery2, data, async (err, results) => {
                     try {
                         if (err) {
                             throw err;
                         } else {
+                            // Upload avatar to AWS
+                            await saveUserAvatarToAWS(data.id, defaultAvatar);
                             // Create session to log the user in.
                             req.session.userId = newEditorId;
                             req.session.userName = data.username;
