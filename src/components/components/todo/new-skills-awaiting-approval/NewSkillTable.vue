@@ -158,7 +158,7 @@ export default {
             :headers="mobileHeaders"
             :items="newSkillArray"
             alternating
-            :loading="loadingQuestion"
+            :loading="loadingSkill"
             table-class-name="customize-table"
             buttons-pagination
             theme-color="#a48be6"

@@ -44,6 +44,8 @@ export default {
             });
 
             this.newSkillsAwaitingApproval = resultArray;
+            console.log('anc nsl mkd');
+            console.log(this.newSkillsAwaitingApproval);
         }
     }
 };
