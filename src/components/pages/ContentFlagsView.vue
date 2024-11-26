@@ -4,6 +4,7 @@ import { useResourcesStore } from '../../stores/ResourcesStore.js';
 import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
 import { useEssayQuestionsStore } from '../../stores/EssayQuestionsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
@@ -15,12 +16,14 @@ export default {
         const mcQuestionsStore = useMCQuestionsStore();
         const essayQuestionsStore = useEssayQuestionsStore();
         const settingStore = useSettingsStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
             skillsStore,
             resourcesStore,
             mcQuestionsStore,
             essayQuestionsStore,
-            settingStore
+            settingStore,
+            userDetailsStore
         };
     },
     data() {
@@ -542,7 +545,13 @@ export default {
 <template>
     <div id="banner">
         <img
-            src="/images/banners/edit-mastery-skill-banner.png"
+            v-if="userDetailsStore.theme == 'apprentice'"
+            src="/images/banners/themes/apprentice/banner-2.png"
+            class="img-fluid"
+        />
+        <img
+            v-else
+            src="/images/banners/themes/scholar/banner-2.png"
             class="img-fluid"
         />
     </div>

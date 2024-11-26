@@ -45,7 +45,11 @@ export default {
 
 <template>
     <div id="banner">
-        <img src="/images/banners/general-banner.png" class="" />
+        <img
+            v-if="userDetailsStore.theme == 'apprentice'"
+            src="/images/banners/themes/apprentice/banner-1.png"
+        />
+        <img v-else src="/images/banners/themes/scholar/banner-1.png" />
     </div>
     <div class="container post-login-container min-vh-100">
         <div class="row content-row">

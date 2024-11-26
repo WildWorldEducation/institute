@@ -1,5 +1,6 @@
 <script>
 import { useUsersStore } from '../../../../stores/UsersStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import McQuestionsEditList from './McQuestionsEditList.vue';
 import SkillEditsList from './SkillEditsList.vue';
 import WrittenQuestionEditsList from './WrittenQuestionEditsList.vue';
@@ -8,9 +9,11 @@ import ImageQuestionEditsList from './ImageQuestionEditsList.vue';
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
-            usersStore
+            usersStore,
+            userDetailsStore
         };
     },
     props: ['settingStore'],
@@ -167,7 +170,16 @@ export default {
     <div class="w-100">
         <!-- Banner -->
         <div id="banner">
-            <img src="/images/banners/general-banner.png" class="img-fluid" />
+            <img
+                v-if="userDetailsStore.theme == 'apprentice'"
+                src="/images/banners/themes/apprentice/banner-2.png"
+                class="img-fluid"
+            />
+            <img
+                v-else
+                src="/images/banners/themes/scholar/banner-2.png"
+                class="img-fluid"
+            />
         </div>
         <!-- Page tile -->
         <h2 class="ps-3 mt-2 page-title">Approve Content Edits</h2>
