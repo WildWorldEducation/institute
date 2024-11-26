@@ -95,10 +95,17 @@ router.post(
                 if (err) {
                     throw err;
                 }
+                sqlQuery = `SELECT users.username FROM users WHERE users.id = ${conn.escape(data.user_id)}`
+                conn.query(sqlQuery, async (err, result) => {
+                    if (err)
+                        throw err;
+                    const userName = result[0].username;
+                    const newSkillData = { ...data, userName: userName }
+                    // send notification email to web master
+                    await sendNewSkillNotificationMail(newSkillData);
+                    res.end();
+                })
 
-                // send notification email to web master
-                await sendNewSkillNotificationMail(data);
-                res.end();
             } catch (err) {
                 console.error(err)
                 next(err);

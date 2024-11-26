@@ -13,8 +13,11 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
 
-// Raw test html to send to client account 
-const emailHTMLcontent = `<!DOCTYPE html
+
+
+function prepareHTMLstring(newSkillData) {
+    // Raw test html to send to client account 
+    const emailHTMLcontent = `<!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
@@ -296,6 +299,19 @@ const emailHTMLcontent = `<!DOCTYPE html
                 padding: 45px;
             }
 
+            .content-div {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .skill-detail-table {
+                margin-bottom: 25px;
+            }
+
+            .skill-data-content {
+                color: #334155;
+            }
+
             /*Media Queries ------------------------------ */
 
             @media only screen and (max-width: 600px) {
@@ -370,24 +386,53 @@ const emailHTMLcontent = `<!DOCTYPE html
                                     <tr>
                                         <td class="content-cell">
                                             <div class="f-fallback">
-                                                <h1>Hi Collins,</h1>
+                                                <h1>Hi Collins</h1>
                                                 <p>A user have add a new skill. <strong>Check yours todo page to see
                                                         details.</strong></p>
                                                 <!-- Action -->
+                                                <table class="skill-detail-table" width="100%" border="0"
+                                                    cellspacing="0" cellpadding="0" role="presentation">
+                                                    <tr>
+                                                        <td>
+                                                            Skill name:
+                                                        </td>
+                                                        <td class="skill-data-content">
+                                                            ${newSkillData.name}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            Level:
+                                                        </td>
+                                                        <td class="skill-data-content">
+                                                            ${newSkillData.level}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            Submit by user:
+                                                        </td>
+                                                        <td class="skill-data-content">
+                                                            ${newSkillData.userName}
+                                                        </td>
+                                                    </tr>
+                                                </table>
                                                 <table class="body-action" align="center" width="100%" cellpadding="0"
                                                     cellspacing="0" role="presentation">
                                                     <tr>
                                                         <td align="center">
                                                             <table width="100%" border="0" cellspacing="0"
                                                                 cellpadding="0" role="presentation">
+
                                                                 <tr>
                                                                     <td align="center">
                                                                         <a href="https://parrhesia.io/todo?nav=newSkillsList"
                                                                             class="button button--green"
-                                                                            target="_blank">To Todo Page</a>
+                                                                            target="_blank">Go To Todo Page</a>
                                                                     </td>
                                                                 </tr>
                                                             </table>
+
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -418,44 +463,39 @@ const emailHTMLcontent = `<!DOCTYPE html
     </body>
 
 </html>`
+    return emailHTMLcontent
+}
 
 // async..await is not allowed in global scope, must use a wrapper
 async function sendNewSkillNotificationMail(newSkillData) {
-    try {
-        console.log(newSkillData);
-        const accessToken =
-            await oAuth2Client.getAccessToken();
-        const transport = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: process.env.NOTIFICATION_GMAIL_SENDER,
-                clientId: process.env.GMAIL_CLIENT_ID,
-                clientSecret:
-                    process.env.GMAIL_CLIENT_SECRET,
-                refreshToken:
-                    process.env.GMAIL_REFRESH_TOKEN,
-                accessToken: accessToken
-            }
-        });
 
-        const mailOptions = {
-            from: 'Collins Institute Support <Support@CollinsInstitute.org>', // sender address
-            to: process.env.NOTIFICATION_GMAIL_RECEIVER, // list of receivers
-            subject: 'New skill approval request', // Subject line
-            text: "There are a new skill being add to the site and need yours approval", // plain text body
-            html: emailHTMLcontent, // html body
+
+    const accessToken =
+        await oAuth2Client.getAccessToken();
+    const transport = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            type: 'OAuth2',
+            user: process.env.NOTIFICATION_GMAIL_SENDER,
+            clientId: process.env.GMAIL_CLIENT_ID,
+            clientSecret:
+                process.env.GMAIL_CLIENT_SECRET,
+            refreshToken:
+                process.env.GMAIL_REFRESH_TOKEN,
+            accessToken: accessToken
         }
+    });
 
-        // send mail with defined transport object
-        const info = await transport.sendMail(
-            mailOptions
-        );
-        console.log(info)
-
-    } catch (error) {
-        console.error(error)
+    const mailOptions = {
+        from: 'Collins Institute Support <Support@CollinsInstitute.org>', // sender address
+        to: process.env.NOTIFICATION_GMAIL_RECEIVER, // list of receivers
+        subject: 'New skill approval request', // Subject line
+        text: "There are a new skill being add to the site and need yours approval", // plain text body
+        html: prepareHTMLstring(newSkillData), // html body
     }
+
+    // send mail with defined transport object
+    await transport.sendMail(mailOptions)
 
 }
 
