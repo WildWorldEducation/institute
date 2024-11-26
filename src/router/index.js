@@ -158,12 +158,6 @@ const router = createRouter({
             component: () => import('../components/pages/AssessmentView.vue')
         },
         {
-            path: '/skills/:id/edit-assessment',
-            name: 'edit-assessment',
-            component: () =>
-                import('../components/pages/EditAssessmentView.vue')
-        },
-        {
             path: '/assessments',
             name: 'list-assessments',
             component: () =>
@@ -336,10 +330,7 @@ const router = createRouter({
         {
             path: '/test-ai-feature',
             name: 'test ai feature',
-            component: () =>
-                import(
-                    '../components/pages/willBeDelete.vue'
-                )
+            component: () => import('../components/pages/willBeDelete.vue')
         },
         {
             path: '/:pathMatch(.*)*',
