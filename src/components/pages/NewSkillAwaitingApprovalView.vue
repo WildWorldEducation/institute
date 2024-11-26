@@ -132,6 +132,15 @@ export default {
         hideDismissModal() {
             console.log('hide dismiss modal');
             this.showDisMissModal = false;
+        },
+        getMail() {
+            fetch('/new-skills-awaiting-approval/send-mail').then(
+                async (res) => {
+                    alert('plk');
+                    const resJson = await res.json();
+                    console.log(resJson);
+                }
+            );
         }
     }
 };
@@ -289,6 +298,7 @@ export default {
                 <button class="btn green-btn" @click="handleSaveBtnClick">
                     Save
                 </button>
+                <button class="btn green-btn" @click="getMail">SendMail</button>
             </div>
         </div>
     </div>

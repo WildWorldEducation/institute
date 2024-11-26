@@ -13,6 +13,7 @@ const conn = require('../config/db');
 
 //Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
+const { sendMail } = require('../utilities/mailSender');
 
 /*------------------------------------------
 --------------------------------------------
@@ -247,6 +248,19 @@ router.put('/:id', (req, res, next) => {
     } else {
         res.redirect('/login');
     }
+});
+
+
+
+/**
+ * Delete skill submitted for review.
+ *
+ * @return response()
+ */
+router.get('/send-mail', async (req, res, next) => {
+    console.log('get ting ih')
+    await sendMail()
+    res.json({ mess: 'ok' })
 });
 
 // Export the router for app to use.
