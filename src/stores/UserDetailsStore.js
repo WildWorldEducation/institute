@@ -43,6 +43,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.email = data.email;
                 this.isGoogleAuth = data.is_google_auth;
                 this.skillTreeLevel = data.skill_tree_level;
+                this.theme = data.theme;
 
                 if (this.role == 'student') {
                     await this.getInstructor();

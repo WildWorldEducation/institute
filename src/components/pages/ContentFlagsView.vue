@@ -2074,12 +2074,6 @@ div {
     font-family: 'Poppins', sans-serif !important;
 }
 
-h1 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
 .page-title {
     color: #9c7eec;
     font-size: 30px;

@@ -1,7 +1,5 @@
 <script>
-import { RouterLink, RouterView } from 'vue-router';
-
-// Import the store.
+// Import the stores.
 import { useSessionDetailsStore } from './stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from './stores/UserDetailsStore.js';
 
@@ -14,6 +12,14 @@ export default {
             sessionDetailsStore,
             userDetailsStore
         };
+    },
+    async mounted() {
+        await this.userDetailsStore.getUserDetails();
+        if (this.userDetailsStore.theme == 'scholar') {
+            document.body.classList.add('scholar-theme');
+        } else {
+            document.body.classList.remove('scholar-theme');
+        }
     },
     methods: {}
 };
@@ -171,6 +177,32 @@ export default {
 </template>
 
 <style>
+/*
+Themes
+*/
+
+/* The Apprentice theme */
+:root {
+    --primary-colour: #8f7bd6;
+}
+/* The Scholar theme */
+.scholar-theme {
+    --primary-colour: black;
+}
+
+/* The following are changed by the themes, globally */
+h1 {
+    color: var(--primary-colour) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+}
+
+h2 {
+    color: var(--primary-colour) !important;
+}
+
+/* End of themes section */
+
 .navbar-brand {
     font-family: 'Inter', sans-serif;
     font-weight: 600;

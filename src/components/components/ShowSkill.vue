@@ -773,10 +773,6 @@ export default {
         text-align: center;
     }
 
-    h1 {
-        font-size: 2.5rem;
-    }
-
     #skill-info-container {
         background-color: #f2edffcc;
         border-radius: 12px;

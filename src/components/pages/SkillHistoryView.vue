@@ -128,7 +128,6 @@ export default {
 
 <style scoped>
 h1 {
-    color: #a48be6;
     font-size: 30px;
     font-weight: 500;
     margin-bottom: 5px;
