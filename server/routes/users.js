@@ -694,6 +694,28 @@ router.put(
     }
 );
 
+/**
+ * Update User Theme
+ *
+ * @return response()
+ */
+router.put('/theme/:id/edit', isAuthenticated, (req, res, next) => {
+    let sqlQuery = `UPDATE users 
+            SET theme = ${conn.escape(req.body.theme)}             
+            WHERE id = ${conn.escape(req.params.id)};`;
+
+    conn.query(sqlQuery, async (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.end();
+        } catch (err) {
+            next(err);
+        }
+    });
+});
+
 // Change student's instructor.
 router.put(
     '/:id/edit/instructor',

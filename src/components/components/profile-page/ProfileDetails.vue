@@ -1,8 +1,8 @@
 <script>
-import router from '../../router';
+import router from '../../../router';
 // Import the stores.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useSessionDetailsStore } from '../../../stores/SessionDetailsStore.js';
 
 export default {
     setup() {
@@ -20,11 +20,11 @@ export default {
     },
     computed: {
         name() {
-            return (
-                this.userDetailsStore.firstName ? this.userDetailsStore.firstName : '' +
-                ' ' +
-                this.userDetailsStore.lastName ? this.userDetailsStore.lastName : ''
-            );
+            return this.userDetailsStore.firstName
+                ? this.userDetailsStore.firstName
+                : '' + ' ' + this.userDetailsStore.lastName
+                ? this.userDetailsStore.lastName
+                : '';
         }
     },
     methods: {

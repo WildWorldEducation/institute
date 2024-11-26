@@ -17,7 +17,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             instructorId: null,
             instructorUsername: null,
             isGoogleAuth: null,
-            skillTreeLevel: 'phd'
+            skillTreeLevel: 'phd',
+            theme: 'apprentice'
         };
     },
     actions: {
@@ -89,6 +90,27 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 };
                 skillTreeStore.updateSkillTree(student);
             });
+        },
+        updateTheme(theme) {
+            console.log(theme);
+            if (theme == 'scholar') {
+                this.theme = 'scholar';
+                document.body.classList.add('scholar-theme');
+            } else {
+                this.theme = 'apprentice';
+                document.body.classList.remove('scholar-theme');
+            }
+            // API call
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    theme: this.theme
+                })
+            };
+
+            var url = '/users/theme/' + this.userId + '/edit';
+            fetch(url, requestOptions);
         }
     }
 });
