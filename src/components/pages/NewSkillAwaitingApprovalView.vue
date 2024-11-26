@@ -136,7 +136,7 @@ export default {
         getMail() {
             fetch('/new-skills-awaiting-approval/send-mail').then(
                 async (res) => {
-                    alert('plk');
+                    alert('mail being sended');
                     const resJson = await res.json();
                     console.log(resJson);
                 }

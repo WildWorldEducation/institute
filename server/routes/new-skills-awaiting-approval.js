@@ -13,7 +13,7 @@ const conn = require('../config/db');
 
 //Middlewares
 const isAuthenticated = require('../middlewares/authMiddleware');
-const { sendMail } = require('../utilities/mailSender');
+const { sendMail, sendNewSkillNotificationMail } = require('../utilities/mailSender');
 
 /*------------------------------------------
 --------------------------------------------
@@ -90,14 +90,17 @@ router.post(
 
         // Insert the new skill.
         let sqlQuery = `INSERT INTO new_skills_awaiting_approval SET ?;`;
-        conn.query(sqlQuery, data, (result, err) => {
+        conn.query(sqlQuery, data, async (err, result) => {
             try {
                 if (err) {
                     throw err;
                 }
-                console.log(result)
+
+                // send notification email to web master
+                await sendNewSkillNotificationMail(data);
                 res.end();
             } catch (err) {
+                console.error(err)
                 next(err);
             }
         });
@@ -258,8 +261,8 @@ router.put('/:id', (req, res, next) => {
  * @return response()
  */
 router.get('/send-mail', async (req, res, next) => {
-    console.log('get ting ih')
-    await sendMail()
+
+    await sendNewSkillNotificationMail()
     res.json({ mess: 'ok' })
 });
 
