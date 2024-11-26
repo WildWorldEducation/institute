@@ -199,6 +199,8 @@ h1 {
 
 h2 {
     color: var(--primary-colour) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
 }
 
 /* End of themes section */

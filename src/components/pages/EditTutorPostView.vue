@@ -69,8 +69,8 @@ export default {
                 this.validateContact = true;
             }
 
-            if(!this.validateContact || !this.validateDescription){
-                return
+            if (!this.validateContact || !this.validateDescription) {
+                return;
             }
 
             const requestOptions = {
@@ -110,23 +110,17 @@ export default {
                     id="summernote-description"
                     name="editordata"
                 ></textarea>
-                <div
-                    v-if="validateDescription == false"
-                    class="form-validate"
-                >
+                <div v-if="validateDescription == false" class="form-validate">
                     Please provide at least 25 characters.
                 </div>
             </div>
-            
+
             <div class="mb-3">
                 <textarea
                     id="summernote-contact-preference"
                     name="editordata2"
                 ></textarea>
-                <div
-                    v-if="validateContact == false"
-                    class="form-validate"
-                >
+                <div v-if="validateContact == false" class="form-validate">
                     Please provide at least 25 characters.
                 </div>
             </div>
@@ -140,7 +134,6 @@ export default {
 
 <style>
 h2 {
-    color: #a48be6;
     font-size: 30px;
     font-weight: 700;
 }

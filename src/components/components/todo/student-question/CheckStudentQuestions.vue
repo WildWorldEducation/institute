@@ -137,12 +137,6 @@ export default {
     padding: 10px 6px;
 }
 
-h2 {
-    color: #9c7eec;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
 #assessment-tile {
     font-family: 'Poppins';
     font-size: 20px;

@@ -130,12 +130,6 @@ export default {
 </template>
 
 <style>
-h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
 .green-btn {
     background-color: #36c1af;
     color: white;

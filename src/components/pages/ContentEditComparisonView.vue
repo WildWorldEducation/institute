@@ -82,7 +82,6 @@ export default {
 }
 
 h2 {
-    color: #a48be6;
     font-size: 30px;
     font-weight: 700;
 }

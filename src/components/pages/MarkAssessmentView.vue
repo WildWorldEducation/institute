@@ -121,7 +121,7 @@ export default {
                     this.skillName = this.skillsStore.skillsList[j].name;
                 }
             }
-        }        
+        }
     },
     computed: {},
     methods: {
@@ -380,12 +380,6 @@ export default {
 </template>
 
 <style scoped>
-h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
 #question-bg {
     background: #f2edffcc;
     border-radius: 12px;

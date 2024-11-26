@@ -2080,12 +2080,6 @@ div {
     font-weight: 600;
 }
 
-h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
 .flag-container {
     background-color: #f2edff;
     border-radius: 12px;

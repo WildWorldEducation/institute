@@ -429,9 +429,6 @@ export default {
 }
 
 h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
     font-size: 1.75rem;
 }
 

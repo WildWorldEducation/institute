@@ -72,8 +72,8 @@ export default {
                 this.validateContact = true;
             }
 
-            if(!this.validateContact || !this.validateDescription){
-                return
+            if (!this.validateContact || !this.validateDescription) {
+                return;
             }
 
             const requestOptions = {
@@ -161,7 +161,6 @@ export default {
 
 <style>
 h2 {
-    color: #a48be6;
     font-size: 30px;
     font-weight: 700;
 }
