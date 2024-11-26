@@ -203,6 +203,10 @@ h2 {
     font-weight: 900;
 }
 
+.icon {
+    fill: var(--primary-colour) !important;
+}
+
 /* End of themes section */
 
 .navbar-brand {

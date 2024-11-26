@@ -63,7 +63,7 @@ export default {
 <template>
     <div class="container-fluid">
         <div class="question-header">
-            <h2 class="question-title">Student Question</h2>
+            <h2 class="question-title">Check New Questions</h2>
         </div>
 
         <div class="list-body">
@@ -109,13 +109,10 @@ export default {
 }
 
 .question-title {
-    font-family: 'Poppins';
     font-size: 20px;
-    font-weight: 900;
     line-height: 28px;
     letter-spacing: 0em;
     text-align: left;
-    color: #ad9af3;
     margin-bottom: 0px;
 }
 

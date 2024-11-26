@@ -171,7 +171,13 @@ export default {
 <template>
     <div id="banner">
         <img
-            src="/images/banners/students-banner.png"
+            v-if="userDetailsStore.theme == 'apprentice'"
+            src="/images/banners/themes/apprentice/banner-3.png"
+            class="w-100 img-fluid"
+        />
+        <img
+            v-else
+            src="/images/banners/themes/scholar/banner-3.png"
             class="w-100 img-fluid"
         />
     </div>

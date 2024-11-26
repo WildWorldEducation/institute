@@ -114,7 +114,7 @@ export default {
 <template>
     <div class="container-fluid">
         <div id="question-header">
-            <div id="assessment-tile">Assessments</div>
+            <h2 id="assessment-title">Mark Assessments</h2>
         </div>
         <div id="list-body">
             <div class="assessment" v-for="assessment in this.assessments">
@@ -142,14 +142,11 @@ export default {
     padding: 10px 6px;
 }
 
-#assessment-tile {
-    font-family: 'Poppins';
+#assessment-title {
     font-size: 20px;
-    font-weight: 900;
     line-height: 28px;
     letter-spacing: 0em;
     text-align: left;
-    color: #ad9af3;
 }
 
 .assessment-link {
