@@ -53,12 +53,13 @@ export default {
                     class="collapse navbar-collapse"
                     id="navbarSupportedContent"
                 >
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+                    <ul class="navbar-nav d-flex">
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <RouterLink to="/" class="nav-link btn me-2"
+                            <RouterLink to="/" class="nav-link btn"
                                 >Hub</RouterLink
                             >
                         </li>
@@ -70,7 +71,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/todo" class="nav-link btn me-2">
+                            <RouterLink to="/todo" class="nav-link btn">
                                 <span>Todo</span>
                             </RouterLink>
                         </li>
@@ -78,11 +79,10 @@ export default {
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <RouterLink to="/skills" class="nav-link btn me-2">
+                            <RouterLink to="/skills" class="nav-link btn">
                                 <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
-
                         <li
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
@@ -142,8 +142,6 @@ export default {
                                 <span>Cohorts</span>
                             </RouterLink>
                         </li>
-                    </ul>
-                    <ul class="navbar-nav d-flex">
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item me-2"
@@ -188,24 +186,27 @@ Themes
     --primary-colour-border: #7f56d9;
     --secondary-colour: #56c5b6;
     --secondary-colour-border: #2fa894;
+    --fourth-colour: gold;
 
     --tertiary-colour: white;
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.webp');
 }
 /* The Scholar theme */
 .scholar-theme {
-    --primary-colour: black;
+    --primary-colour: white;
     --primary-colour-hover: #303030;
     --primary-colour-border: #303030;
     --secondary-colour: orange;
     --secondary-colour-border: darkorange;
 
     --tertiary-colour: #87ceeb;
-    --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.webp');
+    --fourth-colour: #bf202f;
+    --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 }
 
 body {
     background-image: var(--background-image);
+    background-size: cover;
 }
 
 /* The following are changed by the themes, globally */
@@ -270,14 +271,17 @@ h2 {
 }
 
 .nav-link {
-    color: var(--primary-colour);
+    color: white;
     font-weight: 700;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 16px;
     display: flex;
     flex-direction: row;
     align-items: baseline;
-    background-color: white;
+}
+
+.nav-link:hover {
+    color: var(--fourth-colour);
 }
 
 .table-header {
