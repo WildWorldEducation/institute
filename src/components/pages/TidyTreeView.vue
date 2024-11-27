@@ -119,7 +119,7 @@ export default {
                                     )
                                 "
                             >
-                                <span class="college</button>"></span> College
+                                <span class="college"></span> College
                             </button>
                         </div>
                         <div
