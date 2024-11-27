@@ -74,27 +74,35 @@ export default {
                 <div class="legend row">
                     <div class="col-8">
                         <div class="col">
-                            <span class="grade-school"></span>Grade school
+                            <button class="btn">
+                                <span class="grade-school"></span>Grade school
+                            </button>
                         </div>
                         <div class="col">
-                            <span class="middle-school"></span> Middle school
+                            <button class="btn">
+                                <span class="middle-school"></span> Middle
+                                school
+                            </button>
                         </div>
                         <div class="col">
-                            <span class="high-school"></span> High school
+                            <button class="btn">
+                                <span class="high-school"></span> High school
+                            </button>
                         </div>
                         <div class="col">
-                            <span class="college"></span> College
+                            <button class="btn">
+                                <span class="college"></span> College
+                            </button>
                         </div>
-                        <div class="col"><span class="phd"></span> PHD</div>
+                        <div class="col">
+                            <button class="btn">
+                                <span class="phd"></span> PHD
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="search-mobile-row">
                     <!-- Search Feature -->
-                    <!-- <CollapsibleTreeSearchBar
-                        :findNode="findNode"
-                        :nameList="nameList"
-                        :clearResults="clearResults"
-                    /> -->
                     <SkillTreeSearchBar
                         :findNode="findNode"
                         :clearResults="clearResults"
@@ -104,29 +112,34 @@ export default {
             <div id="tablet-and-up-legend">
                 <div class="legend row">
                     <div class="col d-flex align-items-center">
-                        <span class="grade-school"></span>Grade school
+                        <button class="btn">
+                            <span class="grade-school"></span>Grade school
+                        </button>
                     </div>
                     <div class="col d-flex align-items-center">
-                        <span class="middle-school"></span> Middle school
+                        <button class="btn">
+                            <span class="middle-school"></span> Middle school
+                        </button>
                     </div>
                     <div class="col d-flex align-items-center">
-                        <span class="high-school"></span> High school
+                        <button class="btn">
+                            <span class="high-school"></span> High school
+                        </button>
                     </div>
                     <div class="col d-flex align-items-center">
-                        <span class="college"></span> College
+                        <button class="btn">
+                            <span class="college"></span> College
+                        </button>
                     </div>
                     <div class="col d-flex align-items-center">
-                        <span class="phd"></span> PHD
+                        <button class="btn">
+                            <span class="phd"></span> PHD
+                        </button>
                     </div>
                     <div
                         class="col-12 col-lg-3 d-flex justify-content-center align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
                     >
                         <!-- Search Feature -->
-                        <!-- <CollapsibleTreeSearchBar
-                            :findNode="findNode"
-                            :nameList="nameList"
-                            :clearResults="clearResults"
-                        /> -->
                         <SkillTreeSearchBar
                             :findNode="findNode"
                             :clearResults="clearResults"
@@ -143,7 +156,9 @@ export default {
 <style scoped>
 #legend {
     height: 60px;
-    border-bottom: 2px #a48be640 solid;
+}
+
+#legend .btn {
     background-color: white;
 }
 
