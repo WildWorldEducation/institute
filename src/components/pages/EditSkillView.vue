@@ -3,12 +3,12 @@ import EditSkill from '../components/EditSkill.vue';
 </script>
 
 <template>
-    <div id="banner">
+    <!-- <div id="banner">
         <img
             src="/images/banners/edit-mastery-skill-banner.png"
             class="image-fluid"
         />
-    </div>
+    </div> -->
     <EditSkill />
 </template>
 

@@ -218,8 +218,6 @@ export default {
             this.context = canvas.getContext('2d');
 
             // Background colour.
-            this.context.fillStyle = '#1e293b';
-            this.context.fillRect(0, 0, this.width, this.height);
             // Set up the Hidden Canvas for Interactivity.
             let hiddenCanvas = document.getElementById('hidden-canvas');
             this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
@@ -368,6 +366,8 @@ export default {
             if (this.scale > 0.6) {
                 // Get the text's angle. Rotate it.
                 ctx1.save();
+                // to avoid sharp artifacts with the stroke of the text.
+                ctx1.lineJoin = 'bevel';
                 ctx1.translate(pos[0], pos[1]);
                 ctx1.rotate(angle);
 
@@ -470,7 +470,13 @@ export default {
             this.context.save();
             this.hiddenCanvasContext.save();
             // Clear all content and repaint background colour.
-            this.context.fillStyle = '#1e293b';
+            this.context.clearRect(
+                (this.width / 2) * -1,
+                (this.height / 2) * -1,
+                this.width,
+                this.height
+            );
+
             this.context.fillRect(
                 (this.width / 2) * -1,
                 (this.height / 2) * -1,

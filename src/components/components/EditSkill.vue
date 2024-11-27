@@ -526,9 +526,9 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 pb-5 px-3 px-md-0">
+    <div class="container pb-5 px-3 px-md-0">
         <!-- Page Title -->
-        <div class="row mt-5">
+        <div class="row">
             <div
                 class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
             >
@@ -536,7 +536,6 @@ export default {
                     <span v-if="skill.type != 'domain'">Edit Skill</span>
                     <span v-else>Edit Category</span>
                 </h1>
-                <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
         <div v-if="!isAnotherInstanceOfExistingSkill">
