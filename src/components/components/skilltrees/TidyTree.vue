@@ -303,7 +303,6 @@ export default {
                 multiplyBy = 4;
             }
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
-            console.log(multiplyBy);
 
             this.tree = d3.tree().nodeSize([dx, dy]);
 
@@ -464,6 +463,8 @@ export default {
 
             // Text.
             if (this.scale > 0.6) {
+                // to avoid sharp artifacts with the stroke of the text.
+                ctx1.lineJoin = 'bevel';
                 // we move the skill name to the left and change the color if it a domain node
                 // using the non domain as if condition will save us some compute time as none domain node is more common
                 if (node.data.type != 'domain') {
