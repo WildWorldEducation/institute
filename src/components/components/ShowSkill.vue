@@ -243,7 +243,7 @@ export default {
                             !isMastered &&
                             showAncestorLink
                         "
-                        class="btn purple-btn assessment-btn text-capitalize me-1"
+                        class="btn primary-btn assessment-btn text-capitalize me-1"
                     >
                         <span v-if="isMobileCheck > 576"
                             >go to nearest unlockable skill&nbsp;</span
@@ -266,7 +266,7 @@ export default {
                             isUnlocked &&
                             !isMastered
                         "
-                        class="btn purple-btn me-1 assessment-btn"
+                        class="btn primary-btn me-1 assessment-btn"
                         :to="skill.id + '/assessment'"
                     >
                         <span v-if="isMobileCheck > 576"
@@ -287,7 +287,7 @@ export default {
                     </router-link>
                     <router-link
                         v-else-if="!sessionDetailsStore.isLoggedIn"
-                        class="btn purple-btn me-1 assessment-btn"
+                        class="btn primary-btn me-1 assessment-btn"
                         to="/login"
                         ><span v-if="isMobileCheck > 576"
                             >Take assessment&nbsp;</span
@@ -350,7 +350,7 @@ export default {
                                 userDetailsStore.role == 'editor'
                             "
                             :to="'/skills/history/' + this.skillUrl"
-                            class="btn purple-btn me-1"
+                            class="btn primary-btn me-1"
                             ><span v-if="isMobileCheck > 576"
                                 >History&nbsp;</span
                             >
@@ -374,7 +374,7 @@ export default {
                                 skill.type != 'super' &&
                                 sessionDetailsStore.isLoggedIn
                             "
-                            class="btn purple-btn me-3"
+                            class="btn primary-btn me-3"
                             :to="skillUrl + '/question-bank'"
                             ><span v-if="isMobileCheck > 576"
                                 >Question Bank&nbsp;</span
@@ -689,25 +689,6 @@ export default {
     border-width: 4px;
     border-color: black;
     border-style: solid;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    max-width: fit-content;
-    display: flex;
-    align-items: center;
-    height: 44px;
-    text-wrap: nowrap;
-}
-
-.purple-btn:hover {
-    background-color: #8f7bd6;
 }
 
 .assessment-btn {

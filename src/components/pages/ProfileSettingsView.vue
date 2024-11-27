@@ -27,8 +27,7 @@ export default {
         DeleteDownVotedSources
     },
     methods: {
-        CheckMCQuestions() {
-            console.log('test');
+        CheckMCQuestions() {          
             fetch('/questions/check-questions');
         }
     }

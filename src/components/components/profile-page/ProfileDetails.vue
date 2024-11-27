@@ -77,7 +77,7 @@ export default {
                         class="col-12 col-5 d-flex gap-3 flex-row justify-content-center justify-content-md-start ps-lg-0"
                     >
                         <router-link
-                            class="purple-btn btn"
+                            class="primary-btn btn"
                             to="/profile/edit"
                             role="button"
                             >Edit Profile&nbsp;&nbsp;
@@ -204,22 +204,6 @@ export default {
 
 .red-btn:hover {
     background-color: #cc3535;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #9a7ceb;
 }
 
 #page-tile {

@@ -27,10 +27,7 @@ export default {
 
 <template>
     <header>
-        <nav
-            id="navbar"
-            class="navbar fixed-top navbar-expand-lg navbar-light bg-light"
-        >
+        <nav id="navbar" class="navbar fixed-top navbar-expand-lg nav-bar">
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link">
                     <img
@@ -184,13 +181,29 @@ Themes
 /* The Apprentice theme */
 :root {
     --primary-colour: #8f7bd6;
+    --primary-colour-hover: #9a7ceb;
+    --primary-colour-border: #7f56d9;
+    --secondary-colour: #56c5b6;
+    --secondary-colour-border: #2fa894;
+
+    --tertiary-colour: white;
 }
 /* The Scholar theme */
 .scholar-theme {
     --primary-colour: black;
+    --primary-colour-hover: #303030;
+    --primary-colour-border: #303030;
+    --secondary-colour: orange;
+    --secondary-colour-border: darkorange;
+
+    --tertiary-colour: #87ceeb;
 }
 
 /* The following are changed by the themes, globally */
+.nav-bar {
+    background-color: var(--tertiary-colour);
+}
+
 h1 {
     color: var(--primary-colour) !important;
     font-family: 'Poppins', sans-serif;
@@ -207,6 +220,40 @@ h2 {
     fill: var(--primary-colour) !important;
 }
 
+.primary-btn {
+    background-color: var(--primary-colour) !important;
+    border: 1px solid var(--primary-colour-border) !important;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    max-height: 44px;
+    text-wrap: nowrap;
+}
+
+.primary-btn:hover {
+    background-color: var(--primary-colour-hover) !important;
+    color: white;
+}
+
+.nav-link {
+    color: var(--primary-colour);
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+th {
+    background-color: var(--secondary-colour) !important;
+    border-color: var(--secondary-colour-border) !important;
+}
+
 /* End of themes section */
 
 .navbar-brand {
@@ -215,15 +262,6 @@ h2 {
     font-size: 16px;
     margin-left: 20px;
     margin-right: 50px;
-}
-
-.nav-link {
-    color: #a48be5;
-    font-weight: 700;
-    font-size: 16px;
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
 }
 
 .nav-link > img {
