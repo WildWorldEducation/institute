@@ -141,13 +141,26 @@ router.delete('/:id', (req, res, next) => {
                              FROM new_skills_awaiting_approval
                              WHERE id = ${conn.escape(req.params.id)}`;
 
-        conn.query(deleteQuery, (err) => {
+        conn.query(deleteQuery, (err, result) => {
             try {
                 if (err) {
                     throw err;
                 }
-
-                res.end();
+                recordUserAction(
+                    {
+                        userId: req.session.userId,
+                        userAction: 'delete',
+                        contentId: result.insertId,
+                        contentType: 'skill_submit_by_user'
+                    },
+                    (err) => {
+                        if (err) {
+                            throw err;
+                        } else {
+                            res.end()
+                        }
+                    }
+                );
             } catch (err) {
                 next(err);
             }
@@ -226,13 +239,26 @@ router.post('/accept/:id', async (req, res, next) => {
 
         const insertQuery = `INSERT INTO skills SET ?;`;
 
-        conn.query(insertQuery, (err) => {
+        conn.query(insertQuery, (err, result) => {
             try {
                 if (err) {
                     throw err;
                 }
-
-                res.end();
+                recordUserAction(
+                    {
+                        userId: req.session.userId,
+                        userAction: 'approve',
+                        contentId: result.insertId,
+                        contentType: 'skill_submit_by_user'
+                    },
+                    (err) => {
+                        if (err) {
+                            throw err;
+                        } else {
+                            res.end()
+                        }
+                    }
+                );
             } catch (err) {
                 next(err);
             }
@@ -244,7 +270,7 @@ router.post('/accept/:id', async (req, res, next) => {
 
 
 /**
- * Delete skill submitted for review.
+ * Edit skill submitted for review.
  *
  * @return response()
  */
@@ -260,11 +286,26 @@ router.put('/:id', (req, res, next) => {
                                  level = ${conn.escape(req.body.level)},
                                  user_id = ${conn.escape(req.body.user_id)}
                              WHERE id = ${conn.escape(req.params.id)}`;
-        conn.query(updateQuery, (err) => {
+        conn.query(updateQuery, (err, result) => {
             try {
                 if (err) {
                     throw err;
                 }
+                recordUserAction(
+                    {
+                        userId: req.session.userId,
+                        userAction: 'update',
+                        contentId: result.insertId,
+                        contentType: 'skill_submit_by_user'
+                    },
+                    (err) => {
+                        if (err) {
+                            throw err;
+                        } else {
+                            res.end()
+                        }
+                    }
+                );
                 res.end();
             } catch (err) {
                 console.error(err)
@@ -276,18 +317,6 @@ router.put('/:id', (req, res, next) => {
     }
 });
 
-
-
-/**
- * Delete skill submitted for review.
- *
- * @return response()
- */
-router.get('/send-mail', async (req, res, next) => {
-
-    await sendNewSkillNotificationMail()
-    res.json({ mess: 'ok' })
-});
 
 // Export the router for app to use.
 module.exports = router;
