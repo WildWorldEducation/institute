@@ -169,7 +169,7 @@ export default {
 <template>
     <div class="w-100">
         <!-- Banner -->
-        <div id="banner">
+        <!-- <div id="banner">
             <img
                 v-if="userDetailsStore.theme == 'apprentice'"
                 src="/images/banners/themes/apprentice/banner-2.png"
@@ -180,7 +180,7 @@ export default {
                 src="/images/banners/themes/scholar/banner-2.png"
                 class="img-fluid"
             />
-        </div>
+        </div> -->
         <!-- Page tile -->
         <h2 class="ps-3 mt-2 page-title">Approve Content Edits</h2>
         <!-- ---- | Nav List On Desktop | ---- -->
@@ -335,7 +335,7 @@ export default {
 }
 
 .normal-nav {
-    background-color: inherit;
+    background-color: white;
     padding: 5px 20px;
     cursor: pointer;
     font-weight: 600;

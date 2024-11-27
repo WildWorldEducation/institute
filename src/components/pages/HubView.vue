@@ -44,13 +44,6 @@ export default {
 </script>
 
 <template>
-    <!--<div id="banner">
-        <img
-            v-if="userDetailsStore.theme == 'apprentice'"
-            src="/images/banners/themes/apprentice/banner-1.png"
-        />
-        <img v-else src="/images/banners/themes/scholar/banner-1.png" />
-    </div>-->
     <div class="container post-login-container min-vh-100">
         <div class="row content-row">
             <!-- Avatar image -->
@@ -82,9 +75,6 @@ export default {
             </div>
             <div class="col-lg-3 col-md-5 mb-4 pb-4 column">
                 <Notifications />
-            </div>
-            <div class="col-lg-9 col-md-6 mb-4 pb-4 column d-none d-lg-block">
-                <!-- <img src="/images/post-login.png" class="img-fluid" /> -->
             </div>
         </div>
         <div id="news-row" class="row">

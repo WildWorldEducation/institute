@@ -47,76 +47,59 @@ export default {
 </script>
 
 <template>
-    <div class="">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th class="table-header">News</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="row border">
-                    <td
-                        id="first-cell"
-                        class="col-lg-3 border col-md-6 news-cell"
-                    >
-                        <p v-if="userDetailsStore.role != 'admin'">
-                            {{ news.news_1 }}
-                        </p>
-                        <textarea
-                            v-else
-                            @change="SaveChange()"
-                            v-model="news.news_1"
-                            class="form-control"
-                            rows="3"
-                        ></textarea>
-                    </td>
-                    <td class="col-lg-3 col-md-6 border news-cell">
-                        <p v-if="userDetailsStore.role != 'admin'">
-                            {{ news.news_2 }}
-                        </p>
-                        <textarea
-                            v-else
-                            @change="SaveChange()"
-                            v-model="news.news_2"
-                            class="form-control"
-                            rows="3"
-                        ></textarea>
-                    </td>
-                    <td class="col-lg-3 col-md-6 border news-cell">
-                        <p v-if="userDetailsStore.role != 'admin'">
-                            {{ news.news_3 }}
-                        </p>
-                        <textarea
-                            v-else
-                            @change="SaveChange()"
-                            v-model="news.news_3"
-                            class="form-control"
-                            rows="3"
-                        ></textarea>
-                    </td>
-                    <td
-                        id="last-cell"
-                        class="col-lg-3 border col-md-6 news-cell"
-                    >
-                        <p v-if="userDetailsStore.role != 'admin'">
-                            {{ news.news_4 }}
-                        </p>
-                        <textarea
-                            v-else
-                            @change="SaveChange()"
-                            v-model="news.news_4"
-                            class="form-control"
-                            rows="3"
-                        ></textarea>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <h2>News</h2>
+    <div class="table-div row rounded mb-3">
+        <div class="p-2 col-lg-3 col-md-6">
+            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_1 }}</p>
+            <textarea
+                v-else
+                @change="SaveChange()"
+                v-model="news.news_1"
+                class="form-control"
+                rows="3"
+            ></textarea>
+        </div>
+        <div class="p-2 col-lg-3 col-md-6">
+            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_2 }}</p>
+            <textarea
+                v-else
+                @change="SaveChange()"
+                v-model="news.news_2"
+                class="form-control"
+                rows="3"
+            ></textarea>
+        </div>
+        <div class="p-2 col-lg-3 col-md-6">
+            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_3 }}</p>
+            <textarea
+                v-else
+                @change="SaveChange()"
+                v-model="news.news_3"
+                class="form-control"
+                rows="3"
+            ></textarea>
+        </div>
+        <div class="p-2 col-lg-3 col-md-6">
+            <p v-if="userDetailsStore.role != 'admin'">{{ news.news_4 }}</p>
+            <textarea
+                v-else
+                @change="SaveChange()"
+                v-model="news.news_4"
+                class="form-control"
+                rows="3"
+            ></textarea>
+        </div>
     </div>
 </template>
 
 <style scoped>
+.table-div {
+    background-color: white;
+    border-radius: 10px;
+    padding: 5px;
+    border: 1px solid black;
+}
+
 th {
     color: #ffffff;
     font-family: 'Poppins', sans-serif;

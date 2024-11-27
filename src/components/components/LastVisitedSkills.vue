@@ -19,12 +19,11 @@ export default {
 </script>
 
 <template>
-    <div class="table-responsive"></div>
-    <h2 id="title" class="table-header">Last visited Skills</h2>
+    <h2>Last visited Skills</h2>
     <div id="skill-list">
         <div v-for="skill in visitedSkills">
             <router-link
-                class="skill-link"
+                class="skill-link btn"
                 :to="`/skills/${skill.url}`"
                 target="_blank"
             >
@@ -45,33 +44,15 @@ export default {
 #skill-list {
     overflow-y: auto;
     max-height: 300px;
-    background-color: white;
-}
-
-#title {
-    padding: 14px 20px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-    font-size: 20px;
-    margin-bottom: 0px;
 }
 
 #skill-list div {
-    border-collapse: collapse;
-    border: 1px solid #ad9af3;
-    border-top: 0px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 28px;
-    text-align: left;
     padding: 10px 6px;
-    color: #667085;
 }
 
 .skill-link {
     text-decoration: none !important;
-    color: #667085;
+    background-color: white;
 }
 
 #skill-list div:hover {

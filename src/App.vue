@@ -29,7 +29,7 @@ export default {
     <header>
         <nav id="navbar" class="navbar fixed-top navbar-expand-lg nav-bar">
             <div class="container-fluid">
-                <RouterLink to="/" class="nav-link">
+                <RouterLink to="/" class="nav-link logo">
                     <img
                         src="/images/logo-red.png"
                         alt=""
@@ -37,7 +37,7 @@ export default {
                         height="50"
                     />
                 </RouterLink>
-                <span class="navbar-brand">The Collins Institute</span>
+                <!-- <span class="navbar-brand">The Collins Institute</span> -->
                 <button
                     class="navbar-toggler"
                     type="button"
@@ -58,7 +58,7 @@ export default {
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <RouterLink to="/" class="nav-link btn"
+                            <RouterLink to="/" class="nav-link btn me-2"
                                 >Hub</RouterLink
                             >
                         </li>
@@ -70,7 +70,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/todo" class="nav-link btn">
+                            <RouterLink to="/todo" class="nav-link btn me-2">
                                 <span>Todo</span>
                             </RouterLink>
                         </li>
@@ -78,7 +78,7 @@ export default {
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <RouterLink to="/skills" class="nav-link btn">
+                            <RouterLink to="/skills" class="nav-link btn me-2">
                                 <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
@@ -150,7 +150,7 @@ export default {
                         >
                             <RouterLink
                                 to="/profile-settings"
-                                class="nav-link btn"
+                                class="nav-link btn profile-btn"
                             >
                                 <img
                                     id="user-avatar"
@@ -181,7 +181,6 @@ export default {
 /*
 Themes
 */
-
 /* The Apprentice theme */
 :root {
     --primary-colour: #8f7bd6;
@@ -288,6 +287,15 @@ h2 {
 }
 
 /* End of themes section */
+
+.logo {
+    background-color: transparent;
+}
+
+.profile-btn {
+    padding: 0px;
+    background-color: transparent;
+}
 
 .navbar-brand {
     font-family: 'Inter', sans-serif;

@@ -54,9 +54,9 @@ export default {
                 </button>
             </div>
             <!-- divide line for pc and tablet view -->
-            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
         <div
             v-else-if="userDetailsStore.role == 'instructor'"
@@ -79,9 +79,9 @@ export default {
                     {{ student.username }}
                 </button>
             </div>
-            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
         <RouterLink
             v-if="userDetailsStore.role == 'instructor'"
@@ -112,9 +112,9 @@ export default {
                 </button>
             </div>
             <!-- divide line for pc and tablet view -->
-            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
     </div>
 </template>

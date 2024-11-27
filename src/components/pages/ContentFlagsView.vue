@@ -543,7 +543,7 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
+    <!-- <div id="banner">
         <img
             v-if="userDetailsStore.theme == 'apprentice'"
             src="/images/banners/themes/apprentice/banner-2.png"
@@ -554,7 +554,7 @@ export default {
             src="/images/banners/themes/scholar/banner-2.png"
             class="img-fluid"
         />
-    </div>
+    </div> -->
     <div class="container-fluid pb-5">
         <div class="mt-3">
             <h2 class="page-title">Content Flags</h2>

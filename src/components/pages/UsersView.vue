@@ -169,7 +169,7 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
+    <!-- <div id="banner">
         <img
             v-if="userDetailsStore.theme == 'apprentice'"
             src="/images/banners/themes/apprentice/banner-3.png"
@@ -180,7 +180,7 @@ export default {
             src="/images/banners/themes/scholar/banner-3.png"
             class="w-100 img-fluid"
         />
-    </div>
+    </div> -->
     <!-- Add user button -->
     <div
         v-if="userDetailsStore.role == 'admin'"
