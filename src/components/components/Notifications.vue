@@ -45,7 +45,32 @@ export default {
 </script>
 
 <template>
-    <table class="table table-bordered">
+    <h2>Notifications</h2>
+    <div class="table-div">
+        <div class="border-bottom p-2" v-if="userDetailsStore.role != 'admin'">
+            {{ notifications.notification_1 }}
+        </div>
+        <div v-else>
+            <textarea
+                @change="SaveChange()"
+                v-model="notifications.notification_1"
+                class="form-control border-bottom p-2"
+                rows="3"
+            ></textarea>
+        </div>
+        <div class="p-2" v-if="userDetailsStore.role != 'admin'">
+            {{ notifications.notification_2 }}
+        </div>
+        <div v-else>
+            <textarea
+                @change="SaveChange()"
+                v-model="notifications.notification_2"
+                class="form-control p-2"
+                rows="3"
+            ></textarea>
+        </div>
+    </div>
+    <!-- <table class="table table-bordered">
         <thead>
             <tr>
                 <th scope="col" class="table-header">Notifications</th>
@@ -79,13 +104,34 @@ export default {
                 </td>
             </tr>
         </tbody>
-    </table>
+    </table> -->
 </template>
 
 <style scoped>
+.table-div {
+    background-color: white;
+    border-radius: 10px;
+    padding: 5px;
+    border: 1px solid black;
+}
+/*
+
 th {
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
+}
+
+th:first-of-type {
+    border-top-left-radius: 10px;
+}
+th:last-of-type {
+    border-top-right-radius: 10px;
+}
+tr:last-of-type td:first-of-type {
+    border-bottom-left-radius: 10px;
+}
+tr:last-of-type td:last-of-type {
+    border-bottom-right-radius: 10px;
 }
 
 tr {
@@ -100,5 +146,5 @@ td {
     color: #667085;
     font-size: 0.875rem;
     background-color: white;
-}
+} */
 </style>
