@@ -99,5 +99,6 @@ td {
     font-weight: 500;
     color: #667085;
     font-size: 0.875rem;
+    background-color: white;
 }
 </style>

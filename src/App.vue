@@ -199,6 +199,11 @@ Themes
     --tertiary-colour: #87ceeb;
 }
 
+body {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/ec/Berber_flag.svg');
+    background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
+}
+
 /* The following are changed by the themes, globally */
 .nav-bar {
     background-color: var(--tertiary-colour);

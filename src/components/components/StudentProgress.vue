@@ -67,6 +67,7 @@ export default {
     overflow-y: auto;
     overflow-x: hidden;
     max-height: 300px;
+    background-color: white;
 }
 
 #title {

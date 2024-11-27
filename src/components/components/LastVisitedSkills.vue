@@ -45,6 +45,7 @@ export default {
 #skill-list {
     overflow-y: auto;
     max-height: 300px;
+    background-color: white;
 }
 
 #title {

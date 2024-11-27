@@ -147,6 +147,7 @@ tr {
     border-color: #2fa894 !important;
     border-width: 1px !important;
     padding: 10px;
+    background-color: white;
 }
 
 /* View Specific On Phone */
