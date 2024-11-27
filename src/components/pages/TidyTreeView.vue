@@ -353,7 +353,6 @@ export default {
 <style>
 #legend {
     height: 60px;
-    border-bottom: 2px #a48be640 solid;
 }
 
 #legend .btn {

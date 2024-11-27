@@ -100,18 +100,6 @@ export default {
     border: 1px solid black;
 }
 
-th {
-    color: #ffffff;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-tr {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    color: #667085;
-}
-
 /* Because some wonky things we have to manual Style margin and border of row */
 .row {
     padding-top: 0px;
