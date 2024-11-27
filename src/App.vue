@@ -58,8 +58,9 @@ export default {
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <!-- ".native is used because Vue doesnt really allow for click handlers for routerlinks" -->
-                            <RouterLink to="/" class="nav-link">Hub</RouterLink>
+                            <RouterLink to="/" class="nav-link btn"
+                                >Hub</RouterLink
+                            >
                         </li>
                         <li
                             v-if="
@@ -69,7 +70,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/todo" class="nav-link">
+                            <RouterLink to="/todo" class="nav-link btn">
                                 <span>Todo</span>
                             </RouterLink>
                         </li>
@@ -77,7 +78,7 @@ export default {
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <RouterLink to="/skills" class="nav-link">
+                            <RouterLink to="/skills" class="nav-link btn">
                                 <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
@@ -86,7 +87,7 @@ export default {
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
-                            <RouterLink to="/vertical-tree" class="nav-link"
+                            <RouterLink to="/vertical-tree" class="nav-link btn"
                                 >Vertical Tree</RouterLink
                             >
                         </li>
@@ -94,7 +95,7 @@ export default {
                             v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <RouterLink to="/vertical-tree" class="nav-link"
+                            <RouterLink to="/vertical-tree" class="nav-link btn"
                                 >You Can Not Interact With the Tree Until Logged
                                 in</RouterLink
                             >
@@ -103,7 +104,7 @@ export default {
                             v-if="userDetailsStore.role == 'student'"
                             class="nav-item"
                         >
-                            <RouterLink to="/radial-tree" class="nav-link"
+                            <RouterLink to="/radial-tree" class="nav-link btn"
                                 >Radial Tree (Alpha Version)</RouterLink
                             >
                         </li>
@@ -115,7 +116,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/users" class="nav-link">
+                            <RouterLink to="/users" class="nav-link btn">
                                 <span v-if="userDetailsStore.role == 'admin'"
                                     >Users
                                 </span>
@@ -137,7 +138,7 @@ export default {
                             v-if="userDetailsStore.role == 'instructor'"
                             class="nav-item"
                         >
-                            <RouterLink to="/cohorts" class="nav-link">
+                            <RouterLink to="/cohorts" class="nav-link btn">
                                 <span>Cohorts</span>
                             </RouterLink>
                         </li>
@@ -147,7 +148,10 @@ export default {
                             v-if="sessionDetailsStore.isLoggedIn"
                             class="nav-item me-2"
                         >
-                            <RouterLink to="/profile-settings" class="nav-link">
+                            <RouterLink
+                                to="/profile-settings"
+                                class="nav-link btn"
+                            >
                                 <img
                                     id="user-avatar"
                                     :src="userDetailsStore.avatar"
@@ -187,6 +191,7 @@ Themes
     --secondary-colour-border: #2fa894;
 
     --tertiary-colour: white;
+    --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.webp');
 }
 /* The Scholar theme */
 .scholar-theme {
@@ -197,17 +202,17 @@ Themes
     --secondary-colour-border: darkorange;
 
     --tertiary-colour: #87ceeb;
+    --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.webp');
 }
 
 body {
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/ec/Berber_flag.svg');
-    background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
+    background-image: var(--background-image);
 }
 
 /* The following are changed by the themes, globally */
-.nav-bar {
+/* .nav-bar {
     background-color: var(--tertiary-colour);
-}
+} */
 
 h1 {
     color: var(--primary-colour) !important;
@@ -273,6 +278,7 @@ h2 {
     display: flex;
     flex-direction: row;
     align-items: baseline;
+    background-color: white;
 }
 
 .table-header {
@@ -293,18 +299,6 @@ h2 {
 
 .nav-link > img {
     margin-left: 5px;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
 }
 
 .purple-btn:hover,

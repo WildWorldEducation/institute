@@ -64,6 +64,7 @@ export default {
     position: relative;
     cursor: pointer;
     overflow: hidden;
+    background-color: white;
 }
 .toggle .cursor {
     height: 100%;

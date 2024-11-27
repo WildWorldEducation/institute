@@ -356,6 +356,10 @@ export default {
     border-bottom: 2px #a48be640 solid;
 }
 
+#legend .btn {
+    background-color: white;
+}
+
 .legend-div {
     height: auto;
     width: 100%;

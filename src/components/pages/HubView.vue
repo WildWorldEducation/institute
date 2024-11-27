@@ -54,13 +54,13 @@ export default {
     <div class="container post-login-container min-vh-100">
         <div class="row content-row">
             <!-- Avatar image -->
-            <div class="col-lg-4 col-md-5 mb-4 pb-4 column mx-0">
+            <!-- <div class="col-lg-4 col-md-5 mb-4 pb-4 column mx-0">
                 <img
                     id="profile-img"
                     :src="userDetailsStore.avatar"
                     class="img-fluid rounded"
                 />
-            </div>
+            </div> -->
             <div class="col-lg-4 col-md-7 mb-4 pb-4">
                 <StudentProgress
                     v-if="userDetailsStore.role == 'student'"
