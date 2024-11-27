@@ -240,18 +240,40 @@ h2 {
     color: white;
 }
 
+.secondary-btn {
+    background-color: var(--secondary-colour) !important;
+    border: 1px solid var(--secondary-colour-border) !important;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    max-height: 44px;
+    text-wrap: nowrap;
+}
+
+.secondary-btn:hover {
+    background-color: var(--secondary-colour-hover) !important;
+    color: white;
+}
+
 .nav-link {
     color: var(--primary-colour);
     font-weight: 700;
+    font-family: 'Poppins', sans-serif;
     font-size: 16px;
     display: flex;
     flex-direction: row;
     align-items: baseline;
 }
 
-th {
+.table-header {
     background-color: var(--secondary-colour) !important;
     border-color: var(--secondary-colour-border) !important;
+    color: white !important;
 }
 
 /* End of themes section */

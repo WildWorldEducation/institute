@@ -20,7 +20,7 @@ export default {
 
 <template>
     <div class="table-responsive"></div>
-    <h2 id="title">Last visited Skills</h2>
+    <h2 id="title" class="table-header">Last visited Skills</h2>
     <div id="skill-list">
         <div v-for="skill in visitedSkills">
             <router-link
@@ -48,9 +48,6 @@ export default {
 }
 
 #title {
-    background-color: #e8e2f9;
-    border-color: #dbd0f9;
-    color: #ad9af3;
     padding: 14px 20px;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;

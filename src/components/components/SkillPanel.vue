@@ -96,14 +96,14 @@ export default {
                 <div class="d-flex justify-content-between">
                     <button
                         v-if="skill.hasChildren"
-                        class="green-btn ms-2 btn"
+                        class="secondary-btn ms-2 btn"
                         @click="toggleChildNodes"
                     >
                         Toggle child nodes
                     </button>
                     <router-link
                         v-if="skill.type != 'domain'"
-                        class="btn green-btn me-2"
+                        class="btn secondary-btn me-2"
                         :class="{ 'ms-auto': !skill.hasChildren }"
                         target="_blank"
                         id="skillLink"
@@ -201,24 +201,6 @@ export default {
 
 .skill-info-panel-bottom {
     margin-bottom: 10px;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-.green-btn:hover {
-    background-color: #2ca695;
-    color: white;
 }
 
 /* Slide left animation */

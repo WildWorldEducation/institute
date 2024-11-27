@@ -51,7 +51,7 @@ export default {
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>News</th>
+                    <th class="table-header">News</th>
                 </tr>
             </thead>
             <tbody>

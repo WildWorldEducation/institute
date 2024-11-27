@@ -328,7 +328,7 @@ export default {
                         <router-link
                             v-if="sessionDetailsStore.isLoggedIn"
                             :to="'/skills/edit/' + skillUrl"
-                            class="btn green-btn me-1"
+                            class="btn secondary-btn me-1"
                             ><span v-if="isMobileCheck > 576">Edit &nbsp;</span>
                             <!-- Pencil icon -->
                             <svg
@@ -597,7 +597,7 @@ export default {
             <div class="d-flex justify-content-end gap-2">
                 <button
                     type="button"
-                    class="btn green-btn modal-btn"
+                    class="btn secondary-btn modal-btn"
                     @click="showConfirmModal = false"
                 >
                     <span class="d-none d-md-block"> OK </span>
@@ -695,32 +695,6 @@ export default {
     height: auto;
     max-height: 48px;
     margin-left: 10px;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 44px;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-
-    display: flex;
-    align-items: center;
-
-    max-width: fit-content;
-}
-
-.green-btn:hover {
-    background-color: #3eb3a3;
 }
 
 .red-btn {

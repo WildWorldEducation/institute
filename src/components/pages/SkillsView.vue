@@ -42,7 +42,7 @@ export default {
 
 <template>
     <div v-if="!isInstructorMode" class="topnav" id="skill-nav">
-        <router-link class="btn purple-btn" to="/skills/add"
+        <router-link class="btn primary-btn" to="/skills/add"
             ><span v-if="userDetailsStore.role == 'admin'">Add&nbsp;</span>
             <span v-else>Submit new skill for review&nbsp;</span>
             <!-- Plus sign -->
@@ -60,7 +60,7 @@ export default {
             </svg>
         </router-link>
         <div v-if="userDetailsStore.role == 'admin'" class="d-flex gap-2">
-            <router-link class="btn purple-btn" to="/tags"
+            <router-link class="btn primary-btn" to="/tags"
                 >Skill Filters</router-link
             >
         </div>
@@ -269,18 +269,6 @@ export default {
 .img-fluid {
     width: 100% !important;
     height: auto;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
 }
 
 .grade-level-legend {
