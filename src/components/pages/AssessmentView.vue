@@ -40,7 +40,7 @@ export default {
     components: {
         Assessment
     },
-    methods:{
+    methods: {
         imageUrlAlternative(event) {
             event.target.src = '/images/skill-avatar/recurso.png';
         }
@@ -49,16 +49,16 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
+    <!-- <div id="banner">
         <img
             v-bind:src="'/images/banners/skills-banner.png'"
             class="img-fluid"
         />
-    </div>
+    </div> -->
     <div class="container mt-3">
         <div class="d-flex justify-content-md-between justify-content-center">
             <div class="d-flex flex-column flex-md-row">
-                <img
+                <!-- <img
                     id="skill-icon"
                     :src="
                         'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
@@ -66,7 +66,7 @@ export default {
                     "
                     :onerror="imageUrlAlternative"
                     class="rounded"
-                />
+                /> -->
                 <div
                     id="assessment-skill-name"
                     class="ms-3 d-flex justify-content-md-end text-center justify-content-center"
