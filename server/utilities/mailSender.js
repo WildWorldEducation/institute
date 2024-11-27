@@ -13,6 +13,12 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
 
+function snakeToTileCase(string) {
+    const result = string.replace(/^[-_]*(.)/, (_, c) => c.toUpperCase()) // Initial char (after -/_)
+        .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase()) // First char after each -/_
+    return result
+
+}
 
 
 function prepareHTMLstring(newSkillData) {
@@ -405,7 +411,7 @@ function prepareHTMLstring(newSkillData) {
                                                             Level:
                                                         </td>
                                                         <td class="skill-data-content">
-                                                            ${newSkillData.level}
+                                                            ${snakeToTileCase(newSkillData.level)}
                                                         </td>
                                                     </tr>
                                                     <tr>

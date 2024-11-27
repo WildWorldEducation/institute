@@ -3,6 +3,7 @@ import VueMultiselect from 'vue-multiselect';
 // Import the stores.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import WaitLoadingModal from './share-components/WaitLoadingModal.vue';
 
 export default {
     setup() {
@@ -14,7 +15,7 @@ export default {
             userDetailsStore
         };
     },
-    components: { VueMultiselect },
+    components: { VueMultiselect, WaitLoadingModal },
     data() {
         return {
             skill: {
@@ -79,7 +80,8 @@ export default {
             parentOfNewInstance: null,
             showCopiedSkillModal: false,
             showSkillTypeModal: false,
-            parentLevel: ''
+            parentLevel: '',
+            showLoadModal: false
         };
     },
     computed: {
@@ -234,6 +236,7 @@ export default {
             }
         },
         async submitNewSkillForReview() {
+            this.showLoadModal = true;
             let url =
                 '/new-skills-awaiting-approval/submit-new-skill-for-review';
 
@@ -254,11 +257,13 @@ export default {
                     level: this.skill.level
                 })
             }).then(() => {
+                this.showLoadModal = false;
                 alert('New skill submitted for approval.');
                 this.$router.push('/skills');
             });
         },
         async Submit() {
+            this.showLoadModal = true;
             let url = '/skills/add';
 
             // Function to help compare level of parent and new skill.
@@ -320,6 +325,7 @@ export default {
                     this.skillsStore.getNestedSkillsList();
                 })
                 .then(() => {
+                    this.showLoadModal = false;
                     this.$router.push('/skills');
                 });
         },
@@ -976,6 +982,8 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Loading Modal show up when user interact with sever -->
+    <WaitLoadingModal v-if="showLoadModal" />
 </template>
 
 <style scoped>
