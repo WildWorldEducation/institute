@@ -15,10 +15,16 @@ export default {
     },
     async mounted() {
         await this.userDetailsStore.getUserDetails();
+        if (this.userDetailsStore.theme == 'apprentice') {
+            document.body.classList.remove('scholar-theme');
+            document.body.classList.add('apprentice-theme');
+        }
         if (this.userDetailsStore.theme == 'scholar') {
             document.body.classList.add('scholar-theme');
+            document.body.classList.remove('apprentice-theme');
         } else {
             document.body.classList.remove('scholar-theme');
+            document.body.classList.remove('apprentice-theme');
         }
     },
     methods: {}
@@ -31,6 +37,14 @@ export default {
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link logo">
                     <img
+                        v-if="userDetailsStore.theme != 'solid_color'"
+                        src="/images/logo-red.png"
+                        alt=""
+                        width="50"
+                        height="50"
+                    />
+                    <img
+                        v-else
                         src="/images/logo-white.png"
                         alt=""
                         width="50"
@@ -196,6 +210,8 @@ Themes
 */
 /* The Solid Colour theme */
 :root {
+    --nav-colour: black;
+
     --primary-colour: #8f7bd6;
     --primary-colour-hover: #9a7ceb;
     --primary-colour-border: #7f56d9;
@@ -207,6 +223,8 @@ Themes
 }
 /* The Apprentice theme */
 .apprentice-theme {
+    --nav-colour: white;
+
     --primary-colour: #8f7bd6;
     --primary-colour-hover: #9a7ceb;
     --primary-colour-border: #7f56d9;
@@ -219,6 +237,8 @@ Themes
 }
 /* The Scholar theme */
 .scholar-theme {
+    --nav-colour: white;
+
     --primary-colour: white;
     --primary-colour-hover: #303030;
     --primary-colour-border: #303030;
@@ -296,7 +316,7 @@ h2 {
 }
 
 .nav-link {
-    color: white;
+    color: var(--nav-colour);
     font-weight: 700;
     font-family: 'Inter', sans-serif;
     font-size: 16px;
