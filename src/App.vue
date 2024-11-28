@@ -37,7 +37,7 @@ export default {
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link logo">
                     <img
-                        v-if="userDetailsStore.theme != 'solid_color'"
+                        v-if="userDetailsStore.theme == 'solid-color'"
                         src="/images/logo-red.png"
                         alt=""
                         width="50"

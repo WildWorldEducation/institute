@@ -89,45 +89,34 @@ export default {
                     />
                 </div>
             </div>
-            <div class="tablet-and-up-legend">
-                <div class="legend row">
-                    <div class="col d-flex align-items-center">
-                        <button class="btn">
-                            <span class="grade-school"></span>Grade school
+            <div id="tablet-and-up-legend">
+                <div class="legend d-flex justify-content-between row">
+                    <!-- Grade buttons -->
+                    <div class="col-lg">
+                        <button class="btn grade-school me-2">
+                            Grade school
                         </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <button class="btn">
-                            <span class="middle-school"></span> Middle school
+                        <button class="btn middle-school me-2">
+                            Middle school
                         </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <button class="btn">
-                            <span class="high-school"></span> High school
+                        <button class="btn high-school me-2">
+                            High school
                         </button>
+                        <button class="btn college me-2">College</button>
+                        <button class="btn phd me-2">PHD</button>
                     </div>
-                    <div class="col d-flex align-items-center">
-                        <button class="btn">
-                            <span class="college"></span> College
-                        </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <button class="btn">
-                            <span class="phd"></span> PHD
-                        </button>
-                    </div>
-
-                    <div
-                        class="col-12 col-lg-4 d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
-                    >
+                    <!-- Search bar, reset, expand all, print buttons -->
+                    <div class="d-flex col-lg justify-content-end">
                         <!-- Search Feature -->
                         <SkillTreeSearchBar
+                            class="me-2"
                             :findNode="handleChooseResult"
                             :clearResults="clearResult"
                         />
+                        <!-- Print Button -->
                         <button
                             id="print-btn"
-                            class="btn btn-info me-3"
+                            class="btn me-4"
                             @click="$refs.childComponent.printPDF()"
                         >
                             Print
@@ -173,11 +162,6 @@ export default {
     width: 25px;
     height: 15px;
     margin-bottom: 8px;
-}
-
-#thin-purple-banner {
-    height: 2px;
-    background-color: #a48be640;
 }
 
 /* Grade level legend */
