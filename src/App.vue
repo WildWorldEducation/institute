@@ -257,7 +257,7 @@ Themes
     --primary-icon-colour: white;
     --secondary-icon-colour: black;
 
-    --primary-btn-colour: white;
+    --primary-btn-colour: black;
     --primary-btn-colour-hover: #303030;
     --primary-btn-colour-border: #303030;
     --secondary-btn-colour: black;
