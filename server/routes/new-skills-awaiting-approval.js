@@ -142,30 +142,39 @@ router.delete('/:id', (req, res, next) => {
                              FROM new_skills_awaiting_approval
                              WHERE id = ${conn.escape(req.params.id)}`;
         const action = req.query.action
+        console.log('action query: ')
+        console.log(req.query)
+        // Only record delete action if new skill is dismiss because if it is approve then delete we only record approve action
+
         conn.query(deleteQuery, (err, result) => {
             try {
                 if (err) {
                     throw err;
                 }
-                recordUserAction(
-                    {
-                        userId: req.session.userId,
-                        userAction: 'delete',
-                        contentId: result.insertId,
-                        contentType: 'skill_submit_by_user'
-                    },
-                    (err) => {
-                        if (err) {
-                            throw err;
-                        } else {
-                            res.end()
+                if (action === 'dismiss') {
+
+                    recordUserAction(
+                        {
+                            userId: req.session.userId,
+                            userAction: 'delete',
+                            contentId: result.insertId,
+                            contentType: 'skill_submit_by_user'
+                        },
+                        (err) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                res.end()
+                            }
                         }
-                    }
-                );
+                    );
+                }
             } catch (err) {
+                console.error(err);
                 next(err);
             }
         });
+
     } else {
         res.redirect('/login');
     }
@@ -243,7 +252,10 @@ router.post('/accept/:id', async (req, res, next) => {
 
                 if (err) {
                     throw err;
+
                 }
+                console.log('OK INSERT SUCCESS')
+
                 recordUserAction(
                     {
                         userId: req.session.userId,
@@ -253,10 +265,11 @@ router.post('/accept/:id', async (req, res, next) => {
                     },
                     (err) => {
                         if (err) {
+
                             throw err;
-                        } else {
-                            res.end()
                         }
+                        console.log('Done in the sever')
+                        res.json({ mess: 'ok' })
                     }
                 );
 

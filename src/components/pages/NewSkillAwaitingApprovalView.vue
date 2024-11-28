@@ -4,6 +4,7 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUsersStore } from '../../stores/UsersStore.js';
 import ApproveNewSkillModal from '../components/newSkillDetails/modals/ApproveNewSkillModal.vue';
 import DismissModal from '../components/newSkillDetails/modals/DismissModal.vue';
+import WaitLoadingModal from '../components/share-components/WaitLoadingModal.vue';
 
 export default {
     setup() {
@@ -20,7 +21,8 @@ export default {
             id: this.$route.params.id,
             newSkillAwaitingApproval: {},
             showApproveModal: false,
-            showDisMissModal: false
+            showDisMissModal: false,
+            severLoading: false
         };
     },
     async created() {
@@ -32,7 +34,8 @@ export default {
     },
     components: {
         ApproveNewSkillModal,
-        DismissModal
+        DismissModal,
+        WaitLoadingModal
     },
     methods: {
         async getNewSkillAwaitingApproval() {
@@ -89,6 +92,7 @@ export default {
             this.$router.back();
         },
         approveSkill() {
+            this.severLoading = true;
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -104,20 +108,29 @@ export default {
 
             var url = `/new-skills-awaiting-approval/accept/${this.newSkillAwaitingApproval.id}`;
 
-            fetch(url, requestOptions).then((err) => {
+            fetch(url, requestOptions).then((response) => {
+                console.log('Fetched');
+                if (response.error || response.status === 500) {
+                    alert('Fails to add new skill');
+                }
                 // Delete it afterwards.
-                const deleteUrl =
-                    '/skills/submitted-for-review/' +
-                    this.newSkillAwaitingApproval.id +
-                    '?action=delete';
-                fetch(deleteUrl, {
-                    method: 'DELETE'
-                }).then((err) => {
-                    if (err) {
-                        throw err;
+                const result = fetch(
+                    '/new-skills-awaiting-approval/' +
+                        this.id +
+                        '?action=approve',
+                    {
+                        method: 'DELETE'
                     }
-                    this.$router.back();
-                });
+                );
+
+                if (result.error) {
+                    console.err(result.error);
+                    alert('Fails to remove from waiting list');
+                    return;
+                }
+                alert('success');
+                this.severLoading = false;
+                this.$router.back();
             });
         },
         handleSaveBtnClick() {
@@ -302,6 +315,8 @@ export default {
         :closeDismissModal="hideDismissModal"
         :showDismissModal="showDisMissModal"
     />
+
+    <WaitLoadingModal v-if="severLoading" />
 </template>
 
 <style scoped>
