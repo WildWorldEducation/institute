@@ -194,8 +194,19 @@ export default {
 /*
 Themes
 */
-/* The Apprentice theme */
+/* The Solid Colour theme */
 :root {
+    --primary-colour: #8f7bd6;
+    --primary-colour-hover: #9a7ceb;
+    --primary-colour-border: #7f56d9;
+    --secondary-colour: #56c5b6;
+    --secondary-colour-border: #2fa894;
+    --fourth-colour: gold;
+
+    --tertiary-colour: white;
+}
+/* The Apprentice theme */
+.apprentice-theme {
     --primary-colour: #8f7bd6;
     --primary-colour-hover: #9a7ceb;
     --primary-colour-border: #7f56d9;

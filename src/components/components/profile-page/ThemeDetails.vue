@@ -9,16 +9,14 @@ export default {
         };
     },
     data() {
-        return {};
+        return {
+            theme: ''
+        };
     },
 
     methods: {
-        toggleTheme() {
-            if (this.userDetailsStore.theme == 'apprentice') {
-                this.userDetailsStore.updateTheme('scholar');
-            } else {
-                this.userDetailsStore.updateTheme('apprentice');
-            }
+        chooseTheme() {
+            this.userDetailsStore.updateTheme(this.theme);
         }
     }
 };
@@ -30,17 +28,12 @@ export default {
             Theme
         </h2>
         <!-- Choose theme -->
-        <div
-            :class="`toggle ${
-                userDetailsStore.theme == 'apprentice' ? 'left' : 'right'
-            }`"
-            @click="toggleTheme"
-        >
-            <div class="cursor"></div>
-            <div class="labels">
-                <div class="label-left">Apprentice</div>
-                <div class="label-right">Scholar</div>
-            </div>
+        <div class="mb-3 text-start">
+            <select class="form-select" @change="chooseTheme()" v-model="theme">
+                <option value="solid_color">Solid color</option>
+                <option value="apprentice">Apprentice</option>
+                <option value="scholar">Scholar</option>
+            </select>
         </div>
     </div>
 </template>
