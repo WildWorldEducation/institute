@@ -62,9 +62,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/" class="nav-link btn"
-                                >Hub</RouterLink
-                            >
+                            <RouterLink to="/" class="nav-link">Hub</RouterLink>
                         </li>
                         <li
                             v-if="
@@ -75,7 +73,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/todo" class="nav-link btn">
+                            <RouterLink to="/todo" class="nav-link">
                                 <span>Todo</span>
                             </RouterLink>
                         </li>
@@ -86,7 +84,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/skills" class="nav-link btn">
+                            <RouterLink to="/skills" class="nav-link">
                                 <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
@@ -97,7 +95,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/vertical-tree" class="nav-link btn"
+                            <RouterLink to="/vertical-tree" class="nav-link"
                                 >Vertical Tree</RouterLink
                             >
                         </li>
@@ -105,7 +103,7 @@ export default {
                             v-if="!sessionDetailsStore.isLoggedIn"
                             class="nav-item"
                         >
-                            <RouterLink to="/vertical-tree" class="nav-link btn"
+                            <RouterLink to="/vertical-tree" class="nav-link"
                                 >You Can Not Interact With the Tree Until Logged
                                 in</RouterLink
                             >
@@ -117,7 +115,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/radial-tree" class="nav-link btn"
+                            <RouterLink to="/radial-tree" class="nav-link"
                                 >Radial Tree (Alpha Version)</RouterLink
                             >
                         </li>
@@ -130,7 +128,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/users" class="nav-link btn">
+                            <RouterLink to="/users" class="nav-link">
                                 <span v-if="userDetailsStore.role == 'admin'"
                                     >Users
                                 </span>
@@ -155,7 +153,7 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/cohorts" class="nav-link btn">
+                            <RouterLink to="/cohorts" class="nav-link">
                                 <span>Cohorts</span>
                             </RouterLink>
                         </li>
@@ -165,7 +163,7 @@ export default {
                         >
                             <RouterLink
                                 to="/profile-settings"
-                                class="nav-link btn profile-btn"
+                                class="nav-link profile-btn"
                             >
                                 <img
                                     id="user-avatar"
@@ -298,6 +296,7 @@ h2 {
 
 .nav-link:hover {
     color: var(--fourth-colour);
+    text-decoration: underline;
 }
 
 .table-header {
@@ -341,6 +340,9 @@ h2 {
     width: 40px;
     height: 40px;
     border-radius: 8px;
+}
+#user-avatar:hover {
+    border: 2px solid var(--fourth-colour);
 }
 .router-view {
     height: 100vh;
