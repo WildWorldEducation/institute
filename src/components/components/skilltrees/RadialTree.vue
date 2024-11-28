@@ -436,14 +436,24 @@ export default {
                 .radius((d) => d.y)
                 .context(this.context);
 
-            let color = '#fff';
+            // Determine colour of links based on user's theme
+            let color = '#000';
+            if (this.userDetailsStore.theme != 'solid-color') color = '#fff';
+
             // If skill is mastered.
             if (link.target.data.is_mastered == 1) {
                 this.context.lineWidth =
                     4 + parseInt(3 * (1 / this.currentZoom));
                 color = '#000';
-            } else
-                this.context.lineWidth = parseInt(3 * (1 / this.currentZoom));
+            } else {
+                let width = 2;
+                if (this.userDetailsStore.theme != 'solid-color') {
+                    width = 3;
+                }
+                this.context.lineWidth = parseInt(
+                    width * (1 / this.currentZoom)
+                );
+            }
 
             this.context.beginPath();
             linkGenerator(link);

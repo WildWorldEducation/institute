@@ -15,11 +15,11 @@ export default {
     },
     async mounted() {
         await this.userDetailsStore.getUserDetails();
+
         if (this.userDetailsStore.theme == 'apprentice') {
             document.body.classList.remove('scholar-theme');
             document.body.classList.add('apprentice-theme');
-        }
-        if (this.userDetailsStore.theme == 'scholar') {
+        } else if (this.userDetailsStore.theme == 'scholar') {
             document.body.classList.add('scholar-theme');
             document.body.classList.remove('apprentice-theme');
         } else {
