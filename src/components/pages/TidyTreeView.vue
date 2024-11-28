@@ -185,9 +185,9 @@ export default {
                 </div>
             </div>
             <div id="tablet-and-up-legend">
-                <div class="legend d-flex justify-content-between">
+                <div class="legend d-flex justify-content-between row">
                     <!-- Grade buttons -->
-                    <div>
+                    <div class="col-lg">
                         <button
                             class="btn grade-school me-2"
                             @click="
@@ -238,7 +238,7 @@ export default {
                         </button>
                     </div>
                     <!-- Search bar, reset, expand all, print buttons -->
-                    <div class="d-flex">
+                    <div class="d-flex col-lg justify-content-end">
                         <!-- Search Feature -->
                         <SkillTreeSearchBar
                             class="me-2"
@@ -381,6 +381,7 @@ export default {
 .search-bar {
     border: 1px solid #dce2f2;
     border-radius: 8px;
+    height: 40px;
 }
 
 .have-results {
