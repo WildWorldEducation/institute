@@ -135,7 +135,7 @@ export default {
     border-radius: 8px;
     border: 1px solid #7f56d9;
     background-color: #c8d7da;
-    color: white;
+    color: black;
     overflow: hidden;
     padding: 16px, 28px, 16px, 28px;
     font-size: 1.25rem;

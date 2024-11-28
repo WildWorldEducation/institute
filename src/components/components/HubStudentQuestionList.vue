@@ -62,9 +62,7 @@ export default {
 
 <template>
     <div class="container-fluid">
-        <div class="question-header">
-            <h2 class="question-title">Check New Questions</h2>
-        </div>
+        <h2>Check New Questions</h2>
 
         <div class="list-body">
             <div class="question" v-for="question in questions">
@@ -89,14 +87,6 @@ export default {
     padding-right: 15px;
 }
 
-.question-header {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 20px;
-    background: #e8e2f9;
-    border: 1px solid #dbd0f9;
-}
-
 .question-link {
     font-family: 'Poppins';
     font-size: 16px;
@@ -106,14 +96,6 @@ export default {
     text-align: left;
     text-decoration: none;
     color: #667085;
-}
-
-.question-title {
-    font-size: 20px;
-    line-height: 28px;
-    letter-spacing: 0em;
-    text-align: left;
-    margin-bottom: 0px;
 }
 
 .question {
@@ -127,7 +109,6 @@ export default {
 }
 
 .list-body {
-    height: 340px;
     overflow: auto;
 }
 </style>

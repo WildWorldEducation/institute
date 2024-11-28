@@ -186,57 +186,6 @@ export default {
             </div>
             <div id="tablet-and-up-legend">
                 <div class="legend d-flex justify-content-between row">
-                    <!-- Grade buttons -->
-                    <div class="col-lg">
-                        <button
-                            class="btn grade-school me-2"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel(
-                                    'grade_school'
-                                )
-                            "
-                        >
-                            Grade school
-                        </button>
-                        <button
-                            class="btn middle-school me-2"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel(
-                                    'middle_school'
-                                )
-                            "
-                        >
-                            Middle school
-                        </button>
-                        <button
-                            class="btn high-school me-2"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel(
-                                    'high_school'
-                                )
-                            "
-                        >
-                            High school
-                        </button>
-                        <button
-                            class="btn college me-2"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel(
-                                    'college'
-                                )
-                            "
-                        >
-                            College
-                        </button>
-                        <button
-                            class="btn phd me-2"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel('phd')
-                            "
-                        >
-                            PHD
-                        </button>
-                    </div>
                     <!-- Search bar, reset, expand all, print buttons -->
                     <div class="d-flex col-lg justify-content-end">
                         <!-- Search Feature -->
@@ -338,14 +287,79 @@ export default {
             <span>Loading...</span>
         </template>
     </Suspense>
+    <div class="position-absolute bottom-legend-div">
+        <div id="tablet-and-up-legend">
+            <div class="legend">
+                <!-- Grade buttons -->
+                <button
+                    class="btn grade-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel(
+                            'grade_school'
+                        )
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel(
+                            'middle_school'
+                        )
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel('high_school')
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel('college')
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd me-2"
+                    @click="$refs.childComponent.truncateToGradeLevel('phd')"
+                >
+                    PHD
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style>
+.bottom-legend-div {
+    width: 100%;
+    bottom: 10px;
+}
+
 #legend {
     height: 60px;
 }
 
 #legend .btn {
+    color: white;
+}
+
+.legend {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.legend .btn {
     color: white;
 }
 
@@ -365,11 +379,6 @@ export default {
     width: 25px;
     height: 15px;
     margin-bottom: 8px;
-}
-
-#thin-purple-banner {
-    height: 2px;
-    background-color: #a48be640;
 }
 
 /* Grade level legend */
@@ -431,10 +440,6 @@ export default {
 
 .result-row:focus {
     border: 1px solid #133b61;
-}
-
-#legend {
-    height: 60px;
 }
 
 #mobile-legend {
@@ -570,10 +575,6 @@ export default {
 
 /* Bigger devices ( Tablet ) */
 @media (min-width: 481px) and (max-width: 1024px) {
-    #legend {
-        height: 90px;
-    }
-
     #mobile-legend {
         display: none;
     }
