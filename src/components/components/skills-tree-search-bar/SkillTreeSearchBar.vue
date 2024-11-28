@@ -275,8 +275,7 @@ export default {
     flex-direction: column;
     border: 1px solid #dce2f2;
     border-radius: 8px;
-    width: 450px;
-    margin-right: 35px;
+    background-color: white;
 }
 
 .have-results {

@@ -436,12 +436,12 @@ export default {
                 .radius((d) => d.y)
                 .context(this.context);
 
+            let color = '#fff';
             // If skill is mastered.
-            let color = '#71717a';
             if (link.target.data.is_mastered == 1) {
                 this.context.lineWidth =
                     4 + parseInt(3 * (1 / this.currentZoom));
-                color = '#ffffff';
+                color = '#000';
             } else
                 this.context.lineWidth = parseInt(3 * (1 / this.currentZoom));
 

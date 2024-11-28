@@ -527,7 +527,7 @@ export default {
 
             // If skill is mastered.
             if (link.target.data.is_mastered == 1) this.context.lineWidth = 4;
-            else this.context.lineWidth = 1;
+            else this.context.lineWidth = 2;
 
             if (
                 (link.source.data.type == 'super' &&

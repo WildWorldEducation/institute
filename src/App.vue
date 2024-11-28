@@ -31,7 +31,7 @@ export default {
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link logo">
                     <img
-                        src="/images/logo-red.png"
+                        src="/images/logo-white.png"
                         alt=""
                         width="50"
                         height="50"
@@ -56,7 +56,10 @@ export default {
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
                     <ul class="navbar-nav d-flex">
                         <li
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                this.$route.name != 'hub'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/" class="nav-link btn"
@@ -67,7 +70,8 @@ export default {
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
                                 (userDetailsStore.role == 'admin' ||
-                                    userDetailsStore.role == 'editor')
+                                    userDetailsStore.role == 'editor') &&
+                                this.$route.name != 'todo'
                             "
                             class="nav-item"
                         >
@@ -76,7 +80,10 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                this.$route.name != 'skills'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/skills" class="nav-link btn">
@@ -84,7 +91,10 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="userDetailsStore.role == 'student'"
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                this.$route.name != 'vertical-tree'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/vertical-tree" class="nav-link btn"
@@ -101,7 +111,10 @@ export default {
                             >
                         </li>
                         <li
-                            v-if="userDetailsStore.role == 'student'"
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                this.$route.name != 'radial-tree'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/radial-tree" class="nav-link btn"
@@ -110,9 +123,10 @@ export default {
                         </li>
                         <li
                             v-if="
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'admin' ||
-                                userDetailsStore.role == 'editor'
+                                (userDetailsStore.role == 'instructor' ||
+                                    userDetailsStore.role == 'admin' ||
+                                    userDetailsStore.role == 'editor') &&
+                                this.$route.name != 'users'
                             "
                             class="nav-item"
                         >
@@ -135,7 +149,10 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="userDetailsStore.role == 'instructor'"
+                            v-if="
+                                userDetailsStore.role == 'instructor' &&
+                                this.$route.name != 'cohorts'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/cohorts" class="nav-link btn">

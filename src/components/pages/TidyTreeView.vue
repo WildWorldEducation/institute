@@ -75,51 +75,50 @@ export default {
                     <div class="col-8">
                         <div class="col">
                             <button
-                                class="btn"
+                                class="btn grade-school"
                                 @click="
                                     $refs.childComponent.truncateToGradeLevel(
                                         'grade_school'
                                     )
                                 "
                             >
-                                <span class="grade-school"></span>Grade school
+                                Grade school
                             </button>
                         </div>
                         <div class="col">
                             <button
-                                class="btn"
+                                class="btn middle-school"
                                 @click="
                                     $refs.childComponent.truncateToGradeLevel(
                                         'middle_school'
                                     )
                                 "
                             >
-                                <span class="middle-school"></span> Middle
-                                school
+                                Middle school
                             </button>
                         </div>
                         <div class="col">
                             <button
-                                class="btn"
+                                class="btn high-school"
                                 @click="
                                     $refs.childComponent.truncateToGradeLevel(
                                         'high_school'
                                     )
                                 "
                             >
-                                <span class="high-school"></span> High school
+                                High school
                             </button>
                         </div>
                         <div class="col">
                             <button
-                                class="btn"
+                                class="btn college"
                                 @click="
                                     $refs.childComponent.truncateToGradeLevel(
                                         'college'
                                     )
                                 "
                             >
-                                <span class="college"></span> College
+                                College
                             </button>
                         </div>
                         <div
@@ -128,9 +127,7 @@ export default {
                                 $refs.childComponent.truncateToGradeLevel('phd')
                             "
                         >
-                            <button class="btn">
-                                <span class="phd"></span> PHD
-                            </button>
+                            <button class="btn phd">PHD</button>
                         </div>
                     </div>
                     <div class="col-4 d-flex flex-column align-items-end">
@@ -188,84 +185,77 @@ export default {
                 </div>
             </div>
             <div id="tablet-and-up-legend">
-                <div class="legend row">
-                    <div class="col d-flex align-items-center">
+                <div class="legend d-flex justify-content-between">
+                    <!-- Grade buttons -->
+                    <div>
                         <button
-                            class="btn"
+                            class="btn grade-school me-2"
                             @click="
                                 $refs.childComponent.truncateToGradeLevel(
                                     'grade_school'
                                 )
                             "
                         >
-                            <span class="grade-school"></span>Grade school
+                            Grade school
                         </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
                         <button
-                            class="btn"
+                            class="btn middle-school me-2"
                             @click="
                                 $refs.childComponent.truncateToGradeLevel(
                                     'middle_school'
                                 )
                             "
                         >
-                            <span class="middle-school"></span> Middle school
+                            Middle school
                         </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
                         <button
-                            class="btn"
+                            class="btn high-school me-2"
                             @click="
                                 $refs.childComponent.truncateToGradeLevel(
                                     'high_school'
                                 )
                             "
                         >
-                            <span class="high-school"></span> High school
+                            High school
                         </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
                         <button
-                            class="btn"
+                            class="btn college me-2"
                             @click="
                                 $refs.childComponent.truncateToGradeLevel(
                                     'college'
                                 )
                             "
                         >
-                            <span class="college"></span> College
+                            College
                         </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
                         <button
-                            class="btn"
+                            class="btn phd me-2"
                             @click="
                                 $refs.childComponent.truncateToGradeLevel('phd')
                             "
                         >
-                            <span class="phd"></span> PHD
+                            PHD
                         </button>
                     </div>
-                    <div
-                        class="col-12 col-lg-4 d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
-                    >
+                    <!-- Search bar, reset, expand all, print buttons -->
+                    <div class="d-flex">
                         <!-- Search Feature -->
                         <SkillTreeSearchBar
+                            class="me-2"
                             :findNode="handleChooseResult"
                             :clearResults="clearResult"
                         />
                         <!-- Reset Button -->
                         <button
                             id="reset-btn"
-                            class="btn btn-primary me-1"
+                            class="btn btn-primary me-2"
                             @click="resetPos()"
                         >
                             Reset
                         </button>
                         <button
                             v-if="sessionDetailsStore.isLoggedIn"
-                            class="btn legend-btn me-1"
+                            class="btn legend-btn me-2"
                             @click="expandAllNodesWarning()"
                         >
                             <svg
@@ -284,7 +274,7 @@ export default {
                         <!-- Print Button -->
                         <button
                             v-if="sessionDetailsStore.isLoggedIn"
-                            class="btn legend-btn me-3"
+                            class="btn legend-btn me-4"
                             @click="$refs.childComponent.printPDF()"
                         >
                             Print
@@ -356,7 +346,7 @@ export default {
 }
 
 #legend .btn {
-    background-color: white;
+    color: white;
 }
 
 .legend-div {
@@ -389,8 +379,6 @@ export default {
 }
 
 .search-bar {
-    display: flex;
-    flex-direction: column;
     border: 1px solid #dce2f2;
     border-radius: 8px;
 }
