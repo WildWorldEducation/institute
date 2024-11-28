@@ -10,8 +10,11 @@ export default {
     },
     data() {
         return {
-            theme: ''
+            theme: useUserDetailsStore.theme
         };
+    },
+    created() {
+       
     },
 
     methods: {
@@ -28,9 +31,9 @@ export default {
             Theme
         </h2>
         <!-- Choose theme -->
-        <div class="mb-3 text-start">
+        <div class="mb-3 text-start themes">
             <select class="form-select" @change="chooseTheme()" v-model="theme">
-                <option value="solid_color">Solid color</option>
+                <option value="solid-color">Solid color</option>
                 <option value="apprentice">Apprentice</option>
                 <option value="scholar">Scholar</option>
             </select>
@@ -47,54 +50,7 @@ export default {
     text-align: left;
 }
 
-/* Theme toggle */
-.toggle {
-    border: #7f56d9 solid 1px;
-    width: 100%;
-    height: 40px;
-    border-radius: 10px;
-    margin-bottom: 16px;
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-    background-color: white;
-}
-.toggle .cursor {
-    height: 100%;
-    width: 50%;
-    background-color: #7f56d9;
-    position: absolute;
-    top: 0px;
-    transition: all ease 300ms;
-}
-.toggle.left .cursor {
-    left: 0px;
-}
-.toggle.right .cursor {
-    left: 50%;
-}
-.toggle .labels {
-    display: flex;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0px;
-    top: 0px;
-}
-
-.label-left,
-.label-right {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 50%;
-    color: #000000;
-}
-.toggle.left .label-left {
-    color: #ffffff;
-}
-.toggle.right .label-right {
-    color: #ffffff;
+.themes {
+    width: 300px;
 }
 </style>

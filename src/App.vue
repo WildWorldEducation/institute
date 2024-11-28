@@ -33,7 +33,7 @@ export default {
 
 <template>
     <header>
-        <nav id="navbar" class="navbar fixed-top navbar-expand-sm nav-bar">
+        <nav id="navbar" class="navbar navbar-expand-sm nav-bar">
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link logo">
                     <img
@@ -396,16 +396,9 @@ h2 {
 .router-view {
     height: 100vh;
 }
-.router-view-padding {
-    padding-top: 72px;
-}
+
 .login-btn {
     max-width: 100px;
     justify-content: center;
-}
-@media (max-width: 991px) {
-    .router-view-padding {
-        padding-top: 66px;
-    }
 }
 </style>
