@@ -54,7 +54,7 @@ export default {
                     class="img-fluid rounded"
                 />
             </div> -->
-            <div class="col-lg-4 col-md-7 mb-4 pb-4">
+            <div class="col-lg-4 col-md-6 mb-4 pb-4">
                 <StudentProgress
                     v-if="userDetailsStore.role == 'student'"
                     :userId="userDetailsStore.userId"
@@ -63,7 +63,7 @@ export default {
                     v-else-if="userDetailsStore.role == 'instructor'"
                 />
             </div>
-            <div class="col-lg-4 col-md-7 mb-4 pb-4">
+            <div class="col-lg-4 col-md-6 mb-4 pb-4">
                 <LastVisitedSkills
                     v-if="userDetailsStore.role == 'student'"
                     :userId="userDetailsStore.userId"
