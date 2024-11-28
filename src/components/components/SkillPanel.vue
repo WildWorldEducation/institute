@@ -187,7 +187,7 @@ export default {
 }
 
 .skill-name {
-    color: #a48be5;
+    color: var(--secondary-heading-colour) !important;
     font-weight: 600;
     font-size: 33px;
     margin-left: 20px;

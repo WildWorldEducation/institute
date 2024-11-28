@@ -39,11 +39,8 @@ export default {
 </script>
 
 <template>
-    <div id="banner" class="overflow-hidden">
-        <img src="/images/banners/general-banner.png" class="image-fluid" />
-    </div>
     <!-- Purple Banner Row -->
-    <div class="row px-2 px-lg-2" id="purple-banner">
+    <div class="row px-2 px-lg-2">
         <div class="col d-flex justify-content-between">
             <router-link
                 v-if="
@@ -94,8 +91,8 @@ export default {
                 <h1>{{ skill.name }} Question Bank</h1>
             </div>
         </div>
-        <!-- question type checker row -->
-        <div class="row mt-5 pt-3 pb-3">
+        <!-- Question type checkboxes -->
+        <div class="row mt-2 pt-1 pb-1 checkboxes">
             <div class="col-4">
                 <label class="control control-checkbox">
                     <span class="my-auto mx-2 me-4">Multiple Choice</span>
@@ -151,6 +148,16 @@ export default {
 </template>
 
 <style scoped>
+.checkboxes {
+    background-color: white;
+    border-radius: 10px;
+}
+
+table {
+    background-color: white;
+    border-radius: 10px;
+}
+
 .purple-btn {
     background-color: #a48be6;
     color: white;
@@ -184,19 +191,6 @@ export default {
 
 .red-btn:hover {
     background-color: #cc3535;
-}
-
-#purple-banner {
-    margin-top: -10px;
-    margin-right: 0px;
-    margin-left: 0px;
-    padding-left: 46px;
-    padding-top: 16px;
-    padding-bottom: 17px;
-    padding-right: 46px;
-    height: 77px;
-    width: 100%;
-    background-color: rgb(164, 139, 230, 0.25);
 }
 
 /**-------------------------------------  */
