@@ -213,8 +213,8 @@ Themes
     --primary-colour: white;
     --primary-colour-hover: #303030;
     --primary-colour-border: #303030;
-    --secondary-colour: orange;
-    --secondary-colour-border: darkorange;
+    --secondary-colour: black;
+    --secondary-colour-hover-border: darkorange;
 
     --tertiary-colour: #87ceeb;
     --fourth-colour: #bf202f;
@@ -269,7 +269,6 @@ h2 {
 
 .secondary-btn {
     background-color: var(--secondary-colour) !important;
-    border: 1px solid var(--secondary-colour-border) !important;
     color: white;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
@@ -283,7 +282,7 @@ h2 {
 }
 
 .secondary-btn:hover {
-    background-color: var(--secondary-colour-hover) !important;
+    border-color: var(--secondary-colour-hover-border) !important;
     color: white;
 }
 

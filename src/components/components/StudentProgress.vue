@@ -20,13 +20,11 @@ export default {
                     (this.userSkills[i].is_mastered != 1) &
                     (this.userSkills[i].type != 'domain')
                 ) {
-                    // Format the skill name as a URL, based on the Wikipedia style.
-                    let url = this.userSkills[i].name.replace(/ /g, '_');
-
                     availableSkills.push({
                         name: this.userSkills[i].name,
                         id: this.userSkills[i].id,
-                        url: this.userSkills[i].url
+                        url: this.userSkills[i].url,
+                        level: this.userSkills[i].level
                     });
                 }
             }
@@ -45,6 +43,13 @@ export default {
     <div id="skill-list">
         <div v-for="availableSkill in availableSkills">
             <router-link
+                :class="{
+                    'grade-school': availableSkill.level == 'grade_school',
+                    'middle-school': availableSkill.level == 'middle_school',
+                    'high-school': availableSkill.level == 'high_school',
+                    college: availableSkill.level == 'college',
+                    phd: availableSkill.level == 'phd'
+                }"
                 class="skill-link btn"
                 :to="`/skills/${availableSkill.url}`"
                 target="_blank"
@@ -91,7 +96,26 @@ export default {
 
 .skill-link {
     text-decoration: none !important;
-    background-color: white;
+    color: black;
+}
+
+/* Level colors */
+.grade-school {
+    background-color: #40e0d0;
+}
+.middle-school {
+    background-color: #33a133;
+    color: white;
+}
+.high-school {
+    background-color: #ffd700;
+}
+.college {
+    background-color: #ffa500;
+}
+.phd {
+    background-color: #ff0000;
+    color: white;
 }
 
 #skill-list div:hover {

@@ -77,7 +77,7 @@ export default {
                         class="col-12 col-5 d-flex gap-3 flex-row justify-content-center justify-content-md-start ps-lg-0"
                     >
                         <router-link
-                            class="primary-btn btn"
+                            class="secondary-btn btn"
                             to="/profile/edit"
                             role="button"
                             >Edit Profile&nbsp;&nbsp;
@@ -136,7 +136,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="col-12 px-4 px-md-0 col-lg-4 px-0 px-md-4 px-lg-0">
+            <div class="col-12 px-4 px-md-0 col-lg-4 px-0 px-md-4 px-lg-0 form">
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
                     <input
@@ -190,6 +190,10 @@ export default {
 </template>
 
 <style scoped>
+.form {
+    background-color: white;
+}
+
 .red-btn {
     background-color: #e24d4d;
     color: white;

@@ -23,6 +23,13 @@ export default {
     <div id="skill-list">
         <div v-for="skill in visitedSkills">
             <router-link
+                :class="{
+                    'grade-school': skill.level == 'grade_school',
+                    'middle-school': skill.level == 'middle_school',
+                    'high-school': skill.level == 'high_school',
+                    college: skill.level == 'college',
+                    phd: skill.level == 'phd'
+                }"
                 class="skill-link btn"
                 :to="`/skills/${skill.url}`"
                 target="_blank"
@@ -50,7 +57,6 @@ export default {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
-
 .table-responsive {
     max-height: 300px;
     display: flex;
@@ -68,7 +74,26 @@ export default {
 
 .skill-link {
     text-decoration: none !important;
-    background-color: white;
+    color: black;
+}
+
+/* Level colors */
+.grade-school {
+    background-color: #40e0d0;
+}
+.middle-school {
+    background-color: #33a133;
+    color: white;
+}
+.high-school {
+    background-color: #ffd700;
+}
+.college {
+    background-color: #ffa500;
+}
+.phd {
+    background-color: #ff0000;
+    color: white;
 }
 
 #skill-list div:hover {
