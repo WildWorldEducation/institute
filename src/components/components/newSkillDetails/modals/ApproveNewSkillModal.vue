@@ -8,6 +8,12 @@ export default {
             showModal: false
         };
     },
+    methods: {
+        handleApproveSkill() {
+            this.closeModal();
+            this.approveSkill();
+        }
+    },
     watch: {
         showApproveModal: {
             handler(newVal) {
@@ -68,10 +74,7 @@ export default {
                 <button
                     type="button"
                     class="btn green-btn modal-btn"
-                    @click="
-                        closeModal;
-                        approveSkill;
-                    "
+                    @click="handleApproveSkill"
                 >
                     <span class="d-none d-md-block"> Yes </span>
                     <!-- X icon Only show when in Phone View -->

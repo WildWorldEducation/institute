@@ -75,42 +75,8 @@ export default {
                 });
         },
         dismissSkill() {
-            console.log('DISMISS SKILL');
-            const result = fetch('/new-skills-awaiting-approval/' + this.id, {
-                method: 'DELETE'
-            });
-
-            if (result.error) {
-                console.log(result.error);
-            }
-
-            this.$router.back();
-        },
-        saveSkill() {
-            const requestOptions = {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    mastery_requirements: this.skillEdit.mastery_requirements,
-                    icon_image: this.skillEdit.icon_image,
-                    banner_image: this.skillEdit.banner_image,
-                    comment: this.comment,
-                    edit: this.edited
-                })
-            };
-
-            var url =
-                '/skills/' + this.skillEdit.skill_id + '/edit-for-review/save';
-            fetch(url, requestOptions).then(() => {
-                this.$router.back();
-            });
-
-            // Delete it afterwards.
             const result = fetch(
-                '/skills/submitted-for-review/' +
-                    this.skillId +
-                    '/' +
-                    this.userId,
+                '/new-skills-awaiting-approval/' + this.id + '?action=dismiss',
                 {
                     method: 'DELETE'
                 }
@@ -119,6 +85,40 @@ export default {
             if (result.error) {
                 console.log(result.error);
             }
+
+            this.$router.back();
+        },
+        approveSkill() {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: this.newSkillAwaitingApproval.name,
+                    mastery_requirements:
+                        this.newSkillAwaitingApproval.mastery_requirements,
+                    icon_image: this.newSkillAwaitingApproval.icon_image,
+                    type: this.newSkillAwaitingApproval.type,
+                    level: this.newSkillAwaitingApproval.level
+                })
+            };
+
+            var url = `/new-skills-awaiting-approval/accept/${this.newSkillAwaitingApproval.id}`;
+
+            fetch(url, requestOptions).then((err) => {
+                // Delete it afterwards.
+                const deleteUrl =
+                    '/skills/submitted-for-review/' +
+                    this.newSkillAwaitingApproval.id +
+                    '?action=delete';
+                fetch(deleteUrl, {
+                    method: 'DELETE'
+                }).then((err) => {
+                    if (err) {
+                        throw err;
+                    }
+                    this.$router.back();
+                });
+            });
         },
         handleSaveBtnClick() {
             this.showApproveModal = true;
@@ -132,15 +132,6 @@ export default {
         hideDismissModal() {
             console.log('hide dismiss modal');
             this.showDisMissModal = false;
-        },
-        getMail() {
-            fetch('/new-skills-awaiting-approval/send-mail').then(
-                async (res) => {
-                    alert('mail being sended');
-                    const resJson = await res.json();
-                    console.log(resJson);
-                }
-            );
         }
     }
 };
@@ -296,15 +287,14 @@ export default {
                     Edit
                 </router-link>
                 <button class="btn green-btn" @click="handleSaveBtnClick">
-                    Save
+                    Approve
                 </button>
-                <button class="btn green-btn" @click="getMail">SendMail</button>
             </div>
         </div>
     </div>
     <ApproveNewSkillModal
         :showApproveModal="showApproveModal"
-        :approveSkill="saveSkill"
+        :approveSkill="approveSkill"
         :closeModal="hideApproveModal"
     />
     <DismissModal

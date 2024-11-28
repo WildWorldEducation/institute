@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 // The account is Gmail, so need to authenticate (OAuth)
 const { google } = require('googleapis');
+const { snakeToTileCase } = require("./formatter");
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -13,12 +14,6 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
 
-function snakeToTileCase(string) {
-    const result = string.replace(/^[-_]*(.)/, (_, c) => c.toUpperCase()) // Initial char (after -/_)
-        .replace(/[-_]+(.)/g, (_, c) => ' ' + c.toUpperCase()) // First char after each -/_
-    return result
-
-}
 
 
 function prepareHTMLstring(newSkillData) {
