@@ -541,7 +541,7 @@ export default {
 
             this.context.beginPath();
             linkGenerator(link);
-            this.context.strokeStyle = '#000';
+            this.context.strokeStyle = '#fff';
             this.context.stroke();
         },
         genColor() {
