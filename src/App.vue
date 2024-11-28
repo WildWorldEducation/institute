@@ -33,7 +33,7 @@ export default {
 
 <template>
     <header>
-        <nav id="navbar" class="navbar fixed-top navbar-expand-lg nav-bar">
+        <nav id="navbar" class="navbar fixed-top navbar-expand-sm nav-bar">
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link logo">
                     <img
@@ -212,26 +212,38 @@ Themes
 :root {
     --nav-colour: black;
 
-    --primary-colour: #8f7bd6;
-    --primary-colour-hover: #9a7ceb;
-    --primary-colour-border: #7f56d9;
-    --secondary-colour: #56c5b6;
-    --secondary-colour-border: #2fa894;
-    --fourth-colour: gold;
+    --primary-heading-colour: #8f7bd6;
+    --secondary-heading-colour: #8f7bd6;
 
+    --primary-icon-colour: #8f7bd6;
+    --secondary-icon-colour: #8f7bd6;
+
+    --primary-btn-colour: #8f7bd6;
+    --primary-btn-colour-hover: #9a7ceb;
+    --primary-btn-colour-border: #7f56d9;
+    --secondary-btn-colour: #56c5b6;
+    --secondary-btn-colour-border: #2fa894;
+
+    --fourth-colour: gold;
     --tertiary-colour: white;
 }
 /* The Apprentice theme */
 .apprentice-theme {
     --nav-colour: white;
 
-    --primary-colour: #8f7bd6;
-    --primary-colour-hover: #9a7ceb;
-    --primary-colour-border: #7f56d9;
-    --secondary-colour: #56c5b6;
-    --secondary-colour-border: #2fa894;
-    --fourth-colour: gold;
+    --primary-heading-colour: white;
+    --secondary-heading-colour: #8f7bd6;
 
+    --primary-icon-colour: #8f7bd6;
+    --secondary-icon-colour: #8f7bd6;
+
+    --primary-btn-colour: #8f7bd6;
+    --primary-btn-colour-hover: #9a7ceb;
+    --primary-btn-colour-border: #7f56d9;
+    --secondary-btn-colour: #56c5b6;
+    --secondary-btn-colour-border: #2fa894;
+
+    --fourth-colour: gold;
     --tertiary-colour: white;
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.webp');
 }
@@ -239,11 +251,17 @@ Themes
 .scholar-theme {
     --nav-colour: white;
 
-    --primary-colour: white;
-    --primary-colour-hover: #303030;
-    --primary-colour-border: #303030;
-    --secondary-colour: black;
-    --secondary-colour-hover-border: darkorange;
+    --primary-heading-colour: white;
+    --secondary-heading-colour: black;
+
+    --primary-icon-colour: white;
+    --secondary-icon-colour: black;
+
+    --primary-btn-colour: white;
+    --primary-btn-colour-hover: #303030;
+    --primary-btn-colour-border: #303030;
+    --secondary-btn-colour: black;
+    --secondary-btn-colour-hover-border: darkorange;
 
     --tertiary-colour: #87ceeb;
     --fourth-colour: #bf202f;
@@ -261,24 +279,24 @@ body {
 } */
 
 h1 {
-    color: var(--primary-colour) !important;
+    color: var(--primary-heading-colour) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
 
 h2 {
-    color: var(--primary-colour) !important;
+    color: var(--primary-heading-colour) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
 
 .icon {
-    fill: var(--primary-colour) !important;
+    fill: var(--secondary-icon-colour) !important;
 }
 
 .primary-btn {
-    background-color: var(--primary-colour) !important;
-    border: 1px solid var(--primary-colour-border) !important;
+    background-color: var(--primary-btn-colour) !important;
+    border: 1px solid var(--primary-btn-colour-border) !important;
     color: white;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
@@ -292,12 +310,12 @@ h2 {
 }
 
 .primary-btn:hover {
-    background-color: var(--primary-colour-hover) !important;
+    background-color: var(--primary-btn-colour-hover) !important;
     color: white;
 }
 
 .secondary-btn {
-    background-color: var(--secondary-colour) !important;
+    background-color: var(--secondary-btn-colour) !important;
     color: white;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
@@ -311,7 +329,7 @@ h2 {
 }
 
 .secondary-btn:hover {
-    border-color: var(--secondary-colour-hover-border) !important;
+    border-color: var(--secondary-btn-colour-hover-border) !important;
     color: white;
 }
 
@@ -331,8 +349,8 @@ h2 {
 }
 
 .table-header {
-    background-color: var(--secondary-colour) !important;
-    border-color: var(--secondary-colour-border) !important;
+    background-color: var(--h2-colour) !important;
+    border-color: var(--secondary-btn-colour-border) !important;
     color: white !important;
 }
 

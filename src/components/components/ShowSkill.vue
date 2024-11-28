@@ -232,7 +232,7 @@ export default {
             <!-- Name and description -->
             <div>
                 <div class="d-flex justify-content-between">
-                    <h1 class="skill-name">{{ skill.name }}</h1>
+                    <h1 class="skill-name heading">{{ skill.name }}</h1>
                     <!-- Take assessment btn-->
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
@@ -474,7 +474,7 @@ export default {
                         </a>
                         <!-- Grade level -->
                         <div class="mt-2">
-                            <h2 class="h4 title">Level</h2>
+                            <h2 class="h4 title heading">Level</h2>
                             <span v-if="skill.level == 'grade_school'"
                                 >Grade School</span
                             >
@@ -494,7 +494,7 @@ export default {
                             cluster nodes' question banks.</span
                         >
                         <div class="mt-2">
-                            <h2 class="h4 title">Author</h2>
+                            <h2 class="h4 title heading">Author</h2>
                             <!-- Author Icon -->
                             <div
                                 v-if="skill.is_human_edited"
@@ -639,10 +639,13 @@ export default {
     text-align: center;
 }
 
+.heading {
+    color: var(--secondary-heading-colour) !important;
+}
+
 .skill-name {
     font-family: 'Poppins', sans-serif;
     font-size: 40px;
-    color: #a48be6;
     font-weight: 800;
     margin-bottom: 0px;
     text-align: start;

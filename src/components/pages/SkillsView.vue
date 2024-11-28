@@ -41,7 +41,7 @@ export default {
 </script>
 
 <template>
-    <div v-if="!isInstructorMode" class="topnav" id="skill-nav">
+    <div v-if="!isInstructorMode">
         <router-link class="btn primary-btn" to="/skills/add"
             ><span v-if="userDetailsStore.role == 'admin'">Add&nbsp;</span>
             <span v-else>Submit new skill for review&nbsp;</span>
@@ -74,75 +74,57 @@ export default {
                 <div class="legend row">
                     <div class="col-8">
                         <div class="col">
-                            <button class="btn">
-                                <span class="grade-school"></span>Grade school
+                            <button class="btn grade-school">
+                                Grade school
                             </button>
                         </div>
                         <div class="col">
-                            <button class="btn">
-                                <span class="middle-school"></span> Middle
-                                school
+                            <button class="btn middle-school">
+                                Middle school
                             </button>
                         </div>
                         <div class="col">
-                            <button class="btn">
-                                <span class="high-school"></span> High school
-                            </button>
+                            <button class="btn high-school">High school</button>
                         </div>
                         <div class="col">
-                            <button class="btn">
-                                <span class="college"></span> College
-                            </button>
+                            <button class="btn college">College</button>
                         </div>
                         <div class="col">
-                            <button class="btn">
-                                <span class="phd"></span> PHD
-                            </button>
+                            <button class="btn phd">PHD</button>
                         </div>
                     </div>
                 </div>
                 <div class="search-mobile-row">
-                    <!-- Search Feature -->
+                    <!-- Search feature -->
                     <SkillTreeSearchBar
-                        :findNode="findNode"
-                        :clearResults="clearResults"
+                        :findNode="handleChooseResult"
+                        :clearResults="clearResult"
                     />
                 </div>
             </div>
             <div id="tablet-and-up-legend">
-                <div class="legend row">
-                    <div class="col d-flex align-items-center">
-                        <button class="btn">
-                            <span class="grade-school"></span>Grade school
+                <div class="legend d-flex justify-content-between row">
+                    <!-- Grade buttons -->
+                    <div class="col-lg">
+                        <button class="btn grade-school me-2">
+                            Grade school
                         </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <button class="btn">
-                            <span class="middle-school"></span> Middle school
+                        <button class="btn middle-school me-2">
+                            Middle school
                         </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <button class="btn">
-                            <span class="high-school"></span> High school
+                        <button class="btn high-school me-2">
+                            High school
                         </button>
+                        <button class="btn college me-2">College</button>
+                        <button class="btn phd me-2">PHD</button>
                     </div>
-                    <div class="col d-flex align-items-center">
-                        <button class="btn">
-                            <span class="college"></span> College
-                        </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <button class="btn">
-                            <span class="phd"></span> PHD
-                        </button>
-                    </div>
-                    <div
-                        class="col-12 col-lg-3 d-flex justify-content-center align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
-                    >
+                    <!-- Search bar, reset, expand all, print buttons -->
+                    <div class="d-flex col-lg justify-content-end">
                         <!-- Search Feature -->
                         <SkillTreeSearchBar
-                            :findNode="findNode"
-                            :clearResults="clearResults"
+                            class="me-2"
+                            :findNode="handleChooseResult"
+                            :clearResults="clearResult"
                         />
                     </div>
                 </div>
@@ -159,7 +141,7 @@ export default {
 }
 
 #legend .btn {
-    background-color: white;
+    color: white;
 }
 
 .legend-div {
@@ -259,28 +241,23 @@ export default {
 }
 
 /* Level colors */
-.legend .grade-school {
+.grade-school {
     background-color: #40e0d0;
 }
-.legend .middle-school {
+.middle-school {
     background-color: #33a133;
 }
-.legend .high-school {
+.high-school {
     background-color: #ffd700;
 }
-.legend .college {
+.college {
     background-color: #ffa500;
 }
-.legend .phd {
+.phd {
     background-color: #ff0000;
 }
 
 /*---*/
-
-#skill-nav {
-    display: flex;
-    justify-content: space-between;
-}
 
 .img-fluid {
     width: 100% !important;
