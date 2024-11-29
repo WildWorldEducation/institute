@@ -113,7 +113,7 @@ export default {
 
 <template>
     <div class="container-fluid">
-        <h2>Mark Assessments</h2>
+        <h2 class="h2-stroke">Mark Assessments</h2>
         <div id="list-body">
             <div class="assessment" v-for="assessment in this.assessments">
                 <RouterLink

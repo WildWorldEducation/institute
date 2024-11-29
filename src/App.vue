@@ -228,6 +228,7 @@ Themes
     --tertiary-colour: white;
 
     --fifth-colour: #888;
+    --stroke-width: 0px;
 }
 /* The Apprentice theme */
 .apprentice-theme {
@@ -250,6 +251,7 @@ Themes
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.webp');
 
     --fifth-colour: white;
+    --stroke-width: 1px;
 }
 /* The Scholar theme */
 .scholar-theme {
@@ -272,6 +274,7 @@ Themes
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 
     --fifth-colour: white;
+    --stroke-width: 1px;
 }
 
 body {
@@ -290,10 +293,20 @@ h1 {
     font-weight: 900;
 }
 
+.h1-stroke {
+    -webkit-text-stroke-color: var(--secondary-heading-colour);
+    -webkit-text-stroke-width: var(--stroke-width);
+}
+
 h2 {
     color: var(--primary-heading-colour) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
+}
+
+.h2-stroke {
+    -webkit-text-stroke-color: var(--secondary-heading-colour);
+    -webkit-text-stroke-width: var(--stroke-width);
 }
 
 .icon {

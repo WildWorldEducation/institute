@@ -546,10 +546,10 @@ export default {
                 "
             >
                 <!-- Skill name -->
-                <div class="row mt-5">
+                <div class="row mt-3">
                     <div class="col-12 col-md-8 col-lg-5 mt-2">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
+                            <h2>Name</h2>
                             <input
                                 v-model="skill.name"
                                 class="form-control"
@@ -573,7 +573,7 @@ export default {
                     <div v-if="skill.type != 'sub'">
                         <div class="col col-md-8 col-lg-5 mt-2">
                             <!-- Custom Dropdown -->
-                            <label class="form-label">Level</label>
+                            <h2>Level</h2>
                             <div class="d-flex flex-column position-relative">
                                 <div
                                     :class="[
@@ -653,11 +653,13 @@ export default {
             <!-- Skills Types Radio choose -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
-                    <label class="form-label">Node Type</label>
+                    <h2>Node Type</h2>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4">Regular</span>
+                                <span class="my-auto mx-2 me-4 text"
+                                    >Regular</span
+                                >
                                 <input
                                     type="radio"
                                     name="nodeType"
@@ -740,11 +742,12 @@ export default {
                     </div>
                 </div>
             </div>
+
             <!-- Parent Typing Dropdown -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div v-if="skill.type != 'sub'" class="mb-3">
-                        <label class="form-label">Parent</label>
+                        <h2>Parent</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -771,7 +774,7 @@ export default {
                     </div>
                     <!-- -------------------------------------------------- -->
                     <div v-else class="mb-3">
-                        <label class="form-label">Cluster node center</label>
+                        <h2>Cluster node center</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -810,7 +813,7 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                     >
-                        <label for="image" class="form-label">Icon</label>
+                        <h2>Icon</h2>
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -858,7 +861,7 @@ export default {
                                 </div>
                             </div>
                             <p style="font-size: 14px">
-                                <em>Maximum file size 15mb</em>
+                                <em class="text">Maximum file size 15mb</em>
                             </p>
                         </div>
                         <div v-else>
@@ -902,13 +905,12 @@ export default {
                     </div>
                 </div>
             </div>
+
             <!-- Description -->
             <div v-if="userDetailsStore.role == 'admin'" class="row">
                 <div class="col">
                     <div class="mb-3">
-                        <label for="description" class="form-label"
-                            >Description</label
-                        >
+                        <h2>Description</h2>
                         <textarea
                             v-model="skill.description"
                             class="form-control"
@@ -926,9 +928,7 @@ export default {
             <!-- Mastery Requirement summernote -->
             <div v-if="skill.type != 'domain'" class="mb-3">
                 <div class="d-flex justify-content-between">
-                    <label for="mastery_requirements" class="form-label"
-                        >Mastery Requirements</label
-                    >
+                    <h2>Mastery Requirements</h2>
                 </div>
 
                 <textarea
@@ -995,9 +995,7 @@ export default {
             <div class="row">
                 <div class="col">
                     <div class="mb-3">
-                        <label for="description" class="form-label"
-                            >Comment</label
-                        >
+                        <h2>Comment</h2>
                         <textarea
                             v-model="comment"
                             class="form-control"
@@ -1211,6 +1209,10 @@ export default {
 </template>
 
 <style scoped>
+.text {
+    color: var(--fifth-colour);
+}
+
 .green-btn {
     background-color: #36c1af;
     color: white;

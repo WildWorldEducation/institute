@@ -47,7 +47,7 @@ export default {
 
 <template>
     <div class="container mt-3">
-        <h1>My Profile</h1>
+        <h1 class="h1-stroke">My Profile</h1>
         <div class="row mt-3">
             <div class="col-12 col-md-6">
                 <!-- Avatar -->
@@ -130,7 +130,7 @@ export default {
             </div>
             <div class="col-12 col-md-6 form">
                 <div class="mb-3">
-                    <h2>Name</h2>
+                    <h2 class="h2-stroke">Name</h2>
                     <input
                         v-model="name"
                         type="text"
@@ -139,7 +139,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <h2>Username</h2>
+                    <h2 class="h2-stroke">Username</h2>
                     <input
                         v-model="userDetailsStore.userName"
                         type="text"
@@ -148,7 +148,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <h2>Email</h2>
+                    <h2 class="h2-stroke">Email</h2>
                     <input
                         v-model="userDetailsStore.email"
                         type="email"
@@ -157,7 +157,7 @@ export default {
                     />
                 </div>
                 <div v-if="userDetailsStore.role != 'student'" class="mb-3">
-                    <h2>Role</h2>
+                    <h2 class="h2-stroke">Role</h2>
                     <input
                         v-model="userDetailsStore.role"
                         type="text"
@@ -167,7 +167,7 @@ export default {
                 </div>
                 <!-- Instructor -->
                 <div v-else class="mb-3">
-                    <h2>Instructor</h2>
+                    <h2 class="h2-stroke">Instructor</h2>
                     <input
                         type="text"
                         class="form-control"

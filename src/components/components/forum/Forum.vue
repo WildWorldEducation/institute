@@ -247,7 +247,9 @@ export default {
 <template>
     <div class="container-fluid mt-4">
         <div class="d-flex align-items-md-baseline align-items-start gap-2">
-            <h2 class="forum-sub-page-title">Best Places To Learn This</h2>
+            <h2 class="forum-sub-page-title h2-stroke">
+                Best Places To Learn This
+            </h2>
             <!-- <img src="/images/recurso-69.png" class="" /> -->
         </div>
         <!-- Navigation Tabs -->

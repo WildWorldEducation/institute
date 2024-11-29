@@ -13,9 +13,7 @@ export default {
             theme: useUserDetailsStore.theme
         };
     },
-    created() {
-       
-    },
+    created() {},
 
     methods: {
         chooseTheme() {
@@ -27,7 +25,10 @@ export default {
 
 <template>
     <div class="container pb-4">
-        <h2 id="heading" class="my-3 ms-0 ms-md-3 ms-lg-0 mt-2 mt-md-4">
+        <h2
+            id="heading"
+            class="my-3 ms-0 ms-md-3 ms-lg-0 mt-2 mt-md-4 h2-stroke"
+        >
             Theme
         </h2>
         <!-- Choose theme -->
