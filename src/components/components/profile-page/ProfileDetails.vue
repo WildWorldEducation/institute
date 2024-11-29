@@ -101,9 +101,9 @@ export default {
                         readonly
                     />
                 </div>
-                <!-- Student Instructor container -->
+                <!-- Instructor -->
                 <div v-else class="mb-3">
-                    <label class="form-label">Instructor</label>
+                    <h2>Instructor</h2>
                     <input
                         type="text"
                         class="form-control"

@@ -109,13 +109,11 @@ export default {
     margin-top: -2px;
     margin-left: 0px;
     margin-right: -1px;
-    border-color: #2fa894 !important;
     border-width: 1px !important;
     border-collapse: collapse;
 }
 
 .news-cell {
-    border-color: #2fa894 !important;
     border-width: 1px !important;
     padding: 10px;
     background-color: white;
@@ -135,7 +133,7 @@ export default {
         padding-bottom: 0px;
         margin-left: -1px;
         margin-right: 0px;
-        border-color: #2fa894 !important;
+
         border-width: 1px !important;
         border-collapse: collapse;
     }
@@ -156,7 +154,7 @@ export default {
         margin-top: -2px;
         margin-left: 0px;
         margin-right: 0px;
-        border-color: #2fa894 !important;
+
         border-width: 1px !important;
         border-collapse: collapse;
     }
