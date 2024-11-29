@@ -169,18 +169,6 @@ export default {
 </script>
 
 <template>
-    <!-- <div id="banner">
-        <img
-            v-if="userDetailsStore.theme == 'apprentice'"
-            src="/images/banners/themes/apprentice/banner-3.png"
-            class="w-100 img-fluid"
-        />
-        <img
-            v-else
-            src="/images/banners/themes/scholar/banner-3.png"
-            class="w-100 img-fluid"
-        />
-    </div> -->
     <!-- Add user button -->
     <div
         v-if="userDetailsStore.role == 'admin'"
@@ -217,7 +205,7 @@ export default {
                 <UsersList @changeUserId="changeUserId($event)" />
             </div>
             <!-- User detail view for PC and Tablet View -->
-            <div class="col-md-7 d-none d-md-block">
+            <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
                     <UserDetails
                         v-if="
