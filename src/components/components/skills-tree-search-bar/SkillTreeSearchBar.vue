@@ -216,7 +216,7 @@ export default {
                 id="skill-tree-search-text"
                 type="text"
                 class="skill-tree-input"
-                placeholder="Skill name"
+                placeholder="Search"
                 v-model="searchText"
                 v-on:keyup.enter="handleEnterPress()"
             />
