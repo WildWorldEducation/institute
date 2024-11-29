@@ -69,7 +69,7 @@ export default {
                         />
                         <!-- Print Button -->
                         <button
-                            class="btn me-4"
+                            class="btn legend-btn me-2 mt-1"
                             @click="$refs.childComponent.printPDF()"
                         >
                             Print

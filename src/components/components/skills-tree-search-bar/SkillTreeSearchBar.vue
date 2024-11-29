@@ -343,11 +343,11 @@ export default {
 }
 
 /* Bigger devices ( Tablet ) */
-@media (min-width: 481px) and (max-width: 1024px) {
+/* @media (min-width: 481px) and (max-width: 1024px) {
     .search-bar {
         width: 90%;
     }
-}
+} */
 
 /* Phone view style */
 @media (max-width: 480px) {
