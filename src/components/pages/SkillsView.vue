@@ -44,7 +44,7 @@ export default {
     <div id="legend" class="container-fluid">
         <div class="position-absolute legend-div">
             <div id="mobile-legend">
-                <div class="legend row">
+                <!-- <div class="legend row">
                     <div class="col-8">
                         <div class="col">
                             <button class="btn grade-school">
@@ -66,7 +66,7 @@ export default {
                             <button class="btn phd">PHD</button>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="search-mobile-row">
                     <!-- Search feature -->
                     <SkillTreeSearchBar
@@ -162,10 +162,7 @@ export default {
     flex-direction: column;
     border: 1px solid #dce2f2;
     border-radius: 8px;
-}
-
-#legend {
-    height: 60px;
+    height: 100%;
 }
 
 #mobile-legend {
@@ -192,10 +189,6 @@ export default {
 
     #print-btn {
         margin-bottom: 5px;
-    }
-
-    #legend {
-        height: 190px;
     }
 
     .search-mobile-row {
@@ -335,9 +328,7 @@ export default {
 /* Tablet view style */
 @media (min-width: 481px) and (max-width: 1024px) {
     .search-bar {
-        width: 40%;
-        margin-left: auto;
-        margin-right: auto;
+        margin-top: 5px;
     }
 }
 </style>

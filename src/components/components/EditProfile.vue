@@ -499,7 +499,7 @@ export default {
                     </div>
                 </div>
                 <div v-if="userDetailsStore.role == 'student'" class="mb-3">
-                    <label class="form-label">Instructor</label>
+                    <h2>Instructor</h2>
                     <!-- Student can only choose an instructor if they don`t have one -->
                     <div v-if="haveInstructor" class="custom-select-button">
                         {{ instructorName }}
