@@ -29,56 +29,49 @@ export default {
 </script>
 
 <template>
-    <div
-        id="legend"
-        class="collapsible-tree-legend container-fluid p-2 position-relative"
-    >
-        <div class="position-absolute legend-div">
-            <div class="mobile-legend">
-                <div class="search-mobile-row">
+    <div class="container-fluid position-absolute legend-div">
+        <div class="mobile-legend">
+            <div class="search-mobile-row">
+                <!-- Search Feature -->
+                <SkillTreeSearchBar
+                    :findNode="handleChooseResult"
+                    :clearResults="clearResult"
+                />
+            </div>
+            <div class="d-flex justify-content-end">
+                <button
+                    class="btn legend-btn me-2"
+                    @click="$refs.childComponent.printPDF()"
+                >
+                    Print
+                </button>
+                <button class="btn legend-btn me-2" @click="resetPos()">
+                    Reset
+                </button>
+            </div>
+        </div>
+        <div class="tablet-and-up-legend">
+            <div class="legend d-flex justify-content-between row">
+                <!-- Search bar, reset, expand all, print buttons -->
+                <div class="d-flex col-lg justify-content-between">
                     <!-- Search Feature -->
                     <SkillTreeSearchBar
+                        class="me-2"
                         :findNode="handleChooseResult"
                         :clearResults="clearResult"
                     />
-                </div>
-                <div class="d-flex justify-content-end">
+                    <!-- Print Button -->
                     <button
-                        class="btn legend-btn me-2 mt-1"
+                        class="btn legend-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
                         Print
                     </button>
-                    <button
-                        class="btn legend-btn me-2 mt-1"
-                        @click="resetPos()"
-                    >
-                        Reset
-                    </button>
-                </div>
-            </div>
-            <div class="tablet-and-up-legend">
-                <div class="legend d-flex justify-content-between row">
-                    <!-- Search bar, reset, expand all, print buttons -->
-                    <div class="d-flex col-lg justify-content-end">
-                        <!-- Search Feature -->
-                        <SkillTreeSearchBar
-                            class="me-2"
-                            :findNode="handleChooseResult"
-                            :clearResults="clearResult"
-                        />
-                        <!-- Print Button -->
-                        <button
-                            class="btn legend-btn me-2 mt-1"
-                            @click="$refs.childComponent.printPDF()"
-                        >
-                            Print
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
@@ -144,7 +137,7 @@ export default {
             </div>
         </div>
         <div class="tablet-and-up-legend">
-            <div class="legend">
+            <div class="d-flex legend">
                 <!-- Grade buttons -->
                 <button
                     class="btn grade-school me-2"
@@ -194,10 +187,6 @@ export default {
 </template>
 
 <style>
-#legend {
-    height: 60px;
-}
-
 .bottom-legend-div {
     width: 100%;
     bottom: 10px;
@@ -208,7 +197,7 @@ export default {
 }
 
 .legend-div {
-    height: auto;
+    z-index: 2;
     width: 100%;
 }
 
@@ -347,12 +336,10 @@ export default {
 
 /* X-Small devices (portrait phones, less than 576px) */
 @media (max-width: 480px) {
-    #legend {
-        height: 90px;
-    }
-
     .mobile-legend {
-        display: block;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
     }
 
     .tablet-and-up-legend {
@@ -372,10 +359,6 @@ export default {
         display: none;
     }
 
-    #legend {
-        height: 90px;
-    }
-
     .tablet-and-up-legend {
         display: block;
     }
@@ -388,7 +371,6 @@ export default {
     }
 
     .search-bar {
-        width: 100%;
     }
 }
 </style>

@@ -65,7 +65,7 @@ export default {
 </script>
 
 <template>
-    <div class="position-absolute legend-div">
+    <div class="container-fluid position-absolute legend-div">
         <div class="mobile-legend">
             <div class="search-mobile-row">
                 <!-- Search feature -->
@@ -340,6 +340,7 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    width: 100%;
 }
 
 .legend .btn {
@@ -537,10 +538,6 @@ export default {
 
 /* Bigger devices ( Tablet ) */
 @media (min-width: 481px) and (max-width: 1024px) {
-    #mobile-legend {
-        display: none;
-    }
-
     .tablet-and-up-legend {
         display: block;
     }

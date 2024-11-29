@@ -173,7 +173,7 @@ export default {
                         </li>
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
-                            class="nav-item me-2"
+                            class="nav-item"
                         >
                             <RouterLink
                                 to="/profile-settings"
@@ -186,7 +186,7 @@ export default {
                                 />
                             </RouterLink>
                         </li>
-                        <li class="nav-item me-2" v-else>
+                        <li class="nav-item" v-else>
                             <RouterLink
                                 to="/login"
                                 class="btn purple-btn login-btn"
@@ -371,10 +371,6 @@ h2 {
     font-size: 16px;
     margin-left: 20px;
     margin-right: 50px;
-}
-
-.nav-link > img {
-    margin-left: 5px;
 }
 
 .purple-btn:hover,
