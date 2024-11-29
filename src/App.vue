@@ -226,6 +226,8 @@ Themes
 
     --fourth-colour: gold;
     --tertiary-colour: white;
+
+    --fifth-colour: #888;
 }
 /* The Apprentice theme */
 .apprentice-theme {
@@ -246,6 +248,8 @@ Themes
     --fourth-colour: gold;
     --tertiary-colour: white;
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.webp');
+
+    --fifth-colour: white;
 }
 /* The Scholar theme */
 .scholar-theme {
@@ -266,6 +270,8 @@ Themes
     --tertiary-colour: #87ceeb;
     --fourth-colour: #bf202f;
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
+
+    --fifth-colour: white;
 }
 
 body {

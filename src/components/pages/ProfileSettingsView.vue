@@ -34,14 +34,7 @@ export default {
 };
 </script>
 
-<template>
-    <!-- <div id="banner">
-        <img
-            v-if="userDetailsStore.theme == 'apprentice'"
-            src="/images/banners/themes/apprentice/banner-1.png" class="w-100 h-auto"
-        />
-        <img v-else src="/images/banners/themes/scholar/banner-1.png" class="w-100 h-auto"/>        
-    </div> -->
+<template>    
     <!-- Profile Section -->
     <ProfileDetails />
     <ThemeDetails />

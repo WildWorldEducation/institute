@@ -109,11 +109,7 @@ export default {
 
 <template>
     <div>
-        <!-- Banner -->
-        <div id="banner">
-            <img src="/images/banners/general-banner.png" class="img-fluid" />
-        </div>
-        <!-- Page tile -->
+        <!-- Page title -->
         <h2 class="ps-3 mt-2 page-title">Approve Student Added Questions</h2>
         <div class="container-fluid">
             <StudentQuestionList

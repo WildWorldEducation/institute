@@ -337,7 +337,7 @@ export default {
 }
 
 .nav-link {
-    color: #888;
+    color: var(--fifth-colour);
     font-weight: 550;
 }
 

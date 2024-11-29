@@ -168,20 +168,7 @@ export default {
 
 <template>
     <div class="w-100">
-        <!-- Banner -->
-        <!-- <div id="banner">
-            <img
-                v-if="userDetailsStore.theme == 'apprentice'"
-                src="/images/banners/themes/apprentice/banner-2.png"
-                class="img-fluid"
-            />
-            <img
-                v-else
-                src="/images/banners/themes/scholar/banner-2.png"
-                class="img-fluid"
-            />
-        </div> -->
-        <!-- Page tile -->
+        <!-- Page title -->
         <h2 class="ps-3 mt-2 page-title">Approve Content Edits</h2>
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
@@ -328,7 +315,6 @@ export default {
 .desktop-nav-bar {
     padding-top: 15px;
     padding-bottom: 15px;
-    border: 1px solid #e0e0e0;
     width: fit-content;
     border-radius: 5px;
     margin-left: 15px;
