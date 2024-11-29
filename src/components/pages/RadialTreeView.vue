@@ -31,7 +31,7 @@ export default {
 <template>
     <div class="container-fluid position-absolute legend-div">
         <div class="mobile-legend">
-            <div class="search-mobile-row">
+            <div class="search-mobile-row me-2">
                 <!-- Search Feature -->
                 <SkillTreeSearchBar
                     :findNode="handleChooseResult"
@@ -39,13 +39,13 @@ export default {
                 />
             </div>
             <div class="d-flex justify-content-end">
-                <button
+                <!-- <button
                     class="btn legend-btn me-2"
                     @click="$refs.childComponent.printPDF()"
                 >
                     Print
-                </button>
-                <button class="btn legend-btn me-2" @click="resetPos()">
+                </button> -->
+                <button class="btn legend-btn" @click="resetPos()">
                     Reset
                 </button>
             </div>
@@ -82,7 +82,7 @@ export default {
         </template>
     </Suspense>
     <div class="position-absolute bottom-legend-div">
-        <div class="mobile-legend">
+        <!-- <div class="mobile-legend">
             <div class="legend d-flex">
                 <div>
                     <button
@@ -135,7 +135,7 @@ export default {
                     </button>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="tablet-and-up-legend">
             <div class="d-flex legend">
                 <!-- Grade buttons -->

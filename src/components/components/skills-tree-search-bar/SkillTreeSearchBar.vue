@@ -352,7 +352,6 @@ export default {
 /* Phone view style */
 @media (max-width: 480px) {
     .search-bar {
-        width: 96%;
         margin-left: auto;
         margin-right: auto;
     }
