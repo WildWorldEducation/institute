@@ -35,52 +35,6 @@ export default {
     >
         <div class="position-absolute legend-div">
             <div class="mobile-legend">
-                <div class="legend row">
-                    <div class="col-8">
-                        <div class="col">
-                            <button class="btn">
-                                <span class="grade-school"></span>Grade school
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button class="btn">
-                                <span class="middle-school"></span> Middle
-                                school
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button class="btn">
-                                <span class="high-school"></span> High school
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button class="btn">
-                                <span class="college"></span> College
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button class="btn">
-                                <span class="phd"></span> PHD
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-4 d-flex flex-column align-items-end">
-                        <button
-                            id="print-btn"
-                            class="btn btn-info"
-                            @click="$refs.childComponent.printPDF()"
-                        >
-                            Print
-                        </button>
-                        <button
-                            id="reset-btn"
-                            class="btn btn-primary"
-                            @click="resetPos()"
-                        >
-                            Reset
-                        </button>
-                    </div>
-                </div>
                 <div class="search-mobile-row">
                     <!-- Search Feature -->
                     <SkillTreeSearchBar
@@ -88,23 +42,23 @@ export default {
                         :clearResults="clearResult"
                     />
                 </div>
+                <div class="d-flex justify-content-end">
+                    <button
+                        class="btn legend-btn me-2 mt-1"
+                        @click="$refs.childComponent.printPDF()"
+                    >
+                        Print
+                    </button>
+                    <button
+                        class="btn legend-btn me-2 mt-1"
+                        @click="resetPos()"
+                    >
+                        Reset
+                    </button>
+                </div>
             </div>
-            <div id="tablet-and-up-legend">
+            <div class="tablet-and-up-legend">
                 <div class="legend d-flex justify-content-between row">
-                    <!-- Grade buttons -->
-                    <div class="col-lg">
-                        <button class="btn grade-school me-2">
-                            Grade school
-                        </button>
-                        <button class="btn middle-school me-2">
-                            Middle school
-                        </button>
-                        <button class="btn high-school me-2">
-                            High school
-                        </button>
-                        <button class="btn college me-2">College</button>
-                        <button class="btn phd me-2">PHD</button>
-                    </div>
                     <!-- Search bar, reset, expand all, print buttons -->
                     <div class="d-flex col-lg justify-content-end">
                         <!-- Search Feature -->
@@ -115,7 +69,6 @@ export default {
                         />
                         <!-- Print Button -->
                         <button
-                            id="print-btn"
                             class="btn me-4"
                             @click="$refs.childComponent.printPDF()"
                         >
@@ -135,11 +88,119 @@ export default {
             <span>Loading...</span>
         </template>
     </Suspense>
+    <div class="position-absolute bottom-legend-div">
+        <div class="mobile-legend">
+            <div class="legend d-flex">
+                <div>
+                    <button
+                        class="btn grade-school me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel(
+                                'grade_school'
+                            )
+                        "
+                    >
+                        GS
+                    </button>
+                    <button
+                        class="btn middle-school me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel(
+                                'middle_school'
+                            )
+                        "
+                    >
+                        MS
+                    </button>
+                </div>
+                <div>
+                    <button
+                        class="btn high-school me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel(
+                                'high_school'
+                            )
+                        "
+                    >
+                        HS
+                    </button>
+                    <button
+                        class="btn college me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel('college')
+                        "
+                    >
+                        C
+                    </button>
+                    <button
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel('phd')
+                        "
+                        class="btn phd"
+                    >
+                        PHD
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="tablet-and-up-legend">
+            <div class="legend">
+                <!-- Grade buttons -->
+                <button
+                    class="btn grade-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel(
+                            'grade_school'
+                        )
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel(
+                            'middle_school'
+                        )
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel('high_school')
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel('college')
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd me-2"
+                    @click="$refs.childComponent.truncateToGradeLevel('phd')"
+                >
+                    PHD
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style>
 #legend {
     height: 60px;
+}
+
+.bottom-legend-div {
+    width: 100%;
+    bottom: 10px;
 }
 
 #legend .btn {
@@ -206,28 +267,24 @@ export default {
     background-color: #ff0000;
 }
 
-#print-btn {
+.legend .btn {
+    color: white;
+}
+
+.legend {
+    align-items: center;
+    justify-content: center;
+}
+
+.legend-btn {
     background-color: #184e80;
     border: #184e80;
     color: white;
-    width: 70px;
     max-height: 40px;
 }
 
-#print-btn:hover {
+.legend-btn:hover {
     background-color: #133b61;
-}
-
-#reset-btn {
-    background-color: #c4d2df;
-    border-color: #c4d2df;
-    color: black;
-    width: 70px;
-    max-height: 40px;
-}
-
-#reset-btn:hover {
-    background-color: #9da7b1;
 }
 
 .search-bar {
@@ -290,20 +347,16 @@ export default {
 
 /* X-Small devices (portrait phones, less than 576px) */
 @media (max-width: 480px) {
+    #legend {
+        height: 90px;
+    }
+
     .mobile-legend {
         display: block;
     }
 
     .tablet-and-up-legend {
         display: none;
-    }
-
-    #print-btn {
-        margin-bottom: 5px;
-    }
-
-    #legend {
-        height: 180px;
     }
 
     .search-mobile-row {
@@ -325,9 +378,6 @@ export default {
 
     .tablet-and-up-legend {
         display: block;
-    }
-    .legend {
-        align-items: center;
     }
 
     .legend .col {
