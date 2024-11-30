@@ -557,19 +557,7 @@ export default {
                                 <div class="control_indicator"></div>
                             </label>
                         </div>
-                        <div class="form-check col-6 col-md-5 my-2">
-                            <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4">Domain</span>
-                                <input
-                                    type="radio"
-                                    name="nodeType"
-                                    id="superSkillRadio"
-                                    value="domain"
-                                    v-model="skillAwaitingApproval.type"
-                                />
-                                <div class="control_indicator"></div>
-                            </label>
-                        </div>
+
                         <div
                             v-if="skillAwaitingApproval.parent_type == 'super'"
                             class="form-check col-6 col-md-5 my-2"
