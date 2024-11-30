@@ -130,7 +130,7 @@ export default {
                 >
                 <span
                     @click="showWarnModal = true"
-                    v-else
+                    v-if="!skill.skillName"
                     class="no-skill-text ms-1"
                     >skill deleted.</span
                 >
