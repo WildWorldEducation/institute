@@ -63,7 +63,10 @@ router.get('/show/:id', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                res.json(results[0]);
+                if (results[0]) {
+                    return res.json(results[0]);
+                }
+                return res.json({ mess: 'no result' })
             } catch (err) {
                 next(err);
             }
@@ -284,6 +287,8 @@ router.post('/accept/:id', async (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+
 
 
 /**

@@ -1,7 +1,14 @@
 <script>
+import { useSkillsStore } from '../../../stores/SkillsStore';
+
 export default {
     props: ['userId'],
-
+    setup() {
+        const skillsStore = useSkillsStore();
+        return {
+            skillsStore
+        };
+    },
     data() {
         return {
             skillsData: [],
@@ -15,22 +22,18 @@ export default {
     async created() {
         // call to content flags route
         await this.getSubmittedSkillLogs();
+        const promises = [];
         this.skillsData.forEach((skill) => {
-            const parseDate = new Date(skill.create_date);
-            const createDate = parseDate.toLocaleString('en-gb', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            const createTime = parseDate.toLocaleTimeString();
-            this.rows.push({
-                resourceId: skill.content_id,
-                action: skill.action,
-                date: createDate,
-                time: createTime,
-                id: skill.id
-            });
+            if (skill.action === 'approve') {
+                promises.push(this.getApproveSkillData(skill));
+            } else {
+                promises.push(this.getStillAwaitingData(skill));
+            }
+        });
+        console.log(promises);
+        Promise.all(promises).then(() => {
+            console.log('Result');
+            console.log(this.rows);
         });
     },
     methods: {
@@ -40,6 +43,54 @@ export default {
             );
             this.skillsData = await res.json();
         },
+        async getApproveSkillData(skillActionData) {
+            const parseDate = new Date(skillActionData.create_date);
+            const createDate = parseDate.toLocaleString('en-gb', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const createTime = parseDate.toLocaleTimeString();
+            const approvedSkill = await this.skillsStore.findSkillById(
+                skillActionData.content_id
+            );
+
+            this.rows.push({
+                resourceId: skillActionData.content_id,
+                action: skillActionData.action,
+                date: createDate,
+                time: createTime,
+                id: skillActionData.id,
+                skillName: approvedSkill && approvedSkill.name
+            });
+        },
+        async getStillAwaitingData(skillActionData) {
+            const parseDate = new Date(skillActionData.create_date);
+            const createDate = parseDate.toLocaleString('en-gb', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const createTime = parseDate.toLocaleTimeString();
+            const resResult = await fetch(
+                `/new-skills-awaiting-approval/show/${skillActionData.content_id}`
+            );
+
+            const resultJson = await resResult.json();
+            const resSkillName = resultJson.name && resultJson.name;
+
+            this.rows.push({
+                resourceId: skillActionData.content_id,
+                action: skillActionData.action,
+                date: createDate,
+                time: createTime,
+                id: skillActionData.id,
+                skillName: resSkillName
+            });
+        },
+
         actionColor(action) {
             switch (action) {
                 case 'create':
@@ -63,7 +114,10 @@ export default {
                 <span :class="actionColor(skill.action)">
                     {{ skill.action }}
                 </span>
-                <span>, id: {{ skill.id }}</span>
+                <span v-if="skill.skillName" class="ms-1">
+                    skill: {{ skill.skillName }}</span
+                >
+                <span v-else class="no-skill-text ms-1">skill deleted.</span>
             </div>
         </div>
     </div>
@@ -73,13 +127,7 @@ export default {
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content skill-modal">
-                <div class="modal-label">
-                    Skill
-                    <span class="skill-modal-text">{{
-                        currentChooseSkill
-                    }}</span>
-                    is deleted !!
-                </div>
+                <div class="modal-label">Skill is deleted !!</div>
 
                 <div class="d-flex justify-content-center">
                     <button
@@ -94,4 +142,13 @@ export default {
         </div>
     </div>
 </template>
-<style></style>
+<style>
+.no-skill-text {
+    color: #a16207;
+}
+
+.no-skill-text:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+</style>
