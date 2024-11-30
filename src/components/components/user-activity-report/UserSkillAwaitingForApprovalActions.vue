@@ -62,7 +62,8 @@ export default {
                 date: createDate,
                 time: createTime,
                 id: skillActionData.id,
-                skillName: approvedSkill && approvedSkill.name
+                skillName: approvedSkill && approvedSkill.name,
+                skillUrl: approvedSkill.url && approvedSkill.url
             });
         },
         async getStillAwaitingData(skillActionData) {
@@ -114,10 +115,25 @@ export default {
                 <span :class="actionColor(skill.action)">
                     {{ skill.action }}
                 </span>
-                <span v-if="skill.skillName" class="ms-1">
+                <span
+                    v-if="skill.skillName && skill.action !== 'approve'"
+                    class="ms-1"
+                >
                     skill: {{ skill.skillName }}</span
                 >
-                <span v-else class="no-skill-text ms-1">skill deleted.</span>
+                <router-link
+                    v-if="skill.skillName && skill.action === 'approve'"
+                    class="skill-link ms-1"
+                    target="_blank"
+                    :to="`/skills/${skill.skillUrl}`"
+                    >{{ skill.skillName }}.</router-link
+                >
+                <span
+                    @click="showWarnModal = true"
+                    v-else
+                    class="no-skill-text ms-1"
+                    >skill deleted.</span
+                >
             </div>
         </div>
     </div>
