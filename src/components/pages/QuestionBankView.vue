@@ -39,7 +39,6 @@ export default {
 </script>
 
 <template>
-    <!-- Purple Banner Row -->
     <div class="row px-2 px-lg-2">
         <div class="col d-flex justify-content-between">
             <router-link
@@ -88,7 +87,7 @@ export default {
         <!-- Tile Row  -->
         <div class="row mt-3">
             <div class="col">
-                <h1>{{ skill.name }} Question Bank</h1>
+                <h1 class="h1-stroke">{{ skill.name }} Question Bank</h1>
             </div>
         </div>
         <!-- Question type checkboxes -->
@@ -208,7 +207,7 @@ table {
 .control > span {
     font-weight: 500;
     font-size: 0.938rem;
-    color: #667085;
+    color: var(--regular-text-colour);
     text-align: center;
 }
 

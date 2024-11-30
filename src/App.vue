@@ -187,10 +187,7 @@ export default {
                             </RouterLink>
                         </li>
                         <li class="nav-item" v-else>
-                            <RouterLink
-                                to="/login"
-                                class="btn purple-btn login-btn"
-                            >
+                            <RouterLink to="/login" class="login-btn nav-link">
                                 Log in
                             </RouterLink>
                         </li>
@@ -226,6 +223,7 @@ Themes
 
     --fourth-colour: gold;
     --tertiary-colour: white;
+    --regular-text-colour: black;
 
     --fifth-colour: #888;
     --stroke-width: 0px;
@@ -248,6 +246,7 @@ Themes
 
     --fourth-colour: gold;
     --tertiary-colour: white;
+    --regular-text-colour: #8f7bd6;
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.webp');
 
     --fifth-colour: white;
@@ -270,6 +269,7 @@ Themes
     --secondary-btn-colour-hover-border: darkorange;
 
     --tertiary-colour: #87ceeb;
+    --regular-text-colour: black;
     --fourth-colour: #bf202f;
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 

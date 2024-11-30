@@ -112,7 +112,7 @@ export default {
                 id="multiple-choice-column"
                 class="col-12 col-md-10 col-lg-6 ps-0 pe-0 pe-lg-4"
             >
-                <h2 class="question-type">Multiple Choice</h2>
+                <h2 class="question-type h1-stroke">Multiple Choice</h2>
                 <table
                     v-if="isMultipleChoice"
                     class="skilltree-table table-bordered"
@@ -127,7 +127,7 @@ export default {
                         <td>
                             <router-link
                                 :to="'/mc-questions/edit/' + question.id"
-                                class="btn purple-btn p-2"
+                                class="btn primary-btn p-2"
                                 role="button"
                                 :title="'Edit ' + question.name"
                                 ><svg
@@ -177,7 +177,7 @@ export default {
             <div
                 class="col-12 col-md-10 col-lg-6 ps-0 pe-0 ps-lg-4 mt-4 mt-lg-0"
             >
-                <h2 class="question-type">Essay</h2>
+                <h2 class="question-type h1-stroke">Essay</h2>
                 <table v-if="isEssay" class="skilltree-table table-bordered">
                     <tr v-for="question in essayQuestions">
                         <td>
@@ -240,7 +240,7 @@ export default {
         </div>
         <div class="row">
             <div class="col-12 col-md-10 col-lg-6 ps-0 pe-0 pe-lg-4">
-                <h2 class="question-type">Image</h2>
+                <h2 class="question-type h1-stroke">Image</h2>
                 <table v-if="isImage" class="skilltree-table table-bordered">
                     <tr v-for="question in imageQuestions">
                         <td>
