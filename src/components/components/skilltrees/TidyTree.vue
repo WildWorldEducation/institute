@@ -92,6 +92,7 @@ export default {
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
+        this.width = window.innerWidth;
 
         this.skill = {
             name: 'SKILLS',
@@ -273,36 +274,37 @@ export default {
 
             moveSubSkills(skillsWithSubSkillsMoved);
 
-            // To determine the size of the skill tree based on the number of skills showing.
-            // It should not be too big, compared to the number of nodes,
-            // or the nodes will be too far a part.
-            const skillCount = count;
-            if (skillCount > 2000) {
-                this.width = skillCount * 1.5;
-            } else if (skillCount > 1000) {
-                this.width = skillCount * 1.5 * 4;
-            } else {
-                this.width = skillCount * 1.5 * 40;
-            }
+            /* Determine width of tree, based on how many nodes are showing
+             * used for the various types of filters,
+             * including: collapsable nodes, grade level filter, and instructors filters skills for students
+             *
+             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
+             */
 
+            // Height: remains constant
+            const dx = 24;
+
+            // Create a tree layout.
             this.data = {
                 skill_name: 'My skills',
                 children: skillsWithSubSkillsMoved
             };
-
-            // Compute the tree height; this approach will allow the height of the
-            // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
-            const dx = 24;
-            // Shorten lines based on truncate level.
-            let divideBy = 1;
-            if (this.truncateLevel == 'grade_school') divideBy = 5;
-            else if (this.truncateLevel == 'middle_school') divideBy = 4;
-            else if (this.truncateLevel == 'high_school') divideBy = 3;
-            else if (this.truncateLevel == 'college') divideBy = 2;
-            const dy = this.width / (this.root.height + 1) / divideBy;
 
-            // Create a tree layout.
+            //Shorten lines based on truncate level.
+            let multiplyBy = 5;
+            if (this.truncateLevel == 'grade_school' || count < 1000) {
+                multiplyBy = 1;
+            } else if (this.truncateLevel == 'middle_school') {
+                multiplyBy = 2;
+            } else if (this.truncateLevel == 'high_school') {
+                multiplyBy = 3;
+            } else if (this.truncateLevel == 'college' || count < 2000) {
+                multiplyBy = 4;
+            }
+            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            console.log(multiplyBy);
+
             this.tree = d3.tree().nodeSize([dx, dy]);
 
             // Sort the tree and apply the layout.
@@ -953,14 +955,22 @@ export default {
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
+
+            // Height is constant
             const dx = 24;
-            // Shorten lines based on truncate level.
-            let divideBy = 1;
-            if (this.truncateLevel == 'grade_school') divideBy = 5;
-            else if (this.truncateLevel == 'middle_school') divideBy = 4;
-            else if (this.truncateLevel == 'high_school') divideBy = 3;
-            else if (this.truncateLevel == 'college') divideBy = 2;
-            const dy = this.width / (this.root.height + 1) / divideBy;
+
+            //Shorten lines based on truncate level.
+            let multiplyBy = 5;
+            if (this.truncateLevel == 'grade_school') {
+                multiplyBy = 1;
+            } else if (this.truncateLevel == 'middle_school') {
+                multiplyBy = 2;
+            } else if (this.truncateLevel == 'high_school') {
+                multiplyBy = 3;
+            } else if (this.truncateLevel == 'college') {
+                multiplyBy = 4;
+            }
+            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
