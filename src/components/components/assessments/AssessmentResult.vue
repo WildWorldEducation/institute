@@ -103,7 +103,7 @@ export default {
 
 <template>
     <div class="container mt-3 pb-3">
-        <h1>Assessment Result</h1>
+        <h2>Assessment Result</h2>
 
         <div class="d-flex flex-md-row flex-column gap-3">
             <!-- Assessment Info -->

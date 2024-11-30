@@ -58,15 +58,6 @@ export default {
     <div class="container mt-3">
         <div class="d-flex justify-content-md-between justify-content-center">
             <div class="d-flex flex-column flex-md-row">
-                <!-- <img
-                    id="skill-icon"
-                    :src="
-                        'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                        skill.url
-                    "
-                    :onerror="imageUrlAlternative"
-                    class="rounded"
-                /> -->
                 <h1
                     class="ms-3 d-flex justify-content-md-end text-center justify-content-center"
                 >
