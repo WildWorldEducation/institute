@@ -103,7 +103,7 @@ export default {
 
 <template>
     <div class="container mt-3 pb-3">
-        <div class="page-tile">Assessment Result</div>
+        <h1>Assessment Result</h1>
 
         <div class="d-flex flex-md-row flex-column gap-3">
             <!-- Assessment Info -->
@@ -204,13 +204,15 @@ export default {
             <!-- The label indicate user answer right or wrong -->
             <div
                 :class="
-                    question.userAnswer == question.correct_answer || question.isCorrect == true
+                    question.userAnswer == question.correct_answer ||
+                    question.isCorrect == true
                         ? 'correct-label'
                         : 'wrong-label'
                 "
             >
                 {{
-                    question.userAnswer == question.correct_answer || question.isCorrect == true
+                    question.userAnswer == question.correct_answer ||
+                    question.isCorrect == true
                         ? 'Correct !!'
                         : 'Incorrect !!'
                 }}
@@ -242,8 +244,10 @@ export default {
                             <!-- show this extra text if it the correct answer and user answer is wrong -->
                             <span
                                 v-if="
-                                    answerOption.index == question.correct_answer &&
-                                    question.userAnswer !== question.correct_answer
+                                    answerOption.index ==
+                                        question.correct_answer &&
+                                    question.userAnswer !==
+                                        question.correct_answer
                                 "
                                 class="correct-indicate"
                             >
@@ -252,7 +256,8 @@ export default {
                             <!-- show user answer text if it user answer -->
                             <span
                                 v-if="
-                                    answerOption.index !== question.correct_answer &&
+                                    answerOption.index !==
+                                        question.correct_answer &&
                                     question.userAnswer == answerOption.index
                                 "
                                 class="user-answer-indicate"
@@ -262,8 +267,10 @@ export default {
                             <!-- congrats if student answer is correct -->
                             <span
                                 v-if="
-                                    answerOption.index == question.correct_answer &&
-                                    question.userAnswer == question.correct_answer
+                                    answerOption.index ==
+                                        question.correct_answer &&
+                                    question.userAnswer ==
+                                        question.correct_answer
                                 "
                                 class="correct-indicate"
                             >
@@ -274,12 +281,17 @@ export default {
                             type="radio"
                             name="nodeType"
                             :value="answerOption.index"
-                            :disabled="answerOption.index != question.correct_answer"
+                            :disabled="
+                                answerOption.index != question.correct_answer
+                            "
                         />
                         <div class="control_indicator">
                             <!-- Check if this is the correct answer -->
                             <div
-                                v-if="answerOption.index == question.correct_answer"
+                                v-if="
+                                    answerOption.index ==
+                                    question.correct_answer
+                                "
                                 class="checked"
                             ></div>
                         </div>
@@ -419,13 +431,6 @@ export default {
 <style scoped>
 .hover-cursor:hover {
     cursor: pointer;
-}
-
-.page-tile {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-    font-size: 1.75rem;
 }
 
 /* Button Styling */

@@ -389,10 +389,10 @@ export default {
         },
         // Async because essay questions are marked on server.
         async Submit() {
-            this.UserAnswer()
-            if(!this.isAllQuestionsAnswered){
-                alert("Please answer all questions before submitting.")
-                return
+            this.UserAnswer();
+            if (!this.isAllQuestionsAnswered) {
+                alert('Please answer all questions before submitting.');
+                return;
             }
             // get the time when user submit the assessment result for result page
             this.finishTime = new Date();
@@ -658,7 +658,10 @@ export default {
         },
         UserAnswer() {
             for (let i = 0; i < this.questions.length; i++) {
-                if (this.questions[i].userAnswer == null || this.questions[i].userAnswer === '') {
+                if (
+                    this.questions[i].userAnswer == null ||
+                    this.questions[i].userAnswer === ''
+                ) {
                     this.isAllQuestionsAnswered = false;
                     return;
                 } else {
@@ -753,7 +756,7 @@ export default {
         <div class="pb-2 pb-md-0">
             <div
                 v-if="questions.length > 0"
-                class="container mt-5 mb-3 p-3 pt-2 mb-3"
+                class="container mt-2 mb-3 p-3 pt-2 mb-3"
                 id="question-container"
             >
                 <!-- To wait for questions to be loaded, before the DOM renders. -->

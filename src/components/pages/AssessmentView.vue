@@ -67,16 +67,15 @@ export default {
                     :onerror="imageUrlAlternative"
                     class="rounded"
                 /> -->
-                <div
-                    id="assessment-skill-name"
+                <h1
                     class="ms-3 d-flex justify-content-md-end text-center justify-content-center"
                 >
                     {{ this.skill.name }} Quiz
-                </div>
+                </h1>
             </div>
         </div>
 
-        <div class="mt-4 mb-4">
+        <div class="mt-4 mb-2">
             <hr
                 class="border border-2 opacity-100 w-md-75 w-100"
                 id="assessment-horizontal-line"
@@ -90,18 +89,6 @@ export default {
 #assessment-horizontal-line {
     border-color: #aea3ce !important;
     border: solid;
-}
-
-#assessment-skill-name {
-    color: #a48be6;
-    font-size: xx-large;
-    font-weight: 800;
-    text-align: left;
-}
-
-#banner {
-    width: 100%;
-    height: fit-content;
 }
 
 .img-fluid {
@@ -119,13 +106,6 @@ export default {
         width: 60%;
         height: auto;
         margin: 0% auto;
-    }
-
-    #assessment-skill-name {
-        font-size: x-large;
-        font-weight: 600;
-        text-align: center;
-        margin-top: 10px;
     }
 }
 </style>
