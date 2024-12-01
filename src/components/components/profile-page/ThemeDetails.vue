@@ -10,11 +10,13 @@ export default {
     },
     data() {
         return {
-            theme: useUserDetailsStore.theme
+            theme: this.userDetailsStore.theme
         };
     },
     created() {},
-
+    async mounted() {
+        await this.userDetailsStore.getUserDetails();
+    },
     methods: {
         chooseTheme() {
             this.userDetailsStore.updateTheme(this.theme);
