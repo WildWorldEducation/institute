@@ -154,18 +154,19 @@ export default {
     <div class="container mt-3 pb-3">
         <div class="row">
             <div class="col-10">
-                <h2 id="header-tile">Student: {{ studentName }}</h2>
-                <h2 id="header-tile">Skill: {{ skillName }}</h2>
+                <h1>Student Suggested Question</h1>
+                <p>
+                    {{ studentName }} suggested the following question, for the
+                    skill {{ skillName }}
+                </p>
             </div>
         </div>
-        <div class="main-content-container container-fluid mt-4">
+        <div class="main-content-container container-fluid">
             <div class="row p-0">
                 <div id="form-container" class="col p-4">
                     <!-- Question -->
                     <div class="mb-3">
-                        <label for="last_name" class="form-label"
-                            >Question</label
-                        >
+                        <h2>Question</h2>
                         <textarea
                             :disabled="!isEditMode"
                             rows="1"
@@ -190,9 +191,7 @@ export default {
                         :key="index"
                         class="mb-3"
                     >
-                        <label class="form-label"
-                            >Answer {{ index + 1 }}:</label
-                        >
+                        <h2>Answer {{ index + 1 }}</h2>
                         <div class="d-flex answer-option">
                             <input
                                 :disabled="!isEditMode"
@@ -290,7 +289,7 @@ export default {
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Explanation</label>
+                        <h2>Explanation</h2>
                         <textarea
                             :disabled="!isEditMode"
                             v-model="question.explanation"
@@ -321,7 +320,7 @@ export default {
                             >Delete</a
                         >
                         <button
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             @click="saveToQuestionBank()"
                         >
                             Save
