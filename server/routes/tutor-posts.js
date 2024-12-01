@@ -9,7 +9,9 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
-
+const userAvatarImageThumbnailsBucketName =
+    process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
+const bucketRegion = process.env.S3_BUCKET_REGION;
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -23,7 +25,8 @@ router.get('/:skillId/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT tutor_posts.id, tutor_posts.user_id, tutor_posts.skill_id, tutor_posts.description, tutor_posts.contact_preference,
-        tutor_posts.created_at, users.username, users.email
+        tutor_posts.created_at, users.username, users.email, 
+        CONCAT('https://${userAvatarImageThumbnailsBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar
         FROM tutor_posts
         JOIN users ON tutor_posts.user_id = users.id
         WHERE skill_id = ${conn.escape(req.params.skillId)};`;
