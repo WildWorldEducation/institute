@@ -4,6 +4,7 @@ import VueMultiselect from 'vue-multiselect';
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import WaitLoadingModal from './share-components/WaitLoadingModal.vue';
+import SuccessModal from './share-components/SuccessModal.vue';
 
 export default {
     setup() {
@@ -15,7 +16,7 @@ export default {
             userDetailsStore
         };
     },
-    components: { VueMultiselect, WaitLoadingModal },
+    components: { VueMultiselect, WaitLoadingModal, SuccessModal },
     data() {
         return {
             skill: {
@@ -81,7 +82,9 @@ export default {
             showCopiedSkillModal: false,
             showSkillTypeModal: false,
             parentLevel: '',
-            showLoadModal: false
+            showLoadModal: false,
+            showSuccessModal: false,
+            message: ''
         };
     },
     computed: {
@@ -258,8 +261,8 @@ export default {
                 })
             }).then(() => {
                 this.showLoadModal = false;
-                alert('New skill submitted for approval.');
-                this.$router.push('/skills');
+                this.showSuccessModal = true;
+                this.message = 'New skill submitted for approval.';
             });
         },
         async Submit() {
@@ -326,6 +329,7 @@ export default {
                 })
                 .then(() => {
                     this.showLoadModal = false;
+                    this.message = 'Adding Skill Successfully';
                     this.$router.push('/skills');
                 });
         },
@@ -406,6 +410,10 @@ export default {
             // find the file input base on id and manually click them
             const input = document.getElementById(elName);
             input.click();
+        },
+        handleOkBtnClick() {
+            this.showSuccessModal = false;
+            this.$router.push('/skills');
         }
     }
 };
@@ -984,6 +992,7 @@ export default {
     </div>
     <!-- Loading Modal show up when user interact with sever -->
     <WaitLoadingModal v-if="showLoadModal" />
+    <SuccessModal :message="message" :handleOkClick="handleOkBtnClick" />
 </template>
 
 <style scoped>
