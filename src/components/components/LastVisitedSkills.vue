@@ -66,6 +66,7 @@ export default {
 #skill-list {
     overflow-y: auto;
     max-height: 300px;
+    background-color: rgb(33, 37, 41);
 }
 
 #skill-list div {

@@ -542,7 +542,7 @@ export default {
             this.context.beginPath();
             linkGenerator(link);
             // Determine colour of links based on user's theme
-            if (this.userDetailsStore.theme == 'solid-color')
+            if (this.userDetailsStore.theme == 'original')
                 this.context.strokeStyle = '#000';
             else this.context.strokeStyle = '#fff';
             this.context.stroke();

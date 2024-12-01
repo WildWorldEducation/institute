@@ -438,7 +438,7 @@ export default {
 
             // Determine colour of links based on user's theme
             let color = '#000';
-            if (this.userDetailsStore.theme != 'solid-color') color = '#fff';
+            if (this.userDetailsStore.theme != 'original') color = '#fff';
 
             // If skill is mastered.
             if (link.target.data.is_mastered == 1) {
@@ -447,7 +447,7 @@ export default {
                 color = '#000';
             } else {
                 let width = 2;
-                if (this.userDetailsStore.theme != 'solid-color') {
+                if (this.userDetailsStore.theme != 'original') {
                     width = 3;
                 }
                 this.context.lineWidth = parseInt(

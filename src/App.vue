@@ -26,6 +26,9 @@ export default {
             document.body.classList.remove('scholar-theme');
             document.body.classList.remove('apprentice-theme');
         }
+
+        console.log(this.userDetailsStore.theme);
+        console.log(typeof this.userDetailsStore.theme);
     },
     methods: {}
 };
@@ -37,15 +40,18 @@ export default {
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link logo">
                     <img
-                        v-if="userDetailsStore.theme == 'solid-color'"
-                        src="/images/logo-red.png"
+                        v-if="
+                            userDetailsStore.theme == 'apprentice' ||
+                            userDetailsStore.theme == 'scholar'
+                        "
+                        src="/images/logo-white.png"
                         alt=""
                         width="50"
                         height="50"
                     />
                     <img
                         v-else
-                        src="/images/logo-white.png"
+                        src="/images/logo-red.png"
                         alt=""
                         width="50"
                         height="50"
