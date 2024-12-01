@@ -5,6 +5,7 @@ import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import WaitLoadingModal from './share-components/WaitLoadingModal.vue';
 import SuccessModal from './share-components/SuccessModal.vue';
+import FailsModal from './share-components/FailsModal.vue';
 
 export default {
     setup() {
@@ -16,7 +17,7 @@ export default {
             userDetailsStore
         };
     },
-    components: { VueMultiselect, WaitLoadingModal, SuccessModal },
+    components: { VueMultiselect, WaitLoadingModal, SuccessModal, FailsModal },
     data() {
         return {
             skill: {
@@ -84,6 +85,7 @@ export default {
             parentLevel: '',
             showLoadModal: false,
             showSuccessModal: false,
+            showFailsModal: false,
             message: ''
         };
     },
@@ -313,15 +315,16 @@ export default {
                 .then((data) => {
                     // Check if skill exists already.
                     if (data.result == 'This skill already exists.') {
-                        alert(data.result);
+                        this.showFailsModal = true;
+                        this.message = data.result;
                         return;
                     } else if (
                         data.result ==
                         'This skill was deleted, but has now been undeleted. Please find it and edit it.'
                     ) {
-                        alert(data.result);
-                    } else if (data.result == 'skill added') {
-                        alert(data.result);
+                        this.showFailsModal = true;
+                        this.message = data.result;
+                        return;
                     }
                 })
                 .then(() => {
@@ -347,7 +350,8 @@ export default {
                     this.skillsStore.getNestedSkillsList();
                 })
                 .then(() => {
-                    this.$router.push('/skills');
+                    this.message = 'Successfully created new instance';
+                    this.showSuccessModal = true;
                 });
         },
         // 2 Method that handle parent dropdown
@@ -414,6 +418,9 @@ export default {
         handleOkBtnClick() {
             this.showSuccessModal = false;
             this.$router.push('/skills');
+        },
+        handleFailsOkClick() {
+            this.showFailsModal = false;
         }
     }
 };
@@ -992,7 +999,16 @@ export default {
     </div>
     <!-- Loading Modal show up when user interact with sever -->
     <WaitLoadingModal v-if="showLoadModal" />
-    <SuccessModal :message="message" :handleOkClick="handleOkBtnClick" />
+    <SuccessModal
+        v-if="showSuccessModal"
+        :message="message"
+        :handleOkClick="handleOkBtnClick"
+    />
+    <FailsModal
+        v-if="showFailsModal"
+        :message="message"
+        :handleOkClick="handleFailsOkClick"
+    />
 </template>
 
 <style scoped>
