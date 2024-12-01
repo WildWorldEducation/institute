@@ -87,7 +87,7 @@ export default {
         <!-- Tile Row  -->
         <div class="row mt-3">
             <div class="col">
-                <h1 class="h1-stroke">{{ skill.name }} Question Bank</h1>
+                <h1>{{ skill.name }} Question Bank</h1>
             </div>
         </div>
         <!-- Question type checkboxes -->
