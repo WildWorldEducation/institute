@@ -34,7 +34,7 @@ export default {
         <!-- Choose theme -->
         <div class="mb-3 text-start themes">
             <select class="form-select" @change="chooseTheme()" v-model="theme">
-                <option value="solid-color">Solid color</option>
+                <option value="original">Original</option>
                 <option value="apprentice">Apprentice</option>
                 <option value="scholar">Scholar</option>
             </select>

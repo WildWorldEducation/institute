@@ -18,7 +18,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
             instructorUsername: null,
             isGoogleAuth: null,
             skillTreeLevel: 'phd',
-            theme: 'solid-color'
+            theme: 'original'
         };
     },
     actions: {
@@ -102,7 +102,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 document.body.classList.remove('apprentice-theme');
                 document.body.classList.add('scholar-theme');
             } else {
-                this.theme = 'solid-color';
+                this.theme = 'original';
                 document.body.classList.remove('apprentice-theme');
                 document.body.classList.remove('scholar-theme');
             }
