@@ -156,12 +156,8 @@ export default {
 .topnav {
     padding: 5px 10px;
 }
-/* Grade level legend */
+
 .search-bar {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #dce2f2;
-    border-radius: 8px;
     height: 100%;
 }
 
