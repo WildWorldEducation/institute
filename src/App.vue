@@ -270,7 +270,7 @@ Themes
 
     --primary-btn-colour: black;
     --primary-btn-colour-hover: #303030;
-    --primary-btn-colour-border: #303030;
+    --primary-btn-colour-border: black;
     --secondary-btn-colour: black;
     --secondary-btn-colour-hover-border: darkorange;
 
@@ -336,6 +336,11 @@ h2 {
 
 .primary-btn:hover {
     background-color: var(--primary-btn-colour-hover) !important;
+    color: white;
+}
+
+.primary-btn:focus {
+    background-color: var(--primary-btn-colour) !important;
     color: white;
 }
 

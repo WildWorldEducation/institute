@@ -175,7 +175,7 @@ export default {
         id="first-content-row"
         class="d-flex justify-content-between"
     >
-        <router-link class="btn purple-btn" to="/users/add"
+        <router-link class="btn primary-btn" to="/users/add"
             >Add&nbsp;
             <!-- Plus sign -->
             <svg
@@ -249,23 +249,6 @@ export default {
 </template>
 
 <style>
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-.purple-btn:hover {
-    background-color: #7f56d9 !important;
-}
-
 #first-content-row {
     margin-top: -10px;
     padding-left: 46px;

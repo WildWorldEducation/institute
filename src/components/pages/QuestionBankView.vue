@@ -46,7 +46,7 @@ export default {
                     userDetailsStore.role == 'admin' ||
                     userDetailsStore.role == 'editor'
                 "
-                class="purple-btn btn"
+                class="primary-btn btn"
                 :to="'/skills/' + skill.id + '/question-bank/add'"
             >
                 Add &ThickSpace;
@@ -155,25 +155,6 @@ export default {
 table {
     background-color: white;
     border-radius: 10px;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    max-width: fit-content;
-    height: 44px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #9c7eec;
-    color: white !important;
 }
 
 .red-btn {

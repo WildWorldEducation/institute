@@ -370,7 +370,7 @@ export default {
                     <router-link class="btn green-btn" to="/"
                         >To Hub</router-link
                     >
-                    <button class="btn purple-btn" @click="showModal = false">
+                    <button class="btn primary-btn" @click="showModal = false">
                         OK
                     </button>
                 </div>
@@ -507,10 +507,6 @@ export default {
 
 .red-btn:hover {
     background-color: #fc7d7d;
-}
-
-.purple-btn:hover {
-    background-color: #a48ef3;
 }
 
 /* The Warning Modal */

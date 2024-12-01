@@ -50,7 +50,7 @@ export default {
             <h1 class="heading">Cohorts</h1>
             <div class="d-flex">
                 <button
-                    class="btn purple-btn me-1"
+                    class="btn primary-btn me-1"
                     @click="toggleInformationModal"
                 >
                     <svg
@@ -66,7 +66,7 @@ export default {
                         />
                     </svg>
                 </button>
-                <router-link class="btn purple-btn" to="/cohorts/add"
+                <router-link class="btn primary-btn" to="/cohorts/add"
                     >Add&nbsp;
                     <!-- Plus sign -->
                     <svg
@@ -152,21 +152,6 @@ export default {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    width: auto;
-    height: 35px;
-}
-
 .closeBtn {
     position: absolute;
     top: 5px;

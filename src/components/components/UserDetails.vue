@@ -58,7 +58,7 @@ export default {
                     <router-link
                         v-if="userDetailsStore.role == 'admin'"
                         :to="'/users/edit/' + this.$parent.user.id"
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                     >
                         Edit&nbsp;
                         <!-- Pencil icon -->
@@ -111,7 +111,7 @@ export default {
                 <router-link
                     v-if="userRole == 'student'"
                     :to="`/student/${this.$parent.user.id}/skill-tree`"
-                    class="btn green-btn mx-auto mt-3"
+                    class="btn secondary-btn mx-auto mt-3"
                 >
                     Skill tree
                     <!-- skill tree icon -->
@@ -132,7 +132,7 @@ export default {
                 <router-link
                     v-if="userRole == 'student'"
                     :to="'/student/' + this.$parent.user.id + '/skills'"
-                    class="btn green-btn mx-auto mt-3"
+                    class="btn secondary-btn mx-auto mt-3"
                 >
                     Skill list
                 </router-link>
@@ -144,7 +144,7 @@ export default {
                         "
                         target="_blank"
                         :to="'/users/activity-report/' + this.$parent.user.id"
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                     >
                         Activity Report
                     </router-link>
@@ -426,11 +426,11 @@ export default {
     }
 }
 
-@media (min-width:1025px) {
-#user-information {
-      margin-left: auto;
-      margin-right: auto;
-      width:90% ;
+@media (min-width: 1025px) {
+    #user-information {
+        margin-left: auto;
+        margin-right: auto;
+        width: 90%;
     }
 
     #user-avatar {
@@ -440,6 +440,5 @@ export default {
         margin-right: auto;
         border-radius: 12px;
     }
-
 }
 </style>

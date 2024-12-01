@@ -86,7 +86,7 @@ export default {
         <RouterLink
             v-if="userDetailsStore.role == 'instructor'"
             to="/users/add-student"
-            class="d-block mb-4 btn purple-btn"
+            class="d-block mb-4 btn primary-btn"
         >
             Add Student
         </RouterLink>
