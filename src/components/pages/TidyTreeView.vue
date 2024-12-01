@@ -75,7 +75,7 @@ export default {
                 />
             </div>
             <div class="d-flex">
-                <button class="btn legend-btn" @click="resetPos()">
+                <button class="btn primary-btn" @click="resetPos()">
                     Reset
                 </button>
                 <!-- <button
@@ -125,17 +125,13 @@ export default {
                 />
                 <div class="d-flex justify-content-end">
                     <!-- Reset Button -->
-                    <button
-                        id="reset-btn"
-                        class="btn legend-btn me-2"
-                        @click="resetPos()"
-                    >
+                    <button class="btn primary-btn me-2" @click="resetPos()">
                         Reset
                     </button>
                     <!-- Expand all nodes -->
                     <button
                         v-if="sessionDetailsStore.isLoggedIn"
-                        class="btn legend-btn me-2"
+                        class="btn primary-btn me-2"
                         @click="expandAllNodesWarning()"
                     >
                         <svg
@@ -154,7 +150,7 @@ export default {
                     <!-- Print Button -->
                     <button
                         v-if="sessionDetailsStore.isLoggedIn"
-                        class="btn legend-btn me-2"
+                        class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
                         Print

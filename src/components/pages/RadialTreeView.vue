@@ -45,13 +45,13 @@ export default {
                 >
                     Print
                 </button> -->
-                <button class="btn legend-btn" @click="resetPos()">
+                <button class="btn primary-btn" @click="resetPos()">
                     Reset
                 </button>
             </div>
         </div>
         <div class="tablet-and-up-legend">
-            <div class="legend d-flex justify-content-between row">
+            <div class="legend d-flex justify-content-between">
                 <!-- Search bar, reset, expand all, print buttons -->
                 <div class="d-flex col-lg justify-content-between">
                     <!-- Search Feature -->
@@ -62,7 +62,7 @@ export default {
                     />
                     <!-- Print Button -->
                     <button
-                        class="btn legend-btn me-2"
+                        class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
                         Print
