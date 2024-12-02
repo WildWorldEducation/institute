@@ -1089,7 +1089,7 @@ export default {
                             userDetailsStore.role == 'editor'
                         "
                         :disabled="!isFormChanged"
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         @click="Submit()"
                     >
                         <div class="d-none d-md-block">Submit</div>
@@ -1112,7 +1112,7 @@ export default {
                             userDetailsStore.role == 'instructor' ||
                             userDetailsStore.role == 'student'
                         "
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         :disabled="!isFormChanged"
                         @click="SubmitForReview()"
                     >
@@ -1256,23 +1256,6 @@ export default {
     gap: 8px;
     box-shadow: 0px 1px 2px 0px #1018280d;
     border: 1px solid #f2f4f7;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    height: fit-content;
-}
-
-.purple-btn:hover {
-    background-color: #8666ca;
 }
 
 .red-btn {

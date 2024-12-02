@@ -329,19 +329,6 @@ export default {
     background-color: #2ca695;
 }
 
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
 #close-popup-btn {
     border-radius: 20px;
     background-color: #36c1af;

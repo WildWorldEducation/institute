@@ -621,7 +621,7 @@ export default {
                     >
                         <router-link
                             :to="editUrl"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             b-tooltip.hover
                             :title="'Go To Edit Page For This ' + type"
                         >
@@ -1483,7 +1483,7 @@ export default {
                     >
                         <router-link
                             :to="editUrl"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             target="_blank"
                             b-tooltip.hover
                             :title="'Go To Edit Page For This ' + type"
@@ -2121,23 +2121,6 @@ div {
 
 .search-bar input {
     outline: none;
-}
-
-.purple-btn {
-    background-color: #a48be6 !important;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #7e59cf !important;
-    color: white;
 }
 
 .red-btn {

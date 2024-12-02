@@ -189,7 +189,7 @@ export default {
                         <td>
                             <router-link
                                 :to="'/essay-questions/edit/' + question.id"
-                                class="btn purple-btn p-2"
+                                class="btn primary-btn p-2"
                                 role="button"
                                 :title="'Edit ' + question.name"
                             >
@@ -252,7 +252,7 @@ export default {
                         <td>
                             <router-link
                                 :to="'/image-questions/edit/' + question.id"
-                                class="btn purple-btn p-2"
+                                class="btn primary-btn p-2"
                                 role="button"
                                 :title="'Edit ' + question.name"
                             >
@@ -438,22 +438,6 @@ export default {
 
 .green-btn:hover {
     background-color: #2ca695;
-}
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #8f7bd6;
-    color: white;
 }
 
 /* The Warning Modal */

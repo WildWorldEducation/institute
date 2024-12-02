@@ -211,7 +211,7 @@ export default {
 /*
 Themes
 */
-/* The Solid Colour theme */
+/* The Original theme */
 :root {
     --nav-colour: black;
 
@@ -339,7 +339,8 @@ h2 {
     color: white;
 }
 
-.primary-btn:focus {
+.primary-btn:focus,
+.primary-btn:active {
     background-color: var(--primary-btn-colour) !important;
     color: white;
 }
@@ -373,6 +374,10 @@ h2 {
     align-items: baseline;
 }
 
+.nav-link .active {
+    color: var(--primary-heading-colour) !important;
+}
+
 .nav-link:hover {
     color: var(--fourth-colour);
     text-decoration: underline;
@@ -401,14 +406,6 @@ h2 {
     font-size: 16px;
     margin-left: 20px;
     margin-right: 50px;
-}
-
-.purple-btn:hover,
-.purple-btn:active,
-.purple-btn:focus {
-    background-color: #7f56d9;
-    border: 1px solid #7f56d9;
-    color: white;
 }
 
 #user-avatar {

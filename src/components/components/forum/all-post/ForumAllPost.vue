@@ -134,7 +134,7 @@ export default {
                             user.role == 'student' && isAlreadyTutoring == false
                         "
                         :to="'/tutor/add/' + skillId"
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         role="button"
                         >Offer to tutor&nbsp;&nbsp;
                         <!-- hand point up icon -->

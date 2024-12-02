@@ -149,7 +149,7 @@ export default {
                         <button class="btn red-btn" @click="$router.go(-1)">
                             Cancel
                         </button>
-                        <button class="btn purple-btn" @click="Submit()">
+                        <button class="btn primary-btn" @click="Submit()">
                             Submit
                         </button>
                     </div>
@@ -179,23 +179,6 @@ h2 {
 
 .red-btn:hover {
     background-color: #cc3535;
-    color: white;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #8666ca;
     color: white;
 }
 

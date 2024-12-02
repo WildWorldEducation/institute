@@ -438,7 +438,7 @@ export default {
                     <!-- Information button -->
                     <div class="col-2">
                         <button
-                            class="btn purple-btn mt-2"
+                            class="btn primary-btn mt-2"
                             @click="showCopiedSkillModal = 'true'"
                         >
                             <svg
@@ -707,7 +707,7 @@ export default {
                 <!-- Information button -->
                 <div class="col-2">
                     <button
-                        class="btn purple-btn mt-2"
+                        class="btn primary-btn mt-2"
                         @click="showSkillTypeModal = true"
                     >
                         <svg
@@ -866,14 +866,14 @@ export default {
                             userDetailsStore.role == 'admin' &&
                             isAnotherInstanceOfExistingSkill
                         "
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         @click="CreateNewInstance()"
                     >
                         Create New Instance
                     </button>
                     <button
                         v-else
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         @click="validateSkill()"
                     >
                         <span
@@ -1003,23 +1003,6 @@ export default {
     gap: 8px;
     box-shadow: 0px 1px 2px 0px #1018280d;
     border: 1px solid #f2f4f7;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    width: fit-content;
-}
-
-.purple-btn:hover {
-    background-color: #8666ca;
 }
 
 .red-btn {

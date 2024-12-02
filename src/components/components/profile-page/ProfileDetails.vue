@@ -120,7 +120,7 @@ export default {
                             <a
                                 v-else
                                 href="/login"
-                                class="btn purple-btn"
+                                class="btn primary-btn"
                                 role="button"
                                 >Log in</a
                             >

@@ -48,7 +48,7 @@ export default {
             </button>
             <button
                 :disabled="disableBtn"
-                :class="['btn', disableBtn ? 'disable-btn' : 'purple-btn']"
+                :class="['btn', disableBtn ? 'disable-btn' : 'primary-btn']"
                 @click="$refs.child.edit()"
             >
                 Edit
@@ -99,23 +99,6 @@ h2 {
 .red-btn:hover,
 :deep(.red-btn:hover) {
     background-color: #cc3535;
-    color: white;
-}
-
-:deep(.purple-btn) {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-:deep(.purple-btn:hover) {
-    background-color: #8666ca;
     color: white;
 }
 

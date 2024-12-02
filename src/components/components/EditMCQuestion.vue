@@ -323,7 +323,7 @@ export default {
                         <button
                             v-if="answers[4].show == false"
                             @click="addAnswer"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                         >
                             <svg
                                 width="20"
@@ -399,7 +399,7 @@ export default {
                                 userDetailsStore.role == 'admin' ||
                                 userDetailsStore.role == 'editor'
                             "
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             @click="ValidateForm('submission')"
                             :disabled="!isFormChanged"
                         >
@@ -410,7 +410,7 @@ export default {
                                 userDetailsStore.role == 'instructor' ||
                                 userDetailsStore.role == 'student'
                             "
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             @click="ValidateForm('submissionForReview')"
                             :disabled="!isFormChanged"
                         >
@@ -456,28 +456,6 @@ export default {
 
 .red-btn:hover {
     background-color: #cc3535;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #7f56d9;
-    color: white;
-}
-
-.purple-btn:focus {
-    background-color: #7f56d9;
-    color: white;
 }
 
 #header-tile {

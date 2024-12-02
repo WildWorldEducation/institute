@@ -255,7 +255,7 @@ export default {
                         <button
                             v-if="answers[4].show == false"
                             @click="addAnswer"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             :disabled="!isEditMode"
                         >
                             <svg
@@ -455,10 +455,6 @@ export default {
 
 .red-btn:hover {
     background-color: #fc7d7d;
-}
-
-.purple-btn:hover {
-    background-color: #a48ef3;
 }
 
 /* The Warning Modal */
