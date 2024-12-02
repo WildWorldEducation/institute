@@ -59,17 +59,10 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img src="/images/banners/general-banner.png" class="image-fluid" />
-    </div>
-    <div class="container mt-5 pb-3">
-        <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Add Question</h2>
-                <img src="/images/recurso-69.png" id="header-icon" />
-            </div>
-        </div>
-        <div class="main-content-container container-fluid p-4">
+    <div class="container mt-3">
+        <h1 class="h1-stroke">Add Question</h1>
+
+        <div class="main-content-container container-fluid">
             <div class="row">
                 <div id="form-container" class="col-lg-6 p-4">
                     <div class="mb-3">

@@ -179,7 +179,7 @@ export default {
 
 <template>
     <div class="container mt-3">
-        <h1>Add Essay Question</h1>
+        <h1 class="h1-stroke">Add Essay Question</h1>
         <!-- Drop down zone for csv file input -->
         <div v-if="userDetailsStore.role == 'admin'">
             <div class="row mt-5">

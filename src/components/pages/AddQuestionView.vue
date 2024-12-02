@@ -16,13 +16,6 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            src="/images/banners/institute-collins-2.png"
-            class="image-fluid"
-        />
-    </div>
-
     <div class="container-fluid">
         <!-- MC Questions -->
         <AddMCQuestion />
@@ -40,7 +33,7 @@ export default {
         <br />
         <!-- Image Questions -->
         <div class="container mt-3">
-            <h1>Add Image Question</h1>
+            <h1 class="h1-stroke">Add Image Question</h1>
             <div class="row mt-4">
                 <div class="col-sm-4">
                     <router-link
