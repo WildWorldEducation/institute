@@ -145,8 +145,7 @@ router.delete('/:id', (req, res, next) => {
                              FROM new_skills_awaiting_approval
                              WHERE id = ${conn.escape(req.params.id)}`;
         const action = req.query.action
-        console.log('action query: ')
-        console.log(req.query)
+
         // Only record delete action if new skill is dismiss because if it is approve then delete we only record approve action
 
         conn.query(deleteQuery, (err, result) => {
@@ -257,8 +256,6 @@ router.post('/accept/:id', async (req, res, next) => {
                     throw err;
 
                 }
-                console.log('OK INSERT SUCCESS')
-
                 recordUserAction(
                     {
                         userId: req.session.userId,
@@ -271,7 +268,7 @@ router.post('/accept/:id', async (req, res, next) => {
 
                             throw err;
                         }
-                        console.log('Done in the sever')
+
                         res.json({ mess: 'ok' })
                     }
                 );
