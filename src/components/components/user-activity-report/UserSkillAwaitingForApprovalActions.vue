@@ -30,17 +30,11 @@ export default {
                 promises.push(this.getStillAwaitingData(skill));
             }
         });
-        console.log(promises);
-        Promise.all(promises).then(() => {
-            console.log('Result');
-            console.log(this.rows);
-        });
+        Promise.all(promises);
     },
     methods: {
         async getSubmittedSkillLogs() {
-            const res = await fetch(
-                `/user-actions/${this.userId}/skill_submit_by_user`
-            );
+            const res = await fetch(`/user-actions/${this.userId}/new-skill`);
             this.skillsData = await res.json();
         },
         async getApproveSkillData(skillActionData) {

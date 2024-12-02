@@ -105,9 +105,9 @@ router.post(
                 recordUserAction(
                     {
                         userId: data.user_id,
-                        userAction: 'create',
+                        userAction: 'submit',
                         contentId: result.insertId,
-                        contentType: 'skill_submit_by_user'
+                        contentType: 'new_skill'
                     },
                     (err) => {
                         if (err) {
@@ -160,7 +160,7 @@ router.delete('/:id', (req, res, next) => {
                             userId: req.session.userId,
                             userAction: 'delete',
                             contentId: result.insertId,
-                            contentType: 'skill_submit_by_user'
+                            contentType: 'new_skill'
                         },
                         (err) => {
                             if (err) {
@@ -261,14 +261,12 @@ router.post('/accept/:id', async (req, res, next) => {
                         userId: req.session.userId,
                         userAction: 'approve',
                         contentId: result.insertId,
-                        contentType: 'skill_submit_by_user'
+                        contentType: 'new_skill'
                     },
                     (err) => {
                         if (err) {
-
                             throw err;
                         }
-
                         res.json({ mess: 'ok' })
                     }
                 );
@@ -279,7 +277,6 @@ router.post('/accept/:id', async (req, res, next) => {
             res.status = 500;
             res.end;
         }
-
     } else {
         res.redirect('/login');
     }
@@ -315,7 +312,7 @@ router.put('/:id', (req, res, next) => {
                         userId: req.session.userId,
                         userAction: 'update',
                         contentId: result.insertId,
-                        contentType: 'skill_submit_by_user'
+                        contentType: 'new_skill'
                     },
                     (err) => {
                         if (err) {

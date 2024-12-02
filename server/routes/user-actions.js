@@ -463,13 +463,13 @@ router.get('/:userId/skill', (req, res, next) => {
  *
  * @return response()
  */
-router.get('/:userId/skill_submit_by_user', (req, res, next) => {
+router.get('/:userId/new-skill', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT user_actions.* 
                         FROM user_actions 
                         WHERE user_actions.user_id = ${conn.escape(req.params.userId)} 
-                        AND user_actions.content_type = 'skill_submit_by_user';`;
+                        AND user_actions.content_type = 'new_skill';`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
