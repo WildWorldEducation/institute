@@ -341,6 +341,10 @@ export default {
     font-weight: 550;
 }
 
+.nav-link.active {
+    color: var(--secondary-heading-colour);
+}
+
 :deep(.red-btn) {
     background-color: #e24d4d;
     color: white;

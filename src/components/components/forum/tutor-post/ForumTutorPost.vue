@@ -137,7 +137,7 @@ export default {
     border-top: 2px dotted #aea3ce;
     border-right: 2px solid #aea3ce;
     border-left: 2px solid #aea3ce;
-    color: #7469b6;
+    color: var(--secondary-heading-colour);
 }
 
 .tutor:last-child {

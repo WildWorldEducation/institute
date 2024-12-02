@@ -133,7 +133,7 @@ export default {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     font-weight: lighter;
-    color: #778094;
+    color: var(--secondary-heading-colour);
 }
 
 .user-name-div {
