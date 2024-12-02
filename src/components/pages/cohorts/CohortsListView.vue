@@ -1,6 +1,7 @@
 <script>
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import CohortView from './CohortView.vue';
 
 export default {
     setup() {
@@ -12,9 +13,13 @@ export default {
             userDetailsStore
         };
     },
+    components: {
+        CohortView,
+    },
     data() {
         return {
-            showInformationModal: true
+            showInformationModal: true,
+            selectedCohortId: null
         };
     },
     async created() {
@@ -39,13 +44,28 @@ export default {
     methods: {
         toggleInformationModal() {
             this.showInformationModal = !this.showInformationModal;
+        },
+        selectCohort(cohortId) {
+           if(this.selectedCohortId === cohortId){
+            this.selectedCohortId = null;
+           } else {
+            this.selectedCohortId = cohortId
+           }
         }
     }
 };
 </script>
 
 <template>
-    <div class="container">
+    <div id="banner">
+        <img
+            src="/images/banners/students-banner.png"
+            class="w-100 img-fluid"
+        />
+    </div>
+
+    <!-- Add user button -->
+    <div id="first-content-row">
         <div class="d-flex justify-content-between">
             <h1 class="heading">Cohorts</h1>
             <div class="d-flex">
@@ -84,14 +104,32 @@ export default {
                 </router-link>
             </div>
         </div>
-
-        <ul>
-            <li v-for="cohort in cohortsStore.cohorts">
-                <RouterLink :to="'/cohort/' + cohort.id">{{
-                    cohort.name
-                }}</RouterLink>
-            </li>
-        </ul>
+    </div>
+    <div class="container-fluid mt-4 mx-4 mobile-container">
+        <div v-for="cohort in cohortsStore.cohorts" :key="cohort.id">
+            <div class="col-lg-4 col-md-5">
+                <div class="d-flex">
+                    <RouterLink
+                        :class="
+                            cohort.id === selectedCohortId
+                                ? 'isCurrentlySelected'
+                                : 'cohort-buttons'
+                        "
+                        @click="selectCohort(cohort.id)"
+                        :to="'/cohort/' + cohort.id"
+                        >{{ cohort.name }}</RouterLink
+                    >
+                </div>
+                <!-- divide line for pc and tablet view -->
+                <hr
+                    class="border border-1 opacity-100 w-75 d-none d-md-block"
+                />
+                <!-- divide line for phone view specific -->
+                <hr
+                    class="border border-1 opacity-100 w-100 d-block d-md-none"
+                />
+            </div>
+        </div>
     </div>
     <!-- The Contact Advice Modal -->
     <div v-show="showInformationModal">
@@ -152,6 +190,74 @@ export default {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }
+
+.purple-btn {
+    background-color: #a48be6;
+    color: white;
+    border: 1px solid #7f56d9;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    width: auto;
+    height: 35px;
+}
+.purple-btn:hover {
+    background-color: #7f56d9 !important;
+}
+
+.cohort-buttons {
+    font-family: 'Poppins', sans-serif;
+    width: 283px;
+    height: 80px;
+    border-radius: 8px;
+    border: 1px solid #7f56d9;
+    background-color: #c8d7da;
+    color: white;
+    overflow: hidden;
+    padding: 16px 28px;
+    font-size: 1.25rem;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.cohort-buttons:hover {
+    background-color: #a48be6;
+    color: white;
+}
+
+.isCurrentlySelected {
+    font-family: 'Poppins', sans-serif;
+    width: 283px;
+    height: 80px;
+    border-radius: 8px;
+    border: 1px solid #7f56d9;
+    background-color: #a48be6;
+    color: white;
+    overflow: hidden;
+    padding: 16px 28px;
+    font-size: 1.25rem;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#first-content-row {
+    margin-top: -10px;
+    padding-left: 46px;
+    padding-top: 16px;
+    padding-bottom: 17px;
+    padding-right: 46px;
+    height: 77px;
+    background-color: rgb(164, 139, 230, 0.25);
+}
+
 .closeBtn {
     position: absolute;
     top: 5px;
@@ -180,6 +286,10 @@ export default {
     /* Black w/ opacity */
 }
 
+ul li {
+    list-style: none;
+}
+
 /* Modal Content/Box */
 .contact-modal-content {
     background-color: #fefefe;
@@ -196,10 +306,19 @@ export default {
         margin: 30% auto !important;
         width: 90% !important;
     }
+    .mobile-container{
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+      justify-content: center;
+      align-items: center;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
 }
 
 /* Tablets */
-@media (min-width: 481px) and (max-width: 1024px) {
+@media (min-width: 481px) and (max-width: 1023px) {
     .contact-modal-content {
         margin: 15% auto !important;
         width: 90% !important;

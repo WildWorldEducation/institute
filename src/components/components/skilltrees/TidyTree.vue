@@ -730,12 +730,20 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         resetPos() {
+            let screenWidth = window.innerWidth;
+            let shift = 143;
+            if(screenWidth > 480){
+                shift = 100;
+            }
+            if(screenWidth > 1024){
+                shift = 90;
+            }
             d3.select(this.context.canvas)
                 .transition()
-                .duration(1700)
+                .duration(700)
                 .call(
                     this.d3Zoom.transform,
-                    d3.zoomIdentity.translate(0, 0).scale(0.3)
+                    d3.zoomIdentity.translate(0, this.context.canvas.height/2 - shift).scale(0.3)
                 );
             this.$refs.sliderControl.showScaleLabel();
         },
