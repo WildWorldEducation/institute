@@ -5,6 +5,8 @@ import { useUsersStore } from '../../stores/UsersStore.js';
 import ApproveNewSkillModal from '../components/newSkillDetails/modals/ApproveNewSkillModal.vue';
 import DismissModal from '../components/newSkillDetails/modals/DismissModal.vue';
 import WaitLoadingModal from '../components/share-components/WaitLoadingModal.vue';
+import SuccessModal from '../components/share-components/SuccessModal.vue';
+import FailsModal from '../components/share-components/FailsModal.vue';
 
 export default {
     setup() {
@@ -22,7 +24,10 @@ export default {
             newSkillAwaitingApproval: {},
             showApproveModal: false,
             showDisMissModal: false,
-            severLoading: false
+            severLoading: false,
+            showSuccessModal: false,
+            showFailsModal: false,
+            message: ''
         };
     },
     async created() {
@@ -35,7 +40,9 @@ export default {
     components: {
         ApproveNewSkillModal,
         DismissModal,
-        WaitLoadingModal
+        WaitLoadingModal,
+        SuccessModal,
+        FailsModal
     },
     methods: {
         async getNewSkillAwaitingApproval() {
@@ -87,9 +94,13 @@ export default {
 
             if (result.error) {
                 console.log(result.error);
+                this.message = 'Fails to dismiss this skill';
+                this.showFailsModal = true;
+                return;
             }
 
-            this.$router.back();
+            this.message = 'Successfully dismiss skill';
+            this.showSuccessModal = true;
         },
         approveSkill() {
             this.severLoading = true;
@@ -111,7 +122,8 @@ export default {
             fetch(url, requestOptions).then((response) => {
                 console.log('Fetched');
                 if (response.error || response.status === 500) {
-                    alert('Fails to add new skill');
+                    this.message = 'Fails to add new skill';
+                    this.showFailsModal = true;
                 }
                 // Delete it afterwards.
                 const result = fetch(
@@ -125,12 +137,13 @@ export default {
 
                 if (result.error) {
                     console.err(result.error);
-                    alert('Fails to remove from waiting list');
+                    this.message = 'Fails to remove from waiting list';
+                    this.showFailsModal = true;
                     return;
                 }
-                alert('success');
+                this.message = 'Successfully add skill to skill tree';
                 this.severLoading = false;
-                this.$router.back();
+                this.showSuccessModal = true;
             });
         },
         handleSaveBtnClick() {
@@ -143,8 +156,13 @@ export default {
             this.showDisMissModal = true;
         },
         hideDismissModal() {
-            console.log('hide dismiss modal');
             this.showDisMissModal = false;
+        },
+        handleSuccessOKclick() {
+            this.$router.back();
+        },
+        handleFailsOKclick() {
+            this.showFailsModal = false;
         }
     }
 };
@@ -305,6 +323,7 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Modals for better UX -->
     <ApproveNewSkillModal
         :showApproveModal="showApproveModal"
         :approveSkill="approveSkill"
@@ -315,8 +334,17 @@ export default {
         :closeDismissModal="hideDismissModal"
         :showDismissModal="showDisMissModal"
     />
-
     <WaitLoadingModal v-if="severLoading" />
+    <SuccessModal
+        v-if="showSuccessModal"
+        :message="message"
+        :handleOkClick="handleSuccessOKclick"
+    />
+    <FailsModal
+        v-if="showFailsModal"
+        :message="message"
+        :handleOkClick="handleFailsOKclick"
+    />
 </template>
 
 <style scoped>
