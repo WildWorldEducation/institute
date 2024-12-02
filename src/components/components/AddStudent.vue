@@ -268,12 +268,8 @@ export default {
 
 <template>
     <div class="container mt-3 pb-3">
-        <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Add Student</h2>
-                <img src="/images/recurso-69.png" id="header-icon" />
-            </div>
-        </div>
+        <h1 class="h1-stroke">Add Student</h1>
+
         <div class="main-content-container container-fluid mt-5 p-4">
             <div class="row">
                 <div class="col-lg-4">

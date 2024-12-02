@@ -268,11 +268,8 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img src="/images/banners/general-banner.png" class="img-fluid" />
-    </div>
     <div class="container mt-3 pb-4">
-        <div id="page-tile">Unmarked Questions</div>
+        <h1 class="h1-stroke">Unmarked Questions</h1>
         <div id="assessment-info">
             {{ this.studentName }} :
             {{ this.skillName }}

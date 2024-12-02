@@ -275,12 +275,8 @@ export default {
 
 <template>
     <div class="container mt-3 pb-5">
-        <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Edit User</h2>
-                <img src="/images/recurso-69.png" id="header-icon" />
-            </div>
-        </div>
+        <h1 class="h1-stroke">Edit User</h1>
+
         <div class="container-fluid main-content-container p-4 mt-5">
             <div class="row">
                 <div class="col-lg-4 mt-3">
