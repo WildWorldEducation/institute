@@ -7,6 +7,8 @@ import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 
 import { useRouter } from 'vue-router';
 import SubmitEditNewSkillAwaitingForApprovalModal from '../components/newSkillDetails/modals/SubmitEditNewSkillAwaitingForApprovalModal.vue';
+import SuccessModal from '../components/share-components/SuccessModal.vue';
+import FailsModal from '../components/share-components/FailsModal.vue';
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
@@ -94,11 +96,16 @@ export default {
             comment: '',
             randomNum: 0,
             originalSkill: {},
-            showSubmitModal: false
+            showSubmitModal: false,
+            showSuccessModal: false,
+            showFailsModal: false,
+            message: ''
         };
     },
     components: {
-        SubmitEditNewSkillAwaitingForApprovalModal
+        SubmitEditNewSkillAwaitingForApprovalModal,
+        SuccessModal,
+        FailsModal
     },
     async mounted() {
         if (this.skillsStore.skillsList.length == 0) {
@@ -321,10 +328,21 @@ export default {
             };
 
             var url = '/new-skills-awaiting-approval/' + this.id;
-            fetch(url, requestOptions).then(() => {
-                // go back to approve skill details page
-                this.$router.push(`/new-skill-awaiting-approval/${this.id}`);
+            fetch(url, requestOptions).then((res) => {
+                if (res.ok) {
+                    this.showSuccessModal = true;
+                    this.message = 'Edit successfully.';
+                } else {
+                    this.showFailsModal = true;
+                    this.message = 'Fails to edit';
+                }
             });
+        },
+        handleSuccessConfirm() {
+            this.$router.push(`/new-skill-awaiting-approval/${this.id}`);
+        },
+        handleFailsModalConform() {
+            this.showFailsModal = false;
         },
         handleChooseSkillLevel(level) {
             this.showLevelDropDown = false;
@@ -826,6 +844,16 @@ export default {
         :showSubmitModal="showSubmitModal"
         :submitSkill="Submit"
         :closeModal="closeSubmitModal"
+    />
+    <SuccessModal
+        v-if="showSuccessModal"
+        :message="message"
+        :handleOkClick="handleSuccessConfirm"
+    />
+    <FailsModal
+        v-if="showFailsModal"
+        :message="message"
+        :handleOkClick="handleFailsModalConform"
     />
 </template>
 
