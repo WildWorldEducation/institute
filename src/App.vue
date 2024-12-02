@@ -232,6 +232,7 @@ Themes
     --fourth-colour: gold;
     --tertiary-colour: white;
     --regular-text-colour: black;
+    --secondary-text-colour: white;
     --hr-colour: #aea3ce;
 
     --fifth-colour: #888;
@@ -255,7 +256,8 @@ Themes
 
     --fourth-colour: gold;
     --tertiary-colour: white;
-    --regular-text-colour: #8f7bd6;
+    --regular-text-colour: black;
+    --secondary-text-colour: white;
     --hr-colour: #aea3ce;
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
 
@@ -280,6 +282,7 @@ Themes
 
     --tertiary-colour: #87ceeb;
     --regular-text-colour: black;
+    --secondary-text-colour: white;
     --hr-colour: black;
     --fourth-colour: #bf202f;
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
@@ -392,6 +395,10 @@ h2 {
     background-color: var(--h2-colour) !important;
     border-color: var(--secondary-btn-colour-border) !important;
     color: white !important;
+}
+
+.secondary-text {
+    color: var(--secondary-text-colour) !important;
 }
 
 /* End of themes section */
