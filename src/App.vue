@@ -238,6 +238,8 @@ Themes
     --fifth-colour: #888;
     --collapsible-tree-node-colour: #53389e;
     --stroke-width: 0px;
+
+    --loading-animation-colour: #8f7bd6;
 }
 /* The Apprentice theme */
 .apprentice-theme {
@@ -265,6 +267,8 @@ Themes
     --fifth-colour: white;
     --collapsible-tree-node-colour: #53389e;
     --stroke-width: 1px;
+
+    --loading-animation-colour: #8f7bd6;
 }
 /* The Scholar theme */
 .scholar-theme {
@@ -292,6 +296,8 @@ Themes
     --fifth-colour: white;
     --collapsible-tree-node-colour: black;
     --stroke-width: 1px;
+
+    --loading-animation-colour: white;
 }
 
 body {
