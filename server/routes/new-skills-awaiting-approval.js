@@ -311,7 +311,7 @@ router.put('/:id', (req, res, next) => {
                     {
                         userId: req.session.userId,
                         userAction: 'update',
-                        contentId: result.insertId,
+                        contentId: req.params.id,
                         contentType: 'new_skill'
                     },
                     (err) => {
