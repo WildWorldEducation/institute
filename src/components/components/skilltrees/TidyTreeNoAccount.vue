@@ -631,10 +631,10 @@ export default {
         resetPos() {
             let screenWidth = window.innerWidth;
             let shift = 143;
-            if(screenWidth > 480){
+            if (screenWidth > 480) {
                 shift = 100;
             }
-            if(screenWidth > 1024){
+            if (screenWidth > 1024) {
                 shift = 90;
             }
             d3.select(this.context.canvas)
@@ -642,7 +642,9 @@ export default {
                 .duration(700)
                 .call(
                     this.d3Zoom.transform,
-                    d3.zoomIdentity.translate(0, this.context.canvas.height/2 - shift).scale(0.3)
+                    d3.zoomIdentity
+                        .translate(0, this.context.canvas.height / 2 - shift)
+                        .scale(0.3)
                 );
             this.$refs.sliderControl.showScaleLabel();
         },
@@ -941,7 +943,7 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid #a48be5;
+    border: 5px solid var(--hr-colour);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;

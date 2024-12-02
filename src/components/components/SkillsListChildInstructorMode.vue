@@ -213,7 +213,7 @@ export default {
             'has-children': children.length > 0,
             'result-button': isResult === true
         }"
-        class="skill-button d-flex justify-content-between"
+        class="skill-button secondary-text d-flex justify-content-between"
         @click.stop="mainButtonPress()"
         :id="`skill${this.id}`"
     >
@@ -481,6 +481,7 @@ export default {
     border-color: black;
     background-position: right;
     flex-direction: row;
+    color: black !important;
 }
 
 .mastered-skills-count {
