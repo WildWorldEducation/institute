@@ -245,13 +245,13 @@ Themes
 .apprentice-theme {
     --nav-colour: white;
 
-    --primary-heading-colour: white;
-    --secondary-heading-colour: #8f7bd6;
+    --primary-heading-colour: #040095;
+    --secondary-heading-colour: #040095;
 
-    --primary-icon-colour: #8f7bd6;
-    --secondary-icon-colour: #8f7bd6;
+    --primary-icon-colour: #040095;
+    --secondary-icon-colour: #040095;
 
-    --primary-btn-colour: #8f7bd6;
+    --primary-btn-colour: #040095;
     --primary-btn-colour-hover: #9a7ceb;
     --primary-btn-colour-border: #7f56d9;
     --secondary-btn-colour: #56c5b6;
@@ -266,9 +266,9 @@ Themes
 
     --fifth-colour: white;
     --collapsible-tree-node-colour: #53389e;
-    --stroke-width: 1px;
+    --stroke-width: 0px;
 
-    --loading-animation-colour: #8f7bd6;
+    --loading-animation-colour: #040095;
 }
 /* The Scholar theme */
 .scholar-theme {
