@@ -338,7 +338,9 @@ export default {
 }
 
 .legend .btn {
-    color: white;
+    color: black;
+    font-weight: 500;
+    border: 1px solid black;
 }
 
 .legend-div {

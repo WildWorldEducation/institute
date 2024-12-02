@@ -191,11 +191,6 @@ export default {
     width: 100%;
     bottom: 10px;
 }
-
-#legend .btn {
-    color: white;
-}
-
 .legend-div {
     z-index: 2;
     width: 100%;
@@ -257,7 +252,9 @@ export default {
 }
 
 .legend .btn {
-    color: white;
+    color: color;
+    font-weight: 500;
+    border: 1px solid black;
 }
 
 .legend {

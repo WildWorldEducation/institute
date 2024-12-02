@@ -247,10 +247,7 @@ export default {
 <template>
     <div class="container-fluid mt-4">
         <div class="d-flex align-items-md-baseline align-items-start gap-2">
-            <h2 class="forum-sub-page-title h2-stroke">
-                Best Places To Learn This
-            </h2>
-            <!-- <img src="/images/recurso-69.png" class="" /> -->
+            <h2 class="h2-stroke">Best Places To Learn This</h2>
         </div>
         <!-- Navigation Tabs -->
         <!-- If guest account, we dont show tutors, only sources -->
@@ -327,9 +324,10 @@ export default {
 <style scoped>
 .nav-tabs {
     --bs-nav-tabs-border-width: 2px;
-    --bs-nav-tabs-border-color: #aea3ce;
-    --bs-nav-tabs-link-active-border-color: #aea3ce #aea3ce #fff;
-    --bs-nav-tabs-link-active-color: #8f7bd6;
+    --bs-nav-tabs-border-color: var(--primary-icon-colour);
+    --bs-nav-tabs-link-active-border-color: var(--hr-colour) var(--hr-colour)
+        #fff;
+    --bs-nav-tabs-link-active-color: var(--primary-btn-colour-border);
     font-weight: 550;
     cursor: pointer;
 }
@@ -341,13 +339,6 @@ export default {
 .nav-link {
     color: var(--fifth-colour);
     font-weight: 550;
-}
-
-:deep(.forum-sub-page-title) {
-    color: #8666ca;
-    font-size: 2rem;
-    font-weight: 600;
-    font-family: 'Poppins' sans-serif;
 }
 
 :deep(.red-btn) {
