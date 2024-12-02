@@ -93,26 +93,12 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            v-bind:src="'/images/banners/students-banner.png'"
-            class="img-fluid"
-        />
-    </div>
-    <div class="container mt-3 pb-3">
-        <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Offer to Tutor</h2>
-            </div>
-        </div>
+    <div class="container mt-3">
+        <h1 class="h1-stroke">Offer to Tutor</h1>
         <div class="main-content-container container-fluid p-2">
             <div class="row">
                 <div class="col">
                     <div class="mb-4">
-                        <!-- <label
-                            >Describe your tutoring style and experience with
-                            the subject.</label
-                        > -->
                         <div class="mb-3 mt-1 text-area-div">
                             <textarea
                                 id="summernote-description"
@@ -127,10 +113,6 @@ export default {
                         </div>
                     </div>
                     <div class="mb-3">
-                        <!-- <label
-                            >How would you like to be contacted (eg: an email
-                            address, mobile number or calendar booking link)?
-                        </label> -->
                         <div class="mb-3 mt-3 text-area-div">
                             <textarea
                                 id="summernote-contact-preference"

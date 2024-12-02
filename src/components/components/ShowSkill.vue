@@ -679,7 +679,7 @@ export default {
 }
 
 .hr {
-    border-color: #aea3ce !important;
+    border-color: var(--hr-colour) !important;
 }
 
 #skill-info-container {

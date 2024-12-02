@@ -526,18 +526,10 @@ export default {
 </script>
 
 <template>
-    <div class="container pb-5 px-3 px-md-0">
-        <!-- Page Title -->
-        <div class="row">
-            <div
-                class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
-            >
-                <h1 id="page-tile">
-                    <span v-if="skill.type != 'domain'">Edit Skill</span>
-                    <span v-else>Edit Category</span>
-                </h1>
-            </div>
-        </div>
+    <div class="container pb-5">
+        <h1 v-if="skill.type != 'domain'" class="h1-stroke">Edit Skill</h1>
+        <h1 v-else class="h1-stroke">Edit Category</h1>
+
         <div v-if="!isAnotherInstanceOfExistingSkill">
             <div
                 v-if="
@@ -549,7 +541,7 @@ export default {
                 <div class="row mt-3">
                     <div class="col-12 col-md-8 col-lg-5 mt-2">
                         <div class="mb-3">
-                            <h2>Name</h2>
+                            <h2 class="h2-stroke">Name</h2>
                             <input
                                 v-model="skill.name"
                                 class="form-control"
@@ -573,7 +565,7 @@ export default {
                     <div v-if="skill.type != 'sub'">
                         <div class="col col-md-8 col-lg-5 mt-2">
                             <!-- Custom Dropdown -->
-                            <h2>Level</h2>
+                            <h2 class="h2-stroke">Level</h2>
                             <div class="d-flex flex-column position-relative">
                                 <div
                                     :class="[
@@ -622,7 +614,7 @@ export default {
                 <div v-if="userDetailsStore.role == 'admin'" class="row">
                     <div class="col col-md-8 col-lg-5 mt-2">
                         <div v-if="skill.type != 'sub'">
-                            <label class="form-label">Filters</label>
+                            <h2 class="h2-stroke">Filters</h2>
                             <div class="col">
                                 <label
                                     v-for="tag in tagsStore.tagsList"
@@ -653,7 +645,7 @@ export default {
             <!-- Skills Types Radio choose -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
-                    <h2>Node Type</h2>
+                    <h2 class="h2-stroke">Node Type</h2>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
@@ -747,7 +739,7 @@ export default {
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div v-if="skill.type != 'sub'" class="mb-3">
-                        <h2>Parent</h2>
+                        <h2 class="h2-stroke">Parent</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -813,7 +805,7 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                     >
-                        <h2>Icon</h2>
+                        <h2 class="h2-stroke">Icon</h2>
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -927,9 +919,7 @@ export default {
 
             <!-- Mastery Requirement summernote -->
             <div v-if="skill.type != 'domain'" class="mb-3">
-                <div class="d-flex justify-content-between">
-                    <h2>Mastery Requirements</h2>
-                </div>
+                <h2 class="h2-stroke">Mastery Requirements</h2>
 
                 <textarea
                     class="form-control"
@@ -995,7 +985,7 @@ export default {
             <div class="row">
                 <div class="col">
                     <div class="mb-3">
-                        <h2>Comment</h2>
+                        <h2 class="h2-stroke">Comment</h2>
                         <textarea
                             v-model="comment"
                             class="form-control"

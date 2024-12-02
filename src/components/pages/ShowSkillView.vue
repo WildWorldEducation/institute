@@ -18,25 +18,7 @@ export default {
         <div class="container">
             <ShowSkill />
         </div>
-        <!-- Banner image -->
-        <!-- <div id="banner">            
-            <img
-                src="/images/banners/institute-collins-2.png"
-                class="img-fluid"
-            />
-        </div> -->
     </div>
 </template>
 
-<style scoped>
-#banner {
-    z-index: -10 !important;
-    top: 0px;
-    position: absolute !important;
-    width: 100%;
-}
-
-.img-fluid {
-    width: 100% !important;
-}
-</style>
+<style scoped></style>

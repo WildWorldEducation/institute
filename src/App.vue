@@ -16,12 +16,14 @@ export default {
     async mounted() {
         await this.userDetailsStore.getUserDetails();
 
+        // Kids theme
         if (this.userDetailsStore.theme == 'apprentice') {
             document.body.classList.remove('scholar-theme');
             document.body.classList.add('apprentice-theme');
         } else if (this.userDetailsStore.theme == 'scholar') {
             document.body.classList.add('scholar-theme');
             document.body.classList.remove('apprentice-theme');
+            // Original theme.
         } else {
             document.body.classList.remove('scholar-theme');
             document.body.classList.remove('apprentice-theme');
@@ -230,6 +232,7 @@ Themes
     --fourth-colour: gold;
     --tertiary-colour: white;
     --regular-text-colour: black;
+    --hr-colour: #aea3ce;
 
     --fifth-colour: #888;
     --stroke-width: 0px;
@@ -253,7 +256,8 @@ Themes
     --fourth-colour: gold;
     --tertiary-colour: white;
     --regular-text-colour: #8f7bd6;
-    --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.webp');
+    --hr-colour: #aea3ce;
+    --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
 
     --fifth-colour: white;
     --stroke-width: 1px;
@@ -276,6 +280,7 @@ Themes
 
     --tertiary-colour: #87ceeb;
     --regular-text-colour: black;
+    --hr-colour: black;
     --fourth-colour: #bf202f;
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 

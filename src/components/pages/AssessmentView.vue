@@ -49,22 +49,8 @@ export default {
 </script>
 
 <template>
-    <!-- <div id="banner">
-        <img
-            v-bind:src="'/images/banners/skills-banner.png'"
-            class="img-fluid"
-        />
-    </div> -->
     <div class="container mt-3">
-        <div class="d-flex justify-content-md-between justify-content-center">
-            <div class="d-flex flex-column flex-md-row">
-                <h1
-                    class="ms-3 d-flex justify-content-md-end text-center justify-content-center"
-                >
-                    {{ this.skill.name }} Quiz
-                </h1>
-            </div>
-        </div>
+        <h1 class="h1-stroke">{{ this.skill.name }} Quiz</h1>
 
         <div class="mt-4 mb-2">
             <hr
@@ -80,23 +66,5 @@ export default {
 #assessment-horizontal-line {
     border-color: #aea3ce !important;
     border: solid;
-}
-
-.img-fluid {
-    width: 100% !important;
-    height: auto;
-}
-#skill-icon {
-    width: 200px;
-    border-radius: 10px;
-}
-
-/*Style for Mobile Devices */
-@media (max-width: 480px) {
-    #skill-icon {
-        width: 60%;
-        height: auto;
-        margin: 0% auto;
-    }
 }
 </style>

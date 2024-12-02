@@ -1006,7 +1006,7 @@ export default {
 
 #question-container {
     border-radius: 12px;
-    background: #f2edffcc;
+    background: #f2edff;
 }
 
 #question-number-div {
