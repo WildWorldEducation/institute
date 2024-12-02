@@ -128,19 +128,9 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            src="/images/banners/edit-mastery-skill-banner.png"
-            class="image-fluid"
-        />
-    </div>
     <div class="container mt-3">
-        <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Edit Question</h2>
-                <img src="/images/recurso-69.png" id="header-icon" />
-            </div>
-        </div>
+        <h1 class="h1-stroke">Edit Question</h1>
+
         <div class="main-content-container container-fluid mt-4">
             <div class="row p-0">
                 <div id="form-container" class="col-lg-7 p-4">
