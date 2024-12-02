@@ -236,6 +236,7 @@ Themes
     --hr-colour: #aea3ce;
 
     --fifth-colour: #888;
+    --collapsible-tree-node-colour: #53389e;
     --stroke-width: 0px;
 }
 /* The Apprentice theme */
@@ -262,6 +263,7 @@ Themes
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
 
     --fifth-colour: white;
+    --collapsible-tree-node-colour: #53389e;
     --stroke-width: 1px;
 }
 /* The Scholar theme */
@@ -276,7 +278,7 @@ Themes
 
     --primary-btn-colour: black;
     --primary-btn-colour-hover: #303030;
-    --primary-btn-colour-border: black;
+    --primary-btn-colour-border: white;
     --secondary-btn-colour: black;
     --secondary-btn-colour-hover-border: darkorange;
 
@@ -288,6 +290,7 @@ Themes
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 
     --fifth-colour: white;
+    --collapsible-tree-node-colour: black;
     --stroke-width: 1px;
 }
 
@@ -403,6 +406,10 @@ h2 {
 
 .secondary-text {
     color: var(--secondary-text-colour) !important;
+}
+
+.collapsible-tree-node {
+    color: var(--collapsible-tree-node-colour) !important;
 }
 
 /* End of themes section */
