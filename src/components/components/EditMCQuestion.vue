@@ -192,16 +192,15 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 pb-3">
-        <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Edit Question</h2>
-            </div>
-        </div>
+    <div class="container mt-3">
+        <h1 class="h1-stroke">Edit Question</h1>
+
         <p class="mt-2">
-            <em>Note: blank questions will not display in the quiz.</em>
+            <em class="secondary-text"
+                >Note: blank answer options will not display in the quiz.</em
+            >
         </p>
-        <div class="main-content-container container-fluid mt-4">
+        <div class="main-content-container container-fluid mt-2">
             <div class="row p-0">
                 <div id="form-container" class="col-lg-7 p-4">
                     <div class="mb-3">

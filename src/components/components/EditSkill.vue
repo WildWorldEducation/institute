@@ -1220,16 +1220,6 @@ export default {
     background-color: #65e0a5;
 }
 
-#page-tile {
-    font-family: 'Poppins' sans-serif;
-    font-size: 38px;
-    font-weight: 900;
-    line-height: 28px;
-    letter-spacing: 0em;
-    text-align: left;
-    color: #667085;
-}
-
 .form-label {
     font-family: 'Poppins' sans-serif;
     font-size: 14px;
@@ -1674,9 +1664,6 @@ export default {
     .default-no-img {
         height: 100px;
         width: auto;
-    }
-    #page-tile {
-        font-size: 32px;
     }
 
     .exit-icon {

@@ -83,13 +83,10 @@ export default {
             </div>
         </div>
     </div>
-    <div class="container mt-5">
-        <!-- Tile Row  -->
-        <div class="row mt-3">
-            <div class="col">
-                <h1>{{ skill.name }} Question Bank</h1>
-            </div>
-        </div>
+    <div class="container mt-2">
+        <!-- Page Heading  -->
+        <h1 class="h1-stroke">{{ skill.name }} Question Bank</h1>
+
         <!-- Question type checkboxes -->
         <div class="row mt-2 pt-1 pb-1 checkboxes">
             <div class="col-4">
@@ -205,7 +202,7 @@ table {
     height: 29.09px;
     width: 29.09px;
     background: #f9f5ff;
-    border: 1.45px solid #9c7eec;
+    border: 1.45px solid var(--secondary-icon-colour);
     border-radius: 8.73px;
 }
 
@@ -245,7 +242,7 @@ table {
     top: 5px;
     width: 13.58px;
     height: 9.33px;
-    border: solid #9c7eec;
+    border: solid var(--secondary-icon-colour);
     border-width: 0px 0px 2.9px 2.9px;
     transform: rotate(-45deg);
 }

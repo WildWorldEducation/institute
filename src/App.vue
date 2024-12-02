@@ -296,6 +296,10 @@ body {
     background-size: cover;
 }
 
+p {
+    color: var(--regular-text-colour) !important;
+}
+
 /* The following are changed by the themes, globally */
 /* .nav-bar {
     background-color: var(--tertiary-colour);
