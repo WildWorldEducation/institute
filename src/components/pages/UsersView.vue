@@ -6,6 +6,7 @@ import UserDetails from '../components/UserDetails.vue';
 import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import SearchUserBar from '../components/users-list/SearchUserBar.vue';
 
 export default {
     setup() {
@@ -40,7 +41,8 @@ export default {
     },
     components: {
         UsersList,
-        UserDetails
+        UserDetails,
+        SearchUserBar
     },
     async created() {
         // Set up the first user in the array to be selected on the page initially.
@@ -197,6 +199,7 @@ export default {
                 />
             </svg>
         </router-link>
+        <SearchUserBar />
     </div>
     <!-- Loading animation -->
     <div
