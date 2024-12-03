@@ -121,7 +121,7 @@ export default {
                     this.skillName = this.skillsStore.skillsList[j].name;
                 }
             }
-        }        
+        }
     },
     computed: {},
     methods: {
@@ -268,11 +268,8 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img src="/images/banners/general-banner.png" class="img-fluid" />
-    </div>
     <div class="container mt-3 pb-4">
-        <div id="page-tile">Unmarked Questions</div>
+        <h1 class="h1-stroke">Unmarked Questions</h1>
         <div id="assessment-info">
             {{ this.studentName }} :
             {{ this.skillName }}
@@ -370,7 +367,7 @@ export default {
                     <router-link class="btn green-btn" to="/"
                         >To Hub</router-link
                     >
-                    <button class="btn purple-btn" @click="showModal = false">
+                    <button class="btn primary-btn" @click="showModal = false">
                         OK
                     </button>
                 </div>
@@ -380,12 +377,6 @@ export default {
 </template>
 
 <style scoped>
-h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
 #question-bg {
     background: #f2edffcc;
     border-radius: 12px;
@@ -513,10 +504,6 @@ h2 {
 
 .red-btn:hover {
     background-color: #fc7d7d;
-}
-
-.purple-btn:hover {
-    background-color: #a48ef3;
 }
 
 /* The Warning Modal */

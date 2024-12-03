@@ -44,20 +44,12 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img src="/images/banners/general-banner.png" class="" />
-    </div>
-    <div class="container post-login-container min-vh-100">
+    <div class="container min-vh-100">
         <div class="row content-row">
-            <div class="col-lg-4 col-md-5 mb-4 pb-4 column mx-0">
-                <!-- Avatar image -->
-                <img
-                    id="profile-img"
-                    :src="userDetailsStore.avatar"
-                    class="img-fluid rounded"
-                />
-            </div>
-            <div class="col-lg-4 col-md-7 mb-4 pb-4">
+            <div
+                class="col-lg-4 col-md-6 mb-4 pb-4"
+                v-if="userDetailsStore.role != 'editor'"
+            >
                 <StudentProgress
                     v-if="userDetailsStore.role == 'student'"
                     :userId="userDetailsStore.userId"
@@ -66,7 +58,10 @@ export default {
                     v-else-if="userDetailsStore.role == 'instructor'"
                 />
             </div>
-            <div class="col-lg-4 col-md-7 mb-4 pb-4">
+            <div
+                class="col-lg-4 col-md-6 mb-4 pb-4"
+                v-if="userDetailsStore.role != 'editor'"
+            >
                 <LastVisitedSkills
                     v-if="userDetailsStore.role == 'student'"
                     :userId="userDetailsStore.userId"
@@ -76,15 +71,14 @@ export default {
                     v-else-if="userDetailsStore.role == 'instructor'"
                 />
             </div>
-            <div class="col-lg-3 col-md-5 mb-4 pb-4 column">
+            <div class="col-lg-3 col-md-5 pb-4 column">
                 <Notifications />
-            </div>
-            <div class="col-lg-9 col-md-6 mb-4 pb-4 column d-none d-lg-block">
-                <img src="/images/post-login.png" class="img-fluid" />
             </div>
         </div>
         <div id="news-row" class="row">
-            <News />
+            <div class="col">
+                <News />
+            </div>
         </div>
     </div>
 </template>
@@ -114,16 +108,6 @@ export default {
 #purple-banner {
     height: 77px;
     background-color: #a48be640;
-}
-
-.post-login-container {
-    padding-top: 23px;
-}
-
-h1 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
 }
 
 #user-name {
@@ -168,12 +152,6 @@ h1 {
         padding-right: 100px;
     }
 
-    .post-login-container {
-        padding-top: 23px;
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-
     #notif-col {
         margin-top: 0px;
     }
@@ -203,11 +181,6 @@ h1 {
     #user-name {
         padding-left: 0px;
         padding-right: 0px;
-    }
-
-    .post-login-container {
-        padding-top: 23px;
-        display: relative;
     }
 
     /* #news-row {

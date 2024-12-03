@@ -4,6 +4,7 @@ import { useResourcesStore } from '../../stores/ResourcesStore.js';
 import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
 import { useEssayQuestionsStore } from '../../stores/EssayQuestionsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
@@ -15,12 +16,14 @@ export default {
         const mcQuestionsStore = useMCQuestionsStore();
         const essayQuestionsStore = useEssayQuestionsStore();
         const settingStore = useSettingsStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
             skillsStore,
             resourcesStore,
             mcQuestionsStore,
             essayQuestionsStore,
-            settingStore
+            settingStore,
+            userDetailsStore
         };
     },
     data() {
@@ -540,12 +543,18 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
+    <!-- <div id="banner">
         <img
-            src="/images/banners/edit-mastery-skill-banner.png"
+            v-if="userDetailsStore.theme == 'apprentice'"
+            src="/images/banners/themes/apprentice/banner-2.png"
             class="img-fluid"
         />
-    </div>
+        <img
+            v-else
+            src="/images/banners/themes/scholar/banner-2.png"
+            class="img-fluid"
+        />
+    </div> -->
     <div class="container-fluid pb-5">
         <div class="mt-3">
             <h2 class="page-title">Content Flags</h2>
@@ -612,7 +621,7 @@ export default {
                     >
                         <router-link
                             :to="editUrl"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             b-tooltip.hover
                             :title="'Go To Edit Page For This ' + type"
                         >
@@ -1474,7 +1483,7 @@ export default {
                     >
                         <router-link
                             :to="editUrl"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             target="_blank"
                             b-tooltip.hover
                             :title="'Go To Edit Page For This ' + type"
@@ -2074,22 +2083,10 @@ div {
     font-family: 'Poppins', sans-serif !important;
 }
 
-h1 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
 .page-title {
     color: #9c7eec;
     font-size: 30px;
     font-weight: 600;
-}
-
-h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
 }
 
 .flag-container {
@@ -2124,23 +2121,6 @@ h2 {
 
 .search-bar input {
     outline: none;
-}
-
-.purple-btn {
-    background-color: #a48be6 !important;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #7e59cf !important;
-    color: white;
 }
 
 .red-btn {

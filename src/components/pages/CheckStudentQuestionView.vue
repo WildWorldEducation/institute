@@ -151,187 +151,180 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img src="/images/banners/general-banner.png" class="img-fluid" />
-        <div class="container mt-3 pb-3">
-            <div class="row">
-                <div class="col-10">
-                    <h2 id="header-tile">Student: {{ studentName }}</h2>
-                    <h2 id="header-tile">Skill: {{ skillName }}</h2>
-                </div>
+    <div class="container mt-3 pb-3">
+        <div class="row">
+            <div class="col-10">
+                <h1>Student Suggested Question</h1>
+                <p>
+                    {{ studentName }} suggested the following question, for the
+                    skill {{ skillName }}
+                </p>
             </div>
-            <div class="main-content-container container-fluid mt-4">
-                <div class="row p-0">
-                    <div id="form-container" class="col p-4">
-                        <!-- Question -->
-                        <div class="mb-3">
-                            <label for="last_name" class="form-label"
-                                >Question</label
-                            >
-                            <textarea
-                                :disabled="!isEditMode"
-                                rows="1"
-                                v-model="question.text"
-                                class="form-control"
-                            >
-                            </textarea>
-                            <div
-                                v-if="
-                                    validate.question &&
-                                    (question.text === '' ||
-                                        question.text === null)
-                                "
-                                class="form-validate"
-                            >
-                                please enter a question !
-                            </div>
-                        </div>
-
-                        <div
-                            v-for="(answer, index) in answers"
-                            v-show="answer.show"
-                            :key="index"
-                            class="mb-3"
+        </div>
+        <div class="main-content-container container-fluid">
+            <div class="row p-0">
+                <div id="form-container" class="col p-4">
+                    <!-- Question -->
+                    <div class="mb-3">
+                        <h2>Question</h2>
+                        <textarea
+                            :disabled="!isEditMode"
+                            rows="1"
+                            v-model="question.text"
+                            class="form-control"
                         >
-                            <label class="form-label"
-                                >Answer {{ index + 1 }}:</label
-                            >
-                            <div class="d-flex answer-option">
-                                <input
-                                    :disabled="!isEditMode"
-                                    v-model="answer.text"
-                                    :id="'answer' + (index + 1)"
-                                    placeholder="Enter answer option"
-                                    type="text"
-                                    class="form-control"
-                                />
-                            </div>
-                            <div
-                                v-if="validate.validated && answer.text === ''"
-                                class="form-validate"
-                            >
-                                please enter a correct answer !
-                            </div>
-                            <!-- Correct Answer Radio Button -->
-                            <div class="form-check">
-                                <input
-                                    :disabled="!isEditMode"
-                                    class="form-check-input"
-                                    type="radio"
-                                    :id="'correct' + (index + 1)"
-                                    name="correctAnswer"
-                                    :value="index + 1"
-                                    v-model="question.correct_answer"
-                                />
-                                <label :for="'correct' + (index + 1)" class=""
-                                    >Set as correct</label
-                                >
-                            </div>
+                        </textarea>
+                        <div
+                            v-if="
+                                validate.question &&
+                                (question.text === '' || question.text === null)
+                            "
+                            class="form-validate"
+                        >
+                            please enter a question !
                         </div>
+                    </div>
 
-                        <!-- Remove Answer Button (visible only if more than 2 answers) -->
-                        <button
-                            v-if="answers[2].show == true"
-                            @click="removeAnswer()"
+                    <div
+                        v-for="(answer, index) in answers"
+                        v-show="answer.show"
+                        :key="index"
+                        class="mb-3"
+                    >
+                        <h2>Answer {{ index + 1 }}</h2>
+                        <div class="d-flex answer-option">
+                            <input
+                                :disabled="!isEditMode"
+                                v-model="answer.text"
+                                :id="'answer' + (index + 1)"
+                                placeholder="Enter answer option"
+                                type="text"
+                                class="form-control"
+                            />
+                        </div>
+                        <div
+                            v-if="validate.validated && answer.text === ''"
+                            class="form-validate"
+                        >
+                            please enter a correct answer !
+                        </div>
+                        <!-- Correct Answer Radio Button -->
+                        <div class="form-check">
+                            <input
+                                :disabled="!isEditMode"
+                                class="form-check-input"
+                                type="radio"
+                                :id="'correct' + (index + 1)"
+                                name="correctAnswer"
+                                :value="index + 1"
+                                v-model="question.correct_answer"
+                            />
+                            <label :for="'correct' + (index + 1)" class=""
+                                >Set as correct</label
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Remove Answer Button (visible only if more than 2 answers) -->
+                    <button
+                        v-if="answers[2].show == true"
+                        @click="removeAnswer()"
+                        data-v-ea3cd1bf=""
+                        type="button"
+                        class="btn btn red-btn p-2"
+                        title="Delete answer"
+                        :disabled="!isEditMode"
+                    >
+                        <svg
                             data-v-ea3cd1bf=""
-                            type="button"
-                            class="btn btn red-btn p-2"
-                            title="Delete answer"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            width="15"
+                            height="15"
+                            fill="white"
+                        >
+                            <path
+                                data-v-ea3cd1bf=""
+                                d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"
+                            ></path></svg
+                        >&nbsp;Remove Answer
+                    </button>
+
+                    <!-- Add Answer Button (max 5 answers) -->
+                    <div class="mb-3">
+                        <button
+                            v-if="answers[4].show == false"
+                            @click="addAnswer"
+                            class="btn primary-btn"
                             :disabled="!isEditMode"
                         >
                             <svg
-                                data-v-ea3cd1bf=""
+                                width="20"
+                                height="20"
+                                fill="#ffffff"
                                 xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="15"
-                                height="15"
-                                fill="white"
+                                viewBox="0 0 448 512"
                             >
+                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                 <path
-                                    data-v-ea3cd1bf=""
-                                    d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"
-                                ></path></svg
-                            >&nbsp;Remove Answer
+                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
+                                />
+                            </svg>
+                            Add Answer
                         </button>
+                    </div>
 
-                        <!-- Add Answer Button (max 5 answers) -->
-                        <div class="mb-3">
-                            <button
-                                v-if="answers[4].show == false"
-                                @click="addAnswer"
-                                class="btn purple-btn"
-                                :disabled="!isEditMode"
-                            >
-                                <svg
-                                    width="20"
-                                    height="20"
-                                    fill="#ffffff"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 448 512"
-                                >
-                                    <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                    <path
-                                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"
-                                    />
-                                </svg>
-                                Add Answer
-                            </button>
-                        </div>
+                    <!-- Random Order Toggle -->
+                    <div class="mb-3 form-check">
+                        <input
+                            :disabled="!isEditMode"
+                            type="checkbox"
+                            id="randomOrder"
+                            v-model="question.is_random"
+                            class="form-check-input"
+                        />
+                        <label for="randomOrder" class="form-check-label"
+                            >Show answers in random order</label
+                        >
+                    </div>
 
-                        <!-- Random Order Toggle -->
-                        <div class="mb-3 form-check">
-                            <input
-                                :disabled="!isEditMode"
-                                type="checkbox"
-                                id="randomOrder"
-                                v-model="question.is_random"
-                                class="form-check-input"
-                            />
-                            <label for="randomOrder" class="form-check-label"
-                                >Show answers in random order</label
-                            >
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Explanation</label>
-                            <textarea
-                                :disabled="!isEditMode"
-                                v-model="question.explanation"
-                                class="form-control"
-                                rows="3"
-                            ></textarea>
-                            <div
-                                v-if="
-                                    validate.explanation &&
-                                    (question.explanation === '' ||
-                                        question.explanation === null)
-                                "
-                                class="form-validate"
-                            >
-                                please enter an explanation !
-                            </div>
-                        </div>
-
+                    <div class="mb-3">
+                        <h2>Explanation</h2>
+                        <textarea
+                            :disabled="!isEditMode"
+                            v-model="question.explanation"
+                            class="form-control"
+                            rows="3"
+                        ></textarea>
                         <div
                             v-if="
-                                userDetailsStore.role == 'admin' ||
-                                userDetailsStore.role == 'editor'
+                                validate.explanation &&
+                                (question.explanation === '' ||
+                                    question.explanation === null)
                             "
-                            class="d-flex justify-content-end gap-4"
+                            class="form-validate"
                         >
-                            <a class="btn red-btn" @click="editMode()">Edit</a>
-                            <a
-                                class="btn red-btn"
-                                @click="deleteStudentQuestion()"
-                                >Delete</a
-                            >
-                            <button
-                                class="btn purple-btn"
-                                @click="saveToQuestionBank()"
-                            >
-                                Save
-                            </button>
+                            please enter an explanation !
                         </div>
+                    </div>
+
+                    <div
+                        v-if="
+                            userDetailsStore.role == 'admin' ||
+                            userDetailsStore.role == 'editor'
+                        "
+                        class="d-flex justify-content-end gap-4"
+                    >
+                        <a class="btn red-btn" @click="editMode()">Edit</a>
+                        <a class="btn red-btn" @click="deleteStudentQuestion()"
+                            >Delete</a
+                        >
+                        <button
+                            class="btn primary-btn"
+                            @click="saveToQuestionBank()"
+                        >
+                            Save
+                        </button>
                     </div>
                 </div>
             </div>
@@ -340,22 +333,6 @@ export default {
 </template>
 
 <style scoped>
-h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-#banner {
-    width: 100%;
-    height: fit-content;
-}
-
-.image-fluid {
-    width: 100%;
-    height: auto;
-}
-
 #question-bg {
     background: #f2edffcc;
     border-radius: 12px;
@@ -478,10 +455,6 @@ h2 {
 
 .red-btn:hover {
     background-color: #fc7d7d;
-}
-
-.purple-btn:hover {
-    background-color: #a48ef3;
 }
 
 /* The Warning Modal */

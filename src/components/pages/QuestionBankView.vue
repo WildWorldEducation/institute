@@ -39,18 +39,14 @@ export default {
 </script>
 
 <template>
-    <div id="banner" class="overflow-hidden">
-        <img src="/images/banners/general-banner.png" class="image-fluid" />
-    </div>
-    <!-- Purple Banner Row -->
-    <div class="row px-2 px-lg-2" id="purple-banner">
+    <div class="row px-2 px-lg-2">
         <div class="col d-flex justify-content-between">
             <router-link
                 v-if="
                     userDetailsStore.role == 'admin' ||
                     userDetailsStore.role == 'editor'
                 "
-                class="purple-btn btn"
+                class="primary-btn btn"
                 :to="'/skills/' + skill.id + '/question-bank/add'"
             >
                 Add &ThickSpace;
@@ -87,15 +83,12 @@ export default {
             </div>
         </div>
     </div>
-    <div class="container mt-5">
-        <!-- Tile Row  -->
-        <div class="row mt-3">
-            <div class="col">
-                <h1>{{ skill.name }} Question Bank</h1>
-            </div>
-        </div>
-        <!-- question type checker row -->
-        <div class="row mt-5 pt-3 pb-3">
+    <div class="container mt-2">
+        <!-- Page Heading  -->
+        <h1 class="h1-stroke">{{ skill.name }} Question Bank</h1>
+
+        <!-- Question type checkboxes -->
+        <div class="row mt-2 pt-1 pb-1 checkboxes">
             <div class="col-4">
                 <label class="control control-checkbox">
                     <span class="my-auto mx-2 me-4">Multiple Choice</span>
@@ -151,23 +144,14 @@ export default {
 </template>
 
 <style scoped>
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    max-width: fit-content;
-    height: 44px;
-    display: flex;
-    align-items: center;
+.checkboxes {
+    background-color: white;
+    border-radius: 10px;
 }
 
-.purple-btn:hover {
-    background-color: #9c7eec;
-    color: white !important;
+table {
+    background-color: white;
+    border-radius: 10px;
 }
 
 .red-btn {
@@ -186,19 +170,6 @@ export default {
     background-color: #cc3535;
 }
 
-#purple-banner {
-    margin-top: -10px;
-    margin-right: 0px;
-    margin-left: 0px;
-    padding-left: 46px;
-    padding-top: 16px;
-    padding-bottom: 17px;
-    padding-right: 46px;
-    height: 77px;
-    width: 100%;
-    background-color: rgb(164, 139, 230, 0.25);
-}
-
 /**-------------------------------------  */
 /* A lot of CSS to styling two check box */
 .control {
@@ -214,7 +185,7 @@ export default {
 .control > span {
     font-weight: 500;
     font-size: 0.938rem;
-    color: #667085;
+    color: var(--regular-text-colour);
     text-align: center;
 }
 
@@ -231,7 +202,7 @@ export default {
     height: 29.09px;
     width: 29.09px;
     background: #f9f5ff;
-    border: 1.45px solid #9c7eec;
+    border: 1.45px solid var(--secondary-icon-colour);
     border-radius: 8.73px;
 }
 
@@ -271,7 +242,7 @@ export default {
     top: 5px;
     width: 13.58px;
     height: 9.33px;
-    border: solid #9c7eec;
+    border: solid var(--secondary-icon-colour);
     border-width: 0px 0px 2.9px 2.9px;
     transform: rotate(-45deg);
 }

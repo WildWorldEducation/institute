@@ -29,92 +29,49 @@ export default {
 </script>
 
 <template>
-    <div
-        id="legend"
-        class="collapsible-tree-legend container-fluid p-2 position-relative"
-    >
-        <div class="position-absolute legend-div">
-            <div class="mobile-legend">
-                <div class="legend row">
-                    <div class="col-8">
-                        <div class="col">
-                            <span class="grade-school"></span>Grade school
-                        </div>
-                        <div class="col">
-                            <span class="middle-school"></span> Middle school
-                        </div>
-                        <div class="col">
-                            <span class="high-school"></span> High school
-                        </div>
-                        <div class="col">
-                            <span class="college"></span> College
-                        </div>
-                        <div class="col"><span class="phd"></span> PHD</div>
-                    </div>
-                    <div class="col-4 d-flex flex-column align-items-end">
-                        <button
-                            id="print-btn"
-                            class="btn btn-info"
-                            @click="$refs.childComponent.printPDF()"
-                        >
-                            Print
-                        </button>
-                        <button
-                            id="reset-btn"
-                            class="btn btn-primary"
-                            @click="resetPos()"
-                        >
-                            Reset
-                        </button>
-                    </div>
-                </div>
-                <div class="search-mobile-row">
+    <div class="container-fluid position-absolute legend-div">
+        <div class="mobile-legend">
+            <div class="search-mobile-row me-2">
+                <!-- Search Feature -->
+                <SkillTreeSearchBar
+                    :findNode="handleChooseResult"
+                    :clearResults="clearResult"
+                />
+            </div>
+            <div class="d-flex justify-content-end">
+                <!-- <button
+                    class="btn legend-btn me-2"
+                    @click="$refs.childComponent.printPDF()"
+                >
+                    Print
+                </button> -->
+                <button class="btn primary-btn" @click="resetPos()">
+                    Reset
+                </button>
+            </div>
+        </div>
+        <div class="tablet-and-up-legend">
+            <div class="legend d-flex justify-content-between">
+                <!-- Search bar, reset, expand all, print buttons -->
+                <div class="d-flex col-lg justify-content-between">
                     <!-- Search Feature -->
                     <SkillTreeSearchBar
+                        class="me-2"
                         :findNode="handleChooseResult"
                         :clearResults="clearResult"
                     />
-                </div>
-            </div>
-            <div class="tablet-and-up-legend">
-                <div class="legend row">
-                    <div class="col d-flex align-items-center">
-                        <span class="grade-school"></span>Grade school
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <span class="middle-school"></span> Middle school
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <span class="high-school"></span> High school
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <span class="college"></span> College
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <span class="phd"></span> PHD
-                    </div>
-
-                    <div
-                        class="col-12 col-lg-4 d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
+                    <!-- Print Button -->
+                    <button
+                        class="btn primary-btn me-2"
+                        @click="$refs.childComponent.printPDF()"
                     >
-                        <!-- Search Feature -->
-                        <SkillTreeSearchBar
-                            :findNode="handleChooseResult"
-                            :clearResults="clearResult"
-                        />
-                        <button
-                            id="print-btn"
-                            class="btn btn-info me-3"
-                            @click="$refs.childComponent.printPDF()"
-                        >
-                            Print
-                        </button>
-                    </div>
+                        Print
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    <div id="thin-purple-banner"></div>
+
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
@@ -124,18 +81,123 @@ export default {
             <span>Loading...</span>
         </template>
     </Suspense>
+    <div class="position-absolute bottom-legend-div">
+        <!-- <div class="mobile-legend">
+            <div class="legend d-flex">
+                <div>
+                    <button
+                        class="btn grade-school me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel(
+                                'grade_school'
+                            )
+                        "
+                    >
+                        GS
+                    </button>
+                    <button
+                        class="btn middle-school me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel(
+                                'middle_school'
+                            )
+                        "
+                    >
+                        MS
+                    </button>
+                </div>
+                <div>
+                    <button
+                        class="btn high-school me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel(
+                                'high_school'
+                            )
+                        "
+                    >
+                        HS
+                    </button>
+                    <button
+                        class="btn college me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel('college')
+                        "
+                    >
+                        C
+                    </button>
+                    <button
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel('phd')
+                        "
+                        class="btn phd"
+                    >
+                        PHD
+                    </button>
+                </div>
+            </div>
+        </div> -->
+        <div class="tablet-and-up-legend">
+            <div class="d-flex legend">
+                <!-- Grade buttons -->
+                <button
+                    class="btn grade-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel(
+                            'grade_school'
+                        )
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel(
+                            'middle_school'
+                        )
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel('high_school')
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel('college')
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd me-2"
+                    @click="$refs.childComponent.truncateToGradeLevel('phd')"
+                >
+                    PHD
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style>
-#legend {
-    /* display: block;
-    overflow-x: hidden; */
-    height: 60px;
-    border-bottom: 2px #a48be640 solid;
+.bottom-legend-div {
+    width: 100%;
+    bottom: 10px;
+}
+
+.bottom-legend-div .btn {
+    color: black;
 }
 
 .legend-div {
-    height: auto;
+    z-index: 2;
     width: 100%;
 }
 
@@ -150,11 +212,6 @@ export default {
     width: 25px;
     height: 15px;
     margin-bottom: 8px;
-}
-
-#thin-purple-banner {
-    height: 2px;
-    background-color: #a48be640;
 }
 
 /* Grade level legend */
@@ -199,28 +256,25 @@ export default {
     background-color: #ff0000;
 }
 
-#print-btn {
+.legend .btn {
+    font-weight: 500;
+    border: 1px solid black;
+}
+
+.legend {
+    align-items: center;
+    justify-content: center;
+}
+
+.legend-btn {
     background-color: #184e80;
     border: #184e80;
     color: white;
-    width: 70px;
     max-height: 40px;
 }
 
-#print-btn:hover {
+.legend-btn:hover {
     background-color: #133b61;
-}
-
-#reset-btn {
-    background-color: #c4d2df;
-    border-color: #c4d2df;
-    color: black;
-    width: 70px;
-    max-height: 40px;
-}
-
-#reset-btn:hover {
-    background-color: #9da7b1;
 }
 
 .search-bar {
@@ -284,19 +338,13 @@ export default {
 /* X-Small devices (portrait phones, less than 576px) */
 @media (max-width: 480px) {
     .mobile-legend {
-        display: block;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
     }
 
     .tablet-and-up-legend {
         display: none;
-    }
-
-    #print-btn {
-        margin-bottom: 5px;
-    }
-
-    #legend {
-        height: 180px;
     }
 
     .search-mobile-row {
@@ -312,15 +360,8 @@ export default {
         display: none;
     }
 
-    #legend {
-        height: 90px;
-    }
-
     .tablet-and-up-legend {
         display: block;
-    }
-    .legend {
-        align-items: center;
     }
 
     .legend .col {
@@ -331,7 +372,6 @@ export default {
     }
 
     .search-bar {
-        width: 100%;
     }
 }
 </style>

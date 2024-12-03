@@ -14,7 +14,7 @@ export default {
         };
     },
     components: {
-        CohortView,
+        CohortView
     },
     data() {
         return {
@@ -46,31 +46,24 @@ export default {
             this.showInformationModal = !this.showInformationModal;
         },
         selectCohort(cohortId) {
-           if(this.selectedCohortId === cohortId){
-            this.selectedCohortId = null;
-           } else {
-            this.selectedCohortId = cohortId
-           }
+            if (this.selectedCohortId === cohortId) {
+                this.selectedCohortId = null;
+            } else {
+                this.selectedCohortId = cohortId;
+            }
         }
     }
 };
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            src="/images/banners/students-banner.png"
-            class="w-100 img-fluid"
-        />
-    </div>
-
     <!-- Add user button -->
     <div id="first-content-row">
         <div class="d-flex justify-content-between">
-            <h1 class="heading">Cohorts</h1>
+            <h1 class="h1-stroke">Cohorts</h1>
             <div class="d-flex">
                 <button
-                    class="btn purple-btn me-1"
+                    class="btn primary-btn me-1"
                     @click="toggleInformationModal"
                 >
                     <svg
@@ -86,7 +79,7 @@ export default {
                         />
                     </svg>
                 </button>
-                <router-link class="btn purple-btn" to="/cohorts/add"
+                <router-link class="btn primary-btn" to="/cohorts/add"
                     >Add&nbsp;
                     <!-- Plus sign -->
                     <svg
@@ -306,14 +299,14 @@ ul li {
         margin: 30% auto !important;
         width: 90% !important;
     }
-    .mobile-container{
-      display: flex;
-      flex-direction: column;
-      max-width: 100%;
-      justify-content: center;
-      align-items: center;
-      margin-left: 0 !important;
-      margin-right: 0 !important;
+    .mobile-container {
+        display: flex;
+        flex-direction: column;
+        max-width: 100%;
+        justify-content: center;
+        align-items: center;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
     }
 }
 

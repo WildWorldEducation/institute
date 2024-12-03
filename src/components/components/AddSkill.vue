@@ -427,18 +427,13 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 pb-5 px-3 px-md-0">
-        <!-- Page Title -->
-        <div class="row mt-5">
-            <div
-                class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline justify-content-center justify-content-md-start gap-3 mt-3"
-            >
-                <h1 id="page-tile">
-                    <span v-if="skill.type != 'domain'">Add Skill</span>
-                    <span v-else>Add Category</span>
-                </h1>
-                <img src="/images/recurso-69.png" id="header-icon" />
-            </div>
+    <div class="container mt-3 pb-5">
+        <!-- Page Heading -->
+        <div class="row">
+            <h1 class="h1-stroke">
+                <span v-if="skill.type != 'domain'">Add Skill</span>
+                <span v-else>Add Category</span>
+            </h1>
         </div>
         <!-- If making another instance of an existing skill on the tree -->
         <div class="row">
@@ -446,7 +441,7 @@ export default {
                 <div class="row p-0 m-0 d-flex">
                     <div class="form-check my-2 col-10">
                         <label class="control control-checkbox">
-                            <span class="my-auto ms-2"
+                            <span class="my-auto ms-2 secondary-text"
                                 >Is this an existing skill that needs to appear
                                 again in the tree?</span
                             >
@@ -461,7 +456,7 @@ export default {
                     <!-- Information button -->
                     <div class="col-2">
                         <button
-                            class="btn purple-btn mt-2"
+                            class="btn primary-btn mt-2"
                             @click="showCopiedSkillModal = 'true'"
                         >
                             <svg
@@ -481,7 +476,7 @@ export default {
                 </div>
                 <div v-if="isAnotherInstanceOfExistingSkill" class="mb-3">
                     <div class="row mt-3">
-                        <label class="form-label">Original Skill</label>
+                        <h2 class="h2-stroke">Original Skill</h2>
                         <select v-model="skillToBeCopied">
                             <option
                                 v-for="skill in skillsThatCanBeCopied"
@@ -492,7 +487,7 @@ export default {
                         </select>
                     </div>
                     <div class="row mt-3">
-                        <label class="form-label">Parent</label>
+                        <h2 class="h2-stroke">Parent</h2>
                         <select v-model="parentOfNewInstance">
                             <option v-for="skill in skills" :value="skill">
                                 {{ skill.name }}
@@ -508,7 +503,7 @@ export default {
             <div class="row mt-2">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
+                        <h2 class="h2-stroke">Name</h2>
                         <input
                             v-model="skill.name"
                             class="form-control"
@@ -531,7 +526,7 @@ export default {
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div v-if="skill.type != 'sub'" class="mb-3">
-                        <label class="form-label">Parent</label>
+                        <h2 class="h2-stroke">Parent</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -567,7 +562,7 @@ export default {
                     </div>
                     <!-- -------------------------------------------------- -->
                     <div v-else class="mb-3">
-                        <label class="form-label">Cluster node center</label>
+                        <h2 class="h2-stroke">Cluster node center</h2>
                         <!-- <select class="form-select" v-model="skill.parent">
                         <option
                             v-for="superSkill in superSkills"
@@ -611,7 +606,7 @@ export default {
                 <div v-if="skill.type != 'sub'">
                     <div class="col col-md-8 col-lg-5 mt-2">
                         <!-- Custom Dropdown -->
-                        <label class="form-label">Level</label>
+                        <h2 class="h2-stroke">Level</h2>
                         <div class="d-flex flex-column position-relative">
                             <div
                                 :class="[
@@ -657,11 +652,13 @@ export default {
             <!-- Skill Type -->
             <div class="row">
                 <div class="col-10 mt-2">
-                    <label class="form-label">Node Type</label>
+                    <h2 class="h2-stroke">Node Type</h2>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4">Regular</span>
+                                <span class="my-auto mx-2 me-4 secondary-text"
+                                    >Regular</span
+                                >
                                 <input
                                     type="radio"
                                     name="nodeType"
@@ -674,7 +671,9 @@ export default {
                         </div>
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4">Category</span>
+                                <span class="my-auto mx-2 me-4 secondary-text"
+                                    >Category</span
+                                >
                                 <input
                                     type="radio"
                                     name="nodeType"
@@ -687,7 +686,7 @@ export default {
                         </div>
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4"
+                                <span class="my-auto mx-2 me-4 secondary-text"
                                     >Cluster node center</span
                                 >
                                 <input
@@ -702,7 +701,7 @@ export default {
                         </div>
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4"
+                                <span class="my-auto mx-2 me-4 secondary-text"
                                     >Cluster node outer</span
                                 >
                                 <input
@@ -730,7 +729,7 @@ export default {
                 <!-- Information button -->
                 <div class="col-2">
                     <button
-                        class="btn purple-btn mt-2"
+                        class="btn primary-btn mt-2"
                         @click="showSkillTypeModal = true"
                     >
                         <svg
@@ -755,7 +754,7 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start"
                     >
-                        <label for="image" class="form-label">Icon</label>
+                        <h2 class="h2-stroke">Icon</h2>
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -803,7 +802,9 @@ export default {
                                 </div>
                             </div>
                             <p style="font-size: 14px">
-                                <em>Maximum file size 15mb</em>
+                                <em class="secondary-text"
+                                    >Maximum file size 15mb</em
+                                >
                             </p>
                         </div>
                         <div v-else>
@@ -842,9 +843,7 @@ export default {
             <div class="row" v-if="userDetailsStore.role == 'admin'">
                 <div class="col">
                     <div class="mb-3">
-                        <label for="description" class="form-label"
-                            >Description</label
-                        >
+                        <h2 class="h2-stroke">Description</h2>
                         <textarea
                             v-model="skill.description"
                             class="form-control"
@@ -863,9 +862,7 @@ export default {
             <div class="row" v-if="skill.type != 'domain'">
                 <div class="col">
                     <div class="mb-3">
-                        <label for="mastery_requirements" class="form-label"
-                            >Mastery Requirements</label
-                        >
+                        <h2 class="h2-stroke">Mastery Requirements</h2>
                         <textarea
                             v-model="skill.mastery_requirements"
                             class="form-control"
@@ -889,14 +886,14 @@ export default {
                             userDetailsStore.role == 'admin' &&
                             isAnotherInstanceOfExistingSkill
                         "
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         @click="CreateNewInstance()"
                     >
                         Create New Instance
                     </button>
                     <button
                         v-else
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         @click="validateSkill()"
                     >
                         <span
@@ -1038,23 +1035,6 @@ export default {
     gap: 8px;
     box-shadow: 0px 1px 2px 0px #1018280d;
     border: 1px solid #f2f4f7;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    width: fit-content;
-}
-
-.purple-btn:hover {
-    background-color: #8666ca;
 }
 
 .red-btn {

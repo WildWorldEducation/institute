@@ -157,7 +157,7 @@ export default {
                             email: email
                         }"
                     />
-                    <button class="btn mt-2 purple-btn" @click="Submit">
+                    <button class="btn mt-2 primary-btn" @click="Submit">
                         Submit
                     </button>
                 </div>
@@ -202,28 +202,6 @@ export default {
     text-align: left;
     margin-top: auto;
     margin-bottom: 0px;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #a48be6;
-    color: white;
-}
-
-.purple-btn:active {
-    background-color: #a48be6;
-    color: white;
 }
 
 .password-div {

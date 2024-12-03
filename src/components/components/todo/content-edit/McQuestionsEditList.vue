@@ -108,7 +108,7 @@ export default {
 </script>
 
 <template>
-    <div class="mt-3 pt-4 table-div">
+    <div class="mt-1 table-div">
         <!-- Desktop Table -->
         <Vue3EasyDataTable
             ref="dataTableMC"

@@ -58,7 +58,7 @@ export default {
                     <router-link
                         v-if="userDetailsStore.role == 'admin'"
                         :to="'/users/edit/' + this.$parent.user.id"
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                     >
                         Edit&nbsp;
                         <!-- Pencil icon -->
@@ -111,7 +111,7 @@ export default {
                 <router-link
                     v-if="userRole == 'student'"
                     :to="`/student/${this.$parent.user.id}/skill-tree`"
-                    class="btn green-btn mx-auto mt-3"
+                    class="btn secondary-btn mx-auto mt-3"
                 >
                     Skill tree
                     <!-- skill tree icon -->
@@ -132,7 +132,7 @@ export default {
                 <router-link
                     v-if="userRole == 'student'"
                     :to="'/student/' + this.$parent.user.id + '/skills'"
-                    class="btn green-btn mx-auto mt-3"
+                    class="btn secondary-btn mx-auto mt-3"
                 >
                     Skill list
                 </router-link>
@@ -144,7 +144,7 @@ export default {
                         "
                         target="_blank"
                         :to="'/users/activity-report/' + this.$parent.user.id"
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                     >
                         Activity Report
                     </router-link>
@@ -329,19 +329,6 @@ export default {
     background-color: #2ca695;
 }
 
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
 #close-popup-btn {
     border-radius: 20px;
     background-color: #36c1af;
@@ -426,11 +413,11 @@ export default {
     }
 }
 
-@media (min-width:1025px) {
-#user-information {
-      margin-left: auto;
-      margin-right: auto;
-      width:90% ;
+@media (min-width: 1025px) {
+    #user-information {
+        margin-left: auto;
+        margin-right: auto;
+        width: 90%;
     }
 
     #user-avatar {
@@ -440,6 +427,5 @@ export default {
         margin-right: auto;
         border-radius: 12px;
     }
-
 }
 </style>

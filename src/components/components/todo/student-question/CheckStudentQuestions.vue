@@ -109,11 +109,7 @@ export default {
 
 <template>
     <div>
-        <!-- Banner -->
-        <div id="banner">
-            <img src="/images/banners/general-banner.png" class="img-fluid" />
-        </div>
-        <!-- Page tile -->
+        <!-- Page title -->
         <h2 class="ps-3 mt-2 page-title">Approve Student Added Questions</h2>
         <div class="container-fluid">
             <StudentQuestionList
@@ -135,12 +131,6 @@ export default {
     border: 1px solid #dbd0f9;
     margin: 0px;
     padding: 10px 6px;
-}
-
-h2 {
-    color: #9c7eec;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
 }
 
 #assessment-tile {
