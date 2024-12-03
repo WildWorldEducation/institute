@@ -422,26 +422,18 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            src="/images/banners/edit-mastery-skill-banner.png"
-            class="image-fluid"
-        />
-    </div>
-
     <div class="container mt-4 pb-5 px-3 px-md-0">
         <!-- Page Title -->
         <div class="row mt-5">
             <div
                 class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
             >
-                <h1 id="page-tile">
+                <h1 class="h1-stroke">
                     <span v-if="skillAwaitingApproval.type != 'domain'"
                         >Edit Skill</span
                     >
                     <span v-else>Edit Category</span>
                 </h1>
-                <img src="/images/recurso-69.png" id="header-icon" />
             </div>
         </div>
         <div>
@@ -877,16 +869,6 @@ export default {
 
 .green-btn:hover {
     background-color: #65e0a5;
-}
-
-#page-tile {
-    font-family: 'Poppins' sans-serif;
-    font-size: 38px;
-    font-weight: 900;
-    line-height: 28px;
-    letter-spacing: 0em;
-    text-align: left;
-    color: #667085;
 }
 
 .form-label {
