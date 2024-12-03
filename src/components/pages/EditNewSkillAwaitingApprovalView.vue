@@ -422,27 +422,22 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 pb-5 px-3 px-md-0">
-        <!-- Page Title -->
-        <div class="row mt-5">
-            <div
-                class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
+    <div class="container mt-3">
+        <!-- Page Heading -->
+        <h1 class="h1-stroke">
+            <span v-if="skillAwaitingApproval.type != 'domain'"
+                >Edit Skill Submitted for Approval</span
             >
-                <h1 class="h1-stroke">
-                    <span v-if="skillAwaitingApproval.type != 'domain'"
-                        >Edit Skill</span
-                    >
-                    <span v-else>Edit Category</span>
-                </h1>
-            </div>
-        </div>
+            <span v-else>Edit Category Submitted for Approval</span>
+        </h1>
+
         <div>
             <div>
                 <!-- Skill name -->
-                <div class="row mt-5">
-                    <div class="col-12 col-md-8 col-lg-5 mt-2">
+                <div class="row mt-3">
+                    <div class="col-12 col-md-8 col-lg-5">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
+                            <h2 class="h2-stroke">Name</h2>
                             <input
                                 v-model="skillAwaitingApproval.name"
                                 class="form-control"
@@ -472,7 +467,7 @@ export default {
                     >
                         <div class="col col-md-8 col-lg-5 mt-2">
                             <!-- Custom Dropdown -->
-                            <label class="form-label">Level</label>
+                            <h2 class="h2-stroke">Level</h2>
                             <div class="d-flex flex-column position-relative">
                                 <div
                                     :class="[
@@ -522,12 +517,14 @@ export default {
         <div>
             <!-- Skills Types Radio choose -->
             <div class="row">
-                <div class="col-12 col-md-8 col-lg-5 mt-2">
-                    <label class="form-label">Node Type</label>
+                <div class="col-12 col-md-8 col-lg-5 mt-3">
+                    <h2 class="h2-stroke">Node Type</h2>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4">Regular</span>
+                                <span class="my-auto mx-2 me-4 secondary-text"
+                                    >Regular</span
+                                >
                                 <input
                                     type="radio"
                                     name="nodeType"
@@ -541,7 +538,9 @@ export default {
 
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4">Category</span>
+                                <span class="my-auto mx-2 me-4 secondary-text"
+                                    >Category</span
+                                >
                                 <input
                                     type="radio"
                                     name="nodeType"
@@ -554,7 +553,7 @@ export default {
                         </div>
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4"
+                                <span class="my-auto mx-2 me-4 secondary-text"
                                     >Cluster node center</span
                                 >
                                 <input
@@ -573,7 +572,7 @@ export default {
                             class="form-check col-6 col-md-5 my-2"
                         >
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4"
+                                <span class="my-auto mx-2 me-4 secondary-text"
                                     >Cluster node outer</span
                                 >
                                 <input
@@ -616,7 +615,7 @@ export default {
                         v-if="skillAwaitingApproval.type != 'sub'"
                         class="mb-3"
                     >
-                        <label class="form-label">Parent</label>
+                        <h2 class="h2-stroke">Parent</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -682,7 +681,7 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                     >
-                        <label for="image" class="form-label">Icon</label>
+                        <h2 class="h2-stroke">Icon</h2>
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -730,7 +729,9 @@ export default {
                                 </div>
                             </div>
                             <p style="font-size: 14px">
-                                <em>Maximum file size 15mb</em>
+                                <em class="secondary-text"
+                                    >Maximum file size 15mb</em
+                                >
                             </p>
                         </div>
                         <div v-else>
@@ -769,9 +770,7 @@ export default {
             <!-- Mastery Requirement summernote -->
             <div v-if="skillAwaitingApproval.type != 'domain'" class="mb-3">
                 <div class="d-flex justify-content-between">
-                    <label for="mastery_requirements" class="form-label"
-                        >Mastery Requirements</label
-                    >
+                    <h2 class="h2-stroke">Mastery Requirements</h2>
                 </div>
 
                 <textarea
@@ -810,7 +809,7 @@ export default {
                         </svg>
                     </router-link>
                     <button
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         @click="showSubmitModal = true"
                     >
                         <div class="d-none d-md-block">Submit</div>
@@ -850,25 +849,12 @@ export default {
 </template>
 
 <style scoped>
+.secondary-text {
+    color: var(--secondary-text-colour);
+}
+
 .image-fluid {
     width: 100%;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-.green-btn:hover {
-    background-color: #65e0a5;
 }
 
 .form-label {
@@ -887,23 +873,6 @@ export default {
     gap: 8px;
     box-shadow: 0px 1px 2px 0px #1018280d;
     border: 1px solid #f2f4f7;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    height: fit-content;
-}
-
-.purple-btn:hover {
-    background-color: #8666ca;
 }
 
 .red-btn {
@@ -1103,7 +1072,6 @@ export default {
 .control > span {
     font-weight: 500;
     font-size: 0.938rem;
-    color: #667085;
     text-align: center;
 }
 .control input {

@@ -1019,7 +1019,7 @@ export default {
     color: white;
     border: 1px solid#8f7bd6;
     box-shadow: 0px 1px 2px 0px #1018280d;
-    background-color: #8f7bd6;
+    background-color: var(--background-colour);
     font-family: 'Poppins', sans-serif;
     font-size: 20px;
     font-weight: 900;
@@ -1036,7 +1036,7 @@ export default {
     line-height: 28px;
     letter-spacing: 0em;
     text-align: left;
-    color: #667085;
+    color: var(--regular-text-colour);
     margin-left: 15px;
 }
 
@@ -1051,7 +1051,7 @@ export default {
 }
 
 .answer-option {
-    color: #667085;
+    color: var(--regular-text-colour);
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
 }

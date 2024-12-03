@@ -189,7 +189,7 @@ export default {
         <div id="skill-info-container">
             <!-- Name -->
             <div>
-                <h1 class="skill-name">
+                <h1 class="h1-secondary-colour">
                     {{ newSkillAwaitingApproval.name }}
                 </h1>
                 <!-- A line divide -->
@@ -242,7 +242,7 @@ export default {
                         </div>
                         <!-- Parent -->
                         <div class="mt-3 d-flex flex-column align-items-center">
-                            <h2 class="h4 title">Parent</h2>
+                            <h2 class="h4 h2-secondary-colour">Parent</h2>
                             <RouterLink
                                 b-on-hoover
                                 title="Click on parent name to see it details"
@@ -254,7 +254,7 @@ export default {
                         </div>
                         <!-- Type -->
                         <div class="mt-3 d-flex flex-column align-items-center">
-                            <h2 class="h4 title">Type</h2>
+                            <h2 class="h4 h2-secondary-colour">Type</h2>
                             <div>
                                 {{ newSkillAwaitingApproval.type }}
                             </div>
@@ -264,7 +264,7 @@ export default {
                             class="mt-3 d-flex flex-column align-items-center"
                             v-if="newSkillAwaitingApproval.type != 'category'"
                         >
-                            <h2 class="h4 title">Level</h2>
+                            <h2 class="h4 h2-secondary-colour">Level</h2>
                             <!-- <div class="h1-title">Level</div> -->
                             <span
                                 v-if="
@@ -309,12 +309,12 @@ export default {
                     Dismiss
                 </button>
                 <router-link
-                    class="btn purple-btn"
+                    class="btn primary-btn"
                     :to="'/new-skill-awaiting-approval/edit/' + id"
                 >
                     Edit
                 </router-link>
-                <button class="btn green-btn" @click="handleSaveBtnClick">
+                <button class="btn secondary-btn" @click="handleSaveBtnClick">
                     Approve
                 </button>
             </div>
@@ -383,7 +383,6 @@ export default {
 }
 
 .h1-title {
-    color: #a48be6;
     font-size: 30px;
     font-weight: 700;
     margin-bottom: 5px;
@@ -417,25 +416,6 @@ export default {
     padding: 15px 30px;
     width: fit-content;
     color: #ca8a04;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    max-width: fit-content;
-    display: flex;
-    align-items: center;
-    height: 44px;
-    text-wrap: nowrap;
-}
-
-.purple-btn:hover {
-    background-color: #8f7bd6;
 }
 
 .green-btn {
@@ -516,10 +496,5 @@ export default {
     #skill-info-container {
         padding: 15px;
     }
-}
-
-.title {
-    color: #a48be6;
-    font-weight: 700;
 }
 </style>

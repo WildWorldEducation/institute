@@ -281,9 +281,7 @@ export default {
 
 <template>
     <div class="container mt-3">
-        <h1 id="page-tile" class="my-3 ms-0 ms-md-3 ms-lg-0 mt-5">
-            Edit Profile
-        </h1>
+        <h1 class="mt-3 h1-stroke">Edit Profile</h1>
         <div class="row mt-4">
             <!-- Avatar section -->
             <div class="col-12 col-md-6">
@@ -444,7 +442,7 @@ export default {
                 <div class="d-flex gap-4">
                     <!-- First Name -->
                     <div class="mb-3">
-                        <h2>First Name</h2>
+                        <h2 class="h2-stroke">First Name</h2>
                         <input
                             v-model="firstName"
                             type="text"
@@ -453,7 +451,7 @@ export default {
                     </div>
                     <!-- Last Name -->
                     <div class="mb-3">
-                        <h2>Last Name</h2>
+                        <h2 class="h2-stroke">Last Name</h2>
                         <input
                             v-model="lastName"
                             type="text"
@@ -463,7 +461,7 @@ export default {
                 </div>
                 <!-- Username -->
                 <div class="mb-3">
-                    <h2>Username</h2>
+                    <h2 class="h2-stroke">Username</h2>
                     <input
                         v-model="userName"
                         type="text"
@@ -480,7 +478,7 @@ export default {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <h2>Email</h2>
+                    <h2 class="h2-stroke">Email</h2>
                     <input
                         v-model="email"
                         type="email"
@@ -499,7 +497,7 @@ export default {
                     </div>
                 </div>
                 <div v-if="userDetailsStore.role == 'student'" class="mb-3">
-                    <h2>Instructor</h2>
+                    <h2 class="h2-stroke">Instructor</h2>
                     <!-- Student can only choose an instructor if they don`t have one -->
                     <div v-if="haveInstructor" class="custom-select-button">
                         {{ instructorName }}
@@ -561,7 +559,7 @@ export default {
 
                 <hr class="mt-5 mb-5" />
                 <!-- Password Section -->
-                <h2>Update Password</h2>
+                <h2 class="h2-stroke">Update Password</h2>
                 <div class="mb-3">
                     <div class="password-div">
                         <input
