@@ -320,6 +320,12 @@ h1 {
     font-weight: 900;
 }
 
+.h1-secondary-colour {
+    color: var(--secondary-heading-colour) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+}
+
 .h1-stroke {
     -webkit-text-stroke-color: var(--secondary-heading-colour);
     -webkit-text-stroke-width: var(--stroke-width);
@@ -327,6 +333,12 @@ h1 {
 
 h2 {
     color: var(--primary-heading-colour) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+}
+
+.h2-secondary-colour {
+    color: var(--secondary-heading-colour) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
