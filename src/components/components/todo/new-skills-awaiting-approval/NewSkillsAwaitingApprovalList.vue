@@ -58,7 +58,7 @@ export default {
             <img src="/images/banners/general-banner.png" class="img-fluid" />
         </div>
         <!-- Page tile -->
-        <h2 class="ps-3 mt-2 page-title">Add New Skill Made By User</h2>
+        <h2 class="ps-3 mt-2 page-title">Suggested New Skills</h2>
         <NewSkillTable
             :newSkillArray="newSkillsAwaitingApproval"
             :loadingSkill="loadingSkill"

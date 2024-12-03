@@ -331,10 +331,10 @@ export default {
             fetch(url, requestOptions).then((res) => {
                 if (res.ok) {
                     this.showSuccessModal = true;
-                    this.message = 'Edit successfully.';
+                    this.message = 'Edited successfully.';
                 } else {
                     this.showFailsModal = true;
-                    this.message = 'Fails to edit';
+                    this.message = 'Failed to edit';
                 }
             });
         },

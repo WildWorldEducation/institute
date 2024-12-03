@@ -94,12 +94,12 @@ export default {
 
             if (result.error) {
                 console.log(result.error);
-                this.message = 'Fails to dismiss this skill';
+                this.message = 'Failed to dismiss suggested skill';
                 this.showFailsModal = true;
                 return;
             }
 
-            this.message = 'Successfully dismiss skill';
+            this.message = 'Successfully dismissed suggested skill';
             this.showSuccessModal = true;
         },
         approveSkill() {
@@ -122,7 +122,7 @@ export default {
             fetch(url, requestOptions).then((response) => {
                 console.log('Fetched');
                 if (response.error || response.status === 500) {
-                    this.message = 'Fails to add new skill';
+                    this.message = 'Failed to add new skill';
                     this.showFailsModal = true;
                 }
                 // Delete it afterwards.
@@ -137,11 +137,11 @@ export default {
 
                 if (result.error) {
                     console.err(result.error);
-                    this.message = 'Fails to remove from waiting list';
+                    this.message = 'Failed to remove from list of suggested new skills';
                     this.showFailsModal = true;
                     return;
                 }
-                this.message = 'Successfully add skill to skill tree';
+                this.message = 'Successfully added skill';
                 this.severLoading = false;
                 this.showSuccessModal = true;
             });

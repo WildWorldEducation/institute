@@ -44,7 +44,7 @@ export default {
                 </svg>
                 <div class="d-flex flex-column">
                     <div>Save edit?</div>
-                    <div>(Old data will be delete permanently.)</div>
+                    <div>(Old data will be deleted permanently.)</div>
                 </div>
             </div>
             <!-- Buttons row -->
