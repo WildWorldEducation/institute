@@ -16,7 +16,7 @@ export default {
             <div class="d-flex flex-column gap-4 align-items-center">
                 <!-- Warn Triangle Icon -->
                 <LoadingSpinner />
-                <p>Please Wait</p>
+                <p>Please wait</p>
             </div>
         </div>
     </div>

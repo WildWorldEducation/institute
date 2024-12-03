@@ -38,7 +38,7 @@ export default {
             >
                 <!-- Warn Triangle Icon -->
                 <LoadingSpinner />
-                <p>Please Wait</p>
+                <p>Please wait</p>
             </div>
             <div v-if="revertResult === 'success'" class="d-flex flex-column">
                 <div class="d-flex success-text align-items-center">
