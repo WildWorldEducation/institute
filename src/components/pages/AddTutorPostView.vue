@@ -72,8 +72,8 @@ export default {
                 this.validateContact = true;
             }
 
-            if(!this.validateContact || !this.validateDescription){
-                return
+            if (!this.validateContact || !this.validateDescription) {
+                return;
             }
 
             const requestOptions = {
@@ -93,26 +93,12 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            v-bind:src="'/images/banners/students-banner.png'"
-            class="img-fluid"
-        />
-    </div>
-    <div class="container mt-3 pb-3">
-        <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Offer to Tutor</h2>
-            </div>
-        </div>
+    <div class="container mt-3">
+        <h1 class="h1-stroke">Offer to Tutor</h1>
         <div class="main-content-container container-fluid p-2">
             <div class="row">
                 <div class="col">
                     <div class="mb-4">
-                        <!-- <label
-                            >Describe your tutoring style and experience with
-                            the subject.</label
-                        > -->
                         <div class="mb-3 mt-1 text-area-div">
                             <textarea
                                 id="summernote-description"
@@ -127,10 +113,6 @@ export default {
                         </div>
                     </div>
                     <div class="mb-3">
-                        <!-- <label
-                            >How would you like to be contacted (eg: an email
-                            address, mobile number or calendar booking link)?
-                        </label> -->
                         <div class="mb-3 mt-3 text-area-div">
                             <textarea
                                 id="summernote-contact-preference"
@@ -149,7 +131,7 @@ export default {
                         <button class="btn red-btn" @click="$router.go(-1)">
                             Cancel
                         </button>
-                        <button class="btn purple-btn" @click="Submit()">
+                        <button class="btn primary-btn" @click="Submit()">
                             Submit
                         </button>
                     </div>
@@ -161,7 +143,6 @@ export default {
 
 <style>
 h2 {
-    color: #a48be6;
     font-size: 30px;
     font-weight: 700;
 }
@@ -180,23 +161,6 @@ h2 {
 
 .red-btn:hover {
     background-color: #cc3535;
-    color: white;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #8666ca;
     color: white;
 }
 

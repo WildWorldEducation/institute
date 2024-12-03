@@ -62,7 +62,7 @@ export default {
                 <div class="d-flex flex-column align-items-baseline">
                     <router-link
                         :to="'/resources/add/' + skillId"
-                        class="btn green-btn"
+                        class="btn secondary-btn"
                         role="button"
                         >Add source&nbsp;&nbsp;
                         <!-- Plus sign -->
@@ -133,7 +133,7 @@ export default {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     font-weight: lighter;
-    color: #778094;
+    color: var(--secondary-heading-colour);
 }
 
 .user-name-div {

@@ -389,10 +389,10 @@ export default {
         },
         // Async because essay questions are marked on server.
         async Submit() {
-            this.UserAnswer()
-            if(!this.isAllQuestionsAnswered){
-                alert("Please answer all questions before submitting.")
-                return
+            this.UserAnswer();
+            if (!this.isAllQuestionsAnswered) {
+                alert('Please answer all questions before submitting.');
+                return;
             }
             // get the time when user submit the assessment result for result page
             this.finishTime = new Date();
@@ -658,7 +658,10 @@ export default {
         },
         UserAnswer() {
             for (let i = 0; i < this.questions.length; i++) {
-                if (this.questions[i].userAnswer == null || this.questions[i].userAnswer === '') {
+                if (
+                    this.questions[i].userAnswer == null ||
+                    this.questions[i].userAnswer === ''
+                ) {
                     this.isAllQuestionsAnswered = false;
                     return;
                 } else {
@@ -753,7 +756,7 @@ export default {
         <div class="pb-2 pb-md-0">
             <div
                 v-if="questions.length > 0"
-                class="container mt-5 mb-3 p-3 pt-2 mb-3"
+                class="container mt-2 mb-3 p-3 pt-2 mb-3"
                 id="question-container"
             >
                 <!-- To wait for questions to be loaded, before the DOM renders. -->
@@ -1003,7 +1006,7 @@ export default {
 
 #question-container {
     border-radius: 12px;
-    background: #f2edffcc;
+    background: #f2edff;
 }
 
 #question-number-div {
@@ -1177,23 +1180,6 @@ export default {
 
 .red-btn:hover {
     background-color: rgb(201, 18, 18);
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-.purple-btn:hover {
-    background-color: #7c6aad;
 }
 
 .flagging-icon:hover {

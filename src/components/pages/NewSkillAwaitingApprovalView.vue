@@ -137,7 +137,8 @@ export default {
 
                 if (result.error) {
                     console.err(result.error);
-                    this.message = 'Failed to remove from list of suggested new skills';
+                    this.message =
+                        'Failed to remove from list of suggested new skills';
                     this.showFailsModal = true;
                     return;
                 }
@@ -169,10 +170,6 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <!-- Banner image -->
-        <img src="/images/banners/institute-collins-2.png" class="img-fluid" />
-    </div>
     <div class="container mt-3">
         <div
             id="user-alert"

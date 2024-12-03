@@ -53,12 +53,8 @@ export default {
 
 <template>
     <div class="mt-3 table-div h-100">
-        <!-- Banner -->
-        <div id="banner">
-            <img src="/images/banners/general-banner.png" class="img-fluid" />
-        </div>
         <!-- Page tile -->
-        <h2 class="ps-3 mt-2 page-title">Suggested New Skills</h2>
+        <h2 class="h2-stroke">Suggested New Skills</h2>
         <NewSkillTable
             :newSkillArray="newSkillsAwaitingApproval"
             :loadingSkill="loadingSkill"

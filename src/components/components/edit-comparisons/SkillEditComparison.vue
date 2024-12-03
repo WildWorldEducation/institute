@@ -199,7 +199,7 @@ export default {
 
 <template>
     <div class="mt-4 mb-4">
-        <h1 class="page-title">Skill Change Comparison</h1>
+        <h1>Skill Change Comparison</h1>
         <hr />
         <!-- ---General info of skills -->
         <div class="d-flex flex-column gap-2 mb-3">

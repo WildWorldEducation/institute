@@ -65,235 +65,101 @@ export default {
 </script>
 
 <template>
-    <div
-        id="legend"
-        class="collapsible-tree-legend container-fluid p-2 position-relative"
-    >
-        <div class="position-absolute legend-div">
-            <div id="mobile-legend">
-                <div class="legend row">
-                    <div class="col-8">
-                        <div class="col">
-                            <button
-                                class="btn"
-                                @click="
-                                    $refs.childComponent.truncateToGradeLevel(
-                                        'grade_school'
-                                    )
-                                "
-                            >
-                                <span class="grade-school"></span>Grade school
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button
-                                class="btn"
-                                @click="
-                                    $refs.childComponent.truncateToGradeLevel(
-                                        'middle_school'
-                                    )
-                                "
-                            >
-                                <span class="middle-school"></span> Middle
-                                school
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button
-                                class="btn"
-                                @click="
-                                    $refs.childComponent.truncateToGradeLevel(
-                                        'high_school'
-                                    )
-                                "
-                            >
-                                <span class="high-school"></span> High school
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button
-                                class="btn"
-                                @click="
-                                    $refs.childComponent.truncateToGradeLevel(
-                                        'college'
-                                    )
-                                "
-                            >
-                                <span class="college"></span> College
-                            </button>
-                        </div>
-                        <div
-                            class="col"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel('phd')
-                            "
-                        >
-                            <button class="btn">
-                                <span class="phd"></span> PHD
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-4 d-flex flex-column align-items-end">
-                        <button
-                            id="reset-btn"
-                            class="btn btn-primary me-3"
-                            @click="resetPos()"
-                        >
-                            Reset
-                        </button>
-                        <button
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="btn legend-btn me-3 mt-1"
-                            @click="expandAllNodesWarning()"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="20"
-                                height="20"
-                            >
-                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z"
-                                    fill="white"
-                                />
-                            </svg>
-                        </button>
-                        <button
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="legend-btn btn mt-1 me-3"
-                            @click="$refs.childComponent.printPDF()"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="19"
-                                height="18"
-                            >
-                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
-                                    fill="white"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="search-mobile-row">
-                    <!-- Search feature -->
-                    <SkillTreeSearchBar
-                        :findNode="handleChooseResult"
-                        :clearResults="clearResult"
-                    />
-                </div>
+    <div class="container-fluid position-absolute legend-div">
+        <div class="mobile-legend">
+            <div class="search-mobile-row">
+                <!-- Search feature -->
+                <SkillTreeSearchBar
+                    :findNode="handleChooseResult"
+                    :clearResults="clearResult"
+                />
             </div>
-            <div id="tablet-and-up-legend">
-                <div class="legend row">
-                    <div class="col d-flex align-items-center">
-                        <button
-                            class="btn"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel(
-                                    'grade_school'
-                                )
-                            "
-                        >
-                            <span class="grade-school"></span>Grade school
-                        </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <button
-                            class="btn"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel(
-                                    'middle_school'
-                                )
-                            "
-                        >
-                            <span class="middle-school"></span> Middle school
-                        </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <button
-                            class="btn"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel(
-                                    'high_school'
-                                )
-                            "
-                        >
-                            <span class="high-school"></span> High school
-                        </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <button
-                            class="btn"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel(
-                                    'college'
-                                )
-                            "
-                        >
-                            <span class="college"></span> College
-                        </button>
-                    </div>
-                    <div class="col d-flex align-items-center">
-                        <button
-                            class="btn"
-                            @click="
-                                $refs.childComponent.truncateToGradeLevel('phd')
-                            "
-                        >
-                            <span class="phd"></span> PHD
-                        </button>
-                    </div>
-                    <div
-                        class="col-12 col-lg-4 d-flex justify-content-end align-items-center gap-2 mt-0 mt-md-2 mt-lg-0"
+            <div class="d-flex">
+                <button class="btn primary-btn" @click="resetPos()">
+                    Reset
+                </button>
+                <!-- <button
+                    v-if="sessionDetailsStore.isLoggedIn"
+                    class="btn legend-btn me-2"
+                    @click="expandAllNodesWarning()"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 448 512"
+                        width="20"
+                        height="20"
                     >
-                        <!-- Search Feature -->
-                        <SkillTreeSearchBar
-                            :findNode="handleChooseResult"
-                            :clearResults="clearResult"
+                        <path
+                            d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z"
+                            fill="white"
                         />
-                        <!-- Reset Button -->
-                        <button
-                            id="reset-btn"
-                            class="btn btn-primary me-1"
-                            @click="resetPos()"
+                    </svg>
+                </button> -->
+                <!-- <button
+                    v-if="sessionDetailsStore.isLoggedIn"
+                    class="legend-btn btn me-2"
+                    @click="$refs.childComponent.printPDF()"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="19"
+                        height="18"
+                    >
+                        <path
+                            d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
+                            fill="white"
+                        />
+                    </svg>
+                </button> -->
+            </div>
+        </div>
+        <div class="tablet-and-up-legend">
+            <div class="d-flex justify-content-between">
+                <!-- Search bar, reset, expand all, print buttons -->
+                <!-- Search Feature -->
+                <SkillTreeSearchBar
+                    class="ms-2"
+                    :findNode="handleChooseResult"
+                    :clearResults="clearResult"
+                />
+                <div class="d-flex justify-content-end">
+                    <!-- Reset Button -->
+                    <button class="btn primary-btn me-2" @click="resetPos()">
+                        Reset
+                    </button>
+                    <!-- Expand all nodes -->
+                    <button
+                        v-if="sessionDetailsStore.isLoggedIn"
+                        class="btn primary-btn me-2"
+                        @click="expandAllNodesWarning()"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 448 512"
+                            width="20"
+                            height="20"
                         >
-                            Reset
-                        </button>
-                        <button
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="btn legend-btn me-1"
-                            @click="expandAllNodesWarning()"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 448 512"
-                                width="20"
-                                height="20"
-                            >
-                                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                                <path
-                                    d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z"
-                                    fill="white"
-                                />
-                            </svg>
-                        </button>
-                        <!-- Print Button -->
-                        <button
-                            v-if="sessionDetailsStore.isLoggedIn"
-                            class="btn legend-btn me-3"
-                            @click="$refs.childComponent.printPDF()"
-                        >
-                            Print
-                        </button>
-                    </div>
+                            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                            <path
+                                d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z"
+                                fill="white"
+                            />
+                        </svg>
+                    </button>
+                    <!-- Print Button -->
+                    <button
+                        v-if="sessionDetailsStore.isLoggedIn"
+                        class="btn primary-btn me-2"
+                        @click="$refs.childComponent.printPDF()"
+                    >
+                        Print
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+
     <div
         v-if="showConfirmModal"
         @click="showConfirmModal = false"
@@ -348,17 +214,138 @@ export default {
             <span>Loading...</span>
         </template>
     </Suspense>
+    <div class="position-absolute bottom-legend-div">
+        <!-- <div class="mobile-legend">
+            <div class="legend d-flex flex-column">
+                <div>
+                    <button
+                        class="btn grade-school me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel(
+                                'grade_school'
+                            )
+                        "
+                    >
+                        GS
+                    </button>
+                    <button
+                        class="btn middle-school me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel(
+                                'middle_school'
+                            )
+                        "
+                    >
+                        MS
+                    </button>
+                </div>
+                <div>
+                    <button
+                        class="btn high-school me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel(
+                                'high_school'
+                            )
+                        "
+                    >
+                        HS
+                    </button>
+                    <button
+                        class="btn college me-1"
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel('college')
+                        "
+                    >
+                        C
+                    </button>
+                    <button
+                        @click="
+                            $refs.childComponent.truncateToGradeLevel('phd')
+                        "
+                        class="btn phd"
+                    >
+                        PHD
+                    </button>
+                </div>
+            </div>
+        </div> -->
+        <div class="tablet-and-up-legend">
+            <div class="legend">
+                <!-- Grade buttons -->
+                <button
+                    class="btn grade-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel(
+                            'grade_school'
+                        )
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel(
+                            'middle_school'
+                        )
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel('high_school')
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college me-2"
+                    @click="
+                        $refs.childComponent.truncateToGradeLevel('college')
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd me-2"
+                    @click="$refs.childComponent.truncateToGradeLevel('phd')"
+                >
+                    PHD
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style>
-#legend {
-    height: 60px;
-    border-bottom: 2px #a48be640 solid;
+.bottom-legend-div {
+    width: 100%;
+    bottom: 10px;
+}
+
+#legend .btn {
+    color: white;
+}
+
+.legend {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.legend .btn {
+    color: black;
+    font-weight: 500;
+    border: 1px solid black;
 }
 
 .legend-div {
-    height: auto;
     width: 100%;
+    z-index: 2;
 }
 
 #info-button {
@@ -374,22 +361,11 @@ export default {
     margin-bottom: 8px;
 }
 
-#thin-purple-banner {
-    height: 2px;
-    background-color: #a48be640;
-}
-
 /* Grade level legend */
-
-.collapsible-tree-legend {
-    width: 100%;
-}
-
 .search-bar {
-    display: flex;
-    flex-direction: column;
     border: 1px solid #dce2f2;
     border-radius: 8px;
+    height: 40px;
 }
 
 .have-results {
@@ -441,11 +417,7 @@ export default {
     border: 1px solid #133b61;
 }
 
-#legend {
-    height: 60px;
-}
-
-#mobile-legend {
+.mobile-legend {
     display: none;
 }
 
@@ -499,18 +471,6 @@ export default {
     background-color: #133b61;
 }
 
-#reset-btn {
-    background-color: #c4d2df;
-    border-color: #c4d2df;
-    color: black;
-    width: 70px;
-    max-height: 40px;
-}
-
-#reset-btn:hover {
-    background-color: #9da7b1;
-}
-
 .skill-tree-input {
     width: 100%;
 }
@@ -551,20 +511,15 @@ export default {
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
-    #mobile-legend {
-        display: block;
+    .mobile-legend {
+        display: flex;
     }
 
-    #tablet-and-up-legend {
+    .tablet-and-up-legend {
         display: none;
     }
 
-    #legend {
-        height: 190px;
-    }
-
     .search-mobile-row {
-        width: 96%;
         margin-left: 0px;
         margin-right: auto;
     }
@@ -578,15 +533,7 @@ export default {
 
 /* Bigger devices ( Tablet ) */
 @media (min-width: 481px) and (max-width: 1024px) {
-    #legend {
-        height: 90px;
-    }
-
-    #mobile-legend {
-        display: none;
-    }
-
-    #tablet-and-up-legend {
+    .tablet-and-up-legend {
         display: block;
     }
     .legend {
@@ -598,10 +545,6 @@ export default {
     }
     .legend span {
         flex-shrink: 0;
-    }
-
-    .search-bar {
-        width: 100%;
     }
 }
 /*---*/

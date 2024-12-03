@@ -54,9 +54,9 @@ export default {
                 </button>
             </div>
             <!-- divide line for pc and tablet view -->
-            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
         <div
             v-else-if="userDetailsStore.role == 'instructor'"
@@ -79,14 +79,14 @@ export default {
                     {{ student.username }}
                 </button>
             </div>
-            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
         <RouterLink
             v-if="userDetailsStore.role == 'instructor'"
             to="/users/add-student"
-            class="d-block mb-4 btn purple-btn"
+            class="d-block mb-4 btn primary-btn"
         >
             Add Student
         </RouterLink>
@@ -112,9 +112,9 @@ export default {
                 </button>
             </div>
             <!-- divide line for pc and tablet view -->
-            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
     </div>
 </template>
@@ -135,7 +135,7 @@ export default {
     border-radius: 8px;
     border: 1px solid #7f56d9;
     background-color: #c8d7da;
-    color: white;
+    color: black;
     overflow: hidden;
     padding: 16px, 28px, 16px, 28px;
     font-size: 1.25rem;

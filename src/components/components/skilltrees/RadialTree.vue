@@ -218,8 +218,6 @@ export default {
             this.context = canvas.getContext('2d');
 
             // Background colour.
-            this.context.fillStyle = '#1e293b';
-            this.context.fillRect(0, 0, this.width, this.height);
             // Set up the Hidden Canvas for Interactivity.
             let hiddenCanvas = document.getElementById('hidden-canvas');
             this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
@@ -368,6 +366,8 @@ export default {
             if (this.scale > 0.6) {
                 // Get the text's angle. Rotate it.
                 ctx1.save();
+                // to avoid sharp artifacts with the stroke of the text.
+                ctx1.lineJoin = 'bevel';
                 ctx1.translate(pos[0], pos[1]);
                 ctx1.rotate(angle);
 
@@ -436,14 +436,24 @@ export default {
                 .radius((d) => d.y)
                 .context(this.context);
 
+            // Determine colour of links based on user's theme
+            let color = '#000';
+            if (this.userDetailsStore.theme != 'original') color = '#fff';
+
             // If skill is mastered.
-            let color = '#71717a';
             if (link.target.data.is_mastered == 1) {
                 this.context.lineWidth =
                     4 + parseInt(3 * (1 / this.currentZoom));
-                color = '#ffffff';
-            } else
-                this.context.lineWidth = parseInt(3 * (1 / this.currentZoom));
+                color = '#000';
+            } else {
+                let width = 2;
+                if (this.userDetailsStore.theme != 'original') {
+                    width = 3;
+                }
+                this.context.lineWidth = parseInt(
+                    width * (1 / this.currentZoom)
+                );
+            }
 
             this.context.beginPath();
             linkGenerator(link);
@@ -470,7 +480,13 @@ export default {
             this.context.save();
             this.hiddenCanvasContext.save();
             // Clear all content and repaint background colour.
-            this.context.fillStyle = '#1e293b';
+            this.context.clearRect(
+                (this.width / 2) * -1,
+                (this.height / 2) * -1,
+                this.width,
+                this.height
+            );
+
             this.context.fillRect(
                 (this.width / 2) * -1,
                 (this.height / 2) * -1,
@@ -865,7 +881,7 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid #a48be5;
+    border: 5px solid var(--loading-animation-colour);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;

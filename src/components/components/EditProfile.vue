@@ -286,7 +286,7 @@ export default {
         </h1>
         <div class="row mt-4">
             <!-- Avatar section -->
-            <div class="col-12 col-lg-5">
+            <div class="col-12 col-md-6">
                 <div class="row mx-0 px-md-0 mb-4 mb-lg-0">
                     <div
                         class="d-flex justify-content-center justify-content-md-start ps-lg-0"
@@ -440,13 +440,12 @@ export default {
                 </div>
             </div>
             <!-- User info section -->
-            <div class="col-12 px-4 px-md-0 col-lg-4 px-0 px-md-4 px-lg-0">
+            <div class="col-12 col-md-6">
                 <div class="d-flex gap-4">
                     <!-- First Name -->
                     <div class="mb-3">
-                        <label for="name" class="form-label">First Name</label>
+                        <h2>First Name</h2>
                         <input
-                            id="first-name"
                             v-model="firstName"
                             type="text"
                             class="form-control"
@@ -454,9 +453,8 @@ export default {
                     </div>
                     <!-- Last Name -->
                     <div class="mb-3">
-                        <label for="name" class="form-label">Last Name</label>
+                        <h2>Last Name</h2>
                         <input
-                            id="last-name"
                             v-model="lastName"
                             type="text"
                             class="form-control"
@@ -465,7 +463,7 @@ export default {
                 </div>
                 <!-- Username -->
                 <div class="mb-3">
-                    <label class="form-label">Username</label>
+                    <h2>Username</h2>
                     <input
                         v-model="userName"
                         type="text"
@@ -482,7 +480,7 @@ export default {
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Email</label>
+                    <h2>Email</h2>
                     <input
                         v-model="email"
                         type="email"
@@ -501,7 +499,7 @@ export default {
                     </div>
                 </div>
                 <div v-if="userDetailsStore.role == 'student'" class="mb-3">
-                    <label class="form-label">Instructor</label>
+                    <h2>Instructor</h2>
                     <!-- Student can only choose an instructor if they don`t have one -->
                     <div v-if="haveInstructor" class="custom-select-button">
                         {{ instructorName }}
@@ -556,7 +554,7 @@ export default {
                     <router-link class="btn red-btn" to="/profile-settings">
                         Cancel
                     </router-link>
-                    <button class="btn purple-btn" @click="ValidateForm()">
+                    <button class="btn primary-btn" @click="ValidateForm()">
                         Submit
                     </button>
                 </div>
@@ -565,7 +563,6 @@ export default {
                 <!-- Password Section -->
                 <h2>Update Password</h2>
                 <div class="mb-3">
-                    <label class="form-label">Password</label>
                     <div class="password-div">
                         <input
                             v-model="password"
@@ -634,8 +631,8 @@ export default {
                         }"
                     />
                 </div>
-                <div class="d-flex justify-content-between mb-3 mt-5">
-                    <button class="btn purple-btn" @click="ValidatePassword()">
+                <div class="d-flex justify-content-between mb-3 mt-2">
+                    <button class="btn primary-btn" @click="ValidatePassword()">
                         Update
                     </button>
                 </div>
@@ -840,22 +837,6 @@ export default {
     background-color: #cc3535;
 }
 
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #9a7ceb;
-}
-
 .green-btn {
     background-color: #36c1af;
     color: white;
@@ -902,24 +883,6 @@ export default {
     cursor: pointer;
 }
 
-#page-tile {
-    font-family: 'Poppins' sans-serif;
-    font-size: 2.375rem;
-    font-weight: 900;
-    line-height: 28px;
-    letter-spacing: 0em;
-    text-align: left;
-}
-.form-label {
-    color: #344054;
-    font-family: 'Poppins' sans-serif;
-    font-size: 0.875rem;
-    font-weight: 600;
-    line-height: 20px;
-    letter-spacing: 0em;
-    text-align: left;
-}
-
 .form-control {
     border: 1px solid #f2f4f7;
     box-shadow: 0px 1px 2px 0px #1018280d;
@@ -929,8 +892,9 @@ export default {
     line-height: 22px;
     letter-spacing: 0.03em;
     text-align: left;
-    color: #667085;
+    color: black;
 }
+
 .form-validate {
     font-size: 0.75rem;
     color: red;

@@ -1,5 +1,6 @@
 <script>
 import { useUsersStore } from '../../../../stores/UsersStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import McQuestionsEditList from './McQuestionsEditList.vue';
 import SkillEditsList from './SkillEditsList.vue';
 import WrittenQuestionEditsList from './WrittenQuestionEditsList.vue';
@@ -8,9 +9,11 @@ import ImageQuestionEditsList from './ImageQuestionEditsList.vue';
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
-            usersStore
+            usersStore,
+            userDetailsStore
         };
     },
     props: ['settingStore'],
@@ -165,11 +168,7 @@ export default {
 
 <template>
     <div class="w-100">
-        <!-- Banner -->
-        <div id="banner">
-            <img src="/images/banners/general-banner.png" class="img-fluid" />
-        </div>
-        <!-- Page tile -->
+        <!-- Page title -->
         <h2 class="ps-3 mt-2 page-title">Approve Content Edits</h2>
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
@@ -316,14 +315,13 @@ export default {
 .desktop-nav-bar {
     padding-top: 15px;
     padding-bottom: 15px;
-    border: 1px solid #e0e0e0;
     width: fit-content;
     border-radius: 5px;
     margin-left: 15px;
 }
 
 .normal-nav {
-    background-color: inherit;
+    background-color: white;
     padding: 5px 20px;
     cursor: pointer;
     font-weight: 600;

@@ -179,7 +179,7 @@ export default {
 
 <template>
     <div class="container mt-3">
-        <h1>Add Essay Question</h1>
+        <h1 class="h1-stroke">Add Essay Question</h1>
         <!-- Drop down zone for csv file input -->
         <div v-if="userDetailsStore.role == 'admin'">
             <div class="row mt-5">
@@ -401,7 +401,7 @@ export default {
             </div>
             <div class="row mt-3">
                 <div class="col">
-                    <div class="btn purple-btn" @click="Submit">Submit</div>
+                    <div class="btn primary-btn" @click="Submit">Submit</div>
                 </div>
             </div>
         </div>
@@ -504,25 +504,6 @@ export default {
 
 .green-btn:hover {
     background-color: #3eb3a3;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    max-width: fit-content;
-    height: 44px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #9c7eec;
-    color: white !important;
 }
 
 .validate-line {

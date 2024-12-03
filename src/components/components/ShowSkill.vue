@@ -232,7 +232,7 @@ export default {
             <!-- Name and description -->
             <div>
                 <div class="d-flex justify-content-between">
-                    <h1 class="skill-name">{{ skill.name }}</h1>
+                    <h1 class="skill-name heading">{{ skill.name }}</h1>
                     <!-- Take assessment btn-->
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
@@ -243,7 +243,7 @@ export default {
                             !isMastered &&
                             showAncestorLink
                         "
-                        class="btn purple-btn assessment-btn text-capitalize me-1"
+                        class="btn primary-btn assessment-btn text-capitalize me-1"
                     >
                         <span v-if="isMobileCheck > 576"
                             >go to nearest unlockable skill&nbsp;</span
@@ -266,7 +266,7 @@ export default {
                             isUnlocked &&
                             !isMastered
                         "
-                        class="btn purple-btn me-1 assessment-btn"
+                        class="btn primary-btn me-1 assessment-btn"
                         :to="skill.id + '/assessment'"
                     >
                         <span v-if="isMobileCheck > 576"
@@ -287,7 +287,7 @@ export default {
                     </router-link>
                     <router-link
                         v-else-if="!sessionDetailsStore.isLoggedIn"
-                        class="btn purple-btn me-1 assessment-btn"
+                        class="btn primary-btn me-1 assessment-btn"
                         to="/login"
                         ><span v-if="isMobileCheck > 576"
                             >Take assessment&nbsp;</span
@@ -328,7 +328,7 @@ export default {
                         <router-link
                             v-if="sessionDetailsStore.isLoggedIn"
                             :to="'/skills/edit/' + skillUrl"
-                            class="btn green-btn me-1"
+                            class="btn secondary-btn me-1"
                             ><span v-if="isMobileCheck > 576">Edit &nbsp;</span>
                             <!-- Pencil icon -->
                             <svg
@@ -350,7 +350,7 @@ export default {
                                 userDetailsStore.role == 'editor'
                             "
                             :to="'/skills/history/' + this.skillUrl"
-                            class="btn purple-btn me-1"
+                            class="btn primary-btn me-1"
                             ><span v-if="isMobileCheck > 576"
                                 >History&nbsp;</span
                             >
@@ -374,7 +374,7 @@ export default {
                                 skill.type != 'super' &&
                                 sessionDetailsStore.isLoggedIn
                             "
-                            class="btn purple-btn me-3"
+                            class="btn primary-btn me-3"
                             :to="skillUrl + '/question-bank'"
                             ><span v-if="isMobileCheck > 576"
                                 >Question Bank&nbsp;</span
@@ -406,7 +406,7 @@ export default {
                                 heigth="20"
                             >
                                 <path
-                                    fill="#a48be6"
+                                    class="icon"
                                     d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"
                                 />
                             </svg>
@@ -425,7 +425,7 @@ export default {
                                 class="flag-icon"
                             >
                                 <path
-                                    fill="#a48be6"
+                                    class="icon"
                                     d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
                                 />
                             </svg>
@@ -474,7 +474,7 @@ export default {
                         </a>
                         <!-- Grade level -->
                         <div class="mt-2">
-                            <h2 class="h4 title">Level</h2>
+                            <h2 class="h4 title heading">Level</h2>
                             <span v-if="skill.level == 'grade_school'"
                                 >Grade School</span
                             >
@@ -494,7 +494,7 @@ export default {
                             cluster nodes' question banks.</span
                         >
                         <div class="mt-2">
-                            <h2 class="h4 title">Author</h2>
+                            <h2 class="h4 title heading">Author</h2>
                             <!-- Author Icon -->
                             <div
                                 v-if="skill.is_human_edited"
@@ -597,7 +597,7 @@ export default {
             <div class="d-flex justify-content-end gap-2">
                 <button
                     type="button"
-                    class="btn green-btn modal-btn"
+                    class="btn secondary-btn modal-btn"
                     @click="showConfirmModal = false"
                 >
                     <span class="d-none d-md-block"> OK </span>
@@ -639,10 +639,13 @@ export default {
     text-align: center;
 }
 
+.heading {
+    color: var(--secondary-heading-colour) !important;
+}
+
 .skill-name {
     font-family: 'Poppins', sans-serif;
     font-size: 40px;
-    color: #a48be6;
     font-weight: 800;
     margin-bottom: 0px;
     text-align: start;
@@ -676,7 +679,7 @@ export default {
 }
 
 .hr {
-    border-color: #aea3ce !important;
+    border-color: var(--hr-colour) !important;
 }
 
 #skill-info-container {
@@ -691,55 +694,10 @@ export default {
     border-style: solid;
 }
 
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    max-width: fit-content;
-    display: flex;
-    align-items: center;
-    height: 44px;
-    text-wrap: nowrap;
-}
-
-.purple-btn:hover {
-    background-color: #8f7bd6;
-}
-
 .assessment-btn {
     height: auto;
     max-height: 48px;
     margin-left: 10px;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 44px;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-
-    display: flex;
-    align-items: center;
-
-    max-width: fit-content;
-}
-
-.green-btn:hover {
-    background-color: #3eb3a3;
 }
 
 .red-btn {
@@ -771,10 +729,6 @@ export default {
 @media (max-width: 576px) {
     h2 {
         text-align: center;
-    }
-
-    h1 {
-        font-size: 2.5rem;
     }
 
     #skill-info-container {
@@ -838,11 +792,4 @@ export default {
         width: fit-content;
     }
 }
-
-/* h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-    font-size: 1.75rem;
-} */
 </style>

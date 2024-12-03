@@ -144,7 +144,7 @@ export default {
             <div class="row p-0">
                 <RouterLink
                     v-if="questionSubmitted"
-                    class="btn btn-light purple-btn"
+                    class="btn btn-light primary-btn"
                     style="width: 136px"
                     to="/skills"
                 >
@@ -262,7 +262,7 @@ export default {
                         <button
                             v-if="answers[4].show == false"
                             @click="addAnswer"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                         >
                             <svg
                                 width="20"
@@ -320,7 +320,7 @@ export default {
                             Skip
                         </button>
                         <button
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             @click="
                                 !questionSubmitted
                                     ? Submit()
@@ -368,7 +368,7 @@ export default {
                     </button>
                     <RouterLink
                         v-if="questionSubmitted"
-                        class="btn btn-light purple-btn mx-2"
+                        class="btn btn-light primary-btn mx-2"
                         to="/skills"
                     >
                         Back to skills
@@ -398,28 +398,6 @@ export default {
 
 .red-btn:hover {
     background-color: #cc3535;
-    color: white;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #a48be6;
-    color: white;
-}
-
-.purple-btn:focus {
-    background-color: #a48be6;
     color: white;
 }
 
