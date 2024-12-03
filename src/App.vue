@@ -42,10 +42,7 @@ export default {
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link logo">
                     <img
-                        v-if="
-                            userDetailsStore.theme == 'apprentice' ||
-                            userDetailsStore.theme == 'scholar'
-                        "
+                        v-if="userDetailsStore.theme == 'scholar'"
                         src="/images/logo-white.png"
                         alt=""
                         width="50"
@@ -240,12 +237,16 @@ Themes
     --stroke-width: 0px;
 
     --loading-animation-colour: #8f7bd6;
+    --background-colour: #8666ca;
+    --background-hover-colour: #b8a6db;
 }
 /* The Apprentice theme */
 .apprentice-theme {
-    --nav-colour: white;
+    --nav-colour: #040095;
 
     --primary-heading-colour: #040095;
+    --primary-heading-stroke-colour: gold;
+
     --secondary-heading-colour: #040095;
 
     --primary-icon-colour: #040095;
@@ -261,20 +262,23 @@ Themes
     --tertiary-colour: white;
     --regular-text-colour: black;
     --secondary-text-colour: white;
-    --hr-colour: #aea3ce;
+    --hr-colour: #040095;
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
 
     --fifth-colour: white;
     --collapsible-tree-node-colour: #53389e;
-    --stroke-width: 0px;
+    --stroke-width: 1px;
 
     --loading-animation-colour: #040095;
+    --background-colour: #040095;
+    --background-hover-colour: blue;
 }
 /* The Scholar theme */
 .scholar-theme {
     --nav-colour: white;
 
     --primary-heading-colour: white;
+    --primary-heading-stroke-colour: black;
     --secondary-heading-colour: black;
 
     --primary-icon-colour: white;
@@ -298,6 +302,8 @@ Themes
     --stroke-width: 1px;
 
     --loading-animation-colour: white;
+    --background-colour: black;
+    --background-hover-colour: slategrey;
 }
 
 body {
@@ -327,7 +333,7 @@ h1 {
 }
 
 .h1-stroke {
-    -webkit-text-stroke-color: var(--secondary-heading-colour);
+    -webkit-text-stroke-color: var(--primary-heading-stroke-colour);
     -webkit-text-stroke-width: var(--stroke-width);
 }
 
@@ -344,7 +350,7 @@ h2 {
 }
 
 .h2-stroke {
-    -webkit-text-stroke-color: var(--secondary-heading-colour);
+    -webkit-text-stroke-color: var(--primary-heading-stroke-colour);
     -webkit-text-stroke-width: var(--stroke-width);
 }
 

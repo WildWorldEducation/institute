@@ -218,7 +218,7 @@ export default {
 }
 
 .nav-bar-item:hover {
-    background-color: #b8a6db;
+    background-color: var(--background-hover-colour);
     color: #f8fafc;
 }
 
@@ -229,7 +229,7 @@ export default {
 }
 
 .active-item {
-    background-color: #a083da;
+    background-color: var(--background-colour);
     padding: 5px 10px;
     color: white;
 }

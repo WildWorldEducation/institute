@@ -169,7 +169,7 @@ export default {
 <template>
     <div class="w-100">
         <!-- Page title -->
-        <h2 class="ps-3 mt-2 page-title">Approve Content Edits</h2>
+        <h2 class="ps-3 mt-2 h2-stroke">Approve Content Edits</h2>
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
             <button
@@ -301,17 +301,6 @@ export default {
 </template>
 
 <style scoped>
-#banner {
-    width: 100%;
-    height: fit-content;
-}
-
-.page-title {
-    color: #9c7eec;
-    font-size: 30px;
-    font-weight: 600;
-}
-
 .desktop-nav-bar {
     padding-top: 15px;
     padding-bottom: 15px;
@@ -336,7 +325,7 @@ export default {
 }
 
 .active-nav {
-    background-color: #8666ca;
+    background-color: var(--background-colour);
     border: 1px solid grey;
     border-radius: 5px;
     color: white;
