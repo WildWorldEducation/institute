@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:dist/assets/StudentMCQuestionsStore-67ca99a0.js
-import{P as e}from"./main-e2d3868e.js";const o=e("student-mc-questions",{state:()=>({studentMCQuestions:[]}),actions:{async getStudentMCQuestions(){const t=await(await fetch("/questions/student-mc-questions/list")).json();this.studentMCQuestions=t},async deleteStudentMCQuestion(s){const t=fetch("/questions/student-mc-questions/"+s,{method:"DELETE"});t.error&&console.log(t.error)}}});export{o as u};
-========
-import{P as e}from"./main-fe9f24bb.js";const o=e("student-mc-questions",{state:()=>({studentMCQuestions:[]}),actions:{async getStudentMCQuestions(){const t=await(await fetch("/questions/student-mc-questions/list")).json();this.studentMCQuestions=t},async deleteStudentMCQuestion(s){const t=fetch("/questions/student-mc-questions/"+s,{method:"DELETE"});t.error&&console.log(t.error)}}});export{o as u};
->>>>>>>> change-design-for-ai-themes:dist/assets/StudentMCQuestionsStore-24fa1579.js
