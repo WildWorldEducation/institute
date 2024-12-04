@@ -1,14 +1,78 @@
 <script>
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
+import { useUsersStore } from '../../../stores/UsersStore';
+
 export default {
-    setup() {},
+    setup() {
+        const usersStore = useUsersStore();
+        const userDetailsStore = useUserDetailsStore();
+
+        // Run the GET request.
+        if (usersStore.users.length < 1) usersStore.getUsers();
+        return {
+            usersStore,
+            userDetailsStore
+        };
+    },
     data() {
         return {
             searchText: '',
             haveResults: false,
-            usersResult: []
+            userList: []
         };
     },
-    methods: {}
+    created() {
+        switch (this.userDetailsStore.role) {
+            case 'admin':
+                this.userList = this.usersStore.users;
+                break;
+            case 'instructor':
+                this.userList = this.usersStore.users;
+                break;
+            case 'editor':
+                this.userList = this.usersStore.editors;
+            default:
+                break;
+        }
+    },
+    methods: {
+        findUserFirstChars(searchString) {
+            let userResultArray = [];
+            this.userList.forEach((element) => {
+                if (
+                    element.username
+                        .toLowerCase()
+                        .substring(0, searchString.length) === searchString
+                ) {
+                    userResultArray.push(element);
+                }
+            });
+
+            return userResultArray;
+        },
+        findUserWholeString(searchText) {
+            let userResultArray = [];
+            this.userList.forEach((element) => {
+                if (element.username.toLowerCase().includes(searchText)) {
+                    userResultArray.push(element);
+                }
+            });
+            return userResultArray;
+        }
+    },
+    computed: {
+        usersResult() {
+            if (this.searchText.length === 0) {
+                return [];
+            }
+            if (this.searchText.length < 3) {
+                return this.findUserFirstChars(this.searchText);
+            }
+            if (this.searchText.length >= 3) {
+                return this.findUserWholeString(this.searchText);
+            }
+        }
+    }
 };
 </script>
 
@@ -38,7 +102,9 @@ export default {
             />
         </div>
         <div class="position-relative">
-            <div v-if="usersResult.length" class="search-results"></div>
+            <div v-if="usersResult.length" class="search-results">
+                <div v-for="user in usersResult">{{ user.username }}</div>
+            </div>
         </div>
     </div>
 </template>
