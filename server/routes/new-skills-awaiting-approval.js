@@ -17,6 +17,26 @@ const { sendMail, sendNewSkillNotificationMail } = require('../utilities/mailSen
 const { recordUserAction } = require('../utilities/record-user-action');
 const { stringToSnakeCase } = require('../utilities/formatter');
 
+// AWS Setup
+require('dotenv').config();
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const skillInfoboxImagesBucketName =
+    process.env.S3_SKILL_INFOBOX_IMAGE_BUCKET_NAME;
+const skillInfoboxImageThumbnailsBucketName =
+    process.env.S3_SKILL_INFOBOX_IMAGE_THUMBNAILS_BUCKET_NAME;
+const userAvatarImageThumbnailsBucketName =
+    process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
+const bucketRegion = process.env.S3_BUCKET_REGION;
+const accessKeyId = process.env.S3_ACCESS_KEY_ID;
+const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
+const s3 = new S3Client({
+    credentials: {
+        accessKeyId: accessKeyId,
+        secretAccessKey: accessSecretKey
+    },
+    region: bucketRegion
+});
+const sharp = require('sharp');
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -101,7 +121,7 @@ router.post(
                     throw err;
                 }
 
-                //add approve question action into user_actions table
+                //add create skill action into user_actions table
                 recordUserAction(
                     {
                         userId: data.user_id,
@@ -273,7 +293,7 @@ router.post('/accept/:id', async (req, res, next) => {
 
             });
         } catch (error) {
-            console.error
+            console.error(error)
             res.status = 500;
             res.end;
         }
