@@ -246,9 +246,10 @@ export default {
 
 <template>
     <div class="container-fluid mt-4">
-        <div class="d-flex align-items-md-baseline align-items-start gap-2">
-            <h2 class="h2-stroke">Best Places To Learn This</h2>
-        </div>
+        <h2 class="primary-heading primary-heading-stroke">
+            Best Places To Learn This
+        </h2>
+
         <!-- Navigation Tabs -->
         <!-- If guest account, we dont show tutors, only sources -->
         <ul

@@ -47,7 +47,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="h2-stroke">News</h2>
+    <h2 class="primary-heading">News</h2>
     <div class="table-div row rounded mb-3">
         <div class="p-2 col-lg-3 col-md-6">
             <p v-if="userDetailsStore.role != 'admin'">{{ news.news_1 }}</p>

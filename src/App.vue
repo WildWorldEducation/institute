@@ -73,7 +73,7 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-                    <ul class="navbar-nav d-flex">
+                    <ul class="navbar-nav d-flex bg-light rounded">
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -212,57 +212,73 @@ Themes
 */
 /* The Original theme */
 :root {
-    --nav-colour: black;
+    --primary-color: #614bad;
+    --secondary-color: #56c5b6;
+    --tertiary-color: black;
+    --stroke-width: 0px;
+
+    --dark-color: #614bad;
+    --secondary-btn-color: #56c5b6;
+
+    /* --nav-colour: black;
 
     /* Headings */
-    --primary-heading-colour: #8f7bd6;
-    --secondary-heading-colour: #8f7bd6;
+    /* --primary-heading-colour: #8f7bd6;
+    --secondary-heading-colour: #8f7bd6; */
 
     /* Icons */
-    --primary-icon-colour: #8f7bd6;
-    --secondary-icon-colour: #8f7bd6;
+    /* --primary-icon-colour: #8f7bd6;
+    --secondary-icon-colour: #8f7bd6; */
 
     /* Buttons */
-    --primary-btn-colour: #8f7bd6;
+    /* --primary-btn-colour: #8f7bd6;
     --primary-btn-colour-hover: #9a7ceb;
     --primary-btn-colour-border: #7f56d9;
     --secondary-btn-colour: #56c5b6;
     --secondary-btn-colour-border: #2fa894;
-    --secondary-button-text-colour: white;
+    --secondary-button-text-colour: white; */
 
     /* Text */
-    --regular-text-colour: black;
-    --secondary-text-colour: white;
+    /*--secondary-text-colour: white; */
 
     /* Other colours */
-    --tertiary-colour: white;
+    /* --tertiary-colour: white;
     --fourth-colour: gold;
-    --fifth-colour: #888;
+    --fifth-colour: #888; */
 
     /* Other */
-    --hr-colour: #aea3ce;
+    /* --hr-colour: #aea3ce;
     --hr-secondary-colour: #aea3ce;
     --collapsible-tree-node-colour: #53389e;
     --stroke-width: 0px;
     --loading-animation-colour: #8f7bd6;
     --background-colour: #8666ca;
-    --background-hover-colour: #b8a6db;
+    --background-hover-colour: #b8a6db; */
 }
+
 /* The Apprentice theme */
 .apprentice-theme {
-    --nav-colour: #040095;
+    --primary-color: #040095;
+    --secondary-color: gold;
+    --tertiary-color: white;
+    --stroke-width: 1px;
+
+    --dark-color: #040095;
+    --secondary-btn-color: gold;
+
+    /* --nav-colour: #040095; */
 
     /* Headings */
-    --primary-heading-colour: #040095;
+    /* --primary-heading-colour: #040095;
     --primary-heading-stroke-colour: gold;
-    --secondary-heading-colour: #040095;
+    --secondary-heading-colour: #040095; */
 
     /* Icons */
-    --primary-icon-colour: #040095;
-    --secondary-icon-colour: #040095;
+    /* --primary-icon-colour: #040095;
+    --secondary-icon-colour: #040095; */
 
     /* Buttons */
-    --primary-btn-colour: #040095;
+    /* --primary-btn-colour: #040095;
     --primary-btn-colour-hover: #9a7ceb;
     --primary-btn-colour-border: #7f56d9;
     --secondary-btn-colour: gold;
@@ -270,128 +286,146 @@ Themes
     --secondary-btn-colour-hover-border: #040095;
     --secondary-button-text-colour: #040095;
     --secondary-button-border-width: 1px;
-    --secondary-button-border-colour: #040095;
+    --secondary-button-border-colour: #040095; */
 
     /* Text */
-    --regular-text-colour: black;
-    --secondary-text-colour: white;
+    /* --secondary-text-colour: white; */
 
     /* Other colours */
-    --tertiary-colour: white;
+    /* --tertiary-colour: white;
     --fourth-colour: gold;
-    --fifth-colour: white;
+    --fifth-colour: white; */
+
+    --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
 
     /* Other */
-    --hr-colour: #040095;
+    /* --hr-colour: #040095;
     --hr-secondary-colour: #040095;
-    --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
     --collapsible-tree-node-colour: #53389e;
     --stroke-width: 1px;
     --loading-animation-colour: #040095;
     --background-colour: #040095;
-    --background-hover-colour: blue;
+    --background-hover-colour: blue; */
 }
 
 /* The Scholar theme */
 .scholar-theme {
-    --nav-colour: white;
+    --primary-color: black;
+    --secondary-color: white;
+    --tertiary-color: #bf202f;
+    --stroke-width: 1px;
+
+    --dark-color: black;
+    --secondary-btn-color: gold;
+
+    /* --nav-colour: white; */
 
     /* Headings */
-    --primary-heading-colour: white;
+    /* --primary-heading-colour: white;
     --primary-heading-stroke-colour: black;
-    --secondary-heading-colour: black;
+    --secondary-heading-colour: black; */
 
     /* Icons */
-    --primary-icon-colour: white;
-    --secondary-icon-colour: black;
+    /* --primary-icon-colour: white;
+    --secondary-icon-colour: black; */
 
     /* Buttons */
-    --primary-btn-colour: black;
+    /* --primary-btn-colour: black;
     --primary-btn-colour-hover: #303030;
     --primary-btn-colour-border: white;
     --secondary-btn-colour: black;
     --secondary-btn-colour-hover-border: darkorange;
-    --secondary-button-text-colour: white;
+    --secondary-button-text-colour: white; */
 
     /* Text */
-    --regular-text-colour: black;
-    --secondary-text-colour: white;
+    /* --secondary-text-colour: white; */
 
     /* Other colours */
-    --tertiary-colour: #87ceeb;
+    /* --tertiary-colour: #87ceeb;
     --fourth-colour: #bf202f;
-    --fifth-colour: white;
+    --fifth-colour: white; */
+
+    --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 
     /* Other */
-    --hr-colour: black;
-    --hr-secondary-colour: white;
-    --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
-    --collapsible-tree-node-colour: black;
-    --stroke-width: 1px;
-    --loading-animation-colour: white;
-    --background-colour: black;
-    --background-hover-colour: slategrey;
+    /* --hr-colour: black;
+        --hr-secondary-colour: white;
+
+        --collapsible-tree-node-colour: black;
+        --stroke-width: 1px;
+        --loading-animation-colour: white;
+        --background-colour: black;
+        --background-hover-colour: slategrey; */
 }
 
+/* Navigation bar */
+.nav-link {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.nav-link .active {
+    color: darkorange !important;
+}
+
+.nav-link:hover {
+    color: darkorange;
+    text-decoration: underline;
+}
+
+/* Background image */
 body {
     background-image: var(--background-image);
     background-size: cover;
 }
 
+/* Regular text */
 p {
-    color: var(--regular-text-colour) !important;
+    color: black !important;
 }
 
-/* The following are changed by the themes, globally */
-/* .nav-bar {
-    background-color: var(--tertiary-colour);
-} */
-
-h1 {
-    color: var(--primary-heading-colour) !important;
+/* Headings */
+.primary-heading {
+    color: var(--primary-color) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
 
-.h1-secondary-colour {
-    color: var(--secondary-heading-colour) !important;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-.h1-stroke {
-    -webkit-text-stroke-color: var(--primary-heading-stroke-colour);
+.primary-heading-stroke {
+    -webkit-text-stroke-color: var(--secondary-color);
     -webkit-text-stroke-width: var(--stroke-width);
 }
 
-h2 {
-    color: var(--primary-heading-colour) !important;
+.secondary-heading {
+    color: var(--secondary-colour) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
 
-.h2-secondary-colour {
-    color: var(--secondary-heading-colour) !important;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-.h2-stroke {
-    -webkit-text-stroke-color: var(--primary-heading-stroke-colour);
+.secondary-heading-stroke {
+    -webkit-text-stroke-color: var(--primary-colour);
     -webkit-text-stroke-width: var(--stroke-width);
+}
+
+.dark-icon {
+    fill: var(--dark-color);
 }
 
 .icon-primary {
-    fill: var(--primary-icon-colour) !important;
+    fill: var(--primary-colour) !important;
 }
 
 .icon-secondary {
-    fill: var(--primary-icon-colour) !important;
+    fill: var(--secondary-colour) !important;
 }
 
 .primary-btn {
-    background-color: var(--primary-btn-colour) !important;
-    border: 1px solid var(--primary-btn-colour-border) !important;
+    background-color: var(--primary-color) !important;
     color: white;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
@@ -416,7 +450,7 @@ h2 {
 }
 
 .secondary-btn {
-    background-color: var(--secondary-btn-colour) !important;
+    background-color: var(--secondary-color) !important;
     color: var(--secondary-button-text-colour);
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
@@ -435,25 +469,6 @@ h2 {
 .secondary-btn:hover {
     border-color: var(--secondary-btn-colour-hover-border) !important;
     color: var(--secondary-button-text-colour);
-}
-
-.nav-link {
-    color: var(--nav-colour);
-    font-weight: 700;
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-}
-
-.nav-link .active {
-    color: var(--primary-heading-colour) !important;
-}
-
-.nav-link:hover {
-    color: var(--fourth-colour);
-    text-decoration: underline;
 }
 
 .table-header {

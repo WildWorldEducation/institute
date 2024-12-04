@@ -19,7 +19,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="h2-stroke">Last visited Skills</h2>
+    <h2 class="primary-heading">Last visited Skills</h2>
     <div id="skill-list">
         <div v-for="skill in visitedSkills">
             <router-link

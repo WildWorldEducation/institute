@@ -45,7 +45,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="h2-stroke">Notifications</h2>
+    <h2 class="primary-heading">Notifications</h2>
     <div class="table-div">
         <div class="border-bottom p-2" v-if="userDetailsStore.role != 'admin'">
             {{ notifications.notification_1 }}
