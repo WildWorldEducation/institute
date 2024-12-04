@@ -285,9 +285,10 @@ export default {
             // Determine new node level.
             let skillLevel = levelToNumber(this.skill.level);
             if (parentLevel > skillLevel) {
-                alert(
-                    'Child nodes cannot have a lower grade level than parent nodes.'
-                );
+                this.message =
+                    'Child nodes cannot have a lower grade level than parent nodes.';
+                this.showLoadModal = false;
+                this.showFailsModal = true;
                 return;
             }
 
@@ -322,6 +323,7 @@ export default {
                         data.result ==
                         'This skill was deleted, but has now been undeleted. Please find it and edit it.'
                     ) {
+                        this.showLoadModal = false;
                         this.showFailsModal = true;
                         this.message = data.result;
                         return;
@@ -332,8 +334,8 @@ export default {
                 })
                 .then(() => {
                     this.showLoadModal = false;
+                    this.showSuccessModal = true;
                     this.message = 'Adding Skill Successfully';
-                    this.$router.push('/skills');
                 });
         },
         async CreateNewInstance() {
@@ -350,6 +352,7 @@ export default {
                     this.skillsStore.getNestedSkillsList();
                 })
                 .then(() => {
+                    this.showLoadModal = false;
                     this.message = 'Successfully created new instance';
                     this.showSuccessModal = true;
                 });
