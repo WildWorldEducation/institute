@@ -265,8 +265,11 @@ Themes
     --primary-btn-colour-hover: #9a7ceb;
     --primary-btn-colour-border: #7f56d9;
     --secondary-btn-colour: gold;
-    --secondary-btn-colour-border: #2fa894;
+    --secondary-btn-colour-border: #040095;
+    --secondary-btn-colour-hover-border: #040095;
     --secondary-button-text-colour: #040095;
+    --secondary-button-border-width: 1px;
+    --secondary-button-border-colour: #040095;
 
     /* Text */
     --regular-text-colour: black;
@@ -416,11 +419,14 @@ h2 {
     max-width: fit-content;
     max-height: 44px;
     text-wrap: nowrap;
+    border-width: var(--secondary-button-border-width);
+    border-color: var(--secondary-button-border-color);
+    border-style: solid;
 }
 
 .secondary-btn:hover {
     border-color: var(--secondary-btn-colour-hover-border) !important;
-    color: white;
+    color: var(--secondary-button-text-colour);
 }
 
 .nav-link {
