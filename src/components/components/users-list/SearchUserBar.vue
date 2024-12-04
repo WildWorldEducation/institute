@@ -21,23 +21,30 @@ export default {
             userList: []
         };
     },
-    created() {
-        switch (this.userDetailsStore.role) {
-            case 'admin':
-                this.userList = this.usersStore.users;
-                break;
-            case 'instructor':
-                this.userList = this.usersStore.users;
-                break;
-            case 'editor':
-                this.userList = this.usersStore.editors;
-            default:
-                break;
+    async created() {
+        if (!this.userDetailsStore.role) {
+            this.userDetailsStore.getUserDetails();
+        }
+        if (
+            this.userDetailsStore.role === 'admin' ||
+            this.useUserDetailsStore.role === 'instructor'
+        ) {
+            if (this.usersStore.users.length < 1) {
+                await this.usersStore.getUsers();
+            }
+            this.userList = this.usersStore.users;
+        }
+        if (this.userDetailsStore.role === 'editor') {
+            if (this.usersStore.editors.length < 1) {
+                await this.usersStore.getEditors();
+            }
+            this.userList = this.usersStore.editors();
         }
     },
     methods: {
         findUserFirstChars(searchString) {
             let userResultArray = [];
+            console.log(this.userList);
             this.userList.forEach((element) => {
                 if (
                     element.username
@@ -47,7 +54,7 @@ export default {
                     userResultArray.push(element);
                 }
             });
-
+            console.log(userResultArray);
             return userResultArray;
         },
         findUserWholeString(searchText) {
@@ -57,6 +64,7 @@ export default {
                     userResultArray.push(element);
                 }
             });
+            console.log(userResultArray);
             return userResultArray;
         }
     },
@@ -103,7 +111,9 @@ export default {
         </div>
         <div class="position-relative">
             <div v-if="usersResult.length" class="search-results">
-                <div v-for="user in usersResult">{{ user.username }}</div>
+                <div class="result-row" v-for="user in usersResult">
+                    {{ user.username }}
+                </div>
             </div>
         </div>
     </div>
