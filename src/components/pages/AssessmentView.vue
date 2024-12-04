@@ -64,7 +64,7 @@ export default {
 
 <style scoped>
 #assessment-horizontal-line {
-    border-color: var(--hr-colour) !important;
+    border-color: var(--hr-secondary-colour) !important;
     border: solid;
 }
 </style>
