@@ -70,8 +70,8 @@ export default {
                 <div class="search-mobile-row">
                     <!-- Search feature -->
                     <SkillTreeSearchBar
-                        :findNode="handleChooseResult"
-                        :clearResults="clearResult"
+                        :findNode="findNode"
+                        :clearResults="clearResults"
                     />
                 </div>
             </div>
@@ -128,8 +128,8 @@ export default {
                         <!-- Search Feature -->
                         <SkillTreeSearchBar
                             class="me-4"
-                            :findNode="handleChooseResult"
-                            :clearResults="clearResult"
+                            :findNode="findNode"
+                            :clearResults="clearResults"
                         />
                     </div>
                 </div>

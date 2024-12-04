@@ -214,28 +214,35 @@ Themes
 :root {
     --nav-colour: black;
 
+    /* Headings */
     --primary-heading-colour: #8f7bd6;
     --secondary-heading-colour: #8f7bd6;
 
+    /* Icons */
     --primary-icon-colour: #8f7bd6;
     --secondary-icon-colour: #8f7bd6;
 
+    /* Buttons */
     --primary-btn-colour: #8f7bd6;
     --primary-btn-colour-hover: #9a7ceb;
     --primary-btn-colour-border: #7f56d9;
     --secondary-btn-colour: #56c5b6;
     --secondary-btn-colour-border: #2fa894;
+    --secondary-button-text-colour: white;
 
-    --fourth-colour: gold;
-    --tertiary-colour: white;
+    /* Text */
     --regular-text-colour: black;
     --secondary-text-colour: white;
-    --hr-colour: #aea3ce;
 
+    /* Other colours */
+    --tertiary-colour: white;
+    --fourth-colour: gold;
     --fifth-colour: #888;
+
+    /* Other */
+    --hr-colour: #aea3ce;
     --collapsible-tree-node-colour: #53389e;
     --stroke-width: 0px;
-
     --loading-animation-colour: #8f7bd6;
     --background-colour: #8666ca;
     --background-hover-colour: #b8a6db;
@@ -244,31 +251,40 @@ Themes
 .apprentice-theme {
     --nav-colour: #040095;
 
+    /* Headings */
     --primary-heading-colour: #040095;
     --primary-heading-stroke-colour: gold;
-
     --secondary-heading-colour: #040095;
 
+    /* Icons */
     --primary-icon-colour: #040095;
     --secondary-icon-colour: #040095;
 
+    /* Buttons */
     --primary-btn-colour: #040095;
     --primary-btn-colour-hover: #9a7ceb;
     --primary-btn-colour-border: #7f56d9;
-    --secondary-btn-colour: #56c5b6;
-    --secondary-btn-colour-border: #2fa894;
+    --secondary-btn-colour: gold;
+    --secondary-btn-colour-border: #040095;
+    --secondary-btn-colour-hover-border: #040095;
+    --secondary-button-text-colour: #040095;
+    --secondary-button-border-width: 1px;
+    --secondary-button-border-colour: #040095;
 
-    --fourth-colour: gold;
-    --tertiary-colour: white;
+    /* Text */
     --regular-text-colour: black;
     --secondary-text-colour: white;
+
+    /* Other colours */
+    --tertiary-colour: white;
+    --fourth-colour: gold;
+    --fifth-colour: white;
+
+    /* Other */
     --hr-colour: #040095;
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
-
-    --fifth-colour: white;
     --collapsible-tree-node-colour: #53389e;
     --stroke-width: 1px;
-
     --loading-animation-colour: #040095;
     --background-colour: #040095;
     --background-hover-colour: blue;
@@ -277,30 +293,37 @@ Themes
 .scholar-theme {
     --nav-colour: white;
 
+    /* Headings */
     --primary-heading-colour: white;
     --primary-heading-stroke-colour: black;
     --secondary-heading-colour: black;
 
+    /* Icons */
     --primary-icon-colour: white;
     --secondary-icon-colour: black;
 
+    /* Buttons */
     --primary-btn-colour: black;
     --primary-btn-colour-hover: #303030;
     --primary-btn-colour-border: white;
     --secondary-btn-colour: black;
     --secondary-btn-colour-hover-border: darkorange;
+    --secondary-button-text-colour: white;
 
-    --tertiary-colour: #87ceeb;
+    /* Text */
     --regular-text-colour: black;
     --secondary-text-colour: white;
-    --hr-colour: black;
-    --fourth-colour: #bf202f;
-    --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 
+    /* Other colours */
+    --tertiary-colour: #87ceeb;
+    --fourth-colour: #bf202f;
     --fifth-colour: white;
+
+    /* Other */
+    --hr-colour: black;
+    --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
     --collapsible-tree-node-colour: black;
     --stroke-width: 1px;
-
     --loading-animation-colour: white;
     --background-colour: black;
     --background-hover-colour: slategrey;
@@ -386,7 +409,7 @@ h2 {
 
 .secondary-btn {
     background-color: var(--secondary-btn-colour) !important;
-    color: white;
+    color: var(--secondary-button-text-colour);
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
     font-size: 16px;
@@ -396,11 +419,14 @@ h2 {
     max-width: fit-content;
     max-height: 44px;
     text-wrap: nowrap;
+    border-width: var(--secondary-button-border-width);
+    border-color: var(--secondary-button-border-color);
+    border-style: solid;
 }
 
 .secondary-btn:hover {
     border-color: var(--secondary-btn-colour-hover-border) !important;
-    color: white;
+    color: var(--secondary-button-text-colour);
 }
 
 .nav-link {
