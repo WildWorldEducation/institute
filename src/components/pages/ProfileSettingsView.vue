@@ -55,7 +55,7 @@ export default {
         <button class="btn green-btn mt-3" @click="CheckMCQuestions()">
             Check now
         </button>
-        <p style="font-size: 14px" class="mt-2">
+        <div style="font-size: 14px" class="mt-2">
             <ul>
             <li><em>To be done by devs and not admins.</em></li>
             <li><em>
@@ -63,7 +63,7 @@ export default {
                 questions, and can be expensive.</em
             ></li>
             </ul>
-        </p>
+        </div>
     </section>
     <!-- Ability to autogenerate sources for all skills. At the moment, has to be done by programmer --->
      <!-- Hidden from all users --->
