@@ -102,8 +102,8 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
-        <h2>Edit Tutor Post</h2>
+    <div class="container p-2 bg-light rounded">
+        <h1 class="heading">Edit Tutor Post</h1>
         <div class="row">
             <div class="mb-3">
                 <textarea

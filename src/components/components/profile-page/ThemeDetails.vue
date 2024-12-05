@@ -26,13 +26,8 @@ export default {
 </script>
 
 <template>
-    <div class="container pb-4">
-        <h2
-            id="heading"
-            class="my-3 ms-0 ms-md-3 ms-lg-0 mt-2 mt-md-4 h2-stroke"
-        >
-            Theme
-        </h2>
+    <div class="container pb-4 theme-background mt-2">
+        <h2 class="heading">Theme</h2>
         <!-- Choose theme -->
         <div class="mb-3 text-start themes">
             <select class="form-select" @change="chooseTheme()" v-model="theme">
@@ -45,15 +40,13 @@ export default {
 </template>
 
 <style scoped>
-#heading {
-    font-family: 'Poppins' sans-serif;
-    font-weight: 900;
-    line-height: 28px;
-    letter-spacing: 0em;
-    text-align: left;
-}
-
 .themes {
     width: 300px;
+}
+
+.theme-background {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
 }
 </style>

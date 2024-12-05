@@ -52,7 +52,7 @@ export default {
         <div id="skill-info-container">
             <!-- Skill Info -->
             <div class="d-flex justify-content-between">
-                <h1 class="skill-name">
+                <h1 class="heading">
                     <CompareString :diffString="compareData.nameDiff" />
                     <span class="revision-version"
                         >(Ver: {{ compareData.skillData.version_number }})</span
@@ -172,8 +172,8 @@ export default {
                             </svg>
                         </div>
                         <!-- Grade level -->
-                        <div class="mt-3" style="color: #a48be6">
-                            <h2 class="h4 title">Level</h2>
+                        <div class="mt-3">
+                            <h2 class="h4 heading">Level</h2>
 
                             <span
                                 v-if="
@@ -224,11 +224,6 @@ export default {
 </template>
 
 <style scoped>
-.title {
-    color: #a48be6;
-    font-weight: 700;
-}
-
 #skill-info-container {
     background-color: #f2edff;
     border-radius: 12px;
@@ -239,22 +234,13 @@ export default {
     justify-content: space-between;
 }
 
-.skill-name {
-    font-family: 'Poppins', sans-serif;
-    font-size: 40px;
-    color: #a48be6;
-    font-weight: 800;
-    margin-bottom: 0px;
-    text-align: start;
-}
-
 .revision-version {
     font-weight: 500;
     font-size: 18px;
 }
 
 .hr {
-    border-color: #aea3ce !important;
+    border-color: var(--primary-color) !important;
 }
 
 .space-between {

@@ -73,7 +73,7 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-                    <ul class="navbar-nav d-flex">
+                    <ul class="navbar-nav d-flex bg-light rounded p-2">
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -212,233 +212,45 @@ Themes
 */
 /* The Original theme */
 :root {
-    --nav-colour: black;
+    --primary-color: #8d6ce7;
+    --primary-contrast-color: white;
 
-    /* Headings */
-    --primary-heading-colour: #8f7bd6;
-    --secondary-heading-colour: #8f7bd6;
+    --secondary-color: #56c5b6;
+    --secondary-contrast-color: white;
 
-    /* Icons */
-    --primary-icon-colour: #8f7bd6;
-    --secondary-icon-colour: #8f7bd6;
-
-    /* Buttons */
-    --primary-btn-colour: #8f7bd6;
-    --primary-btn-colour-hover: #9a7ceb;
-    --primary-btn-colour-border: #7f56d9;
-    --secondary-btn-colour: #56c5b6;
-    --secondary-btn-colour-border: #2fa894;
-    --secondary-button-text-colour: white;
-
-    /* Text */
-    --regular-text-colour: black;
-    --secondary-text-colour: white;
-
-    /* Other colours */
-    --tertiary-colour: white;
-    --fourth-colour: gold;
-    --fifth-colour: #888;
-
-    /* Other */
-    --hr-colour: #aea3ce;
-    --hr-secondary-colour: #aea3ce;
-    --collapsible-tree-node-colour: #53389e;
+    --tertiary-color: black;
     --stroke-width: 0px;
-    --loading-animation-colour: #8f7bd6;
-    --background-colour: #8666ca;
-    --background-hover-colour: #b8a6db;
 }
+
 /* The Apprentice theme */
 .apprentice-theme {
-    --nav-colour: #040095;
+    --primary-color: #040095;
+    --primary-contrast-color: white;
 
-    /* Headings */
-    --primary-heading-colour: #040095;
-    --primary-heading-stroke-colour: gold;
-    --secondary-heading-colour: #040095;
+    --secondary-color: gold;
+    --secondary-contrast-color: #040095;
 
-    /* Icons */
-    --primary-icon-colour: #040095;
-    --secondary-icon-colour: #040095;
-
-    /* Buttons */
-    --primary-btn-colour: #040095;
-    --primary-btn-colour-hover: #9a7ceb;
-    --primary-btn-colour-border: #7f56d9;
-    --secondary-btn-colour: gold;
-    --secondary-btn-colour-border: #040095;
-    --secondary-btn-colour-hover-border: #040095;
-    --secondary-button-text-colour: #040095;
-    --secondary-button-border-width: 1px;
-    --secondary-button-border-colour: #040095;
-
-    /* Text */
-    --regular-text-colour: black;
-    --secondary-text-colour: white;
-
-    /* Other colours */
-    --tertiary-colour: white;
-    --fourth-colour: gold;
-    --fifth-colour: white;
-
-    /* Other */
-    --hr-colour: #040095;
-    --hr-secondary-colour: #040095;
-    --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
-    --collapsible-tree-node-colour: #53389e;
+    --tertiary-color: white;
     --stroke-width: 1px;
-    --loading-animation-colour: #040095;
-    --background-colour: #040095;
-    --background-hover-colour: blue;
+    --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
 }
 
 /* The Scholar theme */
 .scholar-theme {
-    --nav-colour: white;
+    --primary-color: black;
+    --primary-contrast-color: white;
 
-    /* Headings */
-    --primary-heading-colour: white;
-    --primary-heading-stroke-colour: black;
-    --secondary-heading-colour: black;
+    --secondary-color: gold;
+    --secondary-contrast-color: black;
 
-    /* Icons */
-    --primary-icon-colour: white;
-    --secondary-icon-colour: black;
-
-    /* Buttons */
-    --primary-btn-colour: black;
-    --primary-btn-colour-hover: #303030;
-    --primary-btn-colour-border: white;
-    --secondary-btn-colour: black;
-    --secondary-btn-colour-hover-border: darkorange;
-    --secondary-button-text-colour: white;
-
-    /* Text */
-    --regular-text-colour: black;
-    --secondary-text-colour: white;
-
-    /* Other colours */
-    --tertiary-colour: #87ceeb;
-    --fourth-colour: #bf202f;
-    --fifth-colour: white;
-
-    /* Other */
-    --hr-colour: black;
-    --hr-secondary-colour: white;
-    --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
-    --collapsible-tree-node-colour: black;
+    --tertiary-color: #bf202f;
     --stroke-width: 1px;
-    --loading-animation-colour: white;
-    --background-colour: black;
-    --background-hover-colour: slategrey;
+    --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 }
 
-body {
-    background-image: var(--background-image);
-    background-size: cover;
-}
-
-p {
-    color: var(--regular-text-colour) !important;
-}
-
-/* The following are changed by the themes, globally */
-/* .nav-bar {
-    background-color: var(--tertiary-colour);
-} */
-
-h1 {
-    color: var(--primary-heading-colour) !important;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-.h1-secondary-colour {
-    color: var(--secondary-heading-colour) !important;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-.h1-stroke {
-    -webkit-text-stroke-color: var(--primary-heading-stroke-colour);
-    -webkit-text-stroke-width: var(--stroke-width);
-}
-
-h2 {
-    color: var(--primary-heading-colour) !important;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-.h2-secondary-colour {
-    color: var(--secondary-heading-colour) !important;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-.h2-stroke {
-    -webkit-text-stroke-color: var(--primary-heading-stroke-colour);
-    -webkit-text-stroke-width: var(--stroke-width);
-}
-
-.icon-primary {
-    fill: var(--primary-icon-colour) !important;
-}
-
-.icon-secondary {
-    fill: var(--primary-icon-colour) !important;
-}
-
-.primary-btn {
-    background-color: var(--primary-btn-colour) !important;
-    border: 1px solid var(--primary-btn-colour-border) !important;
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-    max-height: 44px;
-    text-wrap: nowrap;
-}
-
-.primary-btn:hover {
-    background-color: var(--primary-btn-colour-hover) !important;
-    color: white;
-}
-
-.primary-btn:focus,
-.primary-btn:active {
-    background-color: var(--primary-btn-colour) !important;
-    color: white;
-}
-
-.secondary-btn {
-    background-color: var(--secondary-btn-colour) !important;
-    color: var(--secondary-button-text-colour);
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-    max-height: 44px;
-    text-wrap: nowrap;
-    border-width: var(--secondary-button-border-width);
-    border-color: var(--secondary-button-border-color);
-    border-style: solid;
-}
-
-.secondary-btn:hover {
-    border-color: var(--secondary-btn-colour-hover-border) !important;
-    color: var(--secondary-button-text-colour);
-}
-
+/* Navigation bar */
 .nav-link {
-    color: var(--nav-colour);
+    color: var(--primary-color);
     font-weight: 700;
     font-family: 'Inter', sans-serif;
     font-size: 16px;
@@ -448,29 +260,91 @@ h2 {
 }
 
 .nav-link .active {
-    color: var(--primary-heading-colour) !important;
+    color: darkorange !important;
 }
 
 .nav-link:hover {
-    color: var(--fourth-colour);
+    color: darkorange;
     text-decoration: underline;
 }
 
-.table-header {
-    background-color: var(--h2-colour) !important;
-    border-color: var(--secondary-btn-colour-border) !important;
-    color: white !important;
+/* Background image */
+body {
+    background-image: var(--background-image);
+    background-size: cover;
 }
 
-.secondary-text {
-    color: var(--secondary-text-colour) !important;
+/* Headings */
+.heading {
+    color: var(--primary-color) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
 }
 
-.collapsible-tree-node {
-    color: var(--collapsible-tree-node-colour) !important;
+/* Regular text */
+p {
+    color: black !important;
+}
+
+/* Buttons */
+.primary-btn {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-contrast-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    max-height: 44px;
+    text-wrap: nowrap;
+}
+
+.primary-btn:hover,
+.primary-btn:focus,
+.primary-btn:active {
+    border-color: var(--primary-contrast-color) !important;
+    color: var(--primary-contrast-color);
+}
+
+.secondary-btn {
+    background-color: var(--secondary-color) !important;
+    color: var(--secondary-contrast-color);
+    fill: var(--secondary-contrast-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    max-height: 44px;
+    text-wrap: nowrap;
+    border-style: solid;
+}
+
+.secondary-btn:hover,
+.secondary-btn:focus,
+.secondary-btn:active {
+    border-color: var(--secondary-contrast-color) !important;
+    color: var(--secondary-contrast-color);
+}
+
+/* Icons */
+.primary-icon {
+    fill: var(--primary-color) !important;
+}
+
+.secondary-icon {
+    fill: var(--secondary-color) !important;
 }
 
 /* End of themes section */
+
+.navbar-toggler {
+    background-color: white;
+}
 
 .logo {
     background-color: transparent;

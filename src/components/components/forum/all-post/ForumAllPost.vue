@@ -112,7 +112,7 @@ export default {
                 >
                     <router-link
                         :to="'/resources/add/' + skillId"
-                        class="btn secondary-btn me-2"
+                        class="btn primary-btn me-2"
                         role="button"
                         >Add source&nbsp;&nbsp;
                         <!-- Plus icon -->

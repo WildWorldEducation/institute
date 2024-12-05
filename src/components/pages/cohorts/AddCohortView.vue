@@ -52,8 +52,8 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-5 pb-3">
-        <h1 class="h1-stroke">Add Cohort</h1>
+    <div class="container pb-2 bg-light rounded">
+        <h1 class="heading">Add Cohort</h1>
 
         <div class="main-content-container container-fluid p-4">
             <div class="row">

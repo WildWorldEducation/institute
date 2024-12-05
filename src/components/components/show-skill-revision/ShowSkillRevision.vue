@@ -204,14 +204,14 @@ export default {
         <div v-if="!compareWithRevision" class="mt-3">
             <div id="skill-info-container">
                 <!-- Skill Info -->
-                <div class="d-flex justify-content-between">
-                    <h1 class="skill-name">
-                        {{ skill.name }}
-                        <span class="revision-version"
-                            >(revision {{ skillRevision.version_number }})</span
-                        >
-                    </h1>
-                </div>
+
+                <h1 class="heading">
+                    {{ skill.name }}
+                    <span class="revision-version"
+                        >(revision {{ skillRevision.version_number }})</span
+                    >
+                </h1>
+
                 <!-- A line divide -->
                 <hr class="border border-2 opacity-100 hr" />
 
@@ -306,7 +306,7 @@ export default {
                             </div>
                             <!-- Grade level -->
                             <div class="mt-2">
-                                <h2 class="h4 title">Level</h2>
+                                <h2 class="h4 heading">Level</h2>
                                 <span v-if="skill.level == 'grade_school'"
                                     >Grade School</span
                                 >
@@ -391,11 +391,6 @@ export default {
     align-items: center;
     justify-content: center;
     text-align: center;
-}
-
-.title {
-    color: #a48be6;
-    font-weight: 700;
 }
 
 /* The Warning Modal */

@@ -1,6 +1,7 @@
 <script>
 // Import the stores.
 import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 // Nested components.
 import SkillPanel from './../SkillPanel.vue';
 import NewSkillPanel from '../NewSkillPanel.vue';
@@ -13,8 +14,10 @@ import * as d3 from 'd3';
 export default {
     setup() {
         const skillTreeStore = useSkillTreeStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
-            skillTreeStore
+            skillTreeStore,
+            userDetailsStore
         };
     },
     data() {
@@ -433,7 +436,13 @@ export default {
 
             this.context.beginPath();
             linkGenerator(link);
-            this.context.strokeStyle = '#000';
+            // Determine colour of links based on user's theme
+            if (this.userDetailsStore.theme == 'original')
+                this.context.strokeStyle = '#000';
+            else if (this.userDetailsStore.theme == 'apprentice') {
+                this.context.strokeStyle = '#950200';
+                this.context.lineWidth = 3;
+            } else this.context.strokeStyle = '#fff';
             this.context.stroke();
         },
         genColor() {
@@ -684,12 +693,10 @@ export default {
 </script>
 
 <template>
-    <button id="print-btn" class="btn btn-info" @click="printPDF()">
-        Print
-    </button>
-    <button id="reset-btn" class="btn btn-primary" @click="resetPos()">
-        Reset
-    </button>
+    <div class="d-flex justify-content-end">
+        <button class="btn primary-btn me-2" @click="printPDF()">Print</button>
+        <button class="btn primary-btn me-2" @click="resetPos()">Reset</button>
+    </div>
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"
@@ -720,7 +727,7 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid #a48be5;
+    border: 5px solid var(--primary-color);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;

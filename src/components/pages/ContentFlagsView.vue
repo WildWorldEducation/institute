@@ -543,18 +543,6 @@ export default {
 </script>
 
 <template>
-    <!-- <div id="banner">
-        <img
-            v-if="userDetailsStore.theme == 'apprentice'"
-            src="/images/banners/themes/apprentice/banner-2.png"
-            class="img-fluid"
-        />
-        <img
-            v-else
-            src="/images/banners/themes/scholar/banner-2.png"
-            class="img-fluid"
-        />
-    </div> -->
     <div class="container-fluid pb-5">
         <div class="mt-3">
             <h2 class="page-title">Content Flags</h2>
@@ -2084,7 +2072,7 @@ div {
 }
 
 .page-title {
-    color: #9c7eec;
+    color: var(--primary-color);
     font-size: 30px;
     font-weight: 600;
 }
@@ -2097,18 +2085,8 @@ div {
     padding-bottom: 30px;
 }
 
-#banner {
-    width: 100%;
-    height: fit-content;
-}
-
-.image-fluid {
-    width: 100%;
-    height: auto;
-}
-
 .search-bar {
-    background-color: #a48be6;
+    background-color: var(--primary-color);
     border-radius: 5px;
     width: fit-content;
     padding-right: 8px;
@@ -2157,20 +2135,20 @@ div {
 
 .btn:focus {
     outline: none;
-    border: 2px solid #7c3aed;
+    border: 2px solid var(--primary-color);
     border-radius: 6px;
     scale: 1.2;
 }
 
 .filter-btn:focus {
-    border: 1px solid #7e59cf;
+    border: 1px solid var(--primary-color);
     outline: none;
 }
 
 .flag-name {
     text-decoration: none;
     font-family: 'Poppins';
-    color: #7c3aed;
+    color: var(--primary-color);
     text-overflow: ellipsis;
     /* Needed to make the over flow work */
     overflow: hidden;
@@ -2179,19 +2157,19 @@ div {
 }
 
 .flag-name:hover {
-    color: #7e59cf;
+    color: var(--primary-color);
     text-decoration: underline;
 }
 
 .flag-name:focus {
     outline: none;
-    border: #7e59cf 1px solid;
+    border: var(--primary-color) 1px solid;
     border-radius: 5px;
 }
 
 .expand-tile {
     font-size: 16px;
-    color: #a48be6;
+    color: var(--primary-color);
     font-weight: 550;
     margin-right: 5px;
 }
@@ -2284,7 +2262,7 @@ div {
 .customize-table {
     --easy-table-body-row-font-size: 16px;
     --easy-table-header-font-size: 16px;
-    --easy-table-header-font-color: #8f7bd6;
+    --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
     --easy-table-header-item-padding: 15px 5px;
@@ -2331,7 +2309,7 @@ div {
 
 .user-name {
     text-align: center;
-    color: #7c3aed;
+    color: var(--primary-color);
     /* text-decoration: underline; */
     /* cursor: pointer; */
     width: 100%;
@@ -2356,7 +2334,7 @@ div {
 }
 
 .header-btn:focus {
-    border: 1px solid #7e59cf;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
 }
 
@@ -2380,7 +2358,7 @@ div {
 }
 
 .user-filter {
-    border: #a48be6 1px solid;
+    border: var(--primary-color) 1px solid;
     border-radius: 5px;
     display: flex;
     align-items: center;
@@ -2443,7 +2421,7 @@ div {
     gap: 8px;
     background: linear-gradient(0deg, #ffffff, #ffffff),
         linear-gradient(0deg, #f2f4f7, #f2f4f7);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
     box-shadow: 0px 0px 0px 4px #bca3ff4d;
     font-family: 'Poppins' sans-serif;
     font-size: 1rem;
@@ -2456,7 +2434,7 @@ div {
 
 .custom-select-button:hover {
     cursor: pointer;
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
 }
 
 .custom-select-button > span {
@@ -2502,14 +2480,14 @@ div {
     border-radius: 8px;
     border: 1px;
     background: linear-gradient(0deg, #ffffff, #ffffff);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
     box-shadow: 0px 4px 6px -2px #10182808;
     box-shadow: 0px 12px 16px -4px #10182814;
     width: 200px;
 }
 
 .custom-dropdown-base:focus {
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
 }
 
 .custom-dropdown-option {
@@ -2532,7 +2510,7 @@ div {
 
 .custom-dropdown-option:focus {
     border-radius: 6px;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
     background: #bca3ff1a;
 }
 
@@ -2583,7 +2561,7 @@ div {
     height: 29.09px;
     width: 29.09px;
     background: #f9f5ff;
-    border: 1.45px solid #9c7eec;
+    border: 1.45px solid var(--primary-color);
     border-radius: 8.73px;
 }
 .control:hover input ~ .control_indicator,
@@ -2624,7 +2602,7 @@ div {
     top: 5px;
     width: 13.58px;
     height: 9.33px;
-    border: solid #9c7eec;
+    border: solid var(--primary-color);
     border-width: 0px 0px 2.9px 2.9px;
     transform: rotate(-45deg);
 }
@@ -2641,7 +2619,7 @@ div {
     height: 4.5rem;
     margin-left: -1.3rem;
     margin-top: -1.3rem;
-    background: #9c7eec;
+    background: var(--primary-color);
     border-radius: 3rem;
     opacity: 0.6;
     z-index: 99999;

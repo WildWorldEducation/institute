@@ -50,7 +50,7 @@ export default {
     <Transition name="navbar">
         <div v-if="showNavBar" class="nav-bar-container d-flex flex-column">
             <div class="d-flex justify-content-between pe-4">
-                <h1 class="todo-title ps-2 pt-2">Todo List</h1>
+                <h1 class="todo-title heading ps-2 pt-2">Todo List</h1>
                 <button
                     type="button"
                     class="icon-div d-flex align-items-center px-3 py-2"
@@ -63,7 +63,7 @@ export default {
                         viewBox="0 0 448 512"
                         width="20"
                         height="20"
-                        class="icon"
+                        class="primary-icon"
                     >
                         <path
                             d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"
@@ -181,7 +181,6 @@ export default {
 .todo-title {
     font-size: 30px;
     font-weight: 600;
-    color: var(--secondary-heading-colour) !important;
     margin-bottom: 0px;
 }
 .nav-item-tile {
@@ -191,7 +190,7 @@ export default {
 }
 
 .nav-item-tile:focus {
-    outline: #a083da;
+    outline: var(--primary-color);
 }
 
 .icon-div {
@@ -206,7 +205,7 @@ export default {
 }
 
 .icon-div:focus {
-    outline-color: #a083da;
+    outline-color: var(--primary-color);
 }
 
 .nav-bar-item {
@@ -218,24 +217,24 @@ export default {
 }
 
 .nav-bar-item:hover {
-    background-color: var(--background-hover-colour);
+    background-color: var(--primary-color);
     color: #f8fafc;
 }
 
 .nav-bar-item:focus {
-    border: 2px solid white;
-    background-color: #b8a6db;
+    border: 2px solid var(--primary-contrast-color);
+    background-color: var(--primary-color);
     border: none;
 }
 
 .active-item {
-    background-color: var(--background-colour);
+    background-color: var(--primary-color);
     padding: 5px 10px;
     color: white;
 }
 
 .active-item:focus {
-    border: 2px solid rgb(112, 39, 207);
+    border: 2px solid var(--primary-contrast-color);
 }
 
 /* Navbar slide Animation */
@@ -273,12 +272,12 @@ export default {
     width: 20px;
     height: 100%;
     background-color: #e8e2f9;
-    border-right: solid 1px #9f9da1;
+    border-right: solid 1px var(--primary-color);
     outline: none;
 }
 
 .nav-col:focus {
-    outline: #a083da;
+    outline: var(--primary-color);
 }
 
 .expand-icon-div {
@@ -287,7 +286,7 @@ export default {
     right: -17px;
     border-radius: 50px;
     background-color: #e8e2f9;
-    border: 2px solid #9f9da1;
+    border: 2px solid var(--primary-color);
     padding: 2px 7px;
 }
 
@@ -312,12 +311,12 @@ export default {
 
     .nav-col {
         width: 8px;
-        border-right: solid 1px #9f9da1;
+        border-right: solid 1px var(--primary-color);
     }
 
     .expand-icon-div:hover {
         cursor: pointer;
-        background-color: #cecbd6;
+        background-color: var(--primary-color);
     }
 }
 </style>
