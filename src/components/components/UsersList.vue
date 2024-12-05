@@ -31,7 +31,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4">
+    <div class="container mt-4 bg-light rounded p-2">
         <div
             v-if="userDetailsStore.role == 'admin'"
             v-for="user in usersStore.users"
@@ -124,7 +124,7 @@ export default {
     width: 80px;
     height: 80px;
     border-radius: 12px;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
     margin-right: 22px;
 }
 
@@ -133,7 +133,7 @@ export default {
     width: 283px;
     height: 80px;
     border-radius: 8px;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
     background-color: #c8d7da;
     color: black;
     overflow: hidden;
@@ -143,7 +143,8 @@ export default {
 }
 
 .user-buttons:hover {
-    background-color: #a48be6;
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
 }
 
 /* The style when the user button is currently choose to show information */
@@ -152,8 +153,8 @@ export default {
     width: 283px;
     height: 80px;
     border-radius: 8px;
-    border: 1px solid #7f56d9;
-    background-color: #a48be6;
+    border: 1px solid var(--primary-color);
+    background-color: var(--primary-color);
     overflow: hidden;
     color: white;
     padding: 16px, 28px, 16px, 28px;

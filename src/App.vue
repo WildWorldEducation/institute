@@ -73,7 +73,7 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-                    <ul class="navbar-nav d-flex bg-light rounded">
+                    <ul class="navbar-nav d-flex bg-light rounded p-2">
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
@@ -341,6 +341,10 @@ p {
 }
 
 /* End of themes section */
+
+.navbar-toggler {
+    background-color: white;
+}
 
 .logo {
     background-color: transparent;
