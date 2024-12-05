@@ -14,6 +14,7 @@ export default {
             userDetailsStore
         };
     },
+    props: ['updateUserDetails'],
     data() {
         return {
             searchText: '',
@@ -111,7 +112,11 @@ export default {
         </div>
         <div class="position-relative">
             <div v-if="usersResult.length" class="search-results">
-                <div class="result-row" v-for="user in usersResult">
+                <div
+                    class="result-row"
+                    v-for="user in usersResult"
+                    @click="updateUserDetails(user)"
+                >
                     {{ user.username }}
                 </div>
             </div>

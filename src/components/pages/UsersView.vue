@@ -165,6 +165,11 @@ export default {
                     }
                 }
             }
+        },
+        updateShowUserDetails(newUser) {
+            console.log('param user:');
+            console.log(newUser);
+            this.user = newUser;
         }
     }
 };
@@ -199,7 +204,7 @@ export default {
                 />
             </svg>
         </router-link>
-        <SearchUserBar />
+        <SearchUserBar :updateUserDetails="updateShowUserDetails" />
     </div>
     <!-- Loading animation -->
     <div
