@@ -72,7 +72,12 @@ export default {
         handleChooseResult(user) {
             this.searchText = user.username;
             this.chooseUser = user.username;
-            this.updateUserDetails(user);
+            const returnUserObject = {
+                ...user,
+                firstName: user.first_name,
+                lastName: user.last_name
+            };
+            this.updateUserDetails(returnUserObject);
         }
     },
     computed: {
