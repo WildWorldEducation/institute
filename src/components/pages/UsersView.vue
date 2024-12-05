@@ -167,8 +167,6 @@ export default {
             }
         },
         updateShowUserDetails(newUser) {
-            console.log('param user:');
-            console.log(newUser);
             this.user = newUser;
         }
     }
