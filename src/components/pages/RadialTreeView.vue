@@ -256,11 +256,6 @@ export default {
     background-color: #ff0000;
 }
 
-.legend .btn {
-    font-weight: 500;
-    border: 1px solid black;
-}
-
 .legend {
     align-items: center;
     justify-content: center;

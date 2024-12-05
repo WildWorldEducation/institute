@@ -26,7 +26,7 @@ export default {
 </script>
 
 <template>
-    <div id="user-information" class="container mt-4">
+    <div id="user-information" class="container mt-4 bg-light">
         <!-- The X for turn off the user details popup windows when on phone view -->
         <div
             class="flex-row-reverse d-flex d-md-none align-items-end mb-2"
