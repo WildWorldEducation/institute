@@ -206,6 +206,15 @@ export default {
         </router-link>
         <SearchUserBar :updateUserDetails="updateShowUserDetails" />
     </div>
+    <div
+        v-if="
+            userDetailsStore.role === 'editor' ||
+            userDetailsStore.role === 'instructor'
+        "
+        class="d-flex flex-row-reverse mt-3"
+    >
+        <SearchUserBar :updateUserDetails="updateShowUserDetails" />
+    </div>
     <!-- Loading animation -->
     <div
         v-if="isLoading == true"

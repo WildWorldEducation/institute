@@ -29,7 +29,7 @@ export default {
         }
         if (
             this.userDetailsStore.role === 'admin' ||
-            this.useUserDetailsStore.role === 'instructor'
+            this.userDetailsStore.role === 'instructor'
         ) {
             if (this.usersStore.users.length < 1) {
                 await this.usersStore.getUsers();
@@ -40,8 +40,9 @@ export default {
             if (this.usersStore.editors.length < 1) {
                 await this.usersStore.getEditors();
             }
-            this.userList = this.usersStore.editors();
+            this.userList = this.usersStore.editors;
         }
+        console.log(this.userList);
     },
     methods: {
         findUserFirstChars(searchString) {
