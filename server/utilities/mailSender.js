@@ -1,7 +1,7 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 // The account is Gmail, so need to authenticate (OAuth)
 const { google } = require('googleapis');
-const { snakeToTileCase } = require("./formatter");
+const { snakeToTileCase } = require('./formatter');
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -14,10 +14,8 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 oAuth2Client.setCredentials({ refresh_token: process.env.GMAIL_REFRESH_TOKEN });
 
-
-
 function prepareHTMLstring(newSkillData) {
-    // Raw test html to send to client account 
+    // Raw test html to send to client account
     const emailHTMLcontent = `<!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -406,7 +404,9 @@ function prepareHTMLstring(newSkillData) {
                                                             Level:
                                                         </td>
                                                         <td class="skill-data-content">
-                                                            ${snakeToTileCase(newSkillData.level)}
+                                                            ${snakeToTileCase(
+                                                                newSkillData.level
+                                                            )}
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -414,7 +414,9 @@ function prepareHTMLstring(newSkillData) {
                                                             Submit by user:
                                                         </td>
                                                         <td class="skill-data-content">
-                                                            ${newSkillData.userName}
+                                                            ${
+                                                                newSkillData.userName
+                                                            }
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -463,26 +465,21 @@ function prepareHTMLstring(newSkillData) {
         </table>
     </body>
 
-</html>`
-    return emailHTMLcontent
+</html>`;
+    return emailHTMLcontent;
 }
 
 // async..await is not allowed in global scope, must use a wrapper
 async function sendNewSkillNotificationMail(newSkillData) {
-
-
-    const accessToken =
-        await oAuth2Client.getAccessToken();
+    const accessToken = await oAuth2Client.getAccessToken();
     const transport = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             type: 'OAuth2',
-            user: process.env.NOTIFICATION_GMAIL_SENDER,
+            user: process.env.GMAIL_ADDRESS,
             clientId: process.env.GMAIL_CLIENT_ID,
-            clientSecret:
-                process.env.GMAIL_CLIENT_SECRET,
-            refreshToken:
-                process.env.GMAIL_REFRESH_TOKEN,
+            clientSecret: process.env.GMAIL_CLIENT_SECRET,
+            refreshToken: process.env.GMAIL_REFRESH_TOKEN,
             accessToken: accessToken
         }
     });
@@ -491,17 +488,12 @@ async function sendNewSkillNotificationMail(newSkillData) {
         from: 'Collins Institute Support <Support@CollinsInstitute.org>', // sender address
         to: process.env.NOTIFICATION_GMAIL_RECEIVER, // list of receivers
         subject: 'New skill approval request', // Subject line
-        text: "There are a new skill being add to the site and need yours approval", // plain text body
-        html: prepareHTMLstring(newSkillData), // html body
-    }
+        text: 'There are a new skill being add to the site and need yours approval', // plain text body
+        html: prepareHTMLstring(newSkillData) // html body
+    };
 
     // send mail with defined transport object
-    await transport.sendMail(mailOptions)
-
+    await transport.sendMail(mailOptions);
 }
 
-
-
-
-
-module.exports = { sendNewSkillNotificationMail }
+module.exports = { sendNewSkillNotificationMail };
