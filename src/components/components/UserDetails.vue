@@ -26,7 +26,7 @@ export default {
 </script>
 
 <template>
-    <div id="user-information" class="container mt-4">
+    <div id="user-information" class="container mt-4 bg-light">
         <!-- The X for turn off the user details popup windows when on phone view -->
         <div
             class="flex-row-reverse d-flex d-md-none align-items-end mb-2"
@@ -152,7 +152,7 @@ export default {
             </div>
             <div id="user-form-info" class="col-12 col-md-6">
                 <div class="mb-3">
-                    <label class="form-label">First name</label>
+                    <h2 class="heading h4">First name</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -161,7 +161,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Last name</label>
+                    <h2 class="heading h4">Last name</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -170,7 +170,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Username</label>
+                    <h2 class="heading h4">Username</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -179,7 +179,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Email</label>
+                    <h2 class="heading h4">Email</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -204,7 +204,7 @@ export default {
                     "
                     class="mb-3"
                 >
-                    <label class="form-label">Instructor</label>
+                    <h2 class="heading h4">Instructor</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -249,7 +249,7 @@ export default {
 
 <style scoped>
 #user-information {
-    background-color: #e4ecf4;
+    border: 1px solid var(--primary-color);
     border-radius: 12px;
     padding: 33px 28px;
     overflow: hidden;
@@ -269,7 +269,7 @@ export default {
 
 .user-input-information {
     background-color: #fcfcfd !important;
-    color: #667085;
+    color: black;
     font-family: 'Poppins' sans-serif;
     font-weight: 400;
     font-size: 1rem;
@@ -287,7 +287,7 @@ export default {
     padding-right: 10px;
 }
 .form-label {
-    color: #344054;
+    color: black;
     font-size: 0.875rem;
     font-weight: 600;
     font-family: 'Poppins' sans-serif;
@@ -295,7 +295,7 @@ export default {
 .red-btn {
     background-color: #da7033;
     color: white;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;

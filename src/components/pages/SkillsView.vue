@@ -94,7 +94,6 @@ export default {
                         <router-link
                             v-if="!isInstructorMode"
                             class="btn primary-btn"
-                            style="color: white"
                             to="/skills/add"
                             >New skill&nbsp;
                             <!-- Plus sign -->
@@ -146,8 +145,6 @@ export default {
 }
 
 #legend .btn {
-    color: black;
-    border: 1px solid black;
     font-weight: 500;
 }
 

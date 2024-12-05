@@ -1017,9 +1017,9 @@ export default {
     border: 1px;
     gap: 12px;
     color: white;
-    border: 1px solid#8f7bd6;
+    border: 1px solidvar(--primary-color);
     box-shadow: 0px 1px 2px 0px #1018280d;
-    background-color: var(--background-colour);
+    background-color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-size: 20px;
     font-weight: 900;

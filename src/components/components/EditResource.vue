@@ -65,20 +65,20 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
-        <h1>Edit Learning Resource</h1>
+    <div class="container p-2 bg-light rounded">
+        <h1 class="heading">Edit Source</h1>
         <div class="row">
             <div class="mb-3">
                 <textarea id="summernote" name="editordata"></textarea>
             </div>
-            <button
+        </div>
+        <button
                 class="btn btn-dark"
                 :disabled="!isFormChanged"
                 @click="Submit()"
             >
                 Submit
             </button>
-        </div>
     </div>
 </template>
 

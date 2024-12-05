@@ -179,6 +179,7 @@ export default {
             </div>
         </div>
     </div>
+
     <!-- The Contact Advice Modal -->
     <div v-show="showInformationModal">
         <div id="myModal" class="modal">
@@ -232,31 +233,7 @@ export default {
     </div>
 </template>
 
-<style scoped>
-body {
-    overflow-x: hidden;
-}
-
-.container {
-    max-width: 100%; /* Ensure it stays within the viewport */
-}
-
-.left-container,
-.right-container {
-    box-sizing: border-box;
-}
-
-/* Add padding or spacing if necessary */
-.left-container {
-    max-width: 100%;
-    overflow-wrap: break-word;
-}
-
-.right-container {
-    max-width: 100%;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-}
+<style>
 .heading {
     color: #8f7bd6;
     font-family: 'Poppins', sans-serif;
@@ -285,9 +262,9 @@ body {
     width: 283px;
     height: 80px;
     border-radius: 8px;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
     background-color: #c8d7da;
-    color: white;
+    color: black;
     overflow: hidden;
     padding: 16px 28px;
     font-size: 1.25rem;
@@ -299,8 +276,8 @@ body {
 }
 
 .cohort-buttons:hover {
-    background-color: #a48be6;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
 }
 
 .isCurrentlySelected {
@@ -308,9 +285,9 @@ body {
     width: 283px;
     height: 80px;
     border-radius: 8px;
-    border: 1px solid #7f56d9;
-    background-color: #a48be6;
-    color: white;
+    border: 1px solid var(--secondary-contrast-color);
+    background-color: var(--secondary-color);
+    color: var(--secondary-contrast-color);
     overflow: hidden;
     padding: 16px 28px;
     font-size: 1.25rem;
@@ -327,7 +304,6 @@ body {
     padding-bottom: 17px;
     padding-right: 46px;
     height: 77px;
-    background-color: rgb(164, 139, 230, 0.25);
 }
 
 .closeBtn {

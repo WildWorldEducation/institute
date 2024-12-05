@@ -160,7 +160,7 @@ export default {
             this.showDisMissModal = false;
         },
         handleSuccessOKclick() {
-            this.$router.back();
+            this.$router.push('/todo?nav=newSkillsList');
         },
         handleFailsOKclick() {
             this.showFailsModal = false;
@@ -189,7 +189,7 @@ export default {
         <div id="skill-info-container">
             <!-- Name -->
             <div>
-                <h1 class="h1-secondary-colour">
+                <h1 class="heading">
                     {{ newSkillAwaitingApproval.name }}
                 </h1>
                 <!-- A line divide -->
@@ -242,7 +242,7 @@ export default {
                         </div>
                         <!-- Parent -->
                         <div class="mt-3 d-flex flex-column align-items-center">
-                            <h2 class="h4 h2-secondary-colour">Parent</h2>
+                            <h2 class="h4 heading">Parent</h2>
                             <RouterLink
                                 b-on-hoover
                                 title="Click on parent name to see it details"
@@ -254,7 +254,7 @@ export default {
                         </div>
                         <!-- Type -->
                         <div class="mt-3 d-flex flex-column align-items-center">
-                            <h2 class="h4 h2-secondary-colour">Type</h2>
+                            <h2 class="h4 heading">Type</h2>
                             <div>
                                 {{ newSkillAwaitingApproval.type }}
                             </div>
@@ -264,7 +264,7 @@ export default {
                             class="mt-3 d-flex flex-column align-items-center"
                             v-if="newSkillAwaitingApproval.type != 'category'"
                         >
-                            <h2 class="h4 h2-secondary-colour">Level</h2>
+                            <h2 class="h4 heading">Level</h2>
                             <!-- <div class="h1-title">Level</div> -->
                             <span
                                 v-if="

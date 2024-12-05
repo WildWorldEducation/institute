@@ -105,7 +105,7 @@ export default {
 }
 
 .keyboard-shortcut {
-    color: #74a4c4;
+    color: var(--primary-color);
     background-color: #dce4ec;
     border-radius: 5px;
     padding: 0px 5px;
