@@ -25,7 +25,8 @@ export default {
             haveResults: false,
             userList: [],
             chooseUser: '',
-            loading: false
+            loading: false,
+            showFailsModal: false
         };
     },
     async created() {
@@ -86,7 +87,14 @@ export default {
             };
             this.updateUserDetails(returnUserObject);
         },
-        handleInputEnterPress(searchText) {}
+        handleInputEnterPress(searchText) {
+            const result = this.userList.find(
+                (user) => user.username.toLowerCase() === searchText
+            );
+            if (!result) {
+                return;
+            }
+        }
     },
     computed: {
         usersResult() {
