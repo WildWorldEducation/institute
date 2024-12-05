@@ -160,7 +160,7 @@ export default {
             this.showDisMissModal = false;
         },
         handleSuccessOKclick() {
-            this.$router.back();
+            this.$router.push('/todo?nav=newSkillsList');
         },
         handleFailsOKclick() {
             this.showFailsModal = false;
