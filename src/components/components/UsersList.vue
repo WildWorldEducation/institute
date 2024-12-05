@@ -31,12 +31,12 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 bg-light rounded p-2">
+    <div class="container mt-4">
         <div
             v-if="userDetailsStore.role == 'admin'"
             v-for="user in usersStore.users"
         >
-            <div class="d-flex">
+            <div class="d-flex bg-light rounded p-2">
                 <img
                     class="user-avatars"
                     v-if="user.avatar != null"
@@ -62,7 +62,7 @@ export default {
             v-else-if="userDetailsStore.role == 'instructor'"
             v-for="student in $parent.students"
         >
-            <div class="d-flex">
+            <div class="d-flex bg-light rounded p-2">
                 <img
                     class="user-avatars"
                     v-if="student.avatar != null"
@@ -94,7 +94,7 @@ export default {
             v-if="userDetailsStore.role == 'editor'"
             v-for="editor in $parent.usersStore.editors"
         >
-            <div class="d-flex">
+            <div class="d-flex bg-light rounded p-2">
                 <img
                     class="user-avatars"
                     v-if="editor.avatar != null"
