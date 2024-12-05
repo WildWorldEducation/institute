@@ -167,6 +167,7 @@ export default {
             }
         },
         updateShowUserDetails(newUser) {
+            this.showDetails = true;
             this.user = newUser;
         }
     }
