@@ -241,6 +241,7 @@ Themes
 
     /* Other */
     --hr-colour: #aea3ce;
+    --hr-secondary-colour: #aea3ce;
     --collapsible-tree-node-colour: #53389e;
     --stroke-width: 0px;
     --loading-animation-colour: #8f7bd6;
@@ -282,6 +283,7 @@ Themes
 
     /* Other */
     --hr-colour: #040095;
+    --hr-secondary-colour: #040095;
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
     --collapsible-tree-node-colour: #53389e;
     --stroke-width: 1px;
@@ -289,6 +291,7 @@ Themes
     --background-colour: #040095;
     --background-hover-colour: blue;
 }
+
 /* The Scholar theme */
 .scholar-theme {
     --nav-colour: white;
@@ -321,6 +324,7 @@ Themes
 
     /* Other */
     --hr-colour: black;
+    --hr-secondary-colour: white;
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
     --collapsible-tree-node-colour: black;
     --stroke-width: 1px;
@@ -377,8 +381,12 @@ h2 {
     -webkit-text-stroke-width: var(--stroke-width);
 }
 
-.icon {
-    fill: var(--secondary-icon-colour) !important;
+.icon-primary {
+    fill: var(--primary-icon-colour) !important;
+}
+
+.icon-secondary {
+    fill: var(--primary-icon-colour) !important;
 }
 
 .primary-btn {

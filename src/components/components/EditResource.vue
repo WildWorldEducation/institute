@@ -71,14 +71,14 @@ export default {
             <div class="mb-3">
                 <textarea id="summernote" name="editordata"></textarea>
             </div>
-            <button
+        </div>
+        <button
                 class="btn btn-dark"
                 :disabled="!isFormChanged"
                 @click="Submit()"
             >
                 Submit
             </button>
-        </div>
     </div>
 </template>
 

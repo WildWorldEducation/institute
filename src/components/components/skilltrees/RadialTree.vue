@@ -437,8 +437,14 @@ export default {
                 .context(this.context);
 
             // Determine colour of links based on user's theme
-            let color = '#000';
-            if (this.userDetailsStore.theme != 'original') color = '#fff';
+            let color = '';
+            if (this.userDetailsStore.theme == 'original') {
+                color = '#000';
+            } else if (this.userDetailsStore.theme == 'apprentice') {
+                color = '#950200';
+            } else if (this.userDetailsStore.theme == 'scholar') {
+                color = '#fff';
+            }
 
             // If skill is mastered.
             if (link.target.data.is_mastered == 1) {

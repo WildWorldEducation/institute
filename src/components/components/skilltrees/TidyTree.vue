@@ -544,7 +544,10 @@ export default {
             // Determine colour of links based on user's theme
             if (this.userDetailsStore.theme == 'original')
                 this.context.strokeStyle = '#000';
-            else this.context.strokeStyle = '#fff';
+            else if (this.userDetailsStore.theme == 'apprentice') {
+                this.context.strokeStyle = '#950200';
+                this.context.lineWidth = 3;
+            } else this.context.strokeStyle = '#fff';
             this.context.stroke();
         },
         genColor() {

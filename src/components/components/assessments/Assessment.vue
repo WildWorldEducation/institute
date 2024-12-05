@@ -710,7 +710,7 @@ export default {
     </button> -->
 
     <!-- Loading screen -->
-    <div v-if="loading == true">Loading...</div>
+    <div class="secondary-text" v-if="loading == true">Loading...</div>
 
     <!-- AI Essay Marking Loading Animation -->
     <div
