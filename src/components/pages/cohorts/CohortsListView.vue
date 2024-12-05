@@ -2,6 +2,7 @@
 import { useCohortsStore } from '../../../stores/CohortsStore.js';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import CohortView from './CohortView.vue';
+import CohortDetail from './CohortDetail.vue';
 
 export default {
     setup() {
@@ -14,12 +15,14 @@ export default {
         };
     },
     components: {
-        CohortView
+        CohortView,
+        CohortDetail
     },
     data() {
         return {
             showInformationModal: true,
-            selectedCohortId: null
+            selectedCohortId: null,
+            showDetails: false
         };
     },
     async created() {
@@ -41,16 +44,25 @@ export default {
             false
         );
     },
+    computed: {
+        getSelectedCohort() {
+            return this.cohortsStore.cohorts.find(
+                (cohort) => cohort.id === this.selectedCohortId
+            );
+        }
+    },
     methods: {
         toggleInformationModal() {
             this.showInformationModal = !this.showInformationModal;
         },
         selectCohort(cohortId) {
-            if (this.selectedCohortId === cohortId) {
-                this.selectedCohortId = null;
-            } else {
+            if (this.selectedCohortId !== cohortId) {
                 this.selectedCohortId = cohortId;
+                this.showDetails = true;
             }
+        },
+        closeMobileDetail() {
+            this.showDetails = false; // Hide the mobile cohort detail modal
         }
     }
 };
@@ -98,29 +110,72 @@ export default {
             </div>
         </div>
     </div>
-    <div class="container-fluid mt-4 mx-4 mobile-container">
-        <div v-for="cohort in cohortsStore.cohorts" :key="cohort.id">
+    <div class="container-fluid mt-4 mobile-container">
+        <div class="row gx-1">
+            <!-- Left Container -->
             <div class="col-lg-4 col-md-5">
-                <div class="d-flex">
-                    <RouterLink
-                        :class="
-                            cohort.id === selectedCohortId
-                                ? 'isCurrentlySelected'
-                                : 'cohort-buttons'
-                        "
-                        @click="selectCohort(cohort.id)"
-                        :to="'/cohort/' + cohort.id"
-                        >{{ cohort.name }}</RouterLink
+                <div class="left-container p-3">
+                    <div
+                        v-for="cohort in cohortsStore.cohorts"
+                        :key="cohort.id"
                     >
+                        <button
+                            :class="
+                                cohort.id === selectedCohortId
+                                    ? 'isCurrentlySelected'
+                                    : 'cohort-buttons'
+                            "
+                            @click="selectCohort(cohort.id)"
+                        >
+                            {{ cohort.name }}
+                        </button>
+                        <!-- divide line for pc and tablet view -->
+                        <hr
+                            class="border border-1 opacity-0 w-75 d-none d-md-block"
+                        />
+                        <!-- divide line for phone view specific -->
+                        <hr
+                            class="border border-1 opacity-0 w-100 d-block d-md-none"
+                        />
+                    </div>
                 </div>
-                <!-- divide line for pc and tablet view -->
-                <hr
-                    class="border border-1 opacity-100 w-75 d-none d-md-block"
-                />
-                <!-- divide line for phone view specific -->
-                <hr
-                    class="border border-1 opacity-100 w-100 d-block d-md-none"
-                />
+            </div>
+
+            <!-- Right Container -->
+            <div class="col-lg-8 col-md-7 d-none d-md-block">
+                <div
+                    v-if="selectedCohortId"
+                    class="right-container p-4 shadow rounded"
+                >
+                    <div>
+                        <CohortDetail :cohort="getSelectedCohort" />
+                    </div>
+                </div>
+            </div>
+            <div v-if="showDetails" class="col-md-7 d-block d-md-none modal">
+                <div class="modal-content contact-modal-content" id="cohort-details-container">
+                    <button
+                        type="button"
+                        @click="closeMobileDetail"
+                        class="close closeBtn"
+                        aria-label="Close"
+                    >
+                        <span aria-hidden="true">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 384 512"
+                                width="25"
+                                height="25"
+                            >
+                                <path
+                                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                                    fill="black"
+                                />
+                            </svg>
+                        </span>
+                    </button>
+                    <CohortDetail :cohort="getSelectedCohort" />
+                </div>
             </div>
         </div>
     </div>
@@ -177,7 +232,31 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
+body {
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 100%; /* Ensure it stays within the viewport */
+}
+
+.left-container,
+.right-container {
+    box-sizing: border-box;
+}
+
+/* Add padding or spacing if necessary */
+.left-container {
+    max-width: 100%;
+    overflow-wrap: break-word;
+}
+
+.right-container {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
 .heading {
     color: #8f7bd6;
     font-family: 'Poppins', sans-serif;
@@ -307,6 +386,9 @@ ul li {
         align-items: center;
         margin-left: 0 !important;
         margin-right: 0 !important;
+    }
+    #cohort-details-container{
+        
     }
 }
 
