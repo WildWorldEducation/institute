@@ -42,12 +42,11 @@ export default {
             }
             this.userList = this.usersStore.editors;
         }
-        console.log(this.userList);
     },
     methods: {
         findUserFirstChars(searchString) {
             let userResultArray = [];
-            console.log(this.userList);
+
             this.userList.forEach((element) => {
                 if (
                     element.username
@@ -57,7 +56,7 @@ export default {
                     userResultArray.push(element);
                 }
             });
-            console.log(userResultArray);
+
             return userResultArray;
         },
         findUserWholeString(searchText) {
