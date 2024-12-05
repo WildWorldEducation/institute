@@ -145,8 +145,6 @@ export default {
 }
 
 #legend .btn {
-    color: black;
-    border: 1px solid black;
     font-weight: 500;
 }
 

@@ -256,7 +256,6 @@ export default {
                 class="nav nav-tabs border-3"
             >
                 <li
-                    class="nav-item"
                     b-on-hover
                     title="All posts related to this skill"
                     @click="handleTabClick('allPost')"
@@ -271,7 +270,6 @@ export default {
                     </div>
                 </li>
                 <li
-                    class="nav-item"
                     b-on-hover
                     title="Only sources"
                     @click="handleTabClick('resource')"
@@ -286,7 +284,6 @@ export default {
                     </div>
                 </li>
                 <li
-                    class="nav-item"
                     b-on-hover
                     title="Only potential tutors"
                     @click="handleTabClick('tutorPost')"
@@ -354,8 +351,12 @@ export default {
 }
 
 .nav-link {
-    color: var(--fifth-colour);
+    color: var(--primary-color);
     font-weight: 550;
+}
+
+.nav-link:hover {
+    border: inherit;
 }
 
 .nav-link.active {

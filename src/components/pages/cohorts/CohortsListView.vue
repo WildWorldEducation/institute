@@ -97,7 +97,7 @@ export default {
         </div>
     </div>
 
-    <div class="mt-4 mx-4 mobile-container bg-light rounded p-2">
+    <div class="mt-4 mx-4 mobile-container">
         <div v-for="cohort in cohortsStore.cohorts" :key="cohort.id">
             <div class="col-lg-4 col-md-5 mb-2">
                 <div class="d-flex">
@@ -170,37 +170,14 @@ export default {
 </template>
 
 <style>
-.heading {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    width: auto;
-    height: 35px;
-}
-.purple-btn:hover {
-    background-color: #7f56d9 !important;
-}
-
 .cohort-buttons {
     font-family: 'Poppins', sans-serif;
     width: 283px;
     height: 80px;
     border-radius: 8px;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
     background-color: #c8d7da;
-    color: white;
+    color: black;
     overflow: hidden;
     padding: 16px 28px;
     font-size: 1.25rem;
@@ -212,8 +189,8 @@ export default {
 }
 
 .cohort-buttons:hover {
-    background-color: #a48be6;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
 }
 
 .isCurrentlySelected {
@@ -221,9 +198,9 @@ export default {
     width: 283px;
     height: 80px;
     border-radius: 8px;
-    border: 1px solid #7f56d9;
-    background-color: #a48be6;
-    color: white;
+    border: 1px solid var(--secondary-contrast-color);
+    background-color: var(--secondary-color);
+    color: var(--secondary-contrast-color);
     overflow: hidden;
     padding: 16px 28px;
     font-size: 1.25rem;

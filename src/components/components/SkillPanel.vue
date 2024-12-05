@@ -60,7 +60,7 @@ export default {
                     </button>
                 </div>
                 <!-- Skill name -->
-                <h1 class="skill-name">{{ skill?.name }}</h1>
+                <h1 class="skill-name heading">{{ skill?.name }}</h1>
                 <!-- Mastery requirements -->
                 <div
                     class="skill-mastery-requirement"
@@ -187,7 +187,7 @@ export default {
 }
 
 .skill-name {
-    color: var(--secondary-heading-colour) !important;
+    color: var(--primary-color) !important;
     font-weight: 600;
     font-size: 33px;
     margin-left: 20px;
