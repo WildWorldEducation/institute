@@ -49,8 +49,8 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
-        <h1 class="h1-stroke">{{ this.skill.name }} Quiz</h1>
+    <div class="container mt-3 bg-light rounded">
+        <h1 class="heading">{{ this.skill.name }} Quiz</h1>
 
         <div class="mt-4 mb-2">
             <hr

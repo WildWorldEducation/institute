@@ -200,7 +200,7 @@ export default {
 .customize-table {
     --easy-table-body-row-font-size: 16px;
     --easy-table-header-font-size: 16px;
-    --easy-table-header-font-color: #8f7bd6;
+    --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
     --easy-table-header-item-padding: 15px 10px;
@@ -216,8 +216,8 @@ export default {
 }
 
 .cell-link:focus {
-    border: 1px #8f7bd6 solid;
-    border-color: #4523be !important;
+    border: 1px var(--primary-color) solid;
+    border-color: var(--primary-color) !important;
     border-radius: 5px;
     outline: none;
 }

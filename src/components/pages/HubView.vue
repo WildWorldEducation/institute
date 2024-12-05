@@ -50,40 +50,53 @@ export default {
                 class="col-lg-4 col-md-6 mb-4 pb-4"
                 v-if="userDetailsStore.role != 'editor'"
             >
-                <StudentProgress
-                    v-if="userDetailsStore.role == 'student'"
-                    :userId="userDetailsStore.userId"
-                />
-                <MarkAssessment
-                    v-else-if="userDetailsStore.role == 'instructor'"
-                />
+                <div class="hub-component">
+                    <StudentProgress
+                        v-if="userDetailsStore.role == 'student'"
+                        :userId="userDetailsStore.userId"
+                    />
+                    <MarkAssessment
+                        v-else-if="userDetailsStore.role == 'instructor'"
+                    />
+                </div>
             </div>
             <div
                 class="col-lg-4 col-md-6 mb-4 pb-4"
                 v-if="userDetailsStore.role != 'editor'"
             >
-                <LastVisitedSkills
-                    v-if="userDetailsStore.role == 'student'"
-                    :userId="userDetailsStore.userId"
-                />
-                <!-- Student Added Questions List -->
-                <HubStudentQuestionList
-                    v-else-if="userDetailsStore.role == 'instructor'"
-                />
+                <div class="hub-component">
+                    <LastVisitedSkills
+                        v-if="userDetailsStore.role == 'student'"
+                        :userId="userDetailsStore.userId"
+                    />
+                    <!-- Student Added Questions List -->
+                    <HubStudentQuestionList
+                        v-else-if="userDetailsStore.role == 'instructor'"
+                    />
+                </div>
             </div>
             <div class="col-lg-3 col-md-5 pb-4 column">
-                <Notifications />
+                <div class="hub-component">
+                    <Notifications />
+                </div>
             </div>
         </div>
         <div id="news-row" class="row">
             <div class="col">
-                <News />
+                <div class="hub-component">
+                    <News />
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <style>
+.hub-component {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+}
 /**Some how the image-fluid bootstrap does not work
 *  So we have to implement it
 */

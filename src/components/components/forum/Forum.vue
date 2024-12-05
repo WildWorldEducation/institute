@@ -246,51 +246,59 @@ export default {
 
 <template>
     <div class="container-fluid mt-4">
-        <div class="d-flex align-items-md-baseline align-items-start gap-2">
-            <h2 class="h2-stroke">Best Places To Learn This</h2>
-        </div>
-        <!-- Navigation Tabs -->
-        <!-- If guest account, we dont show tutors, only sources -->
-        <ul
-            v-if="$parent.sessionDetailsStore.isLoggedIn"
-            class="nav nav-tabs border-3"
-        >
-            <li
-                class="nav-item"
-                b-on-hover
-                title="All posts related to this skill"
-                @click="handleTabClick('allPost')"
-            >
-                <div :class="['nav-link', activeTab === 'allPost' && 'active']">
-                    All
-                </div>
-            </li>
-            <li
-                class="nav-item"
-                b-on-hover
-                title="Only sources"
-                @click="handleTabClick('resource')"
-            >
-                <div
-                    :class="['nav-link', activeTab === 'resource' && 'active']"
-                >
-                    Sources
-                </div>
-            </li>
-            <li
-                class="nav-item"
-                b-on-hover
-                title="Only potential tutors"
-                @click="handleTabClick('tutorPost')"
-            >
-                <div
-                    :class="['nav-link', activeTab === 'tutorPost' && 'active']"
-                >
-                    Tutors
-                </div>
-            </li>
-        </ul>
+        <div class="forum-header">
+            <h2 class="heading">Best Places To Learn This</h2>
 
+            <!-- Navigation Tabs -->
+            <!-- If guest account, we dont show tutors, only sources -->
+            <ul
+                v-if="$parent.sessionDetailsStore.isLoggedIn"
+                class="nav nav-tabs border-3"
+            >
+                <li
+                    b-on-hover
+                    title="All posts related to this skill"
+                    @click="handleTabClick('allPost')"
+                >
+                    <div
+                        :class="[
+                            'nav-link',
+                            activeTab === 'allPost' && 'active'
+                        ]"
+                    >
+                        All
+                    </div>
+                </li>
+                <li
+                    b-on-hover
+                    title="Only sources"
+                    @click="handleTabClick('resource')"
+                >
+                    <div
+                        :class="[
+                            'nav-link',
+                            activeTab === 'resource' && 'active'
+                        ]"
+                    >
+                        Sources
+                    </div>
+                </li>
+                <li
+                    b-on-hover
+                    title="Only potential tutors"
+                    @click="handleTabClick('tutorPost')"
+                >
+                    <div
+                        :class="[
+                            'nav-link',
+                            activeTab === 'tutorPost' && 'active'
+                        ]"
+                    >
+                        Tutors
+                    </div>
+                </li>
+            </ul>
+        </div>
         <!-- ---- | Post List In This Forum | ---- -->
 
         <ForumResource
@@ -322,12 +330,18 @@ export default {
 </template>
 
 <style scoped>
+.forum-header {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
 .nav-tabs {
     --bs-nav-tabs-border-width: 2px;
-    --bs-nav-tabs-border-color: var(--primary-icon-colour);
-    --bs-nav-tabs-link-active-border-color: var(--hr-colour) var(--hr-colour)
-        #fff;
-    --bs-nav-tabs-link-active-color: var(--primary-btn-colour-border);
+    --bs-nav-tabs-border-color: var(--primary-color);
+    --bs-nav-tabs-link-active-border-color: var(--primary-color)
+        var(--primary-color) #fff;
+    --bs-nav-tabs-link-active-color: var(--primary-color);
     font-weight: 550;
     cursor: pointer;
 }
@@ -337,12 +351,16 @@ export default {
 }
 
 .nav-link {
-    color: var(--fifth-colour);
+    color: var(--primary-color);
     font-weight: 550;
 }
 
+.nav-link:hover {
+    border: inherit;
+}
+
 .nav-link.active {
-    color: var(--secondary-heading-colour);
+    color: var(--primary-color);
 }
 
 :deep(.red-btn) {

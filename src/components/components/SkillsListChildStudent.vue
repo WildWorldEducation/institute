@@ -214,10 +214,9 @@ export default {
             'college-level': level == 'college',
             'phd-level': level == 'phd',
             'has-children': children.length > 0,
-            'result-button': isResult === true,
-            'collapsible-tree-node': type != 'domain'
+            'result-button': isResult === true
         }"
-        class="skill-button secondary-text d-flex justify-content-between align-items-center"
+        class="skill-button d-flex justify-content-between align-items-center"
         @click.stop="mainButtonPress()"
         :id="`skill${this.id}`"
     >
@@ -279,7 +278,9 @@ export default {
         </div>
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
         <div>
-            <div ref="name" style="text-align: left">{{ name }}</div>
+            <div class="dark-text" ref="name" style="text-align: left">
+                {{ name }}
+            </div>
             <div
                 v-if="type == 'super'"
                 class="d-none d-sm-block text-start pt-1 mastered-skills-count"
@@ -302,7 +303,7 @@ export default {
                     v-if="!showSubskills"
                     width="18"
                     height="18"
-                    class="icon"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -316,7 +317,7 @@ export default {
                     v-else
                     width="18"
                     height="18"
-                    class="icon"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -338,7 +339,7 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
-                    class="icon"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
@@ -351,7 +352,7 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
-                    class="icon"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
                     -->
@@ -372,7 +373,7 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
-                    class="icon"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
@@ -386,7 +387,7 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
-                    class="icon"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
                     -->

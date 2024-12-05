@@ -101,11 +101,8 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img src="/images/banners/skills-banner.png" class="img-fluid" />
-    </div>
-    <div class="container">
-        <h1>{{ skill.name }}: Revision history</h1>
+    <div class="container bg-light rounded p-3">
+        <h1 class="heading">{{ skill.name }}: Revision history</h1>
         <hr />
         <div class="d-none d-lg-flex flex-column">
             <HistoryRow
@@ -126,15 +123,4 @@ export default {
     </div>
 </template>
 
-<style scoped>
-h1 {
-    font-size: 30px;
-    font-weight: 500;
-    margin-bottom: 5px;
-}
-
-.img-fluid {
-    width: 100% !important;
-    height: auto;
-}
-</style>
+<style scoped></style>

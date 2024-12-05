@@ -93,8 +93,8 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
-        <h1 class="h1-stroke">Offer to Tutor</h1>
+    <div class="container p-2 bg-light rounded">
+        <h1 class="heading">Offer to Tutor</h1>
         <div class="main-content-container container-fluid p-2">
             <div class="row">
                 <div class="col">

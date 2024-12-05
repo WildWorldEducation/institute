@@ -151,22 +151,19 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 pb-3">
-        <div class="row">
-            <div class="col-10">
-                <h1>Student Suggested Question</h1>
-                <p>
-                    {{ studentName }} suggested the following question, for the
-                    skill {{ skillName }}
-                </p>
-            </div>
-        </div>
+    <div class="container mt-3 pb-2 bg-light rounded">
+        <h1 class="heading">Student Suggested Question</h1>
+        <p>
+            {{ studentName }} suggested the following question, for the skill
+            {{ skillName }}
+        </p>
+
         <div class="main-content-container container-fluid">
             <div class="row p-0">
                 <div id="form-container" class="col p-4">
                     <!-- Question -->
                     <div class="mb-3">
-                        <h2>Question</h2>
+                        <h2 class="heading h4">Question</h2>
                         <textarea
                             :disabled="!isEditMode"
                             rows="1"
@@ -191,7 +188,7 @@ export default {
                         :key="index"
                         class="mb-3"
                     >
-                        <h2>Answer {{ index + 1 }}</h2>
+                        <h2 class="heading h4">Answer {{ index + 1 }}</h2>
                         <div class="d-flex answer-option">
                             <input
                                 :disabled="!isEditMode"
@@ -289,7 +286,7 @@ export default {
                     </div>
 
                     <div class="mb-3">
-                        <h2>Explanation</h2>
+                        <h2 class="heading h4">Explanation</h2>
                         <textarea
                             :disabled="!isEditMode"
                             v-model="question.explanation"
@@ -334,7 +331,7 @@ export default {
 
 <style scoped>
 #question-bg {
-    background: #f2edffcc;
+    background: var(--primary-color);
     border-radius: 12px;
     padding: 10px;
     margin-left: 34px;
@@ -376,26 +373,13 @@ export default {
     border-radius: 15px;
 }
 
-#page-tile {
-    font-family: 'Poppins';
-    font-size: 40px;
-    font-weight: 900;
-    line-height: 28px;
-    text-align: left;
-    color: #8f7bd6;
-    padding-top: 23px;
-    margin-top: 23px;
-    margin-bottom: 23px;
-    margin-left: 17px;
-}
-
 #assessment-info {
     font-family: 'Poppins';
     font-size: 28px;
     font-weight: 900;
     line-height: 28px;
     text-align: left;
-    color: #8f7bd6;
+    color: var(--primary-color);
     margin-left: 17px;
     padding-top: 23px;
     padding-bottom: 23px;
@@ -403,19 +387,19 @@ export default {
 
 #score-text {
     font-family: 'Poppins';
-    color: #8f7bd6;
+    color: var(--primary-color);
     font-weight: 800;
 }
 
 #current-score {
     font-family: 'Poppins';
-    color: #8f7bd6;
+    color: var(--primary-color);
     font-weight: 700;
 }
 
 #total-score {
     font-family: 'Poppins';
-    color: #8f7bd6;
+    color: var(--primary-color);
     font-weight: 800;
 }
 
@@ -499,11 +483,6 @@ export default {
 @media (max-width: 575px) {
     #question-bg {
         margin-left: 0px;
-    }
-
-    #page-tile {
-        font-size: 22px;
-        margin-bottom: 10px;
     }
 
     #assessment-info {

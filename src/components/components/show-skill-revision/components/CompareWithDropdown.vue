@@ -183,7 +183,7 @@ export default {
     top: 0px;
     left: 0px;
     background-color: #fbf9ff;
-    border: 1px solid #aca4cc;
+    border: 1px solid var(--primary-color);
     border-radius: 5px;
     padding: 10px;
 }
@@ -209,13 +209,13 @@ export default {
 }
 
 .revision-row {
-    border-top: 1px solid #aca4cc;
+    border-top: 1px solid var(--primary-color);
     border-radius: 0px;
     padding: 20px 5px;
 }
 
 .revision-strong-text {
-    color: #7e59cf;
+    color: var(--primary-color);
 }
 
 .revision-row:hover {
@@ -226,12 +226,12 @@ export default {
 }
 
 .compare-dropdown-btn:focus {
-    border: 1px solid #7e59cf;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
 }
 
 .version-badge {
-    background-color: #b3a2d6;
+    background-color: var(--primary-color);
     padding: 5px 10px;
     border-radius: 5px;
     color: white;
