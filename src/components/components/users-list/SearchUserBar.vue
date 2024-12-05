@@ -19,7 +19,8 @@ export default {
         return {
             searchText: '',
             haveResults: false,
-            userList: []
+            userList: [],
+            chooseUser: ''
         };
     },
     async created() {
@@ -65,12 +66,20 @@ export default {
                     userResultArray.push(element);
                 }
             });
-            console.log(userResultArray);
+
             return userResultArray;
+        },
+        handleChooseResult(user) {
+            this.searchText = user.username;
+            this.chooseUser = user.username;
+            this.updateUserDetails(user);
         }
     },
     computed: {
         usersResult() {
+            if (this.chooseUser === this.searchText) {
+                return [];
+            }
             if (this.searchText.length === 0) {
                 return [];
             }
@@ -115,7 +124,7 @@ export default {
                 <div
                     class="result-row"
                     v-for="user in usersResult"
-                    @click="updateUserDetails(user)"
+                    @click="handleChooseResult(user)"
                 >
                     {{ user.username }}
                 </div>
