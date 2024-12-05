@@ -84,8 +84,8 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
-        <h1 class="h1-stroke">Add Learning Resource</h1>
+    <div class="container p-2 bg-light rounded">
+        <h1 class="heading">Add Learning Resource</h1>
         <div class="d-flex flex-column">
             <div class="mb-3 mt-3 text-area-div">
                 <textarea id="summernote" name="editordata"></textarea>

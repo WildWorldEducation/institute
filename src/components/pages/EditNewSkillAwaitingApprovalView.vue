@@ -422,9 +422,9 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
+    <div class="container p-2 bg-light rounded">
         <!-- Page Heading -->
-        <h1 class="h1-stroke">
+        <h1 class="heading">
             <span v-if="skillAwaitingApproval.type != 'domain'"
                 >Edit Skill Submitted for Approval</span
             >
@@ -437,7 +437,7 @@ export default {
                 <div class="row mt-3">
                     <div class="col-12 col-md-8 col-lg-5">
                         <div class="mb-3">
-                            <h2 class="h2-stroke">Name</h2>
+                            <h2 class="heading h4">Name</h2>
                             <input
                                 v-model="skillAwaitingApproval.name"
                                 class="form-control"
@@ -467,7 +467,7 @@ export default {
                     >
                         <div class="col col-md-8 col-lg-5 mt-2">
                             <!-- Custom Dropdown -->
-                            <h2 class="h2-stroke">Level</h2>
+                            <h2 class="heading h4">Level</h2>
                             <div class="d-flex flex-column position-relative">
                                 <div
                                     :class="[
@@ -518,7 +518,7 @@ export default {
             <!-- Skills Types Radio choose -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-3">
-                    <h2 class="h2-stroke">Node Type</h2>
+                    <h2 class="heading h4">Node Type</h2>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
@@ -615,7 +615,7 @@ export default {
                         v-if="skillAwaitingApproval.type != 'sub'"
                         class="mb-3"
                     >
-                        <h2 class="h2-stroke">Parent</h2>
+                        <h2 class="heading h4">Parent</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -681,7 +681,7 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                     >
-                        <h2 class="h2-stroke">Icon</h2>
+                        <h2 class="heading h4">Icon</h2>
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -770,7 +770,7 @@ export default {
             <!-- Mastery Requirement summernote -->
             <div v-if="skillAwaitingApproval.type != 'domain'" class="mb-3">
                 <div class="d-flex justify-content-between">
-                    <h2 class="h2-stroke">Mastery Requirements</h2>
+                    <h2 class="heading h4">Mastery Requirements</h2>
                 </div>
 
                 <textarea
@@ -974,7 +974,7 @@ export default {
     gap: 8px;
     background: linear-gradient(0deg, #ffffff, #ffffff),
         linear-gradient(0deg, #f2f4f7, #f2f4f7);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
     box-shadow: 0px 0px 0px 4px #bca3ff4d;
     font-family: 'Poppins' sans-serif;
     font-size: 1rem;
@@ -987,7 +987,7 @@ export default {
 
 .custom-select-button:hover {
     cursor: pointer;
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
 }
 
 .custom-select-button > span {
@@ -1036,7 +1036,7 @@ export default {
     border-radius: 8px;
     border: 1px;
     background: linear-gradient(0deg, #ffffff, #ffffff);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
     box-shadow: 0px 4px 6px -2px #10182808;
     box-shadow: 0px 12px 16px -4px #10182814;
     position: absolute;
@@ -1086,7 +1086,7 @@ export default {
     height: 29.09px;
     width: 29.09px;
     background: #f9f5ff;
-    border: 1.45px solid #9c7eec;
+    border: 1.45px solid var(--primary-color);
     border-radius: 8.73px;
 }
 .control:hover input ~ .control_indicator,
@@ -1123,7 +1123,7 @@ export default {
     top: 5px;
     width: 13.58px;
     height: 9.33px;
-    border: solid #9c7eec;
+    border: solid var(--primary-color);
     border-width: 0px 0px 2.9px 2.9px;
     transform: rotate(-45deg);
 }
@@ -1140,7 +1140,7 @@ export default {
     height: 4.5rem;
     margin-left: -1.3rem;
     margin-top: -1.3rem;
-    background: #9c7eec;
+    background: var(--primary-color);
     border-radius: 3rem;
     opacity: 0.6;
     z-index: 99999;

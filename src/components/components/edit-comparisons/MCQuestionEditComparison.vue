@@ -37,7 +37,7 @@ export default {
     async created() {
         await this.getEditedQuestion();
         await this.getOriginalQuestion();
-        
+
         // Can now render
         this.isQuestionLoaded = true;
     },
@@ -242,23 +242,23 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 mb-4">
-        <h1 ref="pageTile" class="page-title">Compare Changes</h1>
+    <div class="container mb-4 bg-light rounded p-2">
+        <h1 ref="pageTile" class="heading">Compare Changes</h1>
         <hr />
         <!-- Name and Level of Skill -->
         <div class="d-flex flex-column gap-2 mb-3">
-            <h1 class="d-flex gap-2 align-items-end header-tile">
+            <p class="d-flex gap-2 align-items-end">
                 <div class="major-text">Skill:</div>
                 <div class="minor-text">
                     {{ toTileCase(skillName) }}
                 </div>
-            </h1>
-            <h1 class="d-flex gap-2 align-items-end header-tile">
+            </p>
+            <p class="d-flex gap-2 align-items-end">
                 <div class="major-text">Level:</div>
                 <div class="minor-text">
                     {{ toTileCase(skillLevel) }}
                 </div>
-            </h1>
+            </p>
         </div>
         <!-- ----Show and hide Highlight button-->
         <div class="d-flex flex-row-reverse my-3">
@@ -488,11 +488,6 @@ export default {
     margin-top: 2.5rem;
     margin-bottom: 2.5rem;
 }
-.page-title {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-}
 
 .header-tile {
     color: #475569;
@@ -502,7 +497,7 @@ export default {
 }
 
 .major-text {
-    color: #a48be7;
+    color: var(--primary-color);
 }
 
 .compare-container {

@@ -67,7 +67,7 @@ export default {
 
 <style scoped>
 .page-title {
-    color: #a48be7;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }
@@ -127,7 +127,7 @@ h2 {
 }
 
 :deep(.compare-container-tile) {
-    color: #a48be7;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 22px;

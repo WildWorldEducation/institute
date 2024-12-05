@@ -72,9 +72,8 @@ export default {
 
 <template>
     <div class="container">
-        <div class="mt-4 mb-4">
-            <div class="page-title">User Activity Report</div>
-        </div>
+        <h1 class="page-title heading">User Activity Report</h1>
+
         <!-- User Details -->
         <div class="row">
             <div class="d-flex flex-column flex-md-row gap-3">
@@ -370,16 +369,9 @@ export default {
     width: fit-content;
 }
 
-.page-title {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-size: 25px;
-    font-weight: 600;
-}
-
 .skill-modal-text {
     font-style: italic;
-    color: #1f57c3;
+    color: var(--primary-color);
     background-color: #f9f9f9;
     border-radius: 8px;
     padding: 3px 10px;
@@ -491,14 +483,14 @@ export default {
 }
 
 .question-link:hover {
-    color: #5b7dcc;
+    color: var(--primary-color);
     cursor: pointer;
 }
 
 .user-link {
     font-weight: 400;
     text-decoration: none;
-    color: #6c93ee;
+    color: var(--primary-color);
 }
 
 /* Color code for actions */
