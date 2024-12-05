@@ -1,6 +1,7 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useUsersStore } from '../../../stores/UsersStore';
+import LoadingSpinner from '../share-components/LoadingSpinner.vue';
 
 export default {
     setup() {
@@ -15,12 +16,16 @@ export default {
         };
     },
     props: ['updateUserDetails'],
+    components: {
+        LoadingSpinner
+    },
     data() {
         return {
             searchText: '',
             haveResults: false,
             userList: [],
-            chooseUser: ''
+            chooseUser: '',
+            loading: false
         };
     },
     async created() {
@@ -57,6 +62,7 @@ export default {
                 }
             });
 
+            this.loading = false;
             return userResultArray;
         },
         findUserWholeString(searchText) {
@@ -67,6 +73,7 @@ export default {
                 }
             });
 
+            this.loading = false;
             return userResultArray;
         },
         handleChooseResult(user) {
@@ -78,7 +85,8 @@ export default {
                 lastName: user.last_name
             };
             this.updateUserDetails(returnUserObject);
-        }
+        },
+        handleInputEnterPress(searchText) {}
     },
     computed: {
         usersResult() {
@@ -89,9 +97,11 @@ export default {
                 return [];
             }
             if (this.searchText.length < 3) {
+                this.loading = true;
                 return this.findUserFirstChars(this.searchText);
             }
             if (this.searchText.length >= 3) {
+                this.loading = true;
                 return this.findUserWholeString(this.searchText);
             }
         }
@@ -125,7 +135,7 @@ export default {
             />
         </div>
         <div class="position-relative">
-            <div v-if="usersResult.length" class="search-results">
+            <div v-if="usersResult.length && !loading" class="search-results">
                 <div
                     class="result-row"
                     v-for="user in usersResult"
@@ -133,6 +143,10 @@ export default {
                 >
                     {{ user.username }}
                 </div>
+            </div>
+
+            <div v-if="loading" class="search-results">
+                <LoadingSpinner width="25px" height="25px" />
             </div>
         </div>
     </div>
