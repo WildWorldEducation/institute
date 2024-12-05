@@ -219,6 +219,8 @@ Themes
 
     --dark-color: #614bad;
     --secondary-btn-color: #56c5b6;
+    --secondary-button-text-colour: white;
+    --secondary-button-icon-colour: white;
 
     /* --nav-colour: black;
 
@@ -236,7 +238,7 @@ Themes
     --primary-btn-colour-border: #7f56d9;
     --secondary-btn-colour: #56c5b6;
     --secondary-btn-colour-border: #2fa894;
-    --secondary-button-text-colour: white; */
+    
 
     /* Text */
     /*--secondary-text-colour: white; */
@@ -265,6 +267,8 @@ Themes
 
     --dark-color: #040095;
     --secondary-btn-color: gold;
+    --secondary-button-text-color: #040095;
+    --secondary-button-icon-color: #040095;
 
     /* --nav-colour: #040095; */
 
@@ -317,6 +321,8 @@ Themes
 
     --dark-color: black;
     --secondary-btn-color: gold;
+    --secondary-button-text-color: black;
+    --secondary-button-icon-color: black;
 
     /* --nav-colour: white; */
 
