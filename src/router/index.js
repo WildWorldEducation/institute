@@ -328,6 +328,22 @@ const router = createRouter({
                 )
         },
         {
+            path: '/new-skill-awaiting-approval/:id',
+            name: 'new-skill-awaiting-approval',
+            component: () =>
+                import('../components/pages/NewSkillAwaitingApprovalView.vue')
+        },
+        {
+            path: '/'
+        },
+        {
+            path: '/new-skill-awaiting-approval/edit/:id',
+            name: 'edit-new-skill-awaiting-approval',
+            component: () =>
+                import(
+                    '../components/pages/EditNewSkillAwaitingApprovalView.vue')
+        },
+        {
             path: '/test-ai-feature',
             name: 'test ai feature',
             component: () => import('../components/pages/willBeDelete.vue')

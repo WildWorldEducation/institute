@@ -69,8 +69,8 @@ export default {
                 this.validateContact = true;
             }
 
-            if(!this.validateContact || !this.validateDescription){
-                return
+            if (!this.validateContact || !this.validateDescription) {
+                return;
             }
 
             const requestOptions = {
@@ -102,37 +102,33 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
-        <h2>Edit Tutor Post</h2>
+    <div class="container p-2 bg-light rounded">
+        <h1 class="heading">Edit Tutor Post</h1>
         <div class="row">
             <div class="mb-3">
                 <textarea
                     id="summernote-description"
                     name="editordata"
                 ></textarea>
-                <div
-                    v-if="validateDescription == false"
-                    class="form-validate"
-                >
+                <div v-if="validateDescription == false" class="form-validate">
                     Please provide at least 25 characters.
                 </div>
             </div>
-            
+
             <div class="mb-3">
                 <textarea
                     id="summernote-contact-preference"
                     name="editordata2"
                 ></textarea>
-                <div
-                    v-if="validateContact == false"
-                    class="form-validate"
-                >
+                <div v-if="validateContact == false" class="form-validate">
                     Please provide at least 25 characters.
                 </div>
             </div>
             <div class="mb-3 d-flex justify-content-end gap-4">
                 <a class="btn red-btn" @click="$router.go(-1)"> Cancel </a>
-                <button @click="Submit()" class="btn purple-btn">Submit</button>
+                <button @click="Submit()" class="btn primary-btn">
+                    Submit
+                </button>
             </div>
         </div>
     </div>
@@ -140,7 +136,6 @@ export default {
 
 <style>
 h2 {
-    color: #a48be6;
     font-size: 30px;
     font-weight: 700;
 }
@@ -159,28 +154,6 @@ h2 {
 
 .red-btn:hover {
     background-color: #cc3535;
-    color: white;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #7f56d9;
-    color: white;
-}
-
-.purple-btn:focus {
-    background-color: #7f56d9;
     color: white;
 }
 </style>

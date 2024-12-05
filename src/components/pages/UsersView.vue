@@ -175,19 +175,13 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            src="/images/banners/students-banner.png"
-            class="w-100 img-fluid"
-        />
-    </div>
     <!-- Add user button -->
     <div
         v-if="userDetailsStore.role == 'admin'"
         id="first-content-row"
         class="d-flex justify-content-between"
     >
-        <router-link class="btn purple-btn" to="/users/add"
+        <router-link class="btn primary-btn" to="/users/add"
             >Add&nbsp;
             <!-- Plus sign -->
             <svg
@@ -227,7 +221,7 @@ export default {
                 <UsersList @changeUserId="changeUserId($event)" />
             </div>
             <!-- User detail view for PC and Tablet View -->
-            <div class="col-md-7 d-none d-md-block">
+            <div class="col-lg-8 col-md-7 d-none d-md-block">
                 <div class="row user-form-data-row">
                     <UserDetails
                         v-if="
@@ -271,23 +265,6 @@ export default {
 </template>
 
 <style>
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-.purple-btn:hover {
-    background-color: #7f56d9 !important;
-}
-
 #first-content-row {
     margin-top: -10px;
     padding-left: 46px;

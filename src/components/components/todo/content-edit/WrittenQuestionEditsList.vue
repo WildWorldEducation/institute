@@ -108,7 +108,7 @@ export default {
 </script>
 
 <template>
-    <div class="mt-3 pt-4 table-div">
+    <div class="mt-1 table-div">
         <!-- Desk top table -->
         <Vue3EasyDataTable
             ref="dataTable"
@@ -168,7 +168,7 @@ export default {
 .customize-table {
     --easy-table-body-row-font-size: 16px;
     --easy-table-header-font-size: 16px;
-    --easy-table-header-font-color: #8f7bd6;
+    --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
     --easy-table-header-item-padding: 15px 10px;

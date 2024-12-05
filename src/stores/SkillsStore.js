@@ -89,6 +89,15 @@ export const useSkillsStore = defineStore('skills', {
             // Update the store.
             this.getNestedSkillsList();
         },
+        async findSkillById(id) {
+            if (this.skillsList.length < 1) {
+                await this.getSkillsList();
+            }
+            const skill = this.skillsList.find((element) => {
+                return element.id === id;
+            });
+            return skill;
+        },
 
         async findSkill(url) {
             if (this.skillsList.length < 1) {
@@ -96,6 +105,16 @@ export const useSkillsStore = defineStore('skills', {
             }
             const skill = this.skillsList.find((element) => {
                 return element.url === url;
+            });
+            return skill;
+        },
+
+        async findSkillWithName(name) {
+            if (this.skillsList.length < 1) {
+                await this.getSkillsList();
+            }
+            const skill = this.skillsList.find((element) => {
+                return element.name === name;
             });
             return skill;
         },

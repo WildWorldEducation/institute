@@ -192,25 +192,17 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            src="/images/banners/edit-mastery-skill-banner.png"
-            class="image-fluid"
-        />
-    </div>
-    <div class="container mt-3 pb-3">
-        <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Edit Question</h2>
-                <img src="/images/recurso-69.png" id="header-icon" />
-            </div>
-        </div>
+    <div class="container mt-3 bg-light rounded">
+        <h1 class="heading">Edit Question</h1>
+
         <p class="mt-2">
-            <em>Note: blank questions will not display in the quiz.</em>
+            <em class="secondary-text"
+                >Note: blank answer options will not display in the quiz.</em
+            >
         </p>
-        <div class="main-content-container container-fluid mt-4">
+        <div class="container-fluid mt-2">
             <div class="row p-0">
-                <div id="form-container" class="col-lg-7 p-4">
+                <div id="form-container" class="col p-4">
                     <div class="mb-3">
                         <label for="question_name" class="form-label"
                             >Question Name</label
@@ -330,7 +322,7 @@ export default {
                         <button
                             v-if="answers[4].show == false"
                             @click="addAnswer"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                         >
                             <svg
                                 width="20"
@@ -406,7 +398,7 @@ export default {
                                 userDetailsStore.role == 'admin' ||
                                 userDetailsStore.role == 'editor'
                             "
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             @click="ValidateForm('submission')"
                             :disabled="!isFormChanged"
                         >
@@ -417,7 +409,7 @@ export default {
                                 userDetailsStore.role == 'instructor' ||
                                 userDetailsStore.role == 'student'
                             "
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             @click="ValidateForm('submissionForReview')"
                             :disabled="!isFormChanged"
                         >
@@ -463,28 +455,6 @@ export default {
 
 .red-btn:hover {
     background-color: #cc3535;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #7f56d9;
-    color: white;
-}
-
-.purple-btn:focus {
-    background-color: #7f56d9;
-    color: white;
 }
 
 #header-tile {

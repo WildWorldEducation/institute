@@ -210,23 +210,23 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 mb-4">
-        <h1 class="page-title">Comparison Image Question</h1>
+    <div class="container mb-4 bg-light rounded p-2">
+        <h1 class="heading">Comparison Image Question</h1>
         <div class="my-3">
             <hr />
         </div>
         <!-- General Skill Info -->
         <div class="d-flex flex-column gap-2 mb-3">
-            <div class="d-flex gap-2 align-items-center">
+            <p class="d-flex gap-2 align-items-center">
                 <div class="compare-container-tile">Skill:</div>
                 <div class="minor-text">{{ imageQuestion.skill_name }}</div>
-            </div>
-            <div class="d-flex gap-2 align-items-center">
+            </p>
+            <p class="d-flex gap-2 align-items-center">
                 <div class="compare-container-tile">Level:</div>
                 <div class="minor-text capitalize">
                     {{ toTileCase(imageQuestion.skill_level) }}
                 </div>
-            </div>
+            </p>
         </div>
         <!-- Show / Hide hight light button -->
         <div class="d-flex flex-row-reverse my-3">
@@ -532,11 +532,7 @@ export default {
 </template>
 
 <style>
-.page-title {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-}
+
 .compare-container {
     display: flex;
     flex-direction: column;
@@ -547,7 +543,7 @@ export default {
 }
 
 .compare-container-tile {
-    color: #a48be7;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 22px;
@@ -754,7 +750,7 @@ export default {
     gap: 8px;
     background: linear-gradient(0deg, #ffffff, #ffffff),
         linear-gradient(0deg, #f2f4f7, #f2f4f7);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
     box-shadow: 0px 0px 0px 4px #bca3ff4d;
     font-family: 'Poppins' sans-serif;
     font-size: 1rem;
@@ -767,7 +763,7 @@ export default {
 
 .custom-select-button:hover {
     cursor: pointer;
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
 }
 
 .custom-select-button > span {
@@ -813,14 +809,14 @@ export default {
     border-radius: 8px;
     border: 1px;
     background: linear-gradient(0deg, #ffffff, #ffffff);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
     box-shadow: 0px 4px 6px -2px #10182808;
     box-shadow: 0px 12px 16px -4px #10182814;
     width: 200px;
 }
 
 .custom-dropdown-base:focus {
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
 }
 
 .custom-dropdown-option {
@@ -843,7 +839,7 @@ export default {
 
 .custom-dropdown-option:focus {
     border-radius: 6px;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
     background: #bca3ff1a;
 }
 

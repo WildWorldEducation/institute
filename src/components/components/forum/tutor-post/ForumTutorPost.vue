@@ -81,7 +81,7 @@ export default {
                 <router-link
                     v-if="user.role == 'student' && isAlreadyTutoring == false"
                     :to="'/tutor/add/' + skillId"
-                    class="btn purple-btn mt-2"
+                    class="btn primary-btn mt-2"
                     role="button"
                     >Offer to tutor&nbsp;&nbsp;<svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -137,7 +137,7 @@ export default {
     border-top: 2px dotted #aea3ce;
     border-right: 2px solid #aea3ce;
     border-left: 2px solid #aea3ce;
-    color: #7469b6;
+    color: var(--secondary-heading-colour);
 }
 
 .tutor:last-child {

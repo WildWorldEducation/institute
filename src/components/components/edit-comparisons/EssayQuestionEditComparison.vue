@@ -190,23 +190,23 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 mb-4">
-        <h1 class="page-title">Comparison Essay Question</h1>
+    <div class="container mb-4 bg-light rounded p-2">
+        <h1 class="heading">Comparison Essay Question</h1>
         <div class="my-3">
             <hr />
         </div>
         <!-- General Skill Info -->
         <div class="d-flex flex-column gap-2 mb-3">
-            <h1 class="d-flex gap-2 align-items-center header-tile">
+            <p class="d-flex gap-2 align-items-center">
                 <div class="major-text">Skill:</div>
                 <div class="minor-text">{{ essayQuestion.skill_name }}</div>
-            </h1>
-            <h1 class="d-flex gap-2 align-items-center header-tile">
+            </p>
+            <p class="d-flex gap-2 align-items-center">
                 <div class="major-text">Level:</div>
                 <div class="minor-text capitalize">
                     {{ toTileCase(essayQuestion.skill_level) }}
                 </div>
-            </h1>
+            </p>
         </div>
         <!-- Show / Hide hight light button -->
         <div class="d-flex flex-row-reverse my-3">
@@ -322,11 +322,6 @@ export default {
 </template>
 
 <style scoped>
-.page-title {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-}
 .compare-container {
     display: flex;
     flex-direction: column;
@@ -344,7 +339,7 @@ export default {
 }
 
 .major-text {
-    color: #a48be7;
+    color: var(--primary-color);
 }
 
 .container-tile {

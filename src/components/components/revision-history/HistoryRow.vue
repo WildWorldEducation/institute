@@ -168,7 +168,7 @@ export default {
                                         viewBox="0 0 512 512"
                                         width="15"
                                         height="15"
-                                        fill="#64748b"
+                                        class="primary-icon"
                                     >
                                         <path
                                             d="M406.5 399.6C387.4 352.9 341.5 320 288 320l-64 0c-53.5 0-99.4 32.9-118.5 79.6C69.9 362.2 48 311.7 48 256C48 141.1 141.1 48 256 48s208 93.1 208 208c0 55.7-21.9 106.2-57.5 143.6zm-40.1 32.7C334.4 452.4 296.6 464 256 464s-78.4-11.6-110.5-31.7c7.3-36.7 39.7-64.3 78.5-64.3l64 0c38.8 0 71.2 27.6 78.5 64.3zM256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-272a40 40 0 1 1 0-80 40 40 0 1 1 0 80zm-88-40a88 88 0 1 0 176 0 88 88 0 1 0 -176 0z"
@@ -182,8 +182,7 @@ export default {
                                                 viewBox="0 0 512 512"
                                                 width="12"
                                                 height="12"
-                                                class="mx-1"
-                                                fill="#64748b"
+                                                class="mx-1 primary-icon"
                                             >
                                                 <path
                                                     d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
@@ -279,7 +278,7 @@ export default {
     width: 20px;
     height: 20px;
     border-radius: 100%;
-    border: 3px solid #81b6ef;
+    border: 3px solid var(--primary-color);
     background-color: white;
     display: flex;
     justify-content: center;
@@ -294,14 +293,14 @@ export default {
     width: 10px;
     height: 10px;
     border-radius: 100%;
-    background-color: #81b6ef;
+    background-color: var(--primary-color);
 }
 .by-user {
     color: #64748b;
 }
 
 .current-badge {
-    background-color: #b180d7;
+    background-color: var(--primary-color);
     color: white;
     padding: 2px;
     border-radius: 15px;

@@ -40,7 +40,7 @@ export default {
     components: {
         Assessment
     },
-    methods:{
+    methods: {
         imageUrlAlternative(event) {
             event.target.src = '/images/skill-avatar/recurso.png';
         }
@@ -49,34 +49,10 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            v-bind:src="'/images/banners/skills-banner.png'"
-            class="img-fluid"
-        />
-    </div>
-    <div class="container mt-3">
-        <div class="d-flex justify-content-md-between justify-content-center">
-            <div class="d-flex flex-column flex-md-row">
-                <img
-                    id="skill-icon"
-                    :src="
-                        'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
-                        skill.url
-                    "
-                    :onerror="imageUrlAlternative"
-                    class="rounded"
-                />
-                <div
-                    id="assessment-skill-name"
-                    class="ms-3 d-flex justify-content-md-end text-center justify-content-center"
-                >
-                    {{ this.skill.name }} Quiz
-                </div>
-            </div>
-        </div>
+    <div class="container mt-3 bg-light rounded">
+        <h1 class="heading">{{ this.skill.name }} Quiz</h1>
 
-        <div class="mt-4 mb-4">
+        <div class="mt-4 mb-2">
             <hr
                 class="border border-2 opacity-100 w-md-75 w-100"
                 id="assessment-horizontal-line"
@@ -88,44 +64,7 @@ export default {
 
 <style scoped>
 #assessment-horizontal-line {
-    border-color: #aea3ce !important;
+    border-color: var(--hr-secondary-colour) !important;
     border: solid;
-}
-
-#assessment-skill-name {
-    color: #a48be6;
-    font-size: xx-large;
-    font-weight: 800;
-    text-align: left;
-}
-
-#banner {
-    width: 100%;
-    height: fit-content;
-}
-
-.img-fluid {
-    width: 100% !important;
-    height: auto;
-}
-#skill-icon {
-    width: 200px;
-    border-radius: 10px;
-}
-
-/*Style for Mobile Devices */
-@media (max-width: 480px) {
-    #skill-icon {
-        width: 60%;
-        height: auto;
-        margin: 0% auto;
-    }
-
-    #assessment-skill-name {
-        font-size: x-large;
-        font-weight: 600;
-        text-align: center;
-        margin-top: 10px;
-    }
 }
 </style>

@@ -94,12 +94,12 @@ export default {
 
             if (result.error) {
                 console.log(result.error);
-                this.message = 'Fails to dismiss this skill';
+                this.message = 'Failed to dismiss suggested skill';
                 this.showFailsModal = true;
                 return;
             }
 
-            this.message = 'Successfully dismiss skill';
+            this.message = 'Successfully dismissed suggested skill';
             this.showSuccessModal = true;
         },
         approveSkill() {
@@ -122,7 +122,7 @@ export default {
             fetch(url, requestOptions).then((response) => {
                 console.log('Fetched');
                 if (response.error || response.status === 500) {
-                    this.message = 'Fails to add new skill';
+                    this.message = 'Failed to add new skill';
                     this.showFailsModal = true;
                 }
                 // Delete it afterwards.
@@ -137,11 +137,12 @@ export default {
 
                 if (result.error) {
                     console.err(result.error);
-                    this.message = 'Fails to remove from waiting list';
+                    this.message =
+                        'Failed to remove from list of suggested new skills';
                     this.showFailsModal = true;
                     return;
                 }
-                this.message = 'Successfully add skill to skill tree';
+                this.message = 'Successfully added skill';
                 this.severLoading = false;
                 this.showSuccessModal = true;
             });
@@ -159,7 +160,7 @@ export default {
             this.showDisMissModal = false;
         },
         handleSuccessOKclick() {
-            this.$router.push('/natodo?nav=newSkillsList');
+            this.$router.push('/todo?nav=newSkillsList');
         },
         handleFailsOKclick() {
             this.showFailsModal = false;
@@ -169,10 +170,6 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <!-- Banner image -->
-        <img src="/images/banners/institute-collins-2.png" class="img-fluid" />
-    </div>
     <div class="container mt-3">
         <div
             id="user-alert"
@@ -192,7 +189,7 @@ export default {
         <div id="skill-info-container">
             <!-- Name -->
             <div>
-                <h1 class="skill-name">
+                <h1 class="heading">
                     {{ newSkillAwaitingApproval.name }}
                 </h1>
                 <!-- A line divide -->
@@ -245,7 +242,7 @@ export default {
                         </div>
                         <!-- Parent -->
                         <div class="mt-3 d-flex flex-column align-items-center">
-                            <h2 class="h4 title">Parent</h2>
+                            <h2 class="h4 heading">Parent</h2>
                             <RouterLink
                                 b-on-hoover
                                 title="Click on parent name to see it details"
@@ -257,7 +254,7 @@ export default {
                         </div>
                         <!-- Type -->
                         <div class="mt-3 d-flex flex-column align-items-center">
-                            <h2 class="h4 title">Type</h2>
+                            <h2 class="h4 heading">Type</h2>
                             <div>
                                 {{ newSkillAwaitingApproval.type }}
                             </div>
@@ -267,7 +264,7 @@ export default {
                             class="mt-3 d-flex flex-column align-items-center"
                             v-if="newSkillAwaitingApproval.type != 'category'"
                         >
-                            <h2 class="h4 title">Level</h2>
+                            <h2 class="h4 heading">Level</h2>
                             <!-- <div class="h1-title">Level</div> -->
                             <span
                                 v-if="
@@ -312,12 +309,12 @@ export default {
                     Dismiss
                 </button>
                 <router-link
-                    class="btn purple-btn"
+                    class="btn primary-btn"
                     :to="'/new-skill-awaiting-approval/edit/' + id"
                 >
                     Edit
                 </router-link>
-                <button class="btn green-btn" @click="handleSaveBtnClick">
+                <button class="btn secondary-btn" @click="handleSaveBtnClick">
                     Approve
                 </button>
             </div>
@@ -386,7 +383,6 @@ export default {
 }
 
 .h1-title {
-    color: #a48be6;
     font-size: 30px;
     font-weight: 700;
     margin-bottom: 5px;
@@ -420,25 +416,6 @@ export default {
     padding: 15px 30px;
     width: fit-content;
     color: #ca8a04;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    max-width: fit-content;
-    display: flex;
-    align-items: center;
-    height: 44px;
-    text-wrap: nowrap;
-}
-
-.purple-btn:hover {
-    background-color: #8f7bd6;
 }
 
 .green-btn {
@@ -519,10 +496,5 @@ export default {
     #skill-info-container {
         padding: 15px;
     }
-}
-
-.title {
-    color: #a48be6;
-    font-weight: 700;
 }
 </style>

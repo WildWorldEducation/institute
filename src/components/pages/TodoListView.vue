@@ -6,6 +6,7 @@ import { useSettingsStore } from '../../stores/SettingsStore';
 import CheckStudentQuestions from '../components/todo/student-question/CheckStudentQuestions.vue';
 import ContentEditsList from '../components/todo/content-edit/ContentEditsList.vue';
 import ContentFlagsView from './ContentFlagsView.vue';
+import NewSkillsAwaitingApprovalList from '../components/todo/new-skills-awaiting-approval/NewSkillsAwaitingApprovalList.vue';
 
 export default {
     setup() {
@@ -22,7 +23,8 @@ export default {
         CheckStudentQuestions,
         ContentEditsList,
         PageNav,
-        ContentFlagsView
+        ContentFlagsView,
+        NewSkillsAwaitingApprovalList
     },
     computed: {},
     async mounted() {
@@ -52,7 +54,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid h-100 p-0">
+    <div class="container-fluid h-100 p-0 bg-light">
         <!-- In the pc view we display flex row -->
         <div class="h-100 d-flex">
             <PageNav :activeContent="activeContent" />
@@ -67,6 +69,9 @@ export default {
                 <div v-if="activeContent === 'flagList'">
                     <ContentFlagsView />
                 </div>
+                <div v-if="activeContent === 'newSkillsList'">
+                    <NewSkillsAwaitingApprovalList />
+                </div>
             </div>
         </div>
     </div>
@@ -74,7 +79,7 @@ export default {
 
 <style>
 .page-title {
-    color: #9c7eec;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }

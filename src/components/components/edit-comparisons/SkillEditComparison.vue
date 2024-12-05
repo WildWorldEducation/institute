@@ -198,8 +198,8 @@ export default {
 </script>
 
 <template>
-    <div class="mt-4 mb-4">
-        <h1 class="page-title">Skill Change Comparison</h1>
+    <div class="mt-4 mb-4 container-fluid bg-light rounded p-2">
+        <h1 class="heading">Skill Change Comparison</h1>
         <hr />
         <!-- ---General info of skills -->
         <div class="d-flex flex-column gap-2 mb-3">
@@ -230,7 +230,7 @@ export default {
                             viewBox="0 0 512 512"
                             width="16"
                             heigh="16"
-                            fill="#475569"
+                            class="primary-icon"
                         >
                             <path
                                 d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
@@ -255,8 +255,7 @@ export default {
                                 viewBox="0 0 512 512"
                                 width="50"
                                 height="50"
-                                fill="#ac90e8"
-                                class="d-none d-lg-block my-auto mx-1"
+                                class="d-none d-lg-block my-auto mx-1 primary-icon"
                             >
                                 <path
                                     d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
@@ -266,10 +265,9 @@ export default {
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 320 512"
-                                fill="#ac90e8"
                                 height="50"
                                 width="50"
-                                class="mx-auto my-2 d-lg-none"
+                                class="mx-auto my-2 d-lg-none primary-icon"
                             >
                                 <path
                                     d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
@@ -324,8 +322,8 @@ export default {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
                             width="16"
-                            heigh="16"
-                            fill="#475569"
+                            height="16"
+                            class="primary-icon"
                         >
                             <path
                                 d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
@@ -350,8 +348,7 @@ export default {
                                 viewBox="0 0 512 512"
                                 width="50"
                                 height="50"
-                                fill="#ac90e8"
-                                class="d-none d-lg-block my-auto mx-1"
+                                class="d-none d-lg-block my-auto mx-1 primary-icon"
                             >
                                 <path
                                     d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
@@ -361,10 +358,9 @@ export default {
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 320 512"
-                                fill="#ac90e8"
                                 height="50"
                                 width="50"
-                                class="mx-auto my-2 d-lg-none"
+                                class="mx-auto my-2 d-lg-none primary-icon"
                             >
                                 <path
                                     d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
@@ -425,7 +421,7 @@ export default {
                         viewBox="0 0 512 512"
                         width="16"
                         heigh="16"
-                        fill="#475569"
+                        class="primary-icon"
                     >
                         <path
                             d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
@@ -515,8 +511,7 @@ export default {
                             viewBox="0 0 512 512"
                             width="50"
                             height="50"
-                            fill="#ac90e8"
-                            class="d-none d-lg-block my-auto mx-1"
+                            class="d-none d-lg-block my-auto mx-1 primary-icon"
                         >
                             <path
                                 d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
@@ -614,18 +609,9 @@ export default {
 }
 
 .page-title {
-    color: #a48be7;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
-}
-
-.banner-image {
-    width: auto;
-    height: auto;
-    max-width: 80%;
-    max-height: 80%;
-    margin-top: auto;
-    margin-bottom: auto;
 }
 
 .icon-image {

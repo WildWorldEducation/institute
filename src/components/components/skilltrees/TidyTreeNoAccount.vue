@@ -369,6 +369,8 @@ export default {
 
             // Text.
             if (this.scale > 0.6) {
+                // to avoid sharp artifacts with the stroke of the text.
+                ctx1.lineJoin = 'bevel';
                 // we move the skill name to the left and change the color if it a domain node
                 // using the non domain as if condition will save us some compute time as none domain node is more common
                 if (node.data.type != 'domain') {
@@ -429,7 +431,7 @@ export default {
                 .y((d) => d.x)
                 .context(this.context);
 
-            this.context.lineWidth = 1;
+            this.context.lineWidth = 2;
 
             if (
                 (link.source.data.type == 'super' &&
@@ -629,10 +631,10 @@ export default {
         resetPos() {
             let screenWidth = window.innerWidth;
             let shift = 143;
-            if(screenWidth > 480){
+            if (screenWidth > 480) {
                 shift = 100;
             }
-            if(screenWidth > 1024){
+            if (screenWidth > 1024) {
                 shift = 90;
             }
             d3.select(this.context.canvas)
@@ -640,7 +642,9 @@ export default {
                 .duration(700)
                 .call(
                     this.d3Zoom.transform,
-                    d3.zoomIdentity.translate(0, this.context.canvas.height/2 - shift).scale(0.3)
+                    d3.zoomIdentity
+                        .translate(0, this.context.canvas.height / 2 - shift)
+                        .scale(0.3)
                 );
             this.$refs.sliderControl.showScaleLabel();
         },
@@ -939,7 +943,7 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid #a48be5;
+    border: 5px solid var(--loading-animation-colour);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;

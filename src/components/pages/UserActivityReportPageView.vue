@@ -8,6 +8,7 @@ import UserResourceActions from '../components/user-activity-report/UserResource
 import UserQuestionActions from '../components/user-activity-report/UserQuestionActions.vue';
 import UserSkillActions from '../components/user-activity-report/UserSkillActions.vue';
 import UserStudentMcQuestionActions from '../components/user-activity-report/UserStudentMcQuestionActions.vue';
+import UserSkillAwaitingForApprovalActions from '../components/user-activity-report/UserSkillAwaitingForApprovalActions.vue';
 
 export default {
     setup() {
@@ -31,6 +32,7 @@ export default {
             showMcQuestions: false,
             showStudentMcQuestions: false,
             showSkills: false,
+            showSkillSubmittedByUsers: false,
             mcQuestions: [],
             resources: [],
             flags: [],
@@ -42,7 +44,8 @@ export default {
         UserResourceActions,
         UserQuestionActions,
         UserStudentMcQuestionActions,
-        UserSkillActions
+        UserSkillActions,
+        UserSkillAwaitingForApprovalActions
     },
     async created() {
         // Get the user's details.
@@ -69,9 +72,8 @@ export default {
 
 <template>
     <div class="container">
-        <div class="mt-4 mb-4">
-            <div class="page-title">User Activity Report</div>
-        </div>
+        <h1 class="page-title heading">User Activity Report</h1>
+
         <!-- User Details -->
         <div class="row">
             <div class="d-flex flex-column flex-md-row gap-3">
@@ -289,6 +291,52 @@ export default {
                 </transition>
             </div>
             <hr class="mt-5 mb-3" />
+            <!-- Skills  -->
+            <div class="d-flex flex-column">
+                <div class="d-flex flex-row justify-content-between">
+                    <div
+                        class="log-type"
+                        @click="
+                            showSkillSubmittedByUsers =
+                                !showSkillSubmittedByUsers
+                        "
+                        b-on-hover
+                        :title="
+                            showSkillSubmittedByUsers ? 'collapse' : 'expand'
+                        "
+                    >
+                        <span> Skills Submitted By User </span>
+                        <!-- Arrow Icon -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 320 512"
+                            width="22"
+                            height="22"
+                            fill="#667085"
+                            :class="[
+                                showSkillSubmittedByUsers
+                                    ? 'arrow-point-down mb-2'
+                                    : 'arrow-point-up '
+                            ]"
+                        >
+                            <path
+                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <transition name="dropdown">
+                    <div v-if="showSkillSubmittedByUsers">
+                        <UserSkillAwaitingForApprovalActions
+                            :userId="user.id"
+                            @close-resource-div="
+                                showSkillSubmittedByUsers = false
+                            "
+                        />
+                    </div>
+                </transition>
+            </div>
+            <hr class="mt-5 mb-3" />
         </div>
     </div>
 </template>
@@ -321,16 +369,9 @@ export default {
     width: fit-content;
 }
 
-.page-title {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-size: 25px;
-    font-weight: 600;
-}
-
 .skill-modal-text {
     font-style: italic;
-    color: #1f57c3;
+    color: var(--primary-color);
     background-color: #f9f9f9;
     border-radius: 8px;
     padding: 3px 10px;
@@ -442,14 +483,14 @@ export default {
 }
 
 .question-link:hover {
-    color: #5b7dcc;
+    color: var(--primary-color);
     cursor: pointer;
 }
 
 .user-link {
     font-weight: 400;
     text-decoration: none;
-    color: #6c93ee;
+    color: var(--primary-color);
 }
 
 /* Color code for actions */

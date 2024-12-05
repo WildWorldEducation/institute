@@ -216,7 +216,7 @@ export default {
                 id="skill-tree-search-text"
                 type="text"
                 class="skill-tree-input"
-                placeholder="Skill name"
+                placeholder="Search"
                 v-model="searchText"
                 v-on:keyup.enter="handleEnterPress()"
             />
@@ -273,10 +273,10 @@ export default {
 .search-bar {
     display: flex;
     flex-direction: column;
-    border: 1px solid #dce2f2;
+    /* border: 1px solid #dce2f2; */
+    border: 1px solid black;
     border-radius: 8px;
-    width: 450px;
-    margin-right: 35px;
+    background-color: white;
 }
 
 .have-results {
@@ -344,16 +344,15 @@ export default {
 }
 
 /* Bigger devices ( Tablet ) */
-@media (min-width: 481px) and (max-width: 1024px) {
+/* @media (min-width: 481px) and (max-width: 1024px) {
     .search-bar {
         width: 90%;
     }
-}
+} */
 
 /* Phone view style */
 @media (max-width: 480px) {
     .search-bar {
-        width: 96%;
         margin-left: auto;
         margin-right: auto;
     }

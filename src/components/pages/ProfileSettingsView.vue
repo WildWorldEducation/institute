@@ -1,5 +1,6 @@
 <script>
-import ProfileDetails from '../components/ProfileDetails.vue';
+import ProfileDetails from '../components/profile-page/ProfileDetails.vue';
+import ThemeDetails from '../components/profile-page/ThemeDetails.vue';
 import Settings from '../components/settings/Settings.vue';
 import BulkQuestionsUpload from '../components/settings/BulkQuestionsUpload.vue';
 import AutoGenerateSources from '../components/settings/AutoGenerateSources.vue';
@@ -19,33 +20,37 @@ export default {
     },
     components: {
         ProfileDetails,
+        ThemeDetails,
         Settings,
         BulkQuestionsUpload,
         AutoGenerateSources,
         DeleteDownVotedSources
     },
     methods: {
-        CheckMCQuestions() {
-            console.log('test');
+        CheckMCQuestions() {          
             fetch('/questions/check-questions');
         }
     }
 };
 </script>
 
-<template>
-    <div id="banner">
-        <img src="/images/banners/general-banner.png" class="w-100 h-auto" />
-    </div>
+<template>    
+    <!-- Profile Section -->
     <ProfileDetails />
-    <!--Only show if admin ----------------->
+    <ThemeDetails />
+    <!-- 
+    Admin role only 
+    -->
     <!-- App Settings --->
     <Settings v-if="userDetailsStore.role == 'admin'" />
-
-    <!-- Ability to bulk upload multiple choice questions --->
+    <!-- Bulk upload multiple choice questions --->
     <BulkQuestionsUpload v-if="userDetailsStore.role == 'admin'" />
-    <!-- AI Check MC Questions --->
-     <!-- Hidden from all users --->
+    <!-- Delete all sources with negative vote amount --->
+    <DeleteDownVotedSources v-if="userDetailsStore.role == 'admin' || userDetailsStore.userName == 'Sgt. Dysxleia' || userDetailsStore.userName =='jonathandyason@gmail.com'" />
+    <!-- 
+    Hidden from all users 
+    --->
+    <!-- AI Check MC Questions for errors--->
     <section
         class="container mt-1 px-3 px-lg-0 mb-5"
         v-if="userDetailsStore.role == 'dev'"
@@ -55,7 +60,7 @@ export default {
         <button class="btn green-btn mt-3" @click="CheckMCQuestions()">
             Check now
         </button>
-        <p style="font-size: 14px" class="mt-2">
+        <div style="font-size: 14px" class="mt-2">
             <ul>
             <li><em>To be done by devs and not admins.</em></li>
             <li><em>
@@ -63,22 +68,13 @@ export default {
                 questions, and can be expensive.</em
             ></li>
             </ul>
-        </p>
+        </div>
     </section>
-    <!-- Ability to autogenerate sources for all skills. At the moment, has to be done by programmer --->
-     <!-- Hidden from all users --->
-    <AutoGenerateSources v-if="userDetailsStore.role == 'dev'" />
-
-    <DeleteDownVotedSources v-if="userDetailsStore.role == 'admin' || userDetailsStore.userName == 'Sgt. Dysxleia' || userDetailsStore.userName =='jonathandyason@gmail.com'" />
+    <!-- Autogenerate sources for all skills. At the moment, has to be done by programmer --->     
+    <AutoGenerateSources v-if="userDetailsStore.role == 'dev'" />    
 </template>
 
 <style>
-h1 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
 .green-btn {
     background-color: #36c1af;
     color: white;

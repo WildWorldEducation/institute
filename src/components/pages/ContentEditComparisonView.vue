@@ -27,10 +27,6 @@ export default {
 </script>
 
 <template>
-    <!-- Banner -->
-    <div id="banner">
-        <img src="/images/banners/general-banner.png" class="img-fluid" />
-    </div>
     <div class="container-fluid">
         <SkillEditComparison ref="child" v-if="type == 'skill'" />
         <MCQuestionEditComparison ref="child" v-if="type == 'mcquestion'" />
@@ -52,7 +48,7 @@ export default {
             </button>
             <button
                 :disabled="disableBtn"
-                :class="['btn', disableBtn ? 'disable-btn' : 'purple-btn']"
+                :class="['btn', disableBtn ? 'disable-btn' : 'primary-btn']"
                 @click="$refs.child.edit()"
             >
                 Edit
@@ -71,7 +67,7 @@ export default {
 
 <style scoped>
 .page-title {
-    color: #a48be7;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }
@@ -82,7 +78,6 @@ export default {
 }
 
 h2 {
-    color: #a48be6;
     font-size: 30px;
     font-weight: 700;
 }
@@ -104,23 +99,6 @@ h2 {
 .red-btn:hover,
 :deep(.red-btn:hover) {
     background-color: #cc3535;
-    color: white;
-}
-
-:deep(.purple-btn) {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-:deep(.purple-btn:hover) {
-    background-color: #8666ca;
     color: white;
 }
 
@@ -149,7 +127,7 @@ h2 {
 }
 
 :deep(.compare-container-tile) {
-    color: #a48be7;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 22px;

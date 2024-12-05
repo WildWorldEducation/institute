@@ -59,7 +59,7 @@ export default {
             switch (this.deletePostType) {
                 case 'tutorPost':
                     this.$parent.deleteTutorPost(this.currentPost);
-                    this.isAlreadyTutoring = false
+                    this.isAlreadyTutoring = false;
                     break;
                 // default case will be source type post
                 default:
@@ -112,7 +112,7 @@ export default {
                 >
                     <router-link
                         :to="'/resources/add/' + skillId"
-                        class="btn green-btn"
+                        class="btn primary-btn me-2"
                         role="button"
                         >Add source&nbsp;&nbsp;
                         <!-- Plus icon -->
@@ -134,7 +134,7 @@ export default {
                             user.role == 'student' && isAlreadyTutoring == false
                         "
                         :to="'/tutor/add/' + skillId"
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         role="button"
                         >Offer to tutor&nbsp;&nbsp;
                         <!-- hand point up icon -->
@@ -201,10 +201,7 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
 }
-.green-btn{
-    margin-right: 10px;
-    height: 44px;
-}
+
 .forum-container {
     border-radius: 12px;
     padding-top: 12px;

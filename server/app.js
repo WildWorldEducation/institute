@@ -103,6 +103,8 @@ const cohorts = require('./routes/cohorts');
 app.use('/cohorts', cohorts);
 const passwordReset = require('./routes/password-reset');
 app.use('/password-reset', passwordReset);
+const newSkillsAwaitingApproval = require('./routes/new-skills-awaiting-approval');
+app.use('/new-skills-awaiting-approval', newSkillsAwaitingApproval);
 
 app.locals.title = 'Skill Tree';
 

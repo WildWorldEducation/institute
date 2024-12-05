@@ -146,7 +146,7 @@ export default {
 </script>
 
 <template>
-    <div class="container cohort-page">
+    <div class="container cohort-page bg-light rounded p-2">
         <span class="d-flex justify-content-between"
             ><h1 class="heading">{{ cohort.name }}</h1>
             <button class="btn red-btn" @click="deleteCohort">
