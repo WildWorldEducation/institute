@@ -167,9 +167,9 @@ export default {
 </script>
 
 <template>
-    <div class="w-100">
+    <div class="w-100 bg-light p-2">
         <!-- Page title -->
-        <h2 class="ps-3 mt-2 h2-stroke">Approve Content Edits</h2>
+        <h2 class="ps-3 mt-2 heading">Approve Content Edits</h2>
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
             <button
@@ -310,31 +310,31 @@ export default {
 }
 
 .normal-nav {
-    background-color: white;
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
     padding: 5px 20px;
     cursor: pointer;
     font-weight: 600;
-    color: grey;
     border: none;
     border-radius: 8px;
 }
 
 .normal-nav:focus {
     outline: none;
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
 }
 
 .active-nav {
-    background-color: var(--background-colour);
+    background-color: var(--secondary-color);
     border: 1px solid grey;
     border-radius: 5px;
-    color: white;
+    color: var(--secondary-contrast-color);
     font-weight: 600;
     padding: 5px 20px;
 }
 
 .active-nav:focus {
-    outline: solid 2px #4a3091;
+    outline: solid 2px var(--secondary-color);
 }
 
 /* Style For The Custom Select */
@@ -355,7 +355,7 @@ export default {
     letter-spacing: 0.03em;
     text-align: left;
     display: flex;
-    color: #8666ca;
+    color: var(--primary-colour);
 }
 
 .custom-select-button-focus {
@@ -366,7 +366,7 @@ export default {
     gap: 8px;
     background: linear-gradient(0deg, #ffffff, #ffffff),
         linear-gradient(0deg, #f2f4f7, #f2f4f7);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-colour);
     box-shadow: 0px 0px 0px 4px #bca3ff4d;
     font-family: 'Poppins' sans-serif;
     font-size: 1rem;
@@ -375,12 +375,12 @@ export default {
     letter-spacing: 0.03em;
     text-align: left;
     display: flex;
-    color: #8666ca;
+    color: var(--primary-colour);
 }
 
 .custom-select-button:hover {
     cursor: pointer;
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-colour);
 }
 
 .custom-select-button > span {
@@ -443,7 +443,7 @@ export default {
     border-radius: 8px;
     border: 1px;
     background: linear-gradient(0deg, #ffffff, #ffffff);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-colour);
     box-shadow: 0px 4px 6px -2px #10182808;
     box-shadow: 0px 12px 16px -4px #10182814;
     width: 200px;
@@ -468,8 +468,8 @@ export default {
 }
 
 :deep(.cell-link:focus) {
-    border: 1px #8f7bd6 solid;
-    border-color: #4523be !important;
+    border: 1px var(--primary-colour) solid;
+    border-color: var(--primary-colour) !important;
     border-radius: 5px;
     outline: none;
 }

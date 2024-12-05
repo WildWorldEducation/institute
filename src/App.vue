@@ -212,156 +212,40 @@ Themes
 */
 /* The Original theme */
 :root {
-    --primary-color: #614bad;
+    --primary-color: #8d6ce7;
+    --primary-contrast-color: white;
+
     --secondary-color: #56c5b6;
+    --secondary-contrast-color: white;
+
     --tertiary-color: black;
     --stroke-width: 0px;
-
-    --dark-color: #614bad;
-    --secondary-btn-color: #56c5b6;
-    --secondary-button-text-colour: white;
-    --secondary-button-icon-colour: white;
-
-    /* --nav-colour: black;
-
-    /* Headings */
-    /* --primary-heading-colour: #8f7bd6;
-    --secondary-heading-colour: #8f7bd6; */
-
-    /* Icons */
-    /* --primary-icon-colour: #8f7bd6;
-    --secondary-icon-colour: #8f7bd6; */
-
-    /* Buttons */
-    /* --primary-btn-colour: #8f7bd6;
-    --primary-btn-colour-hover: #9a7ceb;
-    --primary-btn-colour-border: #7f56d9;
-    --secondary-btn-colour: #56c5b6;
-    --secondary-btn-colour-border: #2fa894;
-    
-
-    /* Text */
-    /*--secondary-text-colour: white; */
-
-    /* Other colours */
-    /* --tertiary-colour: white;
-    --fourth-colour: gold;
-    --fifth-colour: #888; */
-
-    /* Other */
-    /* --hr-colour: #aea3ce;
-    --hr-secondary-colour: #aea3ce;
-    --collapsible-tree-node-colour: #53389e;
-    --stroke-width: 0px;
-    --loading-animation-colour: #8f7bd6;
-    --background-colour: #8666ca;
-    --background-hover-colour: #b8a6db; */
 }
 
 /* The Apprentice theme */
 .apprentice-theme {
     --primary-color: #040095;
+    --primary-contrast-color: white;
+
     --secondary-color: gold;
+    --secondary-contrast-color: #040095;
+
     --tertiary-color: white;
     --stroke-width: 1px;
-
-    --dark-color: #040095;
-    --secondary-btn-color: gold;
-    --secondary-button-text-color: #040095;
-    --secondary-button-icon-color: #040095;
-
-    /* --nav-colour: #040095; */
-
-    /* Headings */
-    /* --primary-heading-colour: #040095;
-    --primary-heading-stroke-colour: gold;
-    --secondary-heading-colour: #040095; */
-
-    /* Icons */
-    /* --primary-icon-colour: #040095;
-    --secondary-icon-colour: #040095; */
-
-    /* Buttons */
-    /* --primary-btn-colour: #040095;
-    --primary-btn-colour-hover: #9a7ceb;
-    --primary-btn-colour-border: #7f56d9;
-    --secondary-btn-colour: gold;
-    --secondary-btn-colour-border: #040095;
-    --secondary-btn-colour-hover-border: #040095;
-    --secondary-button-text-colour: #040095;
-    --secondary-button-border-width: 1px;
-    --secondary-button-border-colour: #040095; */
-
-    /* Text */
-    /* --secondary-text-colour: white; */
-
-    /* Other colours */
-    /* --tertiary-colour: white;
-    --fourth-colour: gold;
-    --fifth-colour: white; */
-
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
-
-    /* Other */
-    /* --hr-colour: #040095;
-    --hr-secondary-colour: #040095;
-    --collapsible-tree-node-colour: #53389e;
-    --stroke-width: 1px;
-    --loading-animation-colour: #040095;
-    --background-colour: #040095;
-    --background-hover-colour: blue; */
 }
 
 /* The Scholar theme */
 .scholar-theme {
     --primary-color: black;
-    --secondary-color: white;
+    --primary-contrast-color: white;
+
+    --secondary-color: gold;
+    --secondary-contrast-color: black;
+
     --tertiary-color: #bf202f;
     --stroke-width: 1px;
-
-    --dark-color: black;
-    --secondary-btn-color: gold;
-    --secondary-button-text-color: black;
-    --secondary-button-icon-color: black;
-
-    /* --nav-colour: white; */
-
-    /* Headings */
-    /* --primary-heading-colour: white;
-    --primary-heading-stroke-colour: black;
-    --secondary-heading-colour: black; */
-
-    /* Icons */
-    /* --primary-icon-colour: white;
-    --secondary-icon-colour: black; */
-
-    /* Buttons */
-    /* --primary-btn-colour: black;
-    --primary-btn-colour-hover: #303030;
-    --primary-btn-colour-border: white;
-    --secondary-btn-colour: black;
-    --secondary-btn-colour-hover-border: darkorange;
-    --secondary-button-text-colour: white; */
-
-    /* Text */
-    /* --secondary-text-colour: white; */
-
-    /* Other colours */
-    /* --tertiary-colour: #87ceeb;
-    --fourth-colour: #bf202f;
-    --fifth-colour: white; */
-
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
-
-    /* Other */
-    /* --hr-colour: black;
-        --hr-secondary-colour: white;
-
-        --collapsible-tree-node-colour: black;
-        --stroke-width: 1px;
-        --loading-animation-colour: white;
-        --background-colour: black;
-        --background-hover-colour: slategrey; */
 }
 
 /* Navigation bar */
@@ -390,49 +274,22 @@ body {
     background-size: cover;
 }
 
-/* Regular text */
-p {
-    color: black !important;
-}
-
 /* Headings */
-.primary-heading {
+.heading {
     color: var(--primary-color) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
 }
 
-.primary-heading-stroke {
-    -webkit-text-stroke-color: var(--secondary-color);
-    -webkit-text-stroke-width: var(--stroke-width);
+/* Regular text */
+p {
+    color: black !important;
 }
 
-.secondary-heading {
-    color: var(--secondary-colour) !important;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-.secondary-heading-stroke {
-    -webkit-text-stroke-color: var(--primary-colour);
-    -webkit-text-stroke-width: var(--stroke-width);
-}
-
-.dark-icon {
-    fill: var(--dark-color);
-}
-
-.icon-primary {
-    fill: var(--primary-colour) !important;
-}
-
-.icon-secondary {
-    fill: var(--secondary-colour) !important;
-}
-
+/* Buttons */
 .primary-btn {
     background-color: var(--primary-color) !important;
-    color: white;
+    color: var(--primary-contrast-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
     font-size: 16px;
@@ -444,20 +301,17 @@ p {
     text-wrap: nowrap;
 }
 
-.primary-btn:hover {
-    background-color: var(--primary-btn-colour-hover) !important;
-    color: white;
-}
-
+.primary-btn:hover,
 .primary-btn:focus,
 .primary-btn:active {
-    background-color: var(--primary-btn-colour) !important;
-    color: white;
+    border-color: var(--primary-contrast-color) !important;
+    color: var(--primary-contrast-color);
 }
 
 .secondary-btn {
     background-color: var(--secondary-color) !important;
-    color: var(--secondary-button-text-colour);
+    color: var(--secondary-contrast-color);
+    fill: var(--secondary-contrast-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
     font-size: 16px;
@@ -467,28 +321,23 @@ p {
     max-width: fit-content;
     max-height: 44px;
     text-wrap: nowrap;
-    border-width: var(--secondary-button-border-width);
-    border-color: var(--secondary-button-border-color);
     border-style: solid;
 }
 
-.secondary-btn:hover {
-    border-color: var(--secondary-btn-colour-hover-border) !important;
-    color: var(--secondary-button-text-colour);
+.secondary-btn:hover,
+.secondary-btn:focus,
+.secondary-btn:active {
+    border-color: var(--secondary-contrast-color) !important;
+    color: var(--secondary-contrast-color);
 }
 
-.table-header {
-    background-color: var(--h2-colour) !important;
-    border-color: var(--secondary-btn-colour-border) !important;
-    color: white !important;
+/* Icons */
+.primary-icon {
+    fill: var(--primary-color) !important;
 }
 
-.secondary-text {
-    color: var(--secondary-text-colour) !important;
-}
-
-.collapsible-tree-node {
-    color: var(--collapsible-tree-node-colour) !important;
+.secondary-icon {
+    fill: var(--secondary-color) !important;
 }
 
 /* End of themes section */

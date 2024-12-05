@@ -128,12 +128,12 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3">
-        <h1 class="h1-stroke">Edit Question</h1>
+    <div class="container mt-3 bg-light rounded">
+        <h1 class="heading">Edit Question</h1>
 
-        <div class="main-content-container container-fluid mt-4">
+        <div class="container-fluid mt-4">
             <div class="row p-0">
-                <div id="form-container" class="col-lg-7 p-4">
+                <div id="form-container" class="col p-4">
                     <div class="mb-3">
                         <label class="form-label">Name</label>
                         <input

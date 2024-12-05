@@ -27,7 +27,7 @@ export default {
 
 <template>
     <div class="container pb-4 theme-background mt-2">
-        <h2 class="primary-heading">Theme</h2>
+        <h2 class="heading">Theme</h2>
         <!-- Choose theme -->
         <div class="mb-3 text-start themes">
             <select class="form-select" @change="chooseTheme()" v-model="theme">

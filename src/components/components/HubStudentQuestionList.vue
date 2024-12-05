@@ -62,7 +62,7 @@ export default {
 
 <template>
     <div class="container-fluid">
-        <h2 class="primary-heading">Check New Questions</h2>
+        <h2 class="heading">Check New Questions</h2>
 
         <div class="list-body">
             <div class="question" v-for="question in questions">

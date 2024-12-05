@@ -247,7 +247,7 @@ export default {
 <template>
     <div class="container-fluid mt-4">
         <div class="forum-header">
-            <h2 class="primary-heading">Best Places To Learn This</h2>
+            <h2 class="heading">Best Places To Learn This</h2>
 
             <!-- Navigation Tabs -->
             <!-- If guest account, we dont show tutors, only sources -->
@@ -341,10 +341,10 @@ export default {
 
 .nav-tabs {
     --bs-nav-tabs-border-width: 2px;
-    --bs-nav-tabs-border-color: var(--primary-icon-colour);
-    --bs-nav-tabs-link-active-border-color: var(--hr-colour) var(--hr-colour)
-        #fff;
-    --bs-nav-tabs-link-active-color: var(--primary-btn-colour-border);
+    --bs-nav-tabs-border-color: var(--primary-color);
+    --bs-nav-tabs-link-active-border-color: var(--primary-color)
+        var(--primary-color) #fff;
+    --bs-nav-tabs-link-active-color: var(--primary-color);
     font-weight: 550;
     cursor: pointer;
 }
@@ -359,7 +359,7 @@ export default {
 }
 
 .nav-link.active {
-    color: var(--secondary-heading-colour);
+    color: var(--primary-color);
 }
 
 :deep(.red-btn) {

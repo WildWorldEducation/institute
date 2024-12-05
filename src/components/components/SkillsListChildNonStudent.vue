@@ -195,10 +195,9 @@ export default {
             'college-level': level == 'college',
             'phd-level': level == 'phd',
             'has-children': childrenNotSubskills.length > 0,
-            'result-button': isResult === true,
-            'collapsible-tree-node': type != 'domain'
+            'result-button': isResult === true
         }"
-        class="skill-button secondary-text d-flex justify-content-between align-items-center"
+        class="skill-button d-flex justify-content-between align-items-center"
         @click="mainButtonPress()"
         :id="`skill${this.id}`"
     >
@@ -217,7 +216,7 @@ export default {
                     v-if="!showSubskills"
                     width="18"
                     height="18"
-                    class="icon"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -231,7 +230,7 @@ export default {
                     v-else
                     width="18"
                     height="18"
-                    class="icon"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -251,7 +250,7 @@ export default {
                     width="19"
                     height="20"
                     viewBox="0 0 19 20"
-                    class="icon"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                 >
                     <path
@@ -277,7 +276,7 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
-                    class="icon"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
@@ -290,7 +289,7 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
-                    class="icon"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
                     -->
@@ -311,7 +310,7 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
-                    class="icon"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
@@ -324,7 +323,7 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
-                    class="icon"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
                     -->
@@ -454,7 +453,6 @@ export default {
     border-radius: 8px;
     width: 545px;
     height: 84px;
-    color: #53389e;
     font-size: 16px;
     font-weight: 500;
     background-color: #f2edff;
@@ -491,7 +489,7 @@ export default {
 .domains {
     width: 360px;
     height: 71px;
-    color: black;
+    color: black !important;
     font-size: 20px;
     font-weight: 400;
     border-color: black;

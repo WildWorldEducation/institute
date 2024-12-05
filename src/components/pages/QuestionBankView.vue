@@ -83,9 +83,9 @@ export default {
             </div>
         </div>
     </div>
-    <div class="container mt-2">
+    <div class="container mt-2 bg-light rounded">
         <!-- Page Heading  -->
-        <h1 class="h1-stroke">{{ skill.name }} Question Bank</h1>
+        <h1 class="heading">{{ skill.name }} Question Bank</h1>
 
         <!-- Question type checkboxes -->
         <div class="row mt-2 pt-1 pb-1 checkboxes">
@@ -185,7 +185,7 @@ table {
 .control > span {
     font-weight: 500;
     font-size: 0.938rem;
-    color: var(--regular-text-colour);
+    color: var(--primary-color);
     text-align: center;
 }
 
@@ -202,7 +202,7 @@ table {
     height: 29.09px;
     width: 29.09px;
     background: #f9f5ff;
-    border: 1.45px solid var(--secondary-icon-colour);
+    border: 1.45px solid var(--primary-color);
     border-radius: 8.73px;
 }
 
@@ -242,7 +242,7 @@ table {
     top: 5px;
     width: 13.58px;
     height: 9.33px;
-    border: solid var(--secondary-icon-colour);
+    border: solid var(--primary-color);
     border-width: 0px 0px 2.9px 2.9px;
     transform: rotate(-45deg);
 }
@@ -261,7 +261,7 @@ table {
     height: 4.5rem;
     margin-left: -1.3rem;
     margin-top: -1.3rem;
-    background: #9c7eec;
+    background: var(--primary-color);
     border-radius: 3rem;
     opacity: 0.6;
     z-index: 99999;

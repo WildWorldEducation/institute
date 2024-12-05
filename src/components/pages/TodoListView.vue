@@ -54,7 +54,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid h-100 p-0">
+    <div class="container-fluid h-100 p-0 bg-light">
         <!-- In the pc view we display flex row -->
         <div class="h-100 d-flex">
             <PageNav :activeContent="activeContent" />
@@ -79,7 +79,7 @@ export default {
 
 <style>
 .page-title {
-    color: #9c7eec;
+    color: var(--primary-color);
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }
