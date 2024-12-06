@@ -102,9 +102,13 @@ export default {
                 return;
             }
             // find user by search text in result
-            const result = this.userList.find(
-                (user) => user.username.toLowerCase() === searchText
-            );
+            const result = this.userList.find((user) => {
+                return (
+                    user.username.toLowerCase() ===
+                    this.searchText.toLowerCase()
+                );
+            });
+
             if (!result) {
                 this.modalMessage = 'Username doesn`t exist';
                 this.showFailsModal = true;
