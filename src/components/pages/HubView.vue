@@ -75,7 +75,7 @@ export default {
                     />
                 </div>
             </div>
-            <div class="col-lg-3 col-md-5 pb-4 column">
+            <div class="col-lg-4 col-md-6 mb-4 pb-4">
                 <div class="hub-component">
                     <Notifications />
                 </div>
