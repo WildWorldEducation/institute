@@ -140,7 +140,7 @@ export default {
     top: 0px;
     right: 0px;
     width: 30%;
-    height: calc(100% - 55.2px);
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -264,7 +264,7 @@ export default {
 @media (min-width: 577px) and (max-width: 1020px) {
     .skill-panel-container {
         width: 80%;
-        height: calc(100% - 65.6px);
+        height: 100%;
     }
 }
 </style>
