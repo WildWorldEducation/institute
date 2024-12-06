@@ -47,7 +47,6 @@ export default {
 
 <template>
     <div class="container mt-3 profile-background">
-        <h1 class="heading">My Profile</h1>
         <div class="row mt-3">
             <div class="col-12 col-md-6">
                 <!-- Avatar -->
