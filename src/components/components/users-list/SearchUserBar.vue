@@ -97,8 +97,8 @@ export default {
             // find user by arrow key
             if (this.focusIndex >= 0) {
                 this.chooseUser = true;
-                this.focusIndex = 0;
                 this.handleChooseResult(this.usersResult[this.focusIndex]);
+                this.focusIndex = 0;
                 return;
             }
             // find user by search text in result
@@ -129,25 +129,6 @@ export default {
                 behavior: 'smooth',
                 block: 'nearest'
             });
-        },
-        scrollToView(row) {
-            let el = row;
-            let scrollDiv = document.getElementById('#result-div');
-            console.log(scrollDiv);
-            if (el) {
-                let scrollDivRect = scrollDiv.getBoundingClientRect();
-                let idRect = el.getBoundingClientRect();
-
-                let y = scrollDivRect.y;
-                let y1 = idRect.y;
-
-                let offset = y1 - y;
-
-                scrollDiv.scrollBy({
-                    top: offset,
-                    behavior: 'smooth'
-                });
-            }
         }
     },
     computed: {
@@ -205,7 +186,7 @@ export default {
                 v-if="usersResult.length && !loading"
                 class="search-results"
             >
-                <div
+                <button
                     v-for="(user, index) in usersResult"
                     ref="results"
                     class="result-row"
@@ -213,7 +194,7 @@ export default {
                     @click="handleChooseResult(user)"
                 >
                     {{ user.username }}
-                </div>
+                </button>
             </div>
 
             <div v-if="loading" class="search-results">
@@ -276,6 +257,7 @@ export default {
     background-color: inherit;
     border: 0px;
     text-align: left;
+    outline: none;
 }
 
 .result-row:hover,
@@ -289,8 +271,9 @@ export default {
 }
 
 .focus-result {
-    border-left: 2px solid #8c6ce4;
-    background-color: azure;
+    border-left: 4px solid #8c6ce4;
+    background-color: #f3f5f6;
+    color: black;
 }
 
 .loading-spinner-div {
