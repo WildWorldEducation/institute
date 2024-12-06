@@ -1,6 +1,8 @@
 <script>
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import { useUsersStore } from '../../../stores/UsersStore';
+import FailsModal from '../share-components/FailsModal.vue';
+
 import LoadingSpinner from '../share-components/LoadingSpinner.vue';
 
 export default {
@@ -17,7 +19,8 @@ export default {
     },
     props: ['updateUserDetails'],
     components: {
-        LoadingSpinner
+        LoadingSpinner,
+        FailsModal
     },
     data() {
         return {
@@ -26,7 +29,9 @@ export default {
             userList: [],
             chooseUser: '',
             loading: false,
-            showFailsModal: false
+            showFailsModal: false,
+            focusIndex: -1,
+            modalMessage: ''
         };
     },
     async created() {
@@ -48,6 +53,7 @@ export default {
             }
             this.userList = this.usersStore.editors;
         }
+        this.focusIndex = -1;
     },
     methods: {
         findUserFirstChars(searchString) {
@@ -88,12 +94,32 @@ export default {
             this.updateUserDetails(returnUserObject);
         },
         handleInputEnterPress(searchText) {
+            // find user by arrow key
+            if (this.focusIndex >= 0) {
+                this.chooseUser = true;
+                this.handleChooseResult(this.usersResult[this.focusIndex]);
+                return;
+            }
+            // find user by search text in result
             const result = this.userList.find(
                 (user) => user.username.toLowerCase() === searchText
             );
             if (!result) {
+                this.modalMessage = 'Username doesn`t exist';
+                this.showFailsModal = true;
                 return;
             }
+            this.chooseUser = true;
+            this.handleChooseResult(result);
+        },
+        handleFailsOkClick() {
+            this.showFailsModal = false;
+        },
+        handleKeyDownPress() {
+            this.focusIndex = this.focusIndex + 1;
+        },
+        handleKeyUpPress() {
+            this.focusIndex = this.focusIndex - 1;
         }
     },
     computed: {
@@ -134,19 +160,23 @@ export default {
                 />
             </svg>
             <input
+                autocomplete="off"
                 id="skill-tree-search-text"
                 type="text"
                 class="skill-tree-input"
                 placeholder="Find Users"
                 v-model="searchText"
-                v-on:keyup.enter=""
+                @keyup.enter="handleInputEnterPress"
+                @keyup.arrow-down="handleKeyDownPress"
+                @keyup.arrow-up="handleKeyUpPress"
             />
         </div>
         <div class="position-relative">
             <div v-if="usersResult.length && !loading" class="search-results">
                 <div
+                    v-for="(user, index) in usersResult"
                     class="result-row"
-                    v-for="user in usersResult"
+                    :class="index === focusIndex && 'focus-result'"
                     @click="handleChooseResult(user)"
                 >
                     {{ user.username }}
@@ -158,6 +188,11 @@ export default {
             </div>
         </div>
     </div>
+    <FailsModal
+        v-if="showFailsModal"
+        :message="modalMessage"
+        :handleOkClick="handleFailsOkClick"
+    />
 </template>
 
 <style scoped>
@@ -220,15 +255,9 @@ export default {
     border: 1px solid #133b61;
 }
 
-.robot-icon {
-    margin-left: auto;
-    margin-right: 5px;
-    background-color: inherit;
-    border: none;
-}
-
-.robot-icon:hover {
-    cursor: pointer;
+.focus-result {
+    border-left: 2px solid #8c6ce4;
+    background-color: azure;
 }
 
 .loading-spinner-div {
