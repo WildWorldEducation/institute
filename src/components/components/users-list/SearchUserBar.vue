@@ -158,7 +158,13 @@ export default {
 
 <template>
     <!-- Search Feature -->
-    <div :class="['search-bar', usersResult.length > 0 && 'have-results']">
+    <div
+        :class="[
+            'search-bar',
+            usersResult.length > 0 && 'have-results',
+            userDetailsStore.role === 'editor' && 'editor-search-bar'
+        ]"
+    >
         <div class="d-flex align-items-center p-1 my-auto">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -222,6 +228,10 @@ export default {
     width: 450px;
     margin-right: 45px;
     background-color: white;
+}
+
+.editor-search-bar {
+    margin-right: 5%;
 }
 
 .have-results {
@@ -288,15 +298,26 @@ export default {
 @media (min-width: 481px) and (max-width: 1024px) {
     .search-bar {
         width: 45%;
+        margin-left: auto;
+        margin-right: 3%;
+    }
+
+    .editor-search-bar {
+        margin-left: auto;
+        margin-right: 6%;
     }
 }
 
 /* Phone view style */
 @media (max-width: 480px) {
     .search-bar {
-        width: 100%;
-        margin-left: 20px;
-        margin-right: 6px;
+        width: 70%;
+        margin-left: auto;
+        margin-right: 0px;
+    }
+
+    .editor-search-bar {
+        margin-right: auto;
     }
 }
 </style>

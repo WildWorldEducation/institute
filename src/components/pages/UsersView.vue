@@ -204,7 +204,7 @@ export default {
             userDetailsStore.role === 'editor' ||
             userDetailsStore.role === 'instructor'
         "
-        class="d-flex flex-row-reverse mt-3"
+        class="d-flex flex-row-reverse mt-3 justify-contents-between"
     >
         <SearchUserBar :updateUserDetails="updateShowUserDetails" />
     </div>
