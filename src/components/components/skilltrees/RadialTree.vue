@@ -450,12 +450,16 @@ export default {
             if (link.target.data.is_mastered == 1) {
                 this.context.lineWidth =
                     4 + parseInt(3 * (1 / this.currentZoom));
-                color = '#000';
+                if (this.userDetailsStore.theme == 'original') {
+                    color = '#fff';
+                } else if (this.userDetailsStore.theme == 'apprentice') {
+                    color = '#fff';
+                } else if (this.userDetailsStore.theme == 'scholar') {
+                    color = '#000';
+                }
             } else {
                 let width = 2;
-                if (this.userDetailsStore.theme != 'original') {
-                    width = 3;
-                }
+
                 this.context.lineWidth = parseInt(
                     width * (1 / this.currentZoom)
                 );
