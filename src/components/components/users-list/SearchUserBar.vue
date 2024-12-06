@@ -97,6 +97,7 @@ export default {
             // find user by arrow key
             if (this.focusIndex >= 0) {
                 this.chooseUser = true;
+                this.focusIndex = 0;
                 this.handleChooseResult(this.usersResult[this.focusIndex]);
                 return;
             }
@@ -117,9 +118,36 @@ export default {
         },
         handleKeyDownPress() {
             this.focusIndex = this.focusIndex + 1;
+            this.$refs.results[this.focusIndex].scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
         },
         handleKeyUpPress() {
             this.focusIndex = this.focusIndex - 1;
+            this.$refs.results[this.focusIndex].scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        },
+        scrollToView(row) {
+            let el = row;
+            let scrollDiv = document.getElementById('#result-div');
+            console.log(scrollDiv);
+            if (el) {
+                let scrollDivRect = scrollDiv.getBoundingClientRect();
+                let idRect = el.getBoundingClientRect();
+
+                let y = scrollDivRect.y;
+                let y1 = idRect.y;
+
+                let offset = y1 - y;
+
+                scrollDiv.scrollBy({
+                    top: offset,
+                    behavior: 'smooth'
+                });
+            }
         }
     },
     computed: {
@@ -172,9 +200,14 @@ export default {
             />
         </div>
         <div class="position-relative">
-            <div v-if="usersResult.length && !loading" class="search-results">
+            <div
+                id="result-div"
+                v-if="usersResult.length && !loading"
+                class="search-results"
+            >
                 <div
                     v-for="(user, index) in usersResult"
+                    ref="results"
                     class="result-row"
                     :class="index === focusIndex && 'focus-result'"
                     @click="handleChooseResult(user)"
