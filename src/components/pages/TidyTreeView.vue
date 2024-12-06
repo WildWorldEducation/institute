@@ -346,6 +346,7 @@ export default {
 .legend-div {
     width: 100%;
     z-index: 2;
+    top: 70px;
 }
 
 #info-button {

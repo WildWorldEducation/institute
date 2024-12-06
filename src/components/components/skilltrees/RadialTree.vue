@@ -441,7 +441,7 @@ export default {
             if (this.userDetailsStore.theme == 'original') {
                 color = '#000';
             } else if (this.userDetailsStore.theme == 'apprentice') {
-                color = '#950200';
+                color = '#000';
             } else if (this.userDetailsStore.theme == 'scholar') {
                 color = '#fff';
             }
@@ -908,7 +908,6 @@ export default {
 #wrapper {
     width: 100%;
     height: 100%;
-    height: calc(100% - 53px);
     overflow: hidden;
     position: relative;
 }
@@ -974,7 +973,9 @@ input[type='button'] {
 }
 canvas {
     cursor: pointer;
+    background-color: var(--skill-tree-background-color);
 }
+
 .click-animation {
     position: absolute;
     width: 20px;
@@ -1000,7 +1001,7 @@ canvas {
         flex-direction: column;
     }
     #wrapper {
-        height: calc(100% - 66px);
+        height: 100%;
     }
 }
 
