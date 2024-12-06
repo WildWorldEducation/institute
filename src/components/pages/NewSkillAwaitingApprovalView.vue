@@ -93,7 +93,6 @@ export default {
             );
 
             if (result.error) {
-                console.log(result.error);
                 this.message = 'Failed to dismiss suggested skill';
                 this.showFailsModal = true;
                 return;

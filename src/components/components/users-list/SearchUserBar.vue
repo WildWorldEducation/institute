@@ -164,10 +164,10 @@ export default {
 .search-bar {
     display: flex;
     flex-direction: column;
-    border: 1px solid #dce2f2;
+    border: 1px solid #8c6ce4;
     border-radius: 8px;
     width: 450px;
-    margin-right: 35px;
+    margin-right: 45px;
     background-color: white;
 }
 
@@ -191,9 +191,9 @@ export default {
     left: -1px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    border-bottom: 1px solid #dce2f2;
-    border-right: 1px solid #dce2f2;
-    border-left: 1px solid #dce2f2;
+    border-bottom: 1px solid #8c6ce4;
+    border-right: 1px solid #8c6ce4;
+    border-left: 1px solid #8c6ce4;
     background-color: white;
     max-height: 400px;
     overflow-y: auto;
