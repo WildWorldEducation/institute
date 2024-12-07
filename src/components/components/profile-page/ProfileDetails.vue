@@ -29,6 +29,7 @@ export default {
     },
     methods: {
         LogOut() {
+            // Remove background image from theme on logout.
             document.getElementsByTagName('body')[0].style =
                 'background-image: none;';
 

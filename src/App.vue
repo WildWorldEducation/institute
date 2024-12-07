@@ -14,7 +14,7 @@ export default {
         };
     },
     async mounted() {
-        await this.userDetailsStore.getUserDetails();
+        await this.userDetailsStore.getUserDetails();       
 
         // Kids theme
         if (this.userDetailsStore.theme == 'apprentice') {
