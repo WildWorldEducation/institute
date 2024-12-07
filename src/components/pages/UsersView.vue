@@ -6,6 +6,7 @@ import UserDetails from '../components/UserDetails.vue';
 import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import SearchUserBar from '../components/users-list/SearchUserBar.vue';
 
 export default {
     setup() {
@@ -40,7 +41,8 @@ export default {
     },
     components: {
         UsersList,
-        UserDetails
+        UserDetails,
+        SearchUserBar
     },
     async created() {
         // Set up the first user in the array to be selected on the page initially.
@@ -163,6 +165,10 @@ export default {
                     }
                 }
             }
+        },
+        updateShowUserDetails(newUser) {
+            this.showDetails = true;
+            this.user = newUser;
         }
     }
 };
@@ -191,6 +197,16 @@ export default {
                 />
             </svg>
         </router-link>
+        <SearchUserBar :updateUserDetails="updateShowUserDetails" />
+    </div>
+    <div
+        v-if="
+            userDetailsStore.role === 'editor' ||
+            userDetailsStore.role === 'instructor'
+        "
+        class="d-flex flex-row-reverse mt-3 justify-contents-between"
+    >
+        <SearchUserBar :updateUserDetails="updateShowUserDetails" />
     </div>
     <!-- Loading animation -->
     <div
