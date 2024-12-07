@@ -223,10 +223,10 @@ export default {
                         <!-- Vote count Div -->
                         <span
                             b-on-hover
-                            title="number of vote this resource receive"
+                            title="number of votes this tutor post received"
                             :class="{
                                 'text-danger': post.voteCount < 0,
-                                'text-primary': post.voteCount > 0,
+                                'primary-color': post.voteCount > 0,
                                 'vote-count': true
                             }"
                             >{{ post.voteCount }}</span
@@ -428,6 +428,10 @@ export default {
 </template>
 
 <style scoped>
+.primary-color {
+    color: var(--primary-color);
+}
+
 .tutor {
     border-top: 2px dotted #aea3ce;
     border-right: 2px solid #aea3ce;
