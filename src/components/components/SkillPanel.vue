@@ -267,11 +267,11 @@ img {
 @media (max-width: 800px) {
     .skill-panel-container {
         width: 100%;
-        height: calc(100% - 137.6px);
+        height: 100%;
     }
 
     .radial-skill-panel {
-        height: calc(100% - 70.6px);
+        height: 100%;
     }
 }
 
@@ -280,6 +280,15 @@ img {
     .skill-panel-container {
         width: 80%;
         height: 100%;
+    }
+
+    .skill-info-panel-bottom {
+        border-top: 1 px solid #888;
+        position: absolute;
+        bottom: 0px;
+        right: 0px;
+        width: 80%;
+        background-color: #e4ecf4;
     }
 }
 </style>
