@@ -12,7 +12,6 @@ export const useUsersStore = defineStore('users', {
             const result = await fetch('/users/list');
             const data = await result.json();
             this.users = data;
-
         },
         async getUsersIncludingDeleted() {
             const result = await fetch('/users/list-including-deleted');
@@ -42,12 +41,5 @@ export const useUsersStore = defineStore('users', {
                 console.log(result.error);
             }
         },
-        findUserById(id) {
-            const resultUser = this.users.find(user =>
-                user.id === id
-            )
-            console.log(resultUser)
-            return resultUser
-        }
     }
 });
