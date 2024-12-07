@@ -29,6 +29,9 @@ export default {
     },
     methods: {
         LogOut() {
+            document.getElementsByTagName('body')[0].style =
+                'background-image: none;';
+
             this.sessionDetailsStore.isLoggedIn = false;
 
             const requestOptions = {
