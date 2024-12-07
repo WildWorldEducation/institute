@@ -71,7 +71,7 @@ export default {
 </script>
 
 <template>
-    <div class="container">
+    <div class="container bg-light rounded p-2">
         <h1 class="page-title heading">User Activity Report</h1>
 
         <!-- User Details -->
@@ -292,7 +292,7 @@ export default {
             </div>
             <hr class="mt-5 mb-3" />
             <!-- Skills  -->
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-column mb-3">
                 <div class="d-flex flex-row justify-content-between">
                     <div
                         class="log-type"
