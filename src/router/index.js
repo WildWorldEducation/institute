@@ -345,6 +345,11 @@ const router = createRouter({
                 )
         },
         {
+            path: '/goals/add',
+            name: 'add-goal',
+            component: () => import('../components/pages/goals/AddGoalView.vue')
+        },
+        {
             path: '/test-ai-feature',
             name: 'test ai feature',
             component: () => import('../components/pages/willBeDelete.vue')

@@ -1,9 +1,9 @@
 <script>
-import { useAssessmentsStore } from '../../stores/AssessmentsStore.js';
-import { useUsersStore } from '../../stores/UsersStore';
-import { useSkillsStore } from '../../stores/SkillsStore';
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
-import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
+import { useAssessmentsStore } from '../../../stores/AssessmentsStore.js';
+import { useUsersStore } from '../../../stores/UsersStore.js';
+import { useSkillsStore } from '../../../stores/SkillsStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
+import { useInstructorStudentsStore } from '../../../stores/InstructorStudentsStore.js';
 
 export default {
     setup() {

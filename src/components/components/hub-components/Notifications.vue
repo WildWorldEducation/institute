@@ -1,6 +1,6 @@
 <script>
 // Import store.
-import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 
 export default {
     setup() {
