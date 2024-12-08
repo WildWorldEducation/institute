@@ -49,7 +49,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 bg-light rounded p-3">
+    <div class="container bg-light rounded p-3">
         <h1 class="heading">Assessment</h1>
         <p class="skill-name">
             <em>{{ this.skill.name }}</em>

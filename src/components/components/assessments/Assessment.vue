@@ -917,7 +917,7 @@ export default {
                     <button
                         v-if="questionNumber > 0"
                         @click="Previous()"
-                        class="btn red-btn me-2"
+                        class="btn primary-btn me-2"
                     >
                         Previous
                     </button>
