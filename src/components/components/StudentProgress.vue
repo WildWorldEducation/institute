@@ -39,7 +39,7 @@ export default {
 </script>
 
 <template>
-    <h2 class="heading">Available Skills</h2>
+    <h2 class="secondary-heading h4">Available Skills</h2>
     <div id="skill-list">
         <div v-for="availableSkill in availableSkills">
             <router-link

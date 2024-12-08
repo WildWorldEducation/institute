@@ -71,9 +71,8 @@ export default {
 </script>
 
 <template>
-    <div class="container bg-light rounded p-2">
-        <h1 class="page-title heading">User Activity Report</h1>
-
+    <div class="container bg-light rounded p-3">
+        <h1 class="heading mb-2">User Activity Report</h1>
         <!-- User Details -->
         <div class="row">
             <div class="d-flex flex-column flex-md-row gap-3">
@@ -95,24 +94,26 @@ export default {
                         b-on-hover
                         :title="showFlags ? 'collapse' : 'expand'"
                     >
-                        <span> Flags </span>
-                        <!-- Arrow Icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            width="22"
-                            height="22"
-                            fill="#667085"
-                            :class="[
-                                showFlags
-                                    ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up '
-                            ]"
-                        >
-                            <path
-                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
-                            />
-                        </svg>
+                        <h2 class="secondary-heading h4">
+                            Flags
+                            <!-- Arrow Icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 320 512"
+                                width="22"
+                                height="22"
+                                fill="#667085"
+                                :class="[
+                                    showFlags
+                                        ? 'arrow-point-down mb-2'
+                                        : 'arrow-point-up '
+                                ]"
+                            >
+                                <path
+                                    d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                                />
+                            </svg>
+                        </h2>
                     </div>
                 </div>
                 <transition name="dropdown">
@@ -125,7 +126,6 @@ export default {
                     </div>
                 </transition>
             </div>
-            <hr class="mt-5 mb-3" />
 
             <!-- Questions -->
             <!-- Only show Questions log if user is admin  -->
@@ -137,24 +137,26 @@ export default {
                         b-on-hover
                         :title="showMcQuestions ? 'collapse' : 'expand'"
                     >
-                        <span>Questions </span>
-                        <!-- Arrow Icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            width="22"
-                            height="22"
-                            fill="#667085"
-                            :class="[
-                                showMcQuestions
-                                    ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up'
-                            ]"
-                        >
-                            <path
-                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
-                            />
-                        </svg>
+                        <h2 class="secondary-heading h4">
+                            Questions
+                            <!-- Arrow Icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 320 512"
+                                width="22"
+                                height="22"
+                                fill="#667085"
+                                :class="[
+                                    showMcQuestions
+                                        ? 'arrow-point-down mb-2'
+                                        : 'arrow-point-up'
+                                ]"
+                            >
+                                <path
+                                    d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                                />
+                            </svg>
+                        </h2>
                     </div>
                 </div>
                 <Transition name="dropdown">
@@ -168,7 +170,7 @@ export default {
             </div>
             <hr v-if="user.role === 'admin'" class="mt-5 mb-3" />
 
-            <!-- Student Mc Questions -->
+            <!-- Student Suggested MC Questions -->
             <div class="d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
                     <div
@@ -179,24 +181,26 @@ export default {
                         b-on-hover
                         :title="showStudentMcQuestions ? 'collapse' : 'expand'"
                     >
-                        <span>Student MC Questions </span>
-                        <!-- Arrow Icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            width="22"
-                            height="22"
-                            fill="#667085"
-                            :class="[
-                                showStudentMcQuestions
-                                    ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up'
-                            ]"
-                        >
-                            <path
-                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
-                            />
-                        </svg>
+                        <h2 class="secondary-heading h4">
+                            Student Suggested MC Questions
+                            <!-- Arrow Icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 320 512"
+                                width="22"
+                                height="22"
+                                fill="#667085"
+                                :class="[
+                                    showStudentMcQuestions
+                                        ? 'arrow-point-down mb-2'
+                                        : 'arrow-point-up'
+                                ]"
+                            >
+                                <path
+                                    d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                                />
+                            </svg>
+                        </h2>
                     </div>
                 </div>
                 <Transition name="dropdown">
@@ -210,9 +214,8 @@ export default {
                     </div>
                 </Transition>
             </div>
-            <hr class="mt-5 mb-3" />
 
-            <!-- Resources -->
+            <!-- Sources -->
             <div class="d-flex flex-column">
                 <div class="d-flex flex-row justify-content-between">
                     <div
@@ -221,24 +224,26 @@ export default {
                         b-on-hover
                         :title="showSources ? 'collapse' : 'expand'"
                     >
-                        <span> Sources </span>
-                        <!-- Arrow Icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            width="22"
-                            height="22"
-                            fill="#667085"
-                            :class="[
-                                showSources
-                                    ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up '
-                            ]"
-                        >
-                            <path
-                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
-                            />
-                        </svg>
+                        <h2 class="secondary-heading h4">
+                            Sources
+                            <!-- Arrow Icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 320 512"
+                                width="22"
+                                height="22"
+                                fill="#667085"
+                                :class="[
+                                    showSources
+                                        ? 'arrow-point-down mb-2'
+                                        : 'arrow-point-up '
+                                ]"
+                            >
+                                <path
+                                    d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                                />
+                            </svg>
+                        </h2>
                     </div>
                 </div>
                 <transition name="dropdown">
@@ -250,7 +255,6 @@ export default {
                     </div>
                 </transition>
             </div>
-            <hr class="mt-5 mb-3" />
 
             <!-- Skills  -->
             <div class="d-flex flex-column">
@@ -261,24 +265,26 @@ export default {
                         b-on-hover
                         :title="showSkills ? 'collapse' : 'expand'"
                     >
-                        <span> Skills </span>
-                        <!-- Arrow Icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            width="22"
-                            height="22"
-                            fill="#667085"
-                            :class="[
-                                showSkills
-                                    ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up '
-                            ]"
-                        >
-                            <path
-                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
-                            />
-                        </svg>
+                        <h2 class="secondary-heading h4">
+                            Skills
+                            <!-- Arrow Icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 320 512"
+                                width="22"
+                                height="22"
+                                fill="#667085"
+                                :class="[
+                                    showSkills
+                                        ? 'arrow-point-down mb-2'
+                                        : 'arrow-point-up '
+                                ]"
+                            >
+                                <path
+                                    d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                                />
+                            </svg>
+                        </h2>
                     </div>
                 </div>
                 <transition name="dropdown">
@@ -290,7 +296,7 @@ export default {
                     </div>
                 </transition>
             </div>
-            <hr class="mt-5 mb-3" />
+
             <!-- Skills  -->
             <div class="d-flex flex-column mb-3">
                 <div class="d-flex flex-row justify-content-between">
@@ -305,24 +311,26 @@ export default {
                             showSkillSubmittedByUsers ? 'collapse' : 'expand'
                         "
                     >
-                        <span> Skills Submitted By User </span>
-                        <!-- Arrow Icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            width="22"
-                            height="22"
-                            fill="#667085"
-                            :class="[
-                                showSkillSubmittedByUsers
-                                    ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up '
-                            ]"
-                        >
-                            <path
-                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
-                            />
-                        </svg>
+                        <h2 class="secondary-heading h4">
+                            User Suggested New Skills
+                            <!-- Arrow Icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 320 512"
+                                width="22"
+                                height="22"
+                                fill="#667085"
+                                :class="[
+                                    showSkillSubmittedByUsers
+                                        ? 'arrow-point-down mb-2'
+                                        : 'arrow-point-up '
+                                ]"
+                            >
+                                <path
+                                    d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                                />
+                            </svg>
+                        </h2>
                     </div>
                 </div>
                 <transition name="dropdown">
@@ -336,7 +344,6 @@ export default {
                     </div>
                 </transition>
             </div>
-            <hr class="mt-5 mb-3" />
         </div>
     </div>
 </template>
@@ -351,7 +358,6 @@ export default {
 
 #user-name {
     font-size: 20px;
-    font-weight: 660;
     font-family: 'Poppins', sans-serif;
     color: #667085;
 }

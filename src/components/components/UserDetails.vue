@@ -152,7 +152,7 @@ export default {
             </div>
             <div id="user-form-info" class="col-12 col-md-6">
                 <div class="mb-3">
-                    <h2 class="heading h4">First name</h2>
+                    <h2 class="secondary-heading h4">First name</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -161,7 +161,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <h2 class="heading h4">Last name</h2>
+                    <h2 class="secondary-heading h4">Last name</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -170,7 +170,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <h2 class="heading h4">Username</h2>
+                    <h2 class="secondary-heading h4">Username</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -179,7 +179,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <h2 class="heading h4">Email</h2>
+                    <h2 class="secondary-heading h4">Email</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -204,7 +204,7 @@ export default {
                     "
                     class="mb-3"
                 >
-                    <h2 class="heading h4">Instructor</h2>
+                    <h2 class="secondary-heading h4">Instructor</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"

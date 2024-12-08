@@ -132,7 +132,7 @@ export default {
             </div>
             <div class="col-12 col-md-6 form">
                 <div class="mb-3">
-                    <h2 class="heading">Name</h2>
+                    <h2 class="secondary-heading h4">Name</h2>
                     <input
                         v-model="name"
                         type="text"
@@ -141,7 +141,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <h2 class="heading">Username</h2>
+                    <h2 class="secondary-heading h4">Username</h2>
                     <input
                         v-model="userDetailsStore.userName"
                         type="text"
@@ -150,7 +150,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <h2 class="heading">Email</h2>
+                    <h2 class="secondary-heading h4">Email</h2>
                     <input
                         v-model="userDetailsStore.email"
                         type="email"
@@ -159,7 +159,7 @@ export default {
                     />
                 </div>
                 <div v-if="userDetailsStore.role != 'student'" class="mb-3">
-                    <h2 class="heading">Role</h2>
+                    <h2 class="secondary-heading h4">Role</h2>
                     <input
                         v-model="userDetailsStore.role"
                         type="text"
@@ -169,7 +169,7 @@ export default {
                 </div>
                 <!-- Instructor -->
                 <div v-else class="mb-3">
-                    <h2 class="heading heading-stroke">Instructor</h2>
+                    <h2 class="secondary-heading h4">Instructor</h2>
                     <input
                         type="text"
                         class="form-control"

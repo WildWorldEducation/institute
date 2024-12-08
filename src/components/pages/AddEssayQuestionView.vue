@@ -1,6 +1,4 @@
 <script>
-import router from '../../router';
-
 export default {
     data() {
         return {
@@ -61,8 +59,8 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-5 pb-3">
-        <h1 class="h1-stroke">Add Question</h1>
+    <div class="container p-3 bg-light rounded">
+        <h1 class="heading">Add Essay Question</h1>
 
         <div class="main-content-container container-fluid p-4">
             <div class="row">

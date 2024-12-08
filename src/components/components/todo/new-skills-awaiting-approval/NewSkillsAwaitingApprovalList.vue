@@ -53,8 +53,6 @@ export default {
 
 <template>
     <div class="mt-3 table-div h-100">
-        <!-- Page tile -->
-        <h2 class="heading">Suggested New Skills</h2>
         <NewSkillTable
             :newSkillArray="newSkillsAwaitingApproval"
             :loadingSkill="loadingSkill"
