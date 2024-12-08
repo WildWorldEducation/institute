@@ -102,9 +102,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 pb-3">
-        <h2 class="h2-stroke">Assessment Result</h2>
-
+    <div class="container pb-3">
         <div class="d-flex flex-md-row flex-column gap-3">
             <!-- Assessment Info -->
             <div class="assessment-info">

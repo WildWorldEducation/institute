@@ -8,7 +8,8 @@ export default {
             validateContact: true
         };
     },
-    mounted: function () {
+
+    mounted() {
         // Calculate summer note height base on window height
         let summernoteHeight;
         /** == Phone Screen == **/
@@ -94,7 +95,6 @@ export default {
 
 <template>
     <div class="container p-2 bg-light rounded">
-        <h1 class="heading">Offer to Tutor</h1>
         <div class="main-content-container container-fluid p-2">
             <div class="row">
                 <div class="col">

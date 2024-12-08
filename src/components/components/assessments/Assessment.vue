@@ -1042,7 +1042,8 @@ export default {
 
 .form-control:focus {
     border-color: white;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+        0 0 12px var(--primary-color);
 }
 
 .modal-icon {
@@ -1051,15 +1052,20 @@ export default {
 }
 
 .answer-option {
-    color: var(--regular-text-colour);
+    color: black;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
+}
+
+.answer-option:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
 }
 
 /* Dynamic class for the check box is hovered */
 .checkbox-hovered {
     text-decoration: underline;
-    color: #7f56d9;
+    color: var(--primary-color);
 }
 
 /**-------------------------------------  */
@@ -1095,7 +1101,7 @@ export default {
     height: 29.09px;
     width: 29.09px;
     background: #f9f5ff;
-    border: 2px solid #9c7eec;
+    border: 2px solid var(--primary-color);
     border-radius: 60px;
 }
 .control:hover input ~ .control_indicator,
@@ -1132,7 +1138,7 @@ export default {
     top: 5px;
     width: 13.58px;
     height: 9.33px;
-    border: solid #9c7eec;
+    border: solid var(--primary-color);
     border-width: 0px 0px 2.9px 2.9px;
     transform: rotate(-45deg);
 }
@@ -1149,7 +1155,7 @@ export default {
     height: 4.5rem;
     margin-left: -1.3rem;
     margin-top: -1.3rem;
-    background: #9c7eec;
+    background: var(--primary-color);
     border-radius: 3rem;
     opacity: 0.6;
     z-index: 99999;
@@ -1168,7 +1174,6 @@ export default {
 .red-btn {
     background-color: #dd2822;
     color: white;
-    border: 1px solid #7f56d9;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;
@@ -1239,7 +1244,7 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid #a48be5;
+    border: 5px solid var(--primary-color);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;

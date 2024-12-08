@@ -192,7 +192,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 bg-light rounded">
+    <div class="container p-3 bg-light rounded">
         <h1 class="heading">Edit Question</h1>
 
         <p class="mt-2">
