@@ -32,7 +32,8 @@ export default {
 
         //  summernote config
         $('#summernote').summernote({
-            placeholder: '',
+            placeholder:
+                'Share a link to a video, website or any other useful info on learning this skill.',
             height: summernoteHeight,
             tabsize: 2,
             toolbar: [
@@ -85,7 +86,6 @@ export default {
 
 <template>
     <div class="container p-2 bg-light rounded">
-        <h1 class="heading">Add Learning Resource</h1>
         <div class="d-flex flex-column">
             <div class="mb-3 mt-3 text-area-div">
                 <textarea id="summernote" name="editordata"></textarea>
