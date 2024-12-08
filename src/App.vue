@@ -14,7 +14,7 @@ export default {
         };
     },
     async mounted() {
-        await this.userDetailsStore.getUserDetails();
+        await this.userDetailsStore.getUserDetails();       
 
         // Kids theme
         if (this.userDetailsStore.theme == 'apprentice') {
@@ -38,7 +38,15 @@ export default {
 
 <template>
     <header>
-        <nav id="navbar" class="navbar navbar-expand-sm nav-bar">
+        <nav
+            id="navbar"
+            class="navbar navbar-expand-sm nav-bar"
+            :class="{
+                'fixed-top':
+                    $route.name == 'vertical-tree' ||
+                    $route.name == 'radial-tree'
+            }"
+        >
             <div class="container-fluid">
                 <RouterLink to="/" class="nav-link logo">
                     <img
@@ -218,7 +226,9 @@ Themes
     --secondary-color: #56c5b6;
     --secondary-contrast-color: white;
 
-    --tertiary-color: black;
+    --skill-tree-background-color: white;
+    --skill-tree-color: black;
+
     --stroke-width: 0px;
 }
 
@@ -230,7 +240,9 @@ Themes
     --secondary-color: gold;
     --secondary-contrast-color: #040095;
 
-    --tertiary-color: white;
+    --skill-tree-background-color: skyblue;
+    --skill-tree-color: black;
+
     --stroke-width: 1px;
     --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
 }
@@ -243,7 +255,9 @@ Themes
     --secondary-color: gold;
     --secondary-contrast-color: black;
 
-    --tertiary-color: #bf202f;
+    --skill-tree-background-color: black;
+    --skill-tree-color: white;
+
     --stroke-width: 1px;
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 }

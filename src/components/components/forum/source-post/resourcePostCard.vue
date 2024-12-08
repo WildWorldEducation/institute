@@ -224,10 +224,10 @@ export default {
                     <!-- Vote count Div -->
                     <span
                         b-on-hover
-                        title="number of vote this resource receive"
+                        title="number of votes this source received"
                         :class="{
                             'text-danger': post.voteCount < 0,
-                            'text-primary': post.voteCount > 0,
+                            'primary-color': post.voteCount > 0,
                             'vote-count': true
                         }"
                         >{{ post.voteCount }}</span
@@ -397,6 +397,10 @@ export default {
 </template>
 
 <style>
+.primary-color {
+    color: var(--primary-color);
+}
+
 .user-name-text {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
