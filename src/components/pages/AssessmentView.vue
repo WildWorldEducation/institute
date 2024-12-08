@@ -49,9 +49,11 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 bg-light rounded">
-        <h1 class="heading">{{ this.skill.name }} Quiz</h1>
-
+    <div class="container mt-3 bg-light rounded p-3">
+        <h1 class="heading">Assessment</h1>
+        <p class="skill-name">
+            <em>{{ this.skill.name }}</em>
+        </p>
         <div class="mt-4 mb-2">
             <hr
                 class="border border-2 opacity-100 w-md-75 w-100"
@@ -64,7 +66,11 @@ export default {
 
 <style scoped>
 #assessment-horizontal-line {
-    border-color: var(--hr-secondary-colour) !important;
+    border-color: var(--primary-color) !important;
     border: solid;
+}
+
+.skill-name {
+    color: var(--primary-color) !important;
 }
 </style>

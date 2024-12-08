@@ -14,7 +14,7 @@ export default {
         };
     },
     async mounted() {
-        await this.userDetailsStore.getUserDetails();       
+        await this.userDetailsStore.getUserDetails();
 
         // Kids theme
         if (this.userDetailsStore.theme == 'apprentice') {
@@ -293,6 +293,12 @@ body {
     color: var(--primary-color) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
+}
+
+.secondary-heading {
+    color: var(--primary-color) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
 }
 
 /* Regular text */

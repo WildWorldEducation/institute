@@ -471,7 +471,7 @@ export default {
                         </a>
                         <!-- Grade level -->
                         <div class="mt-2">
-                            <h2 class="h4 heading">Level</h2>
+                            <h2 class="h4 secondary-heading">Level</h2>
                             <span v-if="skill.level == 'grade_school'"
                                 >Grade School</span
                             >
@@ -491,7 +491,7 @@ export default {
                             cluster nodes' question banks.</span
                         >
                         <div class="mt-2">
-                            <h2 class="h4 heading">Author</h2>
+                            <h2 class="h4 secondary-heading">Author</h2>
                             <!-- Author Icon -->
                             <div
                                 v-if="skill.is_human_edited"

@@ -52,16 +52,14 @@ export default {
 </script>
 
 <template>
-    <div class="container pb-2 bg-light rounded">
+    <div class="container p-3 bg-light rounded">
         <h1 class="heading">Add Cohort</h1>
 
         <div class="main-content-container container-fluid p-4">
             <div class="row">
                 <div id="form-container" class="col-lg-6 p-4">
                     <div class="mb-3">
-                        <label for="first_name" class="form-label"
-                            >Cohort Name</label
-                        >
+                        <h2 class="secondary-heading h4">Name</h2>
                         <input
                             v-model="cohort.name"
                             type="text"

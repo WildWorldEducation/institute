@@ -94,7 +94,7 @@ export default {
         }"
     >
         <div class="d-flex align-items-center">
-            <h2 class="compare-container-tile mb-3">{{ containerName }}</h2>
+            <h2 class="secondary-heading h4 mb-3">{{ containerName }}</h2>
             <div
                 @click="show = !show"
                 :class="[show ? 'expand-arrow' : 'minimize-arrow']"

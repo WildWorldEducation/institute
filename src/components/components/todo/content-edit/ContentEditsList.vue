@@ -168,8 +168,6 @@ export default {
 
 <template>
     <div class="w-100 bg-light p-2">
-        <!-- Page title -->
-        <h2 class="ps-3 mt-2 heading">Approve Content Edits</h2>
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
             <button

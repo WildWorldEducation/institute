@@ -210,24 +210,20 @@ export default {
 </script>
 
 <template>
-    <div class="container mb-4 bg-light rounded p-2">
-        <h1 class="heading">Comparison Image Question</h1>
+    <div class="container mb-2 bg-light rounded p-3">
+        <h1 class="heading">Compare Changes</h1>
         <div class="my-3">
             <hr />
         </div>
         <!-- General Skill Info -->
-        <div class="d-flex flex-column gap-2 mb-3">
-            <p class="d-flex gap-2 align-items-center">
-                <div class="compare-container-tile">Skill:</div>
-                <div class="minor-text">{{ imageQuestion.skill_name }}</div>
-            </p>
-            <p class="d-flex gap-2 align-items-center">
-                <div class="compare-container-tile">Level:</div>
-                <div class="minor-text capitalize">
-                    {{ toTileCase(imageQuestion.skill_level) }}
-                </div>
-            </p>
+        <h2 class="secondary-heading h4">Skill</h2>
+        <div class="minor-text">{{ imageQuestion.skill_name }}</div>
+
+        <h2 class="secondary-heading h4 mt-2">Level</h2>
+        <div class="minor-text capitalize">
+            {{ toTileCase(imageQuestion.skill_level) }}
         </div>
+
         <!-- Show / Hide hight light button -->
         <div class="d-flex flex-row-reverse my-3">
             <div
@@ -522,7 +518,7 @@ export default {
         <!-- User Comment -->
         <div class="mt-5 w-lg-50 w-md-75 w-100 compare-container">
             <div class="d-flex flex-md-row flex-column gap-2">
-                <h2 class="compare-container-tile mb-3">Comment:</h2>
+                <h2 class="secondary-heading h4 mb-3">Comment</h2>
                 <div class="comment-text">
                     {{ imageQuestionEdit.comment }}
                 </div>
@@ -532,7 +528,6 @@ export default {
 </template>
 
 <style>
-
 .compare-container {
     display: flex;
     flex-direction: column;
