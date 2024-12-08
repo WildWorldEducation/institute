@@ -33,8 +33,8 @@ export default {
         };
     },
     async created() {
-        this.nameList = await this.skillsStore.getNameList();
-        console.log(this.userStore.userId);
+        this.nameList = await this.skillsStore.getFilteredNameList();
+        console.log(this.nameList);
         if (this.userStore.userId) {
             this.isLogin = true;
         }
