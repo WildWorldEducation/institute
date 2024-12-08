@@ -441,7 +441,7 @@ export default {
 .skill-name {
     font-family: 'Poppins', sans-serif;
     font-size: 40px;
-    color: #a48be6;
+    color: var(--primary-color)
     font-weight: 800;
     margin-bottom: 0px;
     text-align: start;

@@ -267,14 +267,14 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 pb-3">
-        <h1 class="h1-stroke">Add Student</h1>
+    <div class="container rounded bg-light p-3">
+        <h1 class="heading">Add Student</h1>
 
-        <div class="main-content-container container-fluid mt-5 p-4">
+        <div class="main-content-container container-fluid p-4">
             <div class="row">
                 <div class="col-lg-4">
                     <div class="mb-3 row">
-                        <label class="form-label">Avatar</label>
+                        <h2 class="secondary-heading h4">Avatar</h2>
                         <div v-if="!image">
                             <input
                                 id="choose-avatar"
@@ -365,7 +365,7 @@ export default {
                 </div>
                 <div class="col-lg-4">
                     <div class="mb-3">
-                        <label class="form-label">Username</label>
+                        <h2 class="secondary-heading h4">Username</h2>
                         <input
                             v-model="user.username"
                             type="text"
@@ -383,7 +383,7 @@ export default {
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Email address</label>
+                        <h2 class="secondary-heading h4">Email address</h2>
                         <input
                             v-model="user.email"
                             type="email"
@@ -405,7 +405,7 @@ export default {
                     </div>
                     <!-- Password Section -->
                     <div class="mb-3">
-                        <label class="form-label">Password</label>
+                        <h2 class="secondary-heading h4">Password</h2>
                         <div class="password-div">
                             <input
                                 v-model="user.password"
@@ -595,7 +595,8 @@ export default {
 <style scoped>
 .form-control:focus {
     border-color: white;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+        0 0 12px var(--primary-color);
 }
 
 .form-select {
@@ -604,34 +605,17 @@ export default {
 
 .form-select:focus {
     border-color: white;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+        0 0 12px var(--primary-color);
 }
 
 .form-custom-option:active {
-    background-color: #a48be6;
+    background-color: var(--primary-color);
 }
 
 .main-content-container {
     background-color: #e4ecf4;
     border-radius: 12px;
-}
-
-#header-tile {
-    color: #667085;
-    font-family: 'Poppins' sans-serif;
-    font-size: 2.375rem;
-    font-weight: 900;
-    line-height: 41px;
-    letter-spacing: 0em;
-    text-align: left;
-    margin-top: auto;
-    margin-bottom: 0px;
-}
-
-#header-icon {
-    margin-left: 10px;
-    width: 108px;
-    height: 61px;
 }
 
 .form-label {
@@ -706,7 +690,7 @@ export default {
     gap: 8px;
     background: linear-gradient(0deg, #ffffff, #ffffff),
         linear-gradient(0deg, #f2f4f7, #f2f4f7);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
     box-shadow: 0px 0px 0px 4px #bca3ff4d;
     font-family: 'Poppins' sans-serif;
     font-size: 1rem;
@@ -719,7 +703,7 @@ export default {
 
 .custom-select-button:hover {
     cursor: pointer;
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
 }
 
 .custom-select-button > span {
@@ -771,7 +755,7 @@ export default {
     border-radius: 8px;
     border: 1px;
     background: linear-gradient(0deg, #ffffff, #ffffff);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
     box-shadow: 0px 4px 6px -2px #10182808;
     box-shadow: 0px 12px 16px -4px #10182814;
 }
@@ -840,7 +824,7 @@ export default {
 .modal-message {
     font-size: 20px;
     font-weight: 500;
-    color: #667085;
+    color: var(--primary-color);
 }
 
 /* Cropper Style */

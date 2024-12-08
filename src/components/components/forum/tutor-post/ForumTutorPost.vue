@@ -180,7 +180,7 @@ export default {
 }
 
 .tutor-user-name {
-    color: #a48be6;
+    color: var(--primary-color);
     font-size: 16px;
     font-weight: 600;
 }

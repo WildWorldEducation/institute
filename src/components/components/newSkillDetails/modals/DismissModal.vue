@@ -162,24 +162,6 @@ export default {
 
 /* ---- End of shake animation ---- */
 
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    max-width: fit-content;
-    height: 44px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #8f7bd6;
-}
-
 .red-btn {
     background-color: #e24d4d;
     color: white;

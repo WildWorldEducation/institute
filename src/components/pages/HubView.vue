@@ -113,16 +113,6 @@ export default {
     width: 100%;
 }
 
-#banner > img {
-    width: 100%;
-    height: auto;
-}
-
-#purple-banner {
-    height: 77px;
-    background-color: #a48be640;
-}
-
 #user-name {
     font-size: 2.375rem;
 }
