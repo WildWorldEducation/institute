@@ -556,6 +556,29 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
 // Not used currently
 router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
     if (req.session.userName) {
+        /* Truncate Vertical Tree to grade level based on which button student presses
+         on grade level key.
+        */
+        // Level will be sent in query param (eg: ?level='middle_school')
+        const level = req.query.level;
+        // Default is to show all.
+        let levelsToShow =
+            "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        if (level == 'grade_school') {
+            levelsToShow = "'domain', 'grade_school'";
+        } else if (level == 'middle_school') {
+            levelsToShow = "'domain', 'grade_school', 'middle_school'";
+        } else if (level == 'high_school') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school'";
+        } else if (level == 'college') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school', 'college'";
+        } else if (level == 'phd') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        }
+
         res.setHeader('Content-Type', 'application/json');
 
         // Check if student is member of a cohort
@@ -583,6 +606,7 @@ router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
                 ON skills.id = user_skills.skill_id
                 WHERE user_skills.user_id = ${conn.escape(req.params.userId)} 
                 AND is_filtered = 'available'
+                AND level IN (${levelsToShow})
                 AND is_deleted = 0
                 AND skills.id NOT IN 
                 (SELECT skill_id 
@@ -600,6 +624,7 @@ router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
                 ON skills.id = user_skills.skill_id
                 WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
                 AND is_filtered = 'available'
+                AND level IN (${levelsToShow})
                 AND is_deleted = 0
                 AND skills.id NOT IN 
                 (SELECT skill_id 

@@ -829,6 +829,13 @@ export default {
                         .translate(translateX, translateY)
                         .scale(fixedScale)
                 );
+        },
+        async truncateToGradeLevel(level) {
+            this.isLoading = true;
+            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(level);    
+            this.skill.children = this.skillTreeStore.userSkillsSubSkillsSeparate.skills;
+            this.userAvatarImg.onload();
+            this.isLoading = false;
         }
     }
 };
