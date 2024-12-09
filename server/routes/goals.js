@@ -93,6 +93,29 @@ router.get('/:userId/list', (req, res, next) => {
 });
 
 /**
+ * List Goal Steps per Student
+ */
+router.get('/:goalId/goal-steps/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT skill_id, is_mastered 
+        FROM goal_steps
+        WHERE goal_id = ${conn.escape(req.params.goalId)}`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * Update Goal
  */
 router.put('/edit', (req, res, next) => {});

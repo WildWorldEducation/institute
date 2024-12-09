@@ -18,7 +18,10 @@ export default {
     },
     async created() {
         await this.getGoals();
-        await this.skillsStore.getSkillsList();
+        if (this.skillsStore.skillsList.length == 0) {
+            await this.skillsStore.getSkillsList();
+        }
+
         for (let i = 0; i < this.goals.length; i++) {
             let skillObj = this.skillsStore.skillsList.find(
                 (skill) => skill.id === this.goals[i].skill_id
@@ -52,7 +55,7 @@ export default {
                     phd: goal.level == 'phd'
                 }"
                 class="goal-link btn"
-                :to="`/goal/${goal.id}`"
+                :to="`/goals/${goal.id}`"
                 target="_blank"
             >
                 {{ goal.name }}
