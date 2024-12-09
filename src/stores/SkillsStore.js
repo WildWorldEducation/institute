@@ -139,6 +139,10 @@ export const useSkillsStore = defineStore('skills', {
             });
             return nameList;
         },
-
+        async getCohortNameList() {
+            const result = await fetch('/skills/name-list');
+            const data = await result.json();
+            return data
+        }
     }
 });

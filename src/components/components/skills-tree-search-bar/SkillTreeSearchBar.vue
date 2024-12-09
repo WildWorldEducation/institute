@@ -12,9 +12,11 @@ export default {
     setup() {
         const skillsStore = useSkillsStore();
         const userStore = useUserDetailsStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
             skillsStore,
-            userStore
+            userStore,
+            userDetailsStore
         };
     },
     props: ['findNode', 'clearResults'],
@@ -33,8 +35,14 @@ export default {
         };
     },
     async created() {
-        this.nameList = await this.skillsStore.getFilteredNameList();
-        console.log(this.nameList);
+        if (this.userDetailsStore.role === 'admin') {
+            this.nameList = await this.skillsStore.getNameList();
+        } else if (this.userDetailsStore.role === 'instructor') {
+            this.nameList = await this.skillsStore.getFilteredNameList();
+        } else if (this.userDetailsStore.role === 'student') {
+            this.nameList = await this.skillsStore.getCohortNameList();
+        }
+
         if (this.userStore.userId) {
             this.isLogin = true;
         }
@@ -72,7 +80,6 @@ export default {
                 this.toolTipStillShowing = false;
             }, 10000);
         },
-
         searchFirstWord(results, searchText) {
             this.nameList.forEach((element) => {
                 if (
