@@ -547,7 +547,7 @@ router.get('/show/:id', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Select user.
         let sqlQuery = `
-    SELECT id, first_name, last_name, username, avatar, email, role, is_deleted, is_google_auth             
+    SELECT id, first_name, last_name, username, email, role, is_deleted, is_google_auth             
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
