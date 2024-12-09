@@ -54,13 +54,14 @@ export default {
             filters: [],
             showFlaggingModal: false,
             ancestor: this.$route.params.id,
-            // accessible List that will use to find nearest un-lockable node
+            // Accessible list used to find nearest un-lockable node.
             accessibleSkills: [],
             showAncestorLink: false,
             isMobileCheck: window.innerWidth,
             showConfirmModal: false,
             isSkillLoaded: false,
-            randomNum: 0
+            randomNum: 0,
+            goalSteps: []
         };
     },
     components: {
@@ -207,16 +208,58 @@ export default {
         imageUrlAlternative(event) {
             event.target.src = '/images/skill-avatar/recurso.png';
         },
-        createGoal() {
+        /*
+         * Goals: this feature allows students to choose a skill to be a goal,
+         * to create a pathway for them to get to that goal.
+         */
+        createGoal(skill) {
+            // Check if current skill is unlocked.
+            const inAccessibleList = this.accessibleSkills.find(
+                (as) => as.id == skill.id
+            );
+            // Stop when the first ancestor node that is unlocked for the student
+            if (inAccessibleList) {
+                this.populateGoalSteps();
+                return;
+            }
+
+            // Add ancestor skill to array.
+            this.goalSteps.push(skill);
+
+            // Add ancestor subskills to array.
+            if (skill.type == 'super') {
+                for (let i = 0; i < this.accessibleSkills.length; i++) {
+                    if (
+                        this.accessibleSkills[i].type == 'sub' &&
+                        this.accessibleSkills[i].parent == skill.id &&
+                        this.accessibleSkills[i].is_mastered != 1
+                    ) {
+                        this.goalSteps.push(this.accessibleSkills[i]);
+                    }
+                }
+            }
+
+            fetch('/skills/show/' + skill.parent)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((skill) => {
+                    // Recursively call the function with parent skill data.
+                    return this.createGoal(skill);
+                });
+        },
+        populateGoalSteps() {
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({})
+                body: JSON.stringify({
+                    skillId: this.skillId,
+                    goalSteps: this.goalSteps
+                })
             };
-            var url = '/goals/add';
-            fetch(url, requestOptions).then(() => {
-                router.push({ name: 'tags' });
-            });
+            const url = '/goals/' + this.userDetailsStore.userId + '/add';
+            console.log(this.goalSteps);
+            fetch(url, requestOptions).then(() => {});
         }
     },
     /**
@@ -404,7 +447,28 @@ export default {
                             </svg>
                         </router-link>
                         <!-- Create goal button -->
-                        <button class="btn primary-btn">Create goal</button>
+                        <button
+                            v-if="
+                                skill.type != 'domain' &&
+                                sessionDetailsStore.isLoggedIn
+                            "
+                            class="btn primary-btn"
+                            @click="createGoal(this.skill)"
+                        >
+                            Create goal&nbsp;
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                fill="white"
+                                width="20"
+                                heigth="20"
+                            >
+                                <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                                />
+                            </svg>
+                        </button>
                     </div>
                     <div class="d-flex justify-content-end">
                         <!-- Sharable URL -->

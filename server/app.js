@@ -105,6 +105,8 @@ const passwordReset = require('./routes/password-reset');
 app.use('/password-reset', passwordReset);
 const newSkillsAwaitingApproval = require('./routes/new-skills-awaiting-approval');
 app.use('/new-skills-awaiting-approval', newSkillsAwaitingApproval);
+const goals = require('./routes/goals');
+app.use('/goals', goals);
 
 app.locals.title = 'Skill Tree';
 
@@ -232,7 +234,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                     last_name: googleUserDetails.family_name,
                     username: googleUserDetails.email,
                     email: googleUserDetails.email,
-                    role: googleUserDetails.role  || 'student',
+                    role: googleUserDetails.role || 'student',
                     id: newStudentId,
                     is_google_auth: 1
                 };
