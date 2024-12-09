@@ -213,16 +213,6 @@ export default {
          * to create a pathway for them to get to that goal.
          */
         createGoal(skill) {
-            // Check if current skill is unlocked.
-            const inAccessibleList = this.accessibleSkills.find(
-                (as) => as.id == skill.id
-            );
-            // Stop when the first ancestor node that is unlocked for the student
-            if (inAccessibleList) {
-                this.populateGoalSteps();
-                return;
-            }
-
             // Add ancestor skill to array.
             this.goalSteps.push(skill);
 
@@ -237,6 +227,16 @@ export default {
                         this.goalSteps.push(this.accessibleSkills[i]);
                     }
                 }
+            }
+
+            // Check if current skill is unlocked.
+            const inAccessibleList = this.accessibleSkills.find(
+                (as) => as.id == skill.id
+            );
+            // Stop when the first ancestor node that is unlocked for the student
+            if (inAccessibleList) {
+                this.populateGoalSteps();
+                return;
             }
 
             fetch('/skills/show/' + skill.parent)
