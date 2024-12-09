@@ -345,9 +345,10 @@ const router = createRouter({
                 )
         },
         {
-            path: '/goals/add',
-            name: 'add-goal',
-            component: () => import('../components/pages/goals/AddGoalView.vue')
+            path: '/goals/progress/:goalId',
+            name: 'goal-progress',
+            component: () =>
+                import('../components/pages/goals/GoalProgressView.vue')
         },
         {
             path: '/test-ai-feature',

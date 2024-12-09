@@ -12,7 +12,6 @@ export default {
 
 <template>
     <h2 class="secondary-heading h4">Goals</h2>
-    <router-link class="btn primary-btn" to="/goals/add">Add goal</router-link>
 </template>
 
 <style scoped>

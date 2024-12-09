@@ -23,7 +23,7 @@ export default {
 
 <template>
     <div class="container p-3 bg-light rounded">
-        <h1 class="heading">Add Goal</h1>
+        <h1 class="heading">Goal Progress</h1>
 
         <div class="container-fluid p-4"></div>
     </div>

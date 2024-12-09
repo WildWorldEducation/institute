@@ -206,6 +206,17 @@ export default {
         },
         imageUrlAlternative(event) {
             event.target.src = '/images/skill-avatar/recurso.png';
+        },
+        createGoal() {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            };
+            var url = '/goals/add';
+            fetch(url, requestOptions).then(() => {
+                router.push({ name: 'tags' });
+            });
         }
     },
     /**
@@ -236,13 +247,13 @@ export default {
                     <!-- Take assessment btn-->
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
-                        :to="'/skills/' + ancestor"
                         v-if="
                             userDetailsStore.role == 'student' &&
                             !isUnlocked &&
                             !isMastered &&
                             showAncestorLink
                         "
+                        :to="'/skills/' + ancestor"
                         class="btn assessment-btn secondary-btn text-capitalize me-1"
                     >
                         <span v-if="isMobileCheck > 576"
@@ -259,6 +270,8 @@ export default {
                             />
                         </svg>
                     </router-link>
+
+                    <!-- Go to assessment -->
                     <router-link
                         v-else-if="
                             userDetailsStore.role == 'student' &&
@@ -283,6 +296,7 @@ export default {
                             />
                         </svg>
                     </router-link>
+                    <!-- If not logged in, go to Login page -->
                     <router-link
                         v-else-if="!sessionDetailsStore.isLoggedIn"
                         class="btn me-1 assessment-btn secondary-btn"
@@ -371,7 +385,7 @@ export default {
                                 skill.type != 'super' &&
                                 sessionDetailsStore.isLoggedIn
                             "
-                            class="btn primary-btn me-3"
+                            class="btn primary-btn me-1"
                             :to="skillUrl + '/question-bank'"
                             ><span v-if="isMobileCheck > 576"
                                 >Question Bank&nbsp;</span
@@ -389,6 +403,8 @@ export default {
                                 />
                             </svg>
                         </router-link>
+                        <!-- Create goal button -->
+                        <button class="btn primary-btn">Create goal</button>
                     </div>
                     <div class="d-flex justify-content-end">
                         <!-- Sharable URL -->
