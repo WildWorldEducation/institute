@@ -20,13 +20,21 @@ export default {
     },
     data() {
         return {
-            showInformationModal: true,
+            showInformationModal: false,
             selectedCohortId: null,
             showDetails: false
         };
     },
     async created() {
         await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
+        // Check if user has visited before
+        const hasVisited = localStorage.getItem('hasVisited');
+        if(!hasVisited) {
+            // Show the modal on the first visit
+            this.showInformationModal = true;
+            // Save a flag for local storage
+            localStorage.setItem('hasVisited', 'true');
+        }
     },
     mounted() {
         // Close modal by clicking outside it.
