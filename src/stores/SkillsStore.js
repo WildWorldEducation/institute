@@ -18,6 +18,7 @@ export const useSkillsStore = defineStore('skills', {
         async getNestedSkillsList() {
             const result = await fetch('/skills/nested-list');
             const data = await result.json();
+
             this.nestedSkillsList = data;
         },
         // For 'Instructor' role / For guest mode of Vertical Tree
@@ -127,7 +128,6 @@ export const useSkillsStore = defineStore('skills', {
                 return { name: skill.name };
             });
             // Filter out all global filtered skill if not admin
-
             return nameList;
         },
         async getFilteredNameList() {
