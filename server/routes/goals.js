@@ -22,30 +22,28 @@ Routes
  */
 router.post('/:userId/add', (req, res, next) => {
     if (req.session.userName) {
-        // Add data.
+        // Record goal in 'goals' table.
         let data = {};
         data = {
             user_id: req.params.userId,
             skill_id: req.body.skillId
         };
-
         let sqlQuery = `INSERT INTO goals 
         SET ?;`;
-    
 
         const goalSteps = req.body.goalSteps;
-
         conn.query(sqlQuery, data, (err, result) => {
             try {
                 if (err) {
                     throw err;
                 } else {
+                    // Record each goal step for the goal, in 'goal_steps' table.
                     const goalId = result.insertId;
                     for (let i = 0; i < goalSteps.length; i++) {
                         let sqlQuery = `INSERT INTO goal_steps (goal_id, skill_id)
                         VALUES (${conn.escape(goalId)}, ${conn.escape(
                             goalSteps[i].id
-                        )});`;                     
+                        )});`;
 
                         conn.query(sqlQuery, data, (err) => {
                             try {
@@ -61,23 +59,6 @@ router.post('/:userId/add', (req, res, next) => {
                             }
                         });
                     }
-
-                    // Record user action.
-                    // recordUserAction(
-                    //     {
-                    //         userId: req.body.userId,
-                    //         userAction: 'submit_update_for_review',
-                    //         contentType: 'mc_question',
-                    //         contentId: req.params.id
-                    //     },
-                    //     (err) => {
-                    //         if (err) {
-                    //             throw err;
-                    //         } else {
-                    //             res.end();
-                    //         }
-                    //     }
-                    // );
                 }
             } catch (err) {
                 next(err);
@@ -91,7 +72,25 @@ router.post('/:userId/add', (req, res, next) => {
 /**
  * List Goals per Student
  */
-router.get('/:userId/list', (req, res, next) => {});
+router.get('/:userId/list', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT id, skill_id 
+        FROM goals
+        WHERE user_id = ${conn.escape(req.params.userId)}`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
 
 /**
  * Update Goal
