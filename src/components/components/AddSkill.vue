@@ -430,14 +430,12 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 pb-5">
+    <div class="container mt-3 bg-light rounded p-2">
         <!-- Page Heading -->
-        <div class="row">
-            <h1 class="h1-stroke">
-                <span v-if="skill.type != 'domain'">Add Skill</span>
-                <span v-else>Add Category</span>
-            </h1>
-        </div>
+        <h1 class="heading">
+            <span v-if="skill.type != 'domain'">Add Skill</span>
+            <span v-else>Add Category</span>
+        </h1>
         <!-- If making another instance of an existing skill on the tree -->
         <div class="row">
             <div class="col-12 mt-2">
@@ -479,7 +477,7 @@ export default {
                 </div>
                 <div v-if="isAnotherInstanceOfExistingSkill" class="mb-3">
                     <div class="row mt-3">
-                        <h2 class="h2-stroke">Original Skill</h2>
+                        <h2 class="secondary-heading h4">Original Skill</h2>
                         <select v-model="skillToBeCopied">
                             <option
                                 v-for="skill in skillsThatCanBeCopied"
@@ -490,7 +488,7 @@ export default {
                         </select>
                     </div>
                     <div class="row mt-3">
-                        <h2 class="h2-stroke">Parent</h2>
+                        <h2 class="secondary-heading h4">Parent</h2>
                         <select v-model="parentOfNewInstance">
                             <option v-for="skill in skills" :value="skill">
                                 {{ skill.name }}
@@ -506,7 +504,7 @@ export default {
             <div class="row mt-2">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div class="mb-3">
-                        <h2 class="h2-stroke">Name</h2>
+                        <h2 class="secondary-heading h4">Name</h2>
                         <input
                             v-model="skill.name"
                             class="form-control"
@@ -529,7 +527,7 @@ export default {
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div v-if="skill.type != 'sub'" class="mb-3">
-                        <h2 class="h2-stroke">Parent</h2>
+                        <h2 class="secondary-heading h4">Parent</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -565,7 +563,9 @@ export default {
                     </div>
                     <!-- -------------------------------------------------- -->
                     <div v-else class="mb-3">
-                        <h2 class="h2-stroke">Cluster node center</h2>
+                        <h2 class="secondary-heading h4">
+                            Cluster node center
+                        </h2>
                         <!-- <select class="form-select" v-model="skill.parent">
                         <option
                             v-for="superSkill in superSkills"
@@ -609,7 +609,7 @@ export default {
                 <div v-if="skill.type != 'sub'">
                     <div class="col col-md-8 col-lg-5 mt-2">
                         <!-- Custom Dropdown -->
-                        <h2 class="h2-stroke">Level</h2>
+                        <h2 class="secondary-heading h4">Level</h2>
                         <div class="d-flex flex-column position-relative">
                             <div
                                 :class="[
@@ -655,7 +655,7 @@ export default {
             <!-- Skill Type -->
             <div class="row">
                 <div class="col-10 mt-2">
-                    <h2 class="h2-stroke">Node Type</h2>
+                    <h2 class="secondary-heading h4">Node Type</h2>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
@@ -757,7 +757,7 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start"
                     >
-                        <h2 class="h2-stroke">Icon</h2>
+                        <h2 class="secondary-heading h4">Icon</h2>
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -846,7 +846,7 @@ export default {
             <div class="row" v-if="userDetailsStore.role == 'admin'">
                 <div class="col">
                     <div class="mb-3">
-                        <h2 class="h2-stroke">Description</h2>
+                        <h2 class="secondary-heading h4">Description</h2>
                         <textarea
                             v-model="skill.description"
                             class="form-control"
@@ -865,7 +865,9 @@ export default {
             <div class="row" v-if="skill.type != 'domain'">
                 <div class="col">
                     <div class="mb-3">
-                        <h2 class="h2-stroke">Mastery Requirements</h2>
+                        <h2 class="secondary-heading h4">
+                            Mastery Requirements
+                        </h2>
                         <textarea
                             v-model="skill.mastery_requirements"
                             class="form-control"

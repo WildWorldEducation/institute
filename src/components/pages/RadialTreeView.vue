@@ -51,7 +51,7 @@ export default {
             </div>
         </div>
         <div class="tablet-and-up-legend">
-            <div class="legend d-flex justify-content-between">
+            <div class="d-flex justify-content-between">
                 <!-- Search bar, reset, expand all, print buttons -->
                 <div class="d-flex col-lg justify-content-between">
                     <!-- Search Feature -->
@@ -199,6 +199,7 @@ export default {
 .legend-div {
     z-index: 2;
     width: 100%;
+    top: 70px;
 }
 
 #info-button {
@@ -256,20 +257,15 @@ export default {
     background-color: #ff0000;
 }
 
+.legend .btn {
+    color: black;
+    font-weight: 500;
+    border: 1px solid black;
+}
+
 .legend {
     align-items: center;
     justify-content: center;
-}
-
-.legend-btn {
-    background-color: #184e80;
-    border: #184e80;
-    color: white;
-    max-height: 40px;
-}
-
-.legend-btn:hover {
-    background-color: #133b61;
 }
 
 .search-bar {

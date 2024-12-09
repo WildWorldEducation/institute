@@ -112,7 +112,7 @@ export default {
                 id="multiple-choice-column"
                 class="col-12 col-md-10 col-lg-6 ps-0 pe-0 pe-lg-4"
             >
-                <h2 class="question-type heading">Multiple Choice</h2>
+                <h2 class="secondary-heading">Multiple Choice</h2>
                 <table
                     v-if="isMultipleChoice"
                     class="skilltree-table table-bordered"
@@ -177,7 +177,7 @@ export default {
             <div
                 class="col-12 col-md-10 col-lg-6 ps-0 pe-0 ps-lg-4 mt-4 mt-lg-0"
             >
-                <h2 class="question-type heading">Essay</h2>
+                <h2 class="secondary-heading">Essay</h2>
                 <table v-if="isEssay" class="skilltree-table table-bordered">
                     <tr v-for="question in essayQuestions">
                         <td>
@@ -240,7 +240,7 @@ export default {
         </div>
         <div class="row">
             <div class="col-12 col-md-10 col-lg-6 ps-0 pe-0 pe-lg-4">
-                <h2 class="question-type heading">Image</h2>
+                <h2 class="secondary-heading">Image</h2>
                 <table v-if="isImage" class="skilltree-table table-bordered">
                     <tr v-for="question in imageQuestions">
                         <td>
@@ -386,19 +386,6 @@ export default {
 </template>
 
 <style scoped>
-.question-type {
-    /* Text */
-    font-family: 'Poppins';
-    font-style: normal;
-    font-weight: 900;
-    font-size: 28px;
-    line-height: 28px;
-    /* or 100% */
-    display: flex;
-    align-items: center;
-    color: #8f7bd6;
-}
-
 .question-data-cell {
     width: 90% !important;
 }

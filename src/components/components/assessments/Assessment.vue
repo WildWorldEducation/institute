@@ -789,11 +789,11 @@ export default {
                                         viewBox="0 0 320 512"
                                         height="22"
                                         style="opacity: 0.5"
+                                        class="primary-icon"
                                     >
                                         <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                         <path
                                             d="M112 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm40 304l0 128c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-223.1L59.4 304.5c-9.1 15.1-28.8 20-43.9 10.9s-20-28.8-10.9-43.9l58.3-97c17.4-28.9 48.6-46.6 82.3-46.6l29.7 0c33.7 0 64.9 17.7 82.3 46.6l58.3 97c9.1 15.1 4.2 34.8-10.9 43.9s-34.8 4.2-43.9-10.9L232 256.9 232 480c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-128-16 0z"
-                                            fill="#8f7bd6"
                                         />
                                     </svg>
                                 </div>
@@ -809,11 +809,11 @@ export default {
                                         viewBox="0 0 640 512"
                                         height="22"
                                         style="opacity: 0.5"
+                                        class="primary-icon"
                                     >
                                         <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                         <path
                                             d="M320 0c17.7 0 32 14.3 32 32l0 64 120 0c39.8 0 72 32.2 72 72l0 272c0 39.8-32.2 72-72 72l-304 0c-39.8 0-72-32.2-72-72l0-272c0-39.8 32.2-72 72-72l120 0 0-64c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-32 0zM264 256a40 40 0 1 0 -80 0 40 40 0 1 0 80 0zm152 40a40 40 0 1 0 0-80 40 40 0 1 0 0 80zM48 224l16 0 0 192-16 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-16 0 0-192 16 0z"
-                                            fill="#8f7bd6"
                                         />
                                     </svg>
                                 </div>
@@ -829,9 +829,9 @@ export default {
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 448 512"
                                         style="height: 22px; opacity: 0.5"
+                                        class="primary-icon"
                                     >
                                         <path
-                                            fill="#8f7bd6"
                                             d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
                                         />
                                     </svg>
@@ -917,7 +917,7 @@ export default {
                     <button
                         v-if="questionNumber > 0"
                         @click="Previous()"
-                        class="btn red-btn me-2"
+                        class="btn primary-btn me-2"
                     >
                         Previous
                     </button>
@@ -1042,7 +1042,8 @@ export default {
 
 .form-control:focus {
     border-color: white;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+        0 0 12px var(--primary-color);
 }
 
 .modal-icon {
@@ -1051,15 +1052,20 @@ export default {
 }
 
 .answer-option {
-    color: var(--regular-text-colour);
+    color: black;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
+}
+
+.answer-option:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
 }
 
 /* Dynamic class for the check box is hovered */
 .checkbox-hovered {
     text-decoration: underline;
-    color: #7f56d9;
+    color: var(--primary-color);
 }
 
 /**-------------------------------------  */
@@ -1095,7 +1101,7 @@ export default {
     height: 29.09px;
     width: 29.09px;
     background: #f9f5ff;
-    border: 2px solid #9c7eec;
+    border: 2px solid var(--primary-color);
     border-radius: 60px;
 }
 .control:hover input ~ .control_indicator,
@@ -1132,7 +1138,7 @@ export default {
     top: 5px;
     width: 13.58px;
     height: 9.33px;
-    border: solid #9c7eec;
+    border: solid var(--primary-color);
     border-width: 0px 0px 2.9px 2.9px;
     transform: rotate(-45deg);
 }
@@ -1149,7 +1155,7 @@ export default {
     height: 4.5rem;
     margin-left: -1.3rem;
     margin-top: -1.3rem;
-    background: #9c7eec;
+    background: var(--primary-color);
     border-radius: 3rem;
     opacity: 0.6;
     z-index: 99999;
@@ -1168,7 +1174,6 @@ export default {
 .red-btn {
     background-color: #dd2822;
     color: white;
-    border: 1px solid #7f56d9;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;
@@ -1239,7 +1244,7 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid #a48be5;
+    border: 5px solid var(--primary-color);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;

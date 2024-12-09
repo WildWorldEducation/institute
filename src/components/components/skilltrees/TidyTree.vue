@@ -545,7 +545,7 @@ export default {
             if (this.userDetailsStore.theme == 'original')
                 this.context.strokeStyle = '#000';
             else if (this.userDetailsStore.theme == 'apprentice') {
-                this.context.strokeStyle = '#950200';
+                this.context.strokeStyle = '#000';
                 this.context.lineWidth = 3;
             } else this.context.strokeStyle = '#fff';
             this.context.stroke();
@@ -1198,12 +1198,13 @@ input[type='button'] {
 }
 canvas {
     cursor: pointer;
+    background-color: var(--skill-tree-background-color);
 }
 .click-animation {
     position: absolute;
     width: 20px;
     height: 20px;
-    background-color: #7a46ff; /* Color of the animation */
+    background-color: var(--primary-color); /* Color of the animation */
     border-radius: 50%;
     transform: translate(-50%, -50%); /* Center the circle on click */
     animation: clickEffect 0.7s infinite ease-out;

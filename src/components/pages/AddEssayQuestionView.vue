@@ -1,6 +1,4 @@
 <script>
-import router from '../../router';
-
 export default {
     data() {
         return {
@@ -61,8 +59,8 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-5 pb-3">
-        <h1 class="h1-stroke">Add Question</h1>
+    <div class="container p-3 bg-light rounded">
+        <h1 class="heading">Add Essay Question</h1>
 
         <div class="main-content-container container-fluid p-4">
             <div class="row">
@@ -213,6 +211,7 @@ export default {
 
 .form-control:focus {
     border-color: white;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+        0 0 12px var(--primary-color);
 }
 </style>

@@ -47,7 +47,7 @@ export default {
     <div class="container min-vh-100">
         <div class="row content-row">
             <div
-                class="col-lg-4 col-md-6 mb-4 pb-4"
+                class="col-lg-4 col-md-6 mb-2"
                 v-if="userDetailsStore.role != 'editor'"
             >
                 <div class="hub-component">
@@ -61,7 +61,7 @@ export default {
                 </div>
             </div>
             <div
-                class="col-lg-4 col-md-6 mb-4 pb-4"
+                class="col-lg-4 col-md-6 mb-2"
                 v-if="userDetailsStore.role != 'editor'"
             >
                 <div class="hub-component">
@@ -75,7 +75,7 @@ export default {
                     />
                 </div>
             </div>
-            <div class="col-lg-3 col-md-5 pb-4 column">
+            <div class="col-lg-4 col-md-6 mb-2">
                 <div class="hub-component">
                     <Notifications />
                 </div>
@@ -111,16 +111,6 @@ export default {
 
 #banner {
     width: 100%;
-}
-
-#banner > img {
-    width: 100%;
-    height: auto;
-}
-
-#purple-banner {
-    height: 77px;
-    background-color: #a48be640;
 }
 
 #user-name {
@@ -195,10 +185,6 @@ export default {
         padding-left: 0px;
         padding-right: 0px;
     }
-
-    /* #news-row {
-        min-height: 40vh;
-    } */
 
     #news-row > div {
         margin-bottom: 10px;

@@ -356,11 +356,15 @@ export default {
 }
 
 .nav-link:hover {
-    border: inherit;
+    border-bottom-color: var(--primary-color);
 }
 
 .nav-link.active {
     color: var(--primary-color);
+}
+
+.nav-link.active:hover {
+    border-bottom-color: transparent;
 }
 
 :deep(.red-btn) {

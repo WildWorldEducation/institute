@@ -48,7 +48,7 @@ export default {
             </div>
         </div>
         <div class="row">
-            <div class="col-12 col-md-5 col-lg-4 d-flex flex-column">
+            <div class="col-12 col-md-4">
                 <img id="user-avatar" :src="this.$parent.user.avatar" />
                 <!-- Edit button -->
                 <div
@@ -150,9 +150,9 @@ export default {
                     </router-link>
                 </div>
             </div>
-            <div id="user-form-info" class="col-12 col-md-6">
+            <div class="col-12 col-md-8">
                 <div class="mb-3">
-                    <h2 class="heading h4">First name</h2>
+                    <h2 class="secondary-heading h4">First name</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -161,7 +161,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <h2 class="heading h4">Last name</h2>
+                    <h2 class="secondary-heading h4">Last name</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -170,7 +170,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <h2 class="heading h4">Username</h2>
+                    <h2 class="secondary-heading h4">Username</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -179,7 +179,7 @@ export default {
                     />
                 </div>
                 <div class="mb-3">
-                    <h2 class="heading h4">Email</h2>
+                    <h2 class="secondary-heading h4">Email</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -204,7 +204,7 @@ export default {
                     "
                     class="mb-3"
                 >
-                    <h2 class="heading h4">Instructor</h2>
+                    <h2 class="secondary-heading h4">Instructor</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
@@ -274,11 +274,6 @@ export default {
     font-weight: 400;
     font-size: 1rem;
     padding: 10px, 14px, 10px, 14px;
-}
-
-#user-form-info {
-    margin-left: auto;
-    margin-right: auto;
 }
 
 #user-function-btns-row {

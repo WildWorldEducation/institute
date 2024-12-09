@@ -242,19 +242,6 @@ input:focus {
     background-color: #e4ecf4;
     border-radius: 12px;
 }
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
 .avatar {
     max-width: 250px;
     width: 157px;

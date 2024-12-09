@@ -126,7 +126,7 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 bg-light rounded">
+    <div class="container p-3 bg-light rounded">
         <h1 class="heading">Edit Question</h1>
 
         <div class="container-fluid mt-4">
@@ -300,6 +300,6 @@ export default {
 
 .form-control:focus {
     border-color: white;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px var(--primary-color);
 }
 </style>

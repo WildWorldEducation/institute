@@ -151,8 +151,8 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-3 pb-2 bg-light rounded">
-        <h1 class="heading">Student Suggested Question</h1>
+    <div class="container p-3 bg-light rounded">
+        <h1 class="heading">Review Suggested Question</h1>
         <p>
             {{ studentName }} suggested the following question, for the skill
             {{ skillName }}
@@ -163,7 +163,7 @@ export default {
                 <div id="form-container" class="col p-4">
                     <!-- Question -->
                     <div class="mb-3">
-                        <h2 class="heading h4">Question</h2>
+                        <h2 class="secondary-heading h4">Question</h2>
                         <textarea
                             :disabled="!isEditMode"
                             rows="1"
@@ -188,7 +188,9 @@ export default {
                         :key="index"
                         class="mb-3"
                     >
-                        <h2 class="heading h4">Answer {{ index + 1 }}</h2>
+                        <h2 class="secondary-heading h4">
+                            Answer {{ index + 1 }}
+                        </h2>
                         <div class="d-flex answer-option">
                             <input
                                 :disabled="!isEditMode"
@@ -286,7 +288,7 @@ export default {
                     </div>
 
                     <div class="mb-3">
-                        <h2 class="heading h4">Explanation</h2>
+                        <h2 class="secondary-heading h4">Explanation</h2>
                         <textarea
                             :disabled="!isEditMode"
                             v-model="question.explanation"

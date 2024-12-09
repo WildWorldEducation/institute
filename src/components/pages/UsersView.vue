@@ -6,6 +6,7 @@ import UserDetails from '../components/UserDetails.vue';
 import { useUsersStore } from '../../stores/UsersStore';
 import { useInstructorStudentsStore } from '../../stores/InstructorStudentsStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import SearchUserBar from '../components/users-list/SearchUserBar.vue';
 
 export default {
     setup() {
@@ -40,7 +41,8 @@ export default {
     },
     components: {
         UsersList,
-        UserDetails
+        UserDetails,
+        SearchUserBar
     },
     async created() {
         // Set up the first user in the array to be selected on the page initially.
@@ -163,6 +165,10 @@ export default {
                     }
                 }
             }
+        },
+        updateShowUserDetails(newUser) {
+            this.showDetails = true;
+            this.user = newUser;
         }
     }
 };
@@ -191,6 +197,16 @@ export default {
                 />
             </svg>
         </router-link>
+        <SearchUserBar :updateUserDetails="updateShowUserDetails" />
+    </div>
+    <div
+        v-if="
+            userDetailsStore.role === 'editor' ||
+            userDetailsStore.role === 'instructor'
+        "
+        class="d-flex flex-row-reverse mt-3 justify-contents-between"
+    >
+        <SearchUserBar :updateUserDetails="updateShowUserDetails" />
     </div>
     <!-- Loading animation -->
     <div
@@ -256,7 +272,6 @@ export default {
     padding-bottom: 17px;
     padding-right: 46px;
     height: 77px;
-    background-color: rgb(164, 139, 230, 0.25);
 }
 
 #user-container {
@@ -300,7 +315,7 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid #a48be5;
+    border: 5px solid var(--primary-color);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;

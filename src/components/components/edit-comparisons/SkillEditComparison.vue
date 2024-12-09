@@ -198,118 +198,20 @@ export default {
 </script>
 
 <template>
-    <div class="mt-4 mb-4 container-fluid bg-light rounded p-2">
-        <h1 class="heading">Skill Change Comparison</h1>
+    <div class="mb-2 container-fluid bg-light rounded p-3">
+        <h1 class="heading">Compare Changes</h1>
         <hr />
         <!-- ---General info of skills -->
-        <div class="d-flex flex-column gap-2 mb-3">
-            <div class="d-flex gap-2 align-items-center">
-                <div class="compare-container-tile">Skill:</div>
-                <div class="minor-text">{{ skill.name }}</div>
-            </div>
-            <div class="d-flex gap-2 align-items-center">
-                <div class="compare-container-tile">Level:</div>
-                <div class="minor-text">{{ skill.level }}</div>
-            </div>
-        </div>
-        <!-- ---Banner image compare -->
-        <div v-if="changeBanner">
-            <div class="compare-container">
-                <div class="d-flex align-items-center">
-                    <h2 class="compare-container-tile mb-3">Banner</h2>
-                    <div
-                        @click="showBannerChange = !showBannerChange"
-                        :class="[
-                            showBannerChange ? 'expand-arrow' : 'minimize-arrow'
-                        ]"
-                        b-on-hover
-                        :title="showBannerChange ? 'minimize' : 'expand'"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="16"
-                            heigh="16"
-                            class="primary-icon"
-                        >
-                            <path
-                                d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
-                            />
-                        </svg>
-                    </div>
-                </div>
-                <Transition name="dropdown">
-                    <div v-if="showBannerChange">
-                        <div class="d-flex flex-lg-row flex-column">
-                            <!-- Old Banner -->
-                            <div class="old-container banner-container">
-                                <div class="container-tile">Original</div>
-                                <img
-                                    :src="skill.banner_image"
-                                    class="banner-image"
-                                />
-                            </div>
-                            <!-- Long arrow pointing right -->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                width="50"
-                                height="50"
-                                class="d-none d-lg-block my-auto mx-1 primary-icon"
-                            >
-                                <path
-                                    d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128z"
-                                />
-                            </svg>
-                            <!-- Long arrow pointing down on tablet and mobile-->
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 320 512"
-                                height="50"
-                                width="50"
-                                class="mx-auto my-2 d-lg-none primary-icon"
-                            >
-                                <path
-                                    d="M2 334.5c-3.8 8.8-2 19 4.6 26l136 144c4.5 4.8 10.8 7.5 17.4 7.5s12.9-2.7 17.4-7.5l136-144c6.6-7 8.4-17.2 4.6-26s-12.5-14.5-22-14.5l-72 0 0-288c0-17.7-14.3-32-32-32L128 0C110.3 0 96 14.3 96 32l0 288-72 0c-9.6 0-18.2 5.7-22 14.5z"
-                                />
-                            </svg>
-                            <!-- New Banner -->
-                            <div class="new-container banner-container">
-                                <div class="container-tile">Changed</div>
-                                <img
-                                    :src="skillEdit.banner_image"
-                                    class="banner-image"
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <button
-                                class="btn red-btn ms-auto me-0 mt-3"
-                                @click="dismissBanner()"
-                            >
-                                Revert &nbsp;&nbsp;
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                    width="20"
-                                    height="20"
-                                    fill="white"
-                                >
-                                    <path
-                                        d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9L0 168c0 13.3 10.7 24 24 24l110.1 0c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1c0-13.3-10.7-24-24-24z"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </Transition>
-            </div>
-        </div>
+        <h2 class="secondary-heading h4">Skill</h2>
+        <div class="minor-text">{{ skill.name }}</div>
+        <h2 class="secondary-heading h4 mt-2">Level</h2>
+        <div class="minor-text">{{ skill.level }}</div>
+
         <!-- ---Icon image compare -->
         <div v-if="changeIcon" class="mt-5">
             <div class="compare-container">
                 <div class="d-flex align-items-center">
-                    <h2 class="compare-container-tile mb-3">Skill Icon</h2>
+                    <h2 class="secondary-heading h4 mb-3">Skill Icon</h2>
                     <div
                         @click="showIconChange = !showIconChange"
                         :class="[
@@ -404,7 +306,7 @@ export default {
             class="compare-container mt-5"
         >
             <div class="d-flex align-items-center">
-                <h2 class="compare-container-tile">Mastery Requirements</h2>
+                <h2 class="secondary-heading h4">Mastery Requirements</h2>
                 <div
                     @click="showSkillMasteryChange = !showSkillMasteryChange"
                     :class="[
@@ -538,9 +440,7 @@ export default {
         </div>
         <!-- Skill mastery edit with summernote -->
         <div v-else class="mt-5 compare-container">
-            <h2 class="compare-container-tile my-3">
-                Edit Mastery Requirement
-            </h2>
+            <h2 class="secondary-heading h4 my-3">Edit Mastery Requirement</h2>
             <textarea
                 class="form-control"
                 id="summernote"
@@ -589,7 +489,7 @@ export default {
         <!-- User Comment -->
         <div class="mt-5 w-lg-50 w-md-75 w-100 compare-container">
             <div class="d-flex flex-md-row flex-column gap-2">
-                <h2 class="compare-container-tile mb-3">Comment:</h2>
+                <h2 class="secondary-heading h4 mb-3">Comment</h2>
                 <div class="comment-text">
                     {{ skillEdit.comment }}
                 </div>
@@ -606,12 +506,6 @@ export default {
 .green-btn:hover {
     background-color: rgb(55, 148, 47);
     color: white;
-}
-
-.page-title {
-    color: var(--primary-color);
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
 }
 
 .icon-image {
@@ -655,29 +549,12 @@ export default {
     height: fit-content;
 }
 
-.banner-container {
-    width: 100%;
-    height: 400;
-    display: flex;
-    justify-content: center;
-}
-
 .icon-container {
     width: 100%;
     height: 400px;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.container-tile {
-    position: absolute;
-    top: -15px;
-    font-size: 18px;
-    left: 20px;
-    padding-left: 5px;
-    padding-right: 5px;
-    background-color: white;
 }
 
 .innerHTMLmastery {

@@ -83,7 +83,7 @@ export default {
             </div>
         </div>
     </div>
-    <div class="container mt-2 bg-light rounded">
+    <div class="container bg-light rounded p-3">
         <!-- Page Heading  -->
         <h1 class="heading">{{ skill.name }} Question Bank</h1>
 
