@@ -112,7 +112,7 @@ export default {
                 id="multiple-choice-column"
                 class="col-12 col-md-10 col-lg-6 ps-0 pe-0 pe-lg-4"
             >
-                <h2 class="question-type">Multiple Choice</h2>
+                <h2 class="secondary-heading">Multiple Choice</h2>
                 <table
                     v-if="isMultipleChoice"
                     class="skilltree-table table-bordered"
@@ -127,7 +127,7 @@ export default {
                         <td>
                             <router-link
                                 :to="'/mc-questions/edit/' + question.id"
-                                class="btn purple-btn p-2"
+                                class="btn primary-btn p-2"
                                 role="button"
                                 :title="'Edit ' + question.name"
                                 ><svg
@@ -177,7 +177,7 @@ export default {
             <div
                 class="col-12 col-md-10 col-lg-6 ps-0 pe-0 ps-lg-4 mt-4 mt-lg-0"
             >
-                <h2 class="question-type">Essay</h2>
+                <h2 class="secondary-heading">Essay</h2>
                 <table v-if="isEssay" class="skilltree-table table-bordered">
                     <tr v-for="question in essayQuestions">
                         <td>
@@ -189,7 +189,7 @@ export default {
                         <td>
                             <router-link
                                 :to="'/essay-questions/edit/' + question.id"
-                                class="btn purple-btn p-2"
+                                class="btn primary-btn p-2"
                                 role="button"
                                 :title="'Edit ' + question.name"
                             >
@@ -240,7 +240,7 @@ export default {
         </div>
         <div class="row">
             <div class="col-12 col-md-10 col-lg-6 ps-0 pe-0 pe-lg-4">
-                <h2 class="question-type">Image</h2>
+                <h2 class="secondary-heading">Image</h2>
                 <table v-if="isImage" class="skilltree-table table-bordered">
                     <tr v-for="question in imageQuestions">
                         <td>
@@ -252,7 +252,7 @@ export default {
                         <td>
                             <router-link
                                 :to="'/image-questions/edit/' + question.id"
-                                class="btn purple-btn p-2"
+                                class="btn primary-btn p-2"
                                 role="button"
                                 :title="'Edit ' + question.name"
                             >
@@ -386,19 +386,6 @@ export default {
 </template>
 
 <style scoped>
-.question-type {
-    /* Text */
-    font-family: 'Poppins';
-    font-style: normal;
-    font-weight: 900;
-    font-size: 28px;
-    line-height: 28px;
-    /* or 100% */
-    display: flex;
-    align-items: center;
-    color: #8f7bd6;
-}
-
 .question-data-cell {
     width: 90% !important;
 }
@@ -438,22 +425,6 @@ export default {
 
 .green-btn:hover {
     background-color: #2ca695;
-}
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #8f7bd6;
-    color: white;
 }
 
 /* The Warning Modal */

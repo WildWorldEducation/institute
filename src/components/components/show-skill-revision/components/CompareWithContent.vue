@@ -52,7 +52,7 @@ export default {
         <div id="skill-info-container">
             <!-- Skill Info -->
             <div class="d-flex justify-content-between">
-                <h1 class="skill-name">
+                <h1 class="heading">
                     <CompareString :diffString="compareData.nameDiff" />
                     <span class="revision-version"
                         >(Ver: {{ compareData.skillData.version_number }})</span
@@ -172,8 +172,8 @@ export default {
                             </svg>
                         </div>
                         <!-- Grade level -->
-                        <div class="mt-3" style="color: #a48be6">
-                            <h2 class="h4 title">Level</h2>
+                        <div class="mt-3">
+                            <h2 class="h4 heading">Level</h2>
 
                             <span
                                 v-if="
@@ -211,7 +211,7 @@ export default {
             </div>
         </div>
         <button
-            class="btn purple-btn mt-4"
+            class="btn primary-btn mt-4"
             @click="updateCompareWithRevision(null)"
         >
             <div>
@@ -224,11 +224,6 @@ export default {
 </template>
 
 <style scoped>
-.title {
-    color: #a48be6;
-    font-weight: 700;
-}
-
 #skill-info-container {
     background-color: #f2edff;
     border-radius: 12px;
@@ -239,44 +234,17 @@ export default {
     justify-content: space-between;
 }
 
-.skill-name {
-    font-family: 'Poppins', sans-serif;
-    font-size: 40px;
-    color: #a48be6;
-    font-weight: 800;
-    margin-bottom: 0px;
-    text-align: start;
-}
-
 .revision-version {
     font-weight: 500;
     font-size: 18px;
 }
 
 .hr {
-    border-color: #aea3ce !important;
+    border-color: var(--primary-color) !important;
 }
 
 .space-between {
     min-height: 15px;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    max-width: fit-content;
-    height: 44px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #8f7bd6;
 }
 
 .red-btn {
@@ -362,10 +330,6 @@ export default {
     text-decoration-color: #1e293b;
     white-space-collapse: collapse;
     margin: 0px 3px;
-}
-
-.no-image-warn {
-    color: #a16207;
 }
 
 /* Style Specific On Phone */

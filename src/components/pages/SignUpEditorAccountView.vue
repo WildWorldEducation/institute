@@ -361,7 +361,7 @@ h1 {
 
 .form-signin button {
     width: 100%;
-    background-color: #a48be6;
+    background-color: var(--primary-color);
     color: white;
     border: 1px solid #7f56d9;
     font-family: 'Inter', sans-serif;

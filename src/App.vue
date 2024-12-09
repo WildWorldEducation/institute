@@ -1,7 +1,5 @@
 <script>
-import { RouterLink, RouterView } from 'vue-router';
-
-// Import the store.
+// Import the stores.
 import { useSessionDetailsStore } from './stores/SessionDetailsStore.js';
 import { useUserDetailsStore } from './stores/UserDetailsStore.js';
 
@@ -15,6 +13,25 @@ export default {
             userDetailsStore
         };
     },
+    async mounted() {
+        await this.userDetailsStore.getUserDetails();
+
+        // Kids theme
+        if (this.userDetailsStore.theme == 'apprentice') {
+            document.body.classList.remove('scholar-theme');
+            document.body.classList.add('apprentice-theme');
+        } else if (this.userDetailsStore.theme == 'scholar') {
+            document.body.classList.add('scholar-theme');
+            document.body.classList.remove('apprentice-theme');
+            // Original theme.
+        } else {
+            document.body.classList.remove('scholar-theme');
+            document.body.classList.remove('apprentice-theme');
+        }
+
+        console.log(this.userDetailsStore.theme);
+        console.log(typeof this.userDetailsStore.theme);
+    },
     methods: {}
 };
 </script>
@@ -23,18 +40,31 @@ export default {
     <header>
         <nav
             id="navbar"
-            class="navbar fixed-top navbar-expand-lg navbar-light bg-light"
+            class="navbar navbar-expand-sm nav-bar"
+            :class="{
+                'fixed-top':
+                    $route.name == 'vertical-tree' ||
+                    $route.name == 'radial-tree'
+            }"
         >
             <div class="container-fluid">
-                <RouterLink to="/" class="nav-link">
+                <RouterLink to="/" class="nav-link logo">
                     <img
+                        v-if="userDetailsStore.theme == 'scholar'"
+                        src="/images/logo-white.png"
+                        alt=""
+                        width="50"
+                        height="50"
+                    />
+                    <img
+                        v-else
                         src="/images/logo-red.png"
                         alt=""
                         width="50"
                         height="50"
                     />
                 </RouterLink>
-                <span class="navbar-brand">The Collins Institute</span>
+                <!-- <span class="navbar-brand">The Collins Institute</span> -->
                 <button
                     class="navbar-toggler"
                     type="button"
@@ -50,19 +80,23 @@ export default {
                     class="collapse navbar-collapse"
                     id="navbarSupportedContent"
                 >
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
+                    <ul class="navbar-nav d-flex bg-light rounded p-2">
                         <li
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                this.$route.name != 'hub'
+                            "
                             class="nav-item"
                         >
-                            <!-- ".native is used because Vue doesnt really allow for click handlers for routerlinks" -->
                             <RouterLink to="/" class="nav-link">Hub</RouterLink>
                         </li>
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
                                 (userDetailsStore.role == 'admin' ||
-                                    userDetailsStore.role == 'editor')
+                                    userDetailsStore.role == 'editor') &&
+                                this.$route.name != 'todo'
                             "
                             class="nav-item"
                         >
@@ -71,16 +105,21 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                this.$route.name != 'skills'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/skills" class="nav-link">
                                 <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
-
                         <li
-                            v-if="userDetailsStore.role == 'student'"
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                this.$route.name != 'vertical-tree'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/vertical-tree" class="nav-link"
@@ -97,7 +136,10 @@ export default {
                             >
                         </li>
                         <li
-                            v-if="userDetailsStore.role == 'student'"
+                            v-if="
+                                userDetailsStore.role == 'student' &&
+                                this.$route.name != 'radial-tree'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/radial-tree" class="nav-link"
@@ -106,9 +148,10 @@ export default {
                         </li>
                         <li
                             v-if="
-                                userDetailsStore.role == 'instructor' ||
-                                userDetailsStore.role == 'admin' ||
-                                userDetailsStore.role == 'editor'
+                                (userDetailsStore.role == 'instructor' ||
+                                    userDetailsStore.role == 'admin' ||
+                                    userDetailsStore.role == 'editor') &&
+                                this.$route.name != 'users'
                             "
                             class="nav-item"
                         >
@@ -131,20 +174,24 @@ export default {
                             </RouterLink>
                         </li>
                         <li
-                            v-if="userDetailsStore.role == 'instructor'"
+                            v-if="
+                                userDetailsStore.role == 'instructor' &&
+                                this.$route.name != 'cohorts'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/cohorts" class="nav-link">
                                 <span>Cohorts</span>
                             </RouterLink>
                         </li>
-                    </ul>
-                    <ul class="navbar-nav d-flex">
                         <li
                             v-if="sessionDetailsStore.isLoggedIn"
-                            class="nav-item me-2"
+                            class="nav-item"
                         >
-                            <RouterLink to="/profile-settings" class="nav-link">
+                            <RouterLink
+                                to="/profile-settings"
+                                class="nav-link profile-btn"
+                            >
                                 <img
                                     id="user-avatar"
                                     :src="userDetailsStore.avatar"
@@ -152,11 +199,8 @@ export default {
                                 />
                             </RouterLink>
                         </li>
-                        <li class="nav-item me-2" v-else>
-                            <RouterLink
-                                to="/login"
-                                class="btn purple-btn login-btn"
-                            >
+                        <li class="nav-item" v-else>
+                            <RouterLink to="/login" class="login-btn nav-link">
                                 Log in
                             </RouterLink>
                         </li>
@@ -171,6 +215,166 @@ export default {
 </template>
 
 <style>
+/*
+Themes
+*/
+/* The Original theme */
+:root {
+    --primary-color: #8d6ce7;
+    --primary-contrast-color: white;
+
+    --secondary-color: #56c5b6;
+    --secondary-contrast-color: white;
+
+    --skill-tree-background-color: white;
+    --skill-tree-color: black;
+
+    --stroke-width: 0px;
+}
+
+/* The Apprentice theme */
+.apprentice-theme {
+    --primary-color: #040095;
+    --primary-contrast-color: white;
+
+    --secondary-color: gold;
+    --secondary-contrast-color: #040095;
+
+    --skill-tree-background-color: skyblue;
+    --skill-tree-color: black;
+
+    --stroke-width: 1px;
+    --background-image: url('../images/backgrounds/themes/apprentice/apprentice-bg.jpg');
+}
+
+/* The Scholar theme */
+.scholar-theme {
+    --primary-color: black;
+    --primary-contrast-color: white;
+
+    --secondary-color: gold;
+    --secondary-contrast-color: black;
+
+    --skill-tree-background-color: black;
+    --skill-tree-color: white;
+
+    --stroke-width: 1px;
+    --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
+}
+
+/* Navigation bar */
+.nav-link {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.nav-link .active {
+    color: darkorange !important;
+}
+
+.nav-link:hover {
+    color: darkorange;
+    text-decoration: underline;
+}
+
+/* Background image */
+body {
+    background-image: var(--background-image);
+    background-size: cover;
+}
+
+/* Headings */
+.heading {
+    color: var(--primary-color) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+}
+
+.secondary-heading {
+    color: var(--primary-color) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+/* Regular text */
+p {
+    color: black !important;
+}
+
+/* Buttons */
+.primary-btn {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-contrast-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    max-height: 44px;
+    text-wrap: nowrap;
+}
+
+.primary-btn:hover,
+.primary-btn:focus,
+.primary-btn:active {
+    border-color: var(--primary-contrast-color) !important;
+    color: var(--primary-contrast-color);
+}
+
+.secondary-btn {
+    background-color: var(--secondary-color) !important;
+    color: var(--secondary-contrast-color);
+    fill: var(--secondary-contrast-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+    max-height: 44px;
+    text-wrap: nowrap;
+    border-style: solid;
+}
+
+.secondary-btn:hover,
+.secondary-btn:focus,
+.secondary-btn:active {
+    border-color: var(--secondary-contrast-color) !important;
+    color: var(--secondary-contrast-color);
+}
+
+/* Icons */
+.primary-icon {
+    fill: var(--primary-color) !important;
+}
+
+.secondary-icon {
+    fill: var(--secondary-color) !important;
+}
+
+/* End of themes section */
+
+.navbar-toggler {
+    background-color: white;
+}
+
+.logo {
+    background-color: transparent;
+}
+
+.profile-btn {
+    padding: 0px;
+    background-color: transparent;
+}
+
 .navbar-brand {
     font-family: 'Inter', sans-serif;
     font-weight: 600;
@@ -179,57 +383,20 @@ export default {
     margin-right: 50px;
 }
 
-.nav-link {
-    color: #a48be5;
-    font-weight: 700;
-    font-size: 16px;
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-}
-
-.nav-link > img {
-    margin-left: 5px;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover,
-.purple-btn:active,
-.purple-btn:focus {
-    background-color: #7f56d9;
-    border: 1px solid #7f56d9;
-    color: white;
-}
-
 #user-avatar {
     width: 40px;
     height: 40px;
     border-radius: 8px;
 }
+#user-avatar:hover {
+    border: 2px solid var(--fourth-colour);
+}
 .router-view {
     height: 100vh;
 }
-.router-view-padding {
-    padding-top: 72px;
-}
+
 .login-btn {
     max-width: 100px;
     justify-content: center;
-}
-@media (max-width: 991px) {
-    .router-view-padding {
-        padding-top: 66px;
-    }
 }
 </style>

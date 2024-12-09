@@ -36,7 +36,7 @@ export default {
             v-if="userDetailsStore.role == 'admin'"
             v-for="user in usersStore.users"
         >
-            <div class="d-flex">
+            <div class="d-flex bg-light rounded p-2">
                 <img
                     class="user-avatars"
                     v-if="user.avatar != null"
@@ -54,15 +54,15 @@ export default {
                 </button>
             </div>
             <!-- divide line for pc and tablet view -->
-            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
         <div
             v-else-if="userDetailsStore.role == 'instructor'"
             v-for="student in $parent.students"
         >
-            <div class="d-flex">
+            <div class="d-flex bg-light rounded p-2">
                 <img
                     class="user-avatars"
                     v-if="student.avatar != null"
@@ -79,14 +79,14 @@ export default {
                     {{ student.username }}
                 </button>
             </div>
-            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
         <RouterLink
             v-if="userDetailsStore.role == 'instructor'"
             to="/users/add-student"
-            class="d-block mb-4 btn purple-btn"
+            class="d-block mb-4 btn primary-btn"
         >
             Add Student
         </RouterLink>
@@ -94,7 +94,7 @@ export default {
             v-if="userDetailsStore.role == 'editor'"
             v-for="editor in $parent.usersStore.editors"
         >
-            <div class="d-flex">
+            <div class="d-flex bg-light rounded p-2">
                 <img
                     class="user-avatars"
                     v-if="editor.avatar != null"
@@ -112,9 +112,9 @@ export default {
                 </button>
             </div>
             <!-- divide line for pc and tablet view -->
-            <hr class="border border-1 opacity-100 w-75 d-none d-md-block" />
+            <hr class="border border-1 opacity-0 w-75 d-none d-md-block" />
             <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-100 w-100 d-block d-md-none" />
+            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
     </div>
 </template>
@@ -124,7 +124,7 @@ export default {
     width: 80px;
     height: 80px;
     border-radius: 12px;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
     margin-right: 22px;
 }
 
@@ -133,9 +133,9 @@ export default {
     width: 283px;
     height: 80px;
     border-radius: 8px;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
     background-color: #c8d7da;
-    color: white;
+    color: black;
     overflow: hidden;
     padding: 16px, 28px, 16px, 28px;
     font-size: 1.25rem;
@@ -143,7 +143,8 @@ export default {
 }
 
 .user-buttons:hover {
-    background-color: #a48be6;
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
 }
 
 /* The style when the user button is currently choose to show information */
@@ -152,8 +153,8 @@ export default {
     width: 283px;
     height: 80px;
     border-radius: 8px;
-    border: 1px solid #7f56d9;
-    background-color: #a48be6;
+    border: 1px solid var(--primary-color);
+    background-color: var(--primary-color);
     overflow: hidden;
     color: white;
     padding: 16px, 28px, 16px, 28px;

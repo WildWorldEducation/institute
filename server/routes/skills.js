@@ -18,6 +18,8 @@ const skillInfoboxImagesBucketName =
     process.env.S3_SKILL_INFOBOX_IMAGE_BUCKET_NAME;
 const skillInfoboxImageThumbnailsBucketName =
     process.env.S3_SKILL_INFOBOX_IMAGE_THUMBNAILS_BUCKET_NAME;
+const userAvatarImageThumbnailsBucketName =
+    process.env.S3_USER_AVATAR_IMAGE_THUMBNAILS_BUCKET_NAME;
 const bucketRegion = process.env.S3_BUCKET_REGION;
 const accessKeyId = process.env.S3_ACCESS_KEY_ID;
 const accessSecretKey = process.env.S3_SECRET_ACCESS_KEY;
@@ -42,7 +44,10 @@ const { recordUserAction } = require('../utilities/record-user-action');
 
 // Helper Function
 const { saveIconToAWS } = require('../utilities/save-image-to-aws');
-
+const {
+    getVectorData,
+    insertSkillsVectorIntoDataBase
+} = require('../utilities/vectorization-skill');
 /*------------------------------------------
 --------------------------------------------
 Routes
@@ -172,12 +177,22 @@ router.post(
                 } else {
                     // Get its id.
                     let sqlQuery2 = `SELECT LAST_INSERT_ID();`;
-                    conn.query(sqlQuery2, data, (err, results) => {
+                    conn.query(sqlQuery2, data, async (err, results) => {
                         const skillId = Object.values(results[0])[0];
                         try {
                             if (err) {
                                 throw err;
                             } else {
+                                // Add vector of skill into skill_vectors table
+                                const skillData = {
+                                    id: skillId,
+                                    name: req.body.name
+                                };
+                                const vectorData = await getVectorData(
+                                    skillData
+                                );
+                                insertSkillsVectorIntoDataBase(vectorData);
+                                console.log('successful vectorize');
                                 // Add skill revision history (this is the first revision.)
                                 let revisionHistoryQuery = `INSERT INTO skill_history
                             (id, version_number, user_id, name, description,
@@ -233,43 +248,7 @@ router.post(
                             next(err);
                         }
                     });
-                    res.json({
-                        result: 'skill added'
-                    });
                 }
-            } catch (err) {
-                next(err);
-            }
-        });
-    }
-);
-
-/**
- * Submit New Skill For Review
- *
- */
-router.post(
-    '/submit-new-skill-for-review',
-    isAuthenticated,
-    async (req, res, next) => {
-        let data = {};
-        data = {
-            name: req.body.name,
-            parent: req.body.parent,
-            mastery_requirements: req.body.mastery_requirements,
-            icon_image: req.body.icon_image,
-            type: req.body.type,
-            level: req.body.level
-        };
-
-        // Insert the new skill.
-        let sqlQuery = `INSERT INTO new_skills_awaiting_approval SET ?;`;
-        conn.query(sqlQuery, data, (err) => {
-            try {
-                if (err) {
-                    throw err;
-                }
-                res.end();
             } catch (err) {
                 next(err);
             }
@@ -429,11 +408,35 @@ router.get('/nested-list', (req, res, next) => {
 // Filtered Nested List - for "Instructor Role" and for "Guest Access" (no account)
 router.get('/filtered-nested-list', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
+
+    /* Truncate Vertical Tree to grade level based on which button student presses
+         on grade level key.
+        */
+    // Level will be sent in query param (eg: ?level='middle_school')
+    const level = req.query.level;
+    // Default is to show all.
+    let levelsToShow =
+        "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+    if (level == 'grade_school') {
+        levelsToShow = "'grade_school'";
+    } else if (level == 'middle_school') {
+        levelsToShow = "'grade_school', 'middle_school'";
+    } else if (level == 'high_school') {
+        levelsToShow = "'grade_school', 'middle_school', 'high_school'";
+    } else if (level == 'college') {
+        levelsToShow =
+            "'grade_school', 'middle_school', 'high_school', 'college'";
+    } else if (level == 'phd') {
+        levelsToShow =
+            "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+    }
+
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `
     SELECT id, name, parent, type, level, skills.order as skillorder, display_name, url
     FROM skills
     WHERE is_filtered = 'available' AND is_deleted = 0
+    AND level IN (${levelsToShow})
     ORDER BY skillorder;`;
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -671,7 +674,7 @@ router.get('/last-visited', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         //Get last visited.
         let sqlQuery = `
-            SELECT skills.id, name, skills.url
+            SELECT skills.id, name, skills.url, level
             FROM user_visited_skills
             INNER JOIN skills 
             ON skills.id = user_visited_skills.skill_id
@@ -1159,7 +1162,7 @@ router.get('/:id/resources', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `SELECT resources.id, resources.user_id, resources.skill_id, resources.content,
-resources.created_at, resources.is_human_edited, users.username, users.avatar  
+resources.created_at, resources.is_human_edited, users.username,  CONCAT('https://${userAvatarImageThumbnailsBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar
 FROM resources
 JOIN users ON resources.user_id = users.id
 WHERE skill_id= ${conn.escape(req.params.id)}
@@ -1614,77 +1617,48 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-const getVectorData = async (skillData, rowData) => {
-    const response = await openai.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: skillData.name,
-        dimensions: 720
-    });
-    const skillWithVector = {
-        id: skillData.id,
-        name: skillData.name,
-        vector: response.data[0].embedding
-    };
-    rowData.rows.push(skillWithVector);
-};
+// router.get('/skills-vectorization', isAuthenticated, async (req, res, next) => {
+//     try {
+//         const rowData = {
+//             rows: []
+//         }
+//         // get skill name list
+//         let sqlQuery = 'SELECT * FROM skills';
+//         conn.query(sqlQuery, async (err, results) => {
+//             if (err) {
+//                 throw err;
+//             }
+//             const promises = [];
+//             console.log(results.length)
+//             // We use text-embedding-3-small model to make vector data from skill name
+//             for (let index = 0; index < results.length; index++) {
+//                 const element = results[index];
 
-const insertSkillsVectorIntoDataBase = (skillVector) => {
-    let sqlQuery = `INSERT INTO skills_vector (skill_id, skill_name, embedding)
-                   VALUES ('${skillVector.id}',
-                   ${conn.escape(skillVector.name)},
-                   VEC_FromText('[${skillVector.vector}]'))`;
+//                 promises.push(getVectorData(element, rowData))
+//             }
+//             res.json(results)
 
-    conn.query(sqlQuery, (err) => {
-        if (err) {
-            console.error(err);
-            throw err;
-        }
-        console.log(results)
-    })
-}
-
-router.get('/skill-vectorization', isAuthenticated, async (req, res, next) => {
-    try {
-        const rowData = {
-            rows: []
-        };
-        // get skill name list
-        let sqlQuery = 'SELECT * FROM skills';
-        conn.query(sqlQuery, async (err, results) => {
-            if (err) {
-                throw err;
-            }
-            const promises = [];
-            console.log(results.length)
-            // We use text-embedding-3-small model to make vector data from skill name
-            for (let index = 0; index < results.length; index++) {
-                const element = results[index];
-
-                promises.push(getVectorData(element, rowData));
-            }
-            res.json(results);
-
-            Promise.all(promises)
-                .then(async () => {
-                    console.log(rowData)
-                    const content = JSON.stringify(rowData)
-                    await fs.writeFile('./vector.json', content);
-                    res.json('all done check vector.json : ');
-                })
-                .catch((e) => {
-                    throw e;
-                });
-        });
-    } catch (err) {
-        res.status = 500;
-        console.log(err);
-        res.json({ mess: 'fails' });
-    }
-});
+//             Promise.all(promises)
+//                 .then(async () => {
+//                     console.log(rowData)
+//                     const content = JSON.stringify(rowData)
+//                     await fs.writeFile('./vector.json', content);
+//                     res.json('all done check vector.json : ');
+//                 })
+//                 .catch((e) => {
+//                     throw e
+//                 });
+//         })
+//     } catch (err) {
+//         res.status = 500;
+//         console.log(err);
+//         res.json({ mess: 'fails' })
+//     }
+// })
 
 router.get('/insert-vectors-to-db', async (req, res) => {
     try {
-        console.log(vectorList.rows.length)
+        console.log(vectorList.rows.length);
         const promises = [];
         vectorList.rows.forEach((skillVector) => {
             promises.push(insertSkillsVectorIntoDataBase(skillVector));

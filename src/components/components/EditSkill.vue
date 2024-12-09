@@ -101,7 +101,8 @@ export default {
             randomNum: 0,
             loadingStatus: '',
             showLoadingModal: false,
-            originalSkill: {}
+            originalSkill: {},
+            parentLevel: ''
         };
     },
     async mounted() {
@@ -170,12 +171,10 @@ export default {
                         '#ffffff'
                     );
                     // Levels
-                    if (this.skill.level != 'domain') {
-                        const skillResult = this.levels.find((level) => {
-                            return level.id === this.skill.level;
-                        });
-                        this.showLevel = skillResult.name;
-                    }
+                    const skillResult = this.levels.find((level) => {
+                        return level.id === this.skill.level;
+                    });
+                    this.showLevel = skillResult.name;
 
                     // Parent skill
                     if (this.skill.parent != 0) {
@@ -262,6 +261,26 @@ export default {
         },
         // If edit is from an admin or editor.
         Submit() {
+            // Function to help compare level of parent and new skill.
+            // Constraint: Parent cannot be higher level than new skill
+            function levelToNumber(level) {
+                if (level == 'grade_school') return 1;
+                else if (level == 'middle_school') return 2;
+                else if (level == 'high_school') return 3;
+                else if (level == 'college') return 4;
+                else if (level == 'phd') return 5;
+            }
+            // Determine parent level.
+            let parentLevel = levelToNumber(this.parentLevel);
+            // Determine new node level.
+            let skillLevel = levelToNumber(this.skill.level);
+            if (parentLevel > skillLevel) {
+                alert(
+                    'Child nodes cannot have a lower grade level than parent nodes.'
+                );
+                return;
+            }
+
             this.showLoadingModal = true;
             // Check if this skill was a super skill with skills, and is being changed to another type.
             if (this.skill.type != 'super') {
@@ -283,12 +302,8 @@ export default {
                     );
                 }
             }
-            // Domains cant get filters or levels.
-            if (this.skill.type == 'domain') {
-                this.skill.level = 'domain';
-
-                // For subskills.
-            } else if (this.skill.type == 'sub') {
+            // For subskills.
+            else if (this.skill.type == 'sub') {
                 // Make sure user has assigned a parent skill.
                 if (this.skill.parent == 0) {
                     this.validate.orphan = true;
@@ -434,6 +449,9 @@ export default {
             }
         },
         handleChooseSuggestSkill(skill) {
+            // Need to make sure skill level is not higher than parent level.
+            this.parentLevel = skill.level;
+
             // set form data
             this.skill.parent = skill.id;
             if (this.skill.type != 'sub') {
@@ -508,19 +526,9 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 pb-5 px-3 px-md-0">
-        <!-- Page Title -->
-        <div class="row mt-5">
-            <div
-                class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline gap-3 mt-3"
-            >
-                <h1 id="page-tile">
-                    <span v-if="skill.type != 'domain'">Edit Skill</span>
-                    <span v-else>Edit Category</span>
-                </h1>
-                <img src="/images/recurso-69.png" id="header-icon" />
-            </div>
-        </div>
+    <div class="container bg-light rounded p-3">
+        <h1 class="heading">{{ skill.name }}</h1>
+
         <div v-if="!isAnotherInstanceOfExistingSkill">
             <div
                 v-if="
@@ -529,10 +537,10 @@ export default {
                 "
             >
                 <!-- Skill name -->
-                <div class="row mt-5">
+                <div class="row mt-3">
                     <div class="col-12 col-md-8 col-lg-5 mt-2">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
+                            <h2 class="secondary-heading h4">Name</h2>
                             <input
                                 v-model="skill.name"
                                 class="form-control"
@@ -553,10 +561,10 @@ export default {
                 </div>
                 <!-- Skill level -->
                 <div class="row">
-                    <div v-if="skill.type != 'domain' && skill.type != 'sub'">
+                    <div v-if="skill.type != 'sub'">
                         <div class="col col-md-8 col-lg-5 mt-2">
                             <!-- Custom Dropdown -->
-                            <label class="form-label">Level</label>
+                            <h2 class="secondary-heading h4">Level</h2>
                             <div class="d-flex flex-column position-relative">
                                 <div
                                     :class="[
@@ -605,7 +613,7 @@ export default {
                 <div v-if="userDetailsStore.role == 'admin'" class="row">
                     <div class="col col-md-8 col-lg-5 mt-2">
                         <div v-if="skill.type != 'sub'">
-                            <label class="form-label">Filters</label>
+                            <h2 class="secondary-heading h4">Filters</h2>
                             <div class="col">
                                 <label
                                     v-for="tag in tagsStore.tagsList"
@@ -636,11 +644,13 @@ export default {
             <!-- Skills Types Radio choose -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
-                    <label class="form-label">Node Type</label>
+                    <h2 class="secondary-heading h4">Node Type</h2>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4">Regular</span>
+                                <span class="my-auto mx-2 me-4 text"
+                                    >Regular</span
+                                >
                                 <input
                                     type="radio"
                                     name="nodeType"
@@ -723,11 +733,12 @@ export default {
                     </div>
                 </div>
             </div>
+
             <!-- Parent Typing Dropdown -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div v-if="skill.type != 'sub'" class="mb-3">
-                        <label class="form-label">Parent</label>
+                        <h2 class="secondary-heading h4">Parent</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -754,7 +765,9 @@ export default {
                     </div>
                     <!-- -------------------------------------------------- -->
                     <div v-else class="mb-3">
-                        <label class="form-label">Cluster node center</label>
+                        <h2 class="secondary-heading h4">
+                            Cluster node center
+                        </h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -793,7 +806,7 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                     >
-                        <label for="image" class="form-label">Icon</label>
+                        <h2 class="secondary-heading h4">Icon</h2>
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -841,7 +854,7 @@ export default {
                                 </div>
                             </div>
                             <p style="font-size: 14px">
-                                <em>Maximum file size 15mb</em>
+                                <em class="text">Maximum file size 15mb</em>
                             </p>
                         </div>
                         <div v-else>
@@ -885,13 +898,12 @@ export default {
                     </div>
                 </div>
             </div>
+
             <!-- Description -->
             <div v-if="userDetailsStore.role == 'admin'" class="row">
                 <div class="col">
                     <div class="mb-3">
-                        <label for="description" class="form-label"
-                            >Description</label
-                        >
+                        <h2>Description</h2>
                         <textarea
                             v-model="skill.description"
                             class="form-control"
@@ -908,11 +920,7 @@ export default {
 
             <!-- Mastery Requirement summernote -->
             <div v-if="skill.type != 'domain'" class="mb-3">
-                <div class="d-flex justify-content-between">
-                    <label for="mastery_requirements" class="form-label"
-                        >Mastery Requirements</label
-                    >
-                </div>
+                <h2 class="secondary-heading h4">Mastery Requirements</h2>
 
                 <textarea
                     class="form-control"
@@ -978,9 +986,7 @@ export default {
             <div class="row">
                 <div class="col">
                     <div class="mb-3">
-                        <label for="description" class="form-label"
-                            >Comment</label
-                        >
+                        <h2 class="secondary-heading h4">Comment</h2>
                         <textarea
                             v-model="comment"
                             class="form-control"
@@ -1052,7 +1058,7 @@ export default {
                 <div
                     class="d-flex justify-content-end gap-md-4 gap-1 align-items-end"
                 >
-                    <router-link class="btn red-btn" to="/skills">
+                    <button class="btn red-btn" @click="$router.go(-1)">
                         <div class="d-none d-md-block">Cancel</div>
                         <!-- Exit Icon-->
                         <svg
@@ -1067,14 +1073,14 @@ export default {
                                 d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"
                             />
                         </svg>
-                    </router-link>
+                    </button>
                     <button
                         v-if="
                             userDetailsStore.role == 'admin' ||
                             userDetailsStore.role == 'editor'
                         "
                         :disabled="!isFormChanged"
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         @click="Submit()"
                     >
                         <div class="d-none d-md-block">Submit</div>
@@ -1097,7 +1103,7 @@ export default {
                             userDetailsStore.role == 'instructor' ||
                             userDetailsStore.role == 'student'
                         "
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         :disabled="!isFormChanged"
                         @click="SubmitForReview()"
                     >
@@ -1194,6 +1200,10 @@ export default {
 </template>
 
 <style scoped>
+.text {
+    color: var(--fifth-colour);
+}
+
 .green-btn {
     background-color: #36c1af;
     color: white;
@@ -1209,16 +1219,6 @@ export default {
 
 .green-btn:hover {
     background-color: #65e0a5;
-}
-
-#page-tile {
-    font-family: 'Poppins' sans-serif;
-    font-size: 38px;
-    font-weight: 900;
-    line-height: 28px;
-    letter-spacing: 0em;
-    text-align: left;
-    color: #667085;
 }
 
 .form-label {
@@ -1237,23 +1237,6 @@ export default {
     gap: 8px;
     box-shadow: 0px 1px 2px 0px #1018280d;
     border: 1px solid #f2f4f7;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    height: fit-content;
-}
-
-.purple-btn:hover {
-    background-color: #8666ca;
 }
 
 .red-btn {
@@ -1682,9 +1665,6 @@ export default {
     .default-no-img {
         height: 100px;
         width: auto;
-    }
-    #page-tile {
-        font-size: 32px;
     }
 
     .exit-icon {

@@ -109,12 +109,6 @@ export default {
 
 <template>
     <div>
-        <!-- Banner -->
-        <div id="banner">
-            <img src="/images/banners/general-banner.png" class="img-fluid" />
-        </div>
-        <!-- Page tile -->
-        <h2 class="ps-3 mt-2 page-title">Approve Student Added Questions</h2>
         <div class="container-fluid">
             <StudentQuestionList
                 :studentQuestion="questions"
@@ -125,22 +119,10 @@ export default {
 </template>
 
 <style>
-.page-title {
-    color: #9c7eec;
-    font-size: 30px;
-    font-weight: 600;
-}
-
 .assessment {
     border: 1px solid #dbd0f9;
     margin: 0px;
     padding: 10px 6px;
-}
-
-h2 {
-    color: #9c7eec;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
 }
 
 #assessment-tile {
@@ -165,7 +147,7 @@ h2 {
 }
 
 #student-name {
-    color: #8f7bd6;
+    color: var(--primary-color);
 }
 
 #date {
@@ -173,17 +155,17 @@ h2 {
 }
 
 .assessment-link:hover #date {
-    color: #7f56d9;
+    color: var(--primary-color);
     cursor: pointer;
 }
 
 .assessment-link:hover {
-    color: #7f56d9;
+    color: var(--primary-color);
     cursor: pointer;
 }
 
 .assessment-link:hover #student-name {
-    color: #7f56d9;
+    color: var(--primary-color);
     cursor: pointer;
 }
 
@@ -217,7 +199,6 @@ h2 {
 .red-btn {
     background-color: #da7033;
     color: white;
-    border: 1px solid #7f56d9;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;

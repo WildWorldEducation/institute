@@ -21,7 +21,7 @@ export default {
 
 <template>
     <div class="topnav">
-        <router-link class="btn purple-btn" to="/tags/add"
+        <router-link class="btn primary-btn" to="/tags/add"
             >Add&nbsp;
             <!-- Plus sign -->
             <svg
@@ -36,7 +36,8 @@ export default {
                     fill="white"
                 />
             </svg>
-        ></router-link>
+            ></router-link
+        >
     </div>
 
     <div class="container mt-3">
@@ -66,17 +67,4 @@ export default {
     </div>
 </template>
 
-<style scoped>
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: 79.05px;
-}
-</style>
+<style scoped></style>

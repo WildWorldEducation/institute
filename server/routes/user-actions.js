@@ -110,8 +110,8 @@ router.get('/:userId/flag', (req, res, next) => {
                     JOIN skills 
                     ON skills.id = resources.skill_id  
                     WHERE user_actions.user_id = ${conn.escape(
-                        req.params.userId
-                    )} 
+                    req.params.userId
+                )} 
                     AND user_actions.content_type = 'content_flag' 
                     AND content_flags.content_type = 'resource';`;
 
@@ -131,8 +131,8 @@ router.get('/:userId/flag', (req, res, next) => {
                         JOIN skills 
                         ON skills.id = mc_questions.skill_id  
                         WHERE user_actions.user_id = ${conn.escape(
-                            req.params.userId
-                        )} 
+                        req.params.userId
+                    )} 
                         AND user_actions.content_type = 'content_flag' 
                         AND content_flags.content_type = 'mc_question';`;
 
@@ -148,8 +148,8 @@ router.get('/:userId/flag', (req, res, next) => {
                                             WHERE user_actions.action = 'delete' 
                                             AND user_actions.content_type = 'content_flag' 
                                             AND user_actions.user_id=${conn.escape(
-                                                req.params.userId
-                                            )};`;
+                                req.params.userId
+                            )};`;
 
                             conn.query(sqlQuery4, (err, results) => {
                                 if (err) throw err;
@@ -185,8 +185,8 @@ router.get('/:userId/flag', (req, res, next) => {
                                                 JOIN skills 
                                                 ON skills.id = image_questions.skill_id  
                                                 WHERE user_actions.user_id = ${conn.escape(
-                                                    req.params.userId
-                                                )} 
+                                                req.params.userId
+                                            )} 
                                                 AND user_actions.content_type = 'content_flag' 
                                                 AND content_flags.content_type = 'image_question'`;
 
@@ -252,8 +252,8 @@ router.get('/:userId/resource', (req, res, next) => {
                           JOIN skills 
                           ON skills.id = resources.skill_id   
                           WHERE user_actions.user_id = ${conn.escape(
-                              req.params.userId
-                          )} 
+            req.params.userId
+        )} 
                           AND user_actions.content_type = 'resource';`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -289,8 +289,8 @@ router.get('/:userId/student_mc_question', (req, res, next) => {
                         JOIN users as student 
                         ON student.id = student_mc_questions.student_id 
                         WHERE user_actions.user_id = ${conn.escape(
-                            req.params.userId
-                        )} 
+            req.params.userId
+        )} 
                         AND user_actions.content_type = 'student_mc_question';`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -306,8 +306,8 @@ router.get('/:userId/student_mc_question', (req, res, next) => {
                                              WHERE user_actions.action = 'delete' 
                                              AND user_actions.content_type = 'student_mc_question' 
                                              AND user_id=${conn.escape(
-                                                 req.params.userId
-                                             )};`;
+                        req.params.userId
+                    )};`;
 
                     conn.query(deleteActionQuery, (err, results) => {
                         if (err) {
@@ -353,8 +353,8 @@ router.get('/:userId/question', (req, res, next) => {
                         JOIN users 
                         ON users.id = user_actions.user_id 
                         WHERE user_actions.user_id = ${conn.escape(
-                            req.params.userId
-                        )} 
+            req.params.userId
+        )} 
                         AND user_actions.content_type = 'mc_question'`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -374,8 +374,8 @@ router.get('/:userId/question', (req, res, next) => {
                                                         JOIN users 
                                                         ON users.id = user_actions.user_id 
                                                         WHERE user_actions.user_id = ${conn.escape(
-                                                            req.params.userId
-                                                        )} 
+                        req.params.userId
+                    )} 
                                                         AND user_actions.content_type = 'essay_question'`;
 
                     conn.query(essayQuestionQuery, (err, results) => {
@@ -394,8 +394,8 @@ router.get('/:userId/question', (req, res, next) => {
                                                         JOIN users 
                                                         ON users.id = user_actions.user_id
                                                         WHERE user_actions.user_id = ${conn.escape(
-                                                            req.params.userId
-                                                        )} 
+                                req.params.userId
+                            )} 
                                                         AND user_actions.content_type = 'image_question'`;
 
                             conn.query(imageQuestionQuery, (err, results) => {
@@ -437,8 +437,8 @@ router.get('/:userId/skill', (req, res, next) => {
                         JOIN skills 
                         ON user_actions.content_id = skills.id 
                         WHERE user_actions.user_id = ${conn.escape(
-                            req.params.userId
-                        )} 
+            req.params.userId
+        )} 
                         AND user_actions.content_type = 'skill';`;
 
         conn.query(sqlQuery, (err, results) => {
@@ -456,6 +456,37 @@ router.get('/:userId/skill', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+
+/**
+ * List Actions with type skill of a specific user
+ *
+ * @return response()
+ */
+router.get('/:userId/new-skill', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT user_actions.* 
+                        FROM user_actions 
+                        WHERE user_actions.user_id = ${conn.escape(req.params.userId)} 
+                        AND user_actions.content_type = 'new_skill';`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                } else {
+                    res.json(results);
+                }
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 
 // Export the router for app to use.
 module.exports = router;

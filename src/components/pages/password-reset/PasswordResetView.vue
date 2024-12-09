@@ -86,7 +86,7 @@ export default {
                 <div v-else-if="!isValidated.emailFormat" class="form-validate">
                     please enter a valid email !
                 </div>
-                <button class="btn mt-2 purple-btn" @click="Submit">
+                <button class="btn mt-2 primary-btn" @click="Submit">
                     Submit
                 </button>
             </div>
@@ -97,14 +97,14 @@ export default {
                         viewBox="0 0 512 512"
                         width="40"
                         height="40"
-                        fill="#a48be6"
+                        class="primary-icon"
                     >
                         <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                         <path
                             d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"
                         />
                     </svg>
-                    <h1 class="h4 mt-2" style="color: #a48be6">Email sent</h1>
+                    <h1 class="heading h4 mt-2">Email sent</h1>
                     <p>
                         Please check your email for instructions on resetting
                         your password.
@@ -129,31 +129,6 @@ export default {
 
 .password-email {
     max-width: 500px;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-}
-
-.purple-btn:active,
-.purple-btn:focus {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
 }
 
 .form-validate {

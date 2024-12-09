@@ -1,5 +1,6 @@
 <script>
 import { useUsersStore } from '../../../../stores/UsersStore';
+import { useUserDetailsStore } from '../../../../stores/UserDetailsStore';
 import McQuestionsEditList from './McQuestionsEditList.vue';
 import SkillEditsList from './SkillEditsList.vue';
 import WrittenQuestionEditsList from './WrittenQuestionEditsList.vue';
@@ -8,9 +9,11 @@ import ImageQuestionEditsList from './ImageQuestionEditsList.vue';
 export default {
     setup() {
         const usersStore = useUsersStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
-            usersStore
+            usersStore,
+            userDetailsStore
         };
     },
     props: ['settingStore'],
@@ -164,13 +167,7 @@ export default {
 </script>
 
 <template>
-    <div class="w-100">
-        <!-- Banner -->
-        <div id="banner">
-            <img src="/images/banners/general-banner.png" class="img-fluid" />
-        </div>
-        <!-- Page tile -->
-        <h2 class="ps-3 mt-2 page-title">Approve Content Edits</h2>
+    <div class="w-100 bg-light p-2">
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
             <button
@@ -302,52 +299,40 @@ export default {
 </template>
 
 <style scoped>
-#banner {
-    width: 100%;
-    height: fit-content;
-}
-
-.page-title {
-    color: #9c7eec;
-    font-size: 30px;
-    font-weight: 600;
-}
-
 .desktop-nav-bar {
     padding-top: 15px;
     padding-bottom: 15px;
-    border: 1px solid #e0e0e0;
     width: fit-content;
     border-radius: 5px;
     margin-left: 15px;
 }
 
 .normal-nav {
-    background-color: inherit;
+    background-color: var(--primary-color);
+    color: var(--primary-contrast-color);
     padding: 5px 20px;
     cursor: pointer;
     font-weight: 600;
-    color: grey;
     border: none;
     border-radius: 8px;
 }
 
 .normal-nav:focus {
     outline: none;
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
 }
 
 .active-nav {
-    background-color: #8666ca;
+    background-color: var(--secondary-color);
     border: 1px solid grey;
     border-radius: 5px;
-    color: white;
+    color: var(--secondary-contrast-color);
     font-weight: 600;
     padding: 5px 20px;
 }
 
 .active-nav:focus {
-    outline: solid 2px #4a3091;
+    outline: solid 2px var(--secondary-color);
 }
 
 /* Style For The Custom Select */
@@ -368,7 +353,7 @@ export default {
     letter-spacing: 0.03em;
     text-align: left;
     display: flex;
-    color: #8666ca;
+    color: var(--primary-colour);
 }
 
 .custom-select-button-focus {
@@ -379,7 +364,7 @@ export default {
     gap: 8px;
     background: linear-gradient(0deg, #ffffff, #ffffff),
         linear-gradient(0deg, #f2f4f7, #f2f4f7);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-colour);
     box-shadow: 0px 0px 0px 4px #bca3ff4d;
     font-family: 'Poppins' sans-serif;
     font-size: 1rem;
@@ -388,12 +373,12 @@ export default {
     letter-spacing: 0.03em;
     text-align: left;
     display: flex;
-    color: #8666ca;
+    color: var(--primary-colour);
 }
 
 .custom-select-button:hover {
     cursor: pointer;
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-colour);
 }
 
 .custom-select-button > span {
@@ -456,7 +441,7 @@ export default {
     border-radius: 8px;
     border: 1px;
     background: linear-gradient(0deg, #ffffff, #ffffff);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-colour);
     box-shadow: 0px 4px 6px -2px #10182808;
     box-shadow: 0px 12px 16px -4px #10182814;
     width: 200px;
@@ -481,8 +466,8 @@ export default {
 }
 
 :deep(.cell-link:focus) {
-    border: 1px #8f7bd6 solid;
-    border-color: #4523be !important;
+    border: 1px var(--primary-colour) solid;
+    border-color: var(--primary-colour) !important;
     border-radius: 5px;
     outline: none;
 }

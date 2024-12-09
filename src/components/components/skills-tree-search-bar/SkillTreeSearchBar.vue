@@ -140,12 +140,22 @@ export default {
         },
         checkTextForAi(searchText) {
             // only context search if user end a word
-            if (
-                searchText.slice(-1) === ' ' &&
-                searchText.length > 3 &&
-                !this.waitForSever
-            ) {
+            if (searchText.length > 3 && !this.waitForSever) {
                 this.getContextResults(searchText);
+            }
+        },
+        handleRobotIconClick() {
+            this.aiMode = !this.aiMode;
+            console.log(this.aiMode);
+            console.log(this.searchText);
+            if (this.aiMode) {
+                this.checkTextForAi(this.searchText);
+            }
+        },
+        handleEnterPress() {
+            this.aiMode = !this.aiMode;
+            if (this.aiMode) {
+                this.checkTextForAi(this.searchText);
             }
         }
     },
@@ -206,12 +216,13 @@ export default {
                 id="skill-tree-search-text"
                 type="text"
                 class="skill-tree-input"
-                placeholder="Skill Name"
+                placeholder="Search"
                 v-model="searchText"
+                v-on:keyup.enter="handleEnterPress()"
             />
             <button
                 class="robot-icon"
-                @click="aiMode = !aiMode"
+                @click="handleRobotIconClick()"
                 @mouseover="showAiToolTip = true"
                 @mouseleave="showAiToolTip = false"
             >
@@ -262,10 +273,10 @@ export default {
 .search-bar {
     display: flex;
     flex-direction: column;
-    border: 1px solid #dce2f2;
+    /* border: 1px solid #dce2f2; */
+    border: 1px solid black;
     border-radius: 8px;
-    width: 450px;
-    margin-right: 35px;
+    background-color: white;
 }
 
 .have-results {
@@ -333,16 +344,15 @@ export default {
 }
 
 /* Bigger devices ( Tablet ) */
-@media (min-width: 481px) and (max-width: 1024px) {
+/* @media (min-width: 481px) and (max-width: 1024px) {
     .search-bar {
         width: 90%;
     }
-}
+} */
 
 /* Phone view style */
 @media (max-width: 480px) {
     .search-bar {
-        width: 96%;
         margin-left: auto;
         margin-right: auto;
     }

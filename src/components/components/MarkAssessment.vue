@@ -113,9 +113,7 @@ export default {
 
 <template>
     <div class="container-fluid">
-        <div id="question-header">
-            <div id="assessment-tile">Assessments</div>
-        </div>
+        <h2 class="secondary-heading h4">Mark Assessments</h2>
         <div id="list-body">
             <div class="assessment" v-for="assessment in this.assessments">
                 <RouterLink
@@ -140,22 +138,6 @@ export default {
     border: 1px solid #dbd0f9;
     margin: 0px;
     padding: 10px 6px;
-}
-
-h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
-#assessment-tile {
-    font-family: 'Poppins';
-    font-size: 20px;
-    font-weight: 900;
-    line-height: 28px;
-    letter-spacing: 0em;
-    text-align: left;
-    color: #ad9af3;
 }
 
 .assessment-link {
@@ -192,16 +174,7 @@ h2 {
     cursor: pointer;
 }
 
-#question-header {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 20px;
-    background: #e8e2f9;
-    border: 1px solid #dbd0f9;
-}
-
 #list-body {
-    height: 340px;
     overflow: auto;
 }
 

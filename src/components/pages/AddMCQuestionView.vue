@@ -108,16 +108,9 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img src="/images/banners/general-banner.png" class="image-fluid" />
-    </div>
-    <div class="container mt-3 pb-3">
-        <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Add Question</h2>
-                <img src="/images/recurso-69.png" id="header-icon" />
-            </div>
-        </div>
+    <div class="container p-3 bg-light rounded">
+        <h1 class="heading">Add Multiple Choice Question</h1>
+
         <div class="main-content-container container-fluid mt-4">
             <div class="row p-0">
                 <div id="form-container" class="col-lg-6 p-4">
@@ -221,16 +214,15 @@ export default {
                             <path
                                 data-v-ea3cd1bf=""
                                 d="M170.5 51.6L151.5 80h145l-19-28.4c-1.5-2.2-4-3.6-6.7-3.6H177.1c-2.7 0-5.2 1.3-6.7 3.6zm147-26.6L354.2 80H368h48 8c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8V432c0 44.2-35.8 80-80 80H112c-44.2 0-80-35.8-80-80V128H24c-13.3 0-24-10.7-24-24S10.7 80 24 80h8H80 93.8l36.7-55.1C140.9 9.4 158.4 0 177.1 0h93.7c18.7 0 36.2 9.4 46.6 24.9zM80 128V432c0 17.7 14.3 32 32 32H336c17.7 0 32-14.3 32-32V128H80zm80 64V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16zm80 0V400c0 8.8-7.2 16-16 16s-16-7.2-16-16V192c0-8.8 7.2-16 16-16s16 7.2 16 16z"
-                            ></path>
-                        </svg>
-                        >&nbsp;&nbsp; Remove Answer
+                            ></path></svg
+                        >&nbsp;Remove Answer
                     </button>
                     <!-- Add Answer Button (max 5 answers) -->
                     <div class="mb-3">
                         <button
                             v-if="answers[4].show == false"
                             @click="addAnswer"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                         >
                             <svg
                                 width="20"
@@ -283,7 +275,7 @@ export default {
                         <a class="btn red-btn" @click="$router.go(-1)"
                             >Cancel</a
                         >
-                        <button class="btn purple-btn" @click="Submit()">
+                        <button class="btn primary-btn" @click="Submit()">
                             Submit
                         </button>
                     </div>
@@ -311,28 +303,6 @@ export default {
 
 .red-btn:hover {
     background-color: #cc3535;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #a48be6;
-    color: white;
-}
-
-.purple-btn:focus {
-    background-color: #a48be6;
-    color: white;
 }
 
 #header-tile {
@@ -376,6 +346,7 @@ export default {
 
 .form-control:focus {
     border-color: white;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+        0 0 12px var(--primary-color);
 }
 </style>

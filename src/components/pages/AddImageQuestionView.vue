@@ -59,17 +59,10 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img src="/images/banners/general-banner.png" class="image-fluid" />
-    </div>
-    <div class="container mt-5 pb-3">
-        <div class="row">
-            <div class="col-10 d-flex align-items-end">
-                <h2 id="header-tile">Add Question</h2>
-                <img src="/images/recurso-69.png" id="header-icon" />
-            </div>
-        </div>
-        <div class="main-content-container container-fluid p-4">
+    <div class="container p-3 bg-light rounded">
+        <h1 class="heading">Add Image Question</h1>
+
+        <div class="main-content-container container-fluid">
             <div class="row">
                 <div id="form-container" class="col-lg-6 p-4">
                     <div class="mb-3">
@@ -132,7 +125,7 @@ export default {
                         <a class="btn red-btn" @click="$router.go(-1)"
                             >Cancel</a
                         >
-                        <button class="btn purple-btn" @click="Submit()">
+                        <button class="btn primary-btn" @click="Submit()">
                             Submit
                         </button>
                     </div>
@@ -162,28 +155,6 @@ export default {
 
 .red-btn:hover {
     background-color: #cc3535;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #a48be6;
-    color: white;
-}
-
-.purple-btn:focus {
-    background-color: #a48be6;
-    color: white;
 }
 
 #header-tile {
@@ -227,6 +198,7 @@ export default {
 
 .form-control:focus {
     border-color: white;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 12px #a48be6;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+        0 0 12px var(--primary-color);
 }
 </style>

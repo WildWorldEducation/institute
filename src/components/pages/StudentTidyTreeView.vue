@@ -14,15 +14,18 @@ export default {
     },
     data() {
         return {
-            studentName: "",
+            studentName: ''
         };
     },
-    async created(){
-        if(this.userDetailsStore.role == "instructor" || this.userDetailsStore.role == "admin"){
-            this.instructorId = this.userDetailsStore.userId
-        }else{
-            alert("Only admin or instructors can access this page.")
-            this.$router.push("/")
+    async created() {
+        if (
+            this.userDetailsStore.role == 'instructor' ||
+            this.userDetailsStore.role == 'admin'
+        ) {
+            this.instructorId = this.userDetailsStore.userId;
+        } else {
+            alert('Only admin or instructors can access this page.');
+            this.$router.push('/');
         }
         if (this.usersStore.users.length == 0) await this.usersStore.getUsers();
         for (let i = 0; i < this.usersStore.users.length; i++) {
@@ -31,20 +34,15 @@ export default {
             }
         }
     },
-    components:{
+    components: {
         StudentTidyTree
     }
-}
+};
 </script>
 
 <template>
-    <div id="thin-purple-banner">
-        <div class="container">
-            <div class="row">
-                <h1>{{ studentName }}</h1>
-            </div>
-        </div>
-    </div>
+    <h1 class="heading">{{ studentName }}</h1>
+
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
@@ -56,8 +54,4 @@ export default {
     </Suspense>
 </template>
 
-<style>
-#thin-purple-banner {
-    background-color: #a48be640;
-}
-</style>
+<style></style>

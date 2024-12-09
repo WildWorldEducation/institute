@@ -12,7 +12,6 @@ export const useSkillTreeStore = defineStore('skillTree', {
         middleSchoolVerticalTreeUserSkills: [],
         highSchoolVerticalTreeUserSkills: [],
         collegeVerticalTreeUserSkills: [],
-        phdVerticalTreeUserSkills: [],
         // --
         userSkillsNoSubSkills: [],
         userSkillsSubSkillsSeparate: [],

@@ -3,6 +3,9 @@ import VueMultiselect from 'vue-multiselect';
 // Import the stores.
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import WaitLoadingModal from './share-components/WaitLoadingModal.vue';
+import SuccessModal from './share-components/SuccessModal.vue';
+import FailsModal from './share-components/FailsModal.vue';
 
 export default {
     setup() {
@@ -14,7 +17,7 @@ export default {
             userDetailsStore
         };
     },
-    components: { VueMultiselect },
+    components: { VueMultiselect, WaitLoadingModal, SuccessModal, FailsModal },
     data() {
         return {
             skill: {
@@ -78,7 +81,12 @@ export default {
             skillToBeCopied: null,
             parentOfNewInstance: null,
             showCopiedSkillModal: false,
-            showSkillTypeModal: false
+            showSkillTypeModal: false,
+            parentLevel: '',
+            showLoadModal: false,
+            showSuccessModal: false,
+            showFailsModal: false,
+            message: ''
         };
     },
     computed: {
@@ -210,10 +218,8 @@ export default {
                 this.validate.name = true;
                 this.validate.description = true;
             }
-            // Assign levels of domains and subskills automatically.
-            if (this.skill.type == 'domain') {
-                this.skill.level = 'domain';
-            } else if (this.skill.type == 'sub') {
+            // Assign levels of subskills automatically.
+            if (this.skill.type == 'sub') {
                 for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
                     if (
                         this.skill.parent == this.skillsStore.skillsList[i].id
@@ -235,7 +241,9 @@ export default {
             }
         },
         async submitNewSkillForReview() {
-            let url = '/skills/submit-new-skill-for-review';
+            this.showLoadModal = true;
+            let url =
+                '/new-skills-awaiting-approval/submit-new-skill-for-review';
 
             // Get the Summernote HTML.
             this.skill.mastery_requirements =
@@ -245,6 +253,7 @@ export default {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    user_id: this.userDetailsStore.userId,
                     name: this.skill.name,
                     parent: this.skill.parent,
                     icon_image: this.skill.icon_image,
@@ -253,12 +262,35 @@ export default {
                     level: this.skill.level
                 })
             }).then(() => {
-                alert('New skill submitted for approval.');
-                this.$router.push('/skills');
+                this.showLoadModal = false;
+                this.showSuccessModal = true;
+                this.message = 'New skill submitted for approval.';
             });
         },
         async Submit() {
+            this.showLoadModal = true;
             let url = '/skills/add';
+
+            // Function to help compare level of parent and new skill.
+            // Constraint: Parent cannot be higher level than new skill
+            function levelToNumber(level) {
+                if (level == 'grade_school') return 1;
+                else if (level == 'middle_school') return 2;
+                else if (level == 'high_school') return 3;
+                else if (level == 'college') return 4;
+                else if (level == 'phd') return 5;
+            }
+            // Determine parent level.
+            let parentLevel = levelToNumber(this.parentLevel);
+            // Determine new node level.
+            let skillLevel = levelToNumber(this.skill.level);
+            if (parentLevel > skillLevel) {
+                this.message =
+                    'Child nodes cannot have a lower grade level than parent nodes.';
+                this.showLoadModal = false;
+                this.showFailsModal = true;
+                return;
+            }
 
             // Get the Summernote HTML.
             this.skill.mastery_requirements =
@@ -284,22 +316,26 @@ export default {
                 .then((data) => {
                     // Check if skill exists already.
                     if (data.result == 'This skill already exists.') {
-                        alert(data.result);
+                        this.showFailsModal = true;
+                        this.message = data.result;
                         return;
                     } else if (
                         data.result ==
                         'This skill was deleted, but has now been undeleted. Please find it and edit it.'
                     ) {
-                        alert(data.result);
-                    } else if (data.result == 'skill added') {
-                        alert(data.result);
+                        this.showLoadModal = false;
+                        this.showFailsModal = true;
+                        this.message = data.result;
+                        return;
                     }
                 })
                 .then(() => {
                     this.skillsStore.getNestedSkillsList();
                 })
                 .then(() => {
-                    this.$router.push('/skills');
+                    this.showLoadModal = false;
+                    this.showSuccessModal = true;
+                    this.message = 'Adding Skill Successfully';
                 });
         },
         async CreateNewInstance() {
@@ -316,7 +352,9 @@ export default {
                     this.skillsStore.getNestedSkillsList();
                 })
                 .then(() => {
-                    this.$router.push('/skills');
+                    this.showLoadModal = false;
+                    this.message = 'Successfully created new instance';
+                    this.showSuccessModal = true;
                 });
         },
         // 2 Method that handle parent dropdown
@@ -333,11 +371,16 @@ export default {
                 });
             }
         },
+        // For selecting parent
         handleChooseSuggestSkill(skill) {
             //turn off the suggestion drop down
             this.parentInput.suggestSkills = [];
             // set form data
             this.skill.parent = skill.id;
+
+            // Need to make sure skill level is not higher than parent level.
+            this.parentLevel = skill.level;
+
             // set input text
             this.parentInput.inputText = skill.name;
         },
@@ -374,32 +417,32 @@ export default {
             // find the file input base on id and manually click them
             const input = document.getElementById(elName);
             input.click();
+        },
+        handleOkBtnClick() {
+            this.showSuccessModal = false;
+            this.$router.push('/skills');
+        },
+        handleFailsOkClick() {
+            this.showFailsModal = false;
         }
     }
 };
 </script>
 
 <template>
-    <div class="container mt-4 pb-5 px-3 px-md-0">
-        <!-- Page Title -->
-        <div class="row mt-5">
-            <div
-                class="col-12 col-md-10 col-lg-5 d-flex align-items-baseline justify-content-center justify-content-md-start gap-3 mt-3"
-            >
-                <h1 id="page-tile">
-                    <span v-if="skill.type != 'domain'">Add Skill</span>
-                    <span v-else>Add Category</span>
-                </h1>
-                <img src="/images/recurso-69.png" id="header-icon" />
-            </div>
-        </div>
+    <div class="container mt-3 bg-light rounded p-2">
+        <!-- Page Heading -->
+        <h1 class="heading">
+            <span v-if="skill.type != 'domain'">Add Skill</span>
+            <span v-else>Add Category</span>
+        </h1>
         <!-- If making another instance of an existing skill on the tree -->
         <div class="row">
             <div class="col-12 mt-2">
                 <div class="row p-0 m-0 d-flex">
                     <div class="form-check my-2 col-10">
                         <label class="control control-checkbox">
-                            <span class="my-auto ms-2"
+                            <span class="my-auto ms-2 secondary-text"
                                 >Is this an existing skill that needs to appear
                                 again in the tree?</span
                             >
@@ -414,7 +457,7 @@ export default {
                     <!-- Information button -->
                     <div class="col-2">
                         <button
-                            class="btn purple-btn mt-2"
+                            class="btn primary-btn mt-2"
                             @click="showCopiedSkillModal = 'true'"
                         >
                             <svg
@@ -434,7 +477,7 @@ export default {
                 </div>
                 <div v-if="isAnotherInstanceOfExistingSkill" class="mb-3">
                     <div class="row mt-3">
-                        <label class="form-label">Original Skill</label>
+                        <h2 class="secondary-heading h4">Original Skill</h2>
                         <select v-model="skillToBeCopied">
                             <option
                                 v-for="skill in skillsThatCanBeCopied"
@@ -445,7 +488,7 @@ export default {
                         </select>
                     </div>
                     <div class="row mt-3">
-                        <label class="form-label">Parent</label>
+                        <h2 class="secondary-heading h4">Parent</h2>
                         <select v-model="parentOfNewInstance">
                             <option v-for="skill in skills" :value="skill">
                                 {{ skill.name }}
@@ -461,7 +504,7 @@ export default {
             <div class="row mt-2">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
+                        <h2 class="secondary-heading h4">Name</h2>
                         <input
                             v-model="skill.name"
                             class="form-control"
@@ -484,7 +527,7 @@ export default {
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div v-if="skill.type != 'sub'" class="mb-3">
-                        <label class="form-label">Parent</label>
+                        <h2 class="secondary-heading h4">Parent</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -520,7 +563,9 @@ export default {
                     </div>
                     <!-- -------------------------------------------------- -->
                     <div v-else class="mb-3">
-                        <label class="form-label">Cluster node center</label>
+                        <h2 class="secondary-heading h4">
+                            Cluster node center
+                        </h2>
                         <!-- <select class="form-select" v-model="skill.parent">
                         <option
                             v-for="superSkill in superSkills"
@@ -561,10 +606,10 @@ export default {
             </div>
             <!-- Skill level -->
             <div class="row">
-                <div v-if="skill.type != 'domain' && skill.type != 'sub'">
+                <div v-if="skill.type != 'sub'">
                     <div class="col col-md-8 col-lg-5 mt-2">
                         <!-- Custom Dropdown -->
-                        <label class="form-label">Level</label>
+                        <h2 class="secondary-heading h4">Level</h2>
                         <div class="d-flex flex-column position-relative">
                             <div
                                 :class="[
@@ -607,14 +652,16 @@ export default {
                     </div>
                 </div>
             </div>
-            <!-- Skills Type -->
+            <!-- Skill Type -->
             <div class="row">
                 <div class="col-10 mt-2">
-                    <label class="form-label">Node Type</label>
+                    <h2 class="secondary-heading h4">Node Type</h2>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4">Regular</span>
+                                <span class="my-auto mx-2 me-4 secondary-text"
+                                    >Regular</span
+                                >
                                 <input
                                     type="radio"
                                     name="nodeType"
@@ -627,7 +674,9 @@ export default {
                         </div>
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4">Category</span>
+                                <span class="my-auto mx-2 me-4 secondary-text"
+                                    >Category</span
+                                >
                                 <input
                                     type="radio"
                                     name="nodeType"
@@ -640,7 +689,7 @@ export default {
                         </div>
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4"
+                                <span class="my-auto mx-2 me-4 secondary-text"
                                     >Cluster node center</span
                                 >
                                 <input
@@ -655,7 +704,7 @@ export default {
                         </div>
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
-                                <span class="my-auto mx-2 me-4"
+                                <span class="my-auto mx-2 me-4 secondary-text"
                                     >Cluster node outer</span
                                 >
                                 <input
@@ -683,7 +732,7 @@ export default {
                 <!-- Information button -->
                 <div class="col-2">
                     <button
-                        class="btn purple-btn mt-2"
+                        class="btn primary-btn mt-2"
                         @click="showSkillTypeModal = true"
                     >
                         <svg
@@ -708,7 +757,7 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start"
                     >
-                        <label for="image" class="form-label">Icon</label>
+                        <h2 class="secondary-heading h4">Icon</h2>
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -756,7 +805,9 @@ export default {
                                 </div>
                             </div>
                             <p style="font-size: 14px">
-                                <em>Maximum file size 15mb</em>
+                                <em class="secondary-text"
+                                    >Maximum file size 15mb</em
+                                >
                             </p>
                         </div>
                         <div v-else>
@@ -795,9 +846,7 @@ export default {
             <div class="row" v-if="userDetailsStore.role == 'admin'">
                 <div class="col">
                     <div class="mb-3">
-                        <label for="description" class="form-label"
-                            >Description</label
-                        >
+                        <h2 class="secondary-heading h4">Description</h2>
                         <textarea
                             v-model="skill.description"
                             class="form-control"
@@ -813,12 +862,12 @@ export default {
                 </div>
             </div>
             <!-- Mastery Requirements with summernote -->
-            <div class="row">
+            <div class="row" v-if="skill.type != 'domain'">
                 <div class="col">
                     <div class="mb-3">
-                        <label for="mastery_requirements" class="form-label"
-                            >Mastery Requirements</label
-                        >
+                        <h2 class="secondary-heading h4">
+                            Mastery Requirements
+                        </h2>
                         <textarea
                             v-model="skill.mastery_requirements"
                             class="form-control"
@@ -842,14 +891,14 @@ export default {
                             userDetailsStore.role == 'admin' &&
                             isAnotherInstanceOfExistingSkill
                         "
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         @click="CreateNewInstance()"
                     >
                         Create New Instance
                     </button>
                     <button
                         v-else
-                        class="btn purple-btn"
+                        class="btn primary-btn"
                         @click="validateSkill()"
                     >
                         <span
@@ -950,6 +999,18 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Loading Modal show up when user interact with sever -->
+    <WaitLoadingModal v-if="showLoadModal" />
+    <SuccessModal
+        v-if="showSuccessModal"
+        :message="message"
+        :handleOkClick="handleOkBtnClick"
+    />
+    <FailsModal
+        v-if="showFailsModal"
+        :message="message"
+        :handleOkClick="handleFailsOkClick"
+    />
 </template>
 
 <style scoped>
@@ -979,23 +1040,6 @@ export default {
     gap: 8px;
     box-shadow: 0px 1px 2px 0px #1018280d;
     border: 1px solid #f2f4f7;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    width: fit-content;
-}
-
-.purple-btn:hover {
-    background-color: #8666ca;
 }
 
 .red-btn {

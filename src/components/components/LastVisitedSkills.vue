@@ -19,12 +19,18 @@ export default {
 </script>
 
 <template>
-    <div class="table-responsive"></div>
-    <h2 id="title">Last visited Skills</h2>
+    <h2 class="secondary-heading h4">Last visited Skills</h2>
     <div id="skill-list">
         <div v-for="skill in visitedSkills">
             <router-link
-                class="skill-link"
+                :class="{
+                    'grade-school': skill.level == 'grade_school',
+                    'middle-school': skill.level == 'middle_school',
+                    'high-school': skill.level == 'high_school',
+                    college: skill.level == 'college',
+                    phd: skill.level == 'phd'
+                }"
+                class="skill-link btn"
                 :to="`/skills/${skill.url}`"
                 target="_blank"
             >
@@ -36,6 +42,21 @@ export default {
 </template>
 
 <style scoped>
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
 .table-responsive {
     max-height: 300px;
     display: flex;
@@ -45,35 +66,36 @@ export default {
 #skill-list {
     overflow-y: auto;
     max-height: 300px;
-}
-
-#title {
-    background-color: #e8e2f9;
-    border-color: #dbd0f9;
-    color: #ad9af3;
-    padding: 14px 20px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-    font-size: 20px;
-    margin-bottom: 0px;
+    background-color: rgb(33, 37, 41);
+    border-radius: 10px;
 }
 
 #skill-list div {
-    border-collapse: collapse;
-    border: 1px solid #ad9af3;
-    border-top: 0px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 28px;
-    text-align: left;
     padding: 10px 6px;
-    color: #667085;
 }
 
 .skill-link {
     text-decoration: none !important;
-    color: #667085;
+    color: black;
+}
+
+/* Level colors */
+.grade-school {
+    background-color: #40e0d0;
+}
+.middle-school {
+    background-color: #33a133;
+    color: white;
+}
+.high-school {
+    background-color: #ffd700;
+}
+.college {
+    background-color: #ffa500;
+}
+.phd {
+    background-color: #ff0000;
+    color: white;
 }
 
 #skill-list div:hover {

@@ -36,6 +36,11 @@ const { v7: uuidv7 } = require('uuid');
 const { unlockInitialSkills } = require('../utilities/unlock-initial-skills');
 const checkRoleHierarchy = require('../middlewares/roleMiddleware');
 const editSelfPermission = require('../middlewares/users/editSelfMiddleware');
+
+require('dotenv').config();
+const { saveUserAvatarToAWS } = require('../utilities/save-image-to-aws');
+const userAvatarImagesBucketName = process.env.S3_USER_AVATAR_IMAGE_BUCKET_NAME;
+const bucketRegion = process.env.S3_BUCKET_REGION;
 router.post('/new-user/add', (req, res, next) => {
     // Providing default avatar.
     // Providing it here, as MEDIUMTEXT type in DB not accepting default values.
@@ -51,9 +56,9 @@ router.post('/new-user/add', (req, res, next) => {
         let data = {
             username: req.body.username,
             email: req.body.email,
-            avatar: req.body.avatar,
             password: hashedPassword,
-            role: req.body.account_type == 'student' ? 'student' : 'instructor'
+            role: req.body.account_type == 'student' ? 'student' : 'instructor',
+            skill_tree_level: req.body.skill_tree_level
         };
 
         // Check if username or email address already exist.
@@ -127,11 +132,16 @@ router.post('/new-user/add', (req, res, next) => {
                                     conn.query(
                                         sqlQuery3,
                                         data,
-                                        (err, results) => {
+                                        async (err, results) => {
                                             try {
                                                 if (err) {
                                                     throw err;
                                                 } else {
+                                                    // Upload avatar to AWS
+                                                    await saveUserAvatarToAWS(
+                                                        data.id,
+                                                        req.body.avatar
+                                                    );
                                                     let newStudentId = data.id;
                                                     // Create session to log the user in.
                                                     req.session.userId =
@@ -187,7 +197,6 @@ router.post('/new-editor/add', (req, res, next) => {
         let data = {
             username: req.body.username,
             email: req.body.email,
-            avatar: req.body.avatar,
             password: hashedPassword,
             role: 'editor'
         };
@@ -263,11 +272,16 @@ router.post('/new-editor/add', (req, res, next) => {
                                     conn.query(
                                         sqlQuery3,
                                         data,
-                                        (err, results) => {
+                                        async (err, results) => {
                                             try {
                                                 if (err) {
                                                     throw err;
                                                 } else {
+                                                    // Upload avatar to AWS
+                                                    await saveUserAvatarToAWS(
+                                                        data.id,
+                                                        req.body.avatar
+                                                    );
                                                     let newEditorId = data.id;
                                                     // Create session to log the user in.
                                                     req.session.userId =
@@ -328,7 +342,6 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
             last_name: req.body.lastname,
             username: req.body.username,
             email: req.body.email,
-            avatar: req.body.avatar,
             role: req.body.role,
             password: hashedPassword
         };
@@ -396,11 +409,16 @@ router.post('/add', isAuthenticated, createUserPermission, (req, res, next) => {
                                     conn.query(
                                         sqlQuery3,
                                         data,
-                                        (err, results) => {
+                                        async (err, results) => {
                                             try {
                                                 if (err) {
                                                     throw err;
                                                 } else {
+                                                    // Upload avatar to AWS
+                                                    await saveUserAvatarToAWS(
+                                                        data.id,
+                                                        req.body.avatar
+                                                    );
                                                     let newUserId = data.id;
                                                     res.json({
                                                         account:
@@ -456,7 +474,9 @@ router.post(
 router.get('/list', isAuthenticated, (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
+        // Note: avatar has query param to deal with image caching by browser,
+        // in case image is changed.
+        let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
         FROM users
         WHERE is_deleted = 0;`;
 
@@ -501,7 +521,9 @@ router.get(
     (req, res, next) => {
         if (req.session.userName) {
             res.setHeader('Content-Type', 'application/json');
-            let sqlQuery = `SELECT id, first_name, last_name, username, avatar, email, role 
+            // Note: avatar has query param to deal with image caching by browser,
+            // in case image is changed.
+            let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
         FROM users
         WHERE role = 'editor'
         AND is_deleted = 0;`;
@@ -545,9 +567,10 @@ router.get('/instructors/list', (req, res, next) => {
 router.get('/show/:id', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        // Select user.
+        // Note: avatar has query param to deal with image caching by browser,
+        // in case image is changed.
         let sqlQuery = `
-    SELECT id, first_name, last_name, username, email, role, is_deleted, is_google_auth             
+    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, skill_tree_level, theme
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
@@ -647,15 +670,18 @@ router.put(
             last_name = ${conn.escape(req.body.lastname)}, 
             username = ${conn.escape(req.body.username)}, 
             email = ${conn.escape(req.body.email)}, 
-            password = ${conn.escape(req.body.password)}, 
-            avatar = ${conn.escape(avatar)}, 
+            password = ${conn.escape(req.body.password)},
             role = ${conn.escape(req.body.role)} 
             WHERE id = ${conn.escape(req.params.id)};`;
 
-            conn.query(sqlQuery, (err, results) => {
+            conn.query(sqlQuery, async (err, results) => {
                 try {
                     if (err) {
                         throw err;
+                    }
+                    // Upload avatar to AWS
+                    if (avatar != '') {
+                        await saveUserAvatarToAWS(req.params.id, avatar);
                     }
                     res.end();
                 } catch (err) {
@@ -667,6 +693,28 @@ router.put(
         }
     }
 );
+
+/**
+ * Update User Theme
+ *
+ * @return response()
+ */
+router.put('/theme/:id/edit', isAuthenticated, (req, res, next) => {
+    let sqlQuery = `UPDATE users 
+            SET theme = ${conn.escape(req.body.theme)}             
+            WHERE id = ${conn.escape(req.params.id)};`;
+
+    conn.query(sqlQuery, async (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.end();
+        } catch (err) {
+            next(err);
+        }
+    });
+});
 
 // Change student's instructor.
 router.put(
@@ -717,18 +765,19 @@ router.put(
     (req, res, next) => {
         let sqlQuery = `UPDATE users
             SET username = 
-            ${conn.escape(req.body.username)},
-            avatar = ${conn.escape(req.body.avatar)},
+            ${conn.escape(req.body.username)},           
             first_name = ${conn.escape(req.body.firstName)},
             last_name = ${conn.escape(req.body.lastName)},
             email = ${conn.escape(req.body.email)}
             WHERE id = ${conn.escape(req.params.id)};`;
 
-        conn.query(sqlQuery, (err) => {
+        conn.query(sqlQuery, async (err) => {
             try {
                 if (err) {
                     throw err;
                 }
+                // Upload avatar to AWS
+                await saveUserAvatarToAWS(req.params.id, req.body.avatar);
                 res.end();
             } catch (err) {
                 next(err);
@@ -778,6 +827,25 @@ router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
     } else {
         res.redirect('/login');
     }
+});
+
+// Choose skill tree truncate level
+router.put('/:userId/skill-tree-level', isAuthenticated, (req, res, next) => {
+    let sqlQuery = `UPDATE users
+            SET skill_tree_level = 
+            ${conn.escape(req.body.level)}            
+            WHERE id = ${conn.escape(req.params.userId)};`;
+
+    conn.query(sqlQuery, (err) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            res.end();
+        } catch (err) {
+            next(err);
+        }
+    });
 });
 
 // router.get('*', (req, res) => {

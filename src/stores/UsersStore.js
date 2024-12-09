@@ -40,6 +40,6 @@ export const useUsersStore = defineStore('users', {
             if (result.error) {
                 console.log(result.error);
             }
-        }
+        },
     }
 });

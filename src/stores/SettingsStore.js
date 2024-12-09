@@ -12,6 +12,7 @@ export const useSettingsStore = defineStore('settings', {
         todoImageQuestionTableRows: 0,
         todoStudentQuestionTableRows: 0,
         todoContentFlagTableRows: 0,
+        todoNewSkillTableRows: 0,
     }),
     actions: {
         async getSettings() {
@@ -27,6 +28,7 @@ export const useSettingsStore = defineStore('settings', {
             this.todoImageQuestionTableRows = data[0].todo_image_question_table_rows;
             this.todoContentFlagTableRows = data[0].todo_content_flag_table_rows;
             this.todoStudentQuestionTableRows = data[0].todo_student_question_table_rows;
+            this.todoNewSkillTableRows = data[0].todo_new_skills_table_rows;
         },
 
         async saveSettings() {
@@ -45,6 +47,7 @@ export const useSettingsStore = defineStore('settings', {
                         todo_image_question_table_rows: this.todoImageQuestionTableRows,
                         todo_content_flag_table_rows: this.todoContentFlagTableRows,
                         todo_student_question_table_rows: this.todoStudentQuestionTableRows,
+                        todo_new_skills_table_rows: this.todoNewSkillTableRows
                     }
                 )
             };

@@ -16,7 +16,9 @@ export const useUserDetailsStore = defineStore('userDetails', {
             userId: null,
             instructorId: null,
             instructorUsername: null,
-            isGoogleAuth: null
+            isGoogleAuth: null,
+            skillTreeLevel: 'phd',
+            theme: 'original'
         };
     },
     actions: {
@@ -40,6 +42,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.password = data.password;
                 this.email = data.email;
                 this.isGoogleAuth = data.is_google_auth;
+                this.skillTreeLevel = data.skill_tree_level;
+                this.theme = data.theme;
 
                 if (this.role == 'student') {
                     await this.getInstructor();
@@ -87,6 +91,32 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 };
                 skillTreeStore.updateSkillTree(student);
             });
+        },
+        updateTheme(theme) {
+            if (theme == 'apprentice') {
+                this.theme = 'apprentice';
+                document.body.classList.remove('scholar-theme');
+                document.body.classList.add('apprentice-theme');
+            } else if (theme == 'scholar') {
+                this.theme = 'scholar';
+                document.body.classList.remove('apprentice-theme');
+                document.body.classList.add('scholar-theme');
+            } else {
+                this.theme = 'original';
+                document.body.classList.remove('apprentice-theme');
+                document.body.classList.remove('scholar-theme');
+            }
+            // API call
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    theme: this.theme
+                })
+            };
+
+            var url = '/users/theme/' + this.userId + '/edit';
+            fetch(url, requestOptions);
         }
     }
 });

@@ -37,7 +37,7 @@ export default {
     async created() {
         await this.getEditedQuestion();
         await this.getOriginalQuestion();
-        
+
         // Can now render
         this.isQuestionLoaded = true;
     },
@@ -242,23 +242,18 @@ export default {
 </script>
 
 <template>
-    <div class="container mt-4 mb-4">
-        <h1 ref="pageTile" class="page-title">Compare Changes</h1>
+    <div class="container mb-2 bg-light rounded p-3">
+        <h1 ref="pageTile" class="heading">Compare Changes</h1>
         <hr />
         <!-- Name and Level of Skill -->
-        <div class="d-flex flex-column gap-2 mb-3">
-            <h1 class="d-flex gap-2 align-items-end header-tile">
-                <div class="major-text">Skill:</div>
-                <div class="minor-text">
-                    {{ toTileCase(skillName) }}
-                </div>
-            </h1>
-            <h1 class="d-flex gap-2 align-items-end header-tile">
-                <div class="major-text">Level:</div>
-                <div class="minor-text">
-                    {{ toTileCase(skillLevel) }}
-                </div>
-            </h1>
+        <h2 class="secondary-heading h4">Skill</h2>
+        <div class="minor-text">
+            {{ toTileCase(skillName) }}
+        </div>
+
+        <h2 class="secondary-heading h4 mt-2">Level</h2>
+        <div class="minor-text">
+            {{ toTileCase(skillLevel) }}
         </div>
         <!-- ----Show and hide Highlight button-->
         <div class="d-flex flex-row-reverse my-3">
@@ -474,7 +469,7 @@ export default {
         <!-- User Comment -->
         <div class="mt-5 w-lg-50 w-md-75 w-100 compare-container">
             <div class="d-flex flex-md-row flex-column gap-2">
-                <h2 class="compare-container-tile mb-3">Comment:</h2>
+                <h2 class="secondary-heading h4 mb-3">Comment</h2>
                 <div class="comment-text">
                     {{ this.comment }}
                 </div>
@@ -488,21 +483,8 @@ export default {
     margin-top: 2.5rem;
     margin-bottom: 2.5rem;
 }
-.page-title {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-}
-
-.header-tile {
-    color: #475569;
-    font-size: 18px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-}
-
 .major-text {
-    color: #a48be7;
+    color: var(--primary-color);
 }
 
 .compare-container {
@@ -512,13 +494,6 @@ export default {
     border-radius: 5px;
     padding: 10px 15px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.compare-container-tile {
-    color: #a48be7;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 22px;
 }
 
 .comment-text {

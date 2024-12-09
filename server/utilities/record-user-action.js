@@ -1,6 +1,6 @@
 // Database Connection
 const conn = require('../config/db');
-const recordUserAction = ({userAction, contentType, contentId, userId}, callback) => {
+const recordUserAction = ({ userAction, contentType, contentId, userId }, callback) => {
     const actionData = {
         action: userAction,
         content_id: contentId,
@@ -15,4 +15,4 @@ const recordUserAction = ({userAction, contentType, contentId, userId}, callback
     });
 };
 
-module.exports = {recordUserAction}
+module.exports = { recordUserAction }

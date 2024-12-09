@@ -4,6 +4,7 @@ import { useResourcesStore } from '../../stores/ResourcesStore.js';
 import { useMCQuestionsStore } from '../../stores/MCQuestionsStore.js';
 import { useEssayQuestionsStore } from '../../stores/EssayQuestionsStore.js';
 import { useSettingsStore } from '../../stores/SettingsStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
@@ -15,12 +16,14 @@ export default {
         const mcQuestionsStore = useMCQuestionsStore();
         const essayQuestionsStore = useEssayQuestionsStore();
         const settingStore = useSettingsStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
             skillsStore,
             resourcesStore,
             mcQuestionsStore,
             essayQuestionsStore,
-            settingStore
+            settingStore,
+            userDetailsStore
         };
     },
     data() {
@@ -540,17 +543,7 @@ export default {
 </script>
 
 <template>
-    <div id="banner">
-        <img
-            src="/images/banners/edit-mastery-skill-banner.png"
-            class="img-fluid"
-        />
-    </div>
-    <div class="container-fluid pb-5">
-        <div class="mt-3">
-            <h2 class="page-title">Content Flags</h2>
-        </div>
-        <hr />
+    <div class="container-fluid p-1">
         <!-- Search Table Section -->
         <div>
             <div class="expand-tile">Search:</div>
@@ -571,7 +564,7 @@ export default {
             </div>
         </div>
         <!-- Vue Data Table Desktop  -->
-        <div class="mt-5 pb-5 d-none d-md-block table-div">
+        <div class="mt-5 pb-3 d-none d-md-block table-div">
             <Vue3EasyDataTable
                 ref="dataTable"
                 :headers="headers"
@@ -612,7 +605,7 @@ export default {
                     >
                         <router-link
                             :to="editUrl"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             b-tooltip.hover
                             :title="'Go To Edit Page For This ' + type"
                         >
@@ -1441,7 +1434,7 @@ export default {
         <!-- ++++++++++++++++++++++++++++_______________________________ ++++++++++++++++++++++++++++ -->
 
         <!-- Vue Data Table Phone -->
-        <div class="mt-5 pb-5 d-md-none">
+        <div class="mt-5 pb-3 d-md-none">
             <Vue3EasyDataTable
                 ref="dataTableM"
                 :headers="headersPhone"
@@ -1474,7 +1467,7 @@ export default {
                     >
                         <router-link
                             :to="editUrl"
-                            class="btn purple-btn"
+                            class="btn primary-btn"
                             target="_blank"
                             b-tooltip.hover
                             :title="'Go To Edit Page For This ' + type"
@@ -2074,22 +2067,10 @@ div {
     font-family: 'Poppins', sans-serif !important;
 }
 
-h1 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-}
-
 .page-title {
-    color: #9c7eec;
+    color: var(--primary-color);
     font-size: 30px;
     font-weight: 600;
-}
-
-h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
 }
 
 .flag-container {
@@ -2100,18 +2081,8 @@ h2 {
     padding-bottom: 30px;
 }
 
-#banner {
-    width: 100%;
-    height: fit-content;
-}
-
-.image-fluid {
-    width: 100%;
-    height: auto;
-}
-
 .search-bar {
-    background-color: #a48be6;
+    background-color: var(--primary-color);
     border-radius: 5px;
     width: fit-content;
     padding-right: 8px;
@@ -2124,23 +2095,6 @@ h2 {
 
 .search-bar input {
     outline: none;
-}
-
-.purple-btn {
-    background-color: #a48be6 !important;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #7e59cf !important;
-    color: white;
 }
 
 .red-btn {
@@ -2177,20 +2131,20 @@ h2 {
 
 .btn:focus {
     outline: none;
-    border: 2px solid #7c3aed;
+    border: 2px solid var(--primary-color);
     border-radius: 6px;
     scale: 1.2;
 }
 
 .filter-btn:focus {
-    border: 1px solid #7e59cf;
+    border: 1px solid var(--primary-color);
     outline: none;
 }
 
 .flag-name {
     text-decoration: none;
     font-family: 'Poppins';
-    color: #7c3aed;
+    color: var(--primary-color);
     text-overflow: ellipsis;
     /* Needed to make the over flow work */
     overflow: hidden;
@@ -2199,19 +2153,19 @@ h2 {
 }
 
 .flag-name:hover {
-    color: #7e59cf;
+    color: var(--primary-color);
     text-decoration: underline;
 }
 
 .flag-name:focus {
     outline: none;
-    border: #7e59cf 1px solid;
+    border: var(--primary-color) 1px solid;
     border-radius: 5px;
 }
 
 .expand-tile {
     font-size: 16px;
-    color: #a48be6;
+    color: var(--primary-color);
     font-weight: 550;
     margin-right: 5px;
 }
@@ -2304,7 +2258,7 @@ h2 {
 .customize-table {
     --easy-table-body-row-font-size: 16px;
     --easy-table-header-font-size: 16px;
-    --easy-table-header-font-color: #8f7bd6;
+    --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
     --easy-table-header-item-padding: 15px 5px;
@@ -2351,7 +2305,7 @@ h2 {
 
 .user-name {
     text-align: center;
-    color: #7c3aed;
+    color: var(--primary-color);
     /* text-decoration: underline; */
     /* cursor: pointer; */
     width: 100%;
@@ -2376,7 +2330,7 @@ h2 {
 }
 
 .header-btn:focus {
-    border: 1px solid #7e59cf;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
 }
 
@@ -2400,7 +2354,7 @@ h2 {
 }
 
 .user-filter {
-    border: #a48be6 1px solid;
+    border: var(--primary-color) 1px solid;
     border-radius: 5px;
     display: flex;
     align-items: center;
@@ -2463,7 +2417,7 @@ h2 {
     gap: 8px;
     background: linear-gradient(0deg, #ffffff, #ffffff),
         linear-gradient(0deg, #f2f4f7, #f2f4f7);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
     box-shadow: 0px 0px 0px 4px #bca3ff4d;
     font-family: 'Poppins' sans-serif;
     font-size: 1rem;
@@ -2476,7 +2430,7 @@ h2 {
 
 .custom-select-button:hover {
     cursor: pointer;
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
 }
 
 .custom-select-button > span {
@@ -2522,14 +2476,14 @@ h2 {
     border-radius: 8px;
     border: 1px;
     background: linear-gradient(0deg, #ffffff, #ffffff);
-    border: 1px solid #9c7eec;
+    border: 1px solid var(--primary-color);
     box-shadow: 0px 4px 6px -2px #10182808;
     box-shadow: 0px 12px 16px -4px #10182814;
     width: 200px;
 }
 
 .custom-dropdown-base:focus {
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
 }
 
 .custom-dropdown-option {
@@ -2552,7 +2506,7 @@ h2 {
 
 .custom-dropdown-option:focus {
     border-radius: 6px;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--primary-color);
     background: #bca3ff1a;
 }
 
@@ -2603,7 +2557,7 @@ h2 {
     height: 29.09px;
     width: 29.09px;
     background: #f9f5ff;
-    border: 1.45px solid #9c7eec;
+    border: 1.45px solid var(--primary-color);
     border-radius: 8.73px;
 }
 .control:hover input ~ .control_indicator,
@@ -2644,7 +2598,7 @@ h2 {
     top: 5px;
     width: 13.58px;
     height: 9.33px;
-    border: solid #9c7eec;
+    border: solid var(--primary-color);
     border-width: 0px 0px 2.9px 2.9px;
     transform: rotate(-45deg);
 }
@@ -2661,7 +2615,7 @@ h2 {
     height: 4.5rem;
     margin-left: -1.3rem;
     margin-top: -1.3rem;
-    background: #9c7eec;
+    background: var(--primary-color);
     border-radius: 3rem;
     opacity: 0.6;
     z-index: 99999;

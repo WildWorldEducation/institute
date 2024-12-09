@@ -221,7 +221,7 @@ export default {
         :id="`skill${this.id}`"
     >
         <!-- Emoticons -->
-        <div v-if="level != 'domain'" class="align-self-end">
+        <div v-if="type != 'domain'" class="align-self-end">
             <!-- Choose one of 5 emoticon colours based on skill level -->
             <!-- check if mastered or unlocked -->
             <!-- and, if locked, apply grayscale. -->
@@ -278,7 +278,9 @@ export default {
         </div>
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
         <div>
-            <div ref="name" style="text-align: left">{{ name }}</div>
+            <div class="dark-text" ref="name" style="text-align: left">
+                {{ name }}
+            </div>
             <div
                 v-if="type == 'super'"
                 class="d-none d-sm-block text-start pt-1 mastered-skills-count"
@@ -301,7 +303,7 @@ export default {
                     v-if="!showSubskills"
                     width="18"
                     height="18"
-                    fill="#9C7EEC"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -315,7 +317,7 @@ export default {
                     v-else
                     width="18"
                     height="18"
-                    fill="#9C7EEC"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -328,7 +330,7 @@ export default {
             <!-- Expand/collapse all domain descendants button-->
             <button
                 class="btn me-2 ci-btn"
-                v-if="level == 'domain'"
+                v-if="type == 'domain'"
                 @click.stop="toggleExpandAll"
             >
                 <svg
@@ -337,10 +339,10 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
-                        fill="#9C7EEC"
                         d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"
                     />
                 </svg>
@@ -350,11 +352,11 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
                     -->
                     <path
-                        fill="#9C7EEC"
                         d="M246.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 402.7 361.4 265.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-160 160zm160-352l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 210.7 361.4 73.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z"
                     />
                 </svg>
@@ -371,10 +373,10 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
-                        fill="#9C7EEC"
                         d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
                     />
                 </svg>
@@ -385,11 +387,11 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
                     -->
                     <path
-                        fill="#9C7EEC"
                         d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"
                     />
                 </svg>
@@ -446,7 +448,6 @@ export default {
     border-radius: 8px;
     width: 545px;
     height: 84px;
-    color: #53389e;
     font-size: 20px;
     font-weight: 500;
     background-color: #f2edff;
@@ -483,7 +484,7 @@ export default {
 .domains {
     width: 360px;
     height: 71px;
-    color: black;
+    color: black !important;
     font-size: 20px;
     font-weight: 400;
     border-color: black;

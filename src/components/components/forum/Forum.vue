@@ -246,52 +246,59 @@ export default {
 
 <template>
     <div class="container-fluid mt-4">
-        <div class="d-flex align-items-md-baseline align-items-start gap-2">
-            <h2 class="forum-sub-page-title">Best Places To Learn This</h2>
-            <img src="/images/recurso-69.png" class="" />
-        </div>
-        <!-- Navigation Tabs -->
-        <!-- If guest account, we dont show tutors, only sources -->
-        <ul
-            v-if="$parent.sessionDetailsStore.isLoggedIn"
-            class="nav nav-tabs border-3"
-        >
-            <li
-                class="nav-item"
-                b-on-hover
-                title="All posts related to this skill"
-                @click="handleTabClick('allPost')"
-            >
-                <div :class="['nav-link', activeTab === 'allPost' && 'active']">
-                    All
-                </div>
-            </li>
-            <li
-                class="nav-item"
-                b-on-hover
-                title="Only sources"
-                @click="handleTabClick('resource')"
-            >
-                <div
-                    :class="['nav-link', activeTab === 'resource' && 'active']"
-                >
-                    Sources
-                </div>
-            </li>
-            <li
-                class="nav-item"
-                b-on-hover
-                title="Only potential tutors"
-                @click="handleTabClick('tutorPost')"
-            >
-                <div
-                    :class="['nav-link', activeTab === 'tutorPost' && 'active']"
-                >
-                    Tutors
-                </div>
-            </li>
-        </ul>
+        <div class="forum-header">
+            <h2 class="heading">Best Places To Learn This</h2>
 
+            <!-- Navigation Tabs -->
+            <!-- If guest account, we dont show tutors, only sources -->
+            <ul
+                v-if="$parent.sessionDetailsStore.isLoggedIn"
+                class="nav nav-tabs border-3"
+            >
+                <li
+                    b-on-hover
+                    title="All posts related to this skill"
+                    @click="handleTabClick('allPost')"
+                >
+                    <div
+                        :class="[
+                            'nav-link',
+                            activeTab === 'allPost' && 'active'
+                        ]"
+                    >
+                        All
+                    </div>
+                </li>
+                <li
+                    b-on-hover
+                    title="Only sources"
+                    @click="handleTabClick('resource')"
+                >
+                    <div
+                        :class="[
+                            'nav-link',
+                            activeTab === 'resource' && 'active'
+                        ]"
+                    >
+                        Sources
+                    </div>
+                </li>
+                <li
+                    b-on-hover
+                    title="Only potential tutors"
+                    @click="handleTabClick('tutorPost')"
+                >
+                    <div
+                        :class="[
+                            'nav-link',
+                            activeTab === 'tutorPost' && 'active'
+                        ]"
+                    >
+                        Tutors
+                    </div>
+                </li>
+            </ul>
+        </div>
         <!-- ---- | Post List In This Forum | ---- -->
 
         <ForumResource
@@ -323,11 +330,18 @@ export default {
 </template>
 
 <style scoped>
+.forum-header {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
 .nav-tabs {
     --bs-nav-tabs-border-width: 2px;
-    --bs-nav-tabs-border-color: #aea3ce;
-    --bs-nav-tabs-link-active-border-color: #aea3ce #aea3ce #fff;
-    --bs-nav-tabs-link-active-color: #8f7bd6;
+    --bs-nav-tabs-border-color: var(--primary-color);
+    --bs-nav-tabs-link-active-border-color: var(--primary-color)
+        var(--primary-color) #fff;
+    --bs-nav-tabs-link-active-color: var(--primary-color);
     font-weight: 550;
     cursor: pointer;
 }
@@ -337,15 +351,20 @@ export default {
 }
 
 .nav-link {
-    color: #888;
+    color: var(--primary-color);
     font-weight: 550;
 }
 
-:deep(.forum-sub-page-title) {
-    color: #8666ca;
-    font-size: 2rem;
-    font-weight: 600;
-    font-family: 'Poppins' sans-serif;
+.nav-link:hover {
+    border-bottom-color: var(--primary-color);
+}
+
+.nav-link.active {
+    color: var(--primary-color);
+}
+
+.nav-link.active:hover {
+    border-bottom-color: transparent;
 }
 
 :deep(.red-btn) {
@@ -383,23 +402,6 @@ export default {
     background-color: #3eb3a3;
 }
 
-:deep(.purple-btn) {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-:deep(.purple-btn:hover) {
-    background-color: #8666ca;
-    color: white;
-}
-
 :deep(.vote-count) {
     font-size: 1.563rem;
     font-weight: 700;
@@ -429,9 +431,6 @@ export default {
 }
 
 h2 {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
     font-size: 1.75rem;
 }
 

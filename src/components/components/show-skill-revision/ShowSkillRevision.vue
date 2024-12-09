@@ -204,14 +204,14 @@ export default {
         <div v-if="!compareWithRevision" class="mt-3">
             <div id="skill-info-container">
                 <!-- Skill Info -->
-                <div class="d-flex justify-content-between">
-                    <h1 class="skill-name">
-                        {{ skill.name }}
-                        <span class="revision-version"
-                            >(revision {{ skillRevision.version_number }})</span
-                        >
-                    </h1>
-                </div>
+
+                <h1 class="heading">
+                    {{ skill.name }}
+                    <span class="revision-version"
+                        >(revision {{ skillRevision.version_number }})</span
+                    >
+                </h1>
+
                 <!-- A line divide -->
                 <hr class="border border-2 opacity-100 hr" />
 
@@ -306,7 +306,7 @@ export default {
                             </div>
                             <!-- Grade level -->
                             <div class="mt-2">
-                                <h2 class="h4 title">Level</h2>
+                                <h2 class="h4 heading">Level</h2>
                                 <span v-if="skill.level == 'grade_school'"
                                     >Grade School</span
                                 >
@@ -333,7 +333,7 @@ export default {
                         (userDetailsStore.role == 'admin' ||
                             userDetailsStore.role == 'editor')
                     "
-                    class="btn purple-btn mt-4"
+                    class="btn primary-btn mt-4"
                     @click="confirmRevert()"
                 >
                     <svg
@@ -393,11 +393,6 @@ export default {
     text-align: center;
 }
 
-.title {
-    color: #a48be6;
-    font-weight: 700;
-}
-
 /* The Warning Modal */
 :deep(.modal) {
     display: block;
@@ -446,7 +441,7 @@ export default {
 .skill-name {
     font-family: 'Poppins', sans-serif;
     font-size: 40px;
-    color: #a48be6;
+    color: var(--primary-color)
     font-weight: 800;
     margin-bottom: 0px;
     text-align: start;
@@ -459,24 +454,6 @@ export default {
 
 .hr {
     border-color: #aea3ce !important;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    max-width: fit-content;
-    height: 44px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #8f7bd6;
 }
 
 .red-btn {

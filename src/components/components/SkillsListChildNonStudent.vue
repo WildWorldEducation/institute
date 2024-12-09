@@ -216,7 +216,7 @@ export default {
                     v-if="!showSubskills"
                     width="18"
                     height="18"
-                    fill="#9C7EEC"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -230,7 +230,7 @@ export default {
                     v-else
                     width="18"
                     height="18"
-                    fill="#9C7EEC"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -250,27 +250,24 @@ export default {
                     width="19"
                     height="20"
                     viewBox="0 0 19 20"
-                    fill="none"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                 >
                     <path
                         d="M0.75558 19.3181C0.77635 19.5132 0.87137 19.6928 1.02096 19.8198C1.17055 19.9468 1.36325 20.0114 1.55915 20.0002L5.27701 19.8288L0.398438 15.6145L0.75558 19.3181Z"
-                        fill="#9C7EEC"
                     />
                     <path
                         d="M11.8467 2.24484L0.801758 15.0315L5.6802 19.2454L16.7251 6.45877L11.8467 2.24484Z"
-                        fill="#9C7EEC"
                     />
                     <path
                         d="M18.2555 3.11796L14.934 0.260817C14.832 0.172259 14.7134 0.104756 14.5852 0.0621907C14.4569 0.0196256 14.3215 0.00283902 14.1868 0.0127967C14.052 0.0227543 13.9205 0.0592596 13.7999 0.120212C13.6793 0.181165 13.572 0.265362 13.484 0.36796L12.4805 1.50725L17.359 5.71439L18.3519 4.56082C18.5289 4.35602 18.6181 4.08969 18.6 3.81958C18.582 3.54948 18.4582 3.29738 18.2555 3.11796Z"
-                        fill="#9C7EEC"
                     />
                 </svg>
             </button>
             <!-- Expand/collapse all domain descendants button-->
             <button
                 class="btn me-2 ci-btn"
-                v-if="level == 'domain'"
+                v-if="type == 'domain'"
                 @click.stop="toggleExpandAll"
             >
                 <svg
@@ -279,10 +276,10 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
-                        fill="#9C7EEC"
                         d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"
                     />
                 </svg>
@@ -292,11 +289,11 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
                     -->
                     <path
-                        fill="#9C7EEC"
                         d="M246.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 402.7 361.4 265.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-160 160zm160-352l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 210.7 361.4 73.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z"
                     />
                 </svg>
@@ -313,10 +310,10 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
-                        fill="#9C7EEC"
                         d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
                     />
                 </svg>
@@ -326,11 +323,11 @@ export default {
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
                     -->
                     <path
-                        fill="#9C7EEC"
                         d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z"
                     />
                 </svg>
@@ -456,7 +453,6 @@ export default {
     border-radius: 8px;
     width: 545px;
     height: 84px;
-    color: #53389e;
     font-size: 16px;
     font-weight: 500;
     background-color: #f2edff;
@@ -493,12 +489,13 @@ export default {
 .domains {
     width: 360px;
     height: 71px;
-    color: black;
+    color: black !important;
     font-size: 20px;
     font-weight: 400;
     border-color: black;
     /* flex-direction: column; */
     background-position: right;
+    color: black !important;
 }
 
 .two-row-domain-name {

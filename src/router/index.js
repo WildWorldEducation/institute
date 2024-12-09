@@ -158,12 +158,6 @@ const router = createRouter({
             component: () => import('../components/pages/AssessmentView.vue')
         },
         {
-            path: '/skills/:id/edit-assessment',
-            name: 'edit-assessment',
-            component: () =>
-                import('../components/pages/EditAssessmentView.vue')
-        },
-        {
             path: '/assessments',
             name: 'list-assessments',
             component: () =>
@@ -334,12 +328,26 @@ const router = createRouter({
                 )
         },
         {
-            path: '/test-ai-feature',
-            name: 'test ai feature',
+            path: '/new-skill-awaiting-approval/:id',
+            name: 'new-skill-awaiting-approval',
+            component: () =>
+                import('../components/pages/NewSkillAwaitingApprovalView.vue')
+        },
+        {
+            path: '/'
+        },
+        {
+            path: '/new-skill-awaiting-approval/edit/:id',
+            name: 'edit-new-skill-awaiting-approval',
             component: () =>
                 import(
-                    '../components/pages/willBeDelete.vue'
+                    '../components/pages/EditNewSkillAwaitingApprovalView.vue'
                 )
+        },
+        {
+            path: '/test-ai-feature',
+            name: 'test ai feature',
+            component: () => import('../components/pages/willBeDelete.vue')
         },
         {
             path: '/:pathMatch(.*)*',
@@ -388,6 +396,26 @@ router.beforeEach(async (to, from, next) => {
 
     const isLoggedIn = sessionDetailsStore.isLoggedIn;
     const userRole = userDetailsStore.role;
+
+    // Implement theme on login.
+    if (
+        from.name == 'login' ||
+        from.name == 'student-signup' ||
+        from.name == 'editor-signup'
+    ) {
+        // Kids theme
+        if (userDetailsStore.theme == 'apprentice') {
+            document.body.classList.remove('scholar-theme');
+            document.body.classList.add('apprentice-theme');
+        } else if (userDetailsStore.theme == 'scholar') {
+            document.body.classList.add('scholar-theme');
+            document.body.classList.remove('apprentice-theme');
+            // Original theme.
+        } else {
+            document.body.classList.remove('scholar-theme');
+            document.body.classList.remove('apprentice-theme');
+        }
+    }
 
     // Checking if skill is unlocked before allowing student to take assessment.
     if (to.name == 'assessment') {

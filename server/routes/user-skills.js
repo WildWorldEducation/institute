@@ -188,14 +188,14 @@ router.get('/unnested-list/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name, is_accessible, is_mastered, type, url
+    SELECT skills.id, name, is_accessible, is_mastered, type, url, level
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
     WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
 
     UNION
-    SELECT skills.id, name, "", "", type, url
+    SELECT skills.id, name, "", "", type, url, level
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -397,20 +397,19 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
         const level = req.query.level;
         // Default is to show all.
         let levelsToShow =
-            "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+            "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
         if (level == 'grade_school') {
-            levelsToShow = "'domain', 'grade_school'";
+            levelsToShow = "'grade_school'";
         } else if (level == 'middle_school') {
-            levelsToShow = "'domain', 'grade_school', 'middle_school'";
+            levelsToShow = "'grade_school', 'middle_school'";
         } else if (level == 'high_school') {
-            levelsToShow =
-                "'domain', 'grade_school', 'middle_school', 'high_school'";
+            levelsToShow = "'grade_school', 'middle_school', 'high_school'";
         } else if (level == 'college') {
             levelsToShow =
-                "'domain', 'grade_school', 'middle_school', 'high_school', 'college'";
+                "'grade_school', 'middle_school', 'high_school', 'college'";
         } else if (level == 'phd') {
             levelsToShow =
-                "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+                "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
         }
 
         res.setHeader('Content-Type', 'application/json');

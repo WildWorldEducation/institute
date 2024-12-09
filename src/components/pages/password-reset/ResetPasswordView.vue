@@ -88,9 +88,7 @@ export default {
     <div class="container">
         <div class="center">
             <div v-if="!isComplete">
-                <h1 class="h4 mb-2" style="color: #a48be6">
-                    Choose new password
-                </h1>
+                <h1 class="heading h4 mb-2">Choose new password</h1>
                 <div v-if="isValid" class="form-group">
                     <div class="password-div">
                         <input
@@ -157,7 +155,7 @@ export default {
                             email: email
                         }"
                     />
-                    <button class="btn mt-2 purple-btn" @click="Submit">
+                    <button class="btn mt-2 primary-btn" @click="Submit">
                         Submit
                     </button>
                 </div>
@@ -170,8 +168,7 @@ export default {
                     viewBox="0 0 512 512"
                     width="40"
                     height="40"
-                    fill="#a48be6"
-                    class="mb-2"
+                    class="mb-2 primary-icon"
                 >
                     <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
@@ -190,40 +187,6 @@ export default {
     margin-left: auto;
     margin-right: auto;
     margin-top: 15%;
-}
-
-.header-title {
-    color: #a48be6;
-    font-family: 'Poppins' sans-serif;
-    font-size: 2.375rem;
-    font-weight: 900;
-    line-height: 41px;
-    letter-spacing: 0em;
-    text-align: left;
-    margin-top: auto;
-    margin-bottom: 0px;
-}
-
-.purple-btn {
-    background-color: #a48be6;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.purple-btn:hover {
-    background-color: #a48be6;
-    color: white;
-}
-
-.purple-btn:active {
-    background-color: #a48be6;
-    color: white;
 }
 
 .password-div {

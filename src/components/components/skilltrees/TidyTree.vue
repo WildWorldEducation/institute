@@ -71,17 +71,33 @@ export default {
         SkillPanel
     },
     async mounted() {
+        this.truncateLevel = this.userDetailsStore.skillTreeLevel;
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
-            await this.skillTreeStore.getVerticalTreeUserSkills();
+            await this.skillTreeStore.getVerticalTreeUserSkills(
+                this.truncateLevel
+            );
+        }
+        let userSkills = '';
+        if (this.truncateLevel == 'grade_school') {
+            userSkills = this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+        } else if (this.truncateLevel == 'middle_school') {
+            userSkills = this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+        } else if (this.truncateLevel == 'high_school') {
+            userSkills = this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+        } else if (this.truncateLevel == 'college') {
+            userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
+        } else {
+            userSkills = this.skillTreeStore.verticalTreeUserSkills;
         }
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
+        this.width = window.innerWidth;
 
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillTreeStore.verticalTreeUserSkills
+            children: userSkills
         };
 
         this.getAlgorithm();
@@ -258,30 +274,36 @@ export default {
 
             moveSubSkills(skillsWithSubSkillsMoved);
 
-            // To determine the size of the skill tree based on the number of skills showing.
-            // It should not be too big, compared to the number of nodes,
-            // or the nodes will be too far a part.
-            const skillCount = count;
-            if (skillCount > 2000) {
-                this.width = skillCount * 1.5;
-            } else if (skillCount > 1000) {
-                this.width = skillCount * 1.5 * 4;
-            } else {
-                this.width = skillCount * 1.5 * 40;
-            }
+            /* Determine width of tree, based on how many nodes are showing
+             * used for the various types of filters,
+             * including: collapsable nodes, grade level filter, and instructors filters skills for students
+             *
+             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
+             */
 
+            // Height: remains constant
+            const dx = 24;
+
+            // Create a tree layout.
             this.data = {
                 skill_name: 'My skills',
                 children: skillsWithSubSkillsMoved
             };
-
-            // Compute the tree height; this approach will allow the height of the
-            // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
-            const dx = 24;
-            const dy = this.width / (this.root.height + 1);
 
-            // Create a tree layout.
+            //Shorten lines based on truncate level.
+            let multiplyBy = 5;
+            if (this.truncateLevel == 'grade_school' || count < 1000) {
+                multiplyBy = 1;
+            } else if (this.truncateLevel == 'middle_school') {
+                multiplyBy = 2;
+            } else if (this.truncateLevel == 'high_school') {
+                multiplyBy = 3;
+            } else if (this.truncateLevel == 'college' || count < 2000) {
+                multiplyBy = 4;
+            }
+            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+
             this.tree = d3.tree().nodeSize([dx, dy]);
 
             // Sort the tree and apply the layout.
@@ -441,6 +463,8 @@ export default {
 
             // Text.
             if (this.scale > 0.6) {
+                // to avoid sharp artifacts with the stroke of the text.
+                ctx1.lineJoin = 'bevel';
                 // we move the skill name to the left and change the color if it a domain node
                 // using the non domain as if condition will save us some compute time as none domain node is more common
                 if (node.data.type != 'domain') {
@@ -503,7 +527,7 @@ export default {
 
             // If skill is mastered.
             if (link.target.data.is_mastered == 1) this.context.lineWidth = 4;
-            else this.context.lineWidth = 1;
+            else this.context.lineWidth = 2;
 
             if (
                 (link.source.data.type == 'super' &&
@@ -517,7 +541,13 @@ export default {
 
             this.context.beginPath();
             linkGenerator(link);
-            this.context.strokeStyle = '#000';
+            // Determine colour of links based on user's theme
+            if (this.userDetailsStore.theme == 'original')
+                this.context.strokeStyle = '#000';
+            else if (this.userDetailsStore.theme == 'apprentice') {
+                this.context.strokeStyle = '#000';
+                this.context.lineWidth = 3;
+            } else this.context.strokeStyle = '#fff';
             this.context.stroke();
         },
         genColor() {
@@ -703,12 +733,22 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         resetPos() {
+            let screenWidth = window.innerWidth;
+            let shift = 143;
+            if (screenWidth > 480) {
+                shift = 100;
+            }
+            if (screenWidth > 1024) {
+                shift = 90;
+            }
             d3.select(this.context.canvas)
                 .transition()
-                .duration(1700)
+                .duration(700)
                 .call(
                     this.d3Zoom.transform,
-                    d3.zoomIdentity.translate(0, 0).scale(0.3)
+                    d3.zoomIdentity
+                        .translate(0, this.context.canvas.height / 2 - shift)
+                        .scale(0.3)
                 );
             this.$refs.sliderControl.showScaleLabel();
         },
@@ -932,8 +972,22 @@ export default {
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
+
+            // Height is constant
             const dx = 24;
-            const dy = this.width / (this.root.height + 1);
+
+            //Shorten lines based on truncate level.
+            let multiplyBy = 5;
+            if (this.truncateLevel == 'grade_school') {
+                multiplyBy = 1;
+            } else if (this.truncateLevel == 'middle_school') {
+                multiplyBy = 2;
+            } else if (this.truncateLevel == 'high_school') {
+                multiplyBy = 3;
+            } else if (this.truncateLevel == 'college') {
+                multiplyBy = 4;
+            }
+            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -979,6 +1033,20 @@ export default {
             this.truncateLevel = level;
             await this.skillTreeStore.getVerticalTreeUserSkills(level);
             await this.reloadTree();
+            this.saveSkillTreeGradeLevel();
+        },
+        saveSkillTreeGradeLevel() {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    level: this.truncateLevel
+                })
+            };
+
+            var url =
+                '/users/' + this.userDetailsStore.userId + '/skill-tree-level';
+            fetch(url, requestOptions).then;
         }
     }
 };
@@ -1019,7 +1087,7 @@ export default {
 .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid #a48be5;
+    border: 5px solid var(--loading-animation-colour);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;
@@ -1130,12 +1198,13 @@ input[type='button'] {
 }
 canvas {
     cursor: pointer;
+    background-color: var(--skill-tree-background-color);
 }
 .click-animation {
     position: absolute;
     width: 20px;
     height: 20px;
-    background-color: #7a46ff; /* Color of the animation */
+    background-color: var(--primary-color); /* Color of the animation */
     border-radius: 50%;
     transform: translate(-50%, -50%); /* Center the circle on click */
     animation: clickEffect 0.7s infinite ease-out;
