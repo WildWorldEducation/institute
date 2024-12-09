@@ -23,8 +23,6 @@ export default {
         }
 
         for (let i = 0; i < this.goalSteps.length; i++) {
-            // console.log(this.goalSteps[i].skill_id);
-
             let skillObj = this.skillsStore.skillsList.find(
                 (skill) => skill.id == this.goalSteps[i].skill_id
             );
@@ -47,31 +45,24 @@ export default {
 
 <template>
     <div class="container p-3 bg-light rounded">
-        <h1 class="heading">Goal Progress</h1>
-        <table>
-            <tr v-for="goalStep in goalSteps">
-                <th>
-                    <router-link
-                        class="btn"
-                        :class="{
-                            'grade-school': goalStep.level == 'grade_school',
-                            'middle-school': goalStep.level == 'middle_school',
-                            'high-school': goalStep.level == 'high_school',
-                            college: goalStep.level == 'college',
-                            phd: goalStep.level == 'phd'
-                        }"
-                        :to="`/skills/${goalStep.url}`"
-                        target="_blank"
-                    >
-                        {{ goalStep.name }}
-                    </router-link>
-                </th>
-                <th>
-                    <span v-if="goalStep.is_mastered == 1">mastered</span>
-                    <span v-else>unmastered</span>
-                </th>
-            </tr>
-        </table>
+        <h1 class="heading text-center">Goal Progress</h1>
+
+        <div class="text-center mb-2" v-for="goalStep in goalSteps">
+            <router-link
+                class="btn progress-btn"
+                :class="{
+                    'grade-school': goalStep.level == 'grade_school',
+                    'middle-school': goalStep.level == 'middle_school',
+                    'high-school': goalStep.level == 'high_school',
+                    college: goalStep.level == 'college',
+                    phd: goalStep.level == 'phd'
+                }"
+                :to="`/skills/${goalStep.url}`"
+                target="_blank"
+            >
+                {{ goalStep.name }}
+            </router-link>
+        </div>
     </div>
 </template>
 
@@ -80,16 +71,20 @@ export default {
 .grade-school {
     background-color: #40e0d0;
 }
+
 .middle-school {
     background-color: #33a133;
     color: white;
 }
+
 .high-school {
     background-color: #ffd700;
 }
+
 .college {
     background-color: #ffa500;
 }
+
 .phd {
     background-color: #ff0000;
     color: white;
