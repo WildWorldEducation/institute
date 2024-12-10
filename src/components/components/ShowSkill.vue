@@ -61,7 +61,8 @@ export default {
             showConfirmModal: false,
             isSkillLoaded: false,
             randomNum: 0,
-            goalSteps: []
+            goalSteps: [],
+            goalExists: false
         };
     },
     components: {
@@ -76,6 +77,7 @@ export default {
             await this.getUserSkills();
         }
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
+        await this.checkIfGoalExists();
     },
     methods: {
         async getSkill() {
@@ -212,6 +214,14 @@ export default {
          * Goals: this feature allows students to choose a skill to be a goal,
          * to create a pathway for them to get to that goal.
          */
+        async checkIfGoalExists() {
+            const result = await fetch(
+                '/goals/' + this.userDetailsStore.userId + '/' + this.skillId
+            );
+            const data = await result.json();
+            this.goalExists = data.goalExists;
+        },
+
         confirmCreateGoal(skill) {
             let text = `Are you sure you want to create a goal for ${skill.name}?`;
             if (confirm(text) == true) {
@@ -468,7 +478,8 @@ export default {
                             v-if="
                                 skill.type != 'domain' &&
                                 sessionDetailsStore.isLoggedIn &&
-                                isMastered == false
+                                isMastered == false &&
+                                goalExists == false
                             "
                             class="btn primary-btn"
                             @click="confirmCreateGoal(this.skill)"

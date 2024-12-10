@@ -117,6 +117,34 @@ router.get('/:goalId/goal-steps/list', (req, res, next) => {
 });
 
 /**
+ * Check if a Student Already has a Goal for a particular Skill
+ */
+router.get('/:userId/:skillId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT id
+        FROM goals
+        WHERE user_id = ${conn.escape(req.params.userId)} &&
+        skill_id = ${conn.escape(req.params.skillId)}`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let result = false;
+                if (results.length > 0) {
+                    result = true;
+                }
+                res.json({ goalExists: result });
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+});
+
+/**
  * Delete Item
  */
 router.delete('/:goalId', (req, res, next) => {
