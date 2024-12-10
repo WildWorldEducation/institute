@@ -29,7 +29,7 @@ export default {
 
             this.goalSteps[i].name = userSkillObj.name;
             // this.goalSteps[i].level = userSkillObj.level;
-            // this.goalSteps[i].url = userSkillObj.url;
+            this.goalSteps[i].url = userSkillObj.url;
             this.goalSteps[i].isMastered = userSkillObj.is_mastered;
         }
     },
