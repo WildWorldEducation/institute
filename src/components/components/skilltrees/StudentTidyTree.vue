@@ -84,48 +84,47 @@ export default {
         this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
         hiddenCanvas.style.display = 'none';
 
-        // Listen for clicks on the main canvas
-        canvas.addEventListener('click', (e) => {
-            // We actually only need to draw the hidden canvas when
-            // there is an interaction. This sketch can draw it on
-            // each loop, but that is only for demonstration.
+        // // Listen for clicks on the main canvas
+        // canvas.addEventListener('click', (e) => {
+        //     // We actually only need to draw the hidden canvas when
+        //     // there is an interaction. This sketch can draw it on
+        //     // each loop, but that is only for demonstration.
 
-            var data = this.nodes;
-            //Figure out where the mouse click occurred.
-            var mouseX = e.layerX;
-            var mouseY = e.layerY;
+        //     var data = this.nodes;
+        //     //Figure out where the mouse click occurred.
+        //     var mouseX = e.layerX;
+        //     var mouseY = e.layerY;
 
-            // Get the corresponding pixel color on the hidden canvas
-            // and look up the node in our map.
-            var ctx = this.hiddenCanvasContext;
+        //     // Get the corresponding pixel color on the hidden canvas
+        //     // and look up the node in our map.
+        //     var ctx = this.hiddenCanvasContext;
 
-            // This will return that pixel's color
-            var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
-            //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
+        //     // This will return that pixel's color
+        //     var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+        //     //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
 
-            //Our map uses these rgb strings as keys to nodes.
-            var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
-            var node = this.colToNode[colString];
+        //     //Our map uses these rgb strings as keys to nodes.
+        //     var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+        //     var node = this.colToNode[colString];
 
-            // console.log(this.colToNode);
+        //     // console.log(this.colToNode);
 
-            if (node) {
-                // We clicked on something, lets set the color of the node
-                // we also have access to the data associated with it, which in
-                // this case is just its original index in the data array.
-                node.renderCol = node.__pickColor;
-                //Update the display with some data
-                this.skill.name = node.data.skill_name;
-                this.skill.id = node.data.id;
-                this.skill.type = node.data.type;
-                this.skill.masteryRequirements = node.data.mastery_requirements;
-                this.showSkillPanel = true;
-            }
-        });
+        //     if (node) {
+        //         // We clicked on something, lets set the color of the node
+        //         // we also have access to the data associated with it, which in
+        //         // this case is just its original index in the data array.
+        //         node.renderCol = node.__pickColor;
+        //         //Update the display with some data
+        //         this.skill.name = node.data.skill_name;
+        //         this.skill.id = node.data.id;
+        //         this.skill.type = node.data.type;
+        //         this.skill.masteryRequirements = node.data.mastery_requirements;
+        //         this.showSkillPanel = true;
+        //     }
+        // });
 
         // Zoom and pan with mouse
-        // We have to construct the d3 zoom function and assign the zoom event,
-
+        // We have to construct the d3 zoom function and assign the zoom event
         this.d3Zoom = d3
             .zoom()
             .scaleExtent([0.1, 5])
@@ -709,6 +708,7 @@ export default {
 </script>
 
 <template>
+    <!-- Student name, print and reset position buttons -->
     <div
         id="overlay"
         class="d-flex position-absolute bottom-0 start-50 translate-middle-x bg-light p-1 rounded mb-2"
