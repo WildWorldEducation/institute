@@ -2,12 +2,19 @@ import { defineStore } from 'pinia';
 
 export const useUserSkillsStore = defineStore('userSkills', {
     state: () => ({
-        unnestedList: []
+        unnestedList: [],
+        filteredUnnestedList: []
     }),
     actions: {
         async getUnnestedList(userId) {
             const result = await fetch('/user-skills/unnested-list/' + userId);
             this.unnestedList = await result.json();
+        },
+        async getFilteredUnnestedList(userId) {
+            const result = await fetch(
+                '/user-skills/filtered-unnested-list/' + userId
+            );
+            this.filteredUnnestedList = await result.json();
         },
         async MakeMastered(userId, skill) {
             const requestOptions = {

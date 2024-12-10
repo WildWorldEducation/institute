@@ -98,7 +98,7 @@ router.get('/:userId/list', (req, res, next) => {
 router.get('/:goalId/goal-steps/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
-        let sqlQuery = `SELECT skill_id, is_mastered 
+        let sqlQuery = `SELECT skill_id
         FROM goal_steps
         WHERE goal_id = ${conn.escape(req.params.goalId)}
         ORDER BY id DESC;`;
