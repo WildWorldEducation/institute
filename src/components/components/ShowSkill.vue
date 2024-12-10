@@ -212,11 +212,20 @@ export default {
          * Goals: this feature allows students to choose a skill to be a goal,
          * to create a pathway for them to get to that goal.
          */
+        confirmCreateGoal(skill) {
+            let text = `Are you sure you want to create a goal for ${skill.name}?`;
+            if (confirm(text) == true) {
+                this.createGoal(skill);
+            }
+        },
         createGoal(skill) {
-            // Add ancestor skill to array.
-            this.goalSteps.push(skill);
+            if (skill.type != 'domain') {
+                // Add ancestor skill to array.
+                this.goalSteps.push(skill);
+            }
 
             // Add ancestor subskills to array.
+            let isSubSkillUnlocked = false;
             if (skill.type == 'super') {
                 for (let i = 0; i < this.accessibleSkills.length; i++) {
                     if (
@@ -225,6 +234,11 @@ export default {
                         this.accessibleSkills[i].is_mastered != 1
                     ) {
                         this.goalSteps.push(this.accessibleSkills[i]);
+
+                        // Check if sub skill is unlocked.
+                        if (this.accessibleSkills[i].is_accessible) {
+                            isSubSkillUnlocked = true;
+                        }
                     }
                 }
             }
@@ -233,8 +247,10 @@ export default {
             const inAccessibleList = this.accessibleSkills.find(
                 (as) => as.id == skill.id
             );
-            // Stop when the first ancestor node that is unlocked for the student
-            if (inAccessibleList) {
+
+            // Stop when the first ancestor node that is unlocked for the student is found
+            // or if its sub skill is unlocked
+            if (inAccessibleList || isSubSkillUnlocked) {
                 this.populateGoalSteps();
                 return;
             }
@@ -258,8 +274,9 @@ export default {
                 })
             };
             const url = '/goals/' + this.userDetailsStore.userId + '/add';
-            console.log(this.goalSteps);
-            fetch(url, requestOptions).then(() => {});
+            fetch(url, requestOptions).then(() => {
+                alert('Goal created.');
+            });
         }
     },
     /**
@@ -450,10 +467,11 @@ export default {
                         <button
                             v-if="
                                 skill.type != 'domain' &&
-                                sessionDetailsStore.isLoggedIn
+                                sessionDetailsStore.isLoggedIn &&
+                                isMastered == false
                             "
                             class="btn primary-btn"
-                            @click="createGoal(this.skill)"
+                            @click="confirmCreateGoal(this.skill)"
                         >
                             Create goal&nbsp;
                             <svg

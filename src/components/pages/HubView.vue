@@ -79,7 +79,10 @@ export default {
                     />
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 mb-2">
+            <div
+                v-if="userDetailsStore.role == 'student'"
+                class="col-lg-4 col-md-6 mb-2"
+            >
                 <div class="hub-component">
                     <Goals />
                 </div>
