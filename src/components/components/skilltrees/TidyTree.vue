@@ -67,8 +67,7 @@ export default {
     components: {
         SkillPanel,
         SliderControl,
-        JoystickControl,
-        SkillPanel
+        JoystickControl
     },
     async mounted() {
         this.truncateLevel = this.userDetailsStore.skillTreeLevel;
