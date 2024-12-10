@@ -28,9 +28,6 @@ export default {
             document.body.classList.remove('scholar-theme');
             document.body.classList.remove('apprentice-theme');
         }
-
-        console.log(this.userDetailsStore.theme);
-        console.log(typeof this.userDetailsStore.theme);
     },
     methods: {}
 };

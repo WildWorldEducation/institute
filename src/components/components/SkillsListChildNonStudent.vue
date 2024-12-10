@@ -1,6 +1,4 @@
 <script>
-import router from '../../router';
-
 export default {
     setup() {
         return {};
@@ -86,6 +84,7 @@ export default {
             this.$refs.name.classList.add('three-row-domain-name');
         else if (this.$refs.name.offsetHeight > 30)
             this.$refs.name.classList.add('two-row-domain-name');
+
         // We only check path to show child if the node depth is 2 or greater
         if (this.depth >= 2) {
             const inPath = this.path.find((node) => node.id === this.id);

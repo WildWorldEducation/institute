@@ -105,6 +105,7 @@ export default {
             else if (this.$refs.name.offsetHeight > 30)
                 this.$refs.name.classList.add('two-row-domain-name');
         }
+
         // We only check path to show child if the node depth is 2 or greater
         if (this.depth >= 2) {
             const inPath = this.path.find((node) => node.id === this.id);
@@ -112,6 +113,7 @@ export default {
                 this.showChildren = true;
             }
         }
+
         // if we are the last node to appear when user choose a path we scroll to here
         const lastNode = this.path[this.path.length - 1];
         if (lastNode && this.id === lastNode.id) {
@@ -211,7 +213,7 @@ export default {
             'college-level': level == 'college',
             'phd-level': level == 'phd',
             'has-children': children.length > 0,
-            'result-button': isResult === true,           
+            'result-button': isResult === true
         }"
         class="skill-button secondary-text d-flex justify-content-between"
         @click.stop="mainButtonPress()"
@@ -407,6 +409,7 @@ export default {
         :isFiltered="subSkill.isFiltered"
         :role="role"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildInstructorMode>
 
@@ -424,6 +427,7 @@ export default {
         :isFiltered="child.isFiltered"
         :role="role"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildInstructorMode>
 </template>
