@@ -44,7 +44,8 @@ export default {
             :class="{
                 'fixed-top':
                     $route.name == 'vertical-tree' ||
-                    $route.name == 'radial-tree'
+                    $route.name == 'radial-tree' ||
+                    $route.name == 'student-vertical-tree'
             }"
         >
             <div class="container-fluid">
@@ -317,7 +318,7 @@ p {
     display: flex;
     align-items: center;
     max-width: fit-content;
-    max-height: 44px;
+    max-height: 40px;
     text-wrap: nowrap;
 }
 

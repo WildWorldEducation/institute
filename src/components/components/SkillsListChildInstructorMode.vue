@@ -211,7 +211,7 @@ export default {
             'college-level': level == 'college',
             'phd-level': level == 'phd',
             'has-children': children.length > 0,
-            'result-button': isResult === true,           
+            'result-button': isResult === true
         }"
         class="skill-button secondary-text d-flex justify-content-between"
         @click.stop="mainButtonPress()"
@@ -407,6 +407,7 @@ export default {
         :isFiltered="subSkill.isFiltered"
         :role="role"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildInstructorMode>
 
@@ -424,6 +425,7 @@ export default {
         :isFiltered="child.isFiltered"
         :role="role"
         :depth="depth + 1"
+        :path="path"
     >
     </SkillsListChildInstructorMode>
 </template>

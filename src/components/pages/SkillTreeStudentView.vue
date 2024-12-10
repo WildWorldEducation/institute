@@ -14,11 +14,6 @@
 </template>
 
 <style>
-#purple-banner {
-    height: 77px;
-    background-color: #a48be640;
-}
-
 template {
     height: 200px;
 }

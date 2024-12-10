@@ -41,12 +41,13 @@ export default {
 </script>
 
 <template>
-    <h1 class="heading">{{ studentName }}</h1>
-
     <!-- Display loading screen while asynchronous call is made. -->
     <Suspense>
         <template #default>
-            <StudentTidyTree :studentId="$route.params.studentId" />
+            <StudentTidyTree
+                :studentId="$route.params.studentId"
+                :studentName="studentName"
+            />
         </template>
         <template #fallback>
             <span>Loading...</span>
@@ -54,4 +55,4 @@ export default {
     </Suspense>
 </template>
 
-<style></style>
+<style scoped></style>
