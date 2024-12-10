@@ -117,6 +117,44 @@ router.get('/:goalId/goal-steps/list', (req, res, next) => {
 });
 
 /**
+ * Delete Item
+ */
+router.delete('/:goalId', (req, res, next) => {
+    if (req.session.userName) {
+        let sqlQuery = `DELETE FROM goals WHERE id=${conn.escape(
+            req.params.goalId
+        )};`;
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                let sqlQuery2 = `DELETE 
+                FROM goal_steps
+                WHERE goal_id=${conn.escape(req.params.goalId)}`;
+
+                conn.query(sqlQuery2, (err) => {
+                    try {
+                        if (err) {
+                            throw err;
+                        }
+
+                        res.end();
+                    } catch (err) {
+                        next(err);
+                    }
+                });
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
+/**
  * Update Goal
  */
 router.put('/edit', (req, res, next) => {});

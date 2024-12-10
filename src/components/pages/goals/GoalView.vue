@@ -38,6 +38,20 @@ export default {
                 '/goals/' + this.goalId + '/goal-steps/list'
             );
             this.goalSteps = await result.json();
+        },
+        async deleteGoal() {
+            let text = 'Are you sure you want to delete this goal?';
+            if (confirm(text) == true) {
+                const result = await fetch('/goals/' + this.goalId, {
+                    method: 'DELETE'
+                });
+
+                if (result.error) {
+                    console.log(result.error);
+                }
+
+                this.$router.push('/');
+            }
         }
     }
 };
@@ -63,6 +77,8 @@ export default {
                 {{ goalStep.name }}
             </router-link>
         </div>
+
+        <button class="btn btn-danger" @click="deleteGoal()">Delete</button>
     </div>
 </template>
 

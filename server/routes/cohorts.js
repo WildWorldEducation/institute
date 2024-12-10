@@ -299,7 +299,6 @@ router.get('/unavailable/:cohortId/list', (req, res, next) => {
 /**
  * Delete Item
  *
- * @return response()
  */
 router.delete('/:cohortId', (req, res, next) => {
     if (req.session.userName) {
