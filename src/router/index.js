@@ -485,11 +485,12 @@ router.beforeEach(async (to, from, next) => {
         next(); // Proceed if no authentication is required
     }
 
-    // To remove the vertical scroll bar for the Vertical and Radial skill tree pages.
+    // To remove the vertical scroll bar.
     if (
         to.name == 'vertical-tree' ||
         to.name == 'radial-tree' ||
         to.name == 'skills' ||
+        to.name == 'student-skills' ||
         to.name == 'student-signup' ||
         to.name == 'editor-signup' ||
         to.name == 'login'
