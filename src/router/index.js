@@ -350,6 +350,17 @@ const router = createRouter({
             component: () => import('../components/pages/goals/GoalView.vue')
         },
         {
+            path: '/student/:studentId/goals',
+            name: 'student-goals',
+            component: () =>
+                import('../components/pages/goals/ListStudentGoalsView.vue'),
+            meta: {
+                title: 'Student goals',
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
+        },
+        {
             path: '/test-ai-feature',
             name: 'test ai feature',
             component: () => import('../components/pages/willBeDelete.vue')

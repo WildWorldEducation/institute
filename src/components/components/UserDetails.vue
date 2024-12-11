@@ -128,7 +128,7 @@ export default {
                 <!-- Goals -->
                 <router-link
                     v-if="userRole == 'student'"
-                    :to="'/student/' + this.$parent.user.id + '/skills'"
+                    :to="'/student/' + this.$parent.user.id + '/goals'"
                     class="btn secondary-btn mt-2"
                     target="_blank"
                 >
