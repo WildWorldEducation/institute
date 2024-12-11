@@ -62,6 +62,7 @@ export default {
             showSkillPanel: false,
             userAvatarImg: null,
             currentZoom: 1,
+            resetPosZoom: 0.1,
             resultNode: null
         };
     },
@@ -190,10 +191,19 @@ export default {
                 this.skillTreeStore.userSkillsSubSkillsSeparate.count;
             if (skillCount > 2000) {
                 this.radiusMultiplier = 96;
+                this.resetPosZoom = 0.05
             } else if (skillCount > 1000) {
-                this.radiusMultiplier = 32;
-            } else {
+                this.radiusMultiplier = 60;
+                this.resetPosZoom = 0.1
+            } else if (skillCount > 500) {
+                this.radiusMultiplier = 30;
+                this.resetPosZoom = 0.1
+            }else if (skillCount > 100) {
                 this.radiusMultiplier = 6;
+                this.resetPosZoom = 0.4
+            } else {
+                this.radiusMultiplier = 4;
+                this.resetPosZoom = 0.4
             }
 
             // Create a radial tree layout. The layout’s first dimension (x)
@@ -806,8 +816,8 @@ export default {
                 .call(
                     this.d3Zoom.transform,
                     d3.zoomIdentity
-                        .translate(this.width / 2, this.height / 3)
-                        .scale(0.1)
+                        .translate(this.width / 2, this.height / 2)
+                        .scale(this.resetPosZoom)
                 );
         },
         // Find node with name include
@@ -857,11 +867,9 @@ export default {
                 );
         },
         async truncateToGradeLevel(level) {
-            this.isLoading = true;
             await this.skillTreeStore.getUserSkillsSubSkillsSeparate(level);    
             this.skill.children = this.skillTreeStore.userSkillsSubSkillsSeparate.skills;
             this.userAvatarImg.onload();
-            this.isLoading = false;
         }
     }
 };
