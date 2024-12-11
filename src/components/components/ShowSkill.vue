@@ -222,9 +222,13 @@ export default {
             this.goalExists = data.goalExists;
         },
 
-        confirmCreateGoal(skill) {
+        async confirmCreateGoal(skill) {
             let text = `Are you sure you want to create a goal for ${skill.name}?`;
             if (confirm(text) == true) {
+                // Will need this list to create the goal steps.
+                await this.userSkillsStore.getFilteredUnnestedList(
+                    this.userDetailsStore.userId
+                );
                 this.createGoal(skill);
             }
         },
@@ -237,16 +241,27 @@ export default {
             // Add ancestor subskills to array.
             let isSubSkillUnlocked = false;
             if (skill.type == 'super') {
-                for (let i = 0; i < this.accessibleSkills.length; i++) {
+                for (
+                    let i = 0;
+                    i < this.userSkillsStore.filteredUnnestedList.length;
+                    i++
+                ) {
                     if (
-                        this.accessibleSkills[i].type == 'sub' &&
-                        this.accessibleSkills[i].parent == skill.id &&
-                        this.accessibleSkills[i].is_mastered != 1
+                        this.userSkillsStore.filteredUnnestedList[i].type ==
+                            'sub' &&
+                        this.userSkillsStore.filteredUnnestedList[i].parent ==
+                            skill.id &&
+                        this.userSkillsStore.filteredUnnestedList[i]
+                            .is_mastered != 1
                     ) {
-                        this.goalSteps.push(this.accessibleSkills[i]);
-
+                        this.goalSteps.push(
+                            this.userSkillsStore.filteredUnnestedList[i]
+                        );
                         // Check if sub skill is unlocked.
-                        if (this.accessibleSkills[i].is_accessible) {
+                        if (
+                            this.userSkillsStore.filteredUnnestedList[i]
+                                .is_accessible
+                        ) {
                             isSubSkillUnlocked = true;
                         }
                     }
