@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
+const { findParentHaveHiddenChild } = require('../utilities/skill-relate-functions');
 
 /*------------------------------------------
 --------------------------------------------
@@ -834,6 +835,38 @@ router.get('/expand-all-children/:userId', (req, res, next) => {
     }
 });
 
+
+/**
+ * this route handle a case when user want to find node that hidden by their parent
+ * we find a node in user cohort and their parent until we hit a node that toggle child off.
+ * 
+ * @return response()
+ */
+router.post('/find-hidden-skill/:userId', (req, res, next) => {
+    if (req.session.userName) {
+        const skillName = req.body.skillName;
+        console.log(req.body)
+        let sqlQuery = `SELECT * 
+                        FROM user_skills JOIN skills ON user_skills.skill_id = skills.id  
+                        WHERE  user_skills.user_id = ${conn.escape(req.params.userId)}`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                findParentHaveHiddenChild(results, skillName)
+                return res.json(results)
+            } catch (err) {
+                console.error(err)
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
+
 /**
  * Make skill unmastered.
  *
@@ -1008,7 +1041,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                                 ) {
                                                     if (
                                                         skills[j].parent ==
-                                                            childSkills[i].id &&
+                                                        childSkills[i].id &&
                                                         skills[j].type == 'sub'
                                                     ) {
                                                         subSkills.push(
@@ -1046,7 +1079,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                         ) {
                                             if (
                                                 skills[i].parent ==
-                                                    skill.parent &&
+                                                skill.parent &&
                                                 skills[i].id != skill.id
                                             ) {
                                                 if (skills[i].type == 'sub') {

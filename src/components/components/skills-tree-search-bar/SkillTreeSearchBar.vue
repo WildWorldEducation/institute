@@ -139,11 +139,11 @@ export default {
                 this.checkTextForAi(searchText.toLowerCase());
             }
         },
-        handleChooseResult(result) {
+        async handleChooseResult(result) {
             this.resultsSkills = [];
             this.searchText = result.name;
             this.chooseResult = result;
-            this.findNode(result.name);
+            await this.findNode(result.name);
         },
         checkTextForAi(searchText) {
             // only context search if user end a word

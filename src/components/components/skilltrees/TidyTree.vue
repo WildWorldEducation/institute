@@ -762,6 +762,8 @@ export default {
         },
         // zoom and pan to a node
         goToLocation(node) {
+            console.log('go to location node:');
+            console.log(node);
             const skillTreeHeight = this.$refs.wrapper.clientHeight;
             const skillTreeWidth = this.$refs.wrapper.clientWidth;
             const zoomedScale = skillTreeWidth > 480 ? 1.75 : 1.2;
@@ -827,7 +829,7 @@ export default {
             }
         },
         // Find node with name include
-        findNodeWithName(searchString) {
+        async findNodeWithName(searchString) {
             // D3
             let breakLoop = false;
             let resultNode = null;
@@ -840,6 +842,23 @@ export default {
                     breakLoop = true;
                 }
             });
+
+            // if we cant find the node it mean the node is hide in children
+            if (!resultNode) {
+                var url =
+                    '/user-skills/find-hidden-skill/' +
+                    this.userDetailsStore.userId;
+
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        skillName: searchString
+                    })
+                });
+                alert('ok');
+            }
+
             return resultNode;
         },
         toggleHideChildren(node) {
