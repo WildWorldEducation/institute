@@ -114,7 +114,7 @@ export default {
                 // instructor mode search
                 this.path = this.findPathInNestedSkillTree(
                     name,
-                    studentUserSkills
+                    this.studentUserSkills
                 );
             }
         },
