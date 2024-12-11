@@ -27,12 +27,31 @@ export default {
             );
             this.goals[i].name = skillObj.name;
             this.goals[i].level = skillObj.level;
+
+            for (let j = 0; j < this.goals[i].steps.length; j++) {
+                let skillObj = this.skillsStore.skillsList.find(
+                    (skill) => skill.id == this.goals[i].steps[j].skill_id
+                );
+                this.goals[i].steps[j].name = skillObj.name;
+                this.goals[i].steps[j].level = skillObj.level;
+            }
         }
+
+        console.log(this.goals);
     },
     methods: {
         async getGoals() {
             const result = await fetch('/goals/' + this.studentId + '/list');
             this.goals = await result.json();
+            for (let i = 0; i < this.goals.length; i++) {
+                await this.getGoalSteps(this.goals[i]);
+            }
+        },
+        async getGoalSteps(goal) {
+            const result = await fetch(
+                '/goals/' + goal.id + '/goal-steps/list'
+            );
+            goal.steps = await result.json();
         },
         async deleteGoal() {
             let text = 'Are you sure you want to delete this goal?';
@@ -69,6 +88,9 @@ export default {
                 >
                     {{ goal.name }}
                 </div>
+                <ul>
+                    <li v-for="step in goal.steps">{{ step.name }}</li>
+                </ul>
             </div>
         </div>
     </div>
