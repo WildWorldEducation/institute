@@ -63,15 +63,19 @@ export default {
             userAvatarImg: null,
             currentZoom: 1,
             resetPosZoom: 0.1,
-            resultNode: null
+            resultNode: null,
+            truncateLevel: 'phd'
         };
     },
     components: {
         SkillPanel
     },
     async mounted() {
+        this.truncateLevel = this.userDetailsStore.skillTreeLevel;
         if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
-            await this.skillTreeStore.getUserSkillsSubSkillsSeparate();
+            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
+                this.truncateLevel
+            );
         }
 
         // Specify the chart’s dimensions.
@@ -191,19 +195,19 @@ export default {
                 this.skillTreeStore.userSkillsSubSkillsSeparate.count;
             if (skillCount > 2000) {
                 this.radiusMultiplier = 96;
-                this.resetPosZoom = 0.05
+                this.resetPosZoom = 0.05;
             } else if (skillCount > 1000) {
                 this.radiusMultiplier = 60;
-                this.resetPosZoom = 0.1
+                this.resetPosZoom = 0.1;
             } else if (skillCount > 500) {
                 this.radiusMultiplier = 30;
-                this.resetPosZoom = 0.1
-            }else if (skillCount > 100) {
+                this.resetPosZoom = 0.1;
+            } else if (skillCount > 100) {
                 this.radiusMultiplier = 6;
-                this.resetPosZoom = 0.4
+                this.resetPosZoom = 0.4;
             } else {
                 this.radiusMultiplier = 4;
-                this.resetPosZoom = 0.4
+                this.resetPosZoom = 0.4;
             }
 
             // Create a radial tree layout. The layout’s first dimension (x)
@@ -867,8 +871,9 @@ export default {
                 );
         },
         async truncateToGradeLevel(level) {
-            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(level);    
-            this.skill.children = this.skillTreeStore.userSkillsSubSkillsSeparate.skills;
+            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(level);
+            this.skill.children =
+                this.skillTreeStore.userSkillsSubSkillsSeparate.skills;
             this.userAvatarImg.onload();
         }
     }
