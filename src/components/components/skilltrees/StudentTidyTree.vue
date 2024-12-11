@@ -22,7 +22,7 @@ export default {
     },
     data() {
         return {
-            width: 6000,
+            width: null,
             height: null,
             skill: {
                 id: null,
@@ -57,7 +57,7 @@ export default {
             showSkillPanel: false
         };
     },
-    props: ['studentId'],
+    props: ['studentId', 'studentName'],
     components: {
         SkillPanel,
         NewSkillPanel,
@@ -69,6 +69,7 @@ export default {
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
+        this.width = window.innerWidth;
 
         this.skill = {
             name: 'SKILLS',
@@ -83,48 +84,47 @@ export default {
         this.hiddenCanvasContext = hiddenCanvas.getContext('2d');
         hiddenCanvas.style.display = 'none';
 
-        // Listen for clicks on the main canvas
-        canvas.addEventListener('click', (e) => {
-            // We actually only need to draw the hidden canvas when
-            // there is an interaction. This sketch can draw it on
-            // each loop, but that is only for demonstration.
+        // // Listen for clicks on the main canvas
+        // canvas.addEventListener('click', (e) => {
+        //     // We actually only need to draw the hidden canvas when
+        //     // there is an interaction. This sketch can draw it on
+        //     // each loop, but that is only for demonstration.
 
-            var data = this.nodes;
-            //Figure out where the mouse click occurred.
-            var mouseX = e.layerX;
-            var mouseY = e.layerY;
+        //     var data = this.nodes;
+        //     //Figure out where the mouse click occurred.
+        //     var mouseX = e.layerX;
+        //     var mouseY = e.layerY;
 
-            // Get the corresponding pixel color on the hidden canvas
-            // and look up the node in our map.
-            var ctx = this.hiddenCanvasContext;
+        //     // Get the corresponding pixel color on the hidden canvas
+        //     // and look up the node in our map.
+        //     var ctx = this.hiddenCanvasContext;
 
-            // This will return that pixel's color
-            var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
-            //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
+        //     // This will return that pixel's color
+        //     var col = ctx.getImageData(mouseX, mouseY, 1, 1).data;
+        //     //var col = ctx.getImageData(mouseX, mouseY, 1, 1);
 
-            //Our map uses these rgb strings as keys to nodes.
-            var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
-            var node = this.colToNode[colString];
+        //     //Our map uses these rgb strings as keys to nodes.
+        //     var colString = 'rgb(' + col[0] + ',' + col[1] + ',' + col[2] + ')';
+        //     var node = this.colToNode[colString];
 
-            // console.log(this.colToNode);
+        //     // console.log(this.colToNode);
 
-            if (node) {
-                // We clicked on something, lets set the color of the node
-                // we also have access to the data associated with it, which in
-                // this case is just its original index in the data array.
-                node.renderCol = node.__pickColor;
-                //Update the display with some data
-                this.skill.name = node.data.skill_name;
-                this.skill.id = node.data.id;
-                this.skill.type = node.data.type;
-                this.skill.masteryRequirements = node.data.mastery_requirements;
-                this.showSkillPanel = true;
-            }
-        });
+        //     if (node) {
+        //         // We clicked on something, lets set the color of the node
+        //         // we also have access to the data associated with it, which in
+        //         // this case is just its original index in the data array.
+        //         node.renderCol = node.__pickColor;
+        //         //Update the display with some data
+        //         this.skill.name = node.data.skill_name;
+        //         this.skill.id = node.data.id;
+        //         this.skill.type = node.data.type;
+        //         this.skill.masteryRequirements = node.data.mastery_requirements;
+        //         this.showSkillPanel = true;
+        //     }
+        // });
 
         // Zoom and pan with mouse
-        // We have to construct the d3 zoom function and assign the zoom event,
-
+        // We have to construct the d3 zoom function and assign the zoom event
         this.d3Zoom = d3
             .zoom()
             .scaleExtent([0.1, 5])
@@ -216,6 +216,16 @@ export default {
 
             moveSubSkills(skillsWithSubSkillsMoved);
 
+            /* Determine width of tree, based on how many nodes are showing
+             * used for the various types of filters,
+             * including: collapsable nodes, grade level filter, and instructors filters skills for students
+             *
+             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
+             */
+
+            // Height: remains constant
+            const dx = 24;
+
             this.data = {
                 skill_name: 'My skills',
                 children: skillsWithSubSkillsMoved
@@ -224,8 +234,10 @@ export default {
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
-            const dx = 24;
-            const dy = this.width / (this.root.height + 1);
+
+            // Calculate width.
+            let multiplyBy = 5;
+            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -357,6 +369,9 @@ export default {
 
             // Text.
             if (this.scale > 0.6) {
+                // to avoid sharp artifacts with the stroke of the text.
+                ctx1.lineJoin = 'bevel';
+
                 // we move the skill name to the left and change the color if it a domain node
                 // using the non domain as if condition will save us some compute time as none domain node is more common
                 if (node.data.type != 'domain') {
@@ -693,9 +708,14 @@ export default {
 </script>
 
 <template>
-    <div class="d-flex justify-content-end">
-        <button class="btn primary-btn me-2" @click="printPDF()">Print</button>
-        <button class="btn primary-btn me-2" @click="resetPos()">Reset</button>
+    <!-- Student name, print and reset position buttons -->
+    <div
+        id="overlay"
+        class="d-flex position-absolute bottom-0 start-50 translate-middle-x bg-light p-1 rounded mb-2"
+    >
+        <p class="">Student: {{ studentName }}</p>
+        <button class="btn primary-btn ms-2" @click="printPDF()">Print</button>
+        <button class="btn primary-btn ms-2" @click="resetPos()">Reset</button>
     </div>
     <!-- Loading animation -->
     <div
@@ -724,6 +744,15 @@ export default {
 </template>
 
 <style scoped>
+#overlay {
+    z-index: 2;
+}
+
+canvas {
+    cursor: pointer;
+    background-color: var(--skill-tree-background-color);
+}
+
 .loader {
     width: 48px;
     height: 48px;
@@ -797,7 +826,7 @@ export default {
 #wrapper {
     width: 100%;
     height: 100%;
-    height: calc(100% - 92px);
+    height: 100%;
     overflow: hidden;
     position: relative;
 }
