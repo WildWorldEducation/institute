@@ -111,7 +111,7 @@ export default {
                 <router-link
                     v-if="userRole == 'student'"
                     :to="`/student/${this.$parent.user.id}/skill-tree`"
-                    class="btn secondary-btn mt-3"
+                    class="btn secondary-btn mt-2"
                     target="_blank"
                 >
                     Vertical tree
@@ -120,10 +120,19 @@ export default {
                 <router-link
                     v-if="userRole == 'student'"
                     :to="'/student/' + this.$parent.user.id + '/skills'"
-                    class="btn secondary-btn mt-3 mb-3"
+                    class="btn secondary-btn mt-2"
                     target="_blank"
                 >
                     Collapsible tree
+                </router-link>
+                <!-- Goals -->
+                <router-link
+                    v-if="userRole == 'student'"
+                    :to="'/student/' + this.$parent.user.id + '/skills'"
+                    class="btn secondary-btn mt-2"
+                    target="_blank"
+                >
+                    Goals
                 </router-link>
                 <div class="d-flex justify-content-center mt-2">
                     <router-link
