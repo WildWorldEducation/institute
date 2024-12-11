@@ -1,21 +1,26 @@
 <script>
-import SkillsListParent from '../components/SkillsListParent.vue';
-
-// Import the store
+// Stores
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+import { useUsersStore } from '../../stores/UsersStore';
+// Components
+import SkillsListParent from '../components/SkillsListParent.vue';
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 
 export default {
     setup() {
         const userDetailsStore = useUserDetailsStore();
+        const usersStore = useUsersStore();
 
         return {
-            userDetailsStore
+            userDetailsStore,
+            usersStore
         };
     },
     data() {
         return {
-            isInstructorMode: false,
+            studentId: this.$route.params.studentId,
+            studentName: '',
+            instructorMode: false,
             searchText: '',
             resultsSkills: [],
             chooseResult: null,
@@ -28,7 +33,20 @@ export default {
         SkillsListParent,
         SkillTreeSearchBar
     },
+    async created() {
+        // Check if regular or instructor mode.
+        if (typeof this.studentId == 'string') {
+            this.instructorMode = true;
 
+            if (this.usersStore.users.length == 0)
+                await this.usersStore.getUsers();
+            for (let i = 0; i < this.usersStore.users.length; i++) {
+                if (this.usersStore.users[i].id == this.studentId) {
+                    this.studentName = this.usersStore.users[i].username;
+                }
+            }
+        }
+    },
     methods: {
         clearResults() {
             this.$refs.skillList.path = [];
@@ -67,6 +85,9 @@ export default {
                         </div>
                     </div>
                 </div> -->
+                <div v-if="instructorMode" class="col-lg-9">
+                    <h1 class="heading h4">Student: {{ studentName }}</h1>
+                </div>
                 <div class="search-mobile-row">
                     <!-- Search feature -->
                     <SkillTreeSearchBar
@@ -78,7 +99,7 @@ export default {
             <div id="tablet-and-up-legend">
                 <div class="legend row">
                     <!-- Grade buttons -->
-                    <div class="col-lg-9 d-flex">
+                    <div v-if="!instructorMode" class="col-lg-9 d-flex">
                         <button class="btn grade-school me-2">
                             Grade school
                         </button>
@@ -91,10 +112,7 @@ export default {
                         <button class="btn college me-2">College</button>
                         <button class="btn phd me-2">PHD</button>
                         <!-- Add skill button -->
-                        <router-link
-                            v-if="!isInstructorMode"
-                            class="btn primary-btn"
-                            to="/skills/add"
+                        <router-link class="btn primary-btn" to="/skills/add"
                             >New skill&nbsp;
                             <!-- Plus sign -->
                             <svg
@@ -111,16 +129,16 @@ export default {
                         ></router-link>
                         <!-- Skill filters button -->
                         <div
-                            v-if="
-                                userDetailsStore.role == 'admin' &&
-                                !isInstructorMode
-                            "
+                            v-if="userDetailsStore.role == 'admin'"
                             class="d-flex gap-2"
                         >
                             <router-link class="btn primary-btn" to="/tags"
                                 >Skill Filters</router-link
                             >
                         </div>
+                    </div>
+                    <div v-else class="col-lg-9">
+                        <h1 class="heading">Student: {{ studentName }}</h1>
                     </div>
 
                     <div class="col-lg-3">
@@ -157,10 +175,6 @@ export default {
     padding: 5px 10px;
 }
 
-.search-bar {
-    height: 100%;
-}
-
 #mobile-legend {
     display: none;
 }
@@ -175,6 +189,10 @@ export default {
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
+    h1 {
+        margin-bottom: 0px;
+    }
+
     #mobile-legend {
         display: block;
     }
@@ -191,7 +209,6 @@ export default {
         width: 96%;
         margin-left: 0px;
         margin-right: auto;
-        margin-top: 15px;
     }
 }
 

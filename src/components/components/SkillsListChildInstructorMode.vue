@@ -290,6 +290,7 @@ export default {
 
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
+            <!-- Expand/collapse subskills button-->
             <button
                 v-if="type == 'super'"
                 type="button"
@@ -301,7 +302,7 @@ export default {
                     v-if="!showSubskills"
                     width="18"
                     height="18"
-                    fill="#9C7EEC"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -315,7 +316,7 @@ export default {
                     v-else
                     width="18"
                     height="18"
-                    fill="#9C7EEC"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -335,12 +336,12 @@ export default {
                     v-if="showChildren"
                     height="18"
                     width="18"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
-                        fill="#9C7EEC"
                         d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"
                     />
                 </svg>
@@ -348,17 +349,18 @@ export default {
                     v-else
                     height="18"
                     width="18"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
                     -->
                     <path
-                        fill="#9C7EEC"
                         d="M246.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 402.7 361.4 265.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-160 160zm160-352l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 210.7 361.4 73.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z"
                     />
                 </svg>
             </button>
+            <!-- Expand/collapse child skills button-->
             <button
                 v-if="childrenNotSubskills.length != 0"
                 @click.stop="toggleChildren"
@@ -371,11 +373,11 @@ export default {
                     viewBox="0 0 320 512"
                     width="18"
                     height="18"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
                         d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"
-                        fill="#9C7EEC"
                     />
                 </svg>
                 <svg
@@ -384,11 +386,11 @@ export default {
                     viewBox="0 0 512 512"
                     width="18"
                     height="18"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
                         d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
-                        fill="#9C7EEC"
                     />
                 </svg>
             </button>
