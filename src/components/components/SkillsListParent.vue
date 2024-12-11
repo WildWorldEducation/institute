@@ -3,7 +3,6 @@
 import { useSkillsStore } from '../../stores/SkillsStore.js';
 import { useSkillTreeStore } from '../../stores/SkillTreeStore.js';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
-import { useUsersStore } from '../../stores/UsersStore';
 
 // Nested components.
 import SkillsListChildStudent from './SkillsListChildStudent.vue';
@@ -15,13 +14,11 @@ export default {
         const skillsStore = useSkillsStore();
         const userDetailsStore = useUserDetailsStore();
         const skillTreeStore = useSkillTreeStore();
-        const usersStore = useUsersStore();
 
         return {
             skillsStore,
             userDetailsStore,
-            skillTreeStore,
-            usersStore
+            skillTreeStore
         };
     },
     data() {
@@ -29,7 +26,6 @@ export default {
             userSkills: [],
             // For instructors to view student's skill trees
             studentId: this.$route.params.studentId,
-            studentName: null,
             instructorMode: false,
             studentUserSkills: [],
             // For the loading animation.
@@ -63,15 +59,6 @@ export default {
         }
         // For instructors to view student's skill trees
         else {
-            if (this.usersStore.users.length == 0)
-                await this.usersStore.getUsers();
-
-            for (let i = 0; i < this.usersStore.users.length; i++) {
-                if (this.usersStore.users[i].id == this.studentId) {
-                    this.studentName = this.usersStore.users[i].username;
-                }
-            }
-
             await this.skillTreeStore.getStudentSkills(this.studentId);
             this.studentUserSkills = this.skillTreeStore.studentSkills;
         }
@@ -191,7 +178,6 @@ export default {
 
 <template>
     <div class="container-fluid bg-white">
-        <h1 class="heading" v-if="instructorMode">{{ studentName }}</h1>
         <!-- Loading animation -->
         <div
             v-if="isLoading == true"
