@@ -17,7 +17,8 @@ Routes
 --------------------------------------------*/
 
 /* Nested list of user-skills*/
-// For Collapsible Tree and Linear Tree.
+// For Collapsible Tree and Linear Tree
+// And Student Collapsible Tree
 // - now replaced by "filter-by-cohort" version.
 router.get('/:userId', (req, res, next) => {
     if (req.session.userName) {

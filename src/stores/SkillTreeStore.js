@@ -68,7 +68,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
         },
         async getStudentSkills(studentId) {
             // API call for skill tree.
-            const result = await fetch('/user-skills/' + studentId);
+            const result = await fetch('/user-skills/filter-by-cohort/' + studentId);
             this.studentSkills = await result.json();
         }
     }
