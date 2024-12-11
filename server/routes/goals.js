@@ -37,10 +37,10 @@ router.post('/:userId/add', (req, res, next) => {
                 if (err) {
                     throw err;
                 } else {
-                    // Record each goal step for the goal, in 'goal_steps' table.
+                    // Record each goal step for the goal, in 'goal_skills' table.
                     const goalId = result.insertId;
                     for (let i = 0; i < goalSteps.length; i++) {
-                        let sqlQuery = `INSERT INTO goal_steps (goal_id, skill_id)
+                        let sqlQuery = `INSERT INTO goal_skills (goal_id, skill_id)
                         VALUES (${conn.escape(goalId)}, ${conn.escape(
                             goalSteps[i].id
                         )});`;
@@ -99,7 +99,7 @@ router.get('/:goalId/goal-steps/list', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT skill_id
-        FROM goal_steps
+        FROM goal_skills
         WHERE goal_id = ${conn.escape(req.params.goalId)}
         ORDER BY id DESC;`;
         conn.query(sqlQuery, (err, results) => {
@@ -159,7 +159,7 @@ router.delete('/:goalId', (req, res, next) => {
                 }
 
                 let sqlQuery2 = `DELETE 
-                FROM goal_steps
+                FROM goal_skills
                 WHERE goal_id=${conn.escape(req.params.goalId)}`;
 
                 conn.query(sqlQuery2, (err) => {
