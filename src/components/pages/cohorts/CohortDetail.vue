@@ -110,7 +110,7 @@ export default {
 </script>
 
 <template>
-    <div class="cohort-detail">
+    <div id="cohort-information" class="container mt-4 bg-light">
         <h2>{{ cohort.name }}</h2>
         <div>
             <!-- Filters -->
@@ -122,7 +122,7 @@ export default {
                     b-on-hover
                     :title="showMembers ? 'collapse' : 'expand'"
                 >
-                    <div class="d-flex">
+                    <div id="secondary-heading-container" class="d-flex">
                         <h2 class="secondary-heading h4">Available Students</h2>
                         <!-- Arrow Icon -->
                         <svg
@@ -212,22 +212,32 @@ export default {
                 <FilterParent />
             </div>
         </Transition>
-        <router-link :to="'/cohort/' + cohort.id" class="btn primary-btn">
+        <div class="btn-link-container">
+            <router-link :to="'/cohort/' + cohort.id" class="btn primary-btn">
             Go to Cohort
         </router-link>
+        </div>
     </div>
 </template>
 
 <style scoped>
-.cohort-detail {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    border: 1px solid #ccc;
-    height: 100%;
-    padding: 16px;
-    border-radius: 8px;
-    background-color: #f9f9f9;
+#cohort-information {
+    border: 1px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 33px 28px;
+    overflow: hidden;
+}
+
+#secondary-heading-container{
+    padding-top:10px;
+}
+
+.btn-link-container{
+    padding-top:10px;
+}
+
+#cohort-information label {
+    font-weight: 600;
 }
 h2{
     word-wrap: break-word;
@@ -303,10 +313,9 @@ h2{
 
 
 @media (max-width: 480px) {
-    .cohort-detail {
+    #cohort-information {
         padding: 20px;
         font-size: 1.2rem;
-        margin: 10px;
         word-wrap: break-word;
         word-break: break-word;
     }

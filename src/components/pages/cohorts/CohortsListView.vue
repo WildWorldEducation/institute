@@ -150,10 +150,9 @@ export default {
             </div>
 
             <!-- Right Container -->
-            <div class="col-lg-8 col-md-7 d-none d-md-block">
+            <div class="col-lg-7 col-md-7 d-none d-md-block">
                 <div
                     v-if="selectedCohortId"
-                    class="right-container p-4 shadow rounded"
                 >
                     <div>
                         <CohortDetail :cohort="getSelectedCohort" />
