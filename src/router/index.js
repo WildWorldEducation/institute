@@ -457,6 +457,8 @@ router.beforeEach(async (to, from, next) => {
         (from.name == 'vertical-tree' && to.name == 'radial-tree')
     ) {
         document.body.classList.add('skill-tree-transition');
+    } else if (from.name == 'radial-tree' || from.name == 'vertical-tree') {
+        document.body.classList.remove('skill-tree-transition');
     }
 
     // Check if initial data has been loaded and user is not logged in, redirect to login
