@@ -212,7 +212,7 @@ export default {
             this.showChildren = !this.showChildren;
         },
         async confirmCreateGoal() {
-            let text = `Are you sure you want to create a goal for ${name}?`;
+            let text = `Are you sure you want to create a goal for ${this.name}?`;
             if (confirm(text) == true) {
                 this.createGoal(this.skill);
             }
