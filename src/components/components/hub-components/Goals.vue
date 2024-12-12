@@ -28,8 +28,7 @@ export default {
             );
             this.goals[i].name = skillObj.name;
             this.goals[i].level = skillObj.level;
-        }
-        console.log(this.goals);
+        }        
     },
     methods: {
         async getGoals() {

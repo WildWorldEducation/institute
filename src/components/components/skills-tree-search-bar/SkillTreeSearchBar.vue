@@ -34,7 +34,6 @@ export default {
     },
     async created() {
         this.nameList = await this.skillsStore.getNameList();
-        console.log(this.userStore.userId);
         if (this.userStore.userId) {
             this.isLogin = true;
         }

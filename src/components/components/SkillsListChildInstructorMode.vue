@@ -1,11 +1,14 @@
 <script>
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const userSkillsStore = useUserSkillsStore();
         return {
-            skillsStore
+            skillsStore,
+            userSkillsStore
         };
     },
     data() {
@@ -15,7 +18,11 @@ export default {
             showModal: false,
             childrenNotSubskills: [],
             subSkills: [],
-            isResult: false
+            isResult: false,
+            // Used for goals feature.
+            skill: {},
+            accessibleSkills: [],
+            goalSteps: []
         };
     },
     props: [
@@ -30,7 +37,9 @@ export default {
         'role',
         'isFiltered',
         'DeleteSkill',
-        'path'
+        'path',
+        'studentId',
+        'parent'
     ],
     computed: {
         indent() {
@@ -74,6 +83,36 @@ export default {
                 this.subSkills.push(this.children[i]);
             } else {
                 this.childrenNotSubskills.push(this.children[i]);
+            }
+        }
+
+        // Created skill object, for goal creation methods.
+        this.skill.id = this.id;
+        this.skill.name = this.name;
+        this.skill.type = this.type;
+        this.skill.parent = this.parent;
+        this.skill.is_mastered = this.isMastered;
+        this.skill.is_accessible = this.isUnlocked;
+
+        // Will need this list to create the goal steps.
+        await this.userSkillsStore.getFilteredUnnestedList(this.studentId);
+        for (
+            let i = 0;
+            i < this.userSkillsStore.filteredUnnestedList.length;
+            i++
+        ) {
+            // Get the accessible skill list of this student
+            if (
+                this.userSkillsStore.filteredUnnestedList[i].is_accessible == 1
+            ) {
+                if (
+                    this.userSkillsStore.filteredUnnestedList[i].type !=
+                    'domain'
+                ) {
+                    this.accessibleSkills.push(
+                        this.userSkillsStore.filteredUnnestedList[i]
+                    );
+                }
             }
         }
     },
@@ -171,6 +210,83 @@ export default {
             this.recursivelySetState(this.children, !this.showChildren);
             localStorage.setItem(this.id + 'children', !this.showChildren);
             this.showChildren = !this.showChildren;
+        },
+        async confirmCreateGoal() {
+            let text = `Are you sure you want to create a goal for ${name}?`;
+            if (confirm(text) == true) {
+                this.createGoal(this.skill);
+            }
+        },
+        createGoal(skill) {
+            if (skill.type != 'domain') {
+                // Add ancestor skill to array.
+                this.goalSteps.push(skill);
+            }
+
+            // Add ancestor subskills to array.
+            let isSubSkillUnlocked = false;
+            if (skill.type == 'super') {
+                for (
+                    let i = 0;
+                    i < this.userSkillsStore.filteredUnnestedList.length;
+                    i++
+                ) {
+                    if (
+                        this.userSkillsStore.filteredUnnestedList[i].type ==
+                            'sub' &&
+                        this.userSkillsStore.filteredUnnestedList[i].parent ==
+                            skill.id &&
+                        this.userSkillsStore.filteredUnnestedList[i]
+                            .is_mastered != 1
+                    ) {
+                        this.goalSteps.push(
+                            this.userSkillsStore.filteredUnnestedList[i]
+                        );
+                        // Check if sub skill is unlocked.
+                        if (
+                            this.userSkillsStore.filteredUnnestedList[i]
+                                .is_accessible
+                        ) {
+                            isSubSkillUnlocked = true;
+                        }
+                    }
+                }
+            }
+
+            // Check if current skill is unlocked.
+            const inAccessibleList = this.accessibleSkills.find(
+                (as) => as.id == skill.id
+            );
+
+            // Stop when the first ancestor node that is unlocked for the student is found
+            // or if its sub skill is unlocked
+            if (inAccessibleList || isSubSkillUnlocked) {
+                this.populateGoalSteps();
+                return;
+            }
+
+            fetch('/skills/show/' + skill.parent)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((skill) => {
+                    // Recursively call the function with parent skill data.
+                    return this.createGoal(skill);
+                });
+        },
+        populateGoalSteps() {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillId: this.skill.id,
+                    goalSteps: this.goalSteps
+                })
+            };
+            const url = '/goals/' + this.studentId + '/add';
+            fetch(url, requestOptions).then(() => {
+                alert('Goal created.');
+            });
         }
     },
     watch: {
@@ -278,7 +394,9 @@ export default {
         </div>
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
         <div>
-            <div ref="name" style="text-align: left">{{ name }}</div>
+            <div ref="name" style="text-align: left">
+                {{ name }}
+            </div>
             <div
                 v-if="type == 'super'"
                 class="d-none d-sm-block text-start pt-1 mastered-skills-count"
@@ -290,6 +408,26 @@ export default {
 
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
+            <button
+                v-if="type != 'domain'"
+                class="btn"
+                title="create a goal"
+                @click="confirmCreateGoal()"
+            >
+                <!-- Create goal button-->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    class="primary-icon"
+                    width="20"
+                    heigth="20"
+                >
+                    <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <path
+                        d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                    />
+                </svg>
+            </button>
             <!-- Expand/collapse subskills button-->
             <button
                 v-if="type == 'super'"
@@ -412,6 +550,8 @@ export default {
         :role="role"
         :depth="depth + 1"
         :path="path"
+        :studentId="studentId"
+        :parent="subSkill.parent"
     >
     </SkillsListChildInstructorMode>
 
@@ -430,6 +570,8 @@ export default {
         :role="role"
         :depth="depth + 1"
         :path="path"
+        :studentId="studentId"
+        :parent="child.parent"
     >
     </SkillsListChildInstructorMode>
 </template>
@@ -575,11 +717,6 @@ export default {
 .locked {
     border-color: #c8d7da;
     background-color: #f3f2f5;
-    color: #c8d7da;
-}
-
-.locked svg path {
-    fill: #c8d7da;
 }
 
 .mastered {

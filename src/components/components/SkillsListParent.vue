@@ -265,6 +265,8 @@ export default {
                     :level="skill.level"
                     :role="userDetailsStore.role"
                     :path="this.path"
+                    :studentId="studentId"
+                    :parent="skill.parent"
                 >
                 </SkillsListChildInstructorMode>
             </div>

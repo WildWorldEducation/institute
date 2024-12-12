@@ -17,7 +17,8 @@ Routes
 --------------------------------------------*/
 
 /* Nested list of user-skills*/
-// For Collapsible Tree and Linear Tree.
+// For Collapsible Tree and Linear Tree
+// And Student Collapsible Tree
 // - now replaced by "filter-by-cohort" version.
 router.get('/:userId', (req, res, next) => {
     if (req.session.userName) {
@@ -227,7 +228,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name, is_accessible, is_mastered, type, parent, url
+    SELECT skills.id, name, is_accessible, is_mastered, type, parent, url, level
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -235,7 +236,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
     AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, "", "", type, parent, url
+    SELECT skills.id, name, "", "", type, parent, url, level
     FROM skills
     WHERE skills.id NOT IN 
 
