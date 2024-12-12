@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 router.use(bodyParser.json());
 // DB
 const conn = require('../config/db');
-const { findParentHaveHiddenChild } = require('../utilities/skill-relate-functions');
+const { findParentHaveHiddenChild, showHiddenChildFromParent } = require('../utilities/skill-relate-functions');
 
 /*------------------------------------------
 --------------------------------------------
@@ -855,8 +855,9 @@ router.post('/find-hidden-skill/:userId', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
-                findParentHaveHiddenChild(results, skillName)
-                return res.json(results)
+                const parentPath = findParentHaveHiddenChild(results, skillName);
+                showHiddenChildFromParent(parentPath, req.params.userId)
+                return res.json({ mess: 'ok' })
             } catch (err) {
                 console.error(err)
                 next(err);

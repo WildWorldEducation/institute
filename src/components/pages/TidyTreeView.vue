@@ -29,12 +29,13 @@ export default {
         resetPos() {
             this.$refs.childComponent.resetPos();
         },
-        handleChooseResult(resultName) {
+        async handleChooseResult(resultName) {
             this.lastChooseResult = resultName;
             // Find the node with name
             const node = this.$refs.childComponent.findNodeWithName(resultName);
+            console.log(node);
             if (!node) {
-                console.error('Cannot find node with name: ' + resultName);
+                await this.$refs.childComponent.findHiddenSkill(resultName);
                 return false;
             }
             // go to the skill position
