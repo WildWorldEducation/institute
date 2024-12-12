@@ -18,6 +18,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             instructorUsername: null,
             isGoogleAuth: null,
             skillTreeLevel: 'phd',
+            verticalTreeLevel: '',
+            radialTreeLevel: '',
             theme: 'original'
         };
     },
