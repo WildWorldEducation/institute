@@ -29,30 +29,8 @@ export default {
                 break;
             }
         }
-
-        await this.getGoals();
         await this.userSkillsStore.getFilteredUnnestedList(this.studentId);
-
-        for (let i = 0; i < this.goals.length; i++) {
-            let skillObj = this.userSkillsStore.filteredUnnestedList.find(
-                (skill) => skill.id === this.goals[i].skill_id
-            );
-            this.goals[i].name = skillObj.name;
-            this.goals[i].level = skillObj.level;
-            this.goals[i].showSteps = false;
-
-            for (let j = 0; j < this.goals[i].steps.length; j++) {
-                let userSkillObj =
-                    this.userSkillsStore.filteredUnnestedList.find(
-                        (skill) => skill.id == this.goals[i].steps[j].skill_id
-                    );
-
-                this.goals[i].steps[j].name = userSkillObj.name;
-                this.goals[i].steps[j].level = userSkillObj.level;
-                this.goals[i].steps[j].url = userSkillObj.url;
-                this.goals[i].steps[j].isMastered = userSkillObj.is_mastered;
-            }
-        }
+        await this.getGoals();
     },
     methods: {
         async getGoals() {
@@ -61,6 +39,7 @@ export default {
             for (let i = 0; i < this.goals.length; i++) {
                 await this.getGoalSteps(this.goals[i]);
             }
+            this.prepareGoals();
         },
         async getGoalSteps(goal) {
             const result = await fetch(
@@ -68,10 +47,34 @@ export default {
             );
             goal.steps = await result.json();
         },
-        async deleteGoal() {
+        prepareGoals() {
+            for (let i = 0; i < this.goals.length; i++) {
+                let skillObj = this.userSkillsStore.filteredUnnestedList.find(
+                    (skill) => skill.id === this.goals[i].skill_id
+                );
+                this.goals[i].name = skillObj.name;
+                this.goals[i].level = skillObj.level;
+                this.goals[i].showSteps = false;
+
+                for (let j = 0; j < this.goals[i].steps.length; j++) {
+                    let userSkillObj =
+                        this.userSkillsStore.filteredUnnestedList.find(
+                            (skill) =>
+                                skill.id == this.goals[i].steps[j].skill_id
+                        );
+
+                    this.goals[i].steps[j].name = userSkillObj.name;
+                    this.goals[i].steps[j].level = userSkillObj.level;
+                    this.goals[i].steps[j].url = userSkillObj.url;
+                    this.goals[i].steps[j].isMastered =
+                        userSkillObj.is_mastered;
+                }
+            }
+        },
+        async deleteGoal(goalId) {
             let text = 'Are you sure you want to delete this goal?';
             if (confirm(text) == true) {
-                const result = await fetch('/goals/' + this.goalId, {
+                const result = await fetch('/goals/' + goalId, {
                     method: 'DELETE'
                 });
 
@@ -79,7 +82,7 @@ export default {
                     console.log(result.error);
                 }
 
-                this.$router.push('/');
+                await this.getGoals();
             }
         }
     }
@@ -130,10 +133,7 @@ export default {
                             </svg>
                         </button>
                         <!-- Delete button -->
-                        <button
-                            class="btn"
-                            @click="goal.showSteps = !goal.showSteps"
-                        >
+                        <button class="btn" @click="deleteGoal(goal.id)">
                             <!-- Trash sign -->
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
