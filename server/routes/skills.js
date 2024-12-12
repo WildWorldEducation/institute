@@ -1657,6 +1657,7 @@ const openai = new OpenAI({
 //         res.json({ mess: 'fails' })
 //     }
 // })
+const vectorList = require('../../vector.json')
 
 router.get('/insert-vectors-to-db', async (req, res) => {
     try {

@@ -38,7 +38,10 @@ export default {
     async created() {
         if (this.userDetailsStore.role === 'admin') {
             this.nameList = await this.skillsStore.getNameList();
-        } else if (this.userDetailsStore.role === 'instructor') {
+        } else if (
+            this.userDetailsStore.role === 'instructor' ||
+            this.userDetailsStore.role === 'editor'
+        ) {
             this.nameList = await this.skillsStore.getFilteredNameList();
         } else if (this.userDetailsStore.role === 'student') {
             this.nameList = await this.skillsStore.getCohortNameList();
@@ -82,6 +85,8 @@ export default {
             }, 10000);
         },
         searchFirstWord(results, searchText) {
+            console.log('name list');
+            console.log(this.nameList);
             this.nameList.forEach((element) => {
                 if (
                     element.name
