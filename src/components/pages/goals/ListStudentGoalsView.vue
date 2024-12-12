@@ -76,17 +76,44 @@ export default {
         <h1 class="heading">Goal Progress</h1>
         <div id="goal-list">
             <div v-for="goal in goals">
-                <div class="d-flex">
-                    <h2 class="goal-link mb-2 secondary-heading">
+                <div class="d-flex mb-2">
+                    <h2 class="goal secondary-heading h4">
                         {{ goal.name }}
+
+                        <button
+                            class="btn"
+                            @click="goal.showSteps = !goal.showSteps"
+                        >
+                            <!-- Plus sign -->
+                            <svg
+                                v-if="!goal.showSteps"
+                                width="18"
+                                height="18"
+                                class="primary-icon"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                            >
+                                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                                />
+                            </svg>
+                            <!-- Minus sign -->
+                            <svg
+                                v-else
+                                width="18"
+                                height="18"
+                                class="primary-icon"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                            >
+                                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                                <path
+                                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                                />
+                            </svg>
+                        </button>
                     </h2>
-                    &nbsp;
-                    <button
-                        class="btn"
-                        @click="goal.showSteps = !goal.showSteps"
-                    >
-                        +
-                    </button>
                 </div>
                 <ul v-if="goal.showSteps">
                     <li v-for="step in goal.steps">
@@ -136,6 +163,10 @@ export default {
 </template>
 
 <style>
+.goal .btn {
+    margin-bottom: 10px;
+}
+
 /* Level colors */
 .grade-school {
     background-color: #40e0d0;
