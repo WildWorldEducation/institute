@@ -14,7 +14,7 @@ export default {
             showMembers: false,
             students: [],
             unavailableStudents: [],
-            members: [],
+            members: []
         };
     },
     async created() {
@@ -57,10 +57,11 @@ export default {
                             (member) => member.id === this.students[i].id
                         );
                         // Show which students are part of another cohort.
-                        this.students[i].unavailable = this.unavailableStudents.some(
-                            (unavailable) =>
-                                unavailable.user_id === this.students[i].id
-                        );
+                        this.students[i].unavailable =
+                            this.unavailableStudents.some(
+                                (unavailable) =>
+                                    unavailable.user_id === this.students[i].id
+                            );
                     }
                 });
         },
@@ -77,14 +78,16 @@ export default {
                     isMember: this.students[index].isMember
                 })
             };
-            fetch(`/cohorts/edit/${this.cohort.id}`, requestOptions).then(() => {
-                if (index + 1 < this.students.length) {
-                    this.updateCohortMembers(index + 1);
-                } else {
-                    alert('Cohort updated');
-                    this.getMembers();
+            fetch(`/cohorts/edit/${this.cohort.id}`, requestOptions).then(
+                () => {
+                    if (index + 1 < this.students.length) {
+                        this.updateCohortMembers(index + 1);
+                    } else {
+                        alert('Cohort updated');
+                        this.getMembers();
+                    }
                 }
-            });
+            );
         },
         async deleteCohort() {
             if (confirm('Are you sure you want to delete this cohort?')) {
@@ -110,73 +113,79 @@ export default {
 </script>
 
 <template>
-    <div id="cohort-information" class="container mt-4 bg-light">
+    <div id="cohort-information" class="container bg-light rounded p-4">
         <h2>{{ cohort.name }}</h2>
         <div>
             <!-- Filters -->
             <div class="d-flex flex-column">
-            <div class="d-flex flex-row justify-content-between">
-                <div
-                    class="log-type"
-                    @click="showMembers = !showMembers"
-                    b-on-hover
-                    :title="showMembers ? 'collapse' : 'expand'"
-                >
-                    <div id="secondary-heading-container" class="d-flex">
-                        <h2 class="secondary-heading h4">Available Students</h2>
-                        <!-- Arrow Icon -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            width="22"
-                            height="22"
-                            fill="#667085"
-                            :class="[
-                                showMembers
-                                    ? 'arrow-point-down mb-2'
-                                    : 'arrow-point-up '
-                            ]"
-                        >
-                            <path
-                                d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
-                            />
-                        </svg>
+                <div class="d-flex flex-row justify-content-between">
+                    <div
+                        class="log-type"
+                        @click="showMembers = !showMembers"
+                        b-on-hover
+                        :title="showMembers ? 'collapse' : 'expand'"
+                    >
+                        <div class="d-flex mt-2">
+                            <h2 class="secondary-heading h4">
+                                Available Students
+                            </h2>
+                            <!-- Arrow Icon -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 320 512"
+                                width="22"
+                                height="22"
+                                fill="#667085"
+                                :class="[
+                                    showMembers
+                                        ? 'arrow-point-down mb-2'
+                                        : 'arrow-point-up '
+                                ]"
+                            >
+                                <path
+                                    d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                                />
+                            </svg>
+                        </div>
+                        <p>
+                            <em
+                                >Please note that a student can only be in one
+                                cohort.</em
+                            >
+                        </p>
                     </div>
-                    <p>
-                        <em
-                            >Please note that a student can only be in one
-                            cohort.</em
-                        >
-                    </p>
                 </div>
             </div>
-        </div>
             <Transition name="dropdown">
-            <div v-if="showMembers">
-                <ul style="list-style: none">
-                    <li v-for="student in students">
-                        <div class="form-check">
-                            <label class="control control-checkbox">
-                                <input
-                                    type="checkbox"
-                                    :value="student.id"
-                                    v-model="student.isMember"
-                                    :disabled="
-                                        student.unavailable ? true : false
-                                    "
-                                />
-                                <div class="control_indicator"></div>
-                            </label>
-                            <span class="students">{{ student.username }}</span>
-                        </div>
-                    </li>
-                </ul>
-                <button class="green-btn btn" @click="submit">Submit</button>
-            </div>
-        </Transition>
+                <div v-if="showMembers">
+                    <ul style="list-style: none">
+                        <li v-for="student in students">
+                            <div class="form-check">
+                                <label class="control control-checkbox">
+                                    <input
+                                        type="checkbox"
+                                        :value="student.id"
+                                        v-model="student.isMember"
+                                        :disabled="
+                                            student.unavailable ? true : false
+                                        "
+                                    />
+                                    <div class="control_indicator"></div>
+                                </label>
+                                <span class="students">{{
+                                    student.username
+                                }}</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <button class="green-btn btn" @click="submit">
+                        Submit
+                    </button>
+                </div>
+            </Transition>
         </div>
-          <!-- Filters -->
-          <div class="d-flex flex-column mt-4">
+        <!-- Filters -->
+        <div class="d-flex flex-column mt-4">
             <div class="d-flex flex-row justify-content-between">
                 <div
                     class="log-type"
@@ -214,8 +223,8 @@ export default {
         </Transition>
         <div class="btn-link-container">
             <router-link :to="'/cohort/' + cohort.id" class="btn primary-btn">
-            Go to Cohort
-        </router-link>
+                Go to Cohort
+            </router-link>
         </div>
     </div>
 </template>
@@ -223,23 +232,17 @@ export default {
 <style scoped>
 #cohort-information {
     border: 1px solid var(--primary-color);
-    border-radius: 12px;
-    padding: 33px 28px;
     overflow: hidden;
 }
 
-#secondary-heading-container{
-    padding-top:10px;
-}
-
-.btn-link-container{
-    padding-top:10px;
+.btn-link-container {
+    padding-top: 10px;
 }
 
 #cohort-information label {
     font-weight: 600;
 }
-h2{
+h2 {
     word-wrap: break-word;
 }
 /* +-+-+ Rotate Arrow Animation +-+-+  */
@@ -310,7 +313,6 @@ h2{
     background-color: #3eb3a3;
     color: white;
 }
-
 
 @media (max-width: 480px) {
     #cohort-information {
