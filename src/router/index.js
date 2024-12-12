@@ -452,6 +452,13 @@ router.beforeEach(async (to, from, next) => {
         }
     }
 
+    if (
+        (to.name == 'vertical-tree' && from.name == 'radial-tree') ||
+        (from.name == 'vertical-tree' && to.name == 'radial-tree')
+    ) {
+        document.body.classList.add('skill-tree-transition');
+    }
+
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&
