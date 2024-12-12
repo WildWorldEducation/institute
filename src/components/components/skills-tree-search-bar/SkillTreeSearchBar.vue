@@ -178,19 +178,28 @@ export default {
             }
         },
         handleKeyDownPress() {
+            if (this.focusIndex > this.resultsSkills.length) {
+                return false;
+            }
             this.focusIndex = this.focusIndex + 1;
-            console.log(this.focusIndex);
-            this.$refs.results[this.focusIndex].scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest'
-            });
+            if (this.focusIndex <= this.resultsSkills.length) {
+                this.$refs.results[this.focusIndex].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
+            }
         },
         handleKeyUpPress() {
+            if (this.focusIndex <= -1) {
+                return false;
+            }
             this.focusIndex = this.focusIndex - 1;
-            this.$refs.results[this.focusIndex].scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest'
-            });
+            if (this.focusIndex > -1) {
+                this.$refs.results[this.focusIndex].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
+            }
         }
     },
     components: {
@@ -328,6 +337,7 @@ export default {
     outline: none;
     border: 0px;
     width: 100%;
+    margin-top: 2px;
 }
 
 .search-results {
