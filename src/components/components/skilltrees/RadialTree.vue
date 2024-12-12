@@ -72,11 +72,17 @@ export default {
     },
     async mounted() {
         this.truncateLevel = this.userDetailsStore.skillTreeLevel;
-        //  if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
-        await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
-            this.truncateLevel
-        );
-        //   }
+        // Check if store is empty,
+        // or if grade level filter has been changed on the other tree (they need to be the same).
+        if (
+            this.skillTreeStore.verticalTreeUserSkills.length == 0 ||
+            this.userDetailsStore.verticalTreeLevel !=
+                this.userDetailsStore.skillTreeLevel
+        ) {
+            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
+                this.truncateLevel
+            );
+        }
 
         // Specify the chart’s dimensions.
         this.width = window.innerWidth;
@@ -881,6 +887,7 @@ export default {
         saveSkillTreeGradeLevel() {
             // Update the store
             this.userDetailsStore.skillTreeLevel = this.truncateLevel;
+            this.userDetailsStore.radialTreeLevel = this.truncateLevel;
             // Update the DB
             const requestOptions = {
                 method: 'PUT',
