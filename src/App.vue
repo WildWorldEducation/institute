@@ -260,6 +260,7 @@ Themes
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 }
 
+/* Background just for moving between the 2 skill trees */
 .skill-tree-transition {
     --background-color: var(--skill-tree-background-color);
     --background-image: none;
