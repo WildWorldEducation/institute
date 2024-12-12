@@ -70,12 +70,10 @@ export default {
         JoystickControl
     },
     async mounted() {
-        this.truncateLevel = this.userDetailsStore.skillTreeLevel;
-        if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
-            await this.skillTreeStore.getVerticalTreeUserSkills(
-                this.truncateLevel
-            );
-        }
+        this.truncateLevel = this.userDetailsStore.skillTreeLevel;       
+        //if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
+        await this.skillTreeStore.getVerticalTreeUserSkills(this.truncateLevel);
+        //}
         let userSkills = '';
         if (this.truncateLevel == 'grade_school') {
             userSkills = this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
@@ -1031,10 +1029,14 @@ export default {
         async truncateToGradeLevel(level) {
             this.truncateLevel = level;
             await this.skillTreeStore.getVerticalTreeUserSkills(level);
+            this.skill.children = 
             await this.reloadTree();
             this.saveSkillTreeGradeLevel();
         },
         saveSkillTreeGradeLevel() {
+            // Update the store
+            this.userDetailsStore.skillTreeLevel = this.truncateLevel;
+            // Update the DB
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -1042,10 +1044,9 @@ export default {
                     level: this.truncateLevel
                 })
             };
-
             var url =
                 '/users/' + this.userDetailsStore.userId + '/skill-tree-level';
-            fetch(url, requestOptions).then;
+            fetch(url, requestOptions);
         }
     }
 };

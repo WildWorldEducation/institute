@@ -72,11 +72,11 @@ export default {
     },
     async mounted() {
         this.truncateLevel = this.userDetailsStore.skillTreeLevel;
-        if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
-            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
-                this.truncateLevel
-            );
-        }
+        //  if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
+        await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
+            this.truncateLevel
+        );
+        //   }
 
         // Specify the chart’s dimensions.
         this.width = window.innerWidth;
@@ -871,10 +871,27 @@ export default {
                 );
         },
         async truncateToGradeLevel(level) {
+            this.truncateLevel = level;
             await this.skillTreeStore.getUserSkillsSubSkillsSeparate(level);
             this.skill.children =
                 this.skillTreeStore.userSkillsSubSkillsSeparate.skills;
             this.userAvatarImg.onload();
+            this.saveSkillTreeGradeLevel();
+        },
+        saveSkillTreeGradeLevel() {
+            // Update the store
+            this.userDetailsStore.skillTreeLevel = this.truncateLevel;
+            // Update the DB
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    level: this.truncateLevel
+                })
+            };
+            var url =
+                '/users/' + this.userDetailsStore.userId + '/skill-tree-level';
+            fetch(url, requestOptions);
         }
     }
 };
