@@ -75,8 +75,8 @@ export default {
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
         if (
-            this.skillTreeStore.verticalTreeUserSkills.length == 0 ||
-            this.userDetailsStore.verticalTreeLevel !=
+            this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0 ||
+            this.userDetailsStore.radialTreeLevel !=
                 this.userDetailsStore.skillTreeLevel
         ) {
             await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
