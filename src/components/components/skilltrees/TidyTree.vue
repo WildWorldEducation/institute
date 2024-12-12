@@ -530,10 +530,6 @@ export default {
                 .y((d) => d.x)
                 .context(this.context);
 
-            // If skill is mastered.
-            if (link.target.data.is_mastered == 1) this.context.lineWidth = 4;
-            else this.context.lineWidth = 2;
-
             if (
                 (link.source.data.type == 'super' &&
                     link.target.data.position == 'end') ||
@@ -546,13 +542,21 @@ export default {
 
             this.context.beginPath();
             linkGenerator(link);
-            // Determine colour of links based on user's theme
-            if (this.userDetailsStore.theme == 'original')
-                this.context.strokeStyle = '#000';
-            else if (this.userDetailsStore.theme == 'apprentice') {
-                this.context.strokeStyle = '#000';
-                this.context.lineWidth = 3;
-            } else this.context.strokeStyle = '#fff';
+
+            // If skill is mastered.
+            if (link.target.data.is_mastered == 1) {
+                this.context.lineWidth = 4;
+                this.context.strokeStyle = '#8d6ce7';
+            } else {
+                this.context.lineWidth = 2;
+                // Determine colour of links based on user's theme
+                if (this.userDetailsStore.theme == 'original')
+                    this.context.strokeStyle = '#000';
+                else if (this.userDetailsStore.theme == 'apprentice') {
+                    this.context.strokeStyle = '#000';
+                } else this.context.strokeStyle = '#fff';
+            }
+
             this.context.stroke();
         },
         genColor() {

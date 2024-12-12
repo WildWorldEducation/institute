@@ -456,33 +456,25 @@ export default {
                 .radius((d) => d.y)
                 .context(this.context);
 
-            // Determine colour of links based on user's theme
             let color = '';
-            if (this.userDetailsStore.theme == 'original') {
-                color = '#000';
-            } else if (this.userDetailsStore.theme == 'apprentice') {
-                color = '#000';
-            } else if (this.userDetailsStore.theme == 'scholar') {
-                color = '#fff';
-            }
-
             // If skill is mastered.
             if (link.target.data.is_mastered == 1) {
                 this.context.lineWidth =
                     4 + parseInt(3 * (1 / this.currentZoom));
-                if (this.userDetailsStore.theme == 'original') {
-                    color = '#fff';
-                } else if (this.userDetailsStore.theme == 'apprentice') {
-                    color = '#fff';
-                } else if (this.userDetailsStore.theme == 'scholar') {
-                    color = '#000';
-                }
+                color = '#8d6ce7';
             } else {
                 let width = 2;
-
                 this.context.lineWidth = parseInt(
                     width * (1 / this.currentZoom)
                 );
+                // Determine colour of links based on user's theme
+                if (this.userDetailsStore.theme == 'original') {
+                    color = '#000';
+                } else if (this.userDetailsStore.theme == 'apprentice') {
+                    color = '#000';
+                } else if (this.userDetailsStore.theme == 'scholar') {
+                    color = '#fff';
+                }
             }
 
             this.context.beginPath();
