@@ -260,6 +260,11 @@ Themes
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 }
 
+.skill-tree-transition {
+    --background-color: var(--skill-tree-background-color);
+    --background-image: none;
+}
+
 /* Navigation bar */
 .nav-link {
     color: var(--primary-color);
@@ -284,6 +289,7 @@ Themes
 body {
     background-image: var(--background-image);
     background-size: cover;
+    background-color: var(--background-color);
 }
 
 /* Headings */
