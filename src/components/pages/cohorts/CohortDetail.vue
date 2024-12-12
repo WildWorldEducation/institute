@@ -151,7 +151,7 @@ export default {
                 </div>
             </div>
         </div>
-            
+            <Transition name="dropdown">
             <div v-if="showMembers">
                 <ul style="list-style: none">
                     <li v-for="student in students">
@@ -173,6 +173,7 @@ export default {
                 </ul>
                 <button class="green-btn btn" @click="submit">Submit</button>
             </div>
+        </Transition>
         </div>
           <!-- Filters -->
           <div class="d-flex flex-column mt-4">
@@ -230,6 +231,56 @@ export default {
 }
 h2{
     word-wrap: break-word;
+}
+/* +-+-+ Rotate Arrow Animation +-+-+  */
+.arrow-point-down {
+    animation: rotation 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.arrow-point-up {
+    animation: rotationBack 0.52s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+@keyframes rotationBack {
+    from {
+        transform: rotate(180deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+/* +-+-+ Rotate Arrow Animation +-+-+  */
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+.dropdown-enter-active {
+    transform-origin: top center;
+    animation: slide 0.5s;
+}
+.dropdown-leave-active {
+    transform-origin: top center;
+    animation: slide 0.5s reverse;
 }
 .green-btn {
     background-color: #36c1af;
