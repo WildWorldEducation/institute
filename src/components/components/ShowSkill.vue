@@ -9,10 +9,8 @@ import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 
-// Import Custom Components
+// Import components
 import FlagModals from './FlagModals.vue';
-
-// Nested component.
 import Forum from './forum/Forum.vue';
 
 export default {
