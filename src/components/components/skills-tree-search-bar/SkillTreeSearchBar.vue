@@ -226,6 +226,7 @@ export default {
                 placeholder="Search"
                 v-model="searchText"
                 v-on:keyup.enter="handleEnterPress()"
+                autocomplete="off"
             />
             <button
                 class="robot-icon"
@@ -306,9 +307,9 @@ export default {
     left: -1px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    border-bottom: 1px solid #dce2f2;
-    border-right: 1px solid #dce2f2;
-    border-left: 1px solid #dce2f2;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
     background-color: white;
     max-height: 400px;
     overflow-y: auto;

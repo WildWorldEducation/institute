@@ -859,7 +859,6 @@ export default {
             if (data?.mess === 'ok') {
                 await this.redrawTree();
                 const resultNode = this.findNodeWithName(searchString);
-
                 this.goToLocation(resultNode);
             }
         },
