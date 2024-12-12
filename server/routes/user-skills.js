@@ -845,7 +845,7 @@ router.get('/expand-all-children/:userId', (req, res, next) => {
 router.post('/find-hidden-skill/:userId', (req, res, next) => {
     if (req.session.userName) {
         const skillName = req.body.skillName;
-        console.log(req.body)
+
         let sqlQuery = `SELECT * 
                         FROM user_skills JOIN skills ON user_skills.skill_id = skills.id  
                         WHERE  user_skills.user_id = ${conn.escape(req.params.userId)}`;

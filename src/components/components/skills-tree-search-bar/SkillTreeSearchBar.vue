@@ -31,7 +31,8 @@ export default {
             showSuggestAiSearchToolTip: false,
             toolTipStillShowing: false,
             nameList: [],
-            isLogin: false
+            isLogin: false,
+            focusIndex: -1
         };
     },
     async created() {
@@ -143,7 +144,9 @@ export default {
             this.resultsSkills = [];
             this.searchText = result.name;
             this.chooseResult = result;
+            this.waitForSever = true;
             await this.findNode(result.name);
+            this.waitForSever = false;
         },
         checkTextForAi(searchText) {
             // only context search if user end a word
@@ -159,11 +162,35 @@ export default {
                 this.checkTextForAi(this.searchText);
             }
         },
-        handleEnterPress() {
+
+        handleInputEnterPress() {
+            // If user is in result row
+            if (this.focusIndex >= 0) {
+                this.chooseUser = true;
+                this.handleChooseResult(this.resultsSkills[this.focusIndex]);
+                this.focusIndex = 0;
+                return;
+            }
+            // If user are focus on input text we switch mode
             this.aiMode = !this.aiMode;
             if (this.aiMode) {
                 this.checkTextForAi(this.searchText);
             }
+        },
+        handleKeyDownPress() {
+            this.focusIndex = this.focusIndex + 1;
+            console.log(this.focusIndex);
+            this.$refs.results[this.focusIndex].scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        },
+        handleKeyUpPress() {
+            this.focusIndex = this.focusIndex - 1;
+            this.$refs.results[this.focusIndex].scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
         }
     },
     components: {
@@ -225,7 +252,9 @@ export default {
                 class="skill-tree-input"
                 placeholder="Search"
                 v-model="searchText"
-                v-on:keyup.enter="handleEnterPress()"
+                @keyup.enter="handleInputEnterPress"
+                @keyup.arrow-down="handleKeyDownPress"
+                @keyup.arrow-up="handleKeyUpPress"
                 autocomplete="off"
             />
             <button
@@ -267,9 +296,11 @@ export default {
         <div class="position-relative">
             <div v-if="resultsSkills.length" class="search-results">
                 <button
+                    v-for="(result, index) in resultsSkills"
+                    ref="results"
                     @click="handleChooseResult(result)"
                     class="result-row"
-                    v-for="result in resultsSkills"
+                    :class="index === focusIndex && 'focus-result'"
                     v-html="result.highlightedResult"
                 ></button>
             </div>
@@ -334,6 +365,12 @@ export default {
 
 .result-row:focus {
     border: 1px solid #133b61;
+}
+
+.focus-result {
+    border-left: 4px solid #8c6ce4;
+    background-color: #f3f5f6;
+    color: black;
 }
 
 .robot-icon {
