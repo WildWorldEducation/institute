@@ -18,7 +18,8 @@ Routes
 --------------------------------------------*/
 
 /* Nested list of user-skills*/
-// For Collapsible Tree and Linear Tree.
+// For Collapsible Tree and Linear Tree
+// And Student Collapsible Tree
 // - now replaced by "filter-by-cohort" version.
 router.get('/:userId', (req, res, next) => {
     if (req.session.userName) {
@@ -228,7 +229,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
 
         let sqlQuery = `
-    SELECT skills.id, name, is_accessible, is_mastered, type, parent
+    SELECT skills.id, name, is_accessible, is_mastered, type, parent, url, level
     FROM skills
     LEFT OUTER JOIN user_skills
     ON skills.id = user_skills.skill_id
@@ -236,7 +237,7 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
     AND is_filtered = 'available'
 
     UNION
-    SELECT skills.id, name, "", "", type, parent
+    SELECT skills.id, name, "", "", type, parent, url, level
     FROM skills
     WHERE skills.id NOT IN 
 
@@ -280,7 +281,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
 
                 let cohortId;
                 if (results.length == 0) {
-                    cohortId = 0;
+                    cohortId = -1;
                 } else cohortId = results[0].cohort_id;
 
                 // Check what skills are available for this cohort.
@@ -428,7 +429,7 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
 
                 let cohortId;
                 if (results.length == 0) {
-                    cohortId = 0;
+                    cohortId = -1;
                 } else cohortId = results[0].cohort_id;
 
                 // Check what skills are available for this cohort.
@@ -553,9 +554,31 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
 
 /* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
 // For Radial Tree.
-// Not used currently
 router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
     if (req.session.userName) {
+        /* Truncate Vertical Tree to grade level based on which button student presses
+         on grade level key.
+        */
+        // Level will be sent in query param (eg: ?level='middle_school')
+        const level = req.query.level;
+        // Default is to show all.
+        let levelsToShow =
+            "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        if (level == 'grade_school') {
+            levelsToShow = "'domain', 'grade_school'";
+        } else if (level == 'middle_school') {
+            levelsToShow = "'domain', 'grade_school', 'middle_school'";
+        } else if (level == 'high_school') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school'";
+        } else if (level == 'college') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school', 'college'";
+        } else if (level == 'phd') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        }
+
         res.setHeader('Content-Type', 'application/json');
 
         // Check if student is member of a cohort
@@ -573,7 +596,7 @@ router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
 
                 let cohortId;
                 if (results.length == 0) {
-                    cohortId = 0;
+                    cohortId = -1;
                 } else cohortId = results[0].cohort_id;
 
                 let sqlQuery = `
@@ -583,6 +606,7 @@ router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
                 ON skills.id = user_skills.skill_id
                 WHERE user_skills.user_id = ${conn.escape(req.params.userId)} 
                 AND is_filtered = 'available'
+                AND level IN (${levelsToShow})
                 AND is_deleted = 0
                 AND skills.id NOT IN 
                 (SELECT skill_id 
@@ -600,6 +624,7 @@ router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
                 ON skills.id = user_skills.skill_id
                 WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
                 AND is_filtered = 'available'
+                AND level IN (${levelsToShow})
                 AND is_deleted = 0
                 AND skills.id NOT IN 
                 (SELECT skill_id 
@@ -898,20 +923,23 @@ router.get('/unmastered/:userId/:skillId', (req, res, next) => {
 });
 
 /**
- * For making a skill mastered (not a domain), or a domain unlocked,
- * which includes the effects on all child skills.
- * If children are domains (pass-through skills), the function is applied to them recursively also.
- * If children are regular skills, they become unlocked.
- * If children are super skills (inner cluster nodes), their sub skills become unlocked.
- * If the skill this is applied to is a sub skill, and all its sibling skills are also mastered,
- * its parent (super skill) becomes mastered.
+ * For making a skill mastered.
  *
- * @return response()
+ * 1) Making descendants unlocked.
+ ** If children are categories, the function is applied to them recursively also. They are only unlocked.
+ ** If children are regular skills, they become unlocked.
+ ** If children are super skills (inner cluster nodes), their sub skills become unlocked.
+ ** If the skill this is applied to is a sub skill, and all its sibling skills are also mastered,
+ ** its parent (super skill) becomes mastered.
+ *
+ * 2) making ancestor domains unlocked.
+ *
  */
 router.post('/make-mastered/:userId', (req, res, next) => {
     if (req.session.userName) {
         // Store the skill data.
         let skill = req.body.skill;
+        let userId = req.params.userId;
 
         // Get a list of all skills.
         let sqlQuery1 = 'SELECT * FROM skills;';
@@ -971,7 +999,11 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                             );
                         }
 
+                        // Functions that are called recursively.
                         function makeMastered(userId, skill) {
+                            // We only unlock domains here because for domains we need to
+                            // check their descendants recursively, while we dont do this
+                            // for skills.
                             let value;
                             if (skill.type == 'domain') {
                                 value = 0;
@@ -990,7 +1022,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                             )}, is_accessible=1;
                             `;
 
-                            conn.query(sqlQuery, (err, results) => {
+                            conn.query(sqlQuery, (err) => {
                                 try {
                                     if (err) {
                                         throw err;
@@ -1062,12 +1094,6 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                                 subSkills[i]
                                             );
                                         }
-                                        // TODO: FIX BELOW. NOT WORKING
-                                        // // Check if domain is now mastered.
-                                        // FindFirstAncestorDomain(
-                                        //     skill,
-                                        //     req.params.userId
-                                        // );
                                     }
                                     // If this skill is a sub skill.
                                     else {
@@ -1137,7 +1163,7 @@ router.post('/make-mastered/:userId', (req, res, next) => {
     VALUES(${conn.escape(userId)}, ${conn.escape(skillId)}, 1) 
     ON DUPLICATE KEY UPDATE is_accessible=1;
     `;
-                            conn.query(sqlQuery3, (err, results) => {
+                            conn.query(sqlQuery3, (err) => {
                                 try {
                                     if (err) {
                                         throw err;
@@ -1147,6 +1173,9 @@ router.post('/make-mastered/:userId', (req, res, next) => {
                                 }
                             });
                         }
+
+                        // This is to make any ancestor domains mastered.
+                        MakeAncestorDomainsMastered(skill, userId);
                     } catch (err) {
                         next(err);
                     }
@@ -1162,8 +1191,87 @@ router.post('/make-mastered/:userId', (req, res, next) => {
     }
 });
 
+function MakeAncestorDomainsMastered(skill, userId) {
+    // Exit if this is a first level node.
+    if (skill.parent == 0) {
+        return;
+    }
+
+    // Get an updated list of user skills.
+    let sqlQuery = `
+SELECT skills.id, name, is_accessible, is_mastered, type, parent
+FROM skills
+LEFT OUTER JOIN user_skills
+ON skills.id = user_skills.skill_id
+WHERE user_skills.user_id = ${conn.escape(userId)}
+
+UNION
+SELECT skills.id, name, "", "", type, parent
+FROM skills
+WHERE skills.id NOT IN 
+
+(SELECT skills.id
+FROM skills
+LEFT OUTER JOIN user_skills
+ON skills.id = user_skills.skill_id
+WHERE user_skills.user_id = ${conn.escape(userId)})
+ORDER BY id;`;
+
+    conn.query(sqlQuery, (err, results) => {
+        try {
+            if (err) {
+                throw err;
+            }
+            let userSkills = results;
+
+            // Go up hierarchy to find the first category node we can.
+            for (let i = 0; i < userSkills.length; i++) {
+                // Find recently mastered skill's parent.
+                if (skill.parent == userSkills[i].id) {
+                    let parent = userSkills[i];
+
+                    // Check if it is a category.
+                    if (parent.type == 'domain') {
+                        // If it is, make it mastered.
+                        let sqlQuery = `
+                        INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
+                        VALUES(${conn.escape(userId)},
+                        ${conn.escape(parent.id)},
+                        1, 1) 
+                        ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
+                        `;
+                        conn.query(sqlQuery, (err) => {
+                            try {
+                                if (err) {
+                                    throw err;
+                                }
+                                // Run again for parent.
+                                MakeAncestorDomainsMastered(userSkills, parent);
+                            } catch (err) {
+                                console.log(err);
+                                return;
+                            }
+                        });
+                    } else {
+                        return;
+                    }
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+
 /*
- * For mastering domains.
+ * TODO or TO DELETE.
+ * For mastering domains. This has not been implemented and is not working.
+ * The idea is that categories / domains get mastered only when all of the descendant skills
+ * have been mastered.
+ *
+ * This is currently replaced by the above function, which simply makes a domain/category mastered
+ * as soon as any of its descendants are mastered. This is done so as to get a line on the skill trees
+ * that comes from the root node to the mastered node.
  */
 
 function FindFirstAncestorDomain(skill, userId) {
@@ -1200,7 +1308,7 @@ ORDER BY id;`;
             }
 
             let userSkills = results;
-            // Go up hierarchy to find the first domain node we can.
+            // Go up hierarchy to find the first category node we can.
             // Store that as "domain".
             //
             // Go through all skills.

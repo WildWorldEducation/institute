@@ -526,9 +526,8 @@ export default {
 </script>
 
 <template>
-    <div class="container pb-5 bg-light rounded">
-        <h1 v-if="skill.type != 'domain'" class="heading">Edit Skill</h1>
-        <h1 v-else class="heading">Edit Category</h1>
+    <div class="container bg-light rounded p-3">
+        <h1 class="heading">{{ skill.name }}</h1>
 
         <div v-if="!isAnotherInstanceOfExistingSkill">
             <div
@@ -541,7 +540,7 @@ export default {
                 <div class="row mt-3">
                     <div class="col-12 col-md-8 col-lg-5 mt-2">
                         <div class="mb-3">
-                            <h2 class="heading">Name</h2>
+                            <h2 class="secondary-heading h4">Name</h2>
                             <input
                                 v-model="skill.name"
                                 class="form-control"
@@ -565,7 +564,7 @@ export default {
                     <div v-if="skill.type != 'sub'">
                         <div class="col col-md-8 col-lg-5 mt-2">
                             <!-- Custom Dropdown -->
-                            <h2 class="heading">Level</h2>
+                            <h2 class="secondary-heading h4">Level</h2>
                             <div class="d-flex flex-column position-relative">
                                 <div
                                     :class="[
@@ -614,7 +613,7 @@ export default {
                 <div v-if="userDetailsStore.role == 'admin'" class="row">
                     <div class="col col-md-8 col-lg-5 mt-2">
                         <div v-if="skill.type != 'sub'">
-                            <h2 class="heading">Filters</h2>
+                            <h2 class="secondary-heading h4">Filters</h2>
                             <div class="col">
                                 <label
                                     v-for="tag in tagsStore.tagsList"
@@ -645,7 +644,7 @@ export default {
             <!-- Skills Types Radio choose -->
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
-                    <h2 class="heading">Node Type</h2>
+                    <h2 class="secondary-heading h4">Node Type</h2>
                     <div class="row p-0 m-0">
                         <div class="form-check col-6 col-md-5 my-2">
                             <label class="control control-checkbox">
@@ -739,7 +738,7 @@ export default {
             <div class="row">
                 <div class="col-12 col-md-8 col-lg-5 mt-2">
                     <div v-if="skill.type != 'sub'" class="mb-3">
-                        <h2 class="heading">Parent</h2>
+                        <h2 class="secondary-heading h4">Parent</h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -766,7 +765,9 @@ export default {
                     </div>
                     <!-- -------------------------------------------------- -->
                     <div v-else class="mb-3">
-                        <h2>Cluster node center</h2>
+                        <h2 class="secondary-heading h4">
+                            Cluster node center
+                        </h2>
                         <div class="row mt-3">
                             <div class="col position-relative">
                                 <input
@@ -805,7 +806,7 @@ export default {
                     <div
                         class="mb-3 row d-flex justify-content-center justify-content-md-start w-100"
                     >
-                        <h2 class="heading">Icon</h2>
+                        <h2 class="secondary-heading h4">Icon</h2>
                         <div v-if="!iconImage">
                             <input
                                 class="form-control d-none"
@@ -919,7 +920,7 @@ export default {
 
             <!-- Mastery Requirement summernote -->
             <div v-if="skill.type != 'domain'" class="mb-3">
-                <h2 class="heading">Mastery Requirements</h2>
+                <h2 class="secondary-heading h4">Mastery Requirements</h2>
 
                 <textarea
                     class="form-control"
@@ -985,7 +986,7 @@ export default {
             <div class="row">
                 <div class="col">
                     <div class="mb-3">
-                        <h2 class="heading">Comment</h2>
+                        <h2 class="secondary-heading h4">Comment</h2>
                         <textarea
                             v-model="comment"
                             class="form-control"
@@ -1057,7 +1058,7 @@ export default {
                 <div
                     class="d-flex justify-content-end gap-md-4 gap-1 align-items-end"
                 >
-                    <router-link class="btn red-btn" to="/skills">
+                    <button class="btn red-btn" @click="$router.go(-1)">
                         <div class="d-none d-md-block">Cancel</div>
                         <!-- Exit Icon-->
                         <svg
@@ -1072,7 +1073,7 @@ export default {
                                 d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"
                             />
                         </svg>
-                    </router-link>
+                    </button>
                     <button
                         v-if="
                             userDetailsStore.role == 'admin' ||

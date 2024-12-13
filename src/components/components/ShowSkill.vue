@@ -9,10 +9,8 @@ import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
 import { useShowSkillStore } from '../../stores/ShowSkillStore.js';
 
-// Import Custom Components
+// Import components
 import FlagModals from './FlagModals.vue';
-
-// Nested component.
 import Forum from './forum/Forum.vue';
 
 export default {
@@ -54,13 +52,15 @@ export default {
             filters: [],
             showFlaggingModal: false,
             ancestor: this.$route.params.id,
-            // accessible List that will use to find nearest un-lockable node
+            // Accessible list used to find nearest un-lockable node.
             accessibleSkills: [],
             showAncestorLink: false,
             isMobileCheck: window.innerWidth,
             showConfirmModal: false,
             isSkillLoaded: false,
-            randomNum: 0
+            randomNum: 0,
+            goalSteps: [],
+            goalExists: false
         };
     },
     components: {
@@ -76,6 +76,7 @@ export default {
         }
 
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
+        await this.checkIfGoalExists();
     },
     methods: {
         async getSkill() {
@@ -208,6 +209,99 @@ export default {
         },
         imageUrlAlternative(event) {
             event.target.src = '/images/skill-avatar/recurso.png';
+        },
+        /*
+         * Goals: this feature allows students to choose a skill to be a goal,
+         * to create a pathway for them to get to that goal.
+         */
+        async checkIfGoalExists() {
+            const result = await fetch(
+                '/goals/' + this.userDetailsStore.userId + '/' + this.skillId
+            );
+            const data = await result.json();
+            this.goalExists = data.goalExists;
+        },
+
+        async confirmCreateGoal(skill) {
+            let text = `Are you sure you want to create a goal for ${skill.name}?`;
+            if (confirm(text) == true) {
+                // Will need this list to create the goal steps.
+                await this.userSkillsStore.getFilteredUnnestedList(
+                    this.userDetailsStore.userId
+                );
+                this.createGoal(skill);
+            }
+        },
+        createGoal(skill) {
+            if (skill.type != 'domain') {
+                // Add ancestor skill to array.
+                this.goalSteps.push(skill);
+            }
+
+            // Add ancestor subskills to array.
+            let isSubSkillUnlocked = false;
+            if (skill.type == 'super') {
+                for (
+                    let i = 0;
+                    i < this.userSkillsStore.filteredUnnestedList.length;
+                    i++
+                ) {
+                    if (
+                        this.userSkillsStore.filteredUnnestedList[i].type ==
+                            'sub' &&
+                        this.userSkillsStore.filteredUnnestedList[i].parent ==
+                            skill.id &&
+                        this.userSkillsStore.filteredUnnestedList[i]
+                            .is_mastered != 1
+                    ) {
+                        this.goalSteps.push(
+                            this.userSkillsStore.filteredUnnestedList[i]
+                        );
+                        // Check if sub skill is unlocked.
+                        if (
+                            this.userSkillsStore.filteredUnnestedList[i]
+                                .is_accessible
+                        ) {
+                            isSubSkillUnlocked = true;
+                        }
+                    }
+                }
+            }
+
+            // Check if current skill is unlocked.
+            const inAccessibleList = this.accessibleSkills.find(
+                (as) => as.id == skill.id
+            );
+
+            // Stop when the first ancestor node that is unlocked for the student is found
+            // or if its sub skill is unlocked
+            if (inAccessibleList || isSubSkillUnlocked) {
+                this.populateGoalSteps();
+                return;
+            }
+
+            fetch('/skills/show/' + skill.parent)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((skill) => {
+                    // Recursively call the function with parent skill data.
+                    return this.createGoal(skill);
+                });
+        },
+        populateGoalSteps() {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillId: this.skillId,
+                    goalSteps: this.goalSteps
+                })
+            };
+            const url = '/goals/' + this.userDetailsStore.userId + '/add';
+            fetch(url, requestOptions).then(() => {
+                alert('Goal created.');
+            });
         }
     },
     /**
@@ -238,13 +332,13 @@ export default {
                     <!-- Take assessment btn-->
                     <!-- If this skill is not unlocked yet, and user is student, instead show link to its closest unlocked ancestor -->
                     <router-link
-                        :to="'/skills/' + ancestor"
                         v-if="
                             userDetailsStore.role == 'student' &&
                             !isUnlocked &&
                             !isMastered &&
                             showAncestorLink
                         "
+                        :to="'/skills/' + ancestor"
                         class="btn assessment-btn secondary-btn text-capitalize me-1"
                     >
                         <span v-if="isMobileCheck > 576"
@@ -261,6 +355,8 @@ export default {
                             />
                         </svg>
                     </router-link>
+
+                    <!-- Go to assessment -->
                     <router-link
                         v-else-if="
                             userDetailsStore.role == 'student' &&
@@ -285,6 +381,7 @@ export default {
                             />
                         </svg>
                     </router-link>
+                    <!-- If not logged in, go to Login page -->
                     <router-link
                         v-else-if="!sessionDetailsStore.isLoggedIn"
                         class="btn me-1 assessment-btn secondary-btn"
@@ -373,7 +470,7 @@ export default {
                                 skill.type != 'super' &&
                                 sessionDetailsStore.isLoggedIn
                             "
-                            class="btn primary-btn me-3"
+                            class="btn primary-btn me-1"
                             :to="skillUrl + '/question-bank'"
                             ><span v-if="isMobileCheck > 576"
                                 >Question Bank&nbsp;</span
@@ -391,6 +488,31 @@ export default {
                                 />
                             </svg>
                         </router-link>
+                        <!-- Create goal button -->
+                        <button
+                            v-if="
+                                skill.type != 'domain' &&
+                                sessionDetailsStore.isLoggedIn &&
+                                isMastered == false &&
+                                goalExists == false
+                            "
+                            class="btn primary-btn"
+                            @click="confirmCreateGoal(this.skill)"
+                        >
+                            Create goal&nbsp;
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512"
+                                fill="white"
+                                width="20"
+                                heigth="20"
+                            >
+                                <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <path
+                                    d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                                />
+                            </svg>
+                        </button>
                     </div>
                     <div class="d-flex justify-content-end">
                         <!-- Sharable URL -->
@@ -473,7 +595,7 @@ export default {
                         </a>
                         <!-- Grade level -->
                         <div class="mt-2">
-                            <h2 class="h4 heading">Level</h2>
+                            <h2 class="h4 secondary-heading">Level</h2>
                             <span v-if="skill.level == 'grade_school'"
                                 >Grade School</span
                             >
@@ -493,7 +615,7 @@ export default {
                             cluster nodes' question banks.</span
                         >
                         <div class="mt-2">
-                            <h2 class="h4 heading">Author</h2>
+                            <h2 class="h4 secondary-heading">Author</h2>
                             <!-- Author Icon -->
                             <div
                                 v-if="skill.is_human_edited"

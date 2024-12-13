@@ -125,7 +125,11 @@ export default {
                     >
                 </button>
                 <button
-                    v-if="todoCount?.new_skill_add_count"
+                    v-if="
+                        (userDetailsStore.userName == '' ||
+                            userDetailsStore.role == 'admin') &&
+                        todoCount?.new_skill_add_count
+                    "
                     :class="[
                         'nav-item-tile',
                         activeContent === 'newSkillsList'
@@ -137,7 +141,7 @@ export default {
                     Approve New Skills
                     <span
                         b-on-hover
-                        title="number of student questions that needed to approved"
+                        title="number of student suggested questions that needed to approved"
                         class="badge bg-danger"
                         >{{ newSkillApproveCount }}</span
                     >

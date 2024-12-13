@@ -109,8 +109,6 @@ export default {
 
 <template>
     <div>
-        <!-- Page title -->
-        <h2 class="ps-3 mt-2 heading">Approve Student Added Questions</h2>
         <div class="container-fluid">
             <StudentQuestionList
                 :studentQuestion="questions"

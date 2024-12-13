@@ -14,7 +14,7 @@ export default {
         };
     },
     async mounted() {
-        await this.userDetailsStore.getUserDetails();       
+        await this.userDetailsStore.getUserDetails();
 
         // Kids theme
         if (this.userDetailsStore.theme == 'apprentice') {
@@ -28,9 +28,6 @@ export default {
             document.body.classList.remove('scholar-theme');
             document.body.classList.remove('apprentice-theme');
         }
-
-        console.log(this.userDetailsStore.theme);
-        console.log(typeof this.userDetailsStore.theme);
     },
     methods: {}
 };
@@ -44,7 +41,8 @@ export default {
             :class="{
                 'fixed-top':
                     $route.name == 'vertical-tree' ||
-                    $route.name == 'radial-tree'
+                    $route.name == 'radial-tree' ||
+                    $route.name == 'student-vertical-tree'
             }"
         >
             <div class="container-fluid">
@@ -262,6 +260,12 @@ Themes
     --background-image: url('../images/backgrounds/themes/scholar/scholar-bg.jpg');
 }
 
+/* Background just for moving between the 2 skill trees */
+.skill-tree-transition {
+    --background-color: var(--skill-tree-background-color);
+    --background-image: none;
+}
+
 /* Navigation bar */
 .nav-link {
     color: var(--primary-color);
@@ -286,6 +290,7 @@ Themes
 body {
     background-image: var(--background-image);
     background-size: cover;
+    background-color: var(--background-color);
 }
 
 /* Headings */
@@ -293,6 +298,12 @@ body {
     color: var(--primary-color) !important;
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
+}
+
+.secondary-heading {
+    color: var(--primary-color) !important;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
 }
 
 /* Regular text */
@@ -311,7 +322,7 @@ p {
     display: flex;
     align-items: center;
     max-width: fit-content;
-    max-height: 44px;
+    max-height: 40px;
     text-wrap: nowrap;
 }
 

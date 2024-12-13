@@ -1,11 +1,12 @@
 <script>
 // import components.
-import StudentProgress from '../components/StudentProgress.vue';
-import LastVisitedSkills from '../components/LastVisitedSkills.vue';
-import Notifications from '../components/Notifications.vue';
-import News from '../components/News.vue';
-import MarkAssessment from '../components/MarkAssessment.vue';
-import HubStudentQuestionList from '../components/HubStudentQuestionList.vue';
+import StudentProgress from '../components/hub-components/StudentProgress.vue';
+import LastVisitedSkills from '../components/hub-components/LastVisitedSkills.vue';
+import Goals from '../components/hub-components/Goals.vue';
+import Notifications from '../components/hub-components/Notifications.vue';
+import News from '../components/hub-components/News.vue';
+import MarkAssessment from '../components/hub-components/MarkAssessment.vue';
+import HubStudentQuestionList from '../components/hub-components/HubStudentQuestionList.vue';
 
 // Import store.
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
@@ -28,6 +29,7 @@ export default {
         StudentProgress,
         MarkAssessment,
         LastVisitedSkills,
+        Goals,
         HubStudentQuestionList
     },
     computed: {
@@ -46,8 +48,9 @@ export default {
 <template>
     <div class="container min-vh-100">
         <div class="row content-row">
+            <!-- Available Skills / Mark Assessments -->
             <div
-                class="col-lg-4 col-md-6 mb-4 pb-4"
+                class="col-lg-4 col-md-6 mb-2"
                 v-if="userDetailsStore.role != 'editor'"
             >
                 <div class="hub-component">
@@ -60,8 +63,9 @@ export default {
                     />
                 </div>
             </div>
+            <!-- Last Visited Skills / Student Suggested Questions -->
             <div
-                class="col-lg-4 col-md-6 mb-4 pb-4"
+                class="col-lg-4 col-md-6 mb-2"
                 v-if="userDetailsStore.role != 'editor'"
             >
                 <div class="hub-component">
@@ -75,13 +79,23 @@ export default {
                     />
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 mb-4 pb-4">
+            <div
+                v-if="userDetailsStore.role == 'student'"
+                class="col-lg-4 col-md-6 mb-2"
+            >
+                <div class="hub-component">
+                    <Goals />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-2">
                 <div class="hub-component">
                     <Notifications />
                 </div>
             </div>
         </div>
-        <div id="news-row" class="row">
+        <div class="row">
             <div class="col">
                 <div class="hub-component">
                     <News />
@@ -113,16 +127,6 @@ export default {
     width: 100%;
 }
 
-#banner > img {
-    width: 100%;
-    height: auto;
-}
-
-#purple-banner {
-    height: 77px;
-    background-color: #a48be640;
-}
-
 #user-name {
     font-size: 2.375rem;
 }
@@ -144,9 +148,6 @@ export default {
     padding-left: 23px;
 }
 
-#news-row {
-    height: 100%;
-}
 /* View Specific On Phone */
 @media (min-width: 320px) and (max-width: 576px) {
     #profile-image-column {
@@ -194,14 +195,6 @@ export default {
     #user-name {
         padding-left: 0px;
         padding-right: 0px;
-    }
-
-    /* #news-row {
-        min-height: 40vh;
-    } */
-
-    #news-row > div {
-        margin-bottom: 10px;
     }
 }
 </style>

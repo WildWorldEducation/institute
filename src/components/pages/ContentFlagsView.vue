@@ -543,11 +543,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid pb-5">
-        <div class="mt-3">
-            <h2 class="page-title">Content Flags</h2>
-        </div>
-        <hr />
+    <div class="container-fluid p-1">
         <!-- Search Table Section -->
         <div>
             <div class="expand-tile">Search:</div>
@@ -568,7 +564,7 @@ export default {
             </div>
         </div>
         <!-- Vue Data Table Desktop  -->
-        <div class="mt-5 pb-5 d-none d-md-block table-div">
+        <div class="mt-5 pb-3 d-none d-md-block table-div">
             <Vue3EasyDataTable
                 ref="dataTable"
                 :headers="headers"
@@ -1438,7 +1434,7 @@ export default {
         <!-- ++++++++++++++++++++++++++++_______________________________ ++++++++++++++++++++++++++++ -->
 
         <!-- Vue Data Table Phone -->
-        <div class="mt-5 pb-5 d-md-none">
+        <div class="mt-5 pb-3 d-md-none">
             <Vue3EasyDataTable
                 ref="dataTableM"
                 :headers="headersPhone"

@@ -63,7 +63,9 @@ export default {
                     </button>
                 </div>
                 <!-- Skill name -->
-                <h1 class="skill-name heading">{{ skill?.name }}</h1>
+                <h1 class="secondary-heading h3 text-center">
+                    {{ skill?.name }}
+                </h1>
                 <img
                     :src="
                         'https://institute-skill-infobox-image-thumbnails.s3.amazonaws.com/' +
@@ -280,15 +282,6 @@ img {
     .skill-panel-container {
         width: 80%;
         height: 100%;
-    }
-
-    .skill-info-panel-bottom {
-        border-top: 1 px solid #888;
-        position: absolute;
-        bottom: 0px;
-        right: 0px;
-        width: 80%;
-        background-color: #e4ecf4;
     }
 }
 </style>

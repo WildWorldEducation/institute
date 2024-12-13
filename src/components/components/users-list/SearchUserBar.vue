@@ -121,6 +121,10 @@ export default {
             this.showFailsModal = false;
         },
         handleKeyDownPress() {
+            // stop increase if we are at the last result
+            if (this.focusIndex === this.usersResult.length) {
+                return;
+            }
             this.focusIndex = this.focusIndex + 1;
             this.$refs.results[this.focusIndex].scrollIntoView({
                 behavior: 'smooth',
@@ -128,6 +132,10 @@ export default {
             });
         },
         handleKeyUpPress() {
+            // stop decrease if we are at the minus 1 index
+            if (this.focusIndex === -1) {
+                return;
+            }
             this.focusIndex = this.focusIndex - 1;
             this.$refs.results[this.focusIndex].scrollIntoView({
                 behavior: 'smooth',

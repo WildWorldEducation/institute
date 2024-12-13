@@ -401,7 +401,6 @@ export default {
 .red-btn {
     background-color: #da7033 !important;
     color: white;
-    border: 1px solid #7f56d9;
     align-items: center;
     max-width: fit-content;
     display: flex;
@@ -556,9 +555,9 @@ h1 {
 
 .form-signin button {
     width: 100%;
-    background-color: #a48be6;
+    background-color: var(--primary-color);
     color: white;
-    border: 1px solid #7f56d9;
+    border: 1px solid var(--secondary-color);
     font-family: 'Inter', sans-serif;
     font-weight: 600;
     font-size: 16px;

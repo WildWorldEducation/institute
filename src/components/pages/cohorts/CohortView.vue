@@ -146,7 +146,7 @@ export default {
 </script>
 
 <template>
-    <div class="container cohort-page bg-light rounded p-2">
+    <div class="container cohort-page bg-light rounded p-3">
         <span class="d-flex justify-content-between"
             ><h1 class="heading">{{ cohort.name }}</h1>
             <button class="btn red-btn" @click="deleteCohort">
@@ -163,7 +163,7 @@ export default {
                     :title="showMembers ? 'collapse' : 'expand'"
                 >
                     <div class="d-flex">
-                        <h2 class="heading h3">Available Students</h2>
+                        <h2 class="secondary-heading h4">Available Students</h2>
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -227,7 +227,7 @@ export default {
                     :title="showFilters ? 'collapse' : 'expand'"
                 >
                     <div class="d-flex">
-                        <h2 class="heading h3">Filters</h2>
+                        <h2 class="secondary-heading h4">Filters</h2>
                         <!-- Arrow Icon -->
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -335,7 +335,6 @@ export default {
 .red-btn {
     background-color: #da7033 !important;
     color: white;
-    border: 1px solid #7f56d9;
     align-items: center;
     max-width: fit-content;
     display: flex;
@@ -344,12 +343,6 @@ export default {
 
 .red-btn:hover {
     background-color: rgb(209, 96, 15);
-}
-
-.heading {
-    color: #8f7bd6;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
 }
 
 /**-------------------------------------  */

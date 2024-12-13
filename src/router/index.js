@@ -342,6 +342,27 @@ const router = createRouter({
                 )
         },
         {
+            path: '/goals/:goalId',
+            name: 'goal',
+            component: () => import('../components/pages/goals/GoalView.vue')
+        },
+        {
+            path: '/student/:studentId/goals',
+            name: 'student-goals',
+            component: () =>
+                import('../components/pages/goals/ListStudentGoalsView.vue'),
+            meta: {
+                title: 'Student goals',
+                requiresAuth: true,
+                roles: ['instructor', 'admin']
+            }
+        },
+        {
+            path: '/test-ai-feature',
+            name: 'test ai feature',
+            component: () => import('../components/pages/willBeDelete.vue')
+        },
+        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')
@@ -439,6 +460,15 @@ router.beforeEach(async (to, from, next) => {
         }
     }
 
+    if (
+        (to.name == 'vertical-tree' && from.name == 'radial-tree') ||
+        (from.name == 'vertical-tree' && to.name == 'radial-tree')
+    ) {
+        document.body.classList.add('skill-tree-transition');
+    } else if (from.name == 'radial-tree' || from.name == 'vertical-tree') {
+        document.body.classList.remove('skill-tree-transition');
+    }
+
     // Check if initial data has been loaded and user is not logged in, redirect to login
     if (
         !sessionDetailsStore.isLoggedIn &&
@@ -472,11 +502,12 @@ router.beforeEach(async (to, from, next) => {
         next(); // Proceed if no authentication is required
     }
 
-    // To remove the vertical scroll bar for the Vertical and Radial skill tree pages.
+    // To remove the vertical scroll bar.
     if (
         to.name == 'vertical-tree' ||
         to.name == 'radial-tree' ||
         to.name == 'skills' ||
+        to.name == 'student-skills' ||
         to.name == 'student-signup' ||
         to.name == 'editor-signup' ||
         to.name == 'login'

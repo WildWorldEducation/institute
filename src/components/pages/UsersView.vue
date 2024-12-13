@@ -272,7 +272,6 @@ export default {
     padding-bottom: 17px;
     padding-right: 46px;
     height: 77px;
-    background-color: rgb(164, 139, 230, 0.25);
 }
 
 #user-container {

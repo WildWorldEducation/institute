@@ -62,15 +62,26 @@ export default {
             showSkillPanel: false,
             userAvatarImg: null,
             currentZoom: 1,
-            resultNode: null
+            resetPosZoom: 0.1,
+            resultNode: null,
+            truncateLevel: 'phd'
         };
     },
     components: {
         SkillPanel
     },
     async mounted() {
-        if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
-            await this.skillTreeStore.getUserSkillsSubSkillsSeparate();
+        this.truncateLevel = this.userDetailsStore.skillTreeLevel;
+        // Check if store is empty,
+        // or if grade level filter has been changed on the other tree (they need to be the same).
+        if (
+            this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0 ||
+            this.userDetailsStore.radialTreeLevel !=
+                this.userDetailsStore.skillTreeLevel
+        ) {
+            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
+                this.truncateLevel
+            );
         }
 
         // Specify the chart’s dimensions.
@@ -190,10 +201,19 @@ export default {
                 this.skillTreeStore.userSkillsSubSkillsSeparate.count;
             if (skillCount > 2000) {
                 this.radiusMultiplier = 96;
+                this.resetPosZoom = 0.05;
             } else if (skillCount > 1000) {
-                this.radiusMultiplier = 32;
-            } else {
+                this.radiusMultiplier = 60;
+                this.resetPosZoom = 0.1;
+            } else if (skillCount > 500) {
+                this.radiusMultiplier = 30;
+                this.resetPosZoom = 0.1;
+            } else if (skillCount > 100) {
                 this.radiusMultiplier = 6;
+                this.resetPosZoom = 0.4;
+            } else {
+                this.radiusMultiplier = 4;
+                this.resetPosZoom = 0.4;
             }
 
             // Create a radial tree layout. The layout’s first dimension (x)
@@ -436,33 +456,25 @@ export default {
                 .radius((d) => d.y)
                 .context(this.context);
 
-            // Determine colour of links based on user's theme
             let color = '';
-            if (this.userDetailsStore.theme == 'original') {
-                color = '#000';
-            } else if (this.userDetailsStore.theme == 'apprentice') {
-                color = '#000';
-            } else if (this.userDetailsStore.theme == 'scholar') {
-                color = '#fff';
-            }
-
             // If skill is mastered.
             if (link.target.data.is_mastered == 1) {
                 this.context.lineWidth =
                     4 + parseInt(3 * (1 / this.currentZoom));
-                if (this.userDetailsStore.theme == 'original') {
-                    color = '#fff';
-                } else if (this.userDetailsStore.theme == 'apprentice') {
-                    color = '#fff';
-                } else if (this.userDetailsStore.theme == 'scholar') {
-                    color = '#000';
-                }
+                color = '#8d6ce7';
             } else {
                 let width = 2;
-
                 this.context.lineWidth = parseInt(
                     width * (1 / this.currentZoom)
                 );
+                // Determine colour of links based on user's theme
+                if (this.userDetailsStore.theme == 'original') {
+                    color = '#000';
+                } else if (this.userDetailsStore.theme == 'apprentice') {
+                    color = '#000';
+                } else if (this.userDetailsStore.theme == 'scholar') {
+                    color = '#fff';
+                }
             }
 
             this.context.beginPath();
@@ -806,8 +818,8 @@ export default {
                 .call(
                     this.d3Zoom.transform,
                     d3.zoomIdentity
-                        .translate(this.width / 2, this.height / 3)
-                        .scale(0.1)
+                        .translate(this.width / 2, this.height / 2)
+                        .scale(this.resetPosZoom)
                 );
         },
         // Find node with name include
@@ -855,6 +867,30 @@ export default {
                         .translate(translateX, translateY)
                         .scale(fixedScale)
                 );
+        },
+        async truncateToGradeLevel(level) {
+            this.truncateLevel = level;
+            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(level);
+            this.skill.children =
+                this.skillTreeStore.userSkillsSubSkillsSeparate.skills;
+            this.userAvatarImg.onload();
+            this.saveSkillTreeGradeLevel();
+        },
+        saveSkillTreeGradeLevel() {
+            // Update the store
+            this.userDetailsStore.skillTreeLevel = this.truncateLevel;
+            this.userDetailsStore.radialTreeLevel = this.truncateLevel;
+            // Update the DB
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    level: this.truncateLevel
+                })
+            };
+            var url =
+                '/users/' + this.userDetailsStore.userId + '/skill-tree-level';
+            fetch(url, requestOptions);
         }
     }
 };

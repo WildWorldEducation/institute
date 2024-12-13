@@ -67,12 +67,17 @@ export default {
     components: {
         SkillPanel,
         SliderControl,
-        JoystickControl,
-        SkillPanel
+        JoystickControl
     },
     async mounted() {
         this.truncateLevel = this.userDetailsStore.skillTreeLevel;
-        if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
+        // Check if store is empty,
+        // or if grade level filter has been changed on the other tree (they need to be the same).
+        if (
+            this.skillTreeStore.verticalTreeUserSkills.length == 0 ||
+            this.userDetailsStore.verticalTreeLevel !=
+                this.userDetailsStore.skillTreeLevel
+        ) {
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.truncateLevel
             );
@@ -292,15 +297,19 @@ export default {
             this.root = d3.hierarchy(this.data);
 
             //Shorten lines based on truncate level.
-            let multiplyBy = 5;
-            if (this.truncateLevel == 'grade_school' || count < 1000) {
+            let multiplyBy = 7;
+            if (count < 70) {
                 multiplyBy = 1;
-            } else if (this.truncateLevel == 'middle_school') {
+            } else if (count < 300) {
                 multiplyBy = 2;
-            } else if (this.truncateLevel == 'high_school') {
+            } else if (this.truncateLevel == 'grade_school' || count < 1000) {
                 multiplyBy = 3;
-            } else if (this.truncateLevel == 'college' || count < 2000) {
+            } else if (this.truncateLevel == 'middle_school') {
                 multiplyBy = 4;
+            } else if (this.truncateLevel == 'high_school') {
+                multiplyBy = 5;
+            } else if (this.truncateLevel == 'college' || count < 2000) {
+                multiplyBy = 6;
             }
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
@@ -525,10 +534,6 @@ export default {
                 .y((d) => d.x)
                 .context(this.context);
 
-            // If skill is mastered.
-            if (link.target.data.is_mastered == 1) this.context.lineWidth = 4;
-            else this.context.lineWidth = 2;
-
             if (
                 (link.source.data.type == 'super' &&
                     link.target.data.position == 'end') ||
@@ -541,13 +546,21 @@ export default {
 
             this.context.beginPath();
             linkGenerator(link);
-            // Determine colour of links based on user's theme
-            if (this.userDetailsStore.theme == 'original')
-                this.context.strokeStyle = '#000';
-            else if (this.userDetailsStore.theme == 'apprentice') {
-                this.context.strokeStyle = '#000';
-                this.context.lineWidth = 3;
-            } else this.context.strokeStyle = '#fff';
+
+            // If skill is mastered.
+            if (link.target.data.is_mastered == 1) {
+                this.context.lineWidth = 4;
+                this.context.strokeStyle = '#8d6ce7';
+            } else {
+                this.context.lineWidth = 2;
+                // Determine colour of links based on user's theme
+                if (this.userDetailsStore.theme == 'original')
+                    this.context.strokeStyle = '#000';
+                else if (this.userDetailsStore.theme == 'apprentice') {
+                    this.context.strokeStyle = '#000';
+                } else this.context.strokeStyle = '#fff';
+            }
+
             this.context.stroke();
         },
         genColor() {
@@ -1190,10 +1203,14 @@ export default {
         async truncateToGradeLevel(level) {
             this.truncateLevel = level;
             await this.skillTreeStore.getVerticalTreeUserSkills(level);
-            await this.reloadTree();
+            this.skill.children = await this.reloadTree();
             this.saveSkillTreeGradeLevel();
         },
         saveSkillTreeGradeLevel() {
+            // Update the store
+            this.userDetailsStore.skillTreeLevel = this.truncateLevel;
+            this.userDetailsStore.verticalTreeLevel = this.truncateLevel;
+            // Update the DB
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -1201,10 +1218,9 @@ export default {
                     level: this.truncateLevel
                 })
             };
-
             var url =
                 '/users/' + this.userDetailsStore.userId + '/skill-tree-level';
-            fetch(url, requestOptions).then;
+            fetch(url, requestOptions);
         }
     }
 };

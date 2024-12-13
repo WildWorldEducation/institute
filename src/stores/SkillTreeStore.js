@@ -54,20 +54,22 @@ export const useSkillTreeStore = defineStore('skillTree', {
             else this.verticalTreeUserSkills = await result.json();
         },
         // API call for Radial skill tree.
-        async getUserSkillsSubSkillsSeparate() {
+        async getUserSkillsSubSkillsSeparate(level) {
             // API call for skill tree.
             const userDetailsStore = useUserDetailsStore();
             const userDetails = await userDetailsStore.getUserDetails();
 
             const result = await fetch(
                 '/user-skills/separate-subskills/filter-by-cohort/' +
-                userDetails.userId
+                userDetails.userId +
+                '?level=' +
+                level
             );
             this.userSkillsSubSkillsSeparate = await result.json();
         },
         async getStudentSkills(studentId) {
             // API call for skill tree.
-            const result = await fetch('/user-skills/' + studentId);
+            const result = await fetch('/user-skills/filter-by-cohort/' + studentId);
             this.studentSkills = await result.json();
         }
     }

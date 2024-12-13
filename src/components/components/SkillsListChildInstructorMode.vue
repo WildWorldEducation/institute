@@ -1,11 +1,14 @@
 <script>
 import { useSkillsStore } from '../../stores/SkillsStore.js';
+import { useUserSkillsStore } from '../../stores/UserSkillsStore.js';
 
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const userSkillsStore = useUserSkillsStore();
         return {
-            skillsStore
+            skillsStore,
+            userSkillsStore
         };
     },
     data() {
@@ -15,7 +18,11 @@ export default {
             showModal: false,
             childrenNotSubskills: [],
             subSkills: [],
-            isResult: false
+            isResult: false,
+            // Used for goals feature.
+            skill: {},
+            accessibleSkills: [],
+            goalSteps: []
         };
     },
     props: [
@@ -30,7 +37,9 @@ export default {
         'role',
         'isFiltered',
         'DeleteSkill',
-        'path'
+        'path',
+        'studentId',
+        'parent'
     ],
     computed: {
         indent() {
@@ -76,6 +85,36 @@ export default {
                 this.childrenNotSubskills.push(this.children[i]);
             }
         }
+
+        // Created skill object, for goal creation methods.
+        this.skill.id = this.id;
+        this.skill.name = this.name;
+        this.skill.type = this.type;
+        this.skill.parent = this.parent;
+        this.skill.is_mastered = this.isMastered;
+        this.skill.is_accessible = this.isUnlocked;
+
+        // Will need this list to create the goal steps.
+        await this.userSkillsStore.getFilteredUnnestedList(this.studentId);
+        for (
+            let i = 0;
+            i < this.userSkillsStore.filteredUnnestedList.length;
+            i++
+        ) {
+            // Get the accessible skill list of this student
+            if (
+                this.userSkillsStore.filteredUnnestedList[i].is_accessible == 1
+            ) {
+                if (
+                    this.userSkillsStore.filteredUnnestedList[i].type !=
+                    'domain'
+                ) {
+                    this.accessibleSkills.push(
+                        this.userSkillsStore.filteredUnnestedList[i]
+                    );
+                }
+            }
+        }
     },
     mounted() {
         // This is to load the state of the nested skills list (which child skills are currently showing).
@@ -105,6 +144,7 @@ export default {
             else if (this.$refs.name.offsetHeight > 30)
                 this.$refs.name.classList.add('two-row-domain-name');
         }
+
         // We only check path to show child if the node depth is 2 or greater
         if (this.depth >= 2) {
             const inPath = this.path.find((node) => node.id === this.id);
@@ -112,6 +152,7 @@ export default {
                 this.showChildren = true;
             }
         }
+
         // if we are the last node to appear when user choose a path we scroll to here
         const lastNode = this.path[this.path.length - 1];
         if (lastNode && this.id === lastNode.id) {
@@ -169,6 +210,83 @@ export default {
             this.recursivelySetState(this.children, !this.showChildren);
             localStorage.setItem(this.id + 'children', !this.showChildren);
             this.showChildren = !this.showChildren;
+        },
+        async confirmCreateGoal() {
+            let text = `Are you sure you want to create a goal for ${this.name}?`;
+            if (confirm(text) == true) {
+                this.createGoal(this.skill);
+            }
+        },
+        createGoal(skill) {
+            if (skill.type != 'domain') {
+                // Add ancestor skill to array.
+                this.goalSteps.push(skill);
+            }
+
+            // Add ancestor subskills to array.
+            let isSubSkillUnlocked = false;
+            if (skill.type == 'super') {
+                for (
+                    let i = 0;
+                    i < this.userSkillsStore.filteredUnnestedList.length;
+                    i++
+                ) {
+                    if (
+                        this.userSkillsStore.filteredUnnestedList[i].type ==
+                            'sub' &&
+                        this.userSkillsStore.filteredUnnestedList[i].parent ==
+                            skill.id &&
+                        this.userSkillsStore.filteredUnnestedList[i]
+                            .is_mastered != 1
+                    ) {
+                        this.goalSteps.push(
+                            this.userSkillsStore.filteredUnnestedList[i]
+                        );
+                        // Check if sub skill is unlocked.
+                        if (
+                            this.userSkillsStore.filteredUnnestedList[i]
+                                .is_accessible
+                        ) {
+                            isSubSkillUnlocked = true;
+                        }
+                    }
+                }
+            }
+
+            // Check if current skill is unlocked.
+            const inAccessibleList = this.accessibleSkills.find(
+                (as) => as.id == skill.id
+            );
+
+            // Stop when the first ancestor node that is unlocked for the student is found
+            // or if its sub skill is unlocked
+            if (inAccessibleList || isSubSkillUnlocked) {
+                this.populateGoalSteps();
+                return;
+            }
+
+            fetch('/skills/show/' + skill.parent)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((skill) => {
+                    // Recursively call the function with parent skill data.
+                    return this.createGoal(skill);
+                });
+        },
+        populateGoalSteps() {
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillId: this.skill.id,
+                    goalSteps: this.goalSteps
+                })
+            };
+            const url = '/goals/' + this.studentId + '/add';
+            fetch(url, requestOptions).then(() => {
+                alert('Goal created.');
+            });
         }
     },
     watch: {
@@ -211,7 +329,7 @@ export default {
             'college-level': level == 'college',
             'phd-level': level == 'phd',
             'has-children': children.length > 0,
-            'result-button': isResult === true,           
+            'result-button': isResult === true
         }"
         class="skill-button secondary-text d-flex justify-content-between"
         @click.stop="mainButtonPress()"
@@ -276,7 +394,9 @@ export default {
         </div>
         <!-- Skill name. Ref added for dynamic class based on name length, see above. -->
         <div>
-            <div ref="name" style="text-align: left">{{ name }}</div>
+            <div ref="name" style="text-align: left">
+                {{ name }}
+            </div>
             <div
                 v-if="type == 'super'"
                 class="d-none d-sm-block text-start pt-1 mastered-skills-count"
@@ -289,6 +409,27 @@ export default {
         <!-- Buttons -->
         <div id="buttons" class="d-flex">
             <button
+                v-if="type != 'domain'"
+                class="btn"
+                title="create a goal"
+                @click="confirmCreateGoal()"
+            >
+                <!-- Create goal button-->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    class="primary-icon"
+                    width="20"
+                    heigth="20"
+                >
+                    <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <path
+                        d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+                    />
+                </svg>
+            </button>
+            <!-- Expand/collapse subskills button-->
+            <button
                 v-if="type == 'super'"
                 type="button"
                 @click.stop="toggleSubSkills"
@@ -299,7 +440,7 @@ export default {
                     v-if="!showSubskills"
                     width="18"
                     height="18"
-                    fill="#9C7EEC"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -313,7 +454,7 @@ export default {
                     v-else
                     width="18"
                     height="18"
-                    fill="#9C7EEC"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
@@ -333,12 +474,12 @@ export default {
                     v-if="showChildren"
                     height="18"
                     width="18"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
-                        fill="#9C7EEC"
                         d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"
                     />
                 </svg>
@@ -346,17 +487,18 @@ export default {
                     v-else
                     height="18"
                     width="18"
+                    class="primary-icon"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
                 >
                     <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.
                     -->
                     <path
-                        fill="#9C7EEC"
                         d="M246.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 402.7 361.4 265.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-160 160zm160-352l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 210.7 361.4 73.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z"
                     />
                 </svg>
             </button>
+            <!-- Expand/collapse child skills button-->
             <button
                 v-if="childrenNotSubskills.length != 0"
                 @click.stop="toggleChildren"
@@ -369,11 +511,11 @@ export default {
                     viewBox="0 0 320 512"
                     width="18"
                     height="18"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
                         d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"
-                        fill="#9C7EEC"
                     />
                 </svg>
                 <svg
@@ -382,11 +524,11 @@ export default {
                     viewBox="0 0 512 512"
                     width="18"
                     height="18"
+                    class="primary-icon"
                 >
                     <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                     <path
                         d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
-                        fill="#9C7EEC"
                     />
                 </svg>
             </button>
@@ -407,6 +549,9 @@ export default {
         :isFiltered="subSkill.isFiltered"
         :role="role"
         :depth="depth + 1"
+        :path="path"
+        :studentId="studentId"
+        :parent="subSkill.parent"
     >
     </SkillsListChildInstructorMode>
 
@@ -424,6 +569,9 @@ export default {
         :isFiltered="child.isFiltered"
         :role="role"
         :depth="depth + 1"
+        :path="path"
+        :studentId="studentId"
+        :parent="child.parent"
     >
     </SkillsListChildInstructorMode>
 </template>
@@ -569,11 +717,6 @@ export default {
 .locked {
     border-color: #c8d7da;
     background-color: #f3f2f5;
-    color: #c8d7da;
-}
-
-.locked svg path {
-    fill: #c8d7da;
 }
 
 .mastered {
