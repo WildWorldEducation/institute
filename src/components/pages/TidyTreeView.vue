@@ -17,7 +17,8 @@ export default {
             searchText: '',
             lastChooseResult: '',
             showResult: false,
-            showConfirmModal: false
+            showConfirmModal: false,
+            filterType: 'grade'
         };
     },
     created() {},
@@ -59,6 +60,13 @@ export default {
         },
         clearResult() {
             this.$refs.childComponent.resetPos();
+        },
+        switchFilters() {
+            if (this.filterType == 'grade') {
+                this.filterType = 'subject';
+            } else {
+                this.filterType = 'grade';
+            }
         }
     }
 };
@@ -214,6 +222,9 @@ export default {
             <span>Loading...</span>
         </template>
     </Suspense>
+
+    <!-- Bottom grade level truncation filters
+        Not available on phone view -->
     <div class="position-absolute bottom-legend-div">
         <!-- <div class="mobile-legend">
             <div class="legend d-flex flex-column">
@@ -270,7 +281,7 @@ export default {
             </div>
         </div> -->
         <div class="tablet-and-up-legend">
-            <div class="legend">
+            <div v-if="filterType == 'grade'" class="legend">
                 <!-- Grade buttons -->
                 <button
                     class="btn grade-school me-2"
@@ -314,18 +325,45 @@ export default {
                 >
                     PHD
                 </button>
+                <button class="btn legend-btn me-2" @click="switchFilters()">
+                    switch filter type
+                </button>
+            </div>
+            <div v-else class="legend">
+                <button class="btn legend-btn me-2">Language</button>
+                <button class="btn legend-btn me-2">Mathematics</button>
+                <button class="btn legend-btn me-2">Science & Invention</button>
+                <button class="btn legend-btn me-2">Computer Science</button>
+                <button class="btn legend-btn me-2">History</button>
+                <button class="btn legend-btn me-2">Life</button>
+                <button class="btn legend-btn me-2">Dangerous Ideas</button>
+                <button class="btn legend-btn" @click="switchFilters()">
+                    switch filter type
+                </button>
             </div>
         </div>
     </div>
 </template>
 
 <style>
+.side-legend {
+    left: 0px;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.side-legend .btn {
+    background-color: lightgray;
+    text-align: left;
+}
+
 .bottom-legend-div {
     width: 100%;
     bottom: 10px;
 }
 
-#legend .btn {
+.legend .btn {
     color: white;
 }
 
@@ -347,19 +385,6 @@ export default {
     width: 100%;
     z-index: 2;
     top: 70px;
-}
-
-#info-button {
-    width: 50px;
-    height: 20px;
-    padding: 0px;
-    float: right;
-}
-
-#info-button svg {
-    width: 25px;
-    height: 15px;
-    margin-bottom: 8px;
 }
 
 /* Grade level legend */
