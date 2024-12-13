@@ -752,7 +752,7 @@ export default {
                 shift = 100;
             }
             if (screenWidth > 1024) {
-                shift = 90;
+                shift = 10;
             }
             d3.select(this.context.canvas)
                 .transition()
@@ -1031,6 +1031,7 @@ export default {
                         .translate(translateX, translateY)
                         .scale(this.scale)
                 );
+            this.resetPos();
         },
         expandAllChildren() {
             var url =
