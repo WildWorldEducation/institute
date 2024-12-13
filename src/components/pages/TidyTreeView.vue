@@ -326,19 +326,84 @@ export default {
                     PHD
                 </button>
                 <button class="btn legend-btn me-2" @click="switchFilters()">
-                    switch filter type
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        height="18"
+                        width="18"
+                        fill="black"
+                    >
+                        <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                        <path
+                            d="M386.3 160L336 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-128c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"
+                        />
+                    </svg>
                 </button>
             </div>
             <div v-else class="legend">
-                <button class="btn legend-btn me-2">Language</button>
-                <button class="btn legend-btn me-2">Mathematics</button>
-                <button class="btn legend-btn me-2">Science & Invention</button>
-                <button class="btn legend-btn me-2">Computer Science</button>
-                <button class="btn legend-btn me-2">History</button>
-                <button class="btn legend-btn me-2">Life</button>
-                <button class="btn legend-btn me-2">Dangerous Ideas</button>
+                <button
+                    class="btn legend-btn me-2"
+                    @click="$refs.childComponent.filterToSubject('language')"
+                >
+                    Language
+                </button>
+                <button
+                    class="btn legend-btn me-2"
+                    @click="$refs.childComponent.filterToSubject('mathematics')"
+                >
+                    Mathematics
+                </button>
+                <button
+                    class="btn legend-btn me-2"
+                    @click="
+                        $refs.childComponent.filterToSubject(
+                            'science-and-invention'
+                        )
+                    "
+                >
+                    Science & Invention
+                </button>
+                <button
+                    class="btn legend-btn me-2"
+                    @click="
+                        $refs.childComponent.filterToSubject('computer-science')
+                    "
+                >
+                    Computer Science
+                </button>
+                <button
+                    class="btn legend-btn me-2"
+                    @click="$refs.childComponent.filterToSubject('history')"
+                >
+                    History
+                </button>
+                <button
+                    class="btn legend-btn me-2"
+                    @click="$refs.childComponent.filterToSubject('life')"
+                >
+                    Life
+                </button>
+                <button
+                    class="btn legend-btn me-2"
+                    @click="
+                        $refs.childComponent.filterToSubject('dangerous-ideas')
+                    "
+                >
+                    Dangerous Ideas
+                </button>
                 <button class="btn legend-btn" @click="switchFilters()">
-                    switch filter type
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        height="18"
+                        width="18"
+                        fill="black"
+                    >
+                        <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                        <path
+                            d="M386.3 160L336 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-128c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"
+                        />
+                    </svg>
                 </button>
             </div>
         </div>
@@ -483,7 +548,7 @@ export default {
 }
 
 .legend-btn {
-    background-color: #184e80;
+    background-color: #467caf;
     border: #184e80;
     color: white;
     max-height: 40px;
