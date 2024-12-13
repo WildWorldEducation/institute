@@ -296,16 +296,21 @@ export default {
             };
             this.root = d3.hierarchy(this.data);
 
+            console.log(count);
             //Shorten lines based on truncate level.
-            let multiplyBy = 5;
-            if (this.truncateLevel == 'grade_school' || count < 1000) {
+            let multiplyBy = 7;
+            if (count < 70) {
                 multiplyBy = 1;
-            } else if (this.truncateLevel == 'middle_school') {
+            } else if (count < 300) {
                 multiplyBy = 2;
-            } else if (this.truncateLevel == 'high_school') {
+            } else if (this.truncateLevel == 'grade_school' || count < 1000) {
                 multiplyBy = 3;
-            } else if (this.truncateLevel == 'college' || count < 2000) {
+            } else if (this.truncateLevel == 'middle_school') {
                 multiplyBy = 4;
+            } else if (this.truncateLevel == 'high_school') {
+                multiplyBy = 5;
+            } else if (this.truncateLevel == 'college' || count < 2000) {
+                multiplyBy = 6;
             }
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
