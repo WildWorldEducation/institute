@@ -116,6 +116,23 @@ export default {
             });
             return highlightedResult;
         },
+        highlightContextResult(results) {
+            // we highlight the part that match search text
+            const highlightedResult = results.map((result) => {
+                console.log(result);
+                const matchedRegex = new RegExp(`(${this.searchText})`, 'gi');
+                const newText = result.skill_name.replace(
+                    matchedRegex,
+                    '<span class="hightLight">$1</span>'
+                );
+                return {
+                    ...result,
+                    highlightedResult: newText,
+                    name: result.skill_name
+                };
+            });
+            return highlightedResult;
+        },
         async getContextResults(searchText) {
             this.waitForSever = true;
             const url = `/skills//find-with-context`;
@@ -128,14 +145,18 @@ export default {
             };
             const res = await fetch(url, requestOption);
             const ResResults = await res.json();
-            // We have to change the field in context result to match the key word results
-            const matchedResult = ResResults.map((resResult) => {
-                return {
-                    id: resResult.skill_id,
-                    name: resResult.skill_name
-                };
+            // Filter out the result if user is not admin
+            const matchedResult = ResResults.filter((skill) => {
+                return this.nameList.some((element) => {
+                    return (
+                        element.name.toLowerCase() ===
+                        skill.skill_name.toLowerCase()
+                    );
+                });
             });
-            this.resultsSkills = this.highlightingResult(matchedResult);
+
+            this.resultsSkills = this.highlightContextResult(matchedResult);
+
             this.waitForSever = false;
         },
         handleSearchTextChange(searchText) {
@@ -145,6 +166,7 @@ export default {
                 this.checkTextForAi(searchText.toLowerCase());
             }
         },
+
         async handleChooseResult(result) {
             this.resultsSkills = [];
             this.searchText = result.name;
@@ -161,8 +183,7 @@ export default {
         },
         handleRobotIconClick() {
             this.aiMode = !this.aiMode;
-            console.log(this.aiMode);
-            console.log(this.searchText);
+
             if (this.aiMode) {
                 this.checkTextForAi(this.searchText);
             }

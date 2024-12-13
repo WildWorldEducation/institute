@@ -1688,13 +1688,14 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
                     ORDER BY VEC_DISTANCE(skills_vector.embedding,
                           VEC_FromText('[${inputVector}]'))
                     LIMIT 25`;
-
+        // sql for instructor and editor account
         conn.query(sqlQuery, (err, results) => {
             if (err) {
                 throw err;
             }
             res.json(results);
         });
+
     } catch (error) {
         console.error(error);
         res.status = 500;
