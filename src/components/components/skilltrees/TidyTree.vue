@@ -296,7 +296,6 @@ export default {
             };
             this.root = d3.hierarchy(this.data);
 
-            console.log(count);
             //Shorten lines based on truncate level.
             let multiplyBy = 7;
             if (count < 70) {

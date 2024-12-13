@@ -428,7 +428,7 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
 
                 let cohortId;
                 if (results.length == 0) {
-                    cohortId = 0;
+                    cohortId = -1;
                 } else cohortId = results[0].cohort_id;
 
                 // Check what skills are available for this cohort.
@@ -553,7 +553,6 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
 
 /* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
 // For Radial Tree.
-// Not used currently
 router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
     if (req.session.userName) {
         /* Truncate Vertical Tree to grade level based on which button student presses
@@ -596,7 +595,7 @@ router.get('/separate-subskills/filter-by-cohort/:userId', (req, res, next) => {
 
                 let cohortId;
                 if (results.length == 0) {
-                    cohortId = 0;
+                    cohortId = -1;
                 } else cohortId = results[0].cohort_id;
 
                 let sqlQuery = `
@@ -1203,7 +1202,7 @@ ORDER BY id;`;
                         let sqlQuery = `
                         INSERT INTO user_skills (user_id, skill_id, is_mastered, is_accessible) 
                         VALUES(${conn.escape(userId)},
-                        ${conn.escape(parent)},
+                        ${conn.escape(parent.id)},
                         1, 1) 
                         ON DUPLICATE KEY UPDATE is_mastered= 1, is_accessible=1;
                         `;
