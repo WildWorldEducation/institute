@@ -18,7 +18,9 @@ export default {
             lastChooseResult: '',
             showResult: false,
             showConfirmModal: false,
-            filterType: 'grade'
+            filterType: 'grade',
+            gradeFilter: 'phd',
+            subjectFilter: 'All'
         };
     },
     created() {},
@@ -286,9 +288,11 @@ export default {
                 <button
                     class="btn grade-school me-2"
                     @click="
-                        $refs.childComponent.truncateToGradeLevel(
-                            'grade_school'
-                        )
+                        this.gradeFilter = 'grade_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
                     "
                 >
                     Grade school
@@ -296,9 +300,11 @@ export default {
                 <button
                     class="btn middle-school me-2"
                     @click="
-                        $refs.childComponent.truncateToGradeLevel(
-                            'middle_school'
-                        )
+                        this.gradeFilter = 'middle_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
                     "
                 >
                     Middle school
@@ -306,7 +312,11 @@ export default {
                 <button
                     class="btn high-school me-2"
                     @click="
-                        $refs.childComponent.truncateToGradeLevel('high_school')
+                        this.gradeFilter = 'high_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
                     "
                 >
                     High school
@@ -314,14 +324,24 @@ export default {
                 <button
                     class="btn college me-2"
                     @click="
-                        $refs.childComponent.truncateToGradeLevel('college')
+                        this.gradeFilter = 'college';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
                     "
                 >
                     College
                 </button>
                 <button
                     class="btn phd me-2"
-                    @click="$refs.childComponent.truncateToGradeLevel('phd')"
+                    @click="
+                        this.gradeFilter = 'phd';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
+                    "
                 >
                     PHD
                 </button>
@@ -343,22 +363,36 @@ export default {
             <div v-else class="legend">
                 <button
                     class="btn legend-btn me-2"
-                    @click="$refs.childComponent.filterToSubject('language')"
+                    @click="
+                        this.subjectFilter = 'Language';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
+                    "
                 >
                     Language
                 </button>
                 <button
                     class="btn legend-btn me-2"
-                    @click="$refs.childComponent.filterToSubject('mathematics')"
+                    @click="
+                        this.subjectFilter = 'Mathematics';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
+                    "
                 >
                     Mathematics
                 </button>
                 <button
                     class="btn legend-btn me-2"
                     @click="
-                        $refs.childComponent.filterToSubject(
-                            'science-and-invention'
-                        )
+                        this.subjectFilter = 'Science & Invention';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
                     "
                 >
                     Science & Invention
@@ -366,27 +400,47 @@ export default {
                 <button
                     class="btn legend-btn me-2"
                     @click="
-                        $refs.childComponent.filterToSubject('computer-science')
+                        this.subjectFilter = 'Computer Science';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
                     "
                 >
                     Computer Science
                 </button>
                 <button
                     class="btn legend-btn me-2"
-                    @click="$refs.childComponent.filterToSubject('history')"
+                    @click="
+                        this.subjectFilter = 'History';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
+                    "
                 >
                     History
                 </button>
                 <button
                     class="btn legend-btn me-2"
-                    @click="$refs.childComponent.filterToSubject('life')"
+                    @click="
+                        this.subjectFilter = 'Life';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
+                    "
                 >
                     Life
                 </button>
                 <button
                     class="btn legend-btn me-2"
                     @click="
-                        $refs.childComponent.filterToSubject('dangerous-ideas')
+                        this.subjectFilter = 'Dangerous Ideas';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilter
+                        );
                     "
                 >
                     Dangerous Ideas

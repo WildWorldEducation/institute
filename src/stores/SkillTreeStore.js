@@ -30,14 +30,17 @@ export const useSkillTreeStore = defineStore('skillTree', {
             this.userSkills = await result.json();
         },
         // API call for Vertical skill tree.
-        async getVerticalTreeUserSkills(level) {
+        async getVerticalTreeUserSkills(level, subject) {
+            subject = subject.replace(/&/g, '%26');
             const userDetailsStore = useUserDetailsStore();
             const userDetails = await userDetailsStore.getUserDetails();
             const result = await fetch(
                 '/user-skills/filter-by-cohort/vertical-tree/' +
                     userDetails.userId +
                     '?level=' +
-                    level
+                    level +
+                    '&subject=' +
+                    subject
             );
 
             // If the student clicks a button on the grade level key,
@@ -70,7 +73,9 @@ export const useSkillTreeStore = defineStore('skillTree', {
         },
         async getStudentSkills(studentId) {
             // API call for skill tree.
-            const result = await fetch('/user-skills/filter-by-cohort/' + studentId);
+            const result = await fetch(
+                '/user-skills/filter-by-cohort/' + studentId
+            );
             this.studentSkills = await result.json();
         }
     }

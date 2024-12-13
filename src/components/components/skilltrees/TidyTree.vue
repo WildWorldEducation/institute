@@ -61,7 +61,8 @@ export default {
             showSkillPanel: false,
             resultNode: null,
             clickMode: 'showPanel',
-            truncateLevel: 'phd'
+            truncateLevel: 'phd',
+            subject: 'All'
         };
     },
     components: {
@@ -79,7 +80,8 @@ export default {
                 this.userDetailsStore.skillTreeLevel
         ) {
             await this.skillTreeStore.getVerticalTreeUserSkills(
-                this.truncateLevel
+                this.truncateLevel,
+                this.subject
             );
         }
         let userSkills = '';
@@ -875,9 +877,9 @@ export default {
                 this.reloadTree(node);
             });
         },
-        async reloadTree(node) {
+        async reloadTree(node, level, subject) {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getVerticalTreeUserSkills();
+            await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
 
             // If the student clicks a button on the grade level key,
             // this will truncate the tree to that level.
@@ -1042,10 +1044,12 @@ export default {
         },
         // If the student clicks a button on the grade level key,
         // this will truncate the tree to that level.
-        async truncateToGradeLevel(level) {
+        async filter(level, subject) {
+            console.log(level);
+            console.log(subject);
             this.truncateLevel = level;
-            await this.skillTreeStore.getVerticalTreeUserSkills(level);
-            this.skill.children = await this.reloadTree();
+            //await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
+            this.skill.children = await this.reloadTree(null, level, subject);
             this.saveSkillTreeGradeLevel();
         },
         saveSkillTreeGradeLevel() {
