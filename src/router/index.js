@@ -358,11 +358,6 @@ const router = createRouter({
             }
         },
         {
-            path: '/test-ai-feature',
-            name: 'test ai feature',
-            component: () => import('../components/pages/willBeDelete.vue')
-        },
-        {
             path: '/:pathMatch(.*)*',
             name: 'not-found',
             component: () => import('../components/pages/PageNotFoundView.vue')
