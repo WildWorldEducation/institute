@@ -1096,7 +1096,7 @@ export default {
         <div id="SVGskilltree"></div>
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
-        <JoystickControl />
+        <JoystickControl class="d-lg-none" />
     </div>
 </template>
 
