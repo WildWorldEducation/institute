@@ -620,6 +620,35 @@ router.get('/instructor/:studentId', (req, res, next) => {
         res.redirect('/login');
     }
 });
+
+// Get student under a instructor class (cohord)
+router.get('/student-of-instructors/:instructorId', (req, res, next) => {
+    if (req.session.userName) {
+        res.setHeader('Content-Type', 'application/json');
+        // Select student info base on instructor id.
+        let sqlQuery = `
+        SELECT instructor_students.instructor_id, users.first_name, users.last_name, users.role, users.username 
+        FROM instructor_students JOIN users ON users.id = instructor_students.student_id
+        WHERE instructor_students.instructor_id = ${conn.escape(
+            req.params.instructorId
+        )}
+        `;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                res.json(results);
+            } catch (err) {
+                next(err);
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+});
 /**
  * Delete User using binary flag
  *

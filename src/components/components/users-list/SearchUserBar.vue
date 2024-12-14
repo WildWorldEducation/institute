@@ -38,14 +38,18 @@ export default {
         if (!this.userDetailsStore.role) {
             this.userDetailsStore.getUserDetails();
         }
-        if (
-            this.userDetailsStore.role === 'admin' ||
-            this.userDetailsStore.role === 'instructor'
-        ) {
+        if (this.userDetailsStore.role === 'admin') {
             if (this.usersStore.users.length < 1) {
                 await this.usersStore.getUsers();
             }
             this.userList = this.usersStore.users;
+        }
+
+        if (this.userDetailsStore.role === 'instructor') {
+            await this.usersStore.getStudentsOfUser(
+                this.userDetailsStore.userId
+            );
+            this.userList = this.usersStore.studentsOfInstructor;
         }
         if (this.userDetailsStore.role === 'editor') {
             if (this.usersStore.editors.length < 1) {
@@ -93,7 +97,7 @@ export default {
             };
             this.updateUserDetails(returnUserObject);
         },
-        handleInputEnterPress(searchText) {
+        handleInputEnterPress() {
             // find user by arrow key
             if (this.focusIndex >= 0) {
                 this.chooseUser = true;
