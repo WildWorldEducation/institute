@@ -5,7 +5,9 @@ export const useUsersStore = defineStore('users', {
         users: [],
         usersIncludingDeleted: [],
         instructors: [],
-        editors: []
+        editors: [],
+        studentsOfInstructor: [],
+
     }),
     actions: {
         async getUsers() {
@@ -27,6 +29,14 @@ export const useUsersStore = defineStore('users', {
             const result = await fetch('/users/editors/list');
             const data = await result.json();
             this.editors = data;
+        },
+        async getStudentsOfUser(instructorId) {
+            const result = await fetch(`/users/student-of-instructors/${instructorId}`)
+            const data = await result.json();
+            console.log(result)
+            console.log(data)
+            this.studentsOfInstructor = data
+
         },
         async deleteUser(id) {
             this.users = this.users.filter((u) => {
