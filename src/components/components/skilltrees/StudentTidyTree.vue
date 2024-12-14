@@ -737,7 +737,7 @@ export default {
         ></canvas>
         <canvas id="hidden-canvas" width="1500" height="1500"></canvas>
         <div id="SVGskilltree"></div>
-        <JoystickControl />
+        <JoystickControl class="d-lg-none" />
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
     </div>
