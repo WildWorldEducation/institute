@@ -33,8 +33,7 @@ export const useUsersStore = defineStore('users', {
         async getStudentsOfUser(instructorId) {
             const result = await fetch(`/users/student-of-instructors/${instructorId}`)
             const data = await result.json();
-            console.log(result)
-            console.log(data)
+
             this.studentsOfInstructor = data
 
         },

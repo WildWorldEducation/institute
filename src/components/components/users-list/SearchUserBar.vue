@@ -50,8 +50,6 @@ export default {
                 this.userDetailsStore.userId
             );
             this.userList = this.usersStore.studentsOfInstructor;
-            console.log('instructor list:');
-            console.log(this.userList);
         }
         if (this.userDetailsStore.role === 'editor') {
             if (this.usersStore.editors.length < 1) {
@@ -99,7 +97,7 @@ export default {
             };
             this.updateUserDetails(returnUserObject);
         },
-        handleInputEnterPress(searchText) {
+        handleInputEnterPress() {
             // find user by arrow key
             if (this.focusIndex >= 0) {
                 this.chooseUser = true;
