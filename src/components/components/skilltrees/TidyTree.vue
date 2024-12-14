@@ -877,9 +877,12 @@ export default {
                 this.reloadTree(node);
             });
         },
-        async reloadTree(node, level, subject) {
+        async reloadTree(node, level, subjects) {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
+            await this.skillTreeStore.getVerticalTreeUserSkills(
+                level,
+                subjects
+            );
 
             // If the student clicks a button on the grade level key,
             // this will truncate the tree to that level.
@@ -1044,12 +1047,12 @@ export default {
         },
         // If the student clicks a button on the grade level key,
         // this will truncate the tree to that level.
-        async filter(level, subject) {
+        async filter(level, subjects) {
             console.log(level);
-            console.log(subject);
+            console.log(subjects);
             this.truncateLevel = level;
             //await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
-            this.skill.children = await this.reloadTree(null, level, subject);
+            this.skill.children = await this.reloadTree(null, level, subjects);
             this.saveSkillTreeGradeLevel();
         },
         saveSkillTreeGradeLevel() {

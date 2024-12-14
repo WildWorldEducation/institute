@@ -30,8 +30,11 @@ export const useSkillTreeStore = defineStore('skillTree', {
             this.userSkills = await result.json();
         },
         // API call for Vertical skill tree.
-        async getVerticalTreeUserSkills(level, subject) {
-            subject = subject.replace(/&/g, '%26');
+        async getVerticalTreeUserSkills(level, subjects) {
+            console.log(subjects);
+            
+            //subject = subject.replace(/&/g, '%26');
+            let subject = 'Life';
             const userDetailsStore = useUserDetailsStore();
             const userDetails = await userDetailsStore.getUserDetails();
             const result = await fetch(
@@ -39,8 +42,8 @@ export const useSkillTreeStore = defineStore('skillTree', {
                     userDetails.userId +
                     '?level=' +
                     level +
-                    '&subject=' +
-                    subject
+                    '&subjects=' +
+                    subjects
             );
 
             // If the student clicks a button on the grade level key,

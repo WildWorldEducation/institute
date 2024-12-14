@@ -20,10 +20,27 @@ export default {
             showConfirmModal: false,
             filterType: 'grade',
             gradeFilter: 'phd',
-            subjectFilter: 'All'
+            isLanguage: true,
+            isMathematics: true,
+            isScienceAndInvention: true,
+            isComputerScience: true,
+            isHistory: true,
+            isLife: true,
+            isDangerousIdeas: true,
+            subjectFilters: []
         };
     },
-    created() {},
+    created() {
+        this.subjectFilters.push({ Language: this.isLanguage });
+        this.subjectFilters.push({ Mathematics: this.isMathematics });
+        this.subjectFilters.push({
+            ScienceAndInvention: this.isScienceAndInvention
+        });
+        this.subjectFilters.push({ ComputerScience: this.isComputerScience });
+        this.subjectFilters.push({ History: this.isHistory });
+        this.subjectFilters.push({ Life: this.isLife });
+        this.subjectFilters.push({ DangerousIdeas: this.isDangerousIdeas });
+    },
     mounted() {
         this.GetGoogleLoginResult();
     },
@@ -69,6 +86,21 @@ export default {
             } else {
                 this.filterType = 'grade';
             }
+        },
+        updateSubjectFilters() {
+            this.subjectFilters = [];
+
+            this.subjectFilters.push({ Language: this.isLanguage });
+            this.subjectFilters.push({ Mathematics: this.isMathematics });
+            this.subjectFilters.push({
+                ScienceAndInvention: this.isScienceAndInvention
+            });
+            this.subjectFilters.push({
+                ComputerScience: this.isComputerScience
+            });
+            this.subjectFilters.push({ History: this.isHistory });
+            this.subjectFilters.push({ Life: this.isLife });
+            this.subjectFilters.push({ DangerousIdeas: this.isDangerousIdeas });
         }
     }
 };
@@ -291,7 +323,7 @@ export default {
                         this.gradeFilter = 'grade_school';
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -303,7 +335,7 @@ export default {
                         this.gradeFilter = 'middle_school';
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -315,7 +347,7 @@ export default {
                         this.gradeFilter = 'high_school';
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -327,7 +359,7 @@ export default {
                         this.gradeFilter = 'college';
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -339,7 +371,7 @@ export default {
                         this.gradeFilter = 'phd';
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -363,11 +395,13 @@ export default {
             <div v-else class="legend">
                 <button
                     class="btn legend-btn me-2"
+                    :class="{ 'chosen-subject': isLanguage }"
                     @click="
-                        this.subjectFilter = 'Language';
+                        this.isLanguage = !this.isLanguage;
+                        this.updateSubjectFilters();
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -375,11 +409,13 @@ export default {
                 </button>
                 <button
                     class="btn legend-btn me-2"
+                    :class="{ 'chosen-subject': isMathematics }"
                     @click="
-                        this.subjectFilter = 'Mathematics';
+                        this.isMathematics = !this.isMathematics;
+                        this.updateSubjectFilters();
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -387,11 +423,14 @@ export default {
                 </button>
                 <button
                     class="btn legend-btn me-2"
+                    :class="{ 'chosen-subject': isScienceAndInvention }"
                     @click="
-                        this.subjectFilter = 'Science & Invention';
+                        this.isScienceAndInvention =
+                            !this.isScienceAndInvention;
+                        this.updateSubjectFilters();
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -399,11 +438,13 @@ export default {
                 </button>
                 <button
                     class="btn legend-btn me-2"
+                    :class="{ 'chosen-subject': isComputerScience }"
                     @click="
-                        this.subjectFilter = 'Computer Science';
+                        this.isComputerScience = !this.isComputerScience;
+                        this.updateSubjectFilters();
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -411,11 +452,13 @@ export default {
                 </button>
                 <button
                     class="btn legend-btn me-2"
+                    :class="{ 'chosen-subject': isHistory }"
                     @click="
-                        this.subjectFilter = 'History';
+                        this.isHistory = !this.isHistory;
+                        this.updateSubjectFilters();
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -423,11 +466,13 @@ export default {
                 </button>
                 <button
                     class="btn legend-btn me-2"
+                    :class="{ 'chosen-subject': isLife }"
                     @click="
-                        this.subjectFilter = 'Life';
+                        this.isLife = !this.isLife;
+                        this.updateSubjectFilters();
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -435,11 +480,13 @@ export default {
                 </button>
                 <button
                     class="btn legend-btn me-2"
+                    :class="{ 'chosen-subject': isDangerousIdeas }"
                     @click="
-                        this.subjectFilter = 'Dangerous Ideas';
+                        this.isDangerousIdeas = !this.isDangerousIdeas;
+                        this.updateSubjectFilters();
                         $refs.childComponent.filter(
                             this.gradeFilter,
-                            this.subjectFilter
+                            this.subjectFilters
                         );
                     "
                 >
@@ -465,16 +512,8 @@ export default {
 </template>
 
 <style>
-.side-legend {
-    left: 0px;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-}
-
-.side-legend .btn {
-    background-color: lightgray;
-    text-align: left;
+.chosen-subject {
+    background-color: white !important;
 }
 
 .bottom-legend-div {

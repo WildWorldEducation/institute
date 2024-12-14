@@ -394,7 +394,12 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
         /* Truncate Vertical Tree to grade level based on which button student presses
          on grade level key.
         */
-        let subject = req.query.subject;
+        let subjects = req.query.subjects;
+        console.log(subjects);
+        for (let i = 0; i < subjects.length; i++) {
+            console.log(subjects[i]);
+        }
+        return;
         // Level will be sent in query param (eg: ?level='middle_school')
         const level = req.query.level;
         // Default is to show all.
