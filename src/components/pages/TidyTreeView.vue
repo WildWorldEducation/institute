@@ -325,7 +325,7 @@ export default {
                 v-if="!isGradeFilter"
                 width="18"
                 height="18"
-                fill="black"
+                fill="white"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
             >
@@ -339,7 +339,7 @@ export default {
                 v-else
                 width="18"
                 height="18"
-                fill="black"
+                fill="white"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
             >
@@ -482,7 +482,7 @@ export default {
                 v-if="!isSubjectFilter"
                 width="18"
                 height="18"
-                fill="black"
+                fill="white"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
             >
@@ -496,7 +496,7 @@ export default {
                 v-else
                 width="18"
                 height="18"
-                fill="black"
+                fill="white"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
             >
@@ -512,6 +512,12 @@ export default {
 <style>
 .chosen-subject,
 .switch-btn {
+    background-color: var(--primary-color) !important;
+    color: white;
+}
+
+.chosen-subject:hover,
+.switch-btn:hover {
     background-color: var(--primary-color) !important;
     color: white;
 }
