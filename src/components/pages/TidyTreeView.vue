@@ -248,143 +248,92 @@ export default {
 
     <!-- Bottom grade level truncation filters
         Not available on phone view -->
-    <div class="position-absolute bottom-legend-div">
-        <!-- <div class="mobile-legend">
-            <div class="legend d-flex flex-column">
-                <div>
-                    <button
-                        class="btn grade-school me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel(
-                                'grade_school'
-                            )
-                        "
-                    >
-                        GS
-                    </button>
-                    <button
-                        class="btn middle-school me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel(
-                                'middle_school'
-                            )
-                        "
-                    >
-                        MS
-                    </button>
-                </div>
-                <div>
-                    <button
-                        class="btn high-school me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel(
-                                'high_school'
-                            )
-                        "
-                    >
-                        HS
-                    </button>
-                    <button
-                        class="btn college me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel('college')
-                        "
-                    >
-                        C
-                    </button>
-                    <button
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel('phd')
-                        "
-                        class="btn phd"
-                    >
-                        PHD
-                    </button>
-                </div>
-            </div>
-        </div> -->
-        <div class="tablet-and-up-legend">
-            <div v-if="filterType == 'grade'" class="legend">
-                <!-- Grade buttons -->
-                <button
-                    class="btn grade-school me-2"
-                    @click="
-                        this.gradeFilter = 'grade_school';
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
+    <div class="tablet-and-up-legend position-absolute bottom-legend-div">
+        <div v-show="filterType == 'grade'" class="legend">
+            <!-- Grade buttons -->
+            <button
+                class="btn grade-school me-2"
+                @click="
+                    this.gradeFilter = 'grade_school';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Grade school
+            </button>
+            <button
+                class="btn middle-school me-2"
+                @click="
+                    this.gradeFilter = 'middle_school';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Middle school
+            </button>
+            <button
+                class="btn high-school me-2"
+                @click="
+                    this.gradeFilter = 'high_school';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                High school
+            </button>
+            <button
+                class="btn college me-2"
+                @click="
+                    this.gradeFilter = 'college';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                College
+            </button>
+            <button
+                class="btn phd me-2"
+                @click="
+                    this.gradeFilter = 'phd';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                PHD
+            </button>
+            <button class="btn legend-btn me-2" @click="switchFilters()">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    height="18"
+                    width="18"
+                    fill="black"
                 >
-                    Grade school
-                </button>
+                    <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <path
+                        d="M386.3 160L336 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-128c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"
+                    />
+                </svg>
+            </button>
+        </div>
+        <div v-show="filterType == 'subject'">
+            <div class="legend">
                 <button
-                    class="btn middle-school me-2"
-                    @click="
-                        this.gradeFilter = 'middle_school';
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Middle school
-                </button>
-                <button
-                    class="btn high-school me-2"
-                    @click="
-                        this.gradeFilter = 'high_school';
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    High school
-                </button>
-                <button
-                    class="btn college me-2"
-                    @click="
-                        this.gradeFilter = 'college';
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    College
-                </button>
-                <button
-                    class="btn phd me-2"
-                    @click="
-                        this.gradeFilter = 'phd';
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    PHD
-                </button>
-                <button class="btn legend-btn me-2" @click="switchFilters()">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        height="18"
-                        width="18"
-                        fill="black"
-                    >
-                        <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                        <path
-                            d="M386.3 160L336 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-128c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"
-                        />
-                    </svg>
-                </button>
-            </div>
-            <div v-else class="legend">
-                <button
-                    class="btn legend-btn me-2"
-                    :class="{ 'chosen-subject': isLanguage }"
+                    class="btn me-2"
+                    :class="{
+                        'chosen-subject': isLanguage,
+                        'hidden-subject': !isLanguage
+                    }"
                     @click="
                         this.isLanguage = !this.isLanguage;
                         this.updateSubjectFilters();
@@ -397,8 +346,11 @@ export default {
                     Language
                 </button>
                 <button
-                    class="btn legend-btn me-2"
-                    :class="{ 'chosen-subject': isMathematics }"
+                    class="btn me-2"
+                    :class="{
+                        'chosen-subject': isMathematics,
+                        'hidden-subject': !isMathematics
+                    }"
                     @click="
                         this.isMathematics = !this.isMathematics;
                         this.updateSubjectFilters();
@@ -410,38 +362,13 @@ export default {
                 >
                     Mathematics
                 </button>
+
                 <button
-                    class="btn legend-btn me-2"
-                    :class="{ 'chosen-subject': isScienceAndInvention }"
-                    @click="
-                        this.isScienceAndInvention =
-                            !this.isScienceAndInvention;
-                        this.updateSubjectFilters();
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Science & Invention
-                </button>
-                <button
-                    class="btn legend-btn me-2"
-                    :class="{ 'chosen-subject': isComputerScience }"
-                    @click="
-                        this.isComputerScience = !this.isComputerScience;
-                        this.updateSubjectFilters();
-                        $refs.childComponent.filter(
-                            this.gradeFilter,
-                            this.subjectFilters
-                        );
-                    "
-                >
-                    Computer Science
-                </button>
-                <button
-                    class="btn legend-btn me-2"
-                    :class="{ 'chosen-subject': isHistory }"
+                    class="btn me-2"
+                    :class="{
+                        'chosen-subject': isHistory,
+                        'hidden-subject': !isHistory
+                    }"
                     @click="
                         this.isHistory = !this.isHistory;
                         this.updateSubjectFilters();
@@ -454,8 +381,11 @@ export default {
                     History
                 </button>
                 <button
-                    class="btn legend-btn me-2"
-                    :class="{ 'chosen-subject': isLife }"
+                    class="btn me-2"
+                    :class="{
+                        'chosen-subject': isLife,
+                        'hidden-subject': !isLife
+                    }"
                     @click="
                         this.isLife = !this.isLife;
                         this.updateSubjectFilters();
@@ -468,8 +398,11 @@ export default {
                     Life
                 </button>
                 <button
-                    class="btn legend-btn me-2"
-                    :class="{ 'chosen-subject': isDangerousIdeas }"
+                    class="btn me-2"
+                    :class="{
+                        'chosen-subject': isDangerousIdeas,
+                        'hidden-subject': !isDangerousIdeas
+                    }"
                     @click="
                         this.isDangerousIdeas = !this.isDangerousIdeas;
                         this.updateSubjectFilters();
@@ -481,6 +414,44 @@ export default {
                 >
                     Dangerous Ideas
                 </button>
+            </div>
+            <div class="legend">
+                <button
+                    class="btn me-2"
+                    :class="{
+                        'chosen-subject': isComputerScience,
+                        'hidden-subject': !isComputerScience
+                    }"
+                    @click="
+                        this.isComputerScience = !this.isComputerScience;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Computer Science
+                </button>
+                <button
+                    class="btn me-2"
+                    :class="{
+                        'chosen-subject': isScienceAndInvention,
+                        'hidden-subject': !isScienceAndInvention
+                    }"
+                    @click="
+                        this.isScienceAndInvention =
+                            !this.isScienceAndInvention;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Science & Invention
+                </button>
+
                 <button class="btn legend-btn" @click="switchFilters()">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -503,16 +474,18 @@ export default {
 <style>
 .chosen-subject {
     background-color: var(--primary-color) !important;
+    color: white;
+}
+
+.hidden-subject {
+    background-color: grey !important;
+    color: black;
 }
 
 .bottom-legend-div {
     left: 50%;
     transform: translateX(-50%);
     bottom: 10px;
-}
-
-.legend .btn {
-    color: white;
 }
 
 .legend {
@@ -628,21 +601,6 @@ export default {
 }
 .legend .phd {
     background-color: #ff0000;
-}
-
-.legend-btn {
-    background-color: #467caf;
-    border: #184e80;
-    color: white;
-    max-height: 40px;
-}
-
-.legend-btn:hover {
-    background-color: #133b61;
-}
-
-.legend-btn:active {
-    background-color: #133b61;
 }
 
 .skill-tree-input {
