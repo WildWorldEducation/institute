@@ -506,7 +506,8 @@ export default {
 }
 
 .bottom-legend-div {
-    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
     bottom: 10px;
 }
 

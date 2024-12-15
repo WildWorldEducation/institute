@@ -1,8 +1,14 @@
 <script>
 // Joystick library.
 import nipplejs from 'nipplejs';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 export default {
-    setup() {},
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            userDetailsStore
+        };
+    },
     data() {
         return {
             // the time user hold the joystick in second
@@ -25,6 +31,21 @@ export default {
     },
     computed: {},
     async mounted() {
+        let joystickColor = '#184e80';
+        switch (this.userDetailsStore.theme) {
+            case 'original':
+                joystickColor = '#184e80';
+                break;
+            case 'apprentice':
+                joystickColor = '#000000';
+                break;
+            case 'scholar':
+                joystickColor = '#ffffff';
+                break;
+            default:
+                joystickColor = '#184e80';
+                break;
+        }
         // store initial scale
         this.oldScale = this.$parent.scale;
         // Panning, using NippleJS.
@@ -33,7 +54,7 @@ export default {
             mode: 'static',
             dynamicPage: true,
             position: { right: '70%', bottom: '33%' },
-            color: '#184e80'
+            color: joystickColor
         });
 
         // we calculate the interval time with fps
@@ -408,7 +429,6 @@ export default {
 #panJoystick {
     width: 100px;
     height: 100px;
-    opacity: 0.7;
 }
 
 #wrapper {
