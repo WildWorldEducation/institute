@@ -629,7 +629,9 @@ router.get('/student-of-instructors/:instructorId', (req, res, next) => {
         let sqlQuery = `
         SELECT instructor_students.instructor_id, users.first_name, users.last_name, users.role, users.username, users.id, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', users.id, '?v=', UNIX_TIMESTAMP()) AS avatar 
         FROM instructor_students JOIN users ON users.id = instructor_students.student_id
-        WHERE instructor_students.instructor_id = ${conn.escape(req.params.instructorId)}
+        WHERE instructor_students.instructor_id = ${conn.escape(
+            req.params.instructorId
+        )}
         `;
 
         conn.query(sqlQuery, (err, results) => {
