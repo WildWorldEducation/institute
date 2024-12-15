@@ -17,7 +17,26 @@ export default {
             searchText: '',
             lastChooseResult: '',
             showResult: false,
-            showConfirmModal: false
+            showConfirmModal: false,
+            isGradeFilter: true,
+            isSubjectFilter: true,
+            gradeFilter: 'phd',
+            isLanguage: true,
+            isMathematics: true,
+            isScienceAndInvention: true,
+            isComputerScience: true,
+            isHistory: true,
+            isLife: true,
+            isDangerousIdeas: true,
+            subjectFilters: [
+                'Language',
+                'Mathematics',
+                'Science & Invention',
+                'Computer Science',
+                'History',
+                'Life',
+                'Dangerous Ideas'
+            ]
         };
     },
     created() {},
@@ -59,6 +78,20 @@ export default {
         },
         clearResult() {
             this.$refs.childComponent.resetPos();
+        },
+        updateSubjectFilters() {
+            this.subjectFilters = [];
+
+            if (this.isLanguage) this.subjectFilters.push('Language');
+            if (this.isMathematics) this.subjectFilters.push('Mathematics');
+            if (this.isScienceAndInvention)
+                this.subjectFilters.push('Science & Invention');
+            if (this.isComputerScience)
+                this.subjectFilters.push('Computer Science');
+            if (this.isHistory) this.subjectFilters.push('History');
+            if (this.isLife) this.subjectFilters.push('Life');
+            if (this.isDangerousIdeas)
+                this.subjectFilters.push('Dangerous Ideas');
         }
     }
 };
@@ -214,120 +247,301 @@ export default {
             <span>Loading...</span>
         </template>
     </Suspense>
-    <div class="position-absolute bottom-legend-div">
-        <!-- <div class="mobile-legend">
-            <div class="legend d-flex flex-column">
-                <div>
-                    <button
-                        class="btn grade-school me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel(
-                                'grade_school'
-                            )
-                        "
-                    >
-                        GS
-                    </button>
-                    <button
-                        class="btn middle-school me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel(
-                                'middle_school'
-                            )
-                        "
-                    >
-                        MS
-                    </button>
-                </div>
-                <div>
-                    <button
-                        class="btn high-school me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel(
-                                'high_school'
-                            )
-                        "
-                    >
-                        HS
-                    </button>
-                    <button
-                        class="btn college me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel('college')
-                        "
-                    >
-                        C
-                    </button>
-                    <button
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel('phd')
-                        "
-                        class="btn phd"
-                    >
-                        PHD
-                    </button>
-                </div>
-            </div>
-        </div> -->
-        <div class="tablet-and-up-legend">
-            <div class="legend">
-                <!-- Grade buttons -->
-                <button
-                    class="btn grade-school me-2"
-                    @click="
-                        $refs.childComponent.truncateToGradeLevel(
-                            'grade_school'
-                        )
-                    "
-                >
-                    Grade school
-                </button>
-                <button
-                    class="btn middle-school me-2"
-                    @click="
-                        $refs.childComponent.truncateToGradeLevel(
-                            'middle_school'
-                        )
-                    "
-                >
-                    Middle school
-                </button>
-                <button
-                    class="btn high-school me-2"
-                    @click="
-                        $refs.childComponent.truncateToGradeLevel('high_school')
-                    "
-                >
-                    High school
-                </button>
-                <button
-                    class="btn college me-2"
-                    @click="
-                        $refs.childComponent.truncateToGradeLevel('college')
-                    "
-                >
-                    College
-                </button>
-                <button
-                    class="btn phd me-2"
-                    @click="$refs.childComponent.truncateToGradeLevel('phd')"
-                >
-                    PHD
-                </button>
-            </div>
+
+    <!-- Bottom grade level truncation filters
+        Not available on phone view -->
+    <div
+        class="tablet-and-up-legend position-absolute bottom-legend-div d-flex"
+    >
+        <div v-if="isGradeFilter" class="legend">
+            <!-- Grade buttons -->
+            <button
+                class="btn grade-school me-2"
+                @click="
+                    this.gradeFilter = 'grade_school';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Grade school
+            </button>
+            <button
+                class="btn middle-school me-2"
+                @click="
+                    this.gradeFilter = 'middle_school';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Middle school
+            </button>
+            <button
+                class="btn high-school me-2"
+                @click="
+                    this.gradeFilter = 'high_school';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                High school
+            </button>
+            <button
+                class="btn college me-2"
+                @click="
+                    this.gradeFilter = 'college';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                College
+            </button>
+            <button
+                class="btn phd me-2"
+                @click="
+                    this.gradeFilter = 'phd';
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                PHD
+            </button>
         </div>
+        <button
+            class="btn switch-btn me-2"
+            @click="isGradeFilter = !isGradeFilter"
+        >
+            <!-- Plus sign -->
+            <svg
+                v-if="!isGradeFilter"
+                width="18"
+                height="18"
+                fill="black"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+            >
+                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                />
+            </svg>
+            <!-- Minus sign -->
+            <svg
+                v-else
+                width="18"
+                height="18"
+                fill="black"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+            >
+                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                />
+            </svg>
+        </button>
+    </div>
+    <!-- Left root subject filters  -->
+    <div class="tablet-and-up-legend position-absolute left-legend-div">
+        <div v-if="isSubjectFilter" class="d-flex flex-column">
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isLanguage,
+                    'hidden-subject': !isLanguage
+                }"
+                @click="
+                    this.isLanguage = !this.isLanguage;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Language
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isMathematics,
+                    'hidden-subject': !isMathematics
+                }"
+                @click="
+                    this.isMathematics = !this.isMathematics;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Math
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isHistory,
+                    'hidden-subject': !isHistory
+                }"
+                @click="
+                    this.isHistory = !this.isHistory;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                History
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isLife,
+                    'hidden-subject': !isLife
+                }"
+                @click="
+                    this.isLife = !this.isLife;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Life
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isComputerScience,
+                    'hidden-subject': !isComputerScience
+                }"
+                @click="
+                    this.isComputerScience = !this.isComputerScience;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Computer Science
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isScienceAndInvention,
+                    'hidden-subject': !isScienceAndInvention
+                }"
+                @click="
+                    this.isScienceAndInvention = !this.isScienceAndInvention;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Science & Invention
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isDangerousIdeas,
+                    'hidden-subject': !isDangerousIdeas
+                }"
+                @click="
+                    this.isDangerousIdeas = !this.isDangerousIdeas;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Dangerous Ideas
+            </button>
+        </div>
+        <button
+            class="btn switch-btn"
+            @click="isSubjectFilter = !isSubjectFilter"
+        >
+            <!-- Plus sign -->
+            <svg
+                v-if="!isSubjectFilter"
+                width="18"
+                height="18"
+                fill="black"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+            >
+                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                />
+            </svg>
+            <!-- Minus sign -->
+            <svg
+                v-else
+                width="18"
+                height="18"
+                fill="black"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+            >
+                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                />
+            </svg>
+        </button>
     </div>
 </template>
 
 <style>
+.chosen-subject,
+.switch-btn {
+    background-color: var(--primary-color) !important;
+    color: white;
+}
+
+.hidden-subject {
+    background-color: grey !important;
+    color: black;
+}
+
+.hidden-subject:hover {
+    background-color: var(--primary-color) !important;
+    color: white;
+    border: 1px solid black;
+}
+
 .bottom-legend-div {
     left: 50%;
     transform: translateX(-50%);
     bottom: 10px;
 }
 
-#legend .btn {
-    color: white;
+.left-legend-div {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 3px;
+}
+
+.left-legend-div button {
+    border: 1px solid black;
+    width: fit-content;
 }
 
 .legend {
@@ -348,19 +562,6 @@ export default {
     width: 100%;
     z-index: 2;
     top: 70px;
-}
-
-#info-button {
-    width: 50px;
-    height: 20px;
-    padding: 0px;
-    float: right;
-}
-
-#info-button svg {
-    width: 25px;
-    height: 15px;
-    margin-bottom: 8px;
 }
 
 /* Grade level legend */
@@ -456,21 +657,6 @@ export default {
 }
 .legend .phd {
     background-color: #ff0000;
-}
-
-.legend-btn {
-    background-color: #184e80;
-    border: #184e80;
-    color: white;
-    max-height: 40px;
-}
-
-.legend-btn:hover {
-    background-color: #133b61;
-}
-
-.legend-btn:active {
-    background-color: #133b61;
 }
 
 .skill-tree-input {

@@ -394,6 +394,8 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
         /* Truncate Vertical Tree to grade level based on which button student presses
          on grade level key.
         */
+        let subjects = req.query.subjects;
+
         // Level will be sent in query param (eg: ?level='middle_school')
         const level = req.query.level;
         // Default is to show all.
@@ -532,8 +534,10 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
                         let studentSkills = [];
                         for (var i = 0; i < results.length; i++) {
                             if (
-                                results[i].parent == null ||
-                                results[i].parent == 0
+                                (results[i].parent == null ||
+                                    results[i].parent == 0) &&
+                                // check if root name is in list of root subjects to show
+                                subjects.includes(results[i].skill_name)
                             ) {
                                 studentSkills.push(results[i]);
                             }
