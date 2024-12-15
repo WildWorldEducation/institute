@@ -15,6 +15,7 @@ export default {
             userDetailsStore
         };
     },
+    props: ['searchBarCurrentUserId'],
     data() {
         return {
             currentUserId: null
@@ -25,6 +26,15 @@ export default {
         changeUserId(user) {
             this.currentUserId = user.id;
             this.$emit('changeUserId', user);
+        }
+    },
+    watch: {
+        searchBarCurrentUserId: {
+            handler(newValue) {
+                console.log('new value');
+                console.log(newValue);
+                this.currentUserId = newValue;
+            }
         }
     }
 };

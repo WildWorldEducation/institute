@@ -36,7 +36,8 @@ export default {
             students: [],
             // Flag to decide whether to show the details panel. Will be false if there are no users,
             showUserInfo: true,
-            isLoading: true
+            isLoading: true,
+            currentUserId: ''
         };
     },
     components: {
@@ -169,6 +170,10 @@ export default {
         updateShowUserDetails(newUser) {
             this.showDetails = true;
             this.user = newUser;
+        },
+        // only for search bar to update the choose user id
+        searchBarUserId(userId) {
+            this.currentUserId = userId;
         }
     }
 };
@@ -206,7 +211,10 @@ export default {
         "
         class="d-flex flex-row-reverse mt-3 justify-contents-between"
     >
-        <SearchUserBar :updateUserDetails="updateShowUserDetails" />
+        <SearchUserBar
+            :updateUserDetails="updateShowUserDetails"
+            :updateUserId="searchBarUserId"
+        />
     </div>
     <!-- Loading animation -->
     <div
@@ -218,7 +226,10 @@ export default {
     <div v-else id="user-container" class="container-fluid">
         <div class="row position-relative">
             <div class="col-lg-4 col-md-5">
-                <UsersList @changeUserId="changeUserId($event)" />
+                <UsersList
+                    @changeUserId="changeUserId($event)"
+                    :searchBarCurrentUserId="currentUserId"
+                />
             </div>
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
