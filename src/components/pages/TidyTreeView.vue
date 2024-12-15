@@ -30,15 +30,7 @@ export default {
             subjectFilters: []
         };
     },
-    created() {
-        this.subjectFilters.push('Language');
-        this.subjectFilters.push('Mathematics');
-        this.subjectFilters.push('Science & Invention');
-        this.subjectFilters.push('Computer Science');
-        this.subjectFilters.push('History');
-        this.subjectFilters.push('Life');
-        this.subjectFilters.push('Dangerous Ideas');
-    },
+    created() {},
     mounted() {
         this.GetGoogleLoginResult();
     },
@@ -510,7 +502,7 @@ export default {
 
 <style>
 .chosen-subject {
-    background-color: white !important;
+    background-color: var(--primary-color) !important;
 }
 
 .bottom-legend-div {

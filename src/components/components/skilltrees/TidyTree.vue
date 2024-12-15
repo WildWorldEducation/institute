@@ -62,7 +62,15 @@ export default {
             resultNode: null,
             clickMode: 'showPanel',
             truncateLevel: 'phd',
-            subjectFilters: []
+            subjectFilters: [
+                'Language',
+                'Mathematics',
+                'Science & Invention',
+                'Computer Science',
+                'History',
+                'Life',
+                'Dangerous Ideas'
+            ]
         };
     },
     components: {

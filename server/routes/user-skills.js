@@ -396,10 +396,7 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
         */
         let subjects = req.query.subjects;
         console.log(subjects);
-        for (let i = 0; i < subjects.length; i++) {
-            console.log(subjects[i]);
-        }
-        return;
+
         // Level will be sent in query param (eg: ?level='middle_school')
         const level = req.query.level;
         // Default is to show all.
@@ -537,17 +534,11 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
 
                         let studentSkills = [];
                         for (var i = 0; i < results.length; i++) {
-                            if (subject == 'All') {
-                                if (
-                                    results[i].parent == null ||
-                                    results[i].parent == 0
-                                ) {
-                                    studentSkills.push(results[i]);
-                                }
-                            } else if (
+                            if (
                                 (results[i].parent == null ||
                                     results[i].parent == 0) &&
-                                results[i].skill_name == subject
+                                // check if root name is in list of root subjects to show
+                                subjects.includes(results[i].skill_name)
                             ) {
                                 studentSkills.push(results[i]);
                             }
