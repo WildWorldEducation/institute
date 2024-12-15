@@ -18,7 +18,8 @@ export default {
             lastChooseResult: '',
             showResult: false,
             showConfirmModal: false,
-            filterType: 'grade',
+            isGradeFilter: true,
+            isSubjectFilter: true,
             gradeFilter: 'phd',
             isLanguage: true,
             isMathematics: true,
@@ -27,8 +28,15 @@ export default {
             isHistory: true,
             isLife: true,
             isDangerousIdeas: true,
-            subjectFilters: [],
-            isMobileCheck: window.innerWidth
+            subjectFilters: [
+                'Language',
+                'Mathematics',
+                'Science & Invention',
+                'Computer Science',
+                'History',
+                'Life',
+                'Dangerous Ideas'
+            ]
         };
     },
     created() {},
@@ -70,13 +78,6 @@ export default {
         },
         clearResult() {
             this.$refs.childComponent.resetPos();
-        },
-        switchFilters() {
-            if (this.filterType == 'grade') {
-                this.filterType = 'subject';
-            } else {
-                this.filterType = 'grade';
-            }
         },
         updateSubjectFilters() {
             this.subjectFilters = [];
@@ -250,10 +251,9 @@ export default {
     <!-- Bottom grade level truncation filters
         Not available on phone view -->
     <div
-        v-if="filterType == 'grade'"
-        class="tablet-and-up-legend position-absolute bottom-legend-div"
+        class="tablet-and-up-legend position-absolute bottom-legend-div d-flex"
     >
-        <div class="legend">
+        <div v-if="isGradeFilter" class="legend">
             <!-- Grade buttons -->
             <button
                 class="btn grade-school me-2"
@@ -315,159 +315,194 @@ export default {
             >
                 PHD
             </button>
-            <button class="btn switch-btn me-2" @click="switchFilters()">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    height="18"
-                    width="18"
-                    fill="black"
-                >
-                    <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                    <path
-                        d="M386.3 160L336 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-128c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"
-                    />
-                </svg>
-            </button>
         </div>
+        <button
+            class="btn switch-btn me-2"
+            @click="isGradeFilter = !isGradeFilter"
+        >
+            <!-- Plus sign -->
+            <svg
+                v-if="!isGradeFilter"
+                width="18"
+                height="18"
+                fill="black"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+            >
+                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                />
+            </svg>
+            <!-- Minus sign -->
+            <svg
+                v-else
+                width="18"
+                height="18"
+                fill="black"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+            >
+                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                />
+            </svg>
+        </button>
     </div>
     <!-- Left root subject filters  -->
-    <div
-        v-else
-        class="tablet-and-up-legend position-absolute left-legend-div d-flex flex-column"
-    >
-        <button
-            class="btn mb-2"
-            :class="{
-                'chosen-subject': isLanguage,
-                'hidden-subject': !isLanguage
-            }"
-            @click="
-                this.isLanguage = !this.isLanguage;
-                this.updateSubjectFilters();
-                $refs.childComponent.filter(
-                    this.gradeFilter,
-                    this.subjectFilters
-                );
-            "
-        >
-            Language
-        </button>
-        <button
-            class="btn mb-2"
-            :class="{
-                'chosen-subject': isMathematics,
-                'hidden-subject': !isMathematics
-            }"
-            @click="
-                this.isMathematics = !this.isMathematics;
-                this.updateSubjectFilters();
-                $refs.childComponent.filter(
-                    this.gradeFilter,
-                    this.subjectFilters
-                );
-            "
-        >
-            <span>Math</span>
-        </button>
-        <button
-            class="btn mb-2"
-            :class="{
-                'chosen-subject': isHistory,
-                'hidden-subject': !isHistory
-            }"
-            @click="
-                this.isHistory = !this.isHistory;
-                this.updateSubjectFilters();
-                $refs.childComponent.filter(
-                    this.gradeFilter,
-                    this.subjectFilters
-                );
-            "
-        >
-            History
-        </button>
-        <button
-            class="btn mb-2"
-            :class="{
-                'chosen-subject': isLife,
-                'hidden-subject': !isLife
-            }"
-            @click="
-                this.isLife = !this.isLife;
-                this.updateSubjectFilters();
-                $refs.childComponent.filter(
-                    this.gradeFilter,
-                    this.subjectFilters
-                );
-            "
-        >
-            Life
-        </button>
-        <button
-            class="btn mb-2"
-            :class="{
-                'chosen-subject': isComputerScience,
-                'hidden-subject': !isComputerScience
-            }"
-            @click="
-                this.isComputerScience = !this.isComputerScience;
-                this.updateSubjectFilters();
-                $refs.childComponent.filter(
-                    this.gradeFilter,
-                    this.subjectFilters
-                );
-            "
-        >
-            <span>C.S.</span>
-        </button>
-        <button
-            class="btn mb-2"
-            :class="{
-                'chosen-subject': isScienceAndInvention,
-                'hidden-subject': !isScienceAndInvention
-            }"
-            @click="
-                this.isScienceAndInvention = !this.isScienceAndInvention;
-                this.updateSubjectFilters();
-                $refs.childComponent.filter(
-                    this.gradeFilter,
-                    this.subjectFilters
-                );
-            "
-        >
-            <span>S. & I.</span>
-        </button>
-        <button
-            class="btn mb-2"
-            :class="{
-                'chosen-subject': isDangerousIdeas,
-                'hidden-subject': !isDangerousIdeas
-            }"
-            @click="
-                this.isDangerousIdeas = !this.isDangerousIdeas;
-                this.updateSubjectFilters();
-                $refs.childComponent.filter(
-                    this.gradeFilter,
-                    this.subjectFilters
-                );
-            "
-        >
-            <span v-if="isMobileCheck">Dangerous Ideas</span>
-            <span v-else>D. I.</span>
-        </button>
-
-        <button class="btn switch-btn" @click="switchFilters()">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                height="18"
-                width="18"
-                fill="black"
+    <div class="tablet-and-up-legend position-absolute left-legend-div">
+        <div v-if="isSubjectFilter" class="d-flex flex-column">
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isLanguage,
+                    'hidden-subject': !isLanguage
+                }"
+                @click="
+                    this.isLanguage = !this.isLanguage;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
             >
-                <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                Language
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isMathematics,
+                    'hidden-subject': !isMathematics
+                }"
+                @click="
+                    this.isMathematics = !this.isMathematics;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Math
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isHistory,
+                    'hidden-subject': !isHistory
+                }"
+                @click="
+                    this.isHistory = !this.isHistory;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                History
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isLife,
+                    'hidden-subject': !isLife
+                }"
+                @click="
+                    this.isLife = !this.isLife;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Life
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isComputerScience,
+                    'hidden-subject': !isComputerScience
+                }"
+                @click="
+                    this.isComputerScience = !this.isComputerScience;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Computer Science
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isScienceAndInvention,
+                    'hidden-subject': !isScienceAndInvention
+                }"
+                @click="
+                    this.isScienceAndInvention = !this.isScienceAndInvention;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Science & Invention
+            </button>
+            <button
+                class="btn mb-2"
+                :class="{
+                    'chosen-subject': isDangerousIdeas,
+                    'hidden-subject': !isDangerousIdeas
+                }"
+                @click="
+                    this.isDangerousIdeas = !this.isDangerousIdeas;
+                    this.updateSubjectFilters();
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
+                "
+            >
+                Dangerous Ideas
+            </button>
+        </div>
+        <button
+            class="btn switch-btn"
+            @click="isSubjectFilter = !isSubjectFilter"
+        >
+            <!-- Plus sign -->
+            <svg
+                v-if="!isSubjectFilter"
+                width="18"
+                height="18"
+                fill="black"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+            >
+                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                 <path
-                    d="M386.3 160L336 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-128c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"
+                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                />
+            </svg>
+            <!-- Minus sign -->
+            <svg
+                v-else
+                width="18"
+                height="18"
+                fill="black"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+            >
+                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                <path
+                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
                 />
             </svg>
         </button>
@@ -489,6 +524,7 @@ export default {
 .hidden-subject:hover {
     background-color: var(--primary-color) !important;
     color: white;
+    border: 1px solid black;
 }
 
 .bottom-legend-div {
