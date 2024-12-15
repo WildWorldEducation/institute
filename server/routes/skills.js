@@ -408,28 +408,9 @@ router.get('/nested-list', (req, res, next) => {
 // Filtered Nested List - for "Instructor Role" and for "Guest Access" (no account)
 router.get('/filtered-nested-list', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
-
-    /* Truncate Vertical Tree to grade level based on which button student presses
-         on grade level key.
-        */
-    // Level will be sent in query param (eg: ?level='middle_school')
-    const level = req.query.level;
     // Default is to show all.
     let levelsToShow =
         "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
-    if (level == 'grade_school') {
-        levelsToShow = "'grade_school'";
-    } else if (level == 'middle_school') {
-        levelsToShow = "'grade_school', 'middle_school'";
-    } else if (level == 'high_school') {
-        levelsToShow = "'grade_school', 'middle_school', 'high_school'";
-    } else if (level == 'college') {
-        levelsToShow =
-            "'grade_school', 'middle_school', 'high_school', 'college'";
-    } else if (level == 'phd') {
-        levelsToShow =
-            "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
-    }
 
     res.setHeader('Content-Type', 'application/json');
     let sqlQuery = `
