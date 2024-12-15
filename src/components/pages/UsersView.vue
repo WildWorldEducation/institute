@@ -170,11 +170,8 @@ export default {
         updateShowUserDetails(newUser) {
             this.showDetails = true;
             this.user = newUser;
-        },
-        // only for search bar to update the choose user id
-        searchBarUserId(userId) {
-            this.currentUserId = userId;
         }
+        // only for search bar to update the choose user id
     }
 };
 </script>
@@ -211,10 +208,7 @@ export default {
         "
         class="d-flex flex-row-reverse mt-3 justify-contents-between"
     >
-        <SearchUserBar
-            :updateUserDetails="updateShowUserDetails"
-            :updateUserId="searchBarUserId"
-        />
+        <SearchUserBar :updateUserDetails="updateShowUserDetails" />
     </div>
     <!-- Loading animation -->
     <div

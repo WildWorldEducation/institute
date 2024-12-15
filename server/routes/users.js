@@ -627,7 +627,7 @@ router.get('/student-of-instructors/:instructorId', (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Select student info base on instructor id.
         let sqlQuery = `
-        SELECT instructor_students.instructor_id, users.first_name, users.last_name, users.role, users.username, users.id 
+        SELECT instructor_students.instructor_id, users.first_name, users.last_name, users.role, users.username, users.id, users.avatar 
         FROM instructor_students JOIN users ON users.id = instructor_students.student_id
         WHERE instructor_students.instructor_id = ${conn.escape(req.params.instructorId)}
         `;

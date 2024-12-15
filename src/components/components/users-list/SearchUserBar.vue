@@ -17,7 +17,7 @@ export default {
             userDetailsStore
         };
     },
-    props: ['updateUserDetails', 'updateUserId'],
+    props: ['updateUserDetails'],
     components: {
         LoadingSpinner,
         FailsModal
@@ -97,7 +97,7 @@ export default {
             };
             this.updateUserDetails(returnUserObject);
 
-            this.updateUserId(user.id);
+            this.$parent.currentUserId = user.id;
         },
         handleInputEnterPress() {
             // find user by arrow key
@@ -122,7 +122,7 @@ export default {
             }
             this.chooseUser = true;
             this.handleChooseResult(result);
-            this.updateUserId(result.id);
+            this.$parent.currentUserId = result.id;
         },
         handleFailsOkClick() {
             this.showFailsModal = false;
