@@ -1026,7 +1026,7 @@ export default {
 
             let translateX = 0;
             let translateY = 0;
-            if (typeof node !== 'undefined') {
+            if (typeof node !== 'undefined' && node != null) {
                 translateX =
                     -node.y * this.scale +
                     (window.innerWidth / (2 * this.scale)) * this.scale;
