@@ -31,15 +31,13 @@ export default {
         };
     },
     created() {
-        this.subjectFilters.push({ Language: this.isLanguage });
-        this.subjectFilters.push({ Mathematics: this.isMathematics });
-        this.subjectFilters.push({
-            ScienceAndInvention: this.isScienceAndInvention
-        });
-        this.subjectFilters.push({ ComputerScience: this.isComputerScience });
-        this.subjectFilters.push({ History: this.isHistory });
-        this.subjectFilters.push({ Life: this.isLife });
-        this.subjectFilters.push({ DangerousIdeas: this.isDangerousIdeas });
+        this.subjectFilters.push('Language');
+        this.subjectFilters.push('Mathematics');
+        this.subjectFilters.push('Science & Invention');
+        this.subjectFilters.push('Computer Science');
+        this.subjectFilters.push('History');
+        this.subjectFilters.push('Life');
+        this.subjectFilters.push('Dangerous Ideas');
     },
     mounted() {
         this.GetGoogleLoginResult();
@@ -90,17 +88,16 @@ export default {
         updateSubjectFilters() {
             this.subjectFilters = [];
 
-            this.subjectFilters.push({ Language: this.isLanguage });
-            this.subjectFilters.push({ Mathematics: this.isMathematics });
-            this.subjectFilters.push({
-                ScienceAndInvention: this.isScienceAndInvention
-            });
-            this.subjectFilters.push({
-                ComputerScience: this.isComputerScience
-            });
-            this.subjectFilters.push({ History: this.isHistory });
-            this.subjectFilters.push({ Life: this.isLife });
-            this.subjectFilters.push({ DangerousIdeas: this.isDangerousIdeas });
+            if (this.isLanguage) this.subjectFilters.push('Language');
+            if (this.isMathematics) this.subjectFilters.push('Mathematics');
+            if (this.isScienceAndInvention)
+                this.subjectFilters.push('Science & Invention');
+            if (this.isComputerScience)
+                this.subjectFilters.push('Computer Science');
+            if (this.isHistory) this.subjectFilters.push('History');
+            if (this.isLife) this.subjectFilters.push('Life');
+            if (this.isDangerousIdeas)
+                this.subjectFilters.push('Dangerous Ideas');
         }
     }
 };

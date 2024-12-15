@@ -32,9 +32,11 @@ export const useSkillTreeStore = defineStore('skillTree', {
         // API call for Vertical skill tree.
         async getVerticalTreeUserSkills(level, subjects) {
             console.log(subjects);
-            
-            //subject = subject.replace(/&/g, '%26');
-            let subject = 'Life';
+            for (let i = 0; i < subjects.length; i++) {
+                subjects[i] = subjects[i].replace(/&/g, '%26');
+            }
+            console.log(subjects);
+
             const userDetailsStore = useUserDetailsStore();
             const userDetails = await userDetailsStore.getUserDetails();
             const result = await fetch(

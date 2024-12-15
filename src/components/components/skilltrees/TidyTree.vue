@@ -62,7 +62,7 @@ export default {
             resultNode: null,
             clickMode: 'showPanel',
             truncateLevel: 'phd',
-            subject: 'All'
+            subjectFilters: []
         };
     },
     components: {
@@ -81,7 +81,7 @@ export default {
         ) {
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.truncateLevel,
-                this.subject
+                this.subjectFilters
             );
         }
         let userSkills = '';
