@@ -395,7 +395,6 @@ router.get('/filter-by-cohort/vertical-tree/:userId', (req, res, next) => {
          on grade level key.
         */
         let subjects = req.query.subjects;
-        console.log(subjects);
 
         // Level will be sent in query param (eg: ?level='middle_school')
         const level = req.query.level;
