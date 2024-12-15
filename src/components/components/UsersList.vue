@@ -31,8 +31,6 @@ export default {
     watch: {
         searchBarCurrentUserId: {
             handler(newValue) {
-                console.log('new value');
-                console.log(newValue);
                 this.currentUserId = newValue;
             }
         }

@@ -117,6 +117,8 @@ export default {
             // turn on the show details flag
             this.showDetails = true;
             if (this.user.role == 'student') this.getInstructor();
+            console.log('details change avatar: ');
+            console.log(user);
         },
         getInstructor() {
             // Get the instructor's user id.
@@ -170,6 +172,8 @@ export default {
         updateShowUserDetails(newUser) {
             this.showDetails = true;
             this.user = newUser;
+            console.log('new user: ');
+            console.log(newUser);
         }
         // only for search bar to update the choose user id
     }
