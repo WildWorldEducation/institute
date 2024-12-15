@@ -111,40 +111,6 @@ export default {
                 <button class="btn primary-btn" @click="resetPos()">
                     Reset
                 </button>
-                <!-- <button
-                    v-if="sessionDetailsStore.isLoggedIn"
-                    class="btn legend-btn me-2"
-                    @click="expandAllNodesWarning()"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 448 512"
-                        width="20"
-                        height="20"
-                    >
-                        <path
-                            d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z"
-                            fill="white"
-                        />
-                    </svg>
-                </button> -->
-                <!-- <button
-                    v-if="sessionDetailsStore.isLoggedIn"
-                    class="legend-btn btn me-2"
-                    @click="$refs.childComponent.printPDF()"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        width="19"
-                        height="18"
-                    >
-                        <path
-                            d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
-                            fill="white"
-                        />
-                    </svg>
-                </button> -->
             </div>
         </div>
         <div class="tablet-and-up-legend">
@@ -251,6 +217,7 @@ export default {
     <!-- Bottom grade level truncation filters
         Not available on phone view -->
     <div
+        v-if="sessionDetailsStore.isLoggedIn"
         class="tablet-and-up-legend position-absolute bottom-legend-div d-flex"
     >
         <div v-if="isGradeFilter" class="legend">
@@ -351,7 +318,10 @@ export default {
         </button>
     </div>
     <!-- Left root subject filters  -->
-    <div class="tablet-and-up-legend position-absolute left-legend-div">
+    <div
+        v-if="sessionDetailsStore.isLoggedIn"
+        class="tablet-and-up-legend position-absolute left-legend-div"
+    >
         <div v-if="isSubjectFilter" class="d-flex flex-column">
             <button
                 class="btn mb-2"
