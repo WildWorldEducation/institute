@@ -20,7 +20,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             skillTreeLevel: 'phd',
             verticalTreeLevel: '',
             radialTreeLevel: '',
-            theme: 'original'
+            theme: 'original',
+            subjectFilters: []
         };
     },
     actions: {
@@ -46,6 +47,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.isGoogleAuth = data.is_google_auth;
                 this.skillTreeLevel = data.skill_tree_level;
                 this.theme = data.theme;
+                this.subjectFilters = data.subjectFilters;
 
                 if (this.role == 'student') {
                     await this.getInstructor();
