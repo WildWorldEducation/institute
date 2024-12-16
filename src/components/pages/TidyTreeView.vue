@@ -24,7 +24,7 @@ export default {
             showConfirmModal: false,
             isGradeFilter: true,
             isSubjectFilter: true,
-            gradeFilter: 'phd',
+            gradeFilter: this.userDetailsStore.skillTreeLevel,
             isLanguage: false,
             isMathematics: false,
             isScienceAndInvention: false,
@@ -246,6 +246,9 @@ export default {
             <!-- Grade buttons -->
             <button
                 class="btn grade-school me-2"
+                :class="{
+                    'active-grade-filter': gradeFilter == 'grade_school'
+                }"
                 @click="
                     this.gradeFilter = 'grade_school';
                     $refs.childComponent.filter(
@@ -258,6 +261,9 @@ export default {
             </button>
             <button
                 class="btn middle-school me-2"
+                :class="{
+                    'active-grade-filter': gradeFilter == 'middle_school'
+                }"
                 @click="
                     this.gradeFilter = 'middle_school';
                     $refs.childComponent.filter(
@@ -270,6 +276,9 @@ export default {
             </button>
             <button
                 class="btn high-school me-2"
+                :class="{
+                    'active-grade-filter': gradeFilter == 'high_school'
+                }"
                 @click="
                     this.gradeFilter = 'high_school';
                     $refs.childComponent.filter(
@@ -282,6 +291,9 @@ export default {
             </button>
             <button
                 class="btn college me-2"
+                :class="{
+                    'active-grade-filter': gradeFilter == 'college'
+                }"
                 @click="
                     this.gradeFilter = 'college';
                     $refs.childComponent.filter(
@@ -294,6 +306,9 @@ export default {
             </button>
             <button
                 class="btn phd me-2"
+                :class="{
+                    'active-grade-filter': gradeFilter == 'phd'
+                }"
                 @click="
                     this.gradeFilter = 'phd';
                     $refs.childComponent.filter(
@@ -651,20 +666,70 @@ export default {
     font-weight: 500;
 }
 /* Level colors */
-.legend .grade-school {
+
+.grade-school {
     background-color: #40e0d0;
+    opacity: 0.5;
 }
-.legend .middle-school {
+
+.grade-school:hover {
+    opacity: 1;
+}
+
+.grade-school.active-grade-filter {
+    opacity: 1;
+}
+
+.middle-school {
     background-color: #33a133;
+    opacity: 0.5;
 }
-.legend .high-school {
+
+.middle-school:hover {
+    opacity: 1;
+}
+
+.middle-school.active-grade-filter {
+    opacity: 1;
+}
+
+.high-school {
     background-color: #ffd700;
+    opacity: 0.5;
 }
-.legend .college {
+
+.high-school:hover {
+    opacity: 1;
+}
+
+.high-school.active-grade-filter {
+    opacity: 1;
+}
+
+.college {
     background-color: #ffa500;
+    opacity: 0.5;
 }
-.legend .phd {
+
+.college:hover {
+    opacity: 1;
+}
+
+.college.active-grade-filter {
+    opacity: 1;
+}
+
+.phd {
     background-color: #ff0000;
+    opacity: 0.5;
+}
+
+.phd:hover {
+    opacity: 1;
+}
+
+.phd.active-grade-filter {
+    opacity: 1;
 }
 
 .skill-tree-input {
