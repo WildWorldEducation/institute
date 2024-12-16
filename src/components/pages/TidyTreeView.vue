@@ -480,6 +480,11 @@ export default {
 </template>
 
 <style>
+.switch-btn {
+    max-height: 38px;
+    margin: auto;
+}
+
 .chosen-subject,
 .switch-btn {
     background-color: var(--primary-color) !important;
@@ -493,8 +498,9 @@ export default {
 }
 
 .hidden-subject {
-    background-color: grey !important;
     color: black;
+    background-color: var(--primary-color) !important;
+    opacity: 0.5;
 }
 
 .hidden-subject:hover {
@@ -526,12 +532,6 @@ export default {
     align-items: center;
     justify-content: center;
     width: 100%;
-}
-
-.legend .btn {
-    color: black;
-    font-weight: 500;
-    border: 1px solid black;
 }
 
 .legend-div {
@@ -617,6 +617,11 @@ export default {
     margin: 0px !important;
     border-radius: 0px !important;
     border: 0px !important;
+}
+
+.bottom-legend-div .btn {
+    border: 1px solid black;
+    font-weight: 500;
 }
 /* Level colors */
 .legend .grade-school {
