@@ -61,7 +61,16 @@ export default {
             showSkillPanel: false,
             resultNode: null,
             clickMode: 'showPanel',
-            truncateLevel: 'phd'
+            truncateLevel: 'phd',
+            subjectFilters: [
+                'Language',
+                'Mathematics',
+                'Science & Invention',
+                'Computer Science',
+                'History',
+                'Life',
+                'Dangerous Ideas'
+            ]
         };
     },
     components: {
@@ -79,7 +88,8 @@ export default {
                 this.userDetailsStore.skillTreeLevel
         ) {
             await this.skillTreeStore.getVerticalTreeUserSkills(
-                this.truncateLevel
+                this.truncateLevel,
+                this.subjectFilters
             );
         }
         let userSkills = '';
@@ -752,7 +762,7 @@ export default {
                 shift = 100;
             }
             if (screenWidth > 1024) {
-                shift = 90;
+                shift = 10;
             }
             d3.select(this.context.canvas)
                 .transition()
@@ -1033,9 +1043,12 @@ export default {
                 this.reloadTree(node);
             });
         },
-        async reloadTree(node) {
+        async reloadTree(node, level, subjects) {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getVerticalTreeUserSkills();
+            await this.skillTreeStore.getVerticalTreeUserSkills(
+                level,
+                subjects
+            );
 
             // If the student clicks a button on the grade level key,
             // this will truncate the tree to that level.
@@ -1171,7 +1184,7 @@ export default {
 
             let translateX = 0;
             let translateY = 0;
-            if (typeof node !== 'undefined') {
+            if (typeof node !== 'undefined' && node != null) {
                 translateX =
                     -node.y * this.scale +
                     (window.innerWidth / (2 * this.scale)) * this.scale;
@@ -1189,6 +1202,7 @@ export default {
                         .translate(translateX, translateY)
                         .scale(this.scale)
                 );
+            this.resetPos();
         },
         expandAllChildren() {
             var url =
@@ -1200,10 +1214,9 @@ export default {
         },
         // If the student clicks a button on the grade level key,
         // this will truncate the tree to that level.
-        async truncateToGradeLevel(level) {
+        async filter(level, subjects) {
             this.truncateLevel = level;
-            await this.skillTreeStore.getVerticalTreeUserSkills(level);
-            this.skill.children = await this.reloadTree();
+            this.skill.children = await this.reloadTree(null, level, subjects);
             this.saveSkillTreeGradeLevel();
         },
         saveSkillTreeGradeLevel() {
@@ -1253,7 +1266,7 @@ export default {
         <div id="SVGskilltree"></div>
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
-        <JoystickControl />
+        <JoystickControl class="d-lg-none" />
     </div>
 </template>
 

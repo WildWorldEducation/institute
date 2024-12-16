@@ -22,25 +22,12 @@ export const useSkillsStore = defineStore('skills', {
             this.nestedSkillsList = data;
         },
         // For 'Instructor' role / For guest mode of Vertical Tree
-        async getFilteredNestedSkillsList(level) {
-            const result = await fetch(
-                '/skills/filtered-nested-list?level=' + level
-            );
+        async getFilteredNestedSkillsList() {
+            const result = await fetch('/skills/filtered-nested-list');
             const data = await result.json();
 
-            // If the student clicks a button on the grade level key,
-            // this will truncate the tree to that level.
-            if (level == 'grade_school') {
-                this.gradeSchoolFilteredNestedSkillsList = data;
-            } else if (level == 'middle_school') {
-                this.middleSchoolFilteredNestedSkillsList = data;
-            } else if (level == 'high_school') {
-                this.highSchoolFilteredNestedSkillsList = data;
-            } else if (level == 'college') {
-                this.collegeFilteredNestedSkillsList = data;
-            }
             // Default is all levels.
-            else this.filteredNestedSkillsList = data;
+            this.filteredNestedSkillsList = data;
         },
         async getSkillsList() {
             const result = await fetch('/skills/list');

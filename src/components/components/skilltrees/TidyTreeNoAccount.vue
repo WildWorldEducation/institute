@@ -56,8 +56,7 @@ export default {
             yPos: 0,
             showAnimation: false,
             showSkillPanel: false,
-            resultNode: null,
-            truncateLevel: 'phd'
+            resultNode: null
         };
     },
     components: {
@@ -635,7 +634,7 @@ export default {
                 shift = 100;
             }
             if (screenWidth > 1024) {
-                shift = 90;
+                shift = 10;
             }
             d3.select(this.context.canvas)
                 .transition()
@@ -752,30 +751,10 @@ export default {
             });
             return results;
         },
-        // If the student clicks a button on the grade level key,
-        // this will truncate the tree to that level.
-        async truncateToGradeLevel(level) {
-            this.truncateLevel = level;
-            await this.skillsStore.getFilteredNestedSkillsList(level);
-            await this.reloadTree();
-        },
         async reloadTree() {
             this.showSkillPanel = false;
 
-            // If the student clicks a button on the grade level key,
-            // this will truncate the tree to that level.
-            let skills = [];
-            if (this.truncateLevel == 'grade_school') {
-                skills = this.skillsStore.gradeSchoolFilteredNestedSkillsList;
-            } else if (this.truncateLevel == 'middle_school') {
-                skills = this.skillsStore.middleSchoolFilteredNestedSkillsList;
-            } else if (this.truncateLevel == 'high_school') {
-                skills = this.skillsStore.highSchoolFilteredNestedSkillsList;
-            } else if (this.truncateLevel == 'college') {
-                skills = this.skillsStore.collegeFilteredNestedSkillsList;
-            } else {
-                skills = this.skillsStore.filteredNestedSkillsList;
-            }
+            let skills = this.skillsStore.filteredNestedSkillsList;
 
             this.skill = {
                 name: 'SKILLS',
@@ -868,10 +847,6 @@ export default {
             const dx = 24;
             // Shorten lines based on truncate level.
             let divideBy = 1;
-            if (this.truncateLevel == 'grade_school') divideBy = 5;
-            else if (this.truncateLevel == 'middle_school') divideBy = 4;
-            else if (this.truncateLevel == 'high_school') divideBy = 3;
-            else if (this.truncateLevel == 'college') divideBy = 2;
             const dy = this.width / (this.root.height + 1) / divideBy;
 
             // Create a tree layout.
@@ -903,6 +878,7 @@ export default {
                         .translate(translateX, translateY)
                         .scale(this.scale)
                 );
+            this.resetPos();
         }
     }
 };
@@ -935,7 +911,7 @@ export default {
         <div id="SVGskilltree"></div>
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
-        <JoystickControl />
+        <JoystickControl class="d-lg-none" />
     </div>
 </template>
 

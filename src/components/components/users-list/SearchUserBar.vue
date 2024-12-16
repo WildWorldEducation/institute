@@ -38,14 +38,18 @@ export default {
         if (!this.userDetailsStore.role) {
             this.userDetailsStore.getUserDetails();
         }
-        if (
-            this.userDetailsStore.role === 'admin' ||
-            this.userDetailsStore.role === 'instructor'
-        ) {
+        if (this.userDetailsStore.role === 'admin') {
             if (this.usersStore.users.length < 1) {
                 await this.usersStore.getUsers();
             }
             this.userList = this.usersStore.users;
+        }
+
+        if (this.userDetailsStore.role === 'instructor') {
+            await this.usersStore.getStudentsOfUser(
+                this.userDetailsStore.userId
+            );
+            this.userList = this.usersStore.studentsOfInstructor;
         }
         if (this.userDetailsStore.role === 'editor') {
             if (this.usersStore.editors.length < 1) {
@@ -92,8 +96,10 @@ export default {
                 lastName: user.last_name
             };
             this.updateUserDetails(returnUserObject);
+
+            this.$parent.currentUserId = user.id;
         },
-        handleInputEnterPress(searchText) {
+        handleInputEnterPress() {
             // find user by arrow key
             if (this.focusIndex >= 0) {
                 this.chooseUser = true;
@@ -116,6 +122,7 @@ export default {
             }
             this.chooseUser = true;
             this.handleChooseResult(result);
+            this.$parent.currentUserId = result.id;
         },
         handleFailsOkClick() {
             this.showFailsModal = false;

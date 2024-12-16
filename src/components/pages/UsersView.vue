@@ -36,7 +36,8 @@ export default {
             students: [],
             // Flag to decide whether to show the details panel. Will be false if there are no users,
             showUserInfo: true,
-            isLoading: true
+            isLoading: true,
+            currentUserId: ''
         };
     },
     components: {
@@ -116,6 +117,8 @@ export default {
             // turn on the show details flag
             this.showDetails = true;
             if (this.user.role == 'student') this.getInstructor();
+            console.log('details change avatar: ');
+            console.log(user);
         },
         getInstructor() {
             // Get the instructor's user id.
@@ -169,7 +172,10 @@ export default {
         updateShowUserDetails(newUser) {
             this.showDetails = true;
             this.user = newUser;
+            console.log('new user: ');
+            console.log(newUser);
         }
+        // only for search bar to update the choose user id
     }
 };
 </script>
@@ -218,7 +224,10 @@ export default {
     <div v-else id="user-container" class="container-fluid">
         <div class="row position-relative">
             <div class="col-lg-4 col-md-5">
-                <UsersList @changeUserId="changeUserId($event)" />
+                <UsersList
+                    @changeUserId="changeUserId($event)"
+                    :searchBarCurrentUserId="currentUserId"
+                />
             </div>
             <!-- User detail view for PC and Tablet View -->
             <div class="col-lg-8 col-md-7 d-none d-md-block">
