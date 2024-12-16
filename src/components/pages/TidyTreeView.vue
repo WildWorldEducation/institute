@@ -493,8 +493,11 @@ export default {
 
 .chosen-subject:hover,
 .switch-btn:hover {
-    background-color: var(--primary-color) !important;
-    color: white;
+    border: 1px solid black;
+}
+
+.chosen-subject:hover {
+    opacity: 0.5;
 }
 
 .hidden-subject {
@@ -507,6 +510,7 @@ export default {
     background-color: var(--primary-color) !important;
     color: white;
     border: 1px solid black;
+    opacity: 1;
 }
 
 .bottom-legend-div {
