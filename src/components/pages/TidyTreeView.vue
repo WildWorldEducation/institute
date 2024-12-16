@@ -488,7 +488,7 @@ export default {
 .chosen-subject,
 .switch-btn {
     background-color: var(--primary-color) !important;
-    color: white;
+    color: var(--primary-contrast-color);
 }
 
 .chosen-subject:hover,
@@ -498,17 +498,18 @@ export default {
 
 .chosen-subject:hover {
     opacity: 0.5;
+    color: var(--primary-contrast-color);
 }
 
 .hidden-subject {
-    color: black;
+    color: var(--primary-contrast-color);
     background-color: var(--primary-color) !important;
     opacity: 0.5;
 }
 
 .hidden-subject:hover {
     background-color: var(--primary-color) !important;
-    color: white;
+    color: var(--primary-contrast-color);
     border: 1px solid black;
     opacity: 1;
 }
