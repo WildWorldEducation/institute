@@ -1,5 +1,7 @@
 <script>
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 import TidyTree from '../components/skilltrees/TidyTree.vue';
 import TidyTreeNoAccount from '../components/skilltrees/TidyTreeNoAccount.vue';
@@ -7,9 +9,11 @@ import TidyTreeNoAccount from '../components/skilltrees/TidyTreeNoAccount.vue';
 export default {
     setup() {
         const sessionDetailsStore = useSessionDetailsStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
-            sessionDetailsStore
+            sessionDetailsStore,
+            userDetailsStore
         };
     },
     data() {
@@ -21,25 +25,43 @@ export default {
             isGradeFilter: true,
             isSubjectFilter: true,
             gradeFilter: 'phd',
-            isLanguage: true,
-            isMathematics: true,
-            isScienceAndInvention: true,
-            isComputerScience: true,
-            isHistory: true,
-            isLife: true,
-            isDangerousIdeas: true,
-            subjectFilters: [
-                'Language',
-                'Mathematics',
-                'Science & Invention',
-                'Computer Science',
-                'History',
-                'Life',
-                'Dangerous Ideas'
-            ]
+            isLanguage: false,
+            isMathematics: false,
+            isScienceAndInvention: false,
+            isComputerScience: false,
+            isHistory: false,
+            isLife: false,
+            isDangerousIdeas: false,
+            subjectFilters: []
         };
     },
-    created() {},
+    created() {
+        for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
+            if (this.userDetailsStore.subjectFilters[i] == 'Language') {
+                this.isLanguage = true;
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
+                this.isMathematics = true;
+            }
+            if (
+                this.userDetailsStore.subjectFilters[i] == 'Science & Invention'
+            ) {
+                this.isScienceAndInvention = true;
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Computer Science') {
+                this.isComputerScience = true;
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'History') {
+                this.isHistory = true;
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Life') {
+                this.isLife = true;
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas') {
+                this.isDangerousIdeas = true;
+            }
+        }
+    },
     mounted() {
         this.GetGoogleLoginResult();
     },
