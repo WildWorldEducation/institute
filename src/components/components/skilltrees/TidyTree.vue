@@ -876,11 +876,8 @@ export default {
             });
             const data = await res.json();
             if (data?.mess === 'ok') {
-                console.log('thing is:');
-                console.log(this.subjectFilters);
                 await this.redrawTree(this.truncateLevel, this.subjectFilters);
                 const resultNode = this.findNodeWithName(searchString);
-
                 this.goToLocation(resultNode);
             }
         },
