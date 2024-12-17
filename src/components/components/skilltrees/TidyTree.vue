@@ -876,15 +876,18 @@ export default {
             });
             const data = await res.json();
             if (data?.mess === 'ok') {
-                await this.redrawTree();
+                console.log('thing is:');
+                console.log(this.subjectFilters);
+                await this.redrawTree(this.truncateLevel, this.subjectFilters);
                 const resultNode = this.findNodeWithName(searchString);
+
                 this.goToLocation(resultNode);
             }
         },
 
-        async redrawTree() {
+        async redrawTree(level, subject) {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getVerticalTreeUserSkills();
+            await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
 
             // If the student clicks a button on the grade level key,
             // this will truncate the tree to that level.
@@ -1026,7 +1029,7 @@ export default {
                 '/' +
                 node.id;
             fetch(url).then(() => {
-                this.reloadTree(node);
+                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
             });
         },
         toggleShowChildren(node) {
@@ -1036,7 +1039,7 @@ export default {
                 '/' +
                 node.id;
             fetch(url).then(() => {
-                this.reloadTree(node);
+                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
             });
         },
         async reloadTree(node, level, subjects) {
@@ -1211,7 +1214,6 @@ export default {
         // If the student clicks a button on the grade level key,
         // this will truncate the tree to that level.
         async filter(level, subjects) {
-            console.log(subjects);
             this.truncateLevel = level;
             this.skill.children = await this.reloadTree(null, level, subjects);
             this.saveSkillTreeFilters();
