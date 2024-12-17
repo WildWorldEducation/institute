@@ -689,7 +689,7 @@ export default {
     top: 70px;
 }
 
-/* Grade level legend */
+
 .search-bar {
     border: 1px solid #dce2f2;
     border-radius: 8px;
