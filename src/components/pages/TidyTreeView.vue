@@ -1,5 +1,7 @@
 <script>
 import { useSessionDetailsStore } from '../../stores/SessionDetailsStore.js';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
+
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 import TidyTree from '../components/skilltrees/TidyTree.vue';
 import TidyTreeNoAccount from '../components/skilltrees/TidyTreeNoAccount.vue';
@@ -7,9 +9,11 @@ import TidyTreeNoAccount from '../components/skilltrees/TidyTreeNoAccount.vue';
 export default {
     setup() {
         const sessionDetailsStore = useSessionDetailsStore();
+        const userDetailsStore = useUserDetailsStore();
 
         return {
-            sessionDetailsStore
+            sessionDetailsStore,
+            userDetailsStore
         };
     },
     data() {
@@ -20,26 +24,51 @@ export default {
             showConfirmModal: false,
             isGradeFilter: true,
             isSubjectFilter: true,
-            gradeFilter: 'phd',
-            isLanguage: true,
-            isMathematics: true,
-            isScienceAndInvention: true,
-            isComputerScience: true,
-            isHistory: true,
-            isLife: true,
-            isDangerousIdeas: true,
-            subjectFilters: [
-                'Language',
-                'Mathematics',
-                'Science & Invention',
-                'Computer Science',
-                'History',
-                'Life',
-                'Dangerous Ideas'
-            ]
+            gradeFilter: this.userDetailsStore.skillTreeLevel,
+            isLanguage: false,
+            isMathematics: false,
+            isScienceAndInvention: false,
+            isComputerScience: false,
+            isHistory: false,
+            isLife: false,
+            isDangerousIdeas: false,
+            subjectFilters: []
         };
     },
-    created() {},
+    created() {
+        for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
+            if (this.userDetailsStore.subjectFilters[i] == 'Language') {
+                this.isLanguage = true;
+                this.subjectFilters.push('Language');
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
+                this.isMathematics = true;
+                this.subjectFilters.push('Mathematics');
+            }
+            if (
+                this.userDetailsStore.subjectFilters[i] == 'Science & Invention'
+            ) {
+                this.isScienceAndInvention = true;
+                this.subjectFilters.push('Science & Invention');
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Computer Science') {
+                this.isComputerScience = true;
+                this.subjectFilters.push('Computer Science');
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'History') {
+                this.isHistory = true;
+                this.subjectFilters.push('History');
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Life') {
+                this.isLife = true;
+                this.subjectFilters.push('Life');
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas') {
+                this.isDangerousIdeas = true;
+                this.subjectFilters.push('Dangerous Ideas');
+            }
+        }
+    },
     mounted() {
         this.GetGoogleLoginResult();
     },
@@ -225,6 +254,9 @@ export default {
             <!-- Grade buttons -->
             <button
                 class="btn grade-school me-2"
+                :class="{
+                    'active-grade-filter': gradeFilter == 'grade_school'
+                }"
                 @click="
                     this.gradeFilter = 'grade_school';
                     $refs.childComponent.filter(
@@ -237,6 +269,9 @@ export default {
             </button>
             <button
                 class="btn middle-school me-2"
+                :class="{
+                    'active-grade-filter': gradeFilter == 'middle_school'
+                }"
                 @click="
                     this.gradeFilter = 'middle_school';
                     $refs.childComponent.filter(
@@ -249,6 +284,9 @@ export default {
             </button>
             <button
                 class="btn high-school me-2"
+                :class="{
+                    'active-grade-filter': gradeFilter == 'high_school'
+                }"
                 @click="
                     this.gradeFilter = 'high_school';
                     $refs.childComponent.filter(
@@ -261,6 +299,9 @@ export default {
             </button>
             <button
                 class="btn college me-2"
+                :class="{
+                    'active-grade-filter': gradeFilter == 'college'
+                }"
                 @click="
                     this.gradeFilter = 'college';
                     $refs.childComponent.filter(
@@ -273,6 +314,9 @@ export default {
             </button>
             <button
                 class="btn phd me-2"
+                :class="{
+                    'active-grade-filter': gradeFilter == 'phd'
+                }"
                 @click="
                     this.gradeFilter = 'phd';
                     $refs.childComponent.filter(
@@ -481,27 +525,38 @@ export default {
 </template>
 
 <style>
+.switch-btn {
+    max-height: 38px;
+    margin: auto;
+}
+
 .chosen-subject,
 .switch-btn {
     background-color: var(--primary-color) !important;
-    color: white;
+    color: var(--primary-contrast-color);
 }
 
 .chosen-subject:hover,
 .switch-btn:hover {
-    background-color: var(--primary-color) !important;
-    color: white;
+    border: 1px solid black;
+}
+
+.chosen-subject:hover {
+    opacity: 0.5;
+    color: var(--primary-contrast-color);
 }
 
 .hidden-subject {
-    background-color: grey !important;
-    color: black;
+    color: var(--primary-contrast-color);
+    background-color: var(--primary-color) !important;
+    opacity: 0.5;
 }
 
 .hidden-subject:hover {
     background-color: var(--primary-color) !important;
-    color: white;
+    color: var(--primary-contrast-color);
     border: 1px solid black;
+    opacity: 1;
 }
 
 .bottom-legend-div {
@@ -527,12 +582,6 @@ export default {
     align-items: center;
     justify-content: center;
     width: 100%;
-}
-
-.legend .btn {
-    color: black;
-    font-weight: 500;
-    border: 1px solid black;
 }
 
 .legend-div {
@@ -619,21 +668,76 @@ export default {
     border-radius: 0px !important;
     border: 0px !important;
 }
+
+.bottom-legend-div .btn {
+    border: 1px solid black;
+    font-weight: 500;
+}
 /* Level colors */
-.legend .grade-school {
+
+.grade-school {
     background-color: #40e0d0;
+    opacity: 0.5;
 }
-.legend .middle-school {
+
+.grade-school:hover {
+    opacity: 1;
+}
+
+.grade-school.active-grade-filter {
+    opacity: 1;
+}
+
+.middle-school {
     background-color: #33a133;
+    opacity: 0.5;
 }
-.legend .high-school {
+
+.middle-school:hover {
+    opacity: 1;
+}
+
+.middle-school.active-grade-filter {
+    opacity: 1;
+}
+
+.high-school {
     background-color: #ffd700;
+    opacity: 0.5;
 }
-.legend .college {
+
+.high-school:hover {
+    opacity: 1;
+}
+
+.high-school.active-grade-filter {
+    opacity: 1;
+}
+
+.college {
     background-color: #ffa500;
+    opacity: 0.5;
 }
-.legend .phd {
+
+.college:hover {
+    opacity: 1;
+}
+
+.college.active-grade-filter {
+    opacity: 1;
+}
+
+.phd {
     background-color: #ff0000;
+    opacity: 0.5;
+}
+
+.phd:hover {
+    opacity: 1;
+}
+
+.phd.active-grade-filter {
+    opacity: 1;
 }
 
 .skill-tree-input {

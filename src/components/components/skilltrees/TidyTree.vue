@@ -62,15 +62,7 @@ export default {
             resultNode: null,
             clickMode: 'showPanel',
             truncateLevel: 'phd',
-            subjectFilters: [
-                'Language',
-                'Mathematics',
-                'Science & Invention',
-                'Computer Science',
-                'History',
-                'Life',
-                'Dangerous Ideas'
-            ]
+            subjectFilters: []
         };
     },
     components: {
@@ -80,6 +72,8 @@ export default {
     },
     async mounted() {
         this.truncateLevel = this.userDetailsStore.skillTreeLevel;
+        this.subjectFilters = this.userDetailsStore.subjectFilters;
+
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
         if (
@@ -92,6 +86,7 @@ export default {
                 this.subjectFilters
             );
         }
+
         let userSkills = '';
         if (this.truncateLevel == 'grade_school') {
             userSkills = this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
@@ -1216,11 +1211,12 @@ export default {
         // If the student clicks a button on the grade level key,
         // this will truncate the tree to that level.
         async filter(level, subjects) {
+            console.log(subjects);
             this.truncateLevel = level;
             this.skill.children = await this.reloadTree(null, level, subjects);
-            this.saveSkillTreeGradeLevel();
+            this.saveSkillTreeFilters();
         },
-        saveSkillTreeGradeLevel() {
+        saveSkillTreeFilters() {
             // Update the store
             this.userDetailsStore.skillTreeLevel = this.truncateLevel;
             this.userDetailsStore.verticalTreeLevel = this.truncateLevel;
@@ -1229,11 +1225,21 @@ export default {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    level: this.truncateLevel
+                    level: this.truncateLevel,
+                    is_language_filter: this.$parent.isLanguage,
+                    is_math_filter: this.$parent.isMathematics,
+                    is_history_filter: this.$parent.isHistory,
+                    is_life_filter: this.$parent.isLife,
+                    is_computer_science_filter: this.$parent.isComputerScience,
+                    is_science_and_invention_filter:
+                        this.$parent.isScienceAndInvention,
+                    is_dangerous_ideas_filter: this.$parent.isDangerousIdeas
                 })
             };
             var url =
-                '/users/' + this.userDetailsStore.userId + '/skill-tree-level';
+                '/users/' +
+                this.userDetailsStore.userId +
+                '/skill-tree-filters';
             fetch(url, requestOptions);
         }
     }

@@ -570,7 +570,8 @@ router.get('/show/:id', (req, res, next) => {
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
         let sqlQuery = `
-    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, skill_tree_level, theme
+    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, skill_tree_level, theme,
+    is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
     AND is_deleted = 0
@@ -581,6 +582,23 @@ router.get('/show/:id', (req, res, next) => {
                 if (err) {
                     throw err;
                 }
+
+                results[0].subjectFilters = [];
+                if (results[0].is_language_filter == 1)
+                    results[0].subjectFilters.push('Language');
+                if (results[0].is_math_filter == 1)
+                    results[0].subjectFilters.push('Mathematics');
+                if (results[0].is_history_filter == 1)
+                    results[0].subjectFilters.push('Science & Invention');
+                if (results[0].is_life_filter == 1)
+                    results[0].subjectFilters.push('Computer Science');
+                if (results[0].is_computer_science_filter == 1)
+                    results[0].subjectFilters.push('History');
+                if (results[0].is_science_and_invention_filter == 1)
+                    results[0].subjectFilters.push('Life');
+                if (results[0].is_dangerous_ideas_filter == 1)
+                    results[0].subjectFilters.push('Dangerous Ideas');
+
                 res.json(results[0]);
             } catch (err) {
                 next(err);
@@ -602,8 +620,8 @@ router.get('/instructor/:studentId', (req, res, next) => {
     LEFT JOIN instructor_students 
     ON users.id = instructor_students.instructor_id
     WHERE instructor_students.student_id = ${conn.escape(
-            req.params.studentId
-        )};`;
+        req.params.studentId
+    )};`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -858,10 +876,24 @@ router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
 });
 
 // Choose skill tree truncate level
-router.put('/:userId/skill-tree-level', isAuthenticated, (req, res, next) => {
+router.put('/:userId/skill-tree-filters', isAuthenticated, (req, res, next) => {
     let sqlQuery = `UPDATE users
             SET skill_tree_level = 
-            ${conn.escape(req.body.level)}            
+            ${conn.escape(req.body.level)},            
+            is_language_filter = 
+            ${conn.escape(req.body.is_language_filter)},
+            is_math_filter = 
+            ${conn.escape(req.body.is_math_filter)},
+            is_history_filter = 
+            ${conn.escape(req.body.is_history_filter)},
+            is_life_filter = 
+            ${conn.escape(req.body.is_life_filter)},
+            is_computer_science_filter = 
+            ${conn.escape(req.body.is_computer_science_filter)},
+            is_science_and_invention_filter = 
+            ${conn.escape(req.body.is_science_and_invention_filter)},
+            is_dangerous_ideas_filter = 
+            ${conn.escape(req.body.is_dangerous_ideas_filter)}
             WHERE id = ${conn.escape(req.params.userId)};`;
 
     conn.query(sqlQuery, (err) => {
