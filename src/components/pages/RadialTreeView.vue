@@ -130,7 +130,10 @@ export default {
                 }"
                 @click="
                     this.gradeFilter = 'grade_school';
-                    $refs.childComponent.truncateToGradeLevel('grade_school');
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
                 "
             >
                 Grade school
@@ -142,7 +145,10 @@ export default {
                 }"
                 @click="
                     this.gradeFilter = 'middle_school';
-                    $refs.childComponent.truncateToGradeLevel('middle_school');
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
                 "
             >
                 Middle school
@@ -154,7 +160,10 @@ export default {
                 }"
                 @click="
                     this.gradeFilter = 'high_school';
-                    $refs.childComponent.truncateToGradeLevel('high_school');
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
                 "
             >
                 High school
@@ -166,7 +175,10 @@ export default {
                 }"
                 @click="
                     this.gradeFilter = 'college';
-                    $refs.childComponent.truncateToGradeLevel('college');
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
                 "
             >
                 College
@@ -178,7 +190,10 @@ export default {
                 }"
                 @click="
                     this.gradeFilter = 'phd';
-                    $refs.childComponent.truncateToGradeLevel('phd');
+                    $refs.childComponent.filter(
+                        this.gradeFilter,
+                        this.subjectFilters
+                    );
                 "
             >
                 PHD

@@ -1049,10 +1049,8 @@ export default {
                 this.reloadTree();
             });
         },
-        // If the student clicks a button on the grade level key,
-        // this will truncate the tree to that level.
+        // Grade level and root subject filter
         async filter(level, subjects) {
-            console.log(subjects);
             this.truncateLevel = level;
             this.skill.children = await this.reloadTree(null, level, subjects);
             this.saveSkillTreeFilters();
