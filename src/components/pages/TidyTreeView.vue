@@ -532,13 +532,14 @@ export default {
 .grade-school {
     background-color: #40e0d0;
     opacity: 0.5;
+    color: black;
 }
 .grade-school:hover,
 .grade-school:active,
 .grade-school:focus {
     background-color: #40e0d0;
     opacity: 1;
-    color: black;
+    color: black !important;
 }
 .grade-school.active-grade-filter {
     opacity: 1;
@@ -553,7 +554,7 @@ export default {
 .middle-school:focus {
     background-color: #33a133;
     opacity: 1;
-    color: black;
+    color: black !important;
 }
 .middle-school.active-grade-filter {
     opacity: 1;
@@ -569,7 +570,7 @@ export default {
 .high-school:focus {
     background-color: #ffd700;
     opacity: 1;
-    color: black;
+    color: black !important;
 }
 .high-school.active-grade-filter {
     opacity: 1;
@@ -584,7 +585,7 @@ export default {
 .college:focus {
     background-color: #ffa500;
     opacity: 1;
-    color: black;
+    color: black !important;
 }
 .college.active-grade-filter {
     opacity: 1;
@@ -599,7 +600,7 @@ export default {
 .phd:focus {
     background-color: #ff0000;
     opacity: 1;
-    color: black;
+    color: black !important;
 }
 .phd.active-grade-filter {
     opacity: 1;
@@ -617,23 +618,23 @@ export default {
     color: var(--primary-contrast-color) !important;
 }
 
-.chosen-subject:hover,
 .chosen-subject:active,
 .chosen-subject:focus,
 .switch-btn:hover {
-    border: 1px solid black;
     color: var(--primary-contrast-color) !important;
+    opacity: 1;
 }
 
 .btn:active,
 .btn:focus {
-    color: var(--primary-contrast-color) !important;
+    color: var(--primary-contrast-color);
     border: 1px solid black;
 }
 
 .chosen-subject:hover {
     opacity: 0.5;
-    color: var(--primary-contrast-color);
+    color: var(--primary-contrast-color) !important;
+    border: 1px solid black;
 }
 
 .hidden-subject {
@@ -647,6 +648,14 @@ export default {
     color: var(--primary-contrast-color);
     border: 1px solid black;
     opacity: 1;
+}
+
+.hidden-subject:active,
+.hidden-subject:focus {
+    background-color: var(--primary-color) !important;
+    color: var(--primary-contrast-color);
+    border: 1px solid black;
+    opacity: 0.5;
 }
 
 .bottom-legend-div {
