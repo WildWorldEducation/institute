@@ -532,12 +532,18 @@ export default {
 .chosen-subject,
 .switch-btn {
     background-color: var(--primary-color) !important;
-    color: var(--primary-contrast-color);
+    color: var(--primary-contrast-color) !important;
 }
 
 .chosen-subject:hover,
+.chosen-subject:active,
 .switch-btn:hover {
     border: 1px solid black;
+    color: var(--primary-contrast-color) !important;
+}
+
+.btn:active {
+    color: var(--primary-contrast-color) !important;
 }
 
 .chosen-subject:hover {
@@ -679,8 +685,12 @@ export default {
     opacity: 0.5;
 }
 
-.grade-school:hover {
+.grade-school:hover,
+.grade-school:active,
+.grade-school:focus {
+    background-color: #40e0d0;
     opacity: 1;
+    color: black;
 }
 
 .grade-school.active-grade-filter {
@@ -692,8 +702,12 @@ export default {
     opacity: 0.5;
 }
 
-.middle-school:hover {
+.middle-school:hover,
+.middle-school:active,
+.middle-school:focus {
+    background-color: #33a133;
     opacity: 1;
+    color: black;
 }
 
 .middle-school.active-grade-filter {
@@ -703,10 +717,15 @@ export default {
 .high-school {
     background-color: #ffd700;
     opacity: 0.5;
+    color: black;
 }
 
-.high-school:hover {
+.high-school:hover,
+.high-school:active,
+.high-school:focus {
+    background-color: #ffd700;
     opacity: 1;
+    color: black;
 }
 
 .high-school.active-grade-filter {
@@ -718,8 +737,12 @@ export default {
     opacity: 0.5;
 }
 
-.college:hover {
+.college:hover,
+.college:active,
+.college:focus {
+    background-color: #ffa500;
     opacity: 1;
+    color: black;
 }
 
 .college.active-grade-filter {
@@ -731,8 +754,12 @@ export default {
     opacity: 0.5;
 }
 
-.phd:hover {
+.phd:hover,
+.phd:active,
+.phd:focus {
+    background-color: #ff0000;
     opacity: 1;
+    color: black;
 }
 
 .phd.active-grade-filter {
