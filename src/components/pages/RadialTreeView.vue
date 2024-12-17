@@ -1,11 +1,22 @@
 <script>
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 import SkillTreeSearchBar from '../components/skills-tree-search-bar/SkillTreeSearchBar.vue';
 import RadialTree from '../components/skilltrees/RadialTree.vue';
 
 export default {
-    setup() {},
+    setup() {
+        const userDetailsStore = useUserDetailsStore();
+        return {
+            userDetailsStore
+        };
+    },
     data() {
-        return {};
+        return {
+            gradeFilter: this.userDetailsStore.skillTreeLevel
+        };
+    },
+    created() {
+        console.log(this.userDetailsStore.skillTreeLevel);
     },
     components: { RadialTree, SkillTreeSearchBar },
     methods: {
@@ -82,102 +93,72 @@ export default {
         </template>
     </Suspense>
     <div class="position-absolute bottom-legend-div">
-        <!-- <div class="mobile-legend">
-            <div class="legend d-flex">
-                <div>
-                    <button
-                        class="btn grade-school me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel(
-                                'grade_school'
-                            )
-                        "
-                    >
-                        GS
-                    </button>
-                    <button
-                        class="btn middle-school me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel(
-                                'middle_school'
-                            )
-                        "
-                    >
-                        MS
-                    </button>
-                </div>
-                <div>
-                    <button
-                        class="btn high-school me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel(
-                                'high_school'
-                            )
-                        "
-                    >
-                        HS
-                    </button>
-                    <button
-                        class="btn college me-1"
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel('college')
-                        "
-                    >
-                        C
-                    </button>
-                    <button
-                        @click="
-                            $refs.childComponent.truncateToGradeLevel('phd')
-                        "
-                        class="btn phd"
-                    >
-                        PHD
-                    </button>
-                </div>
-            </div>
-        </div> -->
         <div class="tablet-and-up-legend">
             <div class="d-flex legend">
                 <!-- Grade buttons -->
                 <button
                     class="btn grade-school me-2"
+                    :class="{
+                        'active-grade-filter': gradeFilter == 'grade_school'
+                    }"
                     @click="
+                        this.gradeFilter = 'grade_school';
                         $refs.childComponent.truncateToGradeLevel(
                             'grade_school'
-                        )
+                        );
                     "
                 >
                     Grade school
                 </button>
                 <button
                     class="btn middle-school me-2"
+                    :class="{
+                        'active-grade-filter': gradeFilter == 'middle_school'
+                    }"
                     @click="
+                        this.gradeFilter = 'middle_school';
                         $refs.childComponent.truncateToGradeLevel(
                             'middle_school'
-                        )
+                        );
                     "
                 >
                     Middle school
                 </button>
                 <button
                     class="btn high-school me-2"
+                    :class="{
+                        'active-grade-filter': gradeFilter == 'high_school'
+                    }"
                     @click="
-                        $refs.childComponent.truncateToGradeLevel('high_school')
+                        this.gradeFilter = 'high_school';
+                        $refs.childComponent.truncateToGradeLevel(
+                            'high_school'
+                        );
                     "
                 >
                     High school
                 </button>
                 <button
                     class="btn college me-2"
+                    :class="{
+                        'active-grade-filter': gradeFilter == 'college'
+                    }"
                     @click="
-                        $refs.childComponent.truncateToGradeLevel('college')
+                        this.gradeFilter = 'college';
+                        $refs.childComponent.truncateToGradeLevel('college');
                     "
                 >
                     College
                 </button>
                 <button
                     class="btn phd me-2"
-                    @click="$refs.childComponent.truncateToGradeLevel('phd')"
+                    :class="{
+                        'active-grade-filter': gradeFilter == 'phd'
+                    }"
+                    @click="
+                        this.gradeFilter = 'phd';
+                        $refs.childComponent.truncateToGradeLevel('phd');
+                    "
                 >
                     PHD
                 </button>
@@ -187,6 +168,93 @@ export default {
 </template>
 
 <style>
+/*
+ * Filters 
+ */
+
+/* Grade level filter */
+.grade-school {
+    background-color: #40e0d0;
+    opacity: 0.5;
+    color: black;
+}
+.grade-school:hover,
+.grade-school:active,
+.grade-school:focus {
+    background-color: #40e0d0;
+    opacity: 1;
+    color: black !important;
+}
+.grade-school.active-grade-filter {
+    opacity: 1;
+}
+
+.middle-school {
+    background-color: #33a133;
+    opacity: 0.5;
+}
+.middle-school:hover,
+.middle-school:active,
+.middle-school:focus {
+    background-color: #33a133;
+    opacity: 1;
+    color: black !important;
+}
+.middle-school.active-grade-filter {
+    opacity: 1;
+}
+
+.high-school {
+    background-color: #ffd700;
+    opacity: 0.5;
+    color: black;
+}
+.high-school:hover,
+.high-school:active,
+.high-school:focus {
+    background-color: #ffd700;
+    opacity: 1;
+    color: black !important;
+}
+.high-school.active-grade-filter {
+    opacity: 1;
+}
+
+.college {
+    background-color: #ffa500;
+    opacity: 0.5;
+}
+.college:hover,
+.college:active,
+.college:focus {
+    background-color: #ffa500;
+    opacity: 1;
+    color: black !important;
+}
+.college.active-grade-filter {
+    opacity: 1;
+}
+
+.phd {
+    background-color: #ff0000;
+    opacity: 0.5;
+}
+.phd:hover,
+.phd:active,
+.phd:focus {
+    background-color: #ff0000;
+    opacity: 1;
+    color: black !important;
+}
+.phd.active-grade-filter {
+    opacity: 1;
+}
+
+.switch-btn {
+    max-height: 38px;
+    margin: auto;
+}
+
 .bottom-legend-div {
     left: 50%;
     transform: translateX(-50%);
@@ -216,8 +284,6 @@ export default {
     margin-bottom: 8px;
 }
 
-/* Grade level legend */
-
 .collapsible-tree-legend {
     width: 100%;
 }
@@ -239,23 +305,6 @@ export default {
     margin: 0px !important;
     border-radius: 0px !important;
     border: 0px !important;
-}
-
-/* Level colors */
-.legend .grade-school {
-    background-color: #40e0d0;
-}
-.legend .middle-school {
-    background-color: #33a133;
-}
-.legend .high-school {
-    background-color: #ffd700;
-}
-.legend .college {
-    background-color: #ffa500;
-}
-.legend .phd {
-    background-color: #ff0000;
 }
 
 .legend .btn {
