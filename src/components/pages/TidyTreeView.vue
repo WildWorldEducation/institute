@@ -524,11 +524,93 @@ export default {
 </template>
 
 <style>
+/*
+ * Filters 
+ */
+
+/* Grade level filter */
+.grade-school {
+    background-color: #40e0d0;
+    opacity: 0.5;
+}
+.grade-school:hover,
+.grade-school:active,
+.grade-school:focus {
+    background-color: #40e0d0;
+    opacity: 1;
+    color: black;
+}
+.grade-school.active-grade-filter {
+    opacity: 1;
+}
+
+.middle-school {
+    background-color: #33a133;
+    opacity: 0.5;
+}
+.middle-school:hover,
+.middle-school:active,
+.middle-school:focus {
+    background-color: #33a133;
+    opacity: 1;
+    color: black;
+}
+.middle-school.active-grade-filter {
+    opacity: 1;
+}
+
+.high-school {
+    background-color: #ffd700;
+    opacity: 0.5;
+    color: black;
+}
+.high-school:hover,
+.high-school:active,
+.high-school:focus {
+    background-color: #ffd700;
+    opacity: 1;
+    color: black;
+}
+.high-school.active-grade-filter {
+    opacity: 1;
+}
+
+.college {
+    background-color: #ffa500;
+    opacity: 0.5;
+}
+.college:hover,
+.college:active,
+.college:focus {
+    background-color: #ffa500;
+    opacity: 1;
+    color: black;
+}
+.college.active-grade-filter {
+    opacity: 1;
+}
+
+.phd {
+    background-color: #ff0000;
+    opacity: 0.5;
+}
+.phd:hover,
+.phd:active,
+.phd:focus {
+    background-color: #ff0000;
+    opacity: 1;
+    color: black;
+}
+.phd.active-grade-filter {
+    opacity: 1;
+}
+
 .switch-btn {
     max-height: 38px;
     margin: auto;
 }
 
+/* Root subject filters */
 .chosen-subject,
 .switch-btn {
     background-color: var(--primary-color) !important;
@@ -537,13 +619,16 @@ export default {
 
 .chosen-subject:hover,
 .chosen-subject:active,
+.chosen-subject:focus,
 .switch-btn:hover {
     border: 1px solid black;
     color: var(--primary-contrast-color) !important;
 }
 
-.btn:active {
+.btn:active,
+.btn:focus {
     color: var(--primary-contrast-color) !important;
+    border: 1px solid black;
 }
 
 .chosen-subject:hover {
@@ -677,93 +762,6 @@ export default {
 .bottom-legend-div .btn {
     border: 1px solid black;
     font-weight: 500;
-}
-/* Level colors */
-
-.grade-school {
-    background-color: #40e0d0;
-    opacity: 0.5;
-}
-
-.grade-school:hover,
-.grade-school:active,
-.grade-school:focus {
-    background-color: #40e0d0;
-    opacity: 1;
-    color: black;
-}
-
-.grade-school.active-grade-filter {
-    opacity: 1;
-}
-
-.middle-school {
-    background-color: #33a133;
-    opacity: 0.5;
-}
-
-.middle-school:hover,
-.middle-school:active,
-.middle-school:focus {
-    background-color: #33a133;
-    opacity: 1;
-    color: black;
-}
-
-.middle-school.active-grade-filter {
-    opacity: 1;
-}
-
-.high-school {
-    background-color: #ffd700;
-    opacity: 0.5;
-    color: black;
-}
-
-.high-school:hover,
-.high-school:active,
-.high-school:focus {
-    background-color: #ffd700;
-    opacity: 1;
-    color: black;
-}
-
-.high-school.active-grade-filter {
-    opacity: 1;
-}
-
-.college {
-    background-color: #ffa500;
-    opacity: 0.5;
-}
-
-.college:hover,
-.college:active,
-.college:focus {
-    background-color: #ffa500;
-    opacity: 1;
-    color: black;
-}
-
-.college.active-grade-filter {
-    opacity: 1;
-}
-
-.phd {
-    background-color: #ff0000;
-    opacity: 0.5;
-}
-
-.phd:hover,
-.phd:active,
-.phd:focus {
-    background-color: #ff0000;
-    opacity: 1;
-    color: black;
-}
-
-.phd.active-grade-filter {
-    opacity: 1;
 }
 
 .skill-tree-input {
