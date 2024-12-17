@@ -114,6 +114,7 @@ export default {
             sprite: null,
             children: userSkills
         };
+        this.$parent.skillTreeNode = this.skill;
 
         this.getAlgorithm();
 
@@ -304,6 +305,7 @@ export default {
                 skill_name: 'My skills',
                 children: skillsWithSubSkillsMoved
             };
+
             this.root = d3.hierarchy(this.data);
 
             //Shorten lines based on truncate level.

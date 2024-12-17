@@ -25,7 +25,9 @@ export const useSkillTreeStore = defineStore('skillTree', {
             const result = await fetch(
                 '/user-skills/filter-by-cohort/' + userDetails.userId
             );
+            console.log('collapse tree skill: ')
             this.userSkills = await result.json();
+            console.log(this.userSkills)
 
         },
         // API call for Vertical skill tree.
@@ -79,6 +81,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
                 '/user-skills/filter-by-cohort/' + studentId
             );
             this.studentSkills = await result.json();
+
         }
     }
 });

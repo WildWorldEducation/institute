@@ -1,5 +1,6 @@
 <script>
 import { useSkillsStore } from '../../../stores/SkillsStore';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import LoadingSpinner from '../share-components/LoadingSpinner.vue';
 import AiExplainToolTip from './tooltips/AiExplainToolTip.vue';
@@ -11,15 +12,17 @@ import TurnOnAiModeToolTip from './tooltips/TurnOnAiModeToolTip.vue';
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const skillTreeStore = useSkillTreeStore();
         const userStore = useUserDetailsStore();
         const userDetailsStore = useUserDetailsStore();
         return {
             skillsStore,
             userStore,
-            userDetailsStore
+            userDetailsStore,
+            skillTreeStore
         };
     },
-    props: ['findNode', 'clearResults'],
+    props: ['findNode', 'clearResults', 'skillTreeNode'],
     data: () => {
         return {
             resultsSkills: [],
@@ -44,13 +47,22 @@ export default {
         ) {
             this.nameList = await this.skillsStore.getFilteredNameList();
         } else if (this.userDetailsStore.role === 'student') {
-            this.nameList = await this.skillsStore.getCohortNameList();
+            await this.skillTreeStore.getStudentSkills(
+                this.userDetailsStore.userId
+            );
+            const nodes = {
+                children: this.skillTreeStore.studentSkills,
+                skillName: 'my skills'
+            };
+
+            this.nameList = this.convertNodesToArray(nodes);
         }
 
         if (this.userStore.userId) {
             this.isLogin = true;
         }
     },
+
     methods: {
         getKeyWordResults(searchText) {
             let results = [];
@@ -85,8 +97,6 @@ export default {
             }, 10000);
         },
         searchFirstWord(results, searchText) {
-            console.log('name list');
-            console.log(this.nameList);
             this.nameList.forEach((element) => {
                 if (
                     element.name
@@ -226,6 +236,19 @@ export default {
                     block: 'nearest'
                 });
             }
+        },
+        convertNodesToArray(nodes) {
+            let childNodes = nodes.children;
+            let results = [];
+            while (childNodes.length > 0) {
+                let currentNode = childNodes.pop();
+                results.push({ name: currentNode.skill_name });
+                if (currentNode.children.length > 0) {
+                    childNodes = childNodes.concat(currentNode.children);
+                }
+            }
+
+            return results;
         }
     },
     components: {
