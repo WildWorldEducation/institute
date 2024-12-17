@@ -2,8 +2,9 @@
 const conn = require('../config/db');
 
 function findParentHaveHiddenChild(userSkills, childName) {
+
     const hiddenChild = userSkills.find(skill => {
-        return skill.name === childName
+        return skill.name.toLowerCase() === childName.toLowerCase()
     })
     const resultsArray = [];
     findHideChildPath(hiddenChild, resultsArray, userSkills)
@@ -14,6 +15,7 @@ function findParentHaveHiddenChild(userSkills, childName) {
 function findHideChildPath(skillNode, resultsArray, userSkills) {
     let stopFlag = false;
     let currentNode = skillNode;
+
     while (!stopFlag) {
         if (currentNode.show_children === 0) {
             resultsArray.push(currentNode)

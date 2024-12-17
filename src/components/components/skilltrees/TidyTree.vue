@@ -114,7 +114,6 @@ export default {
             sprite: null,
             children: userSkills
         };
-        this.$parent.skillTreeNode = this.skill;
 
         this.getAlgorithm();
 
