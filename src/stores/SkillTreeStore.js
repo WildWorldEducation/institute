@@ -32,6 +32,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
         },
         // API call for Vertical skill tree.
         async getVerticalTreeUserSkills(level, subjects) {
+            // To deal with the "&" sign in "Science & Invention".
             for (let i = 0; i < subjects.length; i++) {
                 subjects[i] = subjects[i].replace(/&/g, '%26');
             }
@@ -63,6 +64,10 @@ export const useSkillTreeStore = defineStore('skillTree', {
         },
         // API call for Radial skill tree.
         async getUserSkillsSubSkillsSeparate(level, subjects) {
+            // To deal with the "&" sign in "Science & Invention".
+            for (let i = 0; i < subjects.length; i++) {
+                subjects[i] = subjects[i].replace(/&/g, '%26');
+            }
             // API call for skill tree.
             const userDetailsStore = useUserDetailsStore();
             const userDetails = await userDetailsStore.getUserDetails();
