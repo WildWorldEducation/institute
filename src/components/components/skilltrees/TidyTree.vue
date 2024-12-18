@@ -879,11 +879,12 @@ export default {
                 await this.redrawTree(this.truncateLevel, this.subjectFilters);
                 try {
                     const resultNode = this.findNodeWithName(searchString);
-                    console.log('result node');
-                    console.log(resultNode);
+
                     this.goToLocation(resultNode);
                 } catch (error) {
+                    // Skill get filter by user instead of being hidden
                     console.log('skill get filtered: ' + error);
+                    // Handle filtered case
                     this.removeFilterForHiddenSkill(searchString);
                 }
             }
@@ -894,8 +895,11 @@ export default {
                 searchName,
                 this.userDetailsStore.userId
             );
-            console.log('hidden node info');
-            console.log(node);
+            this.truncateLevel = [node.level];
+            await this.redrawTree(this.truncateLevel, this.subjectFilters);
+            const resultNode = this.findNodeWithName(searchName);
+            this.$parent.gradeFilter = node.level;
+            this.goToLocation(resultNode);
         },
 
         async redrawTree(level, subject) {

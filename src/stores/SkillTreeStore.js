@@ -92,10 +92,13 @@ export const useSkillTreeStore = defineStore('skillTree', {
             let result = null;
             let children = this.studentSkills;
             let stopFlag = false;
-            while (children.length > 0 || stopFlag) {
-                let currentNode = children.pop();
-
-                if (skillName === currentNode?.skill_name) {
+            console.log(skillName)
+            let currentNode = children.pop();
+            while (!stopFlag) {
+                if (currentNode == null) {
+                    stopFlag = true
+                }
+                if (skillName == currentNode?.skill_name) {
                     result = currentNode;
                     stopFlag = true;
                 } else {
@@ -104,6 +107,9 @@ export const useSkillTreeStore = defineStore('skillTree', {
                 }
             }
             return result;
+        },
+        findFatherSubject(node) {
+            let parent = 
         }
     }
 });
