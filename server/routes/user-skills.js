@@ -1218,7 +1218,7 @@ ORDER BY id;`;
                                     throw err;
                                 }
                                 // Run again for parent.
-                                MakeAncestorDomainsMastered(userSkills, parent);
+                                MakeAncestorDomainsMastered(parent, userId);
                             } catch (err) {
                                 console.log(err);
                                 return;
