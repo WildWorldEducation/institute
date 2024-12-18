@@ -524,6 +524,8 @@ router.get('/show/:id', (req, res, next) => {
     });
 });
 
+
+
 router.get('/url/:skillUrl', (req, res, next) => {
     let skill;
     // Not checking if user is logged in, as this is available for guest access.

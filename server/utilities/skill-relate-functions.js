@@ -4,7 +4,7 @@ const conn = require('../config/db');
 function findParentHaveHiddenChild(userSkills, childName) {
 
     const hiddenChild = userSkills.find(skill => {
-        return skill.name.toLowerCase() === childName.toLowerCase()
+        return skill.skill_name.toLowerCase() === childName.toLowerCase()
     })
     const resultsArray = [];
     findHideChildPath(hiddenChild, resultsArray, userSkills)
@@ -17,7 +17,7 @@ function findHideChildPath(skillNode, resultsArray, userSkills) {
     let currentNode = skillNode;
 
     while (!stopFlag) {
-        if (currentNode.show_children === 0) {
+        if (currentNode.show_children == 0) {
             resultsArray.push(currentNode)
         }
         const parentNode = findNode(userSkills, currentNode.parent)
@@ -33,7 +33,7 @@ function findHideChildPath(skillNode, resultsArray, userSkills) {
 
 function findNode(userSkills, skillId) {
     const node = userSkills.find(skill => {
-        return skill.skill_id === skillId
+        return skill.id === skillId
     })
     return node
 }
@@ -68,9 +68,22 @@ function showHiddenChildFromParent(parentPath, userId) {
 
 }
 
+function convertNodesToArray(nodes) {
+    let childNodes = nodes
+    let results = [];
+    while (childNodes.length > 0) {
+        let currentNode = childNodes.pop();
+
+        results.push(currentNode);
+        if (currentNode.children.length > 0) {
+            childNodes = childNodes.concat(currentNode.children);
+        }
+    }
+
+    return results;
+}
 
 
 
 
-
-module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent };
+module.exports = { findParentHaveHiddenChild, showHiddenChildFromParent, convertNodesToArray };

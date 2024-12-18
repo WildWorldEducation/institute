@@ -80,8 +80,30 @@ export const useSkillTreeStore = defineStore('skillTree', {
             const result = await fetch(
                 '/user-skills/filter-by-cohort/' + studentId
             );
+
             this.studentSkills = await result.json();
 
+        },
+        async findInStudentSkill(skillName, studentId) {
+            if (this.studentSkills.length === 0) {
+                await this.getStudentSkills(studentId);
+            }
+
+            let result = null;
+            let children = this.studentSkills;
+            let stopFlag = false;
+            while (children.length > 0 || stopFlag) {
+                let currentNode = children.pop();
+
+                if (skillName === currentNode?.skill_name) {
+                    result = currentNode;
+                    stopFlag = true;
+                } else {
+                    children = children.concat(currentNode.children);
+                    currentNode = children.pop();
+                }
+            }
+            return result;
         }
     }
 });

@@ -56,6 +56,7 @@ export default {
             };
 
             this.nameList = this.convertNodesToArray(nodes);
+            console.log(this.nameList.length);
         }
 
         if (this.userStore.userId) {
@@ -242,6 +243,7 @@ export default {
             let results = [];
             while (childNodes.length > 0) {
                 let currentNode = childNodes.pop();
+
                 results.push({ name: currentNode.skill_name });
                 if (currentNode.children.length > 0) {
                     childNodes = childNodes.concat(currentNode.children);

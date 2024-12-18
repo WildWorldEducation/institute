@@ -877,9 +877,25 @@ export default {
             const data = await res.json();
             if (data?.mess === 'ok') {
                 await this.redrawTree(this.truncateLevel, this.subjectFilters);
-                const resultNode = this.findNodeWithName(searchString);
-                this.goToLocation(resultNode);
+                try {
+                    const resultNode = this.findNodeWithName(searchString);
+                    console.log('result node');
+                    console.log(resultNode);
+                    this.goToLocation(resultNode);
+                } catch (error) {
+                    console.log('skill get filtered: ' + error);
+                    this.removeFilterForHiddenSkill(searchString);
+                }
             }
+        },
+        // if search skill get filtered out by level or subject we remove it
+        async removeFilterForHiddenSkill(searchName) {
+            const node = await this.skillTreeStore.findInStudentSkill(
+                searchName,
+                this.userDetailsStore.userId
+            );
+            console.log('hidden node info');
+            console.log(node);
         },
 
         async redrawTree(level, subject) {
