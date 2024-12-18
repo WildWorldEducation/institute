@@ -588,13 +588,13 @@ router.get('/show/:id', (req, res, next) => {
                     results[0].subjectFilters.push('Language');
                 if (results[0].is_math_filter == 1)
                     results[0].subjectFilters.push('Mathematics');
-                if (results[0].is_history_filter == 1)
-                    results[0].subjectFilters.push('Science & Invention');
-                if (results[0].is_life_filter == 1)
-                    results[0].subjectFilters.push('Computer Science');
-                if (results[0].is_computer_science_filter == 1)
-                    results[0].subjectFilters.push('History');
                 if (results[0].is_science_and_invention_filter == 1)
+                    results[0].subjectFilters.push('Science & Invention');
+                if (results[0].is_computer_science_filter == 1)
+                    results[0].subjectFilters.push('Computer Science');
+                if (results[0].is_history_filter == 1)
+                    results[0].subjectFilters.push('History');
+                if (results[0].is_life_filter == 1)
                     results[0].subjectFilters.push('Life');
                 if (results[0].is_dangerous_ideas_filter == 1)
                     results[0].subjectFilters.push('Dangerous Ideas');
