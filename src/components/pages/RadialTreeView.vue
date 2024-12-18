@@ -25,7 +25,40 @@ export default {
             subjectFilters: []
         };
     },
-    created() {},
+    created() {
+        for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
+            if (this.userDetailsStore.subjectFilters[i] == 'Language') {
+                this.isLanguage = true;
+                this.subjectFilters.push('Language');
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
+                this.isMathematics = true;
+                this.subjectFilters.push('Mathematics');
+            }
+            if (
+                this.userDetailsStore.subjectFilters[i] == 'Science & Invention'
+            ) {
+                this.isScienceAndInvention = true;
+                this.subjectFilters.push('Science & Invention');
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Computer Science') {
+                this.isComputerScience = true;
+                this.subjectFilters.push('Computer Science');
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'History') {
+                this.isHistory = true;
+                this.subjectFilters.push('History');
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Life') {
+                this.isLife = true;
+                this.subjectFilters.push('Life');
+            }
+            if (this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas') {
+                this.isDangerousIdeas = true;
+                this.subjectFilters.push('Dangerous Ideas');
+            }
+        }
+    },
     components: { RadialTree, SkillTreeSearchBar },
     methods: {
         handleChooseResult(resultName) {

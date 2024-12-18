@@ -14,6 +14,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
         collegeVerticalTreeUserSkills: [],
         // --
         userSkillsNoSubSkills: [],
+        // For Radial Tree
         userSkillsSubSkillsSeparate: [],
         studentSkills: []
     }),
@@ -61,7 +62,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             else this.verticalTreeUserSkills = await result.json();
         },
         // API call for Radial skill tree.
-        async getUserSkillsSubSkillsSeparate(level) {
+        async getUserSkillsSubSkillsSeparate(level, subjects) {
             // API call for skill tree.
             const userDetailsStore = useUserDetailsStore();
             const userDetails = await userDetailsStore.getUserDetails();
@@ -70,7 +71,9 @@ export const useSkillTreeStore = defineStore('skillTree', {
                 '/user-skills/separate-subskills/filter-by-cohort/' +
                     userDetails.userId +
                     '?level=' +
-                    level
+                    level +
+                    '&subjects=' +
+                    subjects
             );
             this.userSkillsSubSkillsSeparate = await result.json();
         },

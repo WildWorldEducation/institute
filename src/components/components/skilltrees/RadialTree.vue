@@ -72,6 +72,7 @@ export default {
     },
     async mounted() {
         this.truncateLevel = this.userDetailsStore.skillTreeLevel;
+        this.subjectFilters = this.userDetailsStore.subjectFilters;
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
         if (
@@ -80,7 +81,8 @@ export default {
                 this.userDetailsStore.skillTreeLevel
         ) {
             await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
-                this.truncateLevel
+                this.truncateLevel,
+                this.subjectFilters
             );
         }
 
@@ -869,7 +871,10 @@ export default {
                 );
         },
         async reloadTree(level, subjects) {
-            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(level);
+            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
+                level,
+                subjects
+            );
             this.skill.children =
                 this.skillTreeStore.userSkillsSubSkillsSeparate.skills;
             this.userAvatarImg.onload();
