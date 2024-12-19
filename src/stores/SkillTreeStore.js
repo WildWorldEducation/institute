@@ -22,10 +22,14 @@ export const useSkillTreeStore = defineStore('skillTree', {
         // API call for Collapsible Skill Tree.
         async getUserSkills() {
             const userDetailsStore = useUserDetailsStore();
-            const userDetails = await userDetailsStore.getUserDetails();
+            let level = userDetailsStore.gradeFilter;
+            //const userDetails = await userDetailsStore.getUserDetails();
 
             const result = await fetch(
-                '/user-skills/filter-by-cohort/' + userDetails.userId
+                '/user-skills/filter-by-cohort/' +
+                    userDetailsStore.userId +
+                    '?level=' +
+                    level
             );
 
             this.userSkills = await result.json();

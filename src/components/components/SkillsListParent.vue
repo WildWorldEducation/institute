@@ -165,6 +165,11 @@ export default {
             }
             this.findNodeLoading = false;
             return path;
+        },
+        async filter() {
+            this.userSkills = [];
+            await this.skillTreeStore.getUserSkills();
+            this.userSkills = this.skillTreeStore.userSkills;
         }
     },
     components: {
