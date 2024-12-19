@@ -21,41 +21,33 @@ export default {
             isComputerScience: false,
             isHistory: false,
             isLife: false,
-            isDangerousIdeas: false,
-            subjectFilters: []
+            isDangerousIdeas: false
         };
     },
     created() {
         for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
             if (this.userDetailsStore.subjectFilters[i] == 'Language') {
                 this.isLanguage = true;
-                this.subjectFilters.push('Language');
             }
             if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
                 this.isMathematics = true;
-                this.subjectFilters.push('Mathematics');
             }
             if (
                 this.userDetailsStore.subjectFilters[i] == 'Science & Invention'
             ) {
                 this.isScienceAndInvention = true;
-                this.subjectFilters.push('Science & Invention');
             }
             if (this.userDetailsStore.subjectFilters[i] == 'Computer Science') {
                 this.isComputerScience = true;
-                this.subjectFilters.push('Computer Science');
             }
             if (this.userDetailsStore.subjectFilters[i] == 'History') {
                 this.isHistory = true;
-                this.subjectFilters.push('History');
             }
             if (this.userDetailsStore.subjectFilters[i] == 'Life') {
                 this.isLife = true;
-                this.subjectFilters.push('Life');
             }
             if (this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas') {
                 this.isDangerousIdeas = true;
-                this.subjectFilters.push('Dangerous Ideas');
             }
         }
     },
@@ -77,18 +69,23 @@ export default {
             this.$refs.childComponent.resetPos();
         },
         updateSubjectFilters() {
-            this.subjectFilters = [];
+            this.userDetailsStore.subjectFilters = [];
 
-            if (this.isLanguage) this.subjectFilters.push('Language');
-            if (this.isMathematics) this.subjectFilters.push('Mathematics');
+            if (this.isLanguage)
+                this.userDetailsStore.subjectFilters.push('Language');
+            if (this.isMathematics)
+                this.userDetailsStore.subjectFilters.push('Mathematics');
             if (this.isScienceAndInvention)
-                this.subjectFilters.push('Science & Invention');
+                this.userDetailsStore.subjectFilters.push(
+                    'Science & Invention'
+                );
             if (this.isComputerScience)
-                this.subjectFilters.push('Computer Science');
-            if (this.isHistory) this.subjectFilters.push('History');
-            if (this.isLife) this.subjectFilters.push('Life');
+                this.userDetailsStore.subjectFilters.push('Computer Science');
+            if (this.isHistory)
+                this.userDetailsStore.subjectFilters.push('History');
+            if (this.isLife) this.userDetailsStore.subjectFilters.push('Life');
             if (this.isDangerousIdeas)
-                this.subjectFilters.push('Dangerous Ideas');
+                this.userDetailsStore.subjectFilters.push('Dangerous Ideas');
         }
     }
 };
@@ -165,7 +162,7 @@ export default {
                     this.gradeFilter = 'grade_school';
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -180,7 +177,7 @@ export default {
                     this.gradeFilter = 'middle_school';
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -195,7 +192,7 @@ export default {
                     this.gradeFilter = 'high_school';
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -210,7 +207,7 @@ export default {
                     this.gradeFilter = 'college';
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -225,7 +222,7 @@ export default {
                     this.gradeFilter = 'phd';
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -281,7 +278,7 @@ export default {
                     this.updateSubjectFilters();
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -298,7 +295,7 @@ export default {
                     this.updateSubjectFilters();
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -315,7 +312,7 @@ export default {
                     this.updateSubjectFilters();
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -332,7 +329,7 @@ export default {
                     this.updateSubjectFilters();
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -349,7 +346,7 @@ export default {
                     this.updateSubjectFilters();
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -366,7 +363,7 @@ export default {
                     this.updateSubjectFilters();
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >
@@ -383,7 +380,7 @@ export default {
                     this.updateSubjectFilters();
                     $refs.childComponent.filter(
                         this.gradeFilter,
-                        this.subjectFilters
+                        this.userDetailsStore.subjectFilters
                     );
                 "
             >

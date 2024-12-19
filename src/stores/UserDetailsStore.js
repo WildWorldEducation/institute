@@ -17,7 +17,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
             instructorId: null,
             instructorUsername: null,
             isGoogleAuth: null,
-            skillTreeLevel: 'phd',
+            skillTreeLevel: null,
             verticalTreeLevel: '',
             radialTreeLevel: '',
             theme: 'original',
