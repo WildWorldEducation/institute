@@ -879,7 +879,6 @@ export default {
                 await this.redrawTree(this.truncateLevel, this.subjectFilters);
                 try {
                     const resultNode = this.findNodeWithName(searchString);
-
                     this.goToLocation(resultNode);
                 } catch (error) {
                     // Skill get filter by user instead of being hidden
@@ -896,10 +895,27 @@ export default {
                 this.userDetailsStore.userId
             );
             this.truncateLevel = [node.level];
-            await this.redrawTree(this.truncateLevel, this.subjectFilters);
-            const resultNode = this.findNodeWithName(searchName);
-            this.$parent.gradeFilter = node.level;
-            this.goToLocation(resultNode);
+            try {
+                await this.redrawTree(this.truncateLevel, this.subjectFilters);
+                const resultNode = this.findNodeWithName(searchName);
+                this.$parent.gradeFilter = node.level;
+                this.goToLocation(resultNode);
+            } catch (error) {
+                console.log('subject get filter');
+                const parentNode = await this.skillTreeStore.findFatherSubject(
+                    node
+                );
+                console.log('parent is: ');
+                console.log(parentNode);
+                // show father object
+                this.subjectFilters.push(parentNode.skill_name);
+                console.log('subject filter: ');
+                console.log(this.subjectFilters);
+                await this.redrawTree(this.truncateLevel, this.subjectFilters);
+                const resultNode = this.findNodeWithName(searchName);
+                this.$parent.gradeFilter = node.level;
+                this.goToLocation(resultNode);
+            }
         },
 
         async redrawTree(level, subject) {

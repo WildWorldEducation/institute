@@ -25,7 +25,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             const result = await fetch(
                 '/user-skills/filter-by-cohort/' + userDetails.userId
             );
-            console.log('collapse tree skill: ')
+
             this.userSkills = await result.json();
             console.log(this.userSkills)
 
@@ -108,8 +108,44 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
             return result;
         },
-        findFatherSubject(node) {
-            let parent = 
+        // Find the oldest ancestor of a node 
+        async findFatherSubject(node) {
+            // make all the node into an array
+            const skillArray = this.convertNodesTreeToArray({ children: this.studentSkills });
+            let parentId = node.parent
+            let parent = null;
+            while (parentId !== 0) {
+                parent = skillArray.find(skill => skill.id === parentId)
+                parentId = parent.parent
+            }
+
+            return parent
+        },
+
+        convertNodesToArray(nodes) {
+            let childNodes = nodes.children;
+            let results = [];
+            while (childNodes.length > 0) {
+                let currentNode = childNodes.pop();
+                results.push({ name: currentNode.skill_name });
+                if (currentNode.children.length > 0) {
+                    childNodes = childNodes.concat(currentNode.children);
+                }
+            }
+            return results;
+        },
+
+        convertNodesTreeToArray(nodes) {
+            let childNodes = nodes.children;
+            let results = [];
+            while (childNodes.length > 0) {
+                let currentNode = childNodes.pop();
+                results.push(currentNode);
+                if (currentNode.children.length > 0) {
+                    childNodes = childNodes.concat(currentNode.children);
+                }
+            }
+            return results;
         }
     }
 });

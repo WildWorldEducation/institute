@@ -55,7 +55,7 @@ export default {
                 skillName: 'my skills'
             };
 
-            this.nameList = this.convertNodesToArray(nodes);
+            this.nameList = this.skillTreeStore.convertNodesToArray(nodes);
             console.log(this.nameList.length);
         }
 
@@ -237,20 +237,6 @@ export default {
                     block: 'nearest'
                 });
             }
-        },
-        convertNodesToArray(nodes) {
-            let childNodes = nodes.children;
-            let results = [];
-            while (childNodes.length > 0) {
-                let currentNode = childNodes.pop();
-
-                results.push({ name: currentNode.skill_name });
-                if (currentNode.children.length > 0) {
-                    childNodes = childNodes.concat(currentNode.children);
-                }
-            }
-
-            return results;
         }
     },
     components: {
