@@ -24,48 +24,39 @@ export default {
             showConfirmModal: false,
             isGradeFilter: true,
             isSubjectFilter: true,
-            gradeFilter: this.userDetailsStore.skillTreeLevel,
             isLanguage: false,
             isMathematics: false,
             isScienceAndInvention: false,
             isComputerScience: false,
             isHistory: false,
             isLife: false,
-            isDangerousIdeas: false,
-            subjectFilters: []
+            isDangerousIdeas: false
         };
     },
     created() {
         for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
             if (this.userDetailsStore.subjectFilters[i] == 'Language') {
                 this.isLanguage = true;
-                this.subjectFilters.push('Language');
             }
             if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
                 this.isMathematics = true;
-                this.subjectFilters.push('Mathematics');
             }
             if (
                 this.userDetailsStore.subjectFilters[i] == 'Science & Invention'
             ) {
                 this.isScienceAndInvention = true;
-                this.subjectFilters.push('Science & Invention');
             }
             if (this.userDetailsStore.subjectFilters[i] == 'Computer Science') {
                 this.isComputerScience = true;
-                this.subjectFilters.push('Computer Science');
             }
             if (this.userDetailsStore.subjectFilters[i] == 'History') {
                 this.isHistory = true;
-                this.subjectFilters.push('History');
             }
             if (this.userDetailsStore.subjectFilters[i] == 'Life') {
                 this.isLife = true;
-                this.subjectFilters.push('Life');
             }
             if (this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas') {
                 this.isDangerousIdeas = true;
-                this.subjectFilters.push('Dangerous Ideas');
             }
         }
     },
@@ -109,18 +100,23 @@ export default {
             this.$refs.childComponent.resetPos();
         },
         updateSubjectFilters() {
-            this.subjectFilters = [];
+            this.userDetailsStore.subjectFilters = [];
 
-            if (this.isLanguage) this.subjectFilters.push('Language');
-            if (this.isMathematics) this.subjectFilters.push('Mathematics');
+            if (this.isLanguage)
+                this.userDetailsStore.subjectFilters.push('Language');
+            if (this.isMathematics)
+                this.userDetailsStore.subjectFilters.push('Mathematics');
             if (this.isScienceAndInvention)
-                this.subjectFilters.push('Science & Invention');
+                this.userDetailsStore.subjectFilters.push(
+                    'Science & Invention'
+                );
             if (this.isComputerScience)
-                this.subjectFilters.push('Computer Science');
-            if (this.isHistory) this.subjectFilters.push('History');
-            if (this.isLife) this.subjectFilters.push('Life');
+                this.userDetailsStore.subjectFilters.push('Computer Science');
+            if (this.isHistory)
+                this.userDetailsStore.subjectFilters.push('History');
+            if (this.isLife) this.userDetailsStore.subjectFilters.push('Life');
             if (this.isDangerousIdeas)
-                this.subjectFilters.push('Dangerous Ideas');
+                this.userDetailsStore.subjectFilters.push('Dangerous Ideas');
         }
     }
 };
@@ -254,14 +250,12 @@ export default {
             <button
                 class="btn grade-school me-2"
                 :class="{
-                    'active-grade-filter': gradeFilter == 'grade_school'
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'grade_school'
                 }"
                 @click="
-                    this.gradeFilter = 'grade_school';
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    this.userDetailsStore.gradeFilter = 'grade_school';
+                    $refs.childComponent.filter();
                 "
             >
                 Grade school
@@ -269,14 +263,12 @@ export default {
             <button
                 class="btn middle-school me-2"
                 :class="{
-                    'active-grade-filter': gradeFilter == 'middle_school'
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'middle_school'
                 }"
                 @click="
-                    this.gradeFilter = 'middle_school';
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    this.userDetailsStore.gradeFilter = 'middle_school';
+                    $refs.childComponent.filter();
                 "
             >
                 Middle school
@@ -284,14 +276,12 @@ export default {
             <button
                 class="btn high-school me-2"
                 :class="{
-                    'active-grade-filter': gradeFilter == 'high_school'
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'high_school'
                 }"
                 @click="
-                    this.gradeFilter = 'high_school';
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    this.userDetailsStore.gradeFilter = 'high_school';
+                    $refs.childComponent.filter();
                 "
             >
                 High school
@@ -299,14 +289,12 @@ export default {
             <button
                 class="btn college me-2"
                 :class="{
-                    'active-grade-filter': gradeFilter == 'college'
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'college'
                 }"
                 @click="
-                    this.gradeFilter = 'college';
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    this.userDetailsStore.gradeFilter = 'college';
+                    $refs.childComponent.filter();
                 "
             >
                 College
@@ -314,14 +302,12 @@ export default {
             <button
                 class="btn phd me-2"
                 :class="{
-                    'active-grade-filter': gradeFilter == 'phd'
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'phd'
                 }"
                 @click="
-                    this.gradeFilter = 'phd';
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    this.userDetailsStore.gradeFilter = 'phd';
+                    $refs.childComponent.filter();
                 "
             >
                 PHD
@@ -376,10 +362,7 @@ export default {
                 @click="
                     this.isLanguage = !this.isLanguage;
                     this.updateSubjectFilters();
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    $refs.childComponent.filter();
                 "
             >
                 Language
@@ -393,10 +376,7 @@ export default {
                 @click="
                     this.isMathematics = !this.isMathematics;
                     this.updateSubjectFilters();
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    $refs.childComponent.filter();
                 "
             >
                 Math
@@ -410,10 +390,7 @@ export default {
                 @click="
                     this.isHistory = !this.isHistory;
                     this.updateSubjectFilters();
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    $refs.childComponent.filter();
                 "
             >
                 History
@@ -427,10 +404,7 @@ export default {
                 @click="
                     this.isLife = !this.isLife;
                     this.updateSubjectFilters();
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    $refs.childComponent.filter();
                 "
             >
                 Life
@@ -444,10 +418,7 @@ export default {
                 @click="
                     this.isComputerScience = !this.isComputerScience;
                     this.updateSubjectFilters();
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    $refs.childComponent.filter();
                 "
             >
                 Computer Science
@@ -461,10 +432,7 @@ export default {
                 @click="
                     this.isScienceAndInvention = !this.isScienceAndInvention;
                     this.updateSubjectFilters();
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    $refs.childComponent.filter();
                 "
             >
                 Science & Invention
@@ -478,10 +446,7 @@ export default {
                 @click="
                     this.isDangerousIdeas = !this.isDangerousIdeas;
                     this.updateSubjectFilters();
-                    $refs.childComponent.filter(
-                        this.gradeFilter,
-                        this.subjectFilters
-                    );
+                    $refs.childComponent.filter();
                 "
             >
                 Dangerous Ideas
@@ -689,7 +654,6 @@ export default {
     top: 70px;
 }
 
-/* Grade level legend */
 .search-bar {
     border: 1px solid #dce2f2;
     border-radius: 8px;

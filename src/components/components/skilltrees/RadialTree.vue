@@ -63,24 +63,23 @@ export default {
             userAvatarImg: null,
             currentZoom: 1,
             resetPosZoom: 0.1,
-            resultNode: null,
-            truncateLevel: 'phd'
+            resultNode: null
         };
     },
     components: {
         SkillPanel
     },
     async mounted() {
-        this.truncateLevel = this.userDetailsStore.skillTreeLevel;
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
         if (
             this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0 ||
             this.userDetailsStore.radialTreeLevel !=
-                this.userDetailsStore.skillTreeLevel
+                this.userDetailsStore.gradeFilter
         ) {
             await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
-                this.truncateLevel
+                this.userDetailsStore.gradeFilter,
+                this.userDetailsStore.subjectFilters
             );
         }
 
@@ -868,28 +867,44 @@ export default {
                         .scale(fixedScale)
                 );
         },
-        async truncateToGradeLevel(level) {
-            this.truncateLevel = level;
-            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(level);
+        async reloadTree() {
+            await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
+                this.userDetailsStore.gradeFilter,
+                this.userDetailsStore.subjectFilters
+            );
             this.skill.children =
                 this.skillTreeStore.userSkillsSubSkillsSeparate.skills;
             this.userAvatarImg.onload();
-            this.saveSkillTreeGradeLevel();
         },
-        saveSkillTreeGradeLevel() {
-            // Update the store
-            this.userDetailsStore.skillTreeLevel = this.truncateLevel;
-            this.userDetailsStore.radialTreeLevel = this.truncateLevel;
+        // Grade level and root subject filter
+        async filter() {
+            this.skill.children = await this.reloadTree();
+            this.saveSkillTreeFilters();
+        },
+        saveSkillTreeFilters() {
+            this.userDetailsStore.radialTreeLevel =
+                this.userDetailsStore.gradeFilter;
+
             // Update the DB
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    level: this.truncateLevel
+                    level: this.userDetailsStore.gradeFilter,
+                    is_language_filter: this.$parent.isLanguage,
+                    is_math_filter: this.$parent.isMathematics,
+                    is_history_filter: this.$parent.isHistory,
+                    is_life_filter: this.$parent.isLife,
+                    is_computer_science_filter: this.$parent.isComputerScience,
+                    is_science_and_invention_filter:
+                        this.$parent.isScienceAndInvention,
+                    is_dangerous_ideas_filter: this.$parent.isDangerousIdeas
                 })
             };
             var url =
-                '/users/' + this.userDetailsStore.userId + '/skill-tree-level';
+                '/users/' +
+                this.userDetailsStore.userId +
+                '/skill-tree-filters';
             fetch(url, requestOptions);
         }
     }

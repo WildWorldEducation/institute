@@ -14,6 +14,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
         collegeVerticalTreeUserSkills: [],
         // --
         userSkillsNoSubSkills: [],
+        // For Radial Tree
         userSkillsSubSkillsSeparate: [],
         studentSkills: []
     }),
@@ -31,15 +32,16 @@ export const useSkillTreeStore = defineStore('skillTree', {
         },
         // API call for Vertical skill tree.
         async getVerticalTreeUserSkills(level, subjects) {
+            // To deal with the "&" sign in "Science & Invention".
             for (let i = 0; i < subjects.length; i++) {
                 subjects[i] = subjects[i].replace(/&/g, '%26');
             }
 
             const userDetailsStore = useUserDetailsStore();
-            const userDetails = await userDetailsStore.getUserDetails();
+            // const userDetails = await userDetailsStore.getUserDetails();
             const result = await fetch(
                 '/user-skills/filter-by-cohort/vertical-tree/' +
-                    userDetails.userId +
+                    userDetailsStore.userId +
                     '?level=' +
                     level +
                     '&subjects=' +
@@ -61,16 +63,21 @@ export const useSkillTreeStore = defineStore('skillTree', {
             else this.verticalTreeUserSkills = await result.json();
         },
         // API call for Radial skill tree.
-        async getUserSkillsSubSkillsSeparate(level) {
+        async getUserSkillsSubSkillsSeparate(level, subjects) {
+            // To deal with the "&" sign in "Science & Invention".
+            for (let i = 0; i < subjects.length; i++) {
+                subjects[i] = subjects[i].replace(/&/g, '%26');
+            }
             // API call for skill tree.
             const userDetailsStore = useUserDetailsStore();
-            const userDetails = await userDetailsStore.getUserDetails();
 
             const result = await fetch(
                 '/user-skills/separate-subskills/filter-by-cohort/' +
-                    userDetails.userId +
+                    userDetailsStore.userId +
                     '?level=' +
-                    level
+                    level +
+                    '&subjects=' +
+                    subjects
             );
             this.userSkillsSubSkillsSeparate = await result.json();
         },
