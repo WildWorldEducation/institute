@@ -98,19 +98,74 @@ export default {
             </div>
             <div id="tablet-and-up-legend">
                 <div class="legend row">
-                    <!-- Grade buttons -->
+                    <!-- Grade level filter -->
                     <div v-if="!instructorMode" class="col-lg-9 d-flex">
-                        <button class="btn grade-school me-2">
+                        <button
+                            class="btn grade-school me-2"
+                            :class="{
+                                'active-grade-filter':
+                                    this.userDetailsStore.gradeFilter ==
+                                    'grade_school'
+                            }"
+                            @click="
+                                this.userDetailsStore.gradeFilter =
+                                    'grade_school'
+                            "
+                        >
                             Grade school
                         </button>
-                        <button class="btn middle-school me-2">
+
+                        <button
+                            class="btn middle-school me-2"
+                            :class="{
+                                'active-grade-filter':
+                                    this.userDetailsStore.gradeFilter ==
+                                    'middle_school'
+                            }"
+                            @click="
+                                this.userDetailsStore.gradeFilter =
+                                    'middle_school'
+                            "
+                        >
                             Middle school
                         </button>
-                        <button class="btn high-school me-2">
+                        <button
+                            class="btn high-school me-2"
+                            :class="{
+                                'active-grade-filter':
+                                    this.userDetailsStore.gradeFilter ==
+                                    'high_school'
+                            }"
+                            @click="
+                                this.userDetailsStore.gradeFilter =
+                                    'high_school'
+                            "
+                        >
                             High school
                         </button>
-                        <button class="btn college me-2">College</button>
-                        <button class="btn phd me-2">PHD</button>
+                        <button
+                            class="btn college me-2"
+                            :class="{
+                                'active-grade-filter':
+                                    this.userDetailsStore.gradeFilter ==
+                                    'college'
+                            }"
+                            @click="
+                                this.userDetailsStore.gradeFilter = 'college'
+                            "
+                        >
+                            College
+                        </button>
+                        <button
+                            class="btn phd me-2"
+                            :class="{
+                                'active-grade-filter':
+                                    this.userDetailsStore.gradeFilter == 'phd'
+                            }"
+                            @click="this.userDetailsStore.gradeFilter = 'phd'"
+                        >
+                            PHD
+                        </button>
                         <!-- Add skill button -->
                         <router-link class="btn primary-btn" to="/skills/add"
                             >New skill&nbsp;
@@ -158,6 +213,88 @@ export default {
 </template>
 
 <style scoped>
+/*
+ * Filters 
+ */
+
+/* Grade level filter */
+.grade-school {
+    background-color: #40e0d0;
+    opacity: 0.5;
+    color: black;
+}
+.grade-school:hover,
+.grade-school:active,
+.grade-school:focus {
+    background-color: #40e0d0;
+    opacity: 1;
+    color: black !important;
+}
+.grade-school.active-grade-filter {
+    opacity: 1;
+}
+
+.middle-school {
+    background-color: #33a133;
+    opacity: 0.5;
+}
+.middle-school:hover,
+.middle-school:active,
+.middle-school:focus {
+    background-color: #33a133;
+    opacity: 1;
+    color: black !important;
+}
+.middle-school.active-grade-filter {
+    opacity: 1;
+}
+
+.high-school {
+    background-color: #ffd700;
+    opacity: 0.5;
+    color: black;
+}
+.high-school:hover,
+.high-school:active,
+.high-school:focus {
+    background-color: #ffd700;
+    opacity: 1;
+    color: black !important;
+}
+.high-school.active-grade-filter {
+    opacity: 1;
+}
+
+.college {
+    background-color: #ffa500;
+    opacity: 0.5;
+}
+.college:hover,
+.college:active,
+.college:focus {
+    background-color: #ffa500;
+    opacity: 1;
+    color: black !important;
+}
+.college.active-grade-filter {
+    opacity: 1;
+}
+
+.phd {
+    background-color: #ff0000;
+    opacity: 0.5;
+}
+.phd:hover,
+.phd:active,
+.phd:focus {
+    background-color: #ff0000;
+    opacity: 1;
+    color: black !important;
+}
+.phd.active-grade-filter {
+    opacity: 1;
+}
+
 #legend {
     height: 60px;
 }
@@ -235,23 +372,6 @@ export default {
     .legend span {
         flex-shrink: 0;
     }
-}
-
-/* Level colors */
-.grade-school {
-    background-color: #40e0d0;
-}
-.middle-school {
-    background-color: #33a133;
-}
-.high-school {
-    background-color: #ffd700;
-}
-.college {
-    background-color: #ffa500;
-}
-.phd {
-    background-color: #ff0000;
 }
 
 /*---*/
