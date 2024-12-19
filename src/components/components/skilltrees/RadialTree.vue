@@ -72,11 +72,7 @@ export default {
     async mounted() {
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
-        if (
-            this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0 ||
-            this.userDetailsStore.radialTreeLevel !=
-                this.userDetailsStore.gradeFilter
-        ) {
+        if (this.skillTreeStore.userSkillsSubSkillsSeparate.length == 0) {
             await this.skillTreeStore.getUserSkillsSubSkillsSeparate(
                 this.userDetailsStore.gradeFilter,
                 this.userDetailsStore.subjectFilters
@@ -882,9 +878,6 @@ export default {
             this.saveSkillTreeFilters();
         },
         saveSkillTreeFilters() {
-            this.userDetailsStore.radialTreeLevel =
-                this.userDetailsStore.gradeFilter;
-
             // Update the DB
             const requestOptions = {
                 method: 'PUT',

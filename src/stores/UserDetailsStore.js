@@ -19,8 +19,6 @@ export const useUserDetailsStore = defineStore('userDetails', {
             isGoogleAuth: null,
             theme: 'original',
             gradeFilter: null,
-            verticalTreeLevel: '',
-            radialTreeLevel: '',
             subjectFilters: []
         };
     },

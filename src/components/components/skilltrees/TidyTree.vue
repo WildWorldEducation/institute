@@ -69,14 +69,9 @@ export default {
         JoystickControl
     },
     async mounted() {
-        
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
-        if (
-            this.skillTreeStore.verticalTreeUserSkills.length == 0 ||
-            this.userDetailsStore.verticalTreeLevel !=
-                this.userDetailsStore.gradeFilter
-        ) {
+        if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
             await this.skillTreeStore.getVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
                 this.userDetailsStore.subjectFilters
@@ -1057,10 +1052,6 @@ export default {
             this.saveSkillTreeFilters();
         },
         saveSkillTreeFilters() {
-            // Update the store
-            this.userDetailsStore.verticalTreeLevel =
-                this.userDetailsStore.gradeFilter;
-
             // Update the DB
             const requestOptions = {
                 method: 'PUT',
