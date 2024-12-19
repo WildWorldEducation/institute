@@ -560,6 +560,9 @@ export default {
                     <div v-if="skill.type != 'domain'">
                         <div class="d-flex flex-column">
                             <div class="mastery-requirements">
+                                <h2 class="h4 secondary-heading">
+                                    Requirements for mastery
+                                </h2>
                                 <div v-html="skill.mastery_requirements"></div>
                             </div>
                         </div>
