@@ -266,6 +266,27 @@ router.get('/filtered-unnested-list/:userId', (req, res, next) => {
 router.get('/filter-by-cohort/:userId', (req, res, next) => {
     if (req.session.userName) {
         res.setHeader('Content-Type', 'application/json');
+        /* Apply grade level and subject filters
+         */
+        // Level will be sent in query param (eg: ?level='middle_school')
+        const level = req.query.level;
+        // Default is to show all.
+        let levelsToShow =
+            "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        if (level == 'grade_school') {
+            levelsToShow = "'grade_school'";
+        } else if (level == 'middle_school') {
+            levelsToShow = "'grade_school', 'middle_school'";
+        } else if (level == 'high_school') {
+            levelsToShow = "'grade_school', 'middle_school', 'high_school'";
+        } else if (level == 'college') {
+            levelsToShow =
+                "'grade_school', 'middle_school', 'high_school', 'college'";
+        } else if (level == 'phd') {
+            levelsToShow =
+                "'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        }
+
         // Check if student is member of a cohort
         let isInCohortSQLQuery = `
         SELECT cohort_id 
@@ -292,6 +313,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
             WHERE user_skills.user_id = ${conn.escape(req.params.userId)}
             AND is_filtered = 'available' 
             AND is_deleted = 0
+            AND level IN (${levelsToShow})
             AND skills.id NOT IN 
             (SELECT skill_id 
             FROM cohort_skill_filters
@@ -309,6 +331,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
             WHERE user_skills.user_id = ${conn.escape(req.params.userId)}) 
             AND is_filtered = 'available' 
             AND is_deleted = 0
+            AND level IN (${levelsToShow})
             AND skills.id NOT IN 
             (SELECT skill_id 
             FROM cohort_skill_filters
