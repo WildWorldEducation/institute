@@ -1,14 +1,11 @@
 import { defineStore } from 'pinia';
+// Import another store.
+import { useUserDetailsStore } from './UserDetailsStore.js';
 
 export const useSkillsStore = defineStore('skills', {
     state: () => ({
         nestedSkillsList: [],
         filteredNestedSkillsList: [],
-        // -- for grade level filter on Vertical Tree
-        gradeSchoolFilteredNestedSkillsList: [],
-        middleSchoolFilteredNestedSkillsList: [],
-        highSchoolFilteredNestedSkillsList: [],
-        collegeFilteredNestedSkillsList: [],
         skillsList: [],
         findNodeLoading: false
     }),
@@ -20,9 +17,15 @@ export const useSkillsStore = defineStore('skills', {
 
             this.nestedSkillsList = data;
         },
-        // For 'Instructor' role / For guest mode of Vertical Tree
+        // For 'Instructor' and 'Editor' role of Collapsible Tree/ For guest mode of Vertical Tree
         async getFilteredNestedSkillsList() {
-            const result = await fetch('/skills/filtered-nested-list');
+            // API call for skill tree.
+            const userDetailsStore = useUserDetailsStore();
+            let level = userDetailsStore.gradeFilter;
+
+            const result = await fetch(
+                '/skills/filtered-nested-list?level=' + level
+            );
             const data = await result.json();
 
             // Default is all levels.

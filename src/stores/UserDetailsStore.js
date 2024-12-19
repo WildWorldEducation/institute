@@ -17,10 +17,8 @@ export const useUserDetailsStore = defineStore('userDetails', {
             instructorId: null,
             instructorUsername: null,
             isGoogleAuth: null,
-            skillTreeLevel: 'phd',
-            verticalTreeLevel: '',
-            radialTreeLevel: '',
             theme: 'original',
+            gradeFilter: null,
             subjectFilters: []
         };
     },
@@ -45,7 +43,7 @@ export const useUserDetailsStore = defineStore('userDetails', {
                 this.password = data.password;
                 this.email = data.email;
                 this.isGoogleAuth = data.is_google_auth;
-                this.skillTreeLevel = data.skill_tree_level;
+                this.gradeFilter = data.grade_filter;
                 this.theme = data.theme;
                 this.subjectFilters = data.subjectFilters;
 

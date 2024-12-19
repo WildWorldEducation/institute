@@ -221,8 +221,8 @@ Themes
     --primary-color: #8d6ce7;
     --primary-contrast-color: white;
 
-    --secondary-color: #56c5b6;
-    --secondary-contrast-color: white;
+    --secondary-color: #c6e76c;
+    --secondary-contrast-color: black;
 
     --skill-tree-background-color: white;
     --skill-tree-color: black;

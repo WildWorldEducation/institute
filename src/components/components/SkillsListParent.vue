@@ -165,6 +165,19 @@ export default {
             }
             this.findNodeLoading = false;
             return path;
+        },
+        async filter() {
+            if (this.userDetailsStore.role == 'student') {
+                this.userSkills = [];
+                await this.skillTreeStore.getUserSkills();
+                this.userSkills = this.skillTreeStore.userSkills;
+            } else if (
+                this.userDetailsStore.role == 'instructor' ||
+                this.userDetailsStore.role == 'editor'
+            ) {
+                this.skillsStore.filteredNestedSkillsList = [];
+                await this.skillsStore.getFilteredNestedSkillsList();
+            }
         }
     },
     components: {
