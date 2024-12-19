@@ -58,7 +58,7 @@ router.post('/new-user/add', (req, res, next) => {
             email: req.body.email,
             password: hashedPassword,
             role: req.body.account_type == 'student' ? 'student' : 'instructor',
-            skill_tree_level: req.body.skill_tree_level
+            grade_filter: req.body.grade_filter
         };
 
         // Check if username or email address already exist.
@@ -570,7 +570,7 @@ router.get('/show/:id', (req, res, next) => {
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
         let sqlQuery = `
-    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, skill_tree_level, theme,
+    SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, is_deleted, is_google_auth, grade_filter, theme,
     is_language_filter, is_math_filter, is_history_filter, is_life_filter, is_computer_science_filter, is_science_and_invention_filter, is_dangerous_ideas_filter
     FROM users        
     WHERE id = ${conn.escape(req.params.id)} 
@@ -875,10 +875,10 @@ router.get('/:id/profile-settings', isAuthenticated, isAdmin, (req, res) => {
     }
 });
 
-// Choose skill tree truncate level
+// Choose skill tree filters
 router.put('/:userId/skill-tree-filters', isAuthenticated, (req, res, next) => {
     let sqlQuery = `UPDATE users
-            SET skill_tree_level = 
+            SET grade_filter = 
             ${conn.escape(req.body.level)},            
             is_language_filter = 
             ${conn.escape(req.body.is_language_filter)},
