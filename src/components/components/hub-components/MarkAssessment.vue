@@ -112,23 +112,21 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
-        <h2 class="secondary-heading h4">Mark Assessments</h2>
-        <div id="list-body">
-            <div class="assessment" v-for="assessment in this.assessments">
-                <RouterLink
-                    class="assessment-link"
-                    :to="'/mark-assessment/' + assessment.id"
-                >
-                    <span id="student-name">
-                        {{ assessment.studentUsername }},
-                    </span>
-                    <span id="skill-name"> {{ assessment.skillName }}, </span>
-                    <span id="date">
-                        {{ assessment.date }}
-                    </span>
-                </RouterLink>
-            </div>
+    <h2 class="secondary-heading h4">Mark Assessments</h2>
+    <div v-if="this.assessments.length > 0" id="list-body">
+        <div class="assessment" v-for="assessment in this.assessments">
+            <RouterLink
+                class="assessment-link"
+                :to="'/mark-assessment/' + assessment.id"
+            >
+                <span id="student-name">
+                    {{ assessment.studentUsername }},
+                </span>
+                <span id="skill-name"> {{ assessment.skillName }}, </span>
+                <span id="date">
+                    {{ assessment.date }}
+                </span>
+            </RouterLink>
         </div>
     </div>
 </template>

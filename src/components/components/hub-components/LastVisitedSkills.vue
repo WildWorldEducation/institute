@@ -20,7 +20,7 @@ export default {
 
 <template>
     <h2 class="secondary-heading h4">Last visited Skills</h2>
-    <div id="skill-list">
+    <div v-if="visitedSkills.length > 0" id="skill-list">
         <div v-for="skill in visitedSkills">
             <router-link
                 :class="{
@@ -77,6 +77,7 @@ export default {
 .skill-link {
     text-decoration: none !important;
     color: black;
+    text-align: start
 }
 
 /* Level colors */

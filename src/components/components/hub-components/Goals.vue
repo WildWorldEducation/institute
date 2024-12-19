@@ -43,7 +43,7 @@ export default {
 
 <template>
     <h2 class="secondary-heading h4">Goals</h2>
-    <div id="goal-list">
+    <div v-if="goals.length > 0" id="goal-list">
         <div v-for="goal in goals">
             <router-link
                 :class="{
@@ -93,6 +93,7 @@ export default {
 .goal-link {
     text-decoration: none !important;
     color: black;
+    text-align: start;
 }
 
 /* Level colors */
