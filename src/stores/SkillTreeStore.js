@@ -15,7 +15,9 @@ export const useSkillTreeStore = defineStore('skillTree', {
         // --
         userSkillsNoSubSkills: [],
         userSkillsSubSkillsSeparate: [],
-        studentSkills: []
+        studentSkills: [],
+        // WE Save the node that can appear in result for later use
+        searchResultNodes: null
     }),
     actions: {
         // API call for Collapsible Skill Tree.
@@ -27,7 +29,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             );
 
             this.userSkills = await result.json();
-            console.log(this.userSkills)
+
 
         },
         // API call for Vertical skill tree.
@@ -84,41 +86,18 @@ export const useSkillTreeStore = defineStore('skillTree', {
             this.studentSkills = await result.json();
 
         },
-        async findInStudentSkill(skillName, studentId) {
-            if (this.studentSkills.length === 0) {
-                await this.getStudentSkills(studentId);
-            }
-
-            let result = null;
-            let children = this.studentSkills;
-            let stopFlag = false;
-            console.log(skillName)
-            let currentNode = children.pop();
-            while (!stopFlag) {
-                if (currentNode == null) {
-                    stopFlag = true
-                }
-                if (skillName == currentNode?.skill_name) {
-                    result = currentNode;
-                    stopFlag = true;
-                } else {
-                    children = children.concat(currentNode.children);
-                    currentNode = children.pop();
-                }
-            }
+        async findInStudentSkill(skillName) {
+            const result = this.searchResultNodes.find(result => result.name === skillName)
             return result;
         },
         // Find the oldest ancestor of a node 
         async findFatherSubject(node) {
-            // make all the node into an array
-            const skillArray = this.convertNodesTreeToArray({ children: this.studentSkills });
             let parentId = node.parent
             let parent = null;
             while (parentId !== 0) {
-                parent = skillArray.find(skill => skill.id === parentId)
+                parent = this.searchResultNodes.find(skill => skill.id === parentId)
                 parentId = parent.parent
             }
-
             return parent
         },
 
@@ -127,7 +106,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             let results = [];
             while (childNodes.length > 0) {
                 let currentNode = childNodes.pop();
-                results.push({ name: currentNode.skill_name });
+                results.push({ ...currentNode, name: currentNode.skill_name });
                 if (currentNode.children.length > 0) {
                     childNodes = childNodes.concat(currentNode.children);
                 }
@@ -135,17 +114,5 @@ export const useSkillTreeStore = defineStore('skillTree', {
             return results;
         },
 
-        convertNodesTreeToArray(nodes) {
-            let childNodes = nodes.children;
-            let results = [];
-            while (childNodes.length > 0) {
-                let currentNode = childNodes.pop();
-                results.push(currentNode);
-                if (currentNode.children.length > 0) {
-                    childNodes = childNodes.concat(currentNode.children);
-                }
-            }
-            return results;
-        }
     }
 });

@@ -56,8 +56,9 @@ export default {
             };
 
             this.nameList = this.skillTreeStore.convertNodesToArray(nodes);
-            console.log(this.nameList.length);
         }
+
+        this.skillTreeStore.searchResultNodes = this.nameList;
 
         if (this.userStore.userId) {
             this.isLogin = true;
@@ -130,7 +131,6 @@ export default {
         highlightContextResult(results) {
             // we highlight the part that match search text
             const highlightedResult = results.map((result) => {
-                console.log(result);
                 const matchedRegex = new RegExp(`(${this.searchText})`, 'gi');
                 const newText = result.skill_name.replace(
                     matchedRegex,

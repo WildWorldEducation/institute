@@ -986,8 +986,7 @@ router.post('/find-hidden-skill/:userId', (req, res, next) => {
                     const skillList = convertNodesToArray(studentSkills);
                     const parentPath = findParentHaveHiddenChild(skillList, skillName);
                     showHiddenChildFromParent(parentPath, req.params.userId);
-                    console.log('parent path')
-                    console.log(parentPath)
+
                     return res.json({ mess: 'ok' })
                 })
             } catch (err) {

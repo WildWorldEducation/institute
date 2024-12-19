@@ -9,7 +9,6 @@ export const useSkillsStore = defineStore('skills', {
         middleSchoolFilteredNestedSkillsList: [],
         highSchoolFilteredNestedSkillsList: [],
         collegeFilteredNestedSkillsList: [],
-        // ---
         skillsList: [],
         findNodeLoading: false
     }),

@@ -1492,9 +1492,9 @@ router.get('/name-list', (req, res, next) => {
 
                         let flatArray = flat(studentSkills);
 
-                        // Only return the name field.
+                        // Only return necessary field.
                         var namesArray = flatArray.map(function (a) {
-                            return { name: a.name };
+                            return { ...a, name: a.skill_name };
                         });
 
                         res.json(namesArray);

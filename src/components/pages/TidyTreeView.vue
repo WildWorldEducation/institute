@@ -81,7 +81,7 @@ export default {
             this.lastChooseResult = resultName;
             // Find the node with name
             const node = this.$refs.childComponent.findNodeWithName(resultName);
-            console.log(node);
+
             if (!node) {
                 await this.$refs.childComponent.findHiddenSkill(resultName);
                 return false;

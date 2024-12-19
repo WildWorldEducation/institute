@@ -882,7 +882,7 @@ export default {
                     this.goToLocation(resultNode);
                 } catch (error) {
                     // Skill get filter by user instead of being hidden
-                    console.log('skill get filtered: ' + error);
+
                     // Handle filtered case
                     this.removeFilterForHiddenSkill(searchString);
                 }
@@ -901,19 +901,16 @@ export default {
                 this.$parent.gradeFilter = node.level;
                 this.goToLocation(resultNode);
             } catch (error) {
-                console.log('subject get filter');
                 const parentNode = await this.skillTreeStore.findFatherSubject(
                     node
                 );
-                console.log('parent is: ');
-                console.log(parentNode);
+
                 // show father object
                 this.subjectFilters.push(parentNode.skill_name);
-                console.log('subject filter: ');
-                console.log(this.subjectFilters);
+
                 await this.redrawTree(this.truncateLevel, this.subjectFilters);
                 const resultNode = this.findNodeWithName(searchName);
-                this.$parent.gradeFilter = node.level;
+                this.$parent.subjectFilters = this.subjectFilters;
                 this.goToLocation(resultNode);
             }
         },
