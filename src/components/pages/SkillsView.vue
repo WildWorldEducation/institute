@@ -62,29 +62,6 @@ export default {
     <div id="legend" class="container-fluid">
         <div class="position-absolute legend-div">
             <div id="mobile-legend">
-                <!-- <div class="legend row">
-                    <div class="col-8">
-                        <div class="col">
-                            <button class="btn grade-school">
-                                Grade school
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button class="btn middle-school">
-                                Middle school
-                            </button>
-                        </div>
-                        <div class="col">
-                            <button class="btn high-school">High school</button>
-                        </div>
-                        <div class="col">
-                            <button class="btn college">College</button>
-                        </div>
-                        <div class="col">
-                            <button class="btn phd">PHD</button>
-                        </div>
-                    </div>
-                </div> -->
                 <div v-if="instructorMode" class="col-lg-9">
                     <h1 class="heading h4">Student: {{ studentName }}</h1>
                 </div>
