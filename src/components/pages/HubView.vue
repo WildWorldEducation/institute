@@ -39,6 +39,21 @@ export default {
                 ' ' +
                 this.userDetailsStore.lastName
             );
+        },
+        hasAssessments() {
+            return this.userDetailsStore.assessments && this.userDetailsStore.assessments.length > 0;
+        },
+        hasQuestions() {
+            return this.userDetailsStore.questions && this.userDetailsStore.questions.length > 0;
+        },
+        showFirstContainer() {
+            return this.userDetailsStore.role != 'editor' && (this.userDetailsStore.role == 'student' || this.hasAssessments);
+        },
+        showSecondContainer() {
+            return this.userDetailsStore.role != 'editor' && (this.userDetailsStore.role == 'student' || this.hasQuestions);
+        },
+        showContentRow() {
+            return this.showFirstContainer || this.showSecondContainer;
         }
     },
     methods: {}
@@ -46,12 +61,13 @@ export default {
 </script>
 
 <template>
-    <div class="container min-vh-100">
-        <div class="row content-row">
+    <div class="container min-vh-100 pt-md-5 pt-4">
+        <div class="row content-row gy-2" v-if="showContentRow">
             <!-- Available Skills / Mark Assessments -->
             <div
                 class="col-lg-4 col-md-6 mb-2"
-                v-if="userDetailsStore.role != 'editor'"
+                v-if="showFirstContainer"
+                :style="{ display: showFirstContainer ? 'block' : 'none' }"
             >
                 <div class="hub-component">
                     <StudentProgress
@@ -59,14 +75,15 @@ export default {
                         :userId="userDetailsStore.userId"
                     />
                     <MarkAssessment
-                        v-else-if="userDetailsStore.role == 'instructor'"
+                        v-else-if="userDetailsStore.role == 'instructor' && hasAssessments"
                     />
                 </div>
             </div>
             <!-- Last Visited Skills / Student Suggested Questions -->
             <div
                 class="col-lg-4 col-md-6 mb-2"
-                v-if="userDetailsStore.role != 'editor'"
+                v-if="showSecondContainer"
+                :style="{ display: showSecondContainer ? 'block' : 'none' }"
             >
                 <div class="hub-component">
                     <LastVisitedSkills
@@ -75,7 +92,7 @@ export default {
                     />
                     <!-- Student Added Questions List -->
                     <HubStudentQuestionList
-                        v-else-if="userDetailsStore.role == 'instructor'"
+                        v-else-if="userDetailsStore.role == 'instructor' && hasQuestions"
                     />
                 </div>
             </div>
@@ -88,14 +105,14 @@ export default {
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row mt-4">
             <div class="col-lg-4 col-md-6 mb-2">
                 <div class="hub-component">
                     <Notifications />
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row mt-4">
             <div class="col">
                 <div class="hub-component">
                     <News />

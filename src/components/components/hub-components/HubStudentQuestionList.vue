@@ -61,9 +61,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid">
         <h2 class="secondary-heading h4">Check New Questions</h2>
-
         <div class="list-body">
             <div class="question" v-for="question in questions">
                 <RouterLink
@@ -78,7 +76,6 @@ export default {
                 </RouterLink>
             </div>
         </div>
-    </div>
 </template>
 
 <style scoped>

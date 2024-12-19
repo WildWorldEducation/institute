@@ -40,7 +40,7 @@ export default {
 
 <template>
     <h2 class="secondary-heading h4">Available Skills</h2>
-    <div id="skill-list">
+    <div v-if="availableSkills.length > 0" id="skill-list">
         <div v-for="availableSkill in availableSkills">
             <router-link
                 :class="{
@@ -98,6 +98,7 @@ export default {
 .skill-link {
     text-decoration: none !important;
     color: black;
+    text-align: start;
 }
 
 /* Level colors */
