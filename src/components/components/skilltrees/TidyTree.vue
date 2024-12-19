@@ -69,28 +69,28 @@ export default {
         JoystickControl
     },
     async mounted() {
-        console.log(this.userDetailsStore.skillTreeLevel);
+        
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
         if (
             this.skillTreeStore.verticalTreeUserSkills.length == 0 ||
             this.userDetailsStore.verticalTreeLevel !=
-                this.userDetailsStore.skillTreeLevel
+                this.userDetailsStore.gradeFilter
         ) {
             await this.skillTreeStore.getVerticalTreeUserSkills(
-                this.userDetailsStore.skillTreeLevel,
+                this.userDetailsStore.gradeFilter,
                 this.userDetailsStore.subjectFilters
             );
         }
 
         let userSkills = '';
-        if (this.userDetailsStore.skillTreeLevel == 'grade_school') {
+        if (this.userDetailsStore.gradeFilter == 'grade_school') {
             userSkills = this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
-        } else if (this.userDetailsStore.skillTreeLevel == 'middle_school') {
+        } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
             userSkills = this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
-        } else if (this.userDetailsStore.skillTreeLevel == 'high_school') {
+        } else if (this.userDetailsStore.gradeFilter == 'high_school') {
             userSkills = this.skillTreeStore.highSchoolVerticalTreeUserSkills;
-        } else if (this.userDetailsStore.skillTreeLevel == 'college') {
+        } else if (this.userDetailsStore.gradeFilter == 'college') {
             userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
         } else {
             userSkills = this.skillTreeStore.verticalTreeUserSkills;
@@ -304,18 +304,16 @@ export default {
             } else if (count < 300) {
                 multiplyBy = 2;
             } else if (
-                this.userDetailsStore.skillTreeLevel == 'grade_school' ||
+                this.userDetailsStore.gradeFilter == 'grade_school' ||
                 count < 1000
             ) {
                 multiplyBy = 3;
-            } else if (
-                this.userDetailsStore.skillTreeLevel == 'middle_school'
-            ) {
+            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
                 multiplyBy = 4;
-            } else if (this.userDetailsStore.skillTreeLevel == 'high_school') {
+            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
                 multiplyBy = 5;
             } else if (
-                this.userDetailsStore.skillTreeLevel == 'college' ||
+                this.userDetailsStore.gradeFilter == 'college' ||
                 count < 2000
             ) {
                 multiplyBy = 6;
@@ -887,25 +885,23 @@ export default {
         async reloadTree(node) {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills(
-                this.userDetailsStore.skillTreeLevel,
+                this.userDetailsStore.gradeFilter,
                 this.userDetailsStore.subjectFilters
             );
 
             // If the student clicks a button on the grade level key,
             // this will truncate the tree to that level.
             let userSkills = [];
-            if (this.userDetailsStore.skillTreeLevel == 'grade_school') {
+            if (this.userDetailsStore.gradeFilter == 'grade_school') {
                 userSkills =
                     this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
-            } else if (
-                this.userDetailsStore.skillTreeLevel == 'middle_school'
-            ) {
+            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
                 userSkills =
                     this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
-            } else if (this.userDetailsStore.skillTreeLevel == 'high_school') {
+            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
                 userSkills =
                     this.skillTreeStore.highSchoolVerticalTreeUserSkills;
-            } else if (this.userDetailsStore.skillTreeLevel == 'college') {
+            } else if (this.userDetailsStore.gradeFilter == 'college') {
                 userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
             } else {
                 userSkills = this.skillTreeStore.verticalTreeUserSkills;
@@ -1005,15 +1001,13 @@ export default {
 
             //Shorten lines based on truncate level.
             let multiplyBy = 5;
-            if (this.userDetailsStore.skillTreeLevel == 'grade_school') {
+            if (this.userDetailsStore.gradeFilter == 'grade_school') {
                 multiplyBy = 1;
-            } else if (
-                this.userDetailsStore.skillTreeLevel == 'middle_school'
-            ) {
+            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
                 multiplyBy = 2;
-            } else if (this.userDetailsStore.skillTreeLevel == 'high_school') {
+            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
                 multiplyBy = 3;
-            } else if (this.userDetailsStore.skillTreeLevel == 'college') {
+            } else if (this.userDetailsStore.gradeFilter == 'college') {
                 multiplyBy = 4;
             }
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
@@ -1060,21 +1054,19 @@ export default {
         // Grade level and root subject filter
         async filter() {
             this.skill.children = await this.reloadTree(null);
-            console.log(this.userDetailsStore.skillTreeLevel);
             this.saveSkillTreeFilters();
         },
         saveSkillTreeFilters() {
             // Update the store
             this.userDetailsStore.verticalTreeLevel =
-                this.userDetailsStore.skillTreeLevel;
+                this.userDetailsStore.gradeFilter;
 
-            console.log(this.userDetailsStore.skillTreeLevel);
             // Update the DB
             const requestOptions = {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    level: this.userDetailsStore.skillTreeLevel,
+                    level: this.userDetailsStore.gradeFilter,
                     is_language_filter: this.$parent.isLanguage,
                     is_math_filter: this.$parent.isMathematics,
                     is_history_filter: this.$parent.isHistory,

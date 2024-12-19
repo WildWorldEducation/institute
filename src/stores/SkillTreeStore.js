@@ -38,10 +38,10 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
 
             const userDetailsStore = useUserDetailsStore();
-            const userDetails = await userDetailsStore.getUserDetails();
+            // const userDetails = await userDetailsStore.getUserDetails();
             const result = await fetch(
                 '/user-skills/filter-by-cohort/vertical-tree/' +
-                    userDetails.userId +
+                    userDetailsStore.userId +
                     '?level=' +
                     level +
                     '&subjects=' +
@@ -70,11 +70,10 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
             // API call for skill tree.
             const userDetailsStore = useUserDetailsStore();
-            const userDetails = await userDetailsStore.getUserDetails();
 
             const result = await fetch(
                 '/user-skills/separate-subskills/filter-by-cohort/' +
-                    userDetails.userId +
+                    userDetailsStore.userId +
                     '?level=' +
                     level +
                     '&subjects=' +

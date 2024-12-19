@@ -12,7 +12,7 @@ export default {
     },
     data() {
         return {
-            gradeFilter: this.userDetailsStore.skillTreeLevel,
+            gradeFilter: this.userDetailsStore.gradeFilter,
             isGradeFilter: true,
             isSubjectFilter: true,
             isLanguage: false,
@@ -156,12 +156,13 @@ export default {
             <button
                 class="btn grade-school me-2"
                 :class="{
-                    'active-grade-filter': gradeFilter == 'grade_school'
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'grade_school'
                 }"
                 @click="
-                    this.gradeFilter = 'grade_school';
+                    this.userDetailsStore.gradeFilter = 'grade_school';
                     $refs.childComponent.filter(
-                        this.gradeFilter,
+                        this.userDetailsStore.gradeFilter,
                         this.userDetailsStore.subjectFilters
                     );
                 "
@@ -171,12 +172,13 @@ export default {
             <button
                 class="btn middle-school me-2"
                 :class="{
-                    'active-grade-filter': gradeFilter == 'middle_school'
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'middle_school'
                 }"
                 @click="
-                    this.gradeFilter = 'middle_school';
+                    this.userDetailsStore.gradeFilter = 'middle_school';
                     $refs.childComponent.filter(
-                        this.gradeFilter,
+                        this.userDetailsStore.gradeFilter,
                         this.userDetailsStore.subjectFilters
                     );
                 "
@@ -186,12 +188,13 @@ export default {
             <button
                 class="btn high-school me-2"
                 :class="{
-                    'active-grade-filter': gradeFilter == 'high_school'
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'high_school'
                 }"
                 @click="
-                    this.gradeFilter = 'high_school';
+                    this.userDetailsStore.gradeFilter = 'high_school';
                     $refs.childComponent.filter(
-                        this.gradeFilter,
+                        this.userDetailsStore.gradeFilter,
                         this.userDetailsStore.subjectFilters
                     );
                 "
@@ -201,12 +204,13 @@ export default {
             <button
                 class="btn college me-2"
                 :class="{
-                    'active-grade-filter': gradeFilter == 'college'
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'college'
                 }"
                 @click="
-                    this.gradeFilter = 'college';
+                    this.userDetailsStore.gradeFilter = 'college';
                     $refs.childComponent.filter(
-                        this.gradeFilter,
+                        this.userDetailsStore.gradeFilter,
                         this.userDetailsStore.subjectFilters
                     );
                 "
@@ -216,12 +220,13 @@ export default {
             <button
                 class="btn phd me-2"
                 :class="{
-                    'active-grade-filter': gradeFilter == 'phd'
+                    'active-grade-filter':
+                        this.userDetailsStore.gradeFilter == 'phd'
                 }"
                 @click="
-                    this.gradeFilter = 'phd';
+                    this.userDetailsStore.gradeFilter = 'phd';
                     $refs.childComponent.filter(
-                        this.gradeFilter,
+                        this.userDetailsStore.gradeFilter,
                         this.userDetailsStore.subjectFilters
                     );
                 "

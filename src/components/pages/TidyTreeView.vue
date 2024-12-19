@@ -34,8 +34,6 @@ export default {
         };
     },
     created() {
-        console.log(this.userDetailsStore.skillTreeLevel);
-
         for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
             if (this.userDetailsStore.subjectFilters[i] == 'Language') {
                 this.isLanguage = true;
@@ -253,10 +251,10 @@ export default {
                 class="btn grade-school me-2"
                 :class="{
                     'active-grade-filter':
-                        this.userDetailsStore.skillTreeLevel == 'grade_school'
+                        this.userDetailsStore.gradeFilter == 'grade_school'
                 }"
                 @click="
-                    this.userDetailsStore.skillTreeLevel = 'grade_school';
+                    this.userDetailsStore.gradeFilter = 'grade_school';
                     $refs.childComponent.filter();
                 "
             >
@@ -266,10 +264,10 @@ export default {
                 class="btn middle-school me-2"
                 :class="{
                     'active-grade-filter':
-                        this.userDetailsStore.skillTreeLevel == 'middle_school'
+                        this.userDetailsStore.gradeFilter == 'middle_school'
                 }"
                 @click="
-                    this.userDetailsStore.skillTreeLevel = 'middle_school';
+                    this.userDetailsStore.gradeFilter = 'middle_school';
                     $refs.childComponent.filter();
                 "
             >
@@ -279,10 +277,10 @@ export default {
                 class="btn high-school me-2"
                 :class="{
                     'active-grade-filter':
-                        this.userDetailsStore.skillTreeLevel == 'high_school'
+                        this.userDetailsStore.gradeFilter == 'high_school'
                 }"
                 @click="
-                    this.userDetailsStore.skillTreeLevel = 'high_school';
+                    this.userDetailsStore.gradeFilter = 'high_school';
                     $refs.childComponent.filter();
                 "
             >
@@ -292,10 +290,10 @@ export default {
                 class="btn college me-2"
                 :class="{
                     'active-grade-filter':
-                        this.userDetailsStore.skillTreeLevel == 'college'
+                        this.userDetailsStore.gradeFilter == 'college'
                 }"
                 @click="
-                    this.userDetailsStore.skillTreeLevel = 'college';
+                    this.userDetailsStore.gradeFilter = 'college';
                     $refs.childComponent.filter();
                 "
             >
@@ -305,10 +303,10 @@ export default {
                 class="btn phd me-2"
                 :class="{
                     'active-grade-filter':
-                        this.userDetailsStore.skillTreeLevel == 'phd'
+                        this.userDetailsStore.gradeFilter == 'phd'
                 }"
                 @click="
-                    this.userDetailsStore.skillTreeLevel = 'phd';
+                    this.userDetailsStore.gradeFilter = 'phd';
                     $refs.childComponent.filter();
                 "
             >
