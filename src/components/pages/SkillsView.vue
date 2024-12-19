@@ -109,7 +109,8 @@ export default {
                             }"
                             @click="
                                 this.userDetailsStore.gradeFilter =
-                                    'grade_school'
+                                    'grade_school';
+                                $refs.skillList.filter();
                             "
                         >
                             Grade school
@@ -124,7 +125,8 @@ export default {
                             }"
                             @click="
                                 this.userDetailsStore.gradeFilter =
-                                    'middle_school'
+                                    'middle_school';
+                                $refs.skillList.filter();
                             "
                         >
                             Middle school
@@ -138,7 +140,8 @@ export default {
                             }"
                             @click="
                                 this.userDetailsStore.gradeFilter =
-                                    'high_school'
+                                    'high_school';
+                                $refs.skillList.filter();
                             "
                         >
                             High school
@@ -151,7 +154,8 @@ export default {
                                     'college'
                             }"
                             @click="
-                                this.userDetailsStore.gradeFilter = 'college'
+                                this.userDetailsStore.gradeFilter = 'college';
+                                $refs.skillList.filter();
                             "
                         >
                             College
@@ -162,7 +166,10 @@ export default {
                                 'active-grade-filter':
                                     this.userDetailsStore.gradeFilter == 'phd'
                             }"
-                            @click="this.userDetailsStore.gradeFilter = 'phd'"
+                            @click="
+                                this.userDetailsStore.gradeFilter = 'phd';
+                                $refs.skillList.filter();
+                            "
                         >
                             PHD
                         </button>
