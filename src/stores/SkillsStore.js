@@ -14,6 +14,7 @@ export const useSkillsStore = defineStore('skills', {
         async getNestedSkillsList() {
             const result = await fetch('/skills/nested-list');
             const data = await result.json();
+
             this.nestedSkillsList = data;
         },
         // For 'Instructor' and 'Editor' role of Collapsible Tree/ For guest mode of Vertical Tree
@@ -115,7 +116,22 @@ export const useSkillsStore = defineStore('skills', {
             const nameList = this.skillsList.map((skill) => {
                 return { name: skill.name };
             });
+            // Filter out all global filtered skill if not admin
             return nameList;
+        },
+        async getFilteredNameList() {
+            if (this.skillsList.length < 1) {
+                await this.getSkillsList();
+            }
+            const nameList = this.skillsList.filter((skill) => {
+                return skill.is_filtered === 'available'
+            });
+            return nameList;
+        },
+        async getCohortNameList() {
+            const result = await fetch('/skills/name-list');
+            const data = await result.json();
+            return data
         }
     }
 });

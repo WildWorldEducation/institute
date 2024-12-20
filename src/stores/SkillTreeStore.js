@@ -16,7 +16,9 @@ export const useSkillTreeStore = defineStore('skillTree', {
         userSkillsNoSubSkills: [],
         // For Radial Tree
         userSkillsSubSkillsSeparate: [],
-        studentSkills: []
+        studentSkills: [],
+        // WE Save the node that can appear in result for later use
+        searchResultNodes: null
     }),
     actions: {
         // API call for Collapsible Skill Tree.
@@ -27,12 +29,14 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             const result = await fetch(
                 '/user-skills/filter-by-cohort/' +
-                    userDetailsStore.userId +
-                    '?level=' +
-                    level
+                userDetailsStore.userId +
+                '?level=' +
+                level
             );
 
             this.userSkills = await result.json();
+
+
         },
         // API call for Vertical skill tree.
         async getVerticalTreeUserSkills(level, subjects) {
@@ -45,11 +49,11 @@ export const useSkillTreeStore = defineStore('skillTree', {
             // const userDetails = await userDetailsStore.getUserDetails();
             const result = await fetch(
                 '/user-skills/filter-by-cohort/vertical-tree/' +
-                    userDetailsStore.userId +
-                    '?level=' +
-                    level +
-                    '&subjects=' +
-                    subjects
+                userDetailsStore.userId +
+                '?level=' +
+                level +
+                '&subjects=' +
+                subjects
             );
 
             // If the student clicks a button on the grade level key,
@@ -77,11 +81,11 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             const result = await fetch(
                 '/user-skills/separate-subskills/filter-by-cohort/' +
-                    userDetailsStore.userId +
-                    '?level=' +
-                    level +
-                    '&subjects=' +
-                    subjects
+                userDetailsStore.userId +
+                '?level=' +
+                level +
+                '&subjects=' +
+                subjects
             );
             this.userSkillsSubSkillsSeparate = await result.json();
         },
@@ -90,7 +94,37 @@ export const useSkillTreeStore = defineStore('skillTree', {
             const result = await fetch(
                 '/user-skills/filter-by-cohort/' + studentId
             );
+
             this.studentSkills = await result.json();
-        }
+
+        },
+        async findInStudentSkill(skillName) {
+            const result = this.searchResultNodes.find(result => result.name === skillName)
+            return result;
+        },
+        // Find the oldest ancestor of a node 
+        async findFatherSubject(node) {
+            let parentId = node.parent
+            let parent = null;
+            while (parentId !== 0) {
+                parent = this.searchResultNodes.find(skill => skill.id === parentId)
+                parentId = parent.parent
+            }
+            return parent
+        },
+
+        convertNodesToArray(nodes) {
+            let childNodes = nodes.children;
+            let results = [];
+            while (childNodes.length > 0) {
+                let currentNode = childNodes.pop();
+                results.push({ ...currentNode, name: currentNode.skill_name });
+                if (currentNode.children.length > 0) {
+                    childNodes = childNodes.concat(currentNode.children);
+                }
+            }
+            return results;
+        },
+
     }
 });
