@@ -202,7 +202,7 @@ export default {
                             class="nav-item"
                             v-if="!sessionDetailsStore.isLoggedIn"
                         >
-                            <RouterLink to="/login" class="nav-link">
+                            <RouterLink to="/login" class="btn me-2 signin-btn">
                                 Sign in
                             </RouterLink>
                         </li>
@@ -212,7 +212,7 @@ export default {
                         >
                             <RouterLink
                                 to="/student-signup"
-                                class="btn primary-btn nav-link"
+                                class="btn primary-btn"
                             >
                                 Register
                             </RouterLink>
@@ -413,5 +413,9 @@ p {
 }
 .router-view {
     height: 100vh;
+}
+
+.signin-btn {
+    border: 1px solid var(--primary-color);
 }
 </style>
