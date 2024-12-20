@@ -76,7 +76,12 @@ export default {
             <div id="tablet-and-up-legend">
                 <div class="legend row">
                     <!-- Grade level filter -->
-                    <div v-if="!instructorMode" class="col-lg-9 d-flex">
+                    <div
+                        v-if="
+                            !instructorMode && userDetailsStore.role != 'admin'
+                        "
+                        class="col-lg-9 d-flex"
+                    >
                         <button
                             class="btn grade-school me-2"
                             :class="{
@@ -176,7 +181,7 @@ export default {
                             >
                         </div>
                     </div>
-                    <div v-else class="col-lg-9">
+                    <div v-else-if="instructorMode" class="col-lg-9">
                         <h1 class="heading">Student: {{ studentName }}</h1>
                     </div>
 
