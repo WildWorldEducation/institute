@@ -499,7 +499,7 @@ export default {
     <!-- Filters Modal for Mobile Phone View.-->
     <div v-if="showMobileFiltersModal" class="modal">
         <!-- Confirm Modal -->
-        <div class="modal-content loading-modal">
+        <div class="modal-content">
             <div class="d-flex flex-column">
                 <button class="btn" @click="showMobileFiltersModal = false">
                     <!-- Close icon -->
@@ -947,7 +947,7 @@ export default {
     width: 100%;
 }
 
-/* The Warning Modal */
+/* Modals */
 .modal {
     display: block;
     /* Hidden by default */
