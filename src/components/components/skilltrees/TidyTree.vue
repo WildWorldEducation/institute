@@ -873,7 +873,8 @@ export default {
             });
             const data = await res.json();
             if (data?.mess === 'ok') {
-                await this.redrawTree(this.truncateLevel, this.subjectFilters);
+                await this.reloadTree();
+
                 try {
                     const resultNode = this.findNodeWithName(searchString);
                     this.goToLocation(resultNode);
@@ -891,21 +892,24 @@ export default {
                 searchName,
                 this.userDetailsStore.userId
             );
-            this.truncateLevel = [node.level];
+            this.userDetailsStore.gradeFilter = node.level;
             try {
-                await this.redrawTree(this.truncateLevel, this.subjectFilters);
+                await this.reloadTree();
                 const resultNode = this.findNodeWithName(searchName);
                 this.$parent.gradeFilter = node.level;
+
                 this.goToLocation(resultNode);
             } catch (error) {
+                // Error mean the skill oldest ancestors is get filtering out
                 const parentNode = await this.skillTreeStore.findFatherSubject(
                     node
                 );
 
-                // show father object
-                this.subjectFilters.push(parentNode.skill_name);
+                this.userDetailsStore.subjectFilters.push(
+                    parentNode.skill_name
+                );
+                await this.reloadTree();
 
-                await this.redrawTree(this.truncateLevel, this.subjectFilters);
                 const resultNode = this.findNodeWithName(searchName);
                 this.$parent.subjectFilters = this.subjectFilters;
                 this.goToLocation(resultNode);
