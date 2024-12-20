@@ -54,7 +54,7 @@ const router = createRouter({
             name: 'student-signup',
             component: () =>
                 import('../components/pages/SignUpStudentAccountView.vue'),
-            meta: { title: 'Student sign up' }
+            meta: { title: 'Register' }
         },
         {
             path: '/editor-signup',
