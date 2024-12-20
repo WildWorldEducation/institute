@@ -109,7 +109,7 @@ export default {
                     Print
                 </button> -->
                 <button class="btn primary-btn" @click="resetPos()">
-                    Reset
+                    Center
                 </button>
             </div>
         </div>

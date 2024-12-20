@@ -135,7 +135,7 @@ export default {
             </div>
             <div class="d-flex">
                 <button class="btn primary-btn" @click="resetPos()">
-                    Reset
+                    Center
                 </button>
             </div>
         </div>
@@ -151,7 +151,7 @@ export default {
                 <div class="d-flex justify-content-end">
                     <!-- Reset Button -->
                     <button class="btn primary-btn me-2" @click="resetPos()">
-                        Reset
+                        Center
                     </button>
                     <!-- Expand all nodes -->
                     <button
