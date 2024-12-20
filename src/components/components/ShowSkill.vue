@@ -298,7 +298,7 @@ export default {
             };
             const url = '/goals/' + this.userDetailsStore.userId + '/add';
             fetch(url, requestOptions).then(() => {
-                alert('Goal created.');
+                alert('A goal for this skill has been added on the Hub page.');
             });
         }
     },
