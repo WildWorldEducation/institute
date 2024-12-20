@@ -108,6 +108,7 @@ export default {
                 >
                     Print
                 </button> -->
+
                 <button class="btn primary-btn" @click="resetPos()">
                     Center
                 </button>
