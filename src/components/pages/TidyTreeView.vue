@@ -124,11 +124,8 @@ export default {
 </script>
 
 <template>
-    <div
-        v-if="sessionDetailsStore.isLoggedIn"
-        class="container-fluid position-absolute legend-div"
-    >
-        <div class="mobile-legend">
+    <div class="container-fluid position-absolute legend-div">
+        <div v-if="sessionDetailsStore.isLoggedIn" class="mobile-legend">
             <div class="search-mobile-row">
                 <!-- Search feature -->
                 <SkillTreeSearchBar
@@ -142,7 +139,7 @@ export default {
                 </button>
             </div>
         </div>
-        <div class="tablet-and-up-legend">
+        <div v-if="sessionDetailsStore.isLoggedIn" class="tablet-and-up-legend">
             <div class="d-flex justify-content-between">
                 <!-- Search bar, reset, expand all, print buttons -->
                 <!-- Search Feature -->
@@ -183,6 +180,9 @@ export default {
                     </button>
                 </div>
             </div>
+        </div>
+        <div v-else class="alert alert-warning" role="alert">
+            You cannot interact with the tree until signed in
         </div>
     </div>
 

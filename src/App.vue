@@ -62,7 +62,6 @@ export default {
                         height="50"
                     />
                 </RouterLink>
-                <!-- <span class="navbar-brand">The Collins Institute</span> -->
                 <button
                     class="navbar-toggler"
                     type="button"
@@ -125,12 +124,14 @@ export default {
                             >
                         </li>
                         <li
-                            v-if="!sessionDetailsStore.isLoggedIn"
+                            v-if="
+                                !sessionDetailsStore.isLoggedIn &&
+                                this.$route.name != 'vertical-tree'
+                            "
                             class="nav-item"
                         >
                             <RouterLink to="/vertical-tree" class="nav-link"
-                                >You Can Not Interact With the Tree Until Logged
-                                in</RouterLink
+                                >Vertical Tree</RouterLink
                             >
                         </li>
                         <li
@@ -197,9 +198,23 @@ export default {
                                 />
                             </RouterLink>
                         </li>
-                        <li class="nav-item" v-else>
-                            <RouterLink to="/login" class="login-btn nav-link">
-                                Log in
+                        <li
+                            class="nav-item"
+                            v-if="!sessionDetailsStore.isLoggedIn"
+                        >
+                            <RouterLink to="/login" class="nav-link">
+                                Sign in
+                            </RouterLink>
+                        </li>
+                        <li
+                            class="nav-item"
+                            v-if="!sessionDetailsStore.isLoggedIn"
+                        >
+                            <RouterLink
+                                to="/student-signup"
+                                class="btn primary-btn nav-link"
+                            >
+                                Register
                             </RouterLink>
                         </li>
                     </ul>
@@ -398,10 +413,5 @@ p {
 }
 .router-view {
     height: 100vh;
-}
-
-.login-btn {
-    max-width: 100px;
-    justify-content: center;
 }
 </style>
