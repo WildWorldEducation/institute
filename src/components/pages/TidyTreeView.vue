@@ -124,7 +124,10 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid position-absolute legend-div">
+    <div
+        v-if="sessionDetailsStore.isLoggedIn"
+        class="container-fluid position-absolute legend-div"
+    >
         <div class="mobile-legend">
             <div class="search-mobile-row">
                 <!-- Search feature -->
@@ -155,7 +158,6 @@ export default {
                     </button>
                     <!-- Expand all nodes -->
                     <button
-                        v-if="sessionDetailsStore.isLoggedIn"
                         class="btn primary-btn me-2"
                         @click="expandAllNodesWarning()"
                     >
@@ -174,7 +176,6 @@ export default {
                     </button>
                     <!-- Print Button -->
                     <button
-                        v-if="sessionDetailsStore.isLoggedIn"
                         class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
