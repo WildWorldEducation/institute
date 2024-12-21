@@ -17,7 +17,6 @@ export default {
 
 <template>
     <div class="container bg-light rounded p-3">
-        <h1 class="heading">Add Question</h1>
         <!-- MC Questions -->
         <AddMCQuestion />
         <!-- Essay Questions -->
