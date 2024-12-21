@@ -199,120 +199,44 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            var skillsWithSubSkillsMoved = [];
-            skillsWithSubSkillsMoved = JSON.parse(
-                JSON.stringify(this.skill.children)
-            );
-
-            // Duplicate super skill node, and make second one a child of the first.
-            // Put all the subskills of the node in the second version.
-            // This is an attempt to show the subskills using only D3.
-            let count = 0;
-            function moveSubSkills(parentChildren) {
-                var i = parentChildren.length;
-                while (i--) {
-                    count++;
-                    // If the skill is a super skill, and not an "end" super skill.
-                    if (
-                        parentChildren[i].type == 'super' &&
-                        parentChildren[i].position != 'end'
-                    ) {
-                        if (parentChildren[i].show_children) {
-                            if (parentChildren[i].show_children == 0) {
-                                return;
-                            }
-                        }
-                        // Separate the child nodes.
-                        var subSkills = [];
-                        var regularChildSkills = [];
-                        for (
-                            let j = 0;
-                            j < parentChildren[i].children.length;
-                            j++
-                        ) {
-                            if (parentChildren[i].children[j].type == 'sub') {
-                                subSkills.push(parentChildren[i].children[j]);
-                            } else {
-                                regularChildSkills.push(
-                                    parentChildren[i].children[j]
-                                );
-                            }
-                        }
-
-                        // Create a new child node, with the subskills in it.
-                        var superSkillEndNode = {
-                            skill_name: parentChildren[i].skill_name,
-                            type: 'super',
-                            position: 'end',
-                            children: subSkills
-                        };
-
-                        // Empty the child nodes.
-                        parentChildren[i].children = [];
-                        // Add the new node.
-                        parentChildren[i].children.push(superSkillEndNode);
-                        // Add the other child nodes, excluding subskills.
-                        for (let j = 0; j < regularChildSkills.length; j++) {
-                            parentChildren[i].children.push(
-                                regularChildSkills[j]
-                            );
-                        }
-                    }
-
-                    if (typeof parentChildren[i] !== 'undefined') {
-                        /*
-                         * Run the above function again recursively.
-                         */
-                        if (
-                            parentChildren[i].children &&
-                            Array.isArray(parentChildren[i].children) &&
-                            parentChildren[i].children.length > 0
-                        )
-                            moveSubSkills(parentChildren[i].children);
-                    }
-                }
-            }
-
-            moveSubSkills(skillsWithSubSkillsMoved);
-
             /* Determine width of tree, based on how many nodes are showing
              * used for the various types of filters,
              * including: collapsable nodes, grade level filter, and instructors filters skills for students
              *
              * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
              */
-
+            let count = 0;
             // Height: remains constant
             const dx = 24;
 
             // Create a tree layout.
             this.data = {
                 skill_name: 'My skills',
-                children: skillsWithSubSkillsMoved
+                children: this.skill.children
             };
 
             this.root = d3.hierarchy(this.data);
 
             //Shorten lines based on truncate level.
-            let multiplyBy = 7;
+            let multiplyBy = 10;
             if (count < 70) {
                 multiplyBy = 1;
             } else if (count < 300) {
-                multiplyBy = 2;
+                multiplyBy = 3;
             } else if (
                 this.userDetailsStore.gradeFilter == 'grade_school' ||
                 count < 1000
             ) {
-                multiplyBy = 3;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-                multiplyBy = 4;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
                 multiplyBy = 5;
+            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
+                multiplyBy = 7;
+            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+                multiplyBy = 8;
             } else if (
                 this.userDetailsStore.gradeFilter == 'college' ||
                 count < 2000
             ) {
-                multiplyBy = 6;
+                multiplyBy = 9;
             }
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
@@ -420,7 +344,14 @@ export default {
             // Visible context.
             // If not a domain, make node a circle.
             if (node.data.type != 'domain') {
-                let radius = 10;
+                // Node size
+                let radius;
+                if (node.data.type == 'sub') {
+                    radius = 7.5;
+                } else {
+                    radius = 10;
+                }
+
                 // If child nodes are collapsed.
                 if (node.data.show_children) {
                     if (node.data.show_children == 0) {
@@ -481,9 +412,16 @@ export default {
                 // using the non domain as if condition will save us some compute time as none domain node is more common
                 if (node.data.type != 'domain') {
                     ctx1.beginPath();
+                    // Background stroke
                     ctx1.strokeStyle = '#FFF';
                     ctx1.lineWidth = 4;
-                    // Hight light the text if user search for it
+                    // Font size
+                    ctx1.font = '12px Arial';
+                    if (node.data.type == 'sub') {
+                        ctx1.font = '10px Arial';
+                    }
+
+                    // High light the text if user search for it
                     ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
                     ctx1.font = isSearched ? 'bold' : 'normal';
                     ctx1.direction = 'ltr';
@@ -915,7 +853,6 @@ export default {
                 this.goToLocation(resultNode);
             }
         },
-
         async redrawTree(level, subject) {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
@@ -1104,83 +1041,9 @@ export default {
                 children: userSkills
             };
 
-            var skillsWithSubSkillsMoved = [];
-            skillsWithSubSkillsMoved = JSON.parse(
-                JSON.stringify(this.skill.children)
-            );
-
-            // Duplicate super skill node, and make second one a child of the first.
-            // Put all the subskills of the node in the second version.
-            // This is an attempt to show the subskills using D3.
-            function moveSubSkills(parentChildren) {
-                var i = parentChildren.length;
-                while (i--) {
-                    // If the skill is a super skill, and not an "end" super skill.
-                    if (
-                        parentChildren[i].type == 'super' &&
-                        parentChildren[i].position != 'end'
-                    ) {
-                        if (parentChildren[i].show_children) {
-                            if (parentChildren[i].show_children == 0) {
-                                return;
-                            }
-                        }
-                        // Separate the child nodes.
-                        var subSkills = [];
-                        var regularChildSkills = [];
-                        for (
-                            let j = 0;
-                            j < parentChildren[i].children.length;
-                            j++
-                        ) {
-                            if (parentChildren[i].children[j].type == 'sub') {
-                                subSkills.push(parentChildren[i].children[j]);
-                            } else {
-                                regularChildSkills.push(
-                                    parentChildren[i].children[j]
-                                );
-                            }
-                        }
-
-                        // Create a new child node, with the subskills in it.
-                        var superSkillEndNode = {
-                            skill_name: parentChildren[i].skill_name,
-                            type: 'super',
-                            position: 'end',
-                            children: subSkills
-                        };
-
-                        // Empty the child nodes.
-                        parentChildren[i].children = [];
-                        // Add the new node.
-                        parentChildren[i].children.push(superSkillEndNode);
-                        // Add the other child nodes, excluding subskills.
-                        for (let j = 0; j < regularChildSkills.length; j++) {
-                            parentChildren[i].children.push(
-                                regularChildSkills[j]
-                            );
-                        }
-                    }
-
-                    if (typeof parentChildren[i] !== 'undefined') {
-                        /*
-                         * Run the above function again recursively.
-                         */
-                        if (
-                            parentChildren[i].children &&
-                            Array.isArray(parentChildren[i].children) &&
-                            parentChildren[i].children.length > 0
-                        )
-                            moveSubSkills(parentChildren[i].children);
-                    }
-                }
-            }
-
-            moveSubSkills(skillsWithSubSkillsMoved);
-
             this.data = {
                 skill_name: 'My skills',
-                children: skillsWithSubSkillsMoved
+                children: this.skill.children
             };
 
             // Compute the tree height; this approach will allow the height of the
