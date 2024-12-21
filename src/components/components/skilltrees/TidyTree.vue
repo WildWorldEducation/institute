@@ -344,6 +344,7 @@ export default {
             // Visible context.
             // If not a domain, make node a circle.
             if (node.data.type != 'domain') {
+                // Node size
                 let radius;
                 if (node.data.type == 'sub') {
                     radius = 7.5;
@@ -411,15 +412,16 @@ export default {
                 // using the non domain as if condition will save us some compute time as none domain node is more common
                 if (node.data.type != 'domain') {
                     ctx1.beginPath();
+                    // Background stroke
                     ctx1.strokeStyle = '#FFF';
                     ctx1.lineWidth = 4;
-
+                    // Font size
                     ctx1.font = '12px Arial';
                     if (node.data.type == 'sub') {
                         ctx1.font = '10px Arial';
                     }
 
-                    // Hight light the text if user search for it
+                    // High light the text if user search for it
                     ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
                     ctx1.font = isSearched ? 'bold' : 'normal';
                     ctx1.direction = 'ltr';
