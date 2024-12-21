@@ -85,7 +85,6 @@ export default {
     align-items: center;
     height: auto;
     width: fit-content;
-
     padding: 5px 3px;
 }
 
