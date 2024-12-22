@@ -108,7 +108,9 @@ export default {
                 <hr v-if="skill.type != 'domain'" />
                 <div class="d-flex justify-content-between">
                     <button
-                        v-if="skill.hasChildren"
+                        v-if="
+                            skill.hasChildren && this.$route.name === 'my-tree'
+                        "
                         class="secondary-btn ms-2 btn"
                         @click="toggleChildNodes"
                     >
