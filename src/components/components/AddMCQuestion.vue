@@ -405,7 +405,9 @@ export default {
             </div>
         </div>
         <div class="row mt-4">
-            <div class="col-sm-4 d-flex gap-2 align-items-end">
+            <div
+                class="col-sm-4 d-flex flex-md-row flex-column gap-2 align-items-start align-items-md-end"
+            >
                 <router-link
                     class="btn green-btn"
                     :to="'/mc-questions/' + skillId + '/add'"
@@ -413,7 +415,8 @@ export default {
                 </router-link>
 
                 <TooltipBtn
-                    absoluteTop="40px"
+                    trianglePosition="left"
+                    absoluteTop="37px"
                     toolTipText="Multiple Choice Question (MCQ): A question with a list of options where only one is correct.Student have to select the best answer from the choices provided. Distractors (incorrect options) are included to challenge student understanding."
                 />
             </div>

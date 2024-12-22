@@ -1,6 +1,7 @@
 <script>
 import AddMCQuestion from '../components/AddMCQuestion.vue';
 import AddEssayQuestion from '../components/AddEssayQuestion.vue';
+import TooltipBtn from '../components/share-components/TooltipBtn.vue';
 
 export default {
     data() {
@@ -10,7 +11,8 @@ export default {
     },
     components: {
         AddMCQuestion,
-        AddEssayQuestion
+        AddEssayQuestion,
+        TooltipBtn
     }
 };
 </script>
@@ -24,12 +26,19 @@ export default {
         <!-- Image Questions -->
         <div class="container mt-3">
             <div class="row mt-4">
-                <div class="col-sm-4">
+                <div
+                    class="col-sm-4 d-flex flex-md-row flex-column gap-2 align-items-start align-items-md-end"
+                >
                     <router-link
                         class="btn green-btn"
                         :to="'/image-questions/' + skillId + '/add'"
                         >Image
                     </router-link>
+                    <TooltipBtn
+                        trianglePosition="left"
+                        absoluteTop="37px"
+                        toolTipText="A question that requires either interpreting an image or providing your answer as an image. Upload or draw your response to demonstrate your understanding visually. Ensure clarity and relevance to the question"
+                    />
                 </div>
             </div>
         </div>
