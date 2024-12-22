@@ -103,14 +103,14 @@ export default {
                         </li>
                         <li
                             v-if="
-                                sessionDetailsStore.isLoggedIn &&
-                                this.$route.name != 'skills'
+                                userDetailsStore.role == 'student' &&
+                                this.$route.name != 'my-tree'
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/skills" class="nav-link">
-                                <span>Collapsible Tree</span>
-                            </RouterLink>
+                            <RouterLink to="/my-tree" class="nav-link"
+                                >My Tree</RouterLink
+                            >
                         </li>
                         <li
                             v-if="
@@ -120,9 +120,21 @@ export default {
                             class="nav-item"
                         >
                             <RouterLink to="/vertical-tree" class="nav-link"
-                                >Vertical Tree</RouterLink
+                                >Full Tree</RouterLink
                             >
                         </li>
+                        <li
+                            v-if="
+                                sessionDetailsStore.isLoggedIn &&
+                                this.$route.name != 'skills'
+                            "
+                            class="nav-item"
+                        >
+                            <RouterLink to="/skills" class="nav-link">
+                                <span>Collapsible Tree</span>
+                            </RouterLink>
+                        </li>
+
                         <li
                             v-if="
                                 !sessionDetailsStore.isLoggedIn &&

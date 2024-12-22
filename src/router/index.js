@@ -16,6 +16,13 @@ const router = createRouter({
             meta: { preventZoom: true, title: 'Skill tree' }
         },
         {
+            path: '/my-tree',
+            name: 'my-tree',
+            component: () => import('../components/pages/MyTidyTreeView.vue'),
+            meta: { preventZoom: true, title: 'My skill tree' }
+        },
+
+        {
             path: '/student/:studentId/skill-tree',
             name: 'student-vertical-tree',
             component: () =>
