@@ -1100,14 +1100,6 @@ export default {
                 );
             this.resetPos();
         },
-        expandAllChildren() {
-            var url =
-                '/user-skills/expand-all-children/' +
-                this.userDetailsStore.userId;
-            fetch(url).then(() => {
-                this.reloadTree();
-            });
-        },
         // Grade level and root subject filter
         async filter() {
             this.skill.children = await this.reloadTree(null);
