@@ -818,7 +818,6 @@ export default {
                     this.goToLocation(resultNode);
                 } catch (error) {
                     // Skill get filter by user instead of being hidden
-
                     // Handle filtered case
                     this.removeFilterForHiddenSkill(searchString);
                 }
@@ -838,21 +837,61 @@ export default {
 
                 this.goToLocation(resultNode);
             } catch (error) {
+                console.log('error: ' + error);
                 // Error mean the skill oldest ancestors is get filtering out
-                const parentNode = await this.skillTreeStore.findFatherSubject(
-                    node
-                );
-
-                this.userDetailsStore.subjectFilters.push(
-                    parentNode.skill_name
-                );
-                await this.reloadTree();
-
-                const resultNode = this.findNodeWithName(searchName);
-                this.$parent.subjectFilters = this.subjectFilters;
-                this.goToLocation(resultNode);
+                await this.removeSubjectFilterForSkill(searchName, node);
             }
         },
+        async removeSubjectFilterForSkill(searchName, node) {
+            const parentNode = await this.skillTreeStore.findFatherSubject(
+                node
+            );
+
+            this.userDetailsStore.subjectFilters.push(parentNode.skill_name);
+            await this.reloadTree();
+
+            const resultNode = this.findNodeWithName(searchName);
+            this.toggleParentSubjectFilter();
+            this.goToLocation(resultNode);
+        },
+        toggleParentSubjectFilter() {
+            for (
+                let i = 0;
+                i < this.userDetailsStore.subjectFilters.length;
+                i++
+            ) {
+                if (this.userDetailsStore.subjectFilters[i] == 'Language') {
+                    this.$parent.isLanguage = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
+                    this.$parent.isMathematics = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] ==
+                    'Science & Invention'
+                ) {
+                    this.$parent.isScienceAndInvention = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] ==
+                    'Computer Science'
+                ) {
+                    this.$parent.isComputerScience = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'History') {
+                    this.$parent.isHistory = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'Life') {
+                    this.$parent.isLife = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas'
+                ) {
+                    this.$parent.isDangerousIdeas = true;
+                }
+            }
+        },
+
         async redrawTree(level, subject) {
             this.showSkillPanel = false;
             await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
