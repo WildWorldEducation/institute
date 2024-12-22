@@ -31,7 +31,7 @@ An LMS-like web application, which includes a skill tree progression system, use
 
 -   Node
 -   Express
--   MariaDB
+-   MariaDB (11.7.1 or higher: must include the new Vector Search functionality)
 
 ## Project Setup
 
