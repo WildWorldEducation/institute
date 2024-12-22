@@ -150,7 +150,7 @@ export default {
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
                 // For the collapsing nodes
-                this.skill.show_children = node.data.show_children;
+             //   this.skill.show_children = node.data.show_children;
                 this.skill.hasChildren = false;
                 if (
                     node.data.children.length > 0 ||
@@ -352,12 +352,6 @@ export default {
                     radius = 10;
                 }
 
-                // If child nodes are collapsed.
-                if (node.data.show_children) {
-                    if (node.data.show_children == 0) {
-                        radius = 20;
-                    }
-                }
                 ctx1.beginPath();
                 ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
                 // get the color associate with skill level
@@ -383,26 +377,26 @@ export default {
                     ctx1.stroke();
                 }
             }
-            // If child nodes are collapsed.
-            if (node.data.show_children) {
-                if (node.data.show_children == 0) {
-                    // Set line properties
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = 'black';
+            // // If child nodes are collapsed.
+            // if (node.data.show_children) {
+            //     if (node.data.show_children == 0) {
+            //         // Set line properties
+            //         ctx1.lineWidth = 2;
+            //         ctx1.strokeStyle = 'black';
 
-                    // Draw vertical line
-                    ctx1.beginPath();
-                    ctx1.moveTo(node.y - 10, node.x);
-                    ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
-                    ctx1.stroke();
+            //         // Draw vertical line
+            //         ctx1.beginPath();
+            //         ctx1.moveTo(node.y - 10, node.x);
+            //         ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
+            //         ctx1.stroke();
 
-                    // Draw horizontal line
-                    ctx1.beginPath();
-                    ctx1.moveTo(node.y, node.x - 10);
-                    ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
-                    ctx1.stroke();
-                }
-            }
+            //         // Draw horizontal line
+            //         ctx1.beginPath();
+            //         ctx1.moveTo(node.y, node.x - 10);
+            //         ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
+            //         ctx1.stroke();
+            //     }
+            // }
 
             // Text.
             if (this.scale > 0.6) {
@@ -897,11 +891,11 @@ export default {
                         parentChildren[i].type == 'super' &&
                         parentChildren[i].position != 'end'
                     ) {
-                        if (parentChildren[i].show_children) {
-                            if (parentChildren[i].show_children == 0) {
-                                return;
-                            }
-                        }
+                        // if (parentChildren[i].show_children) {
+                        //     if (parentChildren[i].show_children == 0) {
+                        //         return;
+                        //     }
+                        // }
                         // Separate the child nodes.
                         var subSkills = [];
                         var regularChildSkills = [];

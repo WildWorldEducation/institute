@@ -72,7 +72,7 @@ export default {
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
-            await this.skillTreeStore.getVerticalTreeUserSkills(
+            await this.skillTreeStore.getMyVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
                 this.userDetailsStore.subjectFilters
             );
@@ -855,7 +855,10 @@ export default {
         },
         async redrawTree(level, subject) {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
+            await this.skillTreeStore.getMyVerticalTreeUserSkills(
+                level,
+                subject
+            );
 
             // If the student clicks a button on the grade level key,
             // this will truncate the tree to that level.
@@ -1012,7 +1015,7 @@ export default {
         },
         async reloadTree(node) {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getVerticalTreeUserSkills(
+            await this.skillTreeStore.getMyVerticalTreeUserSkills(
                 this.userDetailsStore.gradeFilter,
                 this.userDetailsStore.subjectFilters
             );
