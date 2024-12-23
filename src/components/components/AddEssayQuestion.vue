@@ -1,5 +1,6 @@
 <script>
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import TooltipBtn from './share-components/TooltipBtn.vue';
 
 export default {
     setup() {
@@ -26,7 +27,9 @@ export default {
             clickModal: false
         };
     },
-    async created() {},
+    components: {
+        TooltipBtn
+    },
     mounted: function () {},
     methods: {
         OnFileChange(e) {
@@ -405,12 +408,19 @@ export default {
             </div>
         </div>
         <div class="row mt-4">
-            <div class="col-sm-4">
+            <div
+                class="col-sm-4 d-flex flex-md-row flex-column gap-2 align-items-start align-items-md-end"
+            >
                 <router-link
                     class="btn green-btn"
                     :to="'/essay-questions/' + skillId + '/add'"
                     >Essay
                 </router-link>
+                <TooltipBtn
+                    absoluteTop="37px"
+                    trianglePosition="left"
+                    toolTipText="A question that requires a detailed, written response. Use complete sentences to explain, analyze, or provide your perspective on the given topic. Answers are graded on content, clarity, and depth of understanding."
+                />
             </div>
         </div>
     </div>
