@@ -104,11 +104,11 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' &&
-                                this.$route.name != 'my-tree'
+                                this.$route.name != 'my-vertical-tree'
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/my-tree" class="nav-link"
+                            <RouterLink to="/my-vertical-tree" class="nav-link"
                                 >My Tree</RouterLink
                             >
                         </li>

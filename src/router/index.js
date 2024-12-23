@@ -13,15 +13,14 @@ const router = createRouter({
             path: '/vertical-tree',
             name: 'vertical-tree',
             component: () => import('../components/pages/TidyTreeView.vue'),
-            meta: { preventZoom: true, title: 'Skill tree' }
+            meta: { preventZoom: true, title: 'Full skill tree' }
         },
         {
-            path: '/my-tree',
-            name: 'my-tree',
+            path: '/my-vertical-tree',
+            name: 'my-vertical-tree',
             component: () => import('../components/pages/MyTidyTreeView.vue'),
             meta: { preventZoom: true, title: 'My skill tree' }
         },
-
         {
             path: '/student/:studentId/skill-tree',
             name: 'student-vertical-tree',
@@ -449,9 +448,7 @@ router.beforeEach(async (to, from, next) => {
 
     if (to.name == 'show-skill') {
         const skillsStore = useSkillsStore();
-
         await skillsStore.getSkillsList();
-
         const currentSkill = skillsStore.skillsList.find(
             (item) => item.URL == to.params.skillUrl
         );
@@ -462,6 +459,7 @@ router.beforeEach(async (to, from, next) => {
         }
     }
 
+    // To prevent the background image (from certain themes) from flashing when switching between skill tree pages.
     if (
         (to.name == 'vertical-tree' && from.name == 'radial-tree') ||
         (from.name == 'vertical-tree' && to.name == 'radial-tree')
@@ -507,6 +505,7 @@ router.beforeEach(async (to, from, next) => {
     // To remove the vertical scroll bar.
     if (
         to.name == 'vertical-tree' ||
+        to.name == 'my-vertical-tree' ||
         to.name == 'radial-tree' ||
         to.name == 'skills' ||
         to.name == 'student-skills' ||
