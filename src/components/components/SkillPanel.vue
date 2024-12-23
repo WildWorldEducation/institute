@@ -109,7 +109,8 @@ export default {
                 <div class="d-flex justify-content-between">
                     <button
                         v-if="
-                            skill.hasChildren && this.$route.name === 'my-tree'
+                            skill.hasChildren &&
+                            this.$route.name === 'my-vertical-tree'
                         "
                         class="secondary-btn ms-2 btn"
                         @click="toggleChildNodes"
