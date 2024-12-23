@@ -202,11 +202,11 @@ router.post(
                             1,
                             ${conn.escape(req.session.userId)},
                             ${conn.escape(
-                                    req.body.name
-                                )},                           
+                                req.body.name
+                            )},                           
                             ${conn.escape(
-                                    req.body.description
-                                )},                                                      
+                                req.body.description
+                            )},                                                      
                             ${conn.escape(req.body.mastery_requirements)},
                             ${conn.escape(req.body.level)});`;
 
@@ -270,8 +270,8 @@ router.post(
         const sqlQuery = `SELECT *
                           FROM skills
                           WHERE skills.id = ${conn.escape(
-            req.body.skillToBeCopied.id
-        )} AND skills.is_deleted = 0;`;
+                              req.body.skillToBeCopied.id
+                          )} AND skills.is_deleted = 0;`;
 
         conn.query(sqlQuery, (err, results) => {
             try {
@@ -333,8 +333,9 @@ router.post(
 router.get('/list', (req, res, next) => {
     // Route is accessible for guest users.
     res.setHeader('Content-Type', 'application/json');
-    let sqlQuery =
-        'SELECT id, name, parent, type, level, URL, is_filtered FROM skills WHERE skills.is_deleted = 0';
+    let sqlQuery = `SELECT id, name, parent, type, level, URL, is_filtered 
+        FROM skills 
+        WHERE skills.is_deleted = 0;`;
     conn.query(sqlQuery, (err, results) => {
         try {
             if (err) {
@@ -410,7 +411,7 @@ router.get('/filtered-nested-list', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     /*
      * Apply grade level and subject filters
-     */    
+     */
     // Level will be sent in query param (eg: ?level='middle_school')
     const level = req.query.level;
     // Default is to show all.
@@ -485,9 +486,6 @@ router.get('/filtered-nested-list', (req, res, next) => {
     });
 });
 
-
-
-
 /**
  * Get Single Item
  *
@@ -543,8 +541,6 @@ router.get('/show/:id', (req, res, next) => {
     });
 });
 
-
-
 router.get('/url/:skillUrl', (req, res, next) => {
     let skill;
     // Not checking if user is logged in, as this is available for guest access.
@@ -558,8 +554,8 @@ router.get('/url/:skillUrl', (req, res, next) => {
                     LEFT JOIN 
                         skills AS parent_skill ON s.parent = parent_skill.id
                     WHERE s.url = ${conn.escape(
-        req.params.skillUrl
-    )} AND s.is_deleted = 0`;
+                        req.params.skillUrl
+                    )} AND s.is_deleted = 0`;
 
     conn.query(sqlQuery, (err, results) => {
         try {
@@ -737,8 +733,8 @@ router.put(
                     ${conn.escape(req.body.description)},
                     ${conn.escape(iconUrl)},
                     ${conn.escape(
-                req.body.mastery_requirements
-            )},                    
+                        req.body.mastery_requirements
+                    )},                    
                     ${conn.escape(req.body.level)},                    
                     ${conn.escape(req.body.order)},
                     ${conn.escape(req.body.comment)});`;
@@ -754,11 +750,11 @@ router.put(
                         url = ${conn.escape(req.body.url)},
                         parent = ${conn.escape(req.body.parent)},
                         description = ${conn.escape(
-                        req.body.description
-                    )},                         
+                            req.body.description
+                        )},                         
                         mastery_requirements = ${conn.escape(
-                        req.body.mastery_requirements
-                    )}, 
+                            req.body.mastery_requirements
+                        )}, 
                         type = ${conn.escape(req.body.type)}, 
                         level = ${conn.escape(req.body.level)}, 
                         skills.order = ${conn.escape(req.body.order)}, 
@@ -827,8 +823,8 @@ router.post('/:id/edit-for-review', isAuthenticated, (req, res, next) => {
          
          ON DUPLICATE KEY
          UPDATE mastery_requirements = ${conn.escape(
-            req.body.mastery_requirements
-        )}, 
+             req.body.mastery_requirements
+         )}, 
          date = CURRENT_TIMESTAMP(), 
          icon_image = ${conn.escape(req.body.icon_image)},          
          comment = ${conn.escape(req.body.comment)};`;
@@ -994,10 +990,11 @@ router.put(
                                         recordUserAction(
                                             {
                                                 userId: req.session.userId,
-                                                userAction: `${req.body.edit
-                                                    ? 'edit_and_approve'
-                                                    : 'approve'
-                                                    }`,
+                                                userAction: `${
+                                                    req.body.edit
+                                                        ? 'edit_and_approve'
+                                                        : 'approve'
+                                                }`,
                                                 contentId: req.params.id,
                                                 contentType: 'skill'
                                             },
@@ -1367,8 +1364,6 @@ router.post(
     }
 );
 
-
-
 // For the search feature on the Collapsable Skill Tree.
 router.get('/name-list', (req, res, next) => {
     if (req.session) {
@@ -1661,7 +1656,7 @@ const openai = new OpenAI({
 //         res.json({ mess: 'fails' })
 //     }
 // })
-const vectorList = require('../../vector.json')
+const vectorList = require('../../vector.json');
 
 router.get('/insert-vectors-to-db', async (req, res) => {
     try {
@@ -1699,7 +1694,6 @@ router.post('/find-with-context', isAuthenticated, async (req, res, next) => {
             }
             res.json(results);
         });
-
     } catch (error) {
         console.error(error);
         res.status = 500;

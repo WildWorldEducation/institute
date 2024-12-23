@@ -33,21 +33,22 @@ export default {
         if (this.skillsStore.skillsList.length == 0) {
             await this.skillsStore.getSkillsList();
         }
-        this.getMCQuestions();
-        this.getEssayQuestions();
-        this.getImageQuestions();
+        await this.getMCQuestions();
+        await this.getEssayQuestions();
+        await this.getImageQuestions();
     },
     methods: {
-        getMCQuestions() {
+        async getMCQuestions() {
             fetch('/skills/' + this.skill.id + '/mc-questions/list')
                 .then(function (response) {
                     return response.json();
                 })
                 .then((data) => {
                     this.mcQuestions = data;
+                    //         console.log(data);
                 });
         },
-        getEssayQuestions() {
+        async getEssayQuestions() {
             fetch('/skills/' + this.skill.id + '/essay-questions/list')
                 .then(function (response) {
                     return response.json();
@@ -56,7 +57,7 @@ export default {
                     this.essayQuestions = data;
                 });
         },
-        getImageQuestions() {
+        async getImageQuestions() {
             fetch('/skills/' + this.skill.id + '/image-questions/list')
                 .then(function (response) {
                     return response.json();
