@@ -209,22 +209,18 @@ export default {
                 multiplyBy = 1;
             } else if (count < 300) {
                 multiplyBy = 3;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'grade_school' ||
-                count < 1000
-            ) {
+            } else if (count < 1000) {
                 multiplyBy = 5;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
+            } else if (count < 1350) {
                 multiplyBy = 7;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+            } else if (count < 1700) {
                 multiplyBy = 8;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'college' ||
-                count < 2000
-            ) {
+            } else if (count < 2000) {
                 multiplyBy = 9;
             }
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+
+            console.log(count);
 
             this.tree = d3.tree().nodeSize([dx, dy]);
 
@@ -374,7 +370,7 @@ export default {
                 if (node.data.show_children == 0) {
                     // Set line properties
                     ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = 'black';
+                    ctx1.strokeStyle = '#8d6ce7';
 
                     // Draw vertical line
                     ctx1.beginPath();
@@ -966,7 +962,7 @@ export default {
                 '/' +
                 node.id;
             fetch(url).then(() => {
-                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
+                this.reloadTree(node);
             });
         },
         toggleShowChildren(node) {
@@ -976,7 +972,7 @@ export default {
                 '/' +
                 node.id;
             fetch(url).then(() => {
-                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
+                this.reloadTree(node);
             });
         },
         async reloadTree(node) {
@@ -1002,17 +998,23 @@ export default {
             // Height is constant
             const dx = 24;
 
+            let count = 0;
             //Shorten lines based on truncate level.
-            let multiplyBy = 5;
-            if (this.userDetailsStore.gradeFilter == 'grade_school') {
+            let multiplyBy = 10;
+            if (count < 70) {
                 multiplyBy = 1;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-                multiplyBy = 2;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+            } else if (count < 300) {
                 multiplyBy = 3;
-            } else if (this.userDetailsStore.gradeFilter == 'college') {
-                multiplyBy = 4;
+            } else if (count < 1000) {
+                multiplyBy = 5;
+            } else if (count < 1350) {
+                multiplyBy = 7;
+            } else if (count < 1700) {
+                multiplyBy = 8;
+            } else if (count < 2000) {
+                multiplyBy = 9;
             }
+
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             // Create a tree layout.
