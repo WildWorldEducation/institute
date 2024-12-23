@@ -416,7 +416,7 @@ router.get('/filter-by-cohort/:userId', (req, res, next) => {
 });
 
 /* Nested list of user-skills, filtered by 1 cohort that student is a member of*/
-// For Full Vertical Tree.
+// For Full Vertical Tree - includes filters.
 router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
     if (req.session.userName) {
         /* Apply grade level and subject filters
@@ -684,6 +684,9 @@ router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
                             }
                         }
 
+                        // We count the number of skills to work out the width of the chart.
+                        let numSkills = 0;
+
                         // Assign children to parent skills.
                         for (var i = 0; i < results.length; i++) {
                             // Check that not first level nodes.
@@ -703,6 +706,7 @@ router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
                                                 results[j].children.push(
                                                     results[i]
                                                 );
+                                                numSkills++;
                                             }
                                         } else {
                                             results[j].children.push(
@@ -724,7 +728,7 @@ router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
                             }
                         }
 
-                        res.json(studentSkills);
+                        res.json({ skills: studentSkills, count: numSkills });
                     } catch (err) {
                         next(err);
                     }
