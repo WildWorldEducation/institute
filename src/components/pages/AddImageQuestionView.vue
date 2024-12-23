@@ -1,4 +1,6 @@
 <script>
+import TooltipBtn from '../components/share-components/TooltipBtn.vue';
+
 export default {
     data() {
         return {
@@ -15,6 +17,9 @@ export default {
                 question: false
             }
         };
+    },
+    components: {
+        TooltipBtn
     },
     methods: {
         Submit() {
@@ -60,7 +65,16 @@ export default {
 
 <template>
     <div class="container p-3 bg-light rounded">
-        <h1 class="heading">Add Image Question</h1>
+        <div
+            class="d-flex flex-lg-row flex-column align-items-start align-items-lg-center gap-2"
+        >
+            <h1 class="heading">Add Image Question</h1>
+            <TooltipBtn
+                trianglePosition="left"
+                absoluteTop="37px"
+                toolTipText="A question that requires uploading an image for the answer, often to prove that a task in the real world has been completed."
+            />
+        </div>
 
         <div class="main-content-container container-fluid">
             <div class="row">
@@ -136,11 +150,6 @@ export default {
 </template>
 
 <style>
-#banner {
-    width: 100% !important;
-    height: auto;
-}
-
 .red-btn {
     background-color: #e24d4d;
     color: white;

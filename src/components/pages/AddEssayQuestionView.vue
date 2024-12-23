@@ -1,4 +1,6 @@
 <script>
+import TooltipBtn from '../components/share-components/TooltipBtn.vue';
+
 export default {
     data() {
         return {
@@ -16,6 +18,7 @@ export default {
             answerType: 'text'
         };
     },
+    components: { TooltipBtn },
     methods: {
         Submit() {
             // reset the validate flag before re-validate
@@ -60,7 +63,16 @@ export default {
 
 <template>
     <div class="container p-3 bg-light rounded">
-        <h1 class="heading">Add Essay Question</h1>
+        <div
+            class="d-flex flex-lg-row flex-column align-items-start align-items-lg-center gap-2"
+        >
+            <h1 class="heading">Add Essay Question</h1>
+            <TooltipBtn
+                absoluteTop="37px"
+                trianglePosition="left"
+                toolTipText="A question that requires a detailed, written response. Use complete sentences to explain, analyze, or provide your perspective on the given topic. Answers are graded on content, clarity, and depth of understanding."
+            />
+        </div>
 
         <div class="main-content-container container-fluid p-4">
             <div class="row">

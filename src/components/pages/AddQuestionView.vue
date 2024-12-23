@@ -1,6 +1,7 @@
 <script>
 import AddMCQuestion from '../components/AddMCQuestion.vue';
 import AddEssayQuestion from '../components/AddEssayQuestion.vue';
+import TooltipBtn from '../components/share-components/TooltipBtn.vue';
 
 export default {
     data() {
@@ -10,14 +11,14 @@ export default {
     },
     components: {
         AddMCQuestion,
-        AddEssayQuestion
+        AddEssayQuestion,
+        TooltipBtn
     }
 };
 </script>
 
 <template>
     <div class="container bg-light rounded p-3">
-        <h1 class="heading">Add Question</h1>
         <!-- MC Questions -->
         <AddMCQuestion />
         <!-- Essay Questions -->
@@ -25,12 +26,19 @@ export default {
         <!-- Image Questions -->
         <div class="container mt-3">
             <div class="row mt-4">
-                <div class="col-sm-4">
+                <div
+                    class="col-sm-4 d-flex flex-md-row flex-column gap-2 align-items-start align-items-md-end"
+                >
                     <router-link
                         class="btn green-btn"
                         :to="'/image-questions/' + skillId + '/add'"
                         >Image
                     </router-link>
+                    <TooltipBtn
+                        trianglePosition="left"
+                        absoluteTop="37px"
+                        toolTipText="A question that requires uploading an image for the answer, often to prove that a task in the real world has been completed."
+                    />
                 </div>
             </div>
         </div>

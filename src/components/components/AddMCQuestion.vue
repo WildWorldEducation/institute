@@ -1,5 +1,6 @@
 <script>
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
+import TooltipBtn from './share-components/TooltipBtn.vue';
 
 export default {
     setup() {
@@ -7,6 +8,9 @@ export default {
         return {
             userDetailsStore
         };
+    },
+    components: {
+        TooltipBtn
     },
     data() {
         return {
@@ -401,12 +405,20 @@ export default {
             </div>
         </div>
         <div class="row mt-4">
-            <div class="col-sm-4">
+            <div
+                class="col-sm-4 d-flex flex-md-row flex-column gap-2 align-items-start align-items-md-end"
+            >
                 <router-link
                     class="btn green-btn"
                     :to="'/mc-questions/' + skillId + '/add'"
                     >Multiple Choice
                 </router-link>
+
+                <TooltipBtn
+                    trianglePosition="left"
+                    absoluteTop="37px"
+                    toolTipText="Multiple Choice Question (MCQ): A question with a list of options where only one is correct. Students have to select the best answer from the choices provided. Distractors (incorrect options) are included to challenge the student's understanding."
+                />
             </div>
         </div>
     </div>
@@ -486,6 +498,22 @@ export default {
 
 .green-btn:hover {
     background-color: #3eb3a3;
+}
+
+.tooltip-btn {
+    background-color: #8d6ce7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    height: auto;
+    width: fit-content;
+    margin: 5px 0px;
 }
 
 .validate-line {
