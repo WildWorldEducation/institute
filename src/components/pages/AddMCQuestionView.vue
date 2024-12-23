@@ -121,7 +121,7 @@ export default {
             <TooltipBtn
                 trianglePosition="left"
                 absoluteTop="37px"
-                toolTipText="Multiple Choice Question (MCQ): A question with a list of options where only one is correct.Student have to select the best answer from the choices provided. Distractors (incorrect options) are included to challenge student understanding."
+                toolTipText="Multiple Choice Question (MCQ): A question with a list of options where only one is correct. Students have to select the best answer from the choices provided. Distractors (incorrect options) are included to challenge the student's understanding."
             />
         </div>
 

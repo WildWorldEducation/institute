@@ -72,7 +72,7 @@ export default {
             <TooltipBtn
                 trianglePosition="left"
                 absoluteTop="37px"
-                toolTipText="A question that requires either interpreting an image or providing your answer as an image. Upload or draw your response to demonstrate your understanding visually. Ensure clarity and relevance to the question"
+                toolTipText="A question that requires uploading an image for the answer, often to prove that a task in the real world has been completed."
             />
         </div>
 
@@ -150,11 +150,6 @@ export default {
 </template>
 
 <style>
-#banner {
-    width: 100% !important;
-    height: auto;
-}
-
 .red-btn {
     background-color: #e24d4d;
     color: white;
