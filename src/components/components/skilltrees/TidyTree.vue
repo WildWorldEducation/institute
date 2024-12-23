@@ -1230,8 +1230,7 @@ export default {
 
 #wrapper {
     width: 100%;
-    /* height: calc(100% - 130px); */
-    height: calc(100%);
+    height: 100%;
     overflow: hidden;
     position: relative;
 }

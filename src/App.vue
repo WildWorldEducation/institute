@@ -41,6 +41,7 @@ export default {
             :class="{
                 'fixed-top':
                     $route.name == 'vertical-tree' ||
+                    $route.name == 'my-vertical-tree' ||
                     $route.name == 'radial-tree' ||
                     $route.name == 'student-vertical-tree'
             }"
