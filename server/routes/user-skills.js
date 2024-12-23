@@ -551,14 +551,42 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                             if (
                                 (results[i].parent == null ||
                                     results[i].parent == 0) &&
-                                // check if root name is in list of root subjects to show
+                                // Filter by subject.
                                 subjects.includes(results[i].skill_name)
                             ) {
                                 studentSkills.push(results[i]);
                             }
                         }
 
-                        res.json(studentSkills);
+                        // Count the filtered skills, to determine size of Vertical Tree
+                        let count = 0;
+                        function countNestedSkills(parentChildren) {
+                            var i = parentChildren.length;
+                            while (i--) {
+                                count++;
+                                if (typeof parentChildren[i] !== 'undefined') {
+                                    /*
+                                     * Run the above function again recursively.
+                                     */
+                                    if (
+                                        parentChildren[i].children &&
+                                        Array.isArray(
+                                            parentChildren[i].children
+                                        ) &&
+                                        parentChildren[i].children.length > 0
+                                    )
+                                        countNestedSkills(
+                                            parentChildren[i].children
+                                        );
+                                }
+                            }
+                            return count;
+                        }
+
+                        countNestedSkills(studentSkills);
+                        const numSkills = count;
+
+                        res.json({ skills: studentSkills, count: numSkills });
                     } catch (err) {
                         next(err);
                     }

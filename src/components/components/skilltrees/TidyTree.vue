@@ -60,7 +60,8 @@ export default {
             showAnimation: false,
             showSkillPanel: false,
             resultNode: null,
-            clickMode: 'showPanel'
+            clickMode: 'showPanel',
+            nodeCount: 0
         };
     },
     components: {
@@ -80,15 +81,28 @@ export default {
 
         let userSkills = '';
         if (this.userDetailsStore.gradeFilter == 'grade_school') {
-            userSkills = this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+            userSkills =
+                this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.skills;
+            this.count =
+                this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.count;
         } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-            userSkills = this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+            userSkills =
+                this.skillTreeStore.middleSchoolVerticalTreeUserSkills.skills;
+            this.count =
+                this.skillTreeStore.middleSchoolVerticalTreeUserSkills.count;
         } else if (this.userDetailsStore.gradeFilter == 'high_school') {
-            userSkills = this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+            userSkills =
+                this.skillTreeStore.highSchoolVerticalTreeUserSkills.skills;
+            this.count =
+                this.skillTreeStore.highSchoolVerticalTreeUserSkills.count;
         } else if (this.userDetailsStore.gradeFilter == 'college') {
-            userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
+            userSkills =
+                this.skillTreeStore.collegeVerticalTreeUserSkills.skills;
+            this.count =
+                this.skillTreeStore.collegeVerticalTreeUserSkills.count;
         } else {
-            userSkills = this.skillTreeStore.verticalTreeUserSkills;
+            userSkills = this.skillTreeStore.verticalTreeUserSkills.skills;
+            this.count = this.skillTreeStore.verticalTreeUserSkills.count;
         }
 
         // Specify the chart’s dimensions.
@@ -199,13 +213,6 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            /* Determine width of tree, based on how many nodes are showing
-             * used for the various types of filters,
-             * including: collapsable nodes, grade level filter, and instructors filters skills for students
-             *
-             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
-             */
-            let count = 0;
             // Height: remains constant
             const dx = 24;
 
@@ -217,15 +224,21 @@ export default {
 
             this.root = d3.hierarchy(this.data);
 
+            /* Determine width of tree, based on how many nodes are showing
+             * used for the various types of filters,
+             * including: collapsable nodes, grade level filter, and instructors filters skills for students
+             *
+             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
+             */
             //Shorten lines based on truncate level.
             let multiplyBy = 10;
-            if (count < 70) {
+            if (this.count < 70) {
                 multiplyBy = 1;
-            } else if (count < 300) {
+            } else if (this.count < 300) {
                 multiplyBy = 3;
             } else if (
                 this.userDetailsStore.gradeFilter == 'grade_school' ||
-                count < 1000
+                this.count < 1000
             ) {
                 multiplyBy = 5;
             } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
@@ -234,10 +247,11 @@ export default {
                 multiplyBy = 8;
             } else if (
                 this.userDetailsStore.gradeFilter == 'college' ||
-                count < 2000
+                this.count < 2000
             ) {
                 multiplyBy = 9;
             }
+
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
