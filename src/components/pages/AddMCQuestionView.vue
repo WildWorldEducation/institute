@@ -1,4 +1,6 @@
 <script>
+import TooltipBtn from '../components/share-components/TooltipBtn.vue';
+
 export default {
     data() {
         return {
@@ -27,6 +29,9 @@ export default {
                 explanation: false
             }
         };
+    },
+    components: {
+        TooltipBtn
     },
     methods: {
         Submit() {
@@ -109,7 +114,16 @@ export default {
 
 <template>
     <div class="container p-3 bg-light rounded">
-        <h1 class="heading">Add Multiple Choice Question</h1>
+        <div
+            class="d-flex flex-lg-row flex-column align-items-start align-items-lg-center gap-2"
+        >
+            <h1 class="heading">Add Multiple Choice Question</h1>
+            <TooltipBtn
+                trianglePosition="left"
+                absoluteTop="37px"
+                toolTipText="Multiple Choice Question (MCQ): A question with a list of options where only one is correct.Student have to select the best answer from the choices provided. Distractors (incorrect options) are included to challenge student understanding."
+            />
+        </div>
 
         <div class="main-content-container container-fluid mt-4">
             <div class="row p-0">
