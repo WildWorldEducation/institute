@@ -31,7 +31,7 @@ An LMS-like web application, which includes a skill tree progression system, use
 
 -   Node
 -   Express
--   MariaDB
+-   MariaDB (11.7.1 or higher: must include the new Vector Search functionality)
 
 ## Project Setup
 
@@ -43,7 +43,7 @@ npm install
 
 For an empty database schema, run the database-setup.sql script.
 For a database schema with certain important tables (eg skills and sources) populated,
-download a recent backup [here](https://institute-database.s3.amazonaws.com/02-10-24.zip)
+download a recent backup [here](https://institute-database.s3.us-east-1.amazonaws.com/20-12-24-abridged.zip)
 
 ### Setup .env file
 

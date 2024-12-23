@@ -30,7 +30,8 @@ export default {
             isComputerScience: false,
             isHistory: false,
             isLife: false,
-            isDangerousIdeas: false
+            isDangerousIdeas: false,
+            showMobileFiltersModal: false
         };
     },
     created() {
@@ -68,12 +69,13 @@ export default {
         resetPos() {
             this.$refs.childComponent.resetPos();
         },
-        handleChooseResult(resultName) {
+        async handleChooseResult(resultName) {
             this.lastChooseResult = resultName;
             // Find the node with name
             const node = this.$refs.childComponent.findNodeWithName(resultName);
+
             if (!node) {
-                console.error('Cannot find node with name: ' + resultName);
+                await this.$refs.childComponent.findHiddenSkill(resultName);
                 return false;
             }
             // go to the skill position
@@ -124,7 +126,7 @@ export default {
 
 <template>
     <div class="container-fluid position-absolute legend-div">
-        <div class="mobile-legend">
+        <div v-if="sessionDetailsStore.isLoggedIn" class="mobile-legend">
             <div class="search-mobile-row">
                 <!-- Search feature -->
                 <SkillTreeSearchBar
@@ -133,12 +135,18 @@ export default {
                 />
             </div>
             <div class="d-flex">
+                <button
+                    class="btn primary-btn me-1"
+                    @click="showMobileFiltersModal = true"
+                >
+                    Filters
+                </button>
                 <button class="btn primary-btn" @click="resetPos()">
-                    Reset
+                    Center
                 </button>
             </div>
         </div>
-        <div class="tablet-and-up-legend">
+        <div v-if="sessionDetailsStore.isLoggedIn" class="tablet-and-up-legend">
             <div class="d-flex justify-content-between">
                 <!-- Search bar, reset, expand all, print buttons -->
                 <!-- Search Feature -->
@@ -150,11 +158,10 @@ export default {
                 <div class="d-flex justify-content-end">
                     <!-- Reset Button -->
                     <button class="btn primary-btn me-2" @click="resetPos()">
-                        Reset
+                        Center
                     </button>
                     <!-- Expand all nodes -->
                     <button
-                        v-if="sessionDetailsStore.isLoggedIn"
                         class="btn primary-btn me-2"
                         @click="expandAllNodesWarning()"
                     >
@@ -173,7 +180,6 @@ export default {
                     </button>
                     <!-- Print Button -->
                     <button
-                        v-if="sessionDetailsStore.isLoggedIn"
                         class="btn primary-btn me-2"
                         @click="$refs.childComponent.printPDF()"
                     >
@@ -181,6 +187,9 @@ export default {
                     </button>
                 </div>
             </div>
+        </div>
+        <div v-else class="alert alert-warning" role="alert">
+            You cannot interact with the tree until signed in
         </div>
     </div>
 
@@ -486,6 +495,197 @@ export default {
             </svg>
         </button>
     </div>
+
+    <!-- Filters Modal for Mobile Phone View.-->
+    <div v-if="showMobileFiltersModal" class="modal">
+        <!-- Confirm Modal -->
+        <div class="modal-content">
+            <div class="d-flex flex-column">
+                <button class="btn" @click="showMobileFiltersModal = false">
+                    <!-- Close icon -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 512 512"
+                        width="25"
+                        height="25"
+                        fill="#ef4444"
+                    >
+                        <path
+                            d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"
+                        />
+                    </svg>
+                </button>
+            </div>
+            <div class="d-flex flex-column">
+                <!-- Subject buttons -->
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isLanguage,
+                        'hidden-subject': !isLanguage
+                    }"
+                    @click="
+                        this.isLanguage = !this.isLanguage;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Language
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isMathematics,
+                        'hidden-subject': !isMathematics
+                    }"
+                    @click="
+                        this.isMathematics = !this.isMathematics;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Math
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isHistory,
+                        'hidden-subject': !isHistory
+                    }"
+                    @click="
+                        this.isHistory = !this.isHistory;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter();
+                    "
+                >
+                    History
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isLife,
+                        'hidden-subject': !isLife
+                    }"
+                    @click="
+                        this.isLife = !this.isLife;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Life
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isComputerScience,
+                        'hidden-subject': !isComputerScience
+                    }"
+                    @click="
+                        this.isComputerScience = !this.isComputerScience;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Computer Science
+                </button>
+                <button
+                    class="btn"
+                    :class="{
+                        'chosen-subject': isScienceAndInvention,
+                        'hidden-subject': !isScienceAndInvention
+                    }"
+                    @click="
+                        this.isScienceAndInvention =
+                            !this.isScienceAndInvention;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Science & Invention
+                </button>
+                <button
+                    class="btn mb-2"
+                    :class="{
+                        'chosen-subject': isDangerousIdeas,
+                        'hidden-subject': !isDangerousIdeas
+                    }"
+                    @click="
+                        this.isDangerousIdeas = !this.isDangerousIdeas;
+                        this.updateSubjectFilters();
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Dangerous Ideas
+                </button>
+                <!-- Grade buttons -->
+                <button
+                    class="btn grade-school"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'grade_school'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'grade_school';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'middle_school'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'middle_school';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'high_school'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'high_school';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'college'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'college';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'phd'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'phd';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    PHD
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -654,6 +854,12 @@ export default {
     top: 70px;
 }
 
+/* Modal filters */
+.modal .btn {
+    width: 200px;
+    margin: auto;
+}
+
 .search-bar {
     border: 1px solid #dce2f2;
     border-radius: 8px;
@@ -741,7 +947,7 @@ export default {
     width: 100%;
 }
 
-/* The Warning Modal */
+/* Modals */
 .modal {
     display: block;
     /* Hidden by default */
@@ -782,7 +988,7 @@ export default {
     }
 
     .tablet-and-up-legend {
-        display: none;
+        display: none !important;
     }
 
     .search-mobile-row {

@@ -199,119 +199,44 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            var skillsWithSubSkillsMoved = [];
-            skillsWithSubSkillsMoved = JSON.parse(
-                JSON.stringify(this.skill.children)
-            );
-
-            // Duplicate super skill node, and make second one a child of the first.
-            // Put all the subskills of the node in the second version.
-            // This is an attempt to show the subskills using only D3.
-            let count = 0;
-            function moveSubSkills(parentChildren) {
-                var i = parentChildren.length;
-                while (i--) {
-                    count++;
-                    // If the skill is a super skill, and not an "end" super skill.
-                    if (
-                        parentChildren[i].type == 'super' &&
-                        parentChildren[i].position != 'end'
-                    ) {
-                        if (parentChildren[i].show_children) {
-                            if (parentChildren[i].show_children == 0) {
-                                return;
-                            }
-                        }
-                        // Separate the child nodes.
-                        var subSkills = [];
-                        var regularChildSkills = [];
-                        for (
-                            let j = 0;
-                            j < parentChildren[i].children.length;
-                            j++
-                        ) {
-                            if (parentChildren[i].children[j].type == 'sub') {
-                                subSkills.push(parentChildren[i].children[j]);
-                            } else {
-                                regularChildSkills.push(
-                                    parentChildren[i].children[j]
-                                );
-                            }
-                        }
-
-                        // Create a new child node, with the subskills in it.
-                        var superSkillEndNode = {
-                            skill_name: parentChildren[i].skill_name,
-                            type: 'super',
-                            position: 'end',
-                            children: subSkills
-                        };
-
-                        // Empty the child nodes.
-                        parentChildren[i].children = [];
-                        // Add the new node.
-                        parentChildren[i].children.push(superSkillEndNode);
-                        // Add the other child nodes, excluding subskills.
-                        for (let j = 0; j < regularChildSkills.length; j++) {
-                            parentChildren[i].children.push(
-                                regularChildSkills[j]
-                            );
-                        }
-                    }
-
-                    if (typeof parentChildren[i] !== 'undefined') {
-                        /*
-                         * Run the above function again recursively.
-                         */
-                        if (
-                            parentChildren[i].children &&
-                            Array.isArray(parentChildren[i].children) &&
-                            parentChildren[i].children.length > 0
-                        )
-                            moveSubSkills(parentChildren[i].children);
-                    }
-                }
-            }
-
-            moveSubSkills(skillsWithSubSkillsMoved);
-
             /* Determine width of tree, based on how many nodes are showing
              * used for the various types of filters,
              * including: collapsable nodes, grade level filter, and instructors filters skills for students
              *
              * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
              */
-
+            let count = 0;
             // Height: remains constant
             const dx = 24;
 
             // Create a tree layout.
             this.data = {
                 skill_name: 'My skills',
-                children: skillsWithSubSkillsMoved
+                children: this.skill.children
             };
+
             this.root = d3.hierarchy(this.data);
 
             //Shorten lines based on truncate level.
-            let multiplyBy = 7;
+            let multiplyBy = 10;
             if (count < 70) {
                 multiplyBy = 1;
             } else if (count < 300) {
-                multiplyBy = 2;
+                multiplyBy = 3;
             } else if (
                 this.userDetailsStore.gradeFilter == 'grade_school' ||
                 count < 1000
             ) {
-                multiplyBy = 3;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-                multiplyBy = 4;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
                 multiplyBy = 5;
+            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
+                multiplyBy = 7;
+            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+                multiplyBy = 8;
             } else if (
                 this.userDetailsStore.gradeFilter == 'college' ||
                 count < 2000
             ) {
-                multiplyBy = 6;
+                multiplyBy = 9;
             }
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
@@ -419,7 +344,14 @@ export default {
             // Visible context.
             // If not a domain, make node a circle.
             if (node.data.type != 'domain') {
-                let radius = 10;
+                // Node size
+                let radius;
+                if (node.data.type == 'sub') {
+                    radius = 7.5;
+                } else {
+                    radius = 10;
+                }
+
                 // If child nodes are collapsed.
                 if (node.data.show_children) {
                     if (node.data.show_children == 0) {
@@ -480,9 +412,16 @@ export default {
                 // using the non domain as if condition will save us some compute time as none domain node is more common
                 if (node.data.type != 'domain') {
                     ctx1.beginPath();
+                    // Background stroke
                     ctx1.strokeStyle = '#FFF';
                     ctx1.lineWidth = 4;
-                    // Hight light the text if user search for it
+                    // Font size
+                    ctx1.font = '12px Arial';
+                    if (node.data.type == 'sub') {
+                        ctx1.font = '10px Arial';
+                    }
+
+                    // High light the text if user search for it
                     ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
                     ctx1.font = isSearched ? 'bold' : 'normal';
                     ctx1.direction = 'ltr';
@@ -857,46 +796,80 @@ export default {
             });
             return resultNode;
         },
-        toggleHideChildren(node) {
+        async findHiddenSkill(searchString) {
+            // if we cant find the node it mean the node is hide in children
             var url =
-                '/user-skills/hide-children/' +
-                this.userDetailsStore.userId +
-                '/' +
-                node.id;
-            fetch(url).then(() => {
-                this.reloadTree(node);
+                '/user-skills/find-hidden-skill/' +
+                this.userDetailsStore.userId;
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skillName: searchString
+                })
             });
+            const data = await res.json();
+            if (data?.mess === 'ok') {
+                await this.reloadTree();
+
+                try {
+                    const resultNode = this.findNodeWithName(searchString);
+                    this.goToLocation(resultNode);
+                } catch (error) {
+                    // Skill get filter by user instead of being hidden
+
+                    // Handle filtered case
+                    this.removeFilterForHiddenSkill(searchString);
+                }
+            }
         },
-        toggleShowChildren(node) {
-            var url =
-                '/user-skills/show-children/' +
-                this.userDetailsStore.userId +
-                '/' +
-                node.id;
-            fetch(url).then(() => {
-                this.reloadTree(node);
-            });
-        },
-        async reloadTree(node) {
-            this.showSkillPanel = false;
-            await this.skillTreeStore.getVerticalTreeUserSkills(
-                this.userDetailsStore.gradeFilter,
-                this.userDetailsStore.subjectFilters
+        // if search skill get filtered out by level or subject we remove it
+        async removeFilterForHiddenSkill(searchName) {
+            const node = await this.skillTreeStore.findInStudentSkill(
+                searchName,
+                this.userDetailsStore.userId
             );
+            this.userDetailsStore.gradeFilter = node.level;
+            try {
+                await this.reloadTree();
+                const resultNode = this.findNodeWithName(searchName);
+                this.$parent.gradeFilter = node.level;
+
+                this.goToLocation(resultNode);
+            } catch (error) {
+                // Error mean the skill oldest ancestors is get filtering out
+                const parentNode = await this.skillTreeStore.findFatherSubject(
+                    node
+                );
+
+                this.userDetailsStore.subjectFilters.push(
+                    parentNode.skill_name
+                );
+                await this.reloadTree();
+
+                const resultNode = this.findNodeWithName(searchName);
+                this.$parent.subjectFilters = this.subjectFilters;
+                this.goToLocation(resultNode);
+            }
+        },
+        async redrawTree(level, subject) {
+            this.showSkillPanel = false;
+            await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
 
             // If the student clicks a button on the grade level key,
             // this will truncate the tree to that level.
             let userSkills = [];
-            if (this.userDetailsStore.gradeFilter == 'grade_school') {
+            if (this.truncateLevel == 'grade_school') {
                 userSkills =
                     this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
+            } else if (this.truncateLevel == 'middle_school') {
                 userSkills =
                     this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+            } else if (this.truncateLevel == 'high_school') {
                 userSkills =
                     this.skillTreeStore.highSchoolVerticalTreeUserSkills;
-            } else if (this.userDetailsStore.gradeFilter == 'college') {
+            } else if (this.truncateLevel == 'college') {
                 userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
             } else {
                 userSkills = this.skillTreeStore.verticalTreeUserSkills;
@@ -985,6 +958,92 @@ export default {
             this.data = {
                 skill_name: 'My skills',
                 children: skillsWithSubSkillsMoved
+            };
+
+            // Compute the tree height; this approach will allow the height of the
+            // SVG to scale according to the breadth (width) of the tree layout.
+            this.root = d3.hierarchy(this.data);
+
+            // Height is constant
+            const dx = 24;
+
+            //Shorten lines based on truncate level.
+            let multiplyBy = 5;
+            if (this.truncateLevel == 'grade_school') {
+                multiplyBy = 1;
+            } else if (this.truncateLevel == 'middle_school') {
+                multiplyBy = 2;
+            } else if (this.truncateLevel == 'high_school') {
+                multiplyBy = 3;
+            } else if (this.truncateLevel == 'college') {
+                multiplyBy = 4;
+            }
+            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+
+            // Create a tree layout.
+            this.tree = d3.tree().nodeSize([dx, dy]);
+
+            // Sort the tree and apply the layout.
+            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
+            this.tree(this.root);
+
+            this.zoomInD3(this.scale, this.panX, this.panY);
+        },
+
+        toggleHideChildren(node) {
+            var url =
+                '/user-skills/hide-children/' +
+                this.userDetailsStore.userId +
+                '/' +
+                node.id;
+            fetch(url).then(() => {
+                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
+            });
+        },
+        toggleShowChildren(node) {
+            var url =
+                '/user-skills/show-children/' +
+                this.userDetailsStore.userId +
+                '/' +
+                node.id;
+            fetch(url).then(() => {
+                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
+            });
+        },
+        async reloadTree(node) {
+            this.showSkillPanel = false;
+            await this.skillTreeStore.getVerticalTreeUserSkills(
+                this.userDetailsStore.gradeFilter,
+                this.userDetailsStore.subjectFilters
+            );
+
+            // If the student clicks a button on the grade level key,
+            // this will truncate the tree to that level.
+            let userSkills = [];
+            if (this.userDetailsStore.gradeFilter == 'grade_school') {
+                userSkills =
+                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
+                userSkills =
+                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+                userSkills =
+                    this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+            } else if (this.userDetailsStore.gradeFilter == 'college') {
+                userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
+            } else {
+                userSkills = this.skillTreeStore.verticalTreeUserSkills;
+            }
+
+            this.skill = {
+                name: 'SKILLS',
+                sprite: null,
+                children: userSkills
+            };
+
+            this.data = {
+                skill_name: 'My skills',
+                children: this.skill.children
             };
 
             // Compute the tree height; this approach will allow the height of the

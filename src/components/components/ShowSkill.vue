@@ -74,6 +74,7 @@ export default {
         if (this.sessionDetailsStore.isLoggedIn) {
             await this.getUserSkills();
         }
+
         if (!this.isUnlocked) this.nearestAccessibleAncestor(this.skill);
         await this.checkIfGoalExists();
     },
@@ -84,7 +85,8 @@ export default {
             // // Load the skill data
             await this.showSkillStore.findSkill(this.skillUrl);
             this.skill = this.showSkillStore.skill;
-
+            console.log('skill is: ');
+            console.log(this.skill);
             this.skillId = this.skill.id;
 
             // Meta title for SEO
@@ -298,7 +300,7 @@ export default {
             };
             const url = '/goals/' + this.userDetailsStore.userId + '/add';
             fetch(url, requestOptions).then(() => {
-                alert('Goal created.');
+                alert('A goal for this skill has been added on the Hub page.');
             });
         }
     },

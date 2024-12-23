@@ -1,5 +1,6 @@
 <script>
 import { useSkillsStore } from '../../../stores/SkillsStore';
+import { useSkillTreeStore } from '../../../stores/SkillTreeStore';
 import { useUserDetailsStore } from '../../../stores/UserDetailsStore';
 import LoadingSpinner from '../share-components/LoadingSpinner.vue';
 import AiExplainToolTip from './tooltips/AiExplainToolTip.vue';
@@ -11,13 +12,17 @@ import TurnOnAiModeToolTip from './tooltips/TurnOnAiModeToolTip.vue';
 export default {
     setup() {
         const skillsStore = useSkillsStore();
+        const skillTreeStore = useSkillTreeStore();
         const userStore = useUserDetailsStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
             skillsStore,
-            userStore
+            userStore,
+            userDetailsStore,
+            skillTreeStore
         };
     },
-    props: ['findNode', 'clearResults'],
+    props: ['findNode', 'clearResults', 'skillTreeNode'],
     data: () => {
         return {
             resultsSkills: [],
@@ -29,15 +34,37 @@ export default {
             showSuggestAiSearchToolTip: false,
             toolTipStillShowing: false,
             nameList: [],
-            isLogin: false
+            isLogin: false,
+            focusIndex: -1
         };
     },
     async created() {
-        this.nameList = await this.skillsStore.getNameList();
+        if (this.userDetailsStore.role === 'admin') {
+            this.nameList = await this.skillsStore.getNameList();
+        } else if (
+            this.userDetailsStore.role === 'instructor' ||
+            this.userDetailsStore.role === 'editor'
+        ) {
+            this.nameList = await this.skillsStore.getFilteredNameList();
+        } else if (this.userDetailsStore.role === 'student') {
+            await this.skillTreeStore.getStudentSkills(
+                this.userDetailsStore.userId
+            );
+            const nodes = {
+                children: this.skillTreeStore.studentSkills,
+                skillName: 'my skills'
+            };
+
+            this.nameList = this.skillTreeStore.convertNodesToArray(nodes);
+        }
+
+        this.skillTreeStore.searchResultNodes = this.nameList;
+
         if (this.userStore.userId) {
             this.isLogin = true;
         }
     },
+
     methods: {
         getKeyWordResults(searchText) {
             let results = [];
@@ -71,7 +98,6 @@ export default {
                 this.toolTipStillShowing = false;
             }, 10000);
         },
-
         searchFirstWord(results, searchText) {
             this.nameList.forEach((element) => {
                 if (
@@ -102,6 +128,22 @@ export default {
             });
             return highlightedResult;
         },
+        highlightContextResult(results) {
+            // we highlight the part that match search text
+            const highlightedResult = results.map((result) => {
+                const matchedRegex = new RegExp(`(${this.searchText})`, 'gi');
+                const newText = result.skill_name.replace(
+                    matchedRegex,
+                    '<span class="hightLight">$1</span>'
+                );
+                return {
+                    ...result,
+                    highlightedResult: newText,
+                    name: result.skill_name
+                };
+            });
+            return highlightedResult;
+        },
         async getContextResults(searchText) {
             this.waitForSever = true;
             const url = `/skills//find-with-context`;
@@ -114,14 +156,18 @@ export default {
             };
             const res = await fetch(url, requestOption);
             const ResResults = await res.json();
-            // We have to change the field in context result to match the key word results
-            const matchedResult = ResResults.map((resResult) => {
-                return {
-                    id: resResult.skill_id,
-                    name: resResult.skill_name
-                };
+            // Filter out the result if user is not admin
+            const matchedResult = ResResults.filter((skill) => {
+                return this.nameList.some((element) => {
+                    return (
+                        element.name.toLowerCase() ===
+                        skill.skill_name.toLowerCase()
+                    );
+                });
             });
-            this.resultsSkills = this.highlightingResult(matchedResult);
+
+            this.resultsSkills = this.highlightContextResult(matchedResult);
+
             this.waitForSever = false;
         },
         handleSearchTextChange(searchText) {
@@ -131,11 +177,14 @@ export default {
                 this.checkTextForAi(searchText.toLowerCase());
             }
         },
-        handleChooseResult(result) {
+
+        async handleChooseResult(result) {
             this.resultsSkills = [];
             this.searchText = result.name;
             this.chooseResult = result;
-            this.findNode(result.name);
+            this.waitForSever = true;
+            await this.findNode(result.name);
+            this.waitForSever = false;
         },
         checkTextForAi(searchText) {
             // only context search if user end a word
@@ -145,16 +194,48 @@ export default {
         },
         handleRobotIconClick() {
             this.aiMode = !this.aiMode;
-            console.log(this.aiMode);
-            console.log(this.searchText);
+
             if (this.aiMode) {
                 this.checkTextForAi(this.searchText);
             }
         },
-        handleEnterPress() {
+
+        handleInputEnterPress() {
+            // If user is in result row
+            if (this.focusIndex >= 0) {
+                this.chooseUser = true;
+                this.handleChooseResult(this.resultsSkills[this.focusIndex]);
+                this.focusIndex = 0;
+                return;
+            }
+            // If user are focus on input text we switch mode
             this.aiMode = !this.aiMode;
             if (this.aiMode) {
                 this.checkTextForAi(this.searchText);
+            }
+        },
+        handleKeyDownPress() {
+            if (this.focusIndex > this.resultsSkills.length) {
+                return false;
+            }
+            this.focusIndex = this.focusIndex + 1;
+            if (this.focusIndex <= this.resultsSkills.length) {
+                this.$refs.results[this.focusIndex].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
+            }
+        },
+        handleKeyUpPress() {
+            if (this.focusIndex <= -1) {
+                return false;
+            }
+            this.focusIndex = this.focusIndex - 1;
+            if (this.focusIndex > -1) {
+                this.$refs.results[this.focusIndex].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
             }
         }
     },
@@ -217,7 +298,10 @@ export default {
                 class="skill-tree-input"
                 placeholder="Search"
                 v-model="searchText"
-                v-on:keyup.enter="handleEnterPress()"
+                @keyup.enter="handleInputEnterPress"
+                @keyup.arrow-down="handleKeyDownPress"
+                @keyup.arrow-up="handleKeyUpPress"
+                autocomplete="off"
             />
             <button
                 class="robot-icon"
@@ -258,9 +342,11 @@ export default {
         <div class="position-relative">
             <div v-if="resultsSkills.length" class="search-results">
                 <button
+                    v-for="(result, index) in resultsSkills"
+                    ref="results"
                     @click="handleChooseResult(result)"
                     class="result-row"
-                    v-for="result in resultsSkills"
+                    :class="index === focusIndex && 'focus-result'"
                     v-html="result.highlightedResult"
                 ></button>
             </div>
@@ -288,6 +374,7 @@ export default {
     outline: none;
     border: 0px;
     width: 100%;
+    margin-top: 2px;
 }
 
 .search-results {
@@ -298,9 +385,9 @@ export default {
     left: -1px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    border-bottom: 1px solid #dce2f2;
-    border-right: 1px solid #dce2f2;
-    border-left: 1px solid #dce2f2;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
     background-color: white;
     max-height: 400px;
     overflow-y: auto;
@@ -325,6 +412,12 @@ export default {
 
 .result-row:focus {
     border: 1px solid #133b61;
+}
+
+.focus-result {
+    border-left: 4px solid #8c6ce4;
+    background-color: #f3f5f6;
+    color: black;
 }
 
 .robot-icon {
