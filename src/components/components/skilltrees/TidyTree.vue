@@ -150,7 +150,7 @@ export default {
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
                 // For the collapsing nodes
-             //   this.skill.show_children = node.data.show_children;
+                //   this.skill.show_children = node.data.show_children;
                 this.skill.hasChildren = false;
                 if (
                     node.data.children.length > 0 ||
@@ -1090,14 +1090,6 @@ export default {
                         .scale(this.scale)
                 );
             this.resetPos();
-        },
-        expandAllChildren() {
-            var url =
-                '/user-skills/expand-all-children/' +
-                this.userDetailsStore.userId;
-            fetch(url).then(() => {
-                this.reloadTree();
-            });
         },
         // Grade level and root subject filter
         async filter() {
