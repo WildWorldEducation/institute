@@ -27,7 +27,7 @@ export default {
         }
 
         for (let i = 0; i < this.skillsStore.skillsList.length; i++) {
-            if (this.skillUrl == this.skillsStore.skillsList[i].url) {
+            if (this.skillUrl == this.skillsStore.skillsList[i].URL) {
                 this.skill = this.skillsStore.skillsList[i];
             }
         }
