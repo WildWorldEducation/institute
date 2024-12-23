@@ -6,12 +6,14 @@ import { useUserDetailsStore } from './UserDetailsStore.js';
 export const useSkillTreeStore = defineStore('skillTree', {
     state: () => ({
         userSkills: [],
-        // For Vertical Tree
+        // For Full Vertical/Tidy Tree
         verticalTreeUserSkills: [],
         gradeSchoolVerticalTreeUserSkills: [],
         middleSchoolVerticalTreeUserSkills: [],
         highSchoolVerticalTreeUserSkills: [],
         collegeVerticalTreeUserSkills: [],
+        // For My Vertical/Tidy Tree
+        myVerticalTreeUserSkills: [],
         // --
         userSkillsNoSubSkills: [],
         // For Radial Tree
@@ -69,36 +71,15 @@ export const useSkillTreeStore = defineStore('skillTree', {
             else this.verticalTreeUserSkills = await result.json();
         },
         // API call for Full Vertical skill tree.
-        async getMyVerticalTreeUserSkills(level, subjects) {
-            // To deal with the "&" sign in "Science & Invention".
-            for (let i = 0; i < subjects.length; i++) {
-                subjects[i] = subjects[i].replace(/&/g, '%26');
-            }
-
+        async getMyVerticalTreeUserSkills() {
             const userDetailsStore = useUserDetailsStore();
-            // const userDetails = await userDetailsStore.getUserDetails();
             const result = await fetch(
                 '/user-skills/filter-by-cohort/my-vertical-tree/' +
-                    userDetailsStore.userId +
-                    '?level=' +
-                    level +
-                    '&subjects=' +
-                    subjects
+                    userDetailsStore.userId
             );
 
-            // If the student clicks a button on the grade level key,
-            // this will truncate the tree to that level.
-            if (level == 'grade_school') {
-                this.gradeSchoolVerticalTreeUserSkills = await result.json();
-            } else if (level == 'middle_school') {
-                this.middleSchoolVerticalTreeUserSkills = await result.json();
-            } else if (level == 'high_school') {
-                this.highSchoolVerticalTreeUserSkills = await result.json();
-            } else if (level == 'college') {
-                this.collegeVerticalTreeUserSkills = await result.json();
-            }
             // Default is all levels.
-            else this.verticalTreeUserSkills = await result.json();
+            this.myVerticalTreeUserSkills = await result.json();
         },
         // API call for Radial skill tree.
         async getUserSkillsSubSkillsSeparate(level, subjects) {

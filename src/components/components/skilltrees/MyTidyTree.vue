@@ -71,25 +71,11 @@ export default {
     async mounted() {
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
-        if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
-            await this.skillTreeStore.getMyVerticalTreeUserSkills(
-                this.userDetailsStore.gradeFilter,
-                this.userDetailsStore.subjectFilters
-            );
+        if (this.skillTreeStore.myVerticalTreeUserSkills.length == 0) {
+            await this.skillTreeStore.getMyVerticalTreeUserSkills();
         }
 
-        let userSkills = '';
-        if (this.userDetailsStore.gradeFilter == 'grade_school') {
-            userSkills = this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
-        } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-            userSkills = this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
-        } else if (this.userDetailsStore.gradeFilter == 'high_school') {
-            userSkills = this.skillTreeStore.highSchoolVerticalTreeUserSkills;
-        } else if (this.userDetailsStore.gradeFilter == 'college') {
-            userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
-        } else {
-            userSkills = this.skillTreeStore.verticalTreeUserSkills;
-        }
+        let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
@@ -853,30 +839,10 @@ export default {
                 this.goToLocation(resultNode);
             }
         },
-        async redrawTree(level, subject) {
+        async redrawTree() {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getMyVerticalTreeUserSkills(
-                level,
-                subject
-            );
-
-            // If the student clicks a button on the grade level key,
-            // this will truncate the tree to that level.
-            let userSkills = [];
-            if (this.truncateLevel == 'grade_school') {
-                userSkills =
-                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
-            } else if (this.truncateLevel == 'middle_school') {
-                userSkills =
-                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
-            } else if (this.truncateLevel == 'high_school') {
-                userSkills =
-                    this.skillTreeStore.highSchoolVerticalTreeUserSkills;
-            } else if (this.truncateLevel == 'college') {
-                userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
-            } else {
-                userSkills = this.skillTreeStore.verticalTreeUserSkills;
-            }
+            await this.skillTreeStore.getMyVerticalTreeUserSkills();
+            let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
 
             this.skill = {
                 name: 'SKILLS',
@@ -1015,28 +981,8 @@ export default {
         },
         async reloadTree(node) {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getMyVerticalTreeUserSkills(
-                this.userDetailsStore.gradeFilter,
-                this.userDetailsStore.subjectFilters
-            );
-
-            // If the student clicks a button on the grade level key,
-            // this will truncate the tree to that level.
-            let userSkills = [];
-            if (this.userDetailsStore.gradeFilter == 'grade_school') {
-                userSkills =
-                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-                userSkills =
-                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
-                userSkills =
-                    this.skillTreeStore.highSchoolVerticalTreeUserSkills;
-            } else if (this.userDetailsStore.gradeFilter == 'college') {
-                userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
-            } else {
-                userSkills = this.skillTreeStore.verticalTreeUserSkills;
-            }
+            await this.skillTreeStore.getMyVerticalTreeUserSkills();
+            let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
 
             this.skill = {
                 name: 'SKILLS',
