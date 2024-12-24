@@ -46,8 +46,8 @@ export default {
 </script>
 
 <template>
-    <div class="container min-vh-100 pt-md-5 pt-4">
-        <div class="row content-row gy-2">
+    <div class="container min-vh-100">
+        <div class="row content-row">
             <!-- Available Skills / Mark Assessments -->
             <div
                 class="col-lg-4 col-md-6 mb-2"
@@ -89,7 +89,7 @@ export default {
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4 col-md-6 mb-2 mt-4">
+            <div class="col-lg-4 col-md-6 mb-2">
                 <div class="hub-component h-100">
                     <Notifications />
                 </div>
@@ -97,7 +97,7 @@ export default {
         </div>
         <div class="row">
             <div class="col">
-                <div class="hub-component h-100 mt-4">
+                <div class="hub-component h-100">
                     <News />
                 </div>
             </div>
