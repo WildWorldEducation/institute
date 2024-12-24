@@ -60,8 +60,7 @@ export default {
             showAnimation: false,
             showSkillPanel: false,
             resultNode: null,
-            clickMode: 'showPanel',
-            count: 0
+            clickMode: 'showPanel'
         };
     },
     components: {
@@ -72,38 +71,11 @@ export default {
     async mounted() {
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
-        if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
-            await this.skillTreeStore.getVerticalTreeUserSkills(
-                this.userDetailsStore.gradeFilter,
-                this.userDetailsStore.subjectFilters
-            );
+        if (this.skillTreeStore.myVerticalTreeUserSkills.length == 0) {
+            await this.skillTreeStore.getMyVerticalTreeUserSkills();
         }
 
-        let userSkills = '';
-        if (this.userDetailsStore.gradeFilter == 'grade_school') {
-            userSkills =
-                this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.skills;
-            this.count =
-                this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.count;
-        } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-            userSkills =
-                this.skillTreeStore.middleSchoolVerticalTreeUserSkills.skills;
-            this.count =
-                this.skillTreeStore.middleSchoolVerticalTreeUserSkills.count;
-        } else if (this.userDetailsStore.gradeFilter == 'high_school') {
-            userSkills =
-                this.skillTreeStore.highSchoolVerticalTreeUserSkills.skills;
-            this.count =
-                this.skillTreeStore.highSchoolVerticalTreeUserSkills.count;
-        } else if (this.userDetailsStore.gradeFilter == 'college') {
-            userSkills =
-                this.skillTreeStore.collegeVerticalTreeUserSkills.skills;
-            this.count =
-                this.skillTreeStore.collegeVerticalTreeUserSkills.count;
-        } else {
-            userSkills = this.skillTreeStore.verticalTreeUserSkills.skills;
-            this.count = this.skillTreeStore.verticalTreeUserSkills.count;
-        }
+        let userSkills = this.skillTreeStore.myVerticalTreeUserSkills.skills;
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
@@ -164,7 +136,7 @@ export default {
                 this.skill.id = node.data.id;
                 this.skill.type = node.data.type;
                 // For the collapsing nodes
-                //   this.skill.show_children = node.data.show_children;
+                this.skill.show_children = node.data.show_children;
                 this.skill.hasChildren = false;
                 if (
                     node.data.children.length > 0 ||
@@ -213,6 +185,13 @@ export default {
     },
     methods: {
         getAlgorithm() {
+            /* Determine width of tree, based on how many nodes are showing
+             * used for the various types of filters,
+             * including: collapsable nodes, grade level filter, and instructors filters skills for students
+             *
+             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
+             */
+            let count = this.skillTreeStore.myVerticalTreeUserSkills.count;
             // Height: remains constant
             const dx = 24;
 
@@ -224,34 +203,21 @@ export default {
 
             this.root = d3.hierarchy(this.data);
 
-            /* Determine width of tree, based on how many nodes are showing
-             * used for the various types of filters,
-             * including: collapsable nodes, grade level filter, and instructors filters skills for students
-             *
-             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
-             */
             //Shorten lines based on truncate level.
             let multiplyBy = 10;
-            if (this.count < 70) {
+            if (count < 70) {
                 multiplyBy = 1;
-            } else if (this.count < 300) {
+            } else if (count < 300) {
                 multiplyBy = 3;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'grade_school' ||
-                this.count < 1000
-            ) {
+            } else if (count < 1000) {
                 multiplyBy = 5;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
+            } else if (count < 1350) {
                 multiplyBy = 7;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+            } else if (count < 1700) {
                 multiplyBy = 8;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'college' ||
-                this.count < 2000
-            ) {
+            } else if (count < 2000) {
                 multiplyBy = 9;
             }
-
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -366,6 +332,12 @@ export default {
                     radius = 10;
                 }
 
+                // If child nodes are collapsed.
+                if (node.data.show_children) {
+                    if (node.data.show_children == 0) {
+                        radius = 20;
+                    }
+                }
                 ctx1.beginPath();
                 ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
                 // get the color associate with skill level
@@ -391,26 +363,26 @@ export default {
                     ctx1.stroke();
                 }
             }
-            // // If child nodes are collapsed.
-            // if (node.data.show_children) {
-            //     if (node.data.show_children == 0) {
-            //         // Set line properties
-            //         ctx1.lineWidth = 2;
-            //         ctx1.strokeStyle = 'black';
+            // If child nodes are collapsed.
+            if (node.data.show_children) {
+                if (node.data.show_children == 0) {
+                    // Set line properties
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = '#8d6ce7';
 
-            //         // Draw vertical line
-            //         ctx1.beginPath();
-            //         ctx1.moveTo(node.y - 10, node.x);
-            //         ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
-            //         ctx1.stroke();
+                    // Draw vertical line
+                    ctx1.beginPath();
+                    ctx1.moveTo(node.y - 10, node.x);
+                    ctx1.lineTo(node.y + 10, node.x); // Draw to the bottom-middle
+                    ctx1.stroke();
 
-            //         // Draw horizontal line
-            //         ctx1.beginPath();
-            //         ctx1.moveTo(node.y, node.x - 10);
-            //         ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
-            //         ctx1.stroke();
-            //     }
-            // }
+                    // Draw horizontal line
+                    ctx1.beginPath();
+                    ctx1.moveTo(node.y, node.x - 10);
+                    ctx1.lineTo(node.y, node.x + 10); // Draw to the middle-right
+                    ctx1.stroke();
+                }
+            }
 
             // Text.
             if (this.scale > 0.6) {
@@ -826,6 +798,7 @@ export default {
                     this.goToLocation(resultNode);
                 } catch (error) {
                     // Skill get filter by user instead of being hidden
+
                     // Handle filtered case
                     this.removeFilterForHiddenSkill(searchString);
                 }
@@ -845,82 +818,25 @@ export default {
 
                 this.goToLocation(resultNode);
             } catch (error) {
-                console.log('error: ' + error);
                 // Error mean the skill oldest ancestors is get filtering out
-                await this.removeSubjectFilterForSkill(searchName, node);
+                const parentNode = await this.skillTreeStore.findFatherSubject(
+                    node
+                );
+
+                this.userDetailsStore.subjectFilters.push(
+                    parentNode.skill_name
+                );
+                await this.reloadTree();
+
+                const resultNode = this.findNodeWithName(searchName);
+                this.$parent.subjectFilters = this.subjectFilters;
+                this.goToLocation(resultNode);
             }
         },
-        async removeSubjectFilterForSkill(searchName, node) {
-            const parentNode = await this.skillTreeStore.findFatherSubject(
-                node
-            );
-
-            this.userDetailsStore.subjectFilters.push(parentNode.skill_name);
-            await this.reloadTree();
-
-            const resultNode = this.findNodeWithName(searchName);
-            this.toggleParentSubjectFilter();
-            this.goToLocation(resultNode);
-        },
-        toggleParentSubjectFilter() {
-            for (
-                let i = 0;
-                i < this.userDetailsStore.subjectFilters.length;
-                i++
-            ) {
-                if (this.userDetailsStore.subjectFilters[i] == 'Language') {
-                    this.$parent.isLanguage = true;
-                }
-                if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
-                    this.$parent.isMathematics = true;
-                }
-                if (
-                    this.userDetailsStore.subjectFilters[i] ==
-                    'Science & Invention'
-                ) {
-                    this.$parent.isScienceAndInvention = true;
-                }
-                if (
-                    this.userDetailsStore.subjectFilters[i] ==
-                    'Computer Science'
-                ) {
-                    this.$parent.isComputerScience = true;
-                }
-                if (this.userDetailsStore.subjectFilters[i] == 'History') {
-                    this.$parent.isHistory = true;
-                }
-                if (this.userDetailsStore.subjectFilters[i] == 'Life') {
-                    this.$parent.isLife = true;
-                }
-                if (
-                    this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas'
-                ) {
-                    this.$parent.isDangerousIdeas = true;
-                }
-            }
-        },
-
-        async redrawTree(level, subject) {
+        async redrawTree() {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getVerticalTreeUserSkills(level, subject);
-
-            // If the student clicks a button on the grade level key,
-            // this will truncate the tree to that level.
-            let userSkills = [];
-            if (this.truncateLevel == 'grade_school') {
-                userSkills =
-                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
-            } else if (this.truncateLevel == 'middle_school') {
-                userSkills =
-                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
-            } else if (this.truncateLevel == 'high_school') {
-                userSkills =
-                    this.skillTreeStore.highSchoolVerticalTreeUserSkills;
-            } else if (this.truncateLevel == 'college') {
-                userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
-            } else {
-                userSkills = this.skillTreeStore.verticalTreeUserSkills;
-            }
+            await this.skillTreeStore.getMyVerticalTreeUserSkills();
+            let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
 
             this.skill = {
                 name: 'SKILLS',
@@ -944,11 +860,11 @@ export default {
                         parentChildren[i].type == 'super' &&
                         parentChildren[i].position != 'end'
                     ) {
-                        // if (parentChildren[i].show_children) {
-                        //     if (parentChildren[i].show_children == 0) {
-                        //         return;
-                        //     }
-                        // }
+                        if (parentChildren[i].show_children) {
+                            if (parentChildren[i].show_children == 0) {
+                                return;
+                            }
+                        }
                         // Separate the child nodes.
                         var subSkills = [];
                         var regularChildSkills = [];
@@ -1044,7 +960,7 @@ export default {
                 '/' +
                 node.id;
             fetch(url).then(() => {
-                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
+                this.reloadTree(node);
             });
         },
         toggleShowChildren(node) {
@@ -1054,45 +970,14 @@ export default {
                 '/' +
                 node.id;
             fetch(url).then(() => {
-                this.reloadTree(node, this.truncateLevel, this.subjectFilters);
+                this.reloadTree(node);
             });
         },
         async reloadTree(node) {
             this.showSkillPanel = false;
-            await this.skillTreeStore.getVerticalTreeUserSkills(
-                this.userDetailsStore.gradeFilter,
-                this.userDetailsStore.subjectFilters
-            );
-
-            // If the student clicks a button on the grade level key,
-            // this will truncate the tree to that level.
-            let userSkills = [];
-            if (this.userDetailsStore.gradeFilter == 'grade_school') {
-                userSkills =
-                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills
-                        .skills;
-                this.count =
-                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.count;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-                userSkills =
-                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills
-                        .skills;
-                this.count =
-                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills.count;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
-                userSkills =
-                    this.skillTreeStore.highSchoolVerticalTreeUserSkills.skills;
-                this.count =
-                    this.skillTreeStore.highSchoolVerticalTreeUserSkills.count;
-            } else if (this.userDetailsStore.gradeFilter == 'college') {
-                userSkills =
-                    this.skillTreeStore.collegeVerticalTreeUserSkills.skills;
-                this.count =
-                    this.skillTreeStore.collegeVerticalTreeUserSkills.count;
-            } else {
-                userSkills = this.skillTreeStore.verticalTreeUserSkills.skills;
-                this.count = this.skillTreeStore.verticalTreeUserSkills.count;
-            }
+            await this.skillTreeStore.getMyVerticalTreeUserSkills();
+            let userSkills =
+                this.skillTreeStore.myVerticalTreeUserSkills.skills;
 
             this.skill = {
                 name: 'SKILLS',
@@ -1112,26 +997,20 @@ export default {
             // Height is constant
             const dx = 24;
 
-            //Shorten lines based on truncate level.
+            let count = this.skillTreeStore.myVerticalTreeUserSkills.count;
             //Shorten lines based on truncate level.
             let multiplyBy = 10;
-            if (this.count < 70) {
+            if (count < 70) {
                 multiplyBy = 1;
-            } else if (this.count < 300) {
+            } else if (count < 300) {
                 multiplyBy = 3;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'grade_school' ||
-                this.count < 1000
-            ) {
+            } else if (count < 1000) {
                 multiplyBy = 5;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
+            } else if (count < 1350) {
                 multiplyBy = 7;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+            } else if (count < 1700) {
                 multiplyBy = 8;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'college' ||
-                this.count < 2000
-            ) {
+            } else if (count < 2000) {
                 multiplyBy = 9;
             }
 
