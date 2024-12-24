@@ -206,11 +206,11 @@ export default {
             //Shorten lines based on truncate level.
             let multiplyBy = 10;
             if (count < 70) {
-                multiplyBy = 1;
-            } else if (count < 300) {
                 multiplyBy = 3;
-            } else if (count < 1000) {
+            } else if (count < 300) {
                 multiplyBy = 5;
+            } else if (count < 1000) {
+                multiplyBy = 6;
             } else if (count < 1350) {
                 multiplyBy = 7;
             } else if (count < 1700) {
@@ -218,6 +218,7 @@ export default {
             } else if (count < 2000) {
                 multiplyBy = 9;
             }
+
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -334,7 +335,10 @@ export default {
 
                 // If child nodes are collapsed.
                 if (node.data.show_children) {
-                    if (node.data.show_children == 0) {
+                    if (
+                        node.data.show_children == 0 &&
+                        node.data.type != 'sub'
+                    ) {
                         radius = 20;
                     }
                 }
@@ -363,8 +367,8 @@ export default {
                     ctx1.stroke();
                 }
             }
-            // If child nodes are collapsed.
-            if (node.data.show_children) {
+            // If child nodes are collapsed, add the 'plus' sign.
+            if (node.data.show_children && node.data.type != 'sub') {
                 if (node.data.show_children == 0) {
                     // Set line properties
                     ctx1.lineWidth = 2;
@@ -833,126 +837,6 @@ export default {
                 this.goToLocation(resultNode);
             }
         },
-        async redrawTree() {
-            this.showSkillPanel = false;
-            await this.skillTreeStore.getMyVerticalTreeUserSkills();
-            let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
-
-            this.skill = {
-                name: 'SKILLS',
-                sprite: null,
-                children: userSkills
-            };
-
-            var skillsWithSubSkillsMoved = [];
-            skillsWithSubSkillsMoved = JSON.parse(
-                JSON.stringify(this.skill.children)
-            );
-
-            // Duplicate super skill node, and make second one a child of the first.
-            // Put all the subskills of the node in the second version.
-            // This is an attempt to show the subskills using D3.
-            function moveSubSkills(parentChildren) {
-                var i = parentChildren.length;
-                while (i--) {
-                    // If the skill is a super skill, and not an "end" super skill.
-                    if (
-                        parentChildren[i].type == 'super' &&
-                        parentChildren[i].position != 'end'
-                    ) {
-                        if (parentChildren[i].show_children) {
-                            if (parentChildren[i].show_children == 0) {
-                                return;
-                            }
-                        }
-                        // Separate the child nodes.
-                        var subSkills = [];
-                        var regularChildSkills = [];
-                        for (
-                            let j = 0;
-                            j < parentChildren[i].children.length;
-                            j++
-                        ) {
-                            if (parentChildren[i].children[j].type == 'sub') {
-                                subSkills.push(parentChildren[i].children[j]);
-                            } else {
-                                regularChildSkills.push(
-                                    parentChildren[i].children[j]
-                                );
-                            }
-                        }
-
-                        // Create a new child node, with the subskills in it.
-                        var superSkillEndNode = {
-                            skill_name: parentChildren[i].skill_name,
-                            type: 'super',
-                            position: 'end',
-                            children: subSkills
-                        };
-
-                        // Empty the child nodes.
-                        parentChildren[i].children = [];
-                        // Add the new node.
-                        parentChildren[i].children.push(superSkillEndNode);
-                        // Add the other child nodes, excluding subskills.
-                        for (let j = 0; j < regularChildSkills.length; j++) {
-                            parentChildren[i].children.push(
-                                regularChildSkills[j]
-                            );
-                        }
-                    }
-
-                    if (typeof parentChildren[i] !== 'undefined') {
-                        /*
-                         * Run the above function again recursively.
-                         */
-                        if (
-                            parentChildren[i].children &&
-                            Array.isArray(parentChildren[i].children) &&
-                            parentChildren[i].children.length > 0
-                        )
-                            moveSubSkills(parentChildren[i].children);
-                    }
-                }
-            }
-
-            moveSubSkills(skillsWithSubSkillsMoved);
-
-            this.data = {
-                skill_name: 'My skills',
-                children: skillsWithSubSkillsMoved
-            };
-
-            // Compute the tree height; this approach will allow the height of the
-            // SVG to scale according to the breadth (width) of the tree layout.
-            this.root = d3.hierarchy(this.data);
-
-            // Height is constant
-            const dx = 24;
-
-            //Shorten lines based on truncate level.
-            let multiplyBy = 5;
-            if (this.truncateLevel == 'grade_school') {
-                multiplyBy = 1;
-            } else if (this.truncateLevel == 'middle_school') {
-                multiplyBy = 2;
-            } else if (this.truncateLevel == 'high_school') {
-                multiplyBy = 3;
-            } else if (this.truncateLevel == 'college') {
-                multiplyBy = 4;
-            }
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
-
-            // Create a tree layout.
-            this.tree = d3.tree().nodeSize([dx, dy]);
-
-            // Sort the tree and apply the layout.
-            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
-            this.tree(this.root);
-
-            this.zoomInD3(this.scale, this.panX, this.panY);
-        },
-
         toggleHideChildren(node) {
             var url =
                 '/user-skills/hide-children/' +
@@ -1001,11 +885,11 @@ export default {
             //Shorten lines based on truncate level.
             let multiplyBy = 10;
             if (count < 70) {
-                multiplyBy = 1;
-            } else if (count < 300) {
                 multiplyBy = 3;
-            } else if (count < 1000) {
+            } else if (count < 300) {
                 multiplyBy = 5;
+            } else if (count < 1000) {
+                multiplyBy = 6;
             } else if (count < 1350) {
                 multiplyBy = 7;
             } else if (count < 1700) {
