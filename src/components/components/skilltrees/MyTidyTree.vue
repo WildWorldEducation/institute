@@ -185,13 +185,6 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            /* Determine width of tree, based on how many nodes are showing
-             * used for the various types of filters,
-             * including: collapsable nodes, grade level filter, and instructors filters skills for students
-             *
-             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
-             */
-            let count = this.skillTreeStore.myVerticalTreeUserSkills.count;
             // Height: remains constant
             const dx = 24;
 
@@ -203,29 +196,9 @@ export default {
 
             this.root = d3.hierarchy(this.data);
 
-            console.log(count);
-
-            //Shorten lines based on truncate level.
-            let multiplyBy = 10;
-            if (count < 20) {
-                multiplyBy = 1;
-            } else if (count < 40) {
-                multiplyBy = 2;
-            } else if (count < 70) {
-                multiplyBy = 3;
-            } else if (count < 300) {
-                multiplyBy = 5;
-            } else if (count < 1000) {
-                multiplyBy = 6;
-            } else if (count < 1350) {
-                multiplyBy = 7;
-            } else if (count < 1700) {
-                multiplyBy = 8;
-            } else if (count < 2000) {
-                multiplyBy = 9;
-            }
-
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            // Determine width of tree based on node depth
+            let depth = this.skillTreeStore.myVerticalTreeUserSkills.depth;
+            const dy = 45 * depth;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
 
@@ -887,28 +860,9 @@ export default {
             // Height is constant
             const dx = 24;
 
-            let count = this.skillTreeStore.myVerticalTreeUserSkills.count;
-            //Shorten lines based on truncate level.
-            let multiplyBy = 10;
-            if (count < 20) {
-                multiplyBy = 1;
-            } else if (count < 40) {
-                multiplyBy = 2;
-            } else if (count < 70) {
-                multiplyBy = 3;
-            } else if (count < 300) {
-                multiplyBy = 5;
-            } else if (count < 1000) {
-                multiplyBy = 6;
-            } else if (count < 1350) {
-                multiplyBy = 7;
-            } else if (count < 1700) {
-                multiplyBy = 8;
-            } else if (count < 2000) {
-                multiplyBy = 9;
-            }
-
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            //Width based on node depth.
+            let depth = this.skillTreeStore.myVerticalTreeUserSkills.depth;
+            const dy = 45 * depth;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
