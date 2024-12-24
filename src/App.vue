@@ -215,7 +215,10 @@ export default {
                             class="nav-item"
                             v-if="!sessionDetailsStore.isLoggedIn"
                         >
-                            <RouterLink to="/login" class="btn me-2 signin-btn">
+                            <RouterLink
+                                to="/login"
+                                class="btn me-2 mb-1 signin-btn"
+                            >
                                 Sign in
                             </RouterLink>
                         </li>
@@ -391,6 +394,10 @@ p {
 
 .secondary-icon {
     fill: var(--secondary-color) !important;
+}
+
+.tertiary-icon {
+    fill: var(--primary-contrast-color) !important;
 }
 
 /* End of themes section */
