@@ -13,6 +13,11 @@ export default {
             userDetailsStore
         };
     },
+    data() {
+        return {
+            isMobileCheck: window.innerWidth
+        };
+    },
     async mounted() {
         await this.userDetailsStore.getUserDetails();
 
@@ -116,7 +121,7 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' &&
-                                this.$route.name != 'vertical-tree'
+                                this.$route.name != 'vertical-tree' && isMobileCheck > 576
                             "
                             class="nav-item"
                         >
@@ -150,7 +155,7 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' &&
-                                this.$route.name != 'radial-tree'
+                                this.$route.name != 'radial-tree' && isMobileCheck > 576
                             "
                             class="nav-item"
                         >
