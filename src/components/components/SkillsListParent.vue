@@ -51,10 +51,12 @@ export default {
                 await this.skillsStore.getFilteredNestedSkillsList();
             // Students.
             else if (this.userDetailsStore.role == 'student') {
-                if (this.skillTreeStore.userSkills.length == 0) {
-                    await this.skillTreeStore.getUserSkills();
-                }
+                //if (this.skillTreeStore.userSkills.length == 0) {
+                await this.skillTreeStore.getUserSkills();
+                // }
                 this.userSkills = this.skillTreeStore.userSkills;
+
+                console.log(this.userSkills);
             }
         }
         // For instructors to view student's skill trees
@@ -222,6 +224,7 @@ export default {
                     :isMastered="skill.is_mastered"
                     :type="skill.type"
                     :level="skill.level"
+                    :showChildren="skill.show_children"
                     :role="userDetailsStore.role"
                     :path="this.path"
                 >

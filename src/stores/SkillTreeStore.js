@@ -6,12 +6,14 @@ import { useUserDetailsStore } from './UserDetailsStore.js';
 export const useSkillTreeStore = defineStore('skillTree', {
     state: () => ({
         userSkills: [],
-        // For Vertical Tree
+        // For Full Vertical/Tidy Tree
         verticalTreeUserSkills: [],
         gradeSchoolVerticalTreeUserSkills: [],
         middleSchoolVerticalTreeUserSkills: [],
         highSchoolVerticalTreeUserSkills: [],
         collegeVerticalTreeUserSkills: [],
+        // For My Vertical/Tidy Tree
+        myVerticalTreeUserSkills: [],
         // --
         userSkillsNoSubSkills: [],
         // For Radial Tree
@@ -25,20 +27,17 @@ export const useSkillTreeStore = defineStore('skillTree', {
         async getUserSkills() {
             const userDetailsStore = useUserDetailsStore();
             let level = userDetailsStore.gradeFilter;
-            //const userDetails = await userDetailsStore.getUserDetails();
 
             const result = await fetch(
                 '/user-skills/filter-by-cohort/' +
-                userDetailsStore.userId +
-                '?level=' +
-                level
+                    userDetailsStore.userId +
+                    '?level=' +
+                    level
             );
 
             this.userSkills = await result.json();
-
-
         },
-        // API call for Vertical skill tree.
+        // API call for Full Vertical skill tree.
         async getVerticalTreeUserSkills(level, subjects) {
             // To deal with the "&" sign in "Science & Invention".
             for (let i = 0; i < subjects.length; i++) {
@@ -48,12 +47,12 @@ export const useSkillTreeStore = defineStore('skillTree', {
             const userDetailsStore = useUserDetailsStore();
             // const userDetails = await userDetailsStore.getUserDetails();
             const result = await fetch(
-                '/user-skills/filter-by-cohort/vertical-tree/' +
-                userDetailsStore.userId +
-                '?level=' +
-                level +
-                '&subjects=' +
-                subjects
+                '/user-skills/filter-by-cohort/full-vertical-tree/' +
+                    userDetailsStore.userId +
+                    '?level=' +
+                    level +
+                    '&subjects=' +
+                    subjects
             );
 
             // If the student clicks a button on the grade level key,
@@ -70,6 +69,17 @@ export const useSkillTreeStore = defineStore('skillTree', {
             // Default is all levels.
             else this.verticalTreeUserSkills = await result.json();
         },
+        // API call for Full Vertical skill tree.
+        async getMyVerticalTreeUserSkills() {
+            const userDetailsStore = useUserDetailsStore();
+            const result = await fetch(
+                '/user-skills/filter-by-cohort/my-vertical-tree/' +
+                    userDetailsStore.userId
+            );
+
+            // Default is all levels.
+            this.myVerticalTreeUserSkills = await result.json();
+        },
         // API call for Radial skill tree.
         async getUserSkillsSubSkillsSeparate(level, subjects) {
             // To deal with the "&" sign in "Science & Invention".
@@ -81,11 +91,11 @@ export const useSkillTreeStore = defineStore('skillTree', {
 
             const result = await fetch(
                 '/user-skills/separate-subskills/filter-by-cohort/' +
-                userDetailsStore.userId +
-                '?level=' +
-                level +
-                '&subjects=' +
-                subjects
+                    userDetailsStore.userId +
+                    '?level=' +
+                    level +
+                    '&subjects=' +
+                    subjects
             );
             this.userSkillsSubSkillsSeparate = await result.json();
         },
@@ -96,21 +106,24 @@ export const useSkillTreeStore = defineStore('skillTree', {
             );
 
             this.studentSkills = await result.json();
-
         },
         async findInStudentSkill(skillName) {
-            const result = this.searchResultNodes.find(result => result.name === skillName)
+            const result = this.searchResultNodes.find(
+                (result) => result.name === skillName
+            );
             return result;
         },
-        // Find the oldest ancestor of a node 
+        // Find the oldest ancestor of a node
         async findFatherSubject(node) {
-            let parentId = node.parent
+            let parentId = node.parent;
             let parent = null;
             while (parentId !== 0) {
-                parent = this.searchResultNodes.find(skill => skill.id === parentId)
-                parentId = parent.parent
+                parent = this.searchResultNodes.find(
+                    (skill) => skill.id === parentId
+                );
+                parentId = parent.parent;
             }
-            return parent
+            return parent;
         },
 
         convertNodesToArray(nodes) {
@@ -124,7 +137,6 @@ export const useSkillTreeStore = defineStore('skillTree', {
                 }
             }
             return results;
-        },
-
+        }
     }
 });
