@@ -55,21 +55,39 @@ export default {
             <em>{{ this.skill.name }}</em>
         </p>
         <div class="mt-4 mb-2">
-            <hr
-                class="border border-2 opacity-100 w-md-75 w-100"
-                id="assessment-horizontal-line"
-            />
+            <div id="assessment-horizontal-line" class="w-md-75 w-100">
+                <div id="full-line"></div>
+                <div :style="`width: ${parseInt(($refs.assessment?.questionNumber+1)/$refs.assessment?.totalNumOfQuestions*100)}%;`" id="progress"></div>
+            </div>
+            
         </div>
-        <Assessment />
+        <Assessment ref="assessment" />
     </div>
 </template>
 
 <style scoped>
 #assessment-horizontal-line {
-    border-color: var(--primary-color) !important;
-    border: solid;
+    position: relative;
+    height: 5px;
 }
-
+#progress{
+    height: 100%;
+    background-color: var(--primary-color) !important;
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+#full-line{
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary-color) !important;
+    opacity: 0.2;
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+}
 .skill-name {
     color: var(--primary-color) !important;
 }
