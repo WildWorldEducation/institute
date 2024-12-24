@@ -28,6 +28,26 @@ export default {
             document.body.classList.remove('scholar-theme');
             document.body.classList.remove('apprentice-theme');
         }
+        const links = document.querySelectorAll('.close-on-click');
+        const navbarToggler = document.querySelector('.navbar-toggler');
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+
+        links.forEach((link) => {
+            link.addEventListener('click', function () {
+                if (navbarCollapse.classList.contains('show')) {
+                    navbarToggler.click();
+                }
+            });
+        });
+        document.addEventListener('click', function (e) {
+            if (
+                !navbarCollapse.contains(e.target) &&
+                !navbarToggler.contains(e.target) &&
+                navbarCollapse.classList.contains('show')
+            ) {
+                navbarToggler.click();
+            }
+        });
     },
     methods: {}
 };
@@ -87,7 +107,9 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/" class="nav-link">Hub</RouterLink>
+                            <RouterLink to="/" class="nav-link close-on-click"
+                                >Hub</RouterLink
+                            >
                         </li>
                         <li
                             v-if="
@@ -98,7 +120,10 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/todo" class="nav-link">
+                            <RouterLink
+                                to="/todo"
+                                class="nav-link close-on-click"
+                            >
                                 <span>Todo</span>
                             </RouterLink>
                         </li>
@@ -109,7 +134,9 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/my-vertical-tree" class="nav-link"
+                            <RouterLink
+                                to="/my-vertical-tree"
+                                class="nav-link close-on-click"
                                 >My Tree</RouterLink
                             >
                         </li>
@@ -120,7 +147,9 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/vertical-tree" class="nav-link"
+                            <RouterLink
+                                to="/vertical-tree"
+                                class="nav-link close-on-click"
                                 >Full Tree</RouterLink
                             >
                         </li>
@@ -131,7 +160,10 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/skills" class="nav-link">
+                            <RouterLink
+                                to="/skills"
+                                class="nav-link close-on-click"
+                            >
                                 <span>Collapsible Tree</span>
                             </RouterLink>
                         </li>
@@ -143,7 +175,9 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/vertical-tree" class="nav-link"
+                            <RouterLink
+                                to="/vertical-tree"
+                                class="nav-link close-on-click"
                                 >Vertical Tree</RouterLink
                             >
                         </li>
@@ -154,7 +188,9 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/radial-tree" class="nav-link"
+                            <RouterLink
+                                to="/radial-tree"
+                                class="nav-link close-on-click"
                                 >Radial Tree (Alpha Version)</RouterLink
                             >
                         </li>
@@ -167,7 +203,10 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/users" class="nav-link">
+                            <RouterLink
+                                to="/users"
+                                class="nav-link close-on-click"
+                            >
                                 <span v-if="userDetailsStore.role == 'admin'"
                                     >Users
                                 </span>
@@ -192,7 +231,10 @@ export default {
                             "
                             class="nav-item"
                         >
-                            <RouterLink to="/cohorts" class="nav-link">
+                            <RouterLink
+                                to="/cohorts"
+                                class="nav-link close-on-click"
+                            >
                                 <span>Cohorts</span>
                             </RouterLink>
                         </li>
@@ -202,7 +244,7 @@ export default {
                         >
                             <RouterLink
                                 to="/profile-settings"
-                                class="nav-link profile-btn"
+                                class="nav-link profile-btn close-on-click"
                             >
                                 <img
                                     id="user-avatar"
