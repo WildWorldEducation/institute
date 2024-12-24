@@ -61,7 +61,7 @@ export default {
             showSkillPanel: false,
             resultNode: null,
             clickMode: 'showPanel',
-            nodeCount: 0
+            count: 0
         };
     },
     components: {
@@ -1030,17 +1030,29 @@ export default {
             let userSkills = [];
             if (this.userDetailsStore.gradeFilter == 'grade_school') {
                 userSkills =
-                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
+                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills
+                        .skills;
+                this.count =
+                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.count;
             } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
                 userSkills =
-                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
+                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills
+                        .skills;
+                this.count =
+                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills.count;
             } else if (this.userDetailsStore.gradeFilter == 'high_school') {
                 userSkills =
-                    this.skillTreeStore.highSchoolVerticalTreeUserSkills;
+                    this.skillTreeStore.highSchoolVerticalTreeUserSkills.skills;
+                this.count =
+                    this.skillTreeStore.highSchoolVerticalTreeUserSkills.count;
             } else if (this.userDetailsStore.gradeFilter == 'college') {
-                userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
+                userSkills =
+                    this.skillTreeStore.collegeVerticalTreeUserSkills.skills;
+                this.count =
+                    this.skillTreeStore.collegeVerticalTreeUserSkills.count;
             } else {
-                userSkills = this.skillTreeStore.verticalTreeUserSkills;
+                userSkills = this.skillTreeStore.verticalTreeUserSkills.skills;
+                this.count = this.skillTreeStore.verticalTreeUserSkills.count;
             }
 
             this.skill = {
@@ -1062,16 +1074,28 @@ export default {
             const dx = 24;
 
             //Shorten lines based on truncate level.
-            let multiplyBy = 5;
-            if (this.userDetailsStore.gradeFilter == 'grade_school') {
+            //Shorten lines based on truncate level.
+            let multiplyBy = 10;
+            if (this.count < 70) {
                 multiplyBy = 1;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-                multiplyBy = 2;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+            } else if (this.count < 300) {
                 multiplyBy = 3;
-            } else if (this.userDetailsStore.gradeFilter == 'college') {
-                multiplyBy = 4;
+            } else if (
+                this.userDetailsStore.gradeFilter == 'grade_school' ||
+                this.count < 1000
+            ) {
+                multiplyBy = 5;
+            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
+                multiplyBy = 7;
+            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
+                multiplyBy = 8;
+            } else if (
+                this.userDetailsStore.gradeFilter == 'college' ||
+                this.count < 2000
+            ) {
+                multiplyBy = 9;
             }
+
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             // Create a tree layout.
