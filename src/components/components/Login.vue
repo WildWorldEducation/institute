@@ -38,9 +38,14 @@ export default {
                 })
                 .then(function (data) {
                     if (data.account == 'authorized') {
-                        if (data.role == 'student')
-                            router.push({ name: 'vertical-tree' });
-                        else router.push({ name: 'hub' });
+                        if (data.role == 'student') {
+                            console.log(window.innerWidth);
+                            if (window.innerWidth < 576) {
+                                router.push({ name: 'my-vertical-tree' });
+                            } else {
+                                router.push({ name: 'vertical-tree' });
+                            }
+                        } else router.push({ name: 'hub' });
                     } else if (data.account == 'wrong-password') {
                         alert('wrong password');
                     } else {
