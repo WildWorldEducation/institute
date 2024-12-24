@@ -963,7 +963,7 @@ export default {
     }
 
     .tablet-and-up-legend {
-        display: none;
+        display: none !important;
     }
 
     .search-mobile-row {
