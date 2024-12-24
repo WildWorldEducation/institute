@@ -203,9 +203,15 @@ export default {
 
             this.root = d3.hierarchy(this.data);
 
+            console.log(count);
+
             //Shorten lines based on truncate level.
             let multiplyBy = 10;
-            if (count < 70) {
+            if (count < 20) {
+                multiplyBy = 1;
+            } else if (count < 40) {
+                multiplyBy = 2;
+            } else if (count < 70) {
                 multiplyBy = 3;
             } else if (count < 300) {
                 multiplyBy = 5;
@@ -884,7 +890,11 @@ export default {
             let count = this.skillTreeStore.myVerticalTreeUserSkills.count;
             //Shorten lines based on truncate level.
             let multiplyBy = 10;
-            if (count < 70) {
+            if (count < 20) {
+                multiplyBy = 1;
+            } else if (count < 40) {
+                multiplyBy = 2;
+            } else if (count < 70) {
                 multiplyBy = 3;
             } else if (count < 300) {
                 multiplyBy = 5;

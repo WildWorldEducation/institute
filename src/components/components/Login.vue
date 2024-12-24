@@ -39,7 +39,6 @@ export default {
                 .then(function (data) {
                     if (data.account == 'authorized') {
                         if (data.role == 'student') {
-                            console.log(window.innerWidth);
                             if (window.innerWidth < 576) {
                                 router.push({ name: 'my-vertical-tree' });
                             } else {

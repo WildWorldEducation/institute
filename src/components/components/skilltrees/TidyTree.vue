@@ -975,7 +975,6 @@ export default {
             const dx = 24;
 
             //Shorten lines based on truncate level.
-            //Shorten lines based on truncate level.
             let multiplyBy = 10;
             if (this.count < 70) {
                 multiplyBy = 1;

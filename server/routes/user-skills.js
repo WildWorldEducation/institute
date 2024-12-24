@@ -684,9 +684,6 @@ router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
                             }
                         }
 
-                        // We count the number of skills to work out the width of the chart.
-                        let numSkills = 0;
-
                         // Assign children to parent skills.
                         for (var i = 0; i < results.length; i++) {
                             // Check that not first level nodes.
@@ -706,12 +703,7 @@ router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
                                                 results[j].children.push(
                                                     results[i]
                                                 );
-                                                numSkills++;
                                             }
-                                        } else {
-                                            results[j].children.push(
-                                                results[i]
-                                            );
                                         }
                                     }
                                 }
@@ -727,6 +719,36 @@ router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
                                 studentSkills.push(results[i]);
                             }
                         }
+
+                        // Count the filtered skills, to determine size of Vertical Tree
+                        let count = 0;
+                        function countNestedSkills(parentChildren) {
+                            var i = parentChildren.length;
+                            while (i--) {
+                                count++;
+                                if (typeof parentChildren[i] !== 'undefined') {
+                                    /*
+                                     * Run the above function again recursively.
+                                     */
+                                    if (
+                                        parentChildren[i].children &&
+                                        Array.isArray(
+                                            parentChildren[i].children
+                                        ) &&
+                                        parentChildren[i].children.length > 0
+                                    )
+                                        countNestedSkills(
+                                            parentChildren[i].children
+                                        );
+                                }
+                            }
+                            return count;
+                        }
+
+                        // We count the number of skills to work out the width of the chart.
+                        let numSkills = 0;
+                        countNestedSkills(studentSkills);
+                        numSkills = count;
 
                         res.json({ skills: studentSkills, count: numSkills });
                     } catch (err) {
