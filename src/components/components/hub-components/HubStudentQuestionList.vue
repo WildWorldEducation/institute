@@ -2,61 +2,18 @@
 // import store
 
 export default {
+    props: {
+        questions: {
+            type: Array,
+            required: true
+        }
+    },
     setup() {
         return {};
     },
-    data() {
-        return {
-            questions: null
-        };
-    },
+    data() {},
     components: {},
-
-    async created() {
-        // Question list needs to be created for both admins (all questions), and instructors
-        // (only their students' questions).
-
-        // Create the questions array ---------------------------------
-        // Get unchecked questions.
-        await this.getStudentMCQuestions();
-    },
-    methods: {
-        formatDate(unformattedDate) {
-            // Prep the date and time data ---------------
-            // Split timestamp into [ Y, M, D, h, m, s ]
-            var date = unformattedDate.replace('T', ' ');
-            date = date.replace('Z', ' ');
-            let newDate = date.split(/[- :]/);
-            // Apply each element to the Date function
-            var finalDate = new Date(
-                Date.UTC(
-                    newDate[0],
-                    newDate[1] - 1,
-                    newDate[2],
-                    newDate[3],
-                    newDate[4],
-                    newDate[5]
-                )
-            );
-            var options = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric'
-            };
-            finalDate = finalDate.toLocaleDateString('en-US', options);
-            return finalDate;
-        },
-        async getStudentMCQuestions() {
-            const result = await fetch(
-                '/questions/student-mc-questions/full-data-list'
-            );
-            const data = await result.json();
-            this.questions = data;
-        }
-    }
+    methods: {}
 };
 </script>
 
