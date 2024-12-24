@@ -396,6 +396,10 @@ p {
     fill: var(--secondary-color) !important;
 }
 
+.tertiary-icon {
+    fill: var(--primary-contrast-color) !important;
+}
+
 /* End of themes section */
 
 .navbar-toggler {
