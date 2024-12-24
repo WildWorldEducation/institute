@@ -45,7 +45,7 @@ export const useSkillTreeStore = defineStore('skillTree', {
             }
 
             const userDetailsStore = useUserDetailsStore();
-            // const userDetails = await userDetailsStore.getUserDetails();
+            
             const result = await fetch(
                 '/user-skills/filter-by-cohort/full-vertical-tree/' +
                     userDetailsStore.userId +

@@ -61,7 +61,7 @@ export default {
             showSkillPanel: false,
             resultNode: null,
             clickMode: 'showPanel',
-            count: 0
+            depth: 0
         };
     },
     components: {
@@ -83,27 +83,29 @@ export default {
         if (this.userDetailsStore.gradeFilter == 'grade_school') {
             userSkills =
                 this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.skills;
-            this.count =
-                this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.count;
+            this.depth =
+                this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.depth;
         } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
             userSkills =
                 this.skillTreeStore.middleSchoolVerticalTreeUserSkills.skills;
-            this.count =
-                this.skillTreeStore.middleSchoolVerticalTreeUserSkills.count;
+            this.depth =
+                this.skillTreeStore.middleSchoolVerticalTreeUserSkills.depth;
         } else if (this.userDetailsStore.gradeFilter == 'high_school') {
             userSkills =
                 this.skillTreeStore.highSchoolVerticalTreeUserSkills.skills;
-            this.count =
-                this.skillTreeStore.highSchoolVerticalTreeUserSkills.count;
+            this.depth =
+                this.skillTreeStore.highSchoolVerticalTreeUserSkills.depth;
         } else if (this.userDetailsStore.gradeFilter == 'college') {
             userSkills =
                 this.skillTreeStore.collegeVerticalTreeUserSkills.skills;
-            this.count =
-                this.skillTreeStore.collegeVerticalTreeUserSkills.count;
+            this.depth =
+                this.skillTreeStore.collegeVerticalTreeUserSkills.depth;
         } else {
             userSkills = this.skillTreeStore.verticalTreeUserSkills.skills;
-            this.count = this.skillTreeStore.verticalTreeUserSkills.count;
+            this.depth = this.skillTreeStore.verticalTreeUserSkills.depth;
         }
+
+        console.log(this.depth);
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
@@ -224,35 +226,8 @@ export default {
 
             this.root = d3.hierarchy(this.data);
 
-            /* Determine width of tree, based on how many nodes are showing
-             * used for the various types of filters,
-             * including: collapsable nodes, grade level filter, and instructors filters skills for students
-             *
-             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
-             */
-            //Shorten lines based on truncate level.
-            let multiplyBy = 10;
-            if (this.count < 70) {
-                multiplyBy = 1;
-            } else if (this.count < 300) {
-                multiplyBy = 3;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'grade_school' ||
-                this.count < 1000
-            ) {
-                multiplyBy = 5;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-                multiplyBy = 7;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
-                multiplyBy = 8;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'college' ||
-                this.count < 2000
-            ) {
-                multiplyBy = 9;
-            }
-
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            // Determine width of tree based on node depth
+            const dy = 50 * this.depth;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
 
@@ -933,27 +908,27 @@ export default {
                 userSkills =
                     this.skillTreeStore.gradeSchoolVerticalTreeUserSkills
                         .skills;
-                this.count =
-                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.count;
+                this.depth =
+                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.depth;
             } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
                 userSkills =
                     this.skillTreeStore.middleSchoolVerticalTreeUserSkills
                         .skills;
-                this.count =
-                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills.count;
+                this.depth =
+                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills.depth;
             } else if (this.userDetailsStore.gradeFilter == 'high_school') {
                 userSkills =
                     this.skillTreeStore.highSchoolVerticalTreeUserSkills.skills;
-                this.count =
-                    this.skillTreeStore.highSchoolVerticalTreeUserSkills.count;
+                this.depth =
+                    this.skillTreeStore.highSchoolVerticalTreeUserSkills.depth;
             } else if (this.userDetailsStore.gradeFilter == 'college') {
                 userSkills =
                     this.skillTreeStore.collegeVerticalTreeUserSkills.skills;
-                this.count =
-                    this.skillTreeStore.collegeVerticalTreeUserSkills.count;
+                this.depth =
+                    this.skillTreeStore.collegeVerticalTreeUserSkills.depth;
             } else {
                 userSkills = this.skillTreeStore.verticalTreeUserSkills.skills;
-                this.count = this.skillTreeStore.verticalTreeUserSkills.count;
+                this.depth = this.skillTreeStore.verticalTreeUserSkills.depth;
             }
 
             this.skill = {
@@ -974,29 +949,8 @@ export default {
             // Height is constant
             const dx = 24;
 
-            //Shorten lines based on truncate level.
-            let multiplyBy = 10;
-            if (this.count < 70) {
-                multiplyBy = 1;
-            } else if (this.count < 300) {
-                multiplyBy = 3;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'grade_school' ||
-                this.count < 1000
-            ) {
-                multiplyBy = 5;
-            } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-                multiplyBy = 7;
-            } else if (this.userDetailsStore.gradeFilter == 'high_school') {
-                multiplyBy = 8;
-            } else if (
-                this.userDetailsStore.gradeFilter == 'college' ||
-                this.count < 2000
-            ) {
-                multiplyBy = 9;
-            }
-
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            // Determine width of tree based on node depth
+            const dy = 50 * this.depth;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);

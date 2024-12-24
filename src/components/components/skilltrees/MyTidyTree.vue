@@ -198,7 +198,7 @@ export default {
 
             // Determine width of tree based on node depth
             let depth = this.skillTreeStore.myVerticalTreeUserSkills.depth;
-            const dy = 45 * depth;
+            const dy = 50 * depth;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
 
@@ -862,7 +862,7 @@ export default {
 
             //Width based on node depth.
             let depth = this.skillTreeStore.myVerticalTreeUserSkills.depth;
-            const dy = 45 * depth;
+            const dy = 50 * depth;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);

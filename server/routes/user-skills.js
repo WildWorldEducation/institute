@@ -558,12 +558,14 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                             }
                         }
 
-                        // Count the filtered skills, to determine size of Vertical Tree
-                        let count = 0;
-                        function countNestedSkills(parentChildren) {
+                        // Find the depth of nodes expanded, to determine width of Vertical Tree
+                        let depth = 0;
+                        let skillDepth;
+                        function determineDepth(parentChildren, depth) {
+                            depth++;
+                            skillDepth = depth;
                             var i = parentChildren.length;
                             while (i--) {
-                                count++;
                                 if (typeof parentChildren[i] !== 'undefined') {
                                     /*
                                      * Run the above function again recursively.
@@ -575,18 +577,17 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                                         ) &&
                                         parentChildren[i].children.length > 0
                                     )
-                                        countNestedSkills(
-                                            parentChildren[i].children
+                                        determineDepth(
+                                            parentChildren[i].children,
+                                            depth
                                         );
                                 }
                             }
-                            return count;
                         }
 
-                        countNestedSkills(studentSkills);
-                        const numSkills = count;
+                        determineDepth(studentSkills, depth);
 
-                        res.json({ skills: studentSkills, count: numSkills });
+                        res.json({ skills: studentSkills, depth: skillDepth });
                     } catch (err) {
                         next(err);
                     }
