@@ -75,7 +75,7 @@ export default {
             await this.skillTreeStore.getMyVerticalTreeUserSkills();
         }
 
-        let userSkills = this.skillTreeStore.myVerticalTreeUserSkills.skills;
+        let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
@@ -185,9 +185,6 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            // Height: remains constant
-            const dx = 24;
-
             // Create a tree layout.
             this.data = {
                 skill_name: 'My skills',
@@ -196,9 +193,11 @@ export default {
 
             this.root = d3.hierarchy(this.data);
 
-            // Determine width of tree based on node depth
-            let depth = this.skillTreeStore.myVerticalTreeUserSkills.depth;
-            const dy = 50 * depth;
+            // Node width and height
+            // height
+            const dx = 24;
+            // width
+            const dy = 270;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
 
@@ -839,8 +838,7 @@ export default {
         async reloadTree(node) {
             this.showSkillPanel = false;
             await this.skillTreeStore.getMyVerticalTreeUserSkills();
-            let userSkills =
-                this.skillTreeStore.myVerticalTreeUserSkills.skills;
+            let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
 
             this.skill = {
                 name: 'SKILLS',
@@ -857,12 +855,9 @@ export default {
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
 
-            // Height is constant
+            // Node width and height
             const dx = 24;
-
-            //Width based on node depth.
-            let depth = this.skillTreeStore.myVerticalTreeUserSkills.depth;
-            const dy = 50 * depth;
+            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);

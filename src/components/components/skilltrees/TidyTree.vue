@@ -227,7 +227,8 @@ export default {
             this.root = d3.hierarchy(this.data);
 
             // Determine width of tree based on node depth
-            const dy = 50 * this.depth;
+            //const dy = 50 * (this.depth + 1);
+            const dy = 270;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
 
@@ -946,11 +947,11 @@ export default {
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
 
-            // Height is constant
+            // Node width and height
+            // Height
             const dx = 24;
-
-            // Determine width of tree based on node depth
-            const dy = 50 * this.depth;
+            // Width
+            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
