@@ -697,14 +697,14 @@ router.get('/filter-by-cohort/my-vertical-tree/:userId', (req, res, next) => {
                                 // Go through all rows again, add children
                                 for (let j = 0; j < results.length; j++) {
                                     if (results[j].id == parentId) {
+                                        // Add a flag to say this node has child skills, so it can be expanded.
+                                        results[j].has_children = true;
                                         // Here we show or hide the child nodes for the Vertical Tree
                                         // based on whether the student has collapsed the node or not.
-                                        if (results[j].show_children) {
-                                            if (results[j].show_children == 1) {
-                                                results[j].children.push(
-                                                    results[i]
-                                                );
-                                            }
+                                        if (results[j].show_children == 1) {
+                                            results[j].children.push(
+                                                results[i]
+                                            );
                                         }
                                     }
                                 }
