@@ -76,7 +76,7 @@ export default {
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillsStore.filteredNestedSkillsList
+            children: this.skillsStore.filteredNestedSkillsList.skills
         };
 
         this.getAlgorithm();
@@ -696,7 +696,7 @@ export default {
         async reloadTree() {
             this.showSkillPanel = false;
 
-            let skills = this.skillsStore.filteredNestedSkillsList;
+            let skills = this.skillsStore.filteredNestedSkillsList.skills;
 
             this.skill = {
                 name: 'SKILLS',

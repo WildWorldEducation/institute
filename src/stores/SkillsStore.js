@@ -24,7 +24,7 @@ export const useSkillsStore = defineStore('skills', {
             let level = userDetailsStore.gradeFilter;
 
             const result = await fetch(
-                '/skills/filtered-nested-list?level=' + level
+                '/skills/filtered-nested-list'
             );
             const data = await result.json();
 
