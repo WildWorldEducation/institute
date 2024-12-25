@@ -48,7 +48,7 @@ export default {
                     <div class="d-flex">
                         <button
                             v-if="
-                                skill.hasChildren &&
+                                skill.has_children &&
                                 this.$route.name === 'my-vertical-tree'
                             "
                             class="primary-btn me-2 btn"
