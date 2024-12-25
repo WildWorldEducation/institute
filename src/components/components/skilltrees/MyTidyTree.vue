@@ -75,7 +75,7 @@ export default {
             await this.skillTreeStore.getMyVerticalTreeUserSkills();
         }
 
-        let userSkills = this.skillTreeStore.myVerticalTreeUserSkills.skills;
+        let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
@@ -185,16 +185,6 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            /* Determine width of tree, based on how many nodes are showing
-             * used for the various types of filters,
-             * including: collapsable nodes, grade level filter, and instructors filters skills for students
-             *
-             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
-             */
-            let count = this.skillTreeStore.myVerticalTreeUserSkills.count;
-            // Height: remains constant
-            const dx = 24;
-
             // Create a tree layout.
             this.data = {
                 skill_name: 'My skills',
@@ -203,23 +193,11 @@ export default {
 
             this.root = d3.hierarchy(this.data);
 
-            //Shorten lines based on truncate level.
-            let multiplyBy = 10;
-            if (count < 70) {
-                multiplyBy = 3;
-            } else if (count < 300) {
-                multiplyBy = 5;
-            } else if (count < 1000) {
-                multiplyBy = 6;
-            } else if (count < 1350) {
-                multiplyBy = 7;
-            } else if (count < 1700) {
-                multiplyBy = 8;
-            } else if (count < 2000) {
-                multiplyBy = 9;
-            }
-
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            // Node width and height
+            // height
+            const dx = 24;
+            // width
+            const dy = 270;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
 
@@ -860,8 +838,7 @@ export default {
         async reloadTree(node) {
             this.showSkillPanel = false;
             await this.skillTreeStore.getMyVerticalTreeUserSkills();
-            let userSkills =
-                this.skillTreeStore.myVerticalTreeUserSkills.skills;
+            let userSkills = this.skillTreeStore.myVerticalTreeUserSkills;
 
             this.skill = {
                 name: 'SKILLS',
@@ -878,27 +855,9 @@ export default {
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
 
-            // Height is constant
+            // Node width and height
             const dx = 24;
-
-            let count = this.skillTreeStore.myVerticalTreeUserSkills.count;
-            //Shorten lines based on truncate level.
-            let multiplyBy = 10;
-            if (count < 70) {
-                multiplyBy = 3;
-            } else if (count < 300) {
-                multiplyBy = 5;
-            } else if (count < 1000) {
-                multiplyBy = 6;
-            } else if (count < 1350) {
-                multiplyBy = 7;
-            } else if (count < 1700) {
-                multiplyBy = 8;
-            } else if (count < 2000) {
-                multiplyBy = 9;
-            }
-
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);

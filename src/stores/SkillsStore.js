@@ -124,14 +124,14 @@ export const useSkillsStore = defineStore('skills', {
                 await this.getSkillsList();
             }
             const nameList = this.skillsList.filter((skill) => {
-                return skill.is_filtered === 'available'
+                return skill.is_filtered === 'available';
             });
             return nameList;
         },
         async getCohortNameList() {
             const result = await fetch('/skills/name-list');
             const data = await result.json();
-            return data
+            return data;
         }
     }
 });

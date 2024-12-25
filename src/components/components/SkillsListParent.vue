@@ -236,7 +236,8 @@ export default {
                     this.userDetailsStore.role == 'instructor' ||
                     this.userDetailsStore.role == 'editor'
                 "
-                v-for="skill in this.skillsStore.filteredNestedSkillsList"
+                v-for="skill in this.skillsStore.filteredNestedSkillsList
+                    .skills"
             >
                 <SkillsListChildNonStudent
                     :id="skill.id"

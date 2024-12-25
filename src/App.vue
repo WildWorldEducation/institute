@@ -33,28 +33,53 @@ export default {
             document.body.classList.remove('scholar-theme');
             document.body.classList.remove('apprentice-theme');
         }
-        const links = document.querySelectorAll('.close-on-click');
-        const navbarToggler = document.querySelector('.navbar-toggler');
-        const navbarCollapse = document.querySelector('.navbar-collapse');
-
-        links.forEach((link) => {
-            link.addEventListener('click', function () {
-                if (navbarCollapse.classList.contains('show')) {
+        this.closeNavbarOnClick();
+    },
+    watch: {
+        $route() {
+            this.closeNavbarWithAnimation();
+        }
+    },
+    methods: {
+        closeNavbarOnClick() {
+            const links = document.querySelectorAll('.close-on-click');
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            links.forEach((link) => {
+                link.addEventListener('click', function () {
+                    if (
+                        navbarCollapse &&
+                        navbarCollapse.classList.contains('show')
+                    ) {
+                        navbarToggler.click();
+                    }
+                });
+            });
+            document.addEventListener('click', (e) => {
+                if (
+                    navbarCollapse &&
+                    !navbarCollapse.contains(e.target) &&
+                    !navbarToggler.contains(e.target) &&
+                    navbarCollapse.classList.contains('show')
+                ) {
                     navbarToggler.click();
                 }
             });
-        });
-        document.addEventListener('click', function (e) {
-            if (
-                !navbarCollapse.contains(e.target) &&
-                !navbarToggler.contains(e.target) &&
-                navbarCollapse.classList.contains('show')
-            ) {
+        },
+
+        closeNavbarWithAnimation() {
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
                 navbarToggler.click();
+                setTimeout(() => {
+                    if (navbarCollapse.classList.contains('show')) {
+                        navbarToggler.click();
+                    }
+                }, 300);
             }
-        });
-    },
-    methods: {}
+        }
+    }
 };
 </script>
 
@@ -148,7 +173,7 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' &&
-                                this.$route.name != 'vertical-tree' && isMobileCheck > 576
+                                this.$route.name != 'vertical-tree'
                             "
                             class="nav-item"
                         >
@@ -189,7 +214,8 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' &&
-                                this.$route.name != 'radial-tree' && isMobileCheck > 576
+                                this.$route.name != 'radial-tree' &&
+                                isMobileCheck > 576
                             "
                             class="nav-item"
                         >

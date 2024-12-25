@@ -172,8 +172,12 @@ export default {
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
+
+            // Node width and height
+            // Height
             const dx = 24;
-            const dy = this.width / (this.root.height + 1);
+            // Width
+            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -712,10 +716,12 @@ export default {
             // Compute the tree height; this approach will allow the height of the
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
+
+            // Node width and height
+            // Height
             const dx = 24;
-            // Shorten lines based on truncate level.
-            let divideBy = 1;
-            const dy = this.width / (this.root.height + 1) / divideBy;
+            // Width
+            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);

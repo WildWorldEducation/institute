@@ -17,6 +17,7 @@ export default {
     methods: {
         hideInfoPanel() {
             this.$parent.showSkillPanel = false;
+            console.log(this.skill);
         },
         toggleChildNodes() {
             if (this.skill.show_children == 0) {

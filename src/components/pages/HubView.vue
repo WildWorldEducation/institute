@@ -53,7 +53,7 @@ export default {
                 class="col-lg-4 col-md-6 mb-2"
                 v-if="userDetailsStore.role != 'editor'"
             >
-                <div class="hub-component">
+                <div class="hub-component h-100">
                     <StudentProgress
                         v-if="userDetailsStore.role == 'student'"
                         :userId="userDetailsStore.userId"
@@ -65,10 +65,10 @@ export default {
             </div>
             <!-- Last Visited Skills / Student Suggested Questions -->
             <div
-                class="col-lg-4 col-md-6 mb-2"
+                class="col-lg-4 col-md-6 mb-2 "
                 v-if="userDetailsStore.role != 'editor'"
             >
-                <div class="hub-component">
+                <div class="hub-component h-100">
                     <LastVisitedSkills
                         v-if="userDetailsStore.role == 'student'"
                         :userId="userDetailsStore.userId"
@@ -81,23 +81,23 @@ export default {
             </div>
             <div
                 v-if="userDetailsStore.role == 'student'"
-                class="col-lg-4 col-md-6 mb-2"
+                class="col-lg-4 col-md-6 mb-2 "
             >
-                <div class="hub-component">
+                <div class="hub-component h-100">
                     <Goals />
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-4 col-md-6 mb-2">
-                <div class="hub-component">
+                <div class="hub-component h-100">
                     <Notifications />
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <div class="hub-component">
+                <div class="hub-component h-100">
                     <News />
                 </div>
             </div>
