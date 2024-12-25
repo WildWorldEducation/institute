@@ -216,16 +216,6 @@ export default {
 
             moveSubSkills(skillsWithSubSkillsMoved);
 
-            /* Determine width of tree, based on how many nodes are showing
-             * used for the various types of filters,
-             * including: collapsable nodes, grade level filter, and instructors filters skills for students
-             *
-             * The fewer nodes, the less wide the tree should be, otherwise nodes are too far spaced apart.
-             */
-
-            // Height: remains constant
-            const dx = 24;
-
             this.data = {
                 skill_name: 'My skills',
                 children: skillsWithSubSkillsMoved
@@ -235,9 +225,11 @@ export default {
             // SVG to scale according to the breadth (width) of the tree layout.
             this.root = d3.hierarchy(this.data);
 
-            // Calculate width.
-            let multiplyBy = 5;
-            const dy = (this.width / (this.root.height + 1)) * multiplyBy;
+            // Node width and height
+            // Height
+            const dx = 24;
+            // Width
+            const dy = 270;
 
             // Create a tree layout.
             this.tree = d3.tree().nodeSize([dx, dy]);
