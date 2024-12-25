@@ -60,8 +60,7 @@ export default {
             showAnimation: false,
             showSkillPanel: false,
             resultNode: null,
-            clickMode: 'showPanel',
-            depth: 0
+            clickMode: 'showPanel'
         };
     },
     components: {
@@ -81,31 +80,16 @@ export default {
 
         let userSkills = '';
         if (this.userDetailsStore.gradeFilter == 'grade_school') {
-            userSkills =
-                this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.skills;
-            this.depth =
-                this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.depth;
+            userSkills = this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
         } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
-            userSkills =
-                this.skillTreeStore.middleSchoolVerticalTreeUserSkills.skills;
-            this.depth =
-                this.skillTreeStore.middleSchoolVerticalTreeUserSkills.depth;
+            userSkills = this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
         } else if (this.userDetailsStore.gradeFilter == 'high_school') {
-            userSkills =
-                this.skillTreeStore.highSchoolVerticalTreeUserSkills.skills;
-            this.depth =
-                this.skillTreeStore.highSchoolVerticalTreeUserSkills.depth;
+            userSkills = this.skillTreeStore.highSchoolVerticalTreeUserSkills;
         } else if (this.userDetailsStore.gradeFilter == 'college') {
-            userSkills =
-                this.skillTreeStore.collegeVerticalTreeUserSkills.skills;
-            this.depth =
-                this.skillTreeStore.collegeVerticalTreeUserSkills.depth;
+            userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
         } else {
-            userSkills = this.skillTreeStore.verticalTreeUserSkills.skills;
-            this.depth = this.skillTreeStore.verticalTreeUserSkills.depth;
+            userSkills = this.skillTreeStore.verticalTreeUserSkills;
         }
-
-        console.log(this.depth);
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
@@ -215,9 +199,6 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            // Height: remains constant
-            const dx = 24;
-
             // Create a tree layout.
             this.data = {
                 skill_name: 'My skills',
@@ -226,8 +207,10 @@ export default {
 
             this.root = d3.hierarchy(this.data);
 
-            // Determine width of tree based on node depth
-            //const dy = 50 * (this.depth + 1);
+            // Node height and width
+            // Height
+            const dx = 24;
+            // Width
             const dy = 270;
 
             this.tree = d3.tree().nodeSize([dx, dy]);
@@ -907,29 +890,17 @@ export default {
             let userSkills = [];
             if (this.userDetailsStore.gradeFilter == 'grade_school') {
                 userSkills =
-                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills
-                        .skills;
-                this.depth =
-                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills.depth;
+                    this.skillTreeStore.gradeSchoolVerticalTreeUserSkills;
             } else if (this.userDetailsStore.gradeFilter == 'middle_school') {
                 userSkills =
-                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills
-                        .skills;
-                this.depth =
-                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills.depth;
+                    this.skillTreeStore.middleSchoolVerticalTreeUserSkills;
             } else if (this.userDetailsStore.gradeFilter == 'high_school') {
                 userSkills =
-                    this.skillTreeStore.highSchoolVerticalTreeUserSkills.skills;
-                this.depth =
-                    this.skillTreeStore.highSchoolVerticalTreeUserSkills.depth;
+                    this.skillTreeStore.highSchoolVerticalTreeUserSkills;
             } else if (this.userDetailsStore.gradeFilter == 'college') {
-                userSkills =
-                    this.skillTreeStore.collegeVerticalTreeUserSkills.skills;
-                this.depth =
-                    this.skillTreeStore.collegeVerticalTreeUserSkills.depth;
+                userSkills = this.skillTreeStore.collegeVerticalTreeUserSkills;
             } else {
-                userSkills = this.skillTreeStore.verticalTreeUserSkills.skills;
-                this.depth = this.skillTreeStore.verticalTreeUserSkills.depth;
+                userSkills = this.skillTreeStore.verticalTreeUserSkills;
             }
 
             this.skill = {

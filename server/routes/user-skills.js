@@ -558,36 +558,36 @@ router.get('/filter-by-cohort/full-vertical-tree/:userId', (req, res, next) => {
                             }
                         }
 
-                        // Find the depth of nodes expanded, to determine width of Vertical Tree
-                        let depth = 0;
-                        let skillDepth;
-                        function determineDepth(parentChildren, depth) {
-                            depth++;
-                            skillDepth = depth;
-                            var i = parentChildren.length;
-                            while (i--) {
-                                if (typeof parentChildren[i] !== 'undefined') {
-                                    /*
-                                     * Run the above function again recursively.
-                                     */
-                                    if (
-                                        parentChildren[i].children &&
-                                        Array.isArray(
-                                            parentChildren[i].children
-                                        ) &&
-                                        parentChildren[i].children.length > 0
-                                    )
-                                        determineDepth(
-                                            parentChildren[i].children,
-                                            depth
-                                        );
-                                }
-                            }
-                        }
+                        // // Find the depth of nodes expanded, to determine width of Vertical Tree
+                        // let depth = 0;
+                        // let skillDepth;
+                        // function determineDepth(parentChildren, depth) {
+                        //     depth++;
+                        //     skillDepth = depth;
+                        //     var i = parentChildren.length;
+                        //     while (i--) {
+                        //         if (typeof parentChildren[i] !== 'undefined') {
+                        //             /*
+                        //              * Run the above function again recursively.
+                        //              */
+                        //             if (
+                        //                 parentChildren[i].children &&
+                        //                 Array.isArray(
+                        //                     parentChildren[i].children
+                        //                 ) &&
+                        //                 parentChildren[i].children.length > 0
+                        //             )
+                        //                 determineDepth(
+                        //                     parentChildren[i].children,
+                        //                     depth
+                        //                 );
+                        //         }
+                        //     }
+                        // }
 
-                        determineDepth(studentSkills, depth);
+                        // determineDepth(studentSkills, depth);
 
-                        res.json({ skills: studentSkills, depth: skillDepth });
+                        res.json(studentSkills);
                     } catch (err) {
                         next(err);
                     }
