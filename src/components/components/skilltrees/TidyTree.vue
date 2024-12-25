@@ -60,7 +60,10 @@ export default {
             showAnimation: false,
             showSkillPanel: false,
             resultNode: null,
-            clickMode: 'showPanel'
+            clickMode: 'showPanel',
+            base64Image:
+                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII',
+            transformData: null
         };
     },
     components: {
@@ -69,6 +72,11 @@ export default {
         JoystickControl
     },
     async mounted() {
+        const resImageData = await fetch('/skills/base-64-data');
+
+        const dataJSON = await resImageData.json();
+
+        this.base64Image = 'data:image/png;base64,' + dataJSON.result;
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
@@ -180,9 +188,7 @@ export default {
             .zoom()
             .scaleExtent([0.1, 5])
             .on('zoom', ({ transform }) => {
-                this.debugScale = transform.k;
-                this.transformX = transform.x;
-                this.transformY = transform.y;
+                this.transformData = transform;
                 this.drawTree(transform);
                 // update slider percent ( Handle by us not d3 but will invoke when the d3 zoom event is call )
                 this.$refs.sliderControl.changeGradientBG();
@@ -194,7 +200,9 @@ export default {
         // Set initial zoom value.
         this.resetPos();
 
+        // =================================================================================
         // For the loading animation.
+
         this.isLoading = false;
     },
     methods: {
@@ -326,7 +334,7 @@ export default {
                 }
                 // On the hidden canvas each rectangle gets a unique color.
                 this.hiddenCanvasContext.fillStyle = node.__pickColor;
-                // Draw the actual shape
+
                 this.drawNode(node);
             }
 
@@ -432,6 +440,16 @@ export default {
                         : node.data.skill_name;
                     ctx1.strokeText(showName, node.y + 15, node.x + 2);
                     ctx1.fillText(showName, node.y + 15, node.x + 2);
+                    // Drawing Image
+                    if (
+                        this.scale > 0.7 &&
+                        this.base64Image &&
+                        node.data.skill_name === 'Pre-Punic Carthage'
+                    ) {
+                        const img = new Image();
+                        img.src = this.base64Image;
+                        ctx1.drawImage(img, node.y, node.x, 20, 20);
+                    }
                 } else {
                     ctx1.beginPath();
                     ctx1.strokeStyle = '#FFF';
@@ -1027,6 +1045,8 @@ export default {
             this.tree(this.root);
 
             this.zoomInD3(this.scale, this.panX, this.panY);
+            console.log('Tree get redraw, here is the context: ');
+            console.log(this.context);
         },
 
         toggleHideChildren(node) {
