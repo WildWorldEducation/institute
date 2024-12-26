@@ -55,8 +55,6 @@ export default {
                 await this.skillTreeStore.getUserSkills();
                 // }
                 this.userSkills = this.skillTreeStore.userSkills;
-
-                console.log(this.userSkills);
             }
         }
         // For instructors to view student's skill trees
@@ -236,8 +234,7 @@ export default {
                     this.userDetailsStore.role == 'instructor' ||
                     this.userDetailsStore.role == 'editor'
                 "
-                v-for="skill in this.skillsStore.filteredNestedSkillsList
-                    .skills"
+                v-for="skill in this.skillsStore.filteredNestedSkillsList"
             >
                 <SkillsListChildNonStudent
                     :id="skill.id"
