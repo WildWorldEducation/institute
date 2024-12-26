@@ -80,11 +80,6 @@ export default {
         JoystickControl
     },
     async mounted() {
-        const resImageData = await fetch('/skills/base-64-data');
-
-        const dataJSON = await resImageData.json();
-
-        this.base64Image = 'data:image/png;base64,' + dataJSON.result;
         // Check if store is empty,
         // or if grade level filter has been changed on the other tree (they need to be the same).
         if (this.skillTreeStore.verticalTreeUserSkills.length == 0) {
@@ -321,9 +316,7 @@ export default {
 
             // Draw nodes.
             this.context.beginPath();
-            console.log(
-                '===================================================================================='
-            );
+
             // Calculate max visible range
             this.visibleRangeX =
                 this.transformData.x + this.width * this.transformData.k;
@@ -353,11 +346,9 @@ export default {
                 }
                 // On the hidden canvas each rectangle gets a unique color.
                 this.hiddenCanvasContext.fillStyle = node.__pickColor;
-                let yellowColor = false;
-                if (transform.k >= 1.75) {
-                    yellowColor = this.checkingIfNodeInView(node);
+                if (this.checkingIfNodeInView(node)) {
+                    this.drawNode(node);
                 }
-                this.drawNode(node, yellowColor);
             }
 
             this.context.restore();
@@ -404,14 +395,7 @@ export default {
                     ctx1.strokeStyle = outlineColor;
                     ctx1.stroke();
                 }
-                if (yellow) {
-                    ctx1.fillStyle = '#f5f505';
-                    ctx1.fill();
-                    const outlineColor = this.hexBorderColor(node.data.level);
-                    ctx1.lineWidth = 2;
-                    ctx1.strokeStyle = outlineColor;
-                    ctx1.stroke();
-                }
+
                 // If not, just an outline.
                 else {
                     ctx1.lineWidth = 2;
@@ -471,11 +455,7 @@ export default {
                     ctx1.strokeText(showName, node.y + 15, node.x + 2);
                     ctx1.fillText(showName, node.y + 15, node.x + 2);
                     // Drawing Image
-                    if (
-                        this.scale > 0.7 &&
-                        this.base64Image &&
-                        node.data.skill_name === 'Pre-Punic Carthage'
-                    ) {
+                    if (this.scale >= 0.75 && this.base64Image) {
                         const img = new Image();
                         img.src = this.base64Image;
                         ctx1.drawImage(img, node.y, node.x, 20, 20);
@@ -1237,7 +1217,6 @@ export default {
                 this.transformData.y > realPositionY &&
                 realPositionY > this.visibleRangeY
             ) {
-                console.log(node.data.skill_name);
                 return true;
             }
             return false;
@@ -1299,6 +1278,66 @@ export default {
                 <div>Visible Y:</div>
                 <div>{{ visibleRangeY }}</div>
             </div>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 100 100"
+                width="100"
+                height="100"
+                fill="black"
+            >
+                <circle cx="50" cy="30" r="2" />
+                <circle cx="30" cy="70" r="2" />
+                <circle cx="70" cy="70" r="2" />
+                <circle cx="50" cy="50" r="2" />
+                <line
+                    x1="50"
+                    y1="30"
+                    x2="30"
+                    y2="70"
+                    stroke="black"
+                    stroke-width="1"
+                />
+                <line
+                    x1="50"
+                    y1="30"
+                    x2="70"
+                    y2="70"
+                    stroke="black"
+                    stroke-width="1"
+                />
+                <line
+                    x1="30"
+                    y1="70"
+                    x2="70"
+                    y2="70"
+                    stroke="black"
+                    stroke-width="1"
+                />
+                <line
+                    x1="50"
+                    y1="30"
+                    x2="50"
+                    y2="50"
+                    stroke="black"
+                    stroke-width="1"
+                />
+                <line
+                    x1="50"
+                    y1="50"
+                    x2="30"
+                    y2="70"
+                    stroke="black"
+                    stroke-width="1"
+                />
+                <line
+                    x1="50"
+                    y1="50"
+                    x2="70"
+                    y2="70"
+                    stroke="black"
+                    stroke-width="1"
+                />
+            </svg>
         </div>
     </div>
 </template>
