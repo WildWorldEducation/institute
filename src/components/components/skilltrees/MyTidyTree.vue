@@ -137,7 +137,7 @@ export default {
                 this.skill.type = node.data.type;
                 // For the collapsing nodes
                 this.skill.show_children = node.data.show_children;
-                this.skill.has_children = node.data.has_children;             
+                this.skill.has_children = node.data.has_children;
                 this.skill.x = node.x;
                 this.skill.y = node.y;
 
@@ -189,7 +189,7 @@ export default {
 
             // Node width and height
             // height
-            const dx = 24;
+            const dx = 34;
             // width
             const dy = 270;
 
@@ -311,7 +311,7 @@ export default {
                     node.data.show_children == 0 &&
                     node.data.type != 'sub'
                 ) {
-                    radius = 20;
+                    radius = 15;
                 }
 
                 ctx1.beginPath();
