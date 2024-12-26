@@ -28,7 +28,8 @@ export default {
             passwordVisible: false,
             // For Google sign up absolute API url.
             isProduction: import.meta.env.PROD,
-            showVideoModal: true
+            showVideoModal: true,
+            showModalVideo: true
         };
     },
     async created() {},
@@ -41,7 +42,7 @@ export default {
         document.head.appendChild(script);
 
         if (window.innerWidth < 800) {
-            this.showVideoModal = false;
+            this.showModalVideo = false;
         }
     },
     methods: {
@@ -340,6 +341,7 @@ export default {
             <div class="modal-content">
                 <!-- The video -->
                 <div
+                    v-if="showModalVideo"
                     id="modal-iframe"
                     class="embed-responsive embed-responsive-16by9"
                 >
@@ -416,6 +418,13 @@ export default {
 @media (max-width: 800px) {
     .intro-video {
         width: 100%;
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+        margin: 40% auto;
+        /* 40% from the top and centered */
+        width: 90%;
     }
 }
 
