@@ -120,7 +120,6 @@ export default {
             } else this.toggleChildren();
         },
         // Save the state of the skills list to DB
-        // // TODO.
         toggleChildren() {
             if (this.localShowChildren == 1) {
                 this.localShowChildren = 0;
@@ -338,7 +337,7 @@ export default {
                 @click.stop="toggleExpandAll"
             >
                 <svg
-                    v-if="localShowChildren"
+                    v-if="localShowChildren == 1"
                     height="18"
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
@@ -351,7 +350,7 @@ export default {
                     />
                 </svg>
                 <svg
-                    v-else
+                    v-else-if="localShowChildren == 0"
                     height="18"
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
@@ -372,7 +371,7 @@ export default {
             >
                 <!-- Collapse icon -->
                 <svg
-                    v-if="!localShowChildren"
+                    v-if="localShowChildren == 0"
                     height="18"
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
@@ -386,7 +385,7 @@ export default {
                 </svg>
 
                 <svg
-                    v-else
+                    v-else-if="localShowChildren == 1"
                     height="18"
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
