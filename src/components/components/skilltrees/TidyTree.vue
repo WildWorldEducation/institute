@@ -63,7 +63,15 @@ export default {
             clickMode: 'showPanel',
             base64Image:
                 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII',
-            transformData: null
+            transformData: {
+                x: 0,
+                y: 0,
+                k: 0
+            },
+            currentNodeX: 0,
+            currentNodeY: 0,
+            visibleRangeX: 0,
+            visibleRangeY: 0
         };
     },
     components: {
@@ -152,6 +160,8 @@ export default {
                 // we also have access to the data associated with it, which in
                 // this case is just its original index in the data array.
                 node.renderCol = node.__pickColor;
+                this.currentNodeX = node.x;
+                this.currentNodeY = node.y;
 
                 //Update the display with some data
                 this.skill.name = node.data.skill_name;
@@ -275,7 +285,7 @@ export default {
         },
         drawTree(transform) {
             this.nodes = this.root.descendants();
-
+            this.transformData = transform;
             // Zoom and pan.
             this.context.save();
             this.hiddenCanvasContext.save();
@@ -311,6 +321,15 @@ export default {
 
             // Draw nodes.
             this.context.beginPath();
+            console.log(
+                '===================================================================================='
+            );
+            // Calculate max visible range
+            this.visibleRangeX =
+                this.transformData.x + this.width * this.transformData.k;
+            this.visibleRangeY =
+                this.transformData.y - this.height * this.transformData.k;
+
             for (const node of this.nodes) {
                 if (node.renderCol) {
                     // Render clicked nodes in the color of their corresponding node
@@ -334,14 +353,17 @@ export default {
                 }
                 // On the hidden canvas each rectangle gets a unique color.
                 this.hiddenCanvasContext.fillStyle = node.__pickColor;
-
-                this.drawNode(node);
+                let yellowColor = false;
+                if (transform.k >= 1.75) {
+                    yellowColor = this.checkingIfNodeInView(node);
+                }
+                this.drawNode(node, yellowColor);
             }
 
             this.context.restore();
             this.hiddenCanvasContext.restore();
         },
-        drawNode(node) {
+        drawNode(node, yellow) {
             // Make sure the nodes have solid outlines
             this.context.setLineDash([]);
             let ctx1 = this.context;
@@ -376,6 +398,14 @@ export default {
                 // If mastered, make a solid shape.
                 if (node.data.is_mastered == 1) {
                     ctx1.fillStyle = skillColor;
+                    ctx1.fill();
+                    const outlineColor = this.hexBorderColor(node.data.level);
+                    ctx1.lineWidth = 2;
+                    ctx1.strokeStyle = outlineColor;
+                    ctx1.stroke();
+                }
+                if (yellow) {
+                    ctx1.fillStyle = '#f5f505';
                     ctx1.fill();
                     const outlineColor = this.hexBorderColor(node.data.level);
                     ctx1.lineWidth = 2;
@@ -1191,6 +1221,26 @@ export default {
                 this.userDetailsStore.userId +
                 '/skill-tree-filters';
             fetch(url, requestOptions);
+        },
+        checkingIfNodeInView(node) {
+            // Calculate max visible range
+            this.visibleRangeX =
+                this.transformData.x + this.width * this.transformData.k;
+            this.visibleRangeY =
+                this.transformData.y - this.height * this.transformData.k;
+            // Calculate real position of node with current scale
+            const realPositionX = node.y * this.transformData.k;
+            const realPositionY = -node.x * this.transformData.k;
+            if (
+                this.transformData.x < realPositionX &&
+                realPositionX < this.visibleRangeX &&
+                this.transformData.y > realPositionY &&
+                realPositionY > this.visibleRangeY
+            ) {
+                console.log(node.data.skill_name);
+                return true;
+            }
+            return false;
         }
     }
 };
@@ -1224,6 +1274,32 @@ export default {
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-lg-none" />
+        <div class="debug-console">
+            <div class="d-flex">
+                <div>Translate X:</div>
+                <div>{{ transformData.x }}</div>
+                ||
+                <div>Translate Y:</div>
+                <div>{{ transformData.y }}</div>
+                ||
+                <div>scale:</div>
+                <div>{{ transformData.k }}</div>
+            </div>
+            <div class="d-flex">
+                <div>Node X:</div>
+                <div>{{ currentNodeY * transformData.k }}</div>
+                ||
+                <div>Node Y:</div>
+                <div>{{ -currentNodeX * transformData.k }}</div>
+            </div>
+            <div class="d-flex">
+                <div>Visible X:</div>
+                <div>{{ visibleRangeX }}</div>
+                ||
+                <div>Visible Y:</div>
+                <div>{{ visibleRangeY }}</div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -1237,6 +1313,16 @@ export default {
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
+}
+
+.debug-console {
+    position: absolute;
+    left: 400px;
+    bottom: 100px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(127, 255, 212);
 }
 
 @keyframes rotation {
