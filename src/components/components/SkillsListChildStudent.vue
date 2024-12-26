@@ -338,7 +338,7 @@ export default {
                 @click.stop="toggleExpandAll"
             >
                 <svg
-                    v-if="showChildren"
+                    v-if="localShowChildren"
                     height="18"
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
@@ -372,7 +372,7 @@ export default {
             >
                 <!-- Collapse icon -->
                 <svg
-                    v-if="!showChildren"
+                    v-if="!localShowChildren"
                     height="18"
                     width="18"
                     xmlns="http://www.w3.org/2000/svg"
