@@ -36,7 +36,10 @@ export default {
             showTutorialTip2: false,
             showTutorialTip3: false,
             showTutorialTip4: false,
-            showTutorialTip5: false
+            showTutorialTip5: false,
+            showTutorialTip6: false,
+            showTutorialTip7: false,
+            showTutorialTip8: false
         };
     },
     created() {
@@ -131,6 +134,17 @@ export default {
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
                 this.showTutorialTip5 = true;
+            } else if (step == 5) {
+                this.showTutorialTip5 = false;
+                this.showTutorialTip6 = true;
+            } else if (step == 6) {
+                this.showTutorialTip6 = false;
+                this.showTutorialTip7 = true;
+            } else if (step == 7) {
+                this.showTutorialTip7 = false;
+                this.showTutorialTip8 = true;
+            } else if (step == 8) {
+                this.showTutorialTip8 = false;
             }
         }
     }
@@ -181,6 +195,21 @@ export default {
                         Print
                     </button>
                 </div>
+            </div>
+            <div
+                v-if="showTutorialTip6"
+                class="bg-light border border-dark rounded p-2 mb-2"
+            >
+                Use the search field to search for specific skills.
+                <button @click="progressTutorial(6)">next</button>
+            </div>
+            <div
+                v-else-if="showTutorialTip7"
+                class="bg-light border border-dark rounded p-2 mb-2"
+            >
+                Use the center button to center the skill tree, and the print
+                button to print a PDF.
+                <button @click="progressTutorial(7)">next</button>
             </div>
         </div>
         <div v-else class="alert alert-warning" role="alert">
@@ -663,7 +692,12 @@ export default {
 
     <!-- Introduction modal -->
     <div
-        v-if="showTutorialTip1 || showTutorialTip2 || showTutorialTip3"
+        v-if="
+            showTutorialTip1 ||
+            showTutorialTip2 ||
+            showTutorialTip3 ||
+            showTutorialTip8
+        "
         class="modal"
     >
         <div class="modal-content">
@@ -687,6 +721,12 @@ export default {
                         next
                     </button>
                 </p>
+            </div>
+
+            <div v-if="showTutorialTip8">
+                When you're ready, try another page by clicking one in the
+                navigation bar at the top right.
+                <button @click="progressTutorial(8)">next</button>
             </div>
         </div>
     </div>
