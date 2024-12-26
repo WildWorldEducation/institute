@@ -36,7 +36,7 @@ export default {
             showTutorialTip2: false,
             showTutorialTip3: false,
             showTutorialTip4: false,
-            showTutorialTip5: false, 
+            showTutorialTip5: false
         };
     },
     created() {
@@ -206,109 +206,118 @@ export default {
         Not available on phone view -->
     <div
         v-if="sessionDetailsStore.isLoggedIn"
-        class="tablet-and-up-legend position-absolute bottom-legend-div d-flex"
+        class="tablet-and-up-legend position-absolute bottom-legend-div"
     >
-        <div v-if="isGradeFilter" class="legend">
-            <!-- Grade buttons -->
+        <div
+            v-if="showTutorialTip5"
+            class="bg-light border border-dark rounded p-2 mb-2"
+        >
+            Use the buttons below to filter the skills by level.
+            <button @click="progressTutorial(5)">next</button>
+        </div>
+        <div class="d-flex">
+            <div v-if="isGradeFilter" class="legend">
+                <!-- Grade buttons -->
+                <button
+                    class="btn grade-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'grade_school'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'grade_school';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'middle_school'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'middle_school';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'high_school'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'high_school';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'college'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'college';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.userDetailsStore.gradeFilter == 'phd'
+                    }"
+                    @click="
+                        this.userDetailsStore.gradeFilter = 'phd';
+                        $refs.childComponent.filter();
+                    "
+                >
+                    PHD
+                </button>
+            </div>
             <button
-                class="btn grade-school me-2"
-                :class="{
-                    'active-grade-filter':
-                        this.userDetailsStore.gradeFilter == 'grade_school'
-                }"
-                @click="
-                    this.userDetailsStore.gradeFilter = 'grade_school';
-                    $refs.childComponent.filter();
-                "
+                class="btn switch-btn me-2"
+                @click="isGradeFilter = !isGradeFilter"
             >
-                Grade school
-            </button>
-            <button
-                class="btn middle-school me-2"
-                :class="{
-                    'active-grade-filter':
-                        this.userDetailsStore.gradeFilter == 'middle_school'
-                }"
-                @click="
-                    this.userDetailsStore.gradeFilter = 'middle_school';
-                    $refs.childComponent.filter();
-                "
-            >
-                Middle school
-            </button>
-            <button
-                class="btn high-school me-2"
-                :class="{
-                    'active-grade-filter':
-                        this.userDetailsStore.gradeFilter == 'high_school'
-                }"
-                @click="
-                    this.userDetailsStore.gradeFilter = 'high_school';
-                    $refs.childComponent.filter();
-                "
-            >
-                High school
-            </button>
-            <button
-                class="btn college me-2"
-                :class="{
-                    'active-grade-filter':
-                        this.userDetailsStore.gradeFilter == 'college'
-                }"
-                @click="
-                    this.userDetailsStore.gradeFilter = 'college';
-                    $refs.childComponent.filter();
-                "
-            >
-                College
-            </button>
-            <button
-                class="btn phd me-2"
-                :class="{
-                    'active-grade-filter':
-                        this.userDetailsStore.gradeFilter == 'phd'
-                }"
-                @click="
-                    this.userDetailsStore.gradeFilter = 'phd';
-                    $refs.childComponent.filter();
-                "
-            >
-                PHD
+                <!-- Plus sign -->
+                <svg
+                    v-if="!isGradeFilter"
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                    />
+                </svg>
+                <!-- Minus sign -->
+                <svg
+                    v-else
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                    />
+                </svg>
             </button>
         </div>
-        <button
-            class="btn switch-btn me-2"
-            @click="isGradeFilter = !isGradeFilter"
-        >
-            <!-- Plus sign -->
-            <svg
-                v-if="!isGradeFilter"
-                width="18"
-                height="18"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-            >
-                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                <path
-                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                />
-            </svg>
-            <!-- Minus sign -->
-            <svg
-                v-else
-                width="18"
-                height="18"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-            >
-                <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                <path
-                    d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
-                />
-            </svg>
-        </button>
     </div>
     <!-- Left root subject filters  -->
     <div
@@ -451,6 +460,7 @@ export default {
                 </svg>
             </button>
         </div>
+        <!-- Tooltip -->
         <div
             v-if="showTutorialTip4"
             class="bg-light border border-dark rounded p-2"
