@@ -35,7 +35,8 @@ export default {
             showTutorialTip1: true,
             showTutorialTip2: false,
             showTutorialTip3: false,
-            showTutorialTip4: false
+            showTutorialTip4: false,
+            showTutorialTip5: false, 
         };
     },
     created() {
@@ -128,6 +129,8 @@ export default {
                 this.showTutorialTip3 = false;
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
+                this.showTutorialTip4 = false;
+                this.showTutorialTip5 = true;
             }
         }
     }
@@ -448,8 +451,12 @@ export default {
                 </svg>
             </button>
         </div>
-        <div v-if="showTutorialTip4">
-            <p>Use the buttons on the left to filter the skills by subject.</p>
+        <div
+            v-if="showTutorialTip4"
+            class="bg-light border border-dark rounded p-2"
+        >
+            Use the buttons on the left to filter the skills by subject.<br />
+            <button @click="progressTutorial(4)">next</button>
         </div>
     </div>
 
