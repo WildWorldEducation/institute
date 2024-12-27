@@ -27,7 +27,7 @@ export default {
             // flag to make watcher do not react when user choose a result
             updateChooseResult: false,
             nameList: [],
-            showTutorialTip1: true,
+            showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
             showTutorialTip4: false,
@@ -39,6 +39,11 @@ export default {
         SkillTreeSearchBar
     },
     async created() {
+        // Tooltips
+        if (localStorage.getItem('isCollapsibleTreeCompleted') != 'true') {
+            this.showTutorialTip1 = true;
+        }
+
         // Check if regular or instructor mode.
         if (typeof this.studentId == 'string') {
             this.instructorMode = true;
@@ -74,6 +79,8 @@ export default {
                 this.showTutorialTip5 = true;
             } else if (step == 5) {
                 this.showTutorialTip5 = false;
+                // Store
+                localStorage.setItem('isCollapsibleTreeCompleted', 'true');
             }
         }
     }

@@ -21,10 +21,15 @@ export default {
             lastChooseResult: '',
             showResult: false,
             showConfirmModal: false,
-            showTutorialTip1: true
+            showTutorialTip1: false
         };
     },
     created() {
+        // Tooltips
+        if (localStorage.getItem('isMyTreeTutorialCompleted') != 'true') {
+            this.showTutorialTip1 = true;
+        }
+
         for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
             if (this.userDetailsStore.subjectFilters[i] == 'Language') {
                 this.isLanguage = true;
@@ -87,6 +92,8 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
+                // Store
+                localStorage.setItem('isMyTreeTutorialCompleted', 'true');
             }
         }
     }

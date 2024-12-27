@@ -23,10 +23,15 @@ export default {
             isLife: false,
             isDangerousIdeas: false,
             showMobileFiltersModal: false,
-            showTutorialTip1: true
+            showTutorialTip1: false
         };
     },
     created() {
+        // Tooltips
+        if (localStorage.getItem('isRadialTreeTutorialCompleted') != 'true') {
+            this.showTutorialTip1 = true;
+        }
+
         for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
             if (this.userDetailsStore.subjectFilters[i] == 'Language') {
                 this.isLanguage = true;
@@ -92,6 +97,9 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
+
+                // Store
+                localStorage.setItem('isRadialTreeTutorialCompleted', 'true');
             }
         }
     }

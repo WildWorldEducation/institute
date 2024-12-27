@@ -45,7 +45,12 @@ export default {
     created() {
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn == true) {
-            this.showTutorialTip1 = true;
+            if (
+                localStorage.getItem('isFullVerticalTreeTutorialCompleted') !=
+                'true'
+            ) {
+                this.showTutorialTip1 = true;
+            }
         }
 
         // Subject filters
@@ -151,6 +156,11 @@ export default {
                 this.showTutorialTip8 = true;
             } else if (step == 8) {
                 this.showTutorialTip8 = false;
+                // Store
+                localStorage.setItem(
+                    'isFullVerticalTreeTutorialCompleted',
+                    'true'
+                );
             }
         }
     }
