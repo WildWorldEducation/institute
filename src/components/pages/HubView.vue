@@ -203,7 +203,7 @@ export default {
                     <!-- Tooltip -->
                     <div
                         v-if="showTutorialTip2"
-                        class="bg-light border border-dark rounded p-2 mb-2"
+                        class="info-panel modal-content bg-light rounded p-2 mb-2"
                     >
                         <p>
                             This section shows your available skills. These are
@@ -246,7 +246,7 @@ export default {
                     <!-- Tooltip -->
                     <div
                         v-if="showTutorialTip3"
-                        class="bg-light border border-dark rounded p-2 mb-2"
+                        class="info-panel modal-content bg-light rounded p-2 mb-2"
                     >
                         <p>
                             This section shows your the last 5 skill pages you
@@ -271,7 +271,7 @@ export default {
                     <!-- Tooltip -->
                     <div
                         v-if="showTutorialTip4"
-                        class="bg-light border border-dark rounded p-2 mb-2"
+                        class="info-panel modal-content bg-light rounded p-2 mb-2"
                     >
                         <p>This section shows any goals you might have made.</p>
                         <p>
@@ -282,7 +282,7 @@ export default {
                             class="btn primary-btn"
                             @click="progressTutorial(4)"
                         >
-                            next
+                            close
                         </button>
                     </div>
                 </div>
@@ -309,16 +309,27 @@ export default {
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>This is your hub page.</p>
-
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
                 </button>
             </div>
         </div>
     </div>
+    <div
+        v-if="showTutorialTip2 || showTutorialTip3 || showTutorialTip4"
+        class="modal"
+    ></div>
 </template>
 
 <style>
+/* Tooltips */
+.info-panel {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    border-style: solid;
+    z-index: 2001;
+}
+
 .hub-component {
     background-color: white;
     border-radius: 10px;
@@ -350,11 +361,11 @@ export default {
 /* Modal Content/Box */
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
-    /* 15% from the top and centered */
+    margin: 5% auto;
+    /* 5% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 520px;
+    max-width: 520px;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
 }

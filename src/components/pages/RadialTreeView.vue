@@ -22,7 +22,8 @@ export default {
             isHistory: false,
             isLife: false,
             isDangerousIdeas: false,
-            showMobileFiltersModal: false
+            showMobileFiltersModal: false,
+            showTutorialTip1: true
         };
     },
     created() {
@@ -87,6 +88,11 @@ export default {
             if (this.isLife) this.userDetailsStore.subjectFilters.push('Life');
             if (this.isDangerousIdeas)
                 this.userDetailsStore.subjectFilters.push('Dangerous Ideas');
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+            }
         }
     }
 };
@@ -623,6 +629,19 @@ export default {
                     PHD
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Introduction modal -->
+    <div v-if="showTutorialTip1" class="modal">
+        <div class="modal-content">
+            <p>
+                This page is like the Full Tree, but the skills are arranged in
+                a radial format.
+            </p>
+            <button class="btn primary-btn" @click="progressTutorial(1)">
+                close
+            </button>
         </div>
     </div>
 </template>
