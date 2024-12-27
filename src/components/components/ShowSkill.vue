@@ -492,7 +492,8 @@ export default {
                                 skill.type != 'domain' &&
                                 sessionDetailsStore.isLoggedIn &&
                                 isMastered == false &&
-                                goalExists == false
+                                goalExists == false &&
+                                userDetailsStore.role == 'student'
                             "
                             class="btn primary-btn"
                             @click="confirmCreateGoal(this.skill)"
