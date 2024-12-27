@@ -60,7 +60,9 @@ export default {
             isSkillLoaded: false,
             randomNum: 0,
             goalSteps: [],
-            goalExists: false
+            goalExists: false,
+            showTutorialTip1: true,
+            showTutorialTip2: true
         };
     },
     components: {
@@ -85,8 +87,6 @@ export default {
             // // Load the skill data
             await this.showSkillStore.findSkill(this.skillUrl);
             this.skill = this.showSkillStore.skill;
-            console.log('skill is: ');
-            console.log(this.skill);
             this.skillId = this.skill.id;
 
             // Meta title for SEO
@@ -302,6 +302,15 @@ export default {
             fetch(url, requestOptions).then(() => {
                 alert('A goal for this skill has been added on the Hub page.');
             });
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            }
         }
     },
     /**
@@ -447,7 +456,7 @@ export default {
                         <router-link
                             v-if="sessionDetailsStore.isLoggedIn"
                             :to="'/skills/edit/' + skillUrl"
-                            class="btn primary-btn me-1"
+                            class="edit-btn btn primary-btn me-1"
                             ><span v-if="isMobileCheck > 576">Edit &nbsp;</span>
                             <!-- Pencil icon -->
                             <svg
@@ -747,9 +756,28 @@ export default {
         contentType="skill"
         :contentId="skillId"
     />
+
+    <!-- Tooltip modal -->
+    <div v-if="showTutorialTip1" class="modal">
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>
+                    This page is where you can learn about, and take a test to
+                    try to master, this skill.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
+.edit-btn {
+    display: flex;
+}
+
 .assessment-btn {
     height: auto;
     max-height: 48px;
