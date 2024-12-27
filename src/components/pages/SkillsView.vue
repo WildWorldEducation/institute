@@ -63,7 +63,7 @@ export default {
         <div class="position-absolute legend-div">
             <div id="mobile-legend">
                 <div v-if="instructorMode" class="col-lg-9">
-                    <h1 class="heading h4">Student: {{ studentName }}</h1>
+                    <h1 class="heading h4">{{ studentName }}</h1>
                 </div>
                 <div class="search-mobile-row">
                     <!-- Search feature -->
@@ -182,7 +182,7 @@ export default {
                         </div>
                     </div>
                     <div v-else-if="instructorMode" class="col-lg-9">
-                        <h1 class="heading">Student: {{ studentName }}</h1>
+                        <h1 class="heading">{{ studentName }}</h1>
                     </div>
 
                     <div class="col-lg-3">

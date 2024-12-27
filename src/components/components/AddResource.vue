@@ -95,7 +95,7 @@ export default {
                 title="add this resource to it associated skill"
                 class="d-flex flex-row-reverse"
             >
-                <button class="btn secondary-btn" @click="Submit()">
+                <button class="btn primary-btn" @click="Submit()">
                     Submit
                 </button>
             </div>
