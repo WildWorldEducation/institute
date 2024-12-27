@@ -423,7 +423,6 @@ p {
     font-weight: 500;
     font-size: 16px;
     line-height: 24px;
-    display: flex;
     align-items: center;
     max-width: fit-content;
     max-height: 40px;
