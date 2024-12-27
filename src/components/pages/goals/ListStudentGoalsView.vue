@@ -91,11 +91,12 @@ export default {
 
 <template>
     <div class="container p-3 bg-light rounded">
-        <h1 class="heading">{{ studentName }}: Goal Progress</h1>
+        <h1 class="heading">{{ studentName }}</h1>
+        <h2 class="secondary-heading">Goal Progress</h2>
         <div id="goal-list">
             <div v-for="goal in goals">
                 <div class="d-flex">
-                    <h2 class="goal secondary-heading h4">
+                    <h2 class="goal h4">
                         {{ goal.name }}
 
                         <!-- Expand/Collapse button -->

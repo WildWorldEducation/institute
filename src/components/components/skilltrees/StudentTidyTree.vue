@@ -145,80 +145,9 @@ export default {
     },
     methods: {
         getAlgorithm() {
-            var skillsWithSubSkillsMoved = [];
-            skillsWithSubSkillsMoved = JSON.parse(
-                JSON.stringify(this.skill.children)
-            );
-
-            // Duplicate super skill node, and make second one a child of the first.
-            // Put all the subskills of the node in the second version.
-            // This is an attempt to show the subskills using only D3.
-            // Other options, such as having them circle around the super skill,
-            // like the D3 and Pixi version, were too complex.
-            function moveSubSkills(parentChildren) {
-                var i = parentChildren.length;
-                while (i--) {
-                    // If the skill is a super skill, and not an "end" super skill.
-                    if (
-                        parentChildren[i].type == 'super' &&
-                        parentChildren[i].position != 'end'
-                    ) {
-                        // Separate the child nodes.
-                        var subSkills = [];
-                        var regularChildSkills = [];
-                        for (
-                            let j = 0;
-                            j < parentChildren[i].children.length;
-                            j++
-                        ) {
-                            if (parentChildren[i].children[j].type == 'sub') {
-                                subSkills.push(parentChildren[i].children[j]);
-                            } else {
-                                regularChildSkills.push(
-                                    parentChildren[i].children[j]
-                                );
-                            }
-                        }
-
-                        // Create a new child node, with the subskills in it.
-                        var superSkillEndNode = {
-                            skill_name: parentChildren[i].skill_name,
-                            type: 'super',
-                            position: 'end',
-                            children: subSkills
-                        };
-
-                        // Empty the child nodes.
-                        parentChildren[i].children = [];
-                        // Add the new node.
-                        parentChildren[i].children.push(superSkillEndNode);
-                        // Add the other child nodes, excluding subskills.
-                        for (let j = 0; j < regularChildSkills.length; j++) {
-                            parentChildren[i].children.push(
-                                regularChildSkills[j]
-                            );
-                        }
-                    }
-
-                    if (typeof parentChildren[i] !== 'undefined') {
-                        /*
-                         * Run the above function again recursively.
-                         */
-                        if (
-                            parentChildren[i].children &&
-                            Array.isArray(parentChildren[i].children) &&
-                            parentChildren[i].children.length > 0
-                        )
-                            moveSubSkills(parentChildren[i].children);
-                    }
-                }
-            }
-
-            moveSubSkills(skillsWithSubSkillsMoved);
-
             this.data = {
                 skill_name: 'My skills',
-                children: skillsWithSubSkillsMoved
+                children: this.skill.children
             };
 
             // Compute the tree height; this approach will allow the height of the
@@ -334,7 +263,14 @@ export default {
             // console.log(node.data.is_mastered);
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
-                ctx1.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                // Node size
+                let radius;
+                if (node.data.type == 'sub') {
+                    radius = 7.5;
+                } else {
+                    radius = 10;
+                }
+                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
                 // get the color associate with skill level
                 const skillColor = node.data.level
                     ? this.hexColor(node.data.level)
@@ -373,6 +309,11 @@ export default {
                     ctx1.fillStyle = '#000';
                     ctx1.font = 'normal';
                     ctx1.direction = 'ltr';
+                    // Font size
+                    ctx1.font = '12px Arial';
+                    if (node.data.type == 'sub') {
+                        ctx1.font = '10px Arial';
+                    }
                     ctx1.strokeText(
                         node.data.skill_name,
                         node.y + 15,
@@ -428,8 +369,18 @@ export default {
                 .context(this.context);
 
             // If skill is mastered.
-            if (link.target.data.is_mastered == 1) this.context.lineWidth = 4;
-            else this.context.lineWidth = 1;
+            if (link.target.data.is_mastered == 1) {
+                this.context.lineWidth = 4;
+                this.context.strokeStyle = '#8d6ce7';
+            } else {
+                this.context.lineWidth = 2;
+                // Determine colour of links based on user's theme
+                if (this.userDetailsStore.theme == 'original')
+                    this.context.strokeStyle = '#000';
+                else if (this.userDetailsStore.theme == 'apprentice') {
+                    this.context.strokeStyle = '#000';
+                } else this.context.strokeStyle = '#fff';
+            }
 
             if (
                 (link.source.data.type == 'super' &&
@@ -443,13 +394,6 @@ export default {
 
             this.context.beginPath();
             linkGenerator(link);
-            // Determine colour of links based on user's theme
-            if (this.userDetailsStore.theme == 'original')
-                this.context.strokeStyle = '#000';
-            else if (this.userDetailsStore.theme == 'apprentice') {
-                this.context.strokeStyle = '#950200';
-                this.context.lineWidth = 3;
-            } else this.context.strokeStyle = '#fff';
             this.context.stroke();
         },
         genColor() {

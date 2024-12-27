@@ -86,7 +86,7 @@ export default {
         <div class="position-absolute legend-div">
             <div id="mobile-legend">
                 <div v-if="instructorMode" class="col-lg-9">
-                    <h1 class="heading h4">Student: {{ studentName }}</h1>
+                    <h1 class="heading h4">{{ studentName }}</h1>
                 </div>
                 <!-- Add skill button -->
                 <router-link class="btn primary-btn me-2" to="/skills/add"
