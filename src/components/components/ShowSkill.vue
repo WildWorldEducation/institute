@@ -61,7 +61,7 @@ export default {
             randomNum: 0,
             goalSteps: [],
             goalExists: false,
-            showTutorialTip1: true,
+            showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
             showTutorialTip4: false,
@@ -75,6 +75,15 @@ export default {
     },
 
     async created() {
+        // Turn this on only if user is logged in.
+        if (this.sessionDetailsStore.isLoggedIn == true) {
+            if (
+                localStorage.getItem('isSkillPageTutorialCompleted') != 'true'
+            ) {
+                this.showTutorialTip1 = true;
+            }
+        }
+
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
@@ -325,6 +334,8 @@ export default {
                 this.showTutorialTip6 = true;
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
+                // Store
+                localStorage.setItem('isSkillPageTutorialCompleted', 'true');
             }
         }
     },
