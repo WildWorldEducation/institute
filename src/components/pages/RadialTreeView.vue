@@ -647,7 +647,7 @@ export default {
                 This page is like the Full Tree, but the skills are arranged in
                 a radial format.
             </p>
-            <button class="btn primary-btn" @click="progressTutorial(1)">
+            <button class="btn primary-btn ms-0" @click="progressTutorial(1)">
                 close
             </button>
         </div>
@@ -795,13 +795,17 @@ export default {
     margin: auto;
 }
 
+.tooltip .btn {
+    /* margin: inherit; */
+}
+
 /* Modals */
 .modal {
     display: block;
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 1;
+    z-index: 2000;
     /* Sit on top */
     left: 0;
     top: 0;

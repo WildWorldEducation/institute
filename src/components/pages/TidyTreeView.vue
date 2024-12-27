@@ -246,7 +246,7 @@ export default {
             </div>
             <div
                 v-else-if="showTutorialTip7"
-                class="info-panel bg-light rounded p-2 mb-2 float-right"
+                class="info-panel bg-light rounded p-2 mb-2 mt-2 float-right"
             >
                 <p>
                     Use the center button to center the skill tree,<br />
