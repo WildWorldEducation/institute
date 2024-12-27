@@ -65,7 +65,8 @@ export default {
             showTutorialTip2: false,
             showTutorialTip3: false,
             showTutorialTip4: false,
-            showTutorialTip5: false
+            showTutorialTip5: false,
+            showTutorialTip6: false
         };
     },
     components: {
@@ -319,6 +320,11 @@ export default {
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
                 this.showTutorialTip5 = true;
+            } else if (step == 5) {
+                this.showTutorialTip5 = false;
+                this.showTutorialTip6 = true;
+            } else if (step == 6) {
+                this.showTutorialTip6 = false;
             }
         }
     },
@@ -820,7 +826,10 @@ export default {
     />
 
     <!-- Tooltip modal -->
-    <div v-if="showTutorialTip1" class="modal">
+    <div
+        v-if="showTutorialTip1 || showTutorialTip5 || showTutorialTip6"
+        class="modal"
+    >
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>
@@ -829,6 +838,25 @@ export default {
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip5">
+                <p>
+                    The "Requirements for mastery" section explains everything
+                    one needs to learn to master the skill.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip6">
+                <p>
+                    At the bottom of the page, in the "Best Places To Learn
+                    This" section, you can find various sites and resources to
+                    learn about this topic.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(6)">
+                    close
                 </button>
             </div>
         </div>
@@ -996,6 +1024,17 @@ export default {
 
     .modal-btn {
         width: fit-content;
+    }
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90% !important;
+
+        margin: auto;
+        margin-top: 30%;
     }
 }
 </style>
