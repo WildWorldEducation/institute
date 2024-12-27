@@ -217,8 +217,8 @@ export default {
                 class="info-panel bg-light rounded p-2 mb-2 float-right"
             >
                 <p>
-                    Use the center button to center the skill tree, and the
-                    print button to print a PDF.
+                    Use the center button to center the skill tree,<br />
+                    and the print button to print a PDF.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(7)">
                     next
@@ -739,8 +739,17 @@ export default {
             </div>
             <div v-else-if="showTutorialTip3">
                 <p>
-                    Use the mouse to navigate around. Zoom in and out using the
-                    mousewheel.
+                    On a computer, use the mouse to navigate around. Zoom in and
+                    out using the mousewheel.
+                </p>
+                <p>
+                    On a tablet or phone, navigate by dragging the screen, or
+                    use the thumbstick at the bottom right. Zoom in and out by
+                    pinching and zooming.
+                </p>
+                <p>
+                    There is also a slider bar at the bottom right, that ca be
+                    used for zooming.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
                     next
