@@ -701,26 +701,13 @@ export default {
     >
         <!-- Confirm Modal -->
         <div class="modal-content asking-modal">
-            <div class="d-flex gap-4">
-                <!-- Warn Triangle Icon -->
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    fill="grey"
-                    width="45"
-                    height="45"
-                >
-                    <path
-                        d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
-                    />
-                </svg>
-                <p>URL copied to clipboard</p>
-            </div>
+            <p>URL copied to clipboard</p>
+
             <!-- Buttons row -->
             <div class="d-flex justify-content-end gap-2">
                 <button
                     type="button"
-                    class="btn secondary-btn modal-btn"
+                    class="btn primary-btn modal-btn"
                     @click="showConfirmModal = false"
                 >
                     <span class="d-none d-md-block"> OK </span>
@@ -792,7 +779,7 @@ export default {
 #skill-info-container {
     background-color: #f2edff;
     border-radius: 12px;
-    padding: 30px;
+    padding: 10px 30px;
 }
 
 .domain {
@@ -835,7 +822,7 @@ export default {
     #skill-info-container {
         background-color: #f2edffcc;
         border-radius: 12px;
-        padding: 20px;
+        padding: 10px 20px;
     }
 
     .mastery-requirements {
@@ -890,7 +877,7 @@ export default {
     }
 
     #skill-info-container {
-        padding: 15px;
+        padding: 5px 15px;
     }
 
     .modal-btn {
