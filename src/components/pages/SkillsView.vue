@@ -29,9 +29,13 @@ export default {
             nameList: [],
             showTutorialTip1: false,
             showTutorialTip2: false,
+            showMobileTutorialTip2: false,
             showTutorialTip3: false,
+            showMobileTutorialTip3: false,
             showTutorialTip4: false,
-            showTutorialTip5: false
+            showMobileTutorialTip4: false,
+            showTutorialTip5: false,
+            showMobileTutorialTip5: false
         };
     },
     components: {
@@ -67,18 +71,41 @@ export default {
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                this.showTutorialTip2 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip2 = true;
+                } else {
+                    this.showMobileTutorialTip2 = true;
+                }
             } else if (step == 2) {
-                this.showTutorialTip2 = false;
-                this.showTutorialTip3 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip2 = false;
+                    this.showTutorialTip3 = true;
+                } else {
+                    this.showMobileTutorialTip2 = false;
+                    this.showMobileTutorialTip3 = true;
+                }
             } else if (step == 3) {
-                this.showTutorialTip3 = false;
-                this.showTutorialTip4 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip3 = false;
+                    this.showTutorialTip4 = true;
+                } else {
+                    this.showMobileTutorialTip3 = false;
+                    this.showMobileTutorialTip4 = true;
+                }
             } else if (step == 4) {
-                this.showTutorialTip4 = false;
-                this.showTutorialTip5 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip4 = false;
+                    this.showTutorialTip5 = true;
+                } else {
+                    this.showMobileTutorialTip4 = false;
+                    this.showMobileTutorialTip5 = true;
+                }
             } else if (step == 5) {
-                this.showTutorialTip5 = false;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip5 = false;
+                } else {
+                    this.showMobileTutorialTip5 = false;
+                }
                 // Store
                 localStorage.setItem('isCollapsibleTreeCompleted', 'true');
             }
@@ -311,7 +338,16 @@ export default {
 
     <!-- Tooltips -->
     <!-- Introduction modal -->
-    <div v-if="showTutorialTip1" class="modal">
+    <div
+        v-if="
+            showTutorialTip1 ||
+            showMobileTutorialTip2 ||
+            showMobileTutorialTip3 ||
+            showMobileTutorialTip4 ||
+            showMobileTutorialTip5
+        "
+        class="modal"
+    >
         <div class="modal-content">
             <div v-if="showTutorialTip1">
                 <p>This page is another view of your skill tree closed.</p>
@@ -319,6 +355,47 @@ export default {
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
+                </button>
+            </div>
+            <div v-else-if="showMobileTutorialTip2">
+                <p>
+                    Greyed out nodes are locked. You need to unlock them by
+                    passing the quizzes of the skills that come before them.
+                </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showMobileTutorialTip3">
+                <p>
+                    Sad face icons mean that the skill has not yet been
+                    mastered. When you master a skill, that face will become
+                    happy.
+                </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showMobileTutorialTip4">
+                <p>Some nodes have a plus or minus sign.</p>
+                <p>
+                    This indicates that the skill contains mini-skills that need
+                    to be mastered, before mastery of the main skill can be
+                    attempted.
+                </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showMobileTutorialTip5">
+                <p>Click on a skill node to go to the page for that skill.</p>
+                <p>Remember, you can only attempt to master unlocked skills.</p>
+
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    close
                 </button>
             </div>
         </div>
@@ -624,5 +701,14 @@ export default {
     width: 520px;
     font-size: 18px;
     /* Could be more or less, depending on screen size */
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 30%;
+    }
 }
 </style>
