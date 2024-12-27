@@ -26,7 +26,12 @@ export default {
             chooseResult: null,
             // flag to make watcher do not react when user choose a result
             updateChooseResult: false,
-            nameList: []
+            nameList: [],
+            showTutorialTip1: true,
+            showTutorialTip2: false,
+            showTutorialTip3: false,
+            showTutorialTip4: false,
+            showTutorialTip5: false
         };
     },
     components: {
@@ -53,6 +58,23 @@ export default {
         },
         findNode(skillName) {
             this.$refs.skillList.findNode(skillName);
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+                this.showTutorialTip4 = true;
+            } else if (step == 4) {
+                this.showTutorialTip4 = false;
+                this.showTutorialTip5 = true;
+            } else if (step == 5) {
+                this.showTutorialTip5 = false;
+            }
         }
     }
 };
@@ -169,8 +191,9 @@ export default {
                                 <path
                                     d="M6.34811 20.0423L6.34811 13.6494L-0.0358702 13.6583C-0.320945 13.6579 -0.594203 13.5444 -0.795782 13.3428C-0.997361 13.1412 -1.11082 12.868 -1.11132 12.5829L-1.11729 7.41477C-1.1168 7.1297 -1.00334 6.85644 -0.801757 6.65486C-0.600179 6.45328 -0.326921 6.33982 -0.0418461 6.33933L6.3481 6.34231L6.3481 -0.0506238C6.34659 -0.193451 6.3736 -0.335145 6.42756 -0.467396C6.48152 -0.599646 6.56134 -0.719794 6.66234 -0.820794C6.76334 -0.921794 6.88349 -1.00161 7.01574 -1.05557C7.14799 -1.10953 7.28969 -1.13655 7.43251 -1.13503L12.5827 -1.12308C12.8678 -1.12259 13.141 -1.00913 13.3426 -0.807549C13.5442 -0.60597 13.6577 -0.332713 13.6582 -0.047637L13.6552 6.34231L20.0481 6.34231C20.3325 6.34248 20.6052 6.45552 20.8063 6.65661C21.0074 6.8577 21.1204 7.13039 21.1206 7.41477L21.1325 12.565C21.1324 12.8494 21.0193 13.122 20.8182 13.3231C20.6171 13.5242 20.3444 13.6373 20.0601 13.6374L13.6552 13.6494L13.6641 20.0334C13.6636 20.3184 13.5502 20.5917 13.3486 20.7933C13.147 20.9948 12.8738 21.1083 12.5887 21.1088L7.43252 21.1267C7.28969 21.1282 7.148 21.1012 7.01575 21.0473C6.88349 20.9933 6.76335 20.9135 6.66235 20.8125C6.56135 20.7115 6.48153 20.5913 6.42757 20.4591C6.37361 20.3268 6.34659 20.1851 6.34811 20.0423Z"
                                     fill="white"
-                                /></svg
-                        ></router-link>
+                                />
+                            </svg>
+                        </router-link>
                         <!-- Skill filters button -->
                         <div
                             v-if="userDetailsStore.role == 'admin'"
@@ -194,14 +217,122 @@ export default {
                         />
                     </div>
                 </div>
+                <!-- Tooltips -->
+                <div
+                    v-if="
+                        showTutorialTip2 ||
+                        showTutorialTip3 ||
+                        showTutorialTip4 ||
+                        showTutorialTip5
+                    "
+                    class="info-panel me-4 mt-1"
+                >
+                    <div
+                        v-if="showTutorialTip2"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>
+                            Greyed out nodes are locked. You need to unlock them
+                            by passing the quizzes of the skills that come
+                            before them.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(2)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-else-if="showTutorialTip3"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>
+                            Sad face icons mean that the skill has not yet been
+                            mastered. When you master a skill, that face will
+                            become happy.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(3)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-else-if="showTutorialTip4"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>
+                            This indicates that the skill contains mini-skills
+                            that need to be mastered, before mastery of the main
+                            skill can be attempted.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(4)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-else-if="showTutorialTip5"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>
+                            Click on a skill node to go to the page for that
+                            skill.
+                        </p>
+                        <p>
+                            Remember, you can only attempt to master unlocked
+                            skills.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(5)"
+                        >
+                            close
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <SkillsListParent ref="skillList" />
+
+    <!-- Tooltips -->
+    <!-- Introduction modal -->
+    <div v-if="showTutorialTip1" class="modal">
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>This page is another view of your skill tree closed.</p>
+                <p>Click on the down arrows to expand the skills.</p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
+/* Tooltips */
+.info-panel {
+    position: relative;
+    z-index: 2;
+    float: right;
+    max-width: 300px;
+}
+
+.info-text {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    border-style: solid;
+}
+
 /*
  * Filters 
  */
@@ -452,5 +583,39 @@ export default {
     .search-bar {
         margin-top: 5px;
     }
+}
+
+/* Modals */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 2000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
 }
 </style>

@@ -36,7 +36,12 @@ export default {
         return {
             assessments: [],
             questions: [],
-            studentIds: []
+            studentIds: [],
+            showTutorialTip1: true,
+            showTutorialTip2: false,
+            showTutorialTip3: false,
+            showTutorialTip4: false,
+            showTutorialTip5: false
         };
     },
     components: {
@@ -151,6 +156,23 @@ export default {
             );
             const data = await result.json();
             this.questions = data;
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+                this.showTutorialTip4 = true;
+            } else if (step == 4) {
+                this.showTutorialTip4 = false;
+                this.showTutorialTip5 = true;
+            } else if (step == 5) {
+                this.showTutorialTip5 = false;
+            }
         }
     }
 };
@@ -178,11 +200,32 @@ export default {
                         v-else-if="userDetailsStore.role == 'instructor'"
                         :assessments="assessments"
                     />
+                    <!-- Tooltip -->
+                    <div
+                        v-if="showTutorialTip2"
+                        class="bg-light border border-dark rounded p-2 mb-2"
+                    >
+                        <p>
+                            This section shows your available skills. These are
+                            the skills that you can try to master by taking a
+                            quiz.
+                        </p>
+                        <p>
+                            Once you master a skill, more skills will get
+                            unlocked.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(2)"
+                        >
+                            next
+                        </button>
+                    </div>
                 </div>
             </div>
             <!-- Last Visited Skills / Student Suggested Questions -->
             <div
-                class="col-lg-4 col-md-6 mb-2 "
+                class="col-lg-4 col-md-6 mb-2"
                 v-if="userDetailsStore.role != 'editor'"
                 :class="{
                     'd-none':
@@ -200,14 +243,48 @@ export default {
                         v-else-if="userDetailsStore.role == 'instructor'"
                         :questions="questions"
                     />
+                    <!-- Tooltip -->
+                    <div
+                        v-if="showTutorialTip3"
+                        class="bg-light border border-dark rounded p-2 mb-2"
+                    >
+                        <p>
+                            This section shows your the last 5 skill pages you
+                            visited.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(3)"
+                        >
+                            next
+                        </button>
+                    </div>
                 </div>
             </div>
+            <!-- Goals -->
             <div
                 v-if="userDetailsStore.role == 'student'"
-                class="col-lg-4 col-md-6 mb-2 "
+                class="col-lg-4 col-md-6 mb-2"
             >
                 <div class="hub-component h-100">
                     <Goals />
+                    <!-- Tooltip -->
+                    <div
+                        v-if="showTutorialTip4"
+                        class="bg-light border border-dark rounded p-2 mb-2"
+                    >
+                        <p>This section shows any goals you might have made.</p>
+                        <p>
+                            You can make a goal when there is a skill you want
+                            to master but it is not unlocked yet.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(4)"
+                        >
+                            next
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -226,6 +303,19 @@ export default {
             </div>
         </div>
     </div>
+
+    <!-- Introduction modal -->
+    <div v-if="showTutorialTip1" class="modal">
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>This is your hub page.</p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style>
@@ -234,64 +324,39 @@ export default {
     border-radius: 10px;
     padding: 10px;
 }
-/**Some how the image-fluid bootstrap does not work
-*  So we have to implement it
-*/
-.img-fluid {
+
+/* Modals */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 2000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
     width: 100%;
-    height: auto;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
 }
 
-.content-row {
-    /* padding-bottom: 51px; */
-}
-
-#banner {
-    width: 100%;
-}
-
-#user-name {
-    font-size: 2.375rem;
-}
-
-/* Because Boostrap doesn`t support the gap between column
-   So we have do it manual here
-*/
-
-#middle-profile-column {
-    padding-right: 42px;
-}
-
-#notif-col {
-    margin-top: 51px;
-}
-
-#sub-image {
-    margin-top: 51px;
-    padding-left: 23px;
-}
-
-/* View Specific On Phone */
-@media (min-width: 320px) and (max-width: 576px) {
-    #profile-image-column {
-        padding-right: 66px;
-        padding-left: 66px;
-    }
-
-    #middle-profile-column {
-        margin-top: 36px;
-        padding-left: 12px;
-        padding-right: 12px;
-    }
-
-    #user-name {
-        padding-left: 100px;
-        padding-right: 100px;
-    }
-
-    #notif-col {
-        margin-top: 0px;
-    }
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
 }
 
 /* View Specific On Tablet */
@@ -300,24 +365,14 @@ export default {
         padding-bottom: 0px;
         /* margin-bottom: 39px; */
     }
+}
 
-    #notif-col {
-        margin-top: 37px;
-        padding-right: 0px;
-    }
-
-    #profile-image-column {
-        padding-left: 0px;
-    }
-
-    #middle-profile-column {
-        padding-right: 0px;
-        margin-right: 0px;
-    }
-
-    #user-name {
-        padding-left: 0px;
-        padding-right: 0px;
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 30%;
     }
 }
 </style>

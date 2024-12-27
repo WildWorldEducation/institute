@@ -32,7 +32,7 @@ export default {
             isLife: false,
             isDangerousIdeas: false,
             showMobileFiltersModal: false,
-            showTutorialTip1: true,
+            showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
             showTutorialTip4: false,
@@ -43,6 +43,12 @@ export default {
         };
     },
     created() {
+        // Turn this on only if user is logged in.
+        if (this.sessionDetailsStore.isLoggedIn == true) {
+            this.showTutorialTip1 = true;
+        }
+
+        // Subject filters
         for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
             if (this.userDetailsStore.subjectFilters[i] == 'Language') {
                 this.isLanguage = true;
@@ -201,7 +207,9 @@ export default {
                 class="bg-light border border-dark rounded p-2 mb-2"
             >
                 Use the search field to search for specific skills.
-                <button @click="progressTutorial(6)">next</button>
+                <button class="btn primary-btn" @click="progressTutorial(6)">
+                    next
+                </button>
             </div>
             <div
                 v-else-if="showTutorialTip7"
@@ -209,7 +217,9 @@ export default {
             >
                 Use the center button to center the skill tree, and the print
                 button to print a PDF.
-                <button @click="progressTutorial(7)">next</button>
+                <button class="btn primary-btn" @click="progressTutorial(7)">
+                    next
+                </button>
             </div>
         </div>
         <div v-else class="alert alert-warning" role="alert">
@@ -241,8 +251,10 @@ export default {
             v-if="showTutorialTip5"
             class="bg-light border border-dark rounded p-2 mb-2"
         >
-            Use the buttons below to filter the skills by level.
-            <button @click="progressTutorial(5)">next</button>
+            <p>Use the buttons below to filter the skills by level.</p>
+            <button class="btn primary-btn" @click="progressTutorial(5)">
+                next
+            </button>
         </div>
         <div class="d-flex">
             <div v-if="isGradeFilter" class="legend">
@@ -495,7 +507,9 @@ export default {
             class="bg-light border border-dark rounded p-2"
         >
             Use the buttons on the left to filter the skills by subject.<br />
-            <button @click="progressTutorial(4)">next</button>
+            <button class="btn primary-btn" @click="progressTutorial(4)">
+                next
+            </button>
         </div>
     </div>
 
@@ -704,29 +718,42 @@ export default {
             <div v-if="showTutorialTip1">
                 <p>Welcome to the Collins Institute!</p>
                 <p>
-                    Click <button @click="progressTutorial(1)">next</button> to
-                    start the tutorial.
+                    Click
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    to start the tutorial.
                 </p>
             </div>
             <div v-else-if="showTutorialTip2">
                 <p>
                     This page provides a look at all the skills one can study
-                    here.<button @click="progressTutorial(2)">next</button>
+                    here.
                 </p>
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
             </div>
             <div v-else-if="showTutorialTip3">
                 <p>
                     Use the mouse to navigate around. Zoom in and out using the
-                    mousewheel.<button @click="progressTutorial(3)">
-                        next
-                    </button>
+                    mousewheel.
                 </p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    next
+                </button>
             </div>
-
             <div v-if="showTutorialTip8">
-                When you're ready, try another page by clicking one in the
-                navigation bar at the top right.
-                <button @click="progressTutorial(8)">next</button>
+                <p>
+                    When you're ready, try another page by clicking one in the
+                    navigation bar at the top right.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(8)">
+                    next
+                </button>
             </div>
         </div>
     </div>
@@ -1000,7 +1027,7 @@ export default {
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 1;
+    z-index: 2000;
     /* Sit on top */
     left: 0;
     top: 0;
@@ -1072,24 +1099,6 @@ export default {
     width: fit-content;
 }
 
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    height: auto;
-    align-items: center;
-    justify-content: center;
-    max-width: fit-content;
-}
-
-.green-btn:hover {
-    background-color: #3eb3a3;
-}
 .red-btn {
     background-color: #e24d4d;
     color: white;
