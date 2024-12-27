@@ -202,21 +202,24 @@ export default {
                     </button>
                 </div>
             </div>
+            <!-- Tooltips -->
             <div
                 v-if="showTutorialTip6"
-                class="bg-light border border-dark rounded p-2 mb-2"
+                class="info-panel bg-light rounded p-2 mb-2"
             >
-                Use the search field to search for specific skills.
+                <p>Use the search field to search for specific skills.</p>
                 <button class="btn primary-btn" @click="progressTutorial(6)">
                     next
                 </button>
             </div>
             <div
                 v-else-if="showTutorialTip7"
-                class="bg-light border border-dark rounded p-2 mb-2"
+                class="info-panel bg-light rounded p-2 mb-2 float-right"
             >
-                Use the center button to center the skill tree, and the print
-                button to print a PDF.
+                <p>
+                    Use the center button to center the skill tree, and the
+                    print button to print a PDF.
+                </p>
                 <button class="btn primary-btn" @click="progressTutorial(7)">
                     next
                 </button>
@@ -249,7 +252,7 @@ export default {
     >
         <div
             v-if="showTutorialTip5"
-            class="bg-light border border-dark rounded p-2 mb-2"
+            class="info-panel bg-light rounded p-2 mb-2"
         >
             <p>Use the buttons below to filter the skills by level.</p>
             <button class="btn primary-btn" @click="progressTutorial(5)">
@@ -502,10 +505,7 @@ export default {
             </button>
         </div>
         <!-- Tooltip -->
-        <div
-            v-if="showTutorialTip4"
-            class="bg-light border border-dark rounded p-2"
-        >
+        <div v-if="showTutorialTip4" class="info-panel bg-light rounded p-2">
             Use the buttons on the left to filter the skills by subject.<br />
             <button class="btn primary-btn" @click="progressTutorial(4)">
                 next
@@ -704,7 +704,7 @@ export default {
         </div>
     </div>
 
-    <!-- Introduction modal -->
+    <!-- Tooltip modal -->
     <div
         v-if="
             showTutorialTip1 ||
@@ -752,7 +752,7 @@ export default {
                     navigation bar at the top right.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(8)">
-                    next
+                    close
                 </button>
             </div>
         </div>
@@ -760,6 +760,18 @@ export default {
 </template>
 
 <style scoped>
+/* Tooltips */
+.info-panel {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    border-style: solid;
+    width: fit-content;
+}
+
+.float-right {
+    float: right;
+}
+
 /*
  * Filters
  */
