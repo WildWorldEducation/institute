@@ -21,8 +21,7 @@ export default {
     data() {
         return {
             showInformationModal: false,
-            selectedCohortId: null,
-            showDetails: false
+            selectedCohortId: null
         };
     },
     async created() {
@@ -52,22 +51,10 @@ export default {
             false
         );
     },
-    computed: {
-        getSelectedCohort() {
-            return this.cohortsStore.cohorts.find(
-                (cohort) => cohort.id === this.selectedCohortId
-            );
-        }
-    },
+    computed: {},
     methods: {
         toggleInformationModal() {
             this.showInformationModal = !this.showInformationModal;
-        },
-        selectCohort(cohortId) {
-            if (this.selectedCohortId !== cohortId) {
-                this.selectedCohortId = cohortId;
-                this.showDetails = true;
-            }
         },
         closeMobileDetail() {
             this.showDetails = false; // Hide the mobile cohort detail modal
@@ -79,7 +66,7 @@ export default {
 <template>
     <div class="container-fluid mobile-container">
         <div class="d-flex justify-content-between mb-2">
-            <router-link class="btn primary-btn" to="/cohorts/add"
+            <router-link class="btn primary-btn me-2" to="/cohorts/add"
                 >Add&nbsp;
                 <!-- Plus sign -->
                 <svg
@@ -116,7 +103,7 @@ export default {
         <div class="row gx-1">
             <!-- Left Container -->
             <div class="col-lg-3 col-md-4">
-                <button
+                <router-link
                     v-for="cohort in cohortsStore.cohorts"
                     :key="cohort.id"
                     :class="
@@ -125,52 +112,15 @@ export default {
                             : 'cohort-buttons'
                     "
                     class="mb-1"
-                    @click="selectCohort(cohort.id)"
+                    :to="'/cohort/' + cohort.id"
                 >
                     {{ cohort.name }}
-                </button>
-            </div>
-
-            <!-- Right Container -->
-            <div class="col-lg-9 col-md-8 d-none d-md-block">
-                <div v-if="selectedCohortId">
-                    <div>
-                        <CohortDetail :cohort="getSelectedCohort" />
-                    </div>
-                </div>
-            </div>
-            <div v-if="showDetails" class="col-md-8 d-block d-md-none modal">
-                <div
-                    class="modal-content contact-modal-content"
-                    id="cohort-details-container"
-                >
-                    <button
-                        type="button"
-                        @click="closeMobileDetail"
-                        class="close closeBtn"
-                        aria-label="Close"
-                    >
-                        <span aria-hidden="true">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 384 512"
-                                width="25"
-                                height="25"
-                            >
-                                <path
-                                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                                    fill="black"
-                                />
-                            </svg>
-                        </span>
-                    </button>
-                    <CohortDetail :cohort="getSelectedCohort" />
-                </div>
+                </router-link>
             </div>
         </div>
     </div>
 
-    <!-- The Contact Advice Modal -->
+    <!-- The Info Modal -->
     <div v-show="showInformationModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
