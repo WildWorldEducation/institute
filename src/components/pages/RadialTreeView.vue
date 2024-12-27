@@ -22,10 +22,16 @@ export default {
             isHistory: false,
             isLife: false,
             isDangerousIdeas: false,
-            showMobileFiltersModal: false
+            showMobileFiltersModal: false,
+            showTutorialTip1: false
         };
     },
     created() {
+        // Tooltips
+        if (localStorage.getItem('isRadialTreeTutorialCompleted') != 'true') {
+            this.showTutorialTip1 = true;
+        }
+
         for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
             if (this.userDetailsStore.subjectFilters[i] == 'Language') {
                 this.isLanguage = true;
@@ -87,6 +93,14 @@ export default {
             if (this.isLife) this.userDetailsStore.subjectFilters.push('Life');
             if (this.isDangerousIdeas)
                 this.userDetailsStore.subjectFilters.push('Dangerous Ideas');
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+
+                // Store
+                localStorage.setItem('isRadialTreeTutorialCompleted', 'true');
+            }
         }
     }
 };
@@ -623,6 +637,19 @@ export default {
                     PHD
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Introduction modal -->
+    <div v-if="showTutorialTip1" class="modal">
+        <div class="modal-content">
+            <p>
+                This page is like the Full Tree, but the skills are arranged in
+                a radial format.
+            </p>
+            <button class="btn primary-btn" @click="progressTutorial(1)">
+                close
+            </button>
         </div>
     </div>
 </template>
