@@ -385,7 +385,7 @@ export default {
     /* Modal Content/Box */
     .modal-content {
         width: 90%;
-        margin-top: 30%;
+        margin-top: 5%;
     }
 }
 </style>

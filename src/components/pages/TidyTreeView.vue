@@ -36,10 +36,14 @@ export default {
             showTutorialTip2: false,
             showTutorialTip3: false,
             showTutorialTip4: false,
+            showMobileTutorialTip4: false,
             showTutorialTip5: false,
+            showMobileTutorialTip5: false,
             showTutorialTip6: false,
+            showMobileTutorialTip6: false,
             showTutorialTip7: false,
-            showTutorialTip8: false
+            showTutorialTip8: false,
+            isMobileCheck: window.innerWidth
         };
     },
     created() {
@@ -141,16 +145,34 @@ export default {
                 this.showTutorialTip3 = true;
             } else if (step == 3) {
                 this.showTutorialTip3 = false;
-                this.showTutorialTip4 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip4 = true;
+                } else {
+                    this.showMobileTutorialTip4 = true;
+                }
             } else if (step == 4) {
-                this.showTutorialTip4 = false;
-                this.showTutorialTip5 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip4 = false;
+                    this.showTutorialTip5 = true;
+                } else {
+                    this.showMobileTutorialTip4 = false;
+                    this.showMobileTutorialTip5 = true;
+                }
             } else if (step == 5) {
-                this.showTutorialTip5 = false;
-                this.showTutorialTip6 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip5 = false;
+                    this.showTutorialTip6 = true;
+                } else {
+                    this.showMobileTutorialTip5 = false;
+                    this.showMobileTutorialTip6 = true;
+                }
             } else if (step == 6) {
-                this.showTutorialTip6 = false;
-                this.showTutorialTip7 = true;
+                if (this.isMobileCheck > 576) {
+                    this.showTutorialTip6 = false;
+                    this.showTutorialTip7 = true;
+                } else {
+                    this.showMobileTutorialTip6 = false;
+                }
             } else if (step == 7) {
                 this.showTutorialTip7 = false;
                 this.showTutorialTip8 = true;
@@ -720,7 +742,10 @@ export default {
             showTutorialTip1 ||
             showTutorialTip2 ||
             showTutorialTip3 ||
-            showTutorialTip8
+            showTutorialTip8 ||
+            showMobileTutorialTip4 ||
+            showMobileTutorialTip5 ||
+            showMobileTutorialTip6
         "
         class="modal"
     >
@@ -771,6 +796,27 @@ export default {
                     navigation bar at the top right.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(8)">
+                    close
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip4">
+                <p>Use the search field to search for specific skills.</p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip5">
+                <p>
+                    The filter button will show ways to filter the skill tree by
+                    both subjects and levels.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip6">
+                <p>The center button will recenter the tree</p>
+                <button class="btn primary-btn" @click="progressTutorial(6)">
                     close
                 </button>
             </div>
