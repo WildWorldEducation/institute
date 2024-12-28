@@ -382,7 +382,7 @@ export default {
                     }
                 }
                 ctx1.beginPath();
-                ctx1.arc(node.y, node.x, radius, 0, 2 * Math.PI);
+                ctx1.arc(node.y, node.x, radius * 1.5, 0, 2 * Math.PI);
                 // get the color associate with skill level
                 const skillColor = node.data.level
                     ? this.hexColor(node.data.level)
@@ -456,16 +456,6 @@ export default {
                         : node.data.skill_name;
                     ctx1.strokeText(showName, node.y + 15, node.x + 2);
                     ctx1.fillText(showName, node.y + 15, node.x + 2);
-                    // Drawing Image
-                    if (this.scale >= 0.75 && this.iconDictionary) {
-                        // find path in skill icon dictionary
-                        const path = this.iconDictionary[node.data.url];
-
-                        const img = new Image();
-
-                        img.src = 'data:image/png;base64,' + path;
-                        ctx1.drawImage(img, node.y, node.x, 40, 40);
-                    }
                 } else {
                     ctx1.beginPath();
                     ctx1.strokeStyle = '#FFF';
@@ -478,13 +468,23 @@ export default {
                     ctx1.strokeText(showName, node.y - 5, node.x + 2);
                     ctx1.fillText(showName, node.y - 5, node.x + 2);
                 }
+                // Drawing Image
+                if (this.scale >= 0.75 && this.iconDictionary) {
+                    // find path in skill icon dictionary
+                    const path = this.iconDictionary[node.data.url];
+
+                    const img = new Image();
+
+                    img.src = 'data:image/png;base64,' + path;
+                    ctx1.drawImage(img, node.y - 10, node.x - 10, 20, 20);
+                }
             }
 
             // Hidden context.
             if (node.data.type != 'domain') {
                 ctx2.beginPath();
                 ctx2.moveTo(node.y, node.x);
-                ctx2.arc(node.y, node.x, 10, 0, 2 * Math.PI);
+                ctx2.arc(node.y, node.x, 20, 0, 2 * Math.PI);
                 ctx2.fill();
             } else {
                 ctx2.beginPath();
@@ -1271,7 +1271,7 @@ export default {
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-lg-none" />
-        <div class="debug-console">
+        <!-- <div class="debug-console">
             <div class="d-flex">
                 <div>Translate X:</div>
                 <div>{{ transformData.x }}</div>
@@ -1299,7 +1299,7 @@ export default {
                     Click me !!!
                 </button>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
