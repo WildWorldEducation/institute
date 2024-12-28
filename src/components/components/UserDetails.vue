@@ -4,7 +4,7 @@ import { useUsersStore } from '../../stores/UsersStore';
 import { useUserDetailsStore } from '../../stores/UserDetailsStore';
 
 export default {
-    props: ['userId', 'userRole'],
+    props: ['userId'],
     setup() {
         const usersStore = useUsersStore();
         const userDetailsStore = useUserDetailsStore();
@@ -108,33 +108,35 @@ export default {
                     </button>
                 </div>
                 <h2 class="secondary-heading h4">Progress</h2>
-                <!-- Vertical Tree -->
-                <router-link
-                    v-if="userRole == 'student'"
-                    :to="`/student/${this.$parent.user.id}/skill-tree`"
-                    class="btn primary-btn mt-2"
-                    target="_blank"
-                >
-                    Vertical tree
-                </router-link>
-                <!-- Collapsible skill tree -->
-                <router-link
-                    v-if="userRole == 'student'"
-                    :to="'/student/' + this.$parent.user.id + '/skills'"
-                    class="btn primary-btn mt-2"
-                    target="_blank"
-                >
-                    Collapsible tree
-                </router-link>
-                <!-- Goals -->
-                <router-link
-                    v-if="userRole == 'student'"
-                    :to="'/student/' + this.$parent.user.id + '/goals'"
-                    class="btn primary-btn mt-2"
-                    target="_blank"
-                >
-                    Goals
-                </router-link>
+                <div class="d-flex flex-column">
+                    <!-- Vertical Tree -->
+                    <router-link
+                        v-if="this.userDetailsStore.role == 'instructor'"
+                        :to="`/student/${this.$parent.user.id}/skill-tree`"
+                        class="btn primary-btn mt-2"
+                        target="_blank"
+                    >
+                        Vertical tree
+                    </router-link>
+                    <!-- Collapsible skill tree -->
+                    <router-link
+                        v-if="this.userDetailsStore.role == 'instructor'"
+                        :to="'/student/' + this.$parent.user.id + '/skills'"
+                        class="btn primary-btn mt-2"
+                        target="_blank"
+                    >
+                        Collapsible tree
+                    </router-link>
+                    <!-- Goals -->
+                    <router-link
+                        v-if="this.userDetailsStore.role == 'instructor'"
+                        :to="'/student/' + this.$parent.user.id + '/goals'"
+                        class="btn primary-btn mt-2"
+                        target="_blank"
+                    >
+                        Goals
+                    </router-link>
+                </div>
                 <div class="d-flex justify-content-center mt-2">
                     <router-link
                         v-if="

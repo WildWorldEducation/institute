@@ -178,8 +178,6 @@ export default {
         updateShowUserDetails(newUser) {
             this.showDetails = true;
             this.user = newUser;
-            console.log('new user: ');
-            console.log(newUser);
         },
         // only for search bar to update the choose user id
         progressTutorial(step) {
@@ -192,7 +190,7 @@ export default {
                 this.showTutorialTip3 = true;
             }
             // Store
-            // localStorage.setItem('isStudentsPageCompleted', 'true');
+            localStorage.setItem('isStudentsPageCompleted', 'true');
         }
     }
 };
@@ -259,7 +257,6 @@ export default {
                                 usersStore.editors.length > 0)
                         "
                         :userId="user.id"
-                        :userRole="user.role"
                     />
                     <div v-else>
                         <h1
@@ -284,7 +281,7 @@ export default {
                 id="user-detail-section"
             >
                 <div class="row">
-                    <UserDetails :userId="user.id" :userRole="user.role" />
+                    <UserDetails :userId="user.id" />
                 </div>
             </div>
         </div>
