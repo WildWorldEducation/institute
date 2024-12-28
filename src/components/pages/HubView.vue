@@ -204,7 +204,10 @@ export default {
                     />
                     <!-- Tooltip -->
                     <div
-                        v-if="showTutorialTip2"
+                        v-if="
+                            showTutorialTip2 &&
+                            userDetailsStore.role == 'student'
+                        "
                         class="info-panel modal-content bg-light rounded p-2 mb-2"
                     >
                         <p>
@@ -247,7 +250,10 @@ export default {
                     />
                     <!-- Tooltip -->
                     <div
-                        v-if="showTutorialTip3"
+                        v-if="
+                            showTutorialTip3 &&
+                            userDetailsStore.role == 'student'
+                        "
                         class="info-panel modal-content bg-light rounded p-2 mb-2"
                     >
                         <p>
@@ -272,7 +278,10 @@ export default {
                     <Goals />
                     <!-- Tooltip -->
                     <div
-                        v-if="showTutorialTip4"
+                        v-if="
+                            showTutorialTip4 &&
+                            userDetailsStore.role == 'student'
+                        "
                         class="info-panel modal-content bg-light rounded p-2 mb-2"
                     >
                         <p>This section shows any goals you might have made.</p>
@@ -307,20 +316,64 @@ export default {
     </div>
 
     <!-- Introduction modal -->
-    <div v-if="showTutorialTip1" class="modal">
-        <div class="modal-content">
-            <div v-if="showTutorialTip1">
+    <div
+        v-if="
+            showTutorialTip1 ||
+            showTutorialTip2 ||
+            showTutorialTip3 ||
+            (showTutorialTip4 && userDetailsStore.role == 'student')
+        "
+        class="modal"
+    >
+        <div
+            class="modal-content"
+            v-if="showTutorialTip1 || showTutorialTip2 || showTutorialTip3"
+        >
+            <!-- Student -->
+            <div v-if="showTutorialTip1 && userDetailsStore.role == 'student'">
                 <p>This is your hub page.</p>
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
                 </button>
             </div>
+            <!-- Instructor -->
+            <div
+                v-if="showTutorialTip1 && userDetailsStore.role == 'instructor'"
+            >
+                <p>Welcome to the Collins Institute!</p>
+                <p>
+                    Click
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    to start the tutorial.
+                </p>
+            </div>
+            <div
+                v-if="showTutorialTip2 && userDetailsStore.role == 'instructor'"
+            >
+                <p>This is your hub page.</p>
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
+            </div>
+            <div
+                v-if="showTutorialTip3 && userDetailsStore.role == 'instructor'"
+            >
+                <p>
+                    On this page you can read news and notifications, check if
+                    you have any quizzes to mark, or questions that your
+                    students have added to the question bank you need approve.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    close
+                </button>
+            </div>
         </div>
     </div>
-    <div
-        v-if="showTutorialTip2 || showTutorialTip3 || showTutorialTip4"
-        class="modal"
-    ></div>
 </template>
 
 <style>
