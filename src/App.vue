@@ -425,7 +425,7 @@ p {
     line-height: 24px;
     align-items: center;
     max-width: fit-content;
-    height: 40px;
+    max-height: 40px;
     text-wrap: nowrap;
 }
 
@@ -473,6 +473,23 @@ p {
 }
 
 /* End of themes section */
+
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.red-btn:hover {
+    color: white;
+    background-color: #e24d4d;
+    border: 1px solid black;
+}
 
 .navbar-toggler {
     background-color: white;
