@@ -1708,4 +1708,54 @@ router.get('/base-64-data', async (req, res, next) => {
     res.json({ result: base64 })
 });
 
+
+
+function insertIntoSkillIconTable(url) {
+    let sqlQuery = `INSERT INTO skill_icon
+                    VALUES (${conn.escape(url)}, ${conn.escape('iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAT0lEQVR42u3WQQoAIAhE0SY6uDe3E2huBIPvtvBlpCR3X52xV3MAAAAATABOviypkiUZye0VKMKLZ3/WkV2RmdWzR5t5pgAf9IH4eAHMBy5x3xg1taMNPwAAAABJRU5ErkJggg==')})`
+    conn.query(sqlQuery, (err, result) => {
+        if (err) {
+            throw err
+        }
+        console.log(result)
+    })
+}
+
+router.get('/generate-dummy-path', async (req, res) => {
+    let sqlQuery = "SELECT skills.url FROM skills  "
+    try {
+        conn.query(sqlQuery, (err, results) => {
+            if (err) {
+                throw err;
+            }
+            let promises = [];
+            results.forEach(element => {
+                promises.push(insertIntoSkillIconTable(element.url))
+            });
+            Promise.all(promises).then(res.json({ mess: 'ok' }))
+
+        });
+
+    } catch (error) {
+        console.error(error)
+        res.status = 500;
+        res.json({ mess: 'error' })
+    }
+})
+
+router.get('/icon-list', (req, res) => {
+    let sqlQuery = "SELECT * FROM skill_icon"
+    try {
+        conn.query(sqlQuery, (err, result) => {
+            if (err) {
+                throw err
+            }
+            res.json(result)
+        })
+
+    } catch (error) {
+        console.error()
+    }
+})
+
 module.exports = router;

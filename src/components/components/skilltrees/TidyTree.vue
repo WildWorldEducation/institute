@@ -71,7 +71,8 @@ export default {
             currentNodeX: 0,
             currentNodeY: 0,
             visibleRangeX: 0,
-            visibleRangeY: 0
+            visibleRangeY: 0,
+            iconDictionary: []
         };
     },
     components: {
@@ -207,6 +208,7 @@ export default {
 
         // =================================================================================
         // For the loading animation.
+        this.getIconPath();
 
         this.isLoading = false;
     },
@@ -455,10 +457,14 @@ export default {
                     ctx1.strokeText(showName, node.y + 15, node.x + 2);
                     ctx1.fillText(showName, node.y + 15, node.x + 2);
                     // Drawing Image
-                    if (this.scale >= 0.75 && this.base64Image) {
+                    if (this.scale >= 0.75 && this.iconDictionary) {
+                        // find path in skill icon dictionary
+                        const path = this.iconDictionary[node.data.url];
+
                         const img = new Image();
-                        img.src = this.base64Image;
-                        ctx1.drawImage(img, node.y, node.x, 20, 20);
+
+                        img.src = 'data:image/png;base64,' + path;
+                        ctx1.drawImage(img, node.y, node.x, 40, 40);
                     }
                 } else {
                     ctx1.beginPath();
@@ -1220,6 +1226,18 @@ export default {
                 return true;
             }
             return false;
+        },
+        async generatePath() {
+            const res = await fetch('/skills/generate-dummy-path');
+            const resData = await res.json();
+        },
+        async getIconPath() {
+            const res = await fetch('/skills/icon-list');
+            const resData = await res.json();
+            // Prepare the icon path array into a hashmap/dictionary for even better performant
+            this.iconDictionary = Object.fromEntries(
+                resData.map((icon) => [icon.skill_url, icon.path])
+            );
         }
     }
 };
@@ -1277,67 +1295,10 @@ export default {
                 ||
                 <div>Visible Y:</div>
                 <div>{{ visibleRangeY }}</div>
+                <button type="button" @click="generatePath">
+                    Click me !!!
+                </button>
             </div>
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 100 100"
-                width="100"
-                height="100"
-                fill="black"
-            >
-                <circle cx="50" cy="30" r="2" />
-                <circle cx="30" cy="70" r="2" />
-                <circle cx="70" cy="70" r="2" />
-                <circle cx="50" cy="50" r="2" />
-                <line
-                    x1="50"
-                    y1="30"
-                    x2="30"
-                    y2="70"
-                    stroke="black"
-                    stroke-width="1"
-                />
-                <line
-                    x1="50"
-                    y1="30"
-                    x2="70"
-                    y2="70"
-                    stroke="black"
-                    stroke-width="1"
-                />
-                <line
-                    x1="30"
-                    y1="70"
-                    x2="70"
-                    y2="70"
-                    stroke="black"
-                    stroke-width="1"
-                />
-                <line
-                    x1="50"
-                    y1="30"
-                    x2="50"
-                    y2="50"
-                    stroke="black"
-                    stroke-width="1"
-                />
-                <line
-                    x1="50"
-                    y1="50"
-                    x2="30"
-                    y2="70"
-                    stroke="black"
-                    stroke-width="1"
-                />
-                <line
-                    x1="50"
-                    y1="50"
-                    x2="70"
-                    y2="70"
-                    stroke="black"
-                    stroke-width="1"
-                />
-            </svg>
         </div>
     </div>
 </template>
