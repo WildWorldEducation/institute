@@ -426,14 +426,14 @@ p {
     display: flex;
     align-items: center;
     max-width: fit-content;
-    max-height: 40px;
+    height: 40px;
     text-wrap: nowrap;
 }
 
 .primary-btn:hover,
 .primary-btn:focus,
 .primary-btn:active {
-    border-color: var(--primary-contrast-color) !important;
+    border-color: var(--secondary-contrast-color) !important;
     color: var(--primary-contrast-color);
 }
 
