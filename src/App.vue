@@ -432,7 +432,7 @@ p {
 .primary-btn:hover,
 .primary-btn:focus,
 .primary-btn:active {
-    border-color: var(--primary-contrast-color) !important;
+    border-color: var(--secondary-contrast-color) !important;
     color: var(--primary-contrast-color);
 }
 
@@ -473,6 +473,23 @@ p {
 }
 
 /* End of themes section */
+
+.red-btn {
+    background-color: #e24d4d;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.red-btn:hover {
+    color: white;
+    background-color: #e24d4d;
+    border: 1px solid black;
+}
 
 .navbar-toggler {
     background-color: white;

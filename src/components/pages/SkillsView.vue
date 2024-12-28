@@ -35,7 +35,8 @@ export default {
             showTutorialTip4: false,
             showMobileTutorialTip4: false,
             showTutorialTip5: false,
-            showMobileTutorialTip5: false
+            showMobileTutorialTip5: false,
+            isMobileCheck: window.innerWidth
         };
     },
     components: {
@@ -99,6 +100,10 @@ export default {
                 } else {
                     this.showMobileTutorialTip4 = false;
                     this.showMobileTutorialTip5 = true;
+                }
+                if (this.userDetailsStore.role == 'instructor') {
+                    // Store
+                    localStorage.setItem('isCollapsibleTreeCompleted', 'true');
                 }
             } else if (step == 5) {
                 if (this.isMobileCheck > 576) {
@@ -251,13 +256,14 @@ export default {
                         />
                     </div>
                 </div>
-                <!-- Tooltips -->
+                <!-- Student Tooltips -->
                 <div
                     v-if="
-                        showTutorialTip2 ||
-                        showTutorialTip3 ||
-                        showTutorialTip4 ||
-                        showTutorialTip5
+                        userDetailsStore.role == 'student' &&
+                        (showTutorialTip2 ||
+                            showTutorialTip3 ||
+                            showTutorialTip4 ||
+                            showTutorialTip5)
                     "
                     class="info-panel me-4 mt-1"
                 >
@@ -330,21 +336,81 @@ export default {
                         </button>
                     </div>
                 </div>
+                <!-- Instructor Tooltips -->
+                <div
+                    v-if="
+                        userDetailsStore.role == 'instructor' &&
+                        (showTutorialTip2 ||
+                            showTutorialTip3 ||
+                            showTutorialTip4 ||
+                            showTutorialTip5)
+                    "
+                    class="info-panel me-4 mt-1"
+                >
+                    <div
+                        v-if="showTutorialTip2"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>
+                            At the top, one can filter the skills by grade
+                            level, and search for a specific skill.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(2)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-else-if="showTutorialTip3"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>
+                            This indicates that the skill contains mini-skills
+                            that your students will need to master, before
+                            mastery of the main skill can be attempted.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(3)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-else-if="showTutorialTip4"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>
+                            When a student unlocks a skill (by passing a quiz)
+                            the next skill will be unlocked.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(4)"
+                        >
+                            close
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <SkillsListParent ref="skillList" />
 
-    <!-- Tooltips -->
-    <!-- Introduction modal -->
+    <!-- Tutorials -->
+    <!-- Student Introduction modal -->
     <div
         v-if="
-            showTutorialTip1 ||
-            showMobileTutorialTip2 ||
-            showMobileTutorialTip3 ||
-            showMobileTutorialTip4 ||
-            showMobileTutorialTip5
+            userDetailsStore.role == 'student' &&
+            (showTutorialTip1 ||
+                showMobileTutorialTip2 ||
+                showMobileTutorialTip3 ||
+                showMobileTutorialTip4 ||
+                showMobileTutorialTip5)
         "
         class="modal"
     >
@@ -395,6 +461,61 @@ export default {
                 <p>Remember, you can only attempt to master unlocked skills.</p>
 
                 <button class="btn primary-btn" @click="progressTutorial(5)">
+                    close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructor Introduction modal -->
+    <div
+        v-if="
+            userDetailsStore.role == 'instructor' &&
+            (showTutorialTip1 ||
+                showMobileTutorialTip2 ||
+                showMobileTutorialTip3 ||
+                showMobileTutorialTip4)
+        "
+        class="modal"
+    >
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>This page the 7 core subjects.</p>
+                <p>
+                    Click on the down arrows to expand them to access all the
+                    skills.
+                </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip2">
+                <p>
+                    At the top, one can filter the skills by grade level, and
+                    search for a specific skill.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip3">
+                <p>Some nodes have a plus or minus sign.</p>
+                <p>
+                    This indicates that the skill contains mini-skills that your
+                    students will need to master, before mastery of the main
+                    skill can be attempted.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip4">
+                <p>
+                    When a student unlocks a skill (by passing a quiz) the next
+                    skill will be unlocked.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
                     close
                 </button>
             </div>
