@@ -480,7 +480,7 @@ export default {
     >
         <div class="modal-content">
             <div v-if="showTutorialTip1">
-                <p>This page the 7 core subjects.</p>
+                <p>This page shows the 7 core subjects.</p>
                 <p>
                     Click on the down arrows to expand them to access all the
                     skills.
