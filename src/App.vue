@@ -129,7 +129,17 @@ export default {
                     id="navbarSupportedContent"
                 >
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0"></ul>
-                    <ul class="navbar-nav d-flex bg-light rounded p-2">
+                    <ul class="navbar-nav d-flex bg-white rounded p-2">
+                        <div
+                            v-if="
+                                !sessionDetailsStore.isLoggedIn &&
+                                this.$route.name == 'skill-tree'
+                            "
+                            class="p-2 rounded me-2 mb-1"
+                            style="background-color: #fff3cd; height: 37.6px"
+                        >
+                            You cannot master skills until signed in
+                        </div>
                         <li
                             v-if="
                                 sessionDetailsStore.isLoggedIn &&
