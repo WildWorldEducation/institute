@@ -19,7 +19,7 @@ export default {
     },
     data() {
         return {
-            width: 6000,
+            width: null,
             height: null,
             skill: {
                 id: null,
@@ -81,6 +81,7 @@ export default {
 
         // Specify the chart’s dimensions.
         this.height = window.innerHeight;
+        this.width = window.innerWidth;
 
         this.skill = {
             name: 'SKILLS',
@@ -291,7 +292,6 @@ export default {
 
             // Visible context.
             // If not a domain, make node a circle.
-            // console.log(node.data.is_mastered);
             if (node.data.type != 'domain') {
                 ctx1.beginPath();
                 // Node size
@@ -583,21 +583,16 @@ export default {
             document.querySelector('#SVGskilltree').append(svg.node());
         },
         resetPos() {
-            let screenWidth = window.innerWidth;
-            let shift = 143;
-            if (screenWidth > 480) {
-                shift = 100;
-            }
-            if (screenWidth > 1024) {
-                shift = 10;
-            }
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
                 .call(
                     this.d3Zoom.transform,
                     d3.zoomIdentity
-                        .translate(0, this.context.canvas.height / 2 - shift)
+                        .translate(
+                            this.context.canvas.width / 2,
+                            this.context.canvas.height / 2
+                        )
                         .scale(0.3)
                 );
             this.$refs.sliderControl.showScaleLabel();
