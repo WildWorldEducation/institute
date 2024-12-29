@@ -653,22 +653,17 @@ export default {
             // Append the SVG element.
             document.querySelector('#SVGskilltree').append(svg.node());
         },
-        resetPos() {
-            let screenWidth = window.innerWidth;
-            let shift = 143;
-            if (screenWidth > 480) {
-                shift = 100;
-            }
-            if (screenWidth > 1024) {
-                shift = 10;
-            }
+        resetPos() {          
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
                 .call(
                     this.d3Zoom.transform,
                     d3.zoomIdentity
-                        .translate(0, this.context.canvas.height / 2 - shift)
+                        .translate(
+                            this.context.canvas.width / 2,
+                            this.context.canvas.height / 2
+                        )
                         .scale(0.3)
                 );
             this.$refs.sliderControl.showScaleLabel();
