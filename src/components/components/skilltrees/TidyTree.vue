@@ -72,7 +72,8 @@ export default {
             currentNodeY: 0,
             visibleRangeX: 0,
             visibleRangeY: 0,
-            iconDictionary: []
+            iconDictionary: [],
+            nodeDrew: 0
         };
     },
     components: {
@@ -320,11 +321,7 @@ export default {
             this.context.beginPath();
 
             // Calculate max visible range
-            this.visibleRangeX =
-                this.transformData.x + this.width * this.transformData.k;
-            this.visibleRangeY =
-                this.transformData.y - this.height * this.transformData.k;
-
+            this.nodeDrew = 0;
             for (const node of this.nodes) {
                 if (node.renderCol) {
                     // Render clicked nodes in the color of their corresponding node
@@ -348,15 +345,18 @@ export default {
                 }
                 // On the hidden canvas each rectangle gets a unique color.
                 this.hiddenCanvasContext.fillStyle = node.__pickColor;
+
                 if (this.checkingIfNodeInView(node)) {
                     this.drawNode(node);
                 }
+                // this.checkingIfNodeInView(node);
+                // this.drawNode(node);
             }
 
             this.context.restore();
             this.hiddenCanvasContext.restore();
         },
-        drawNode(node, yellow) {
+        drawNode(node) {
             // Make sure the nodes have solid outlines
             this.context.setLineDash([]);
             let ctx1 = this.context;
@@ -1209,20 +1209,25 @@ export default {
             fetch(url, requestOptions);
         },
         checkingIfNodeInView(node) {
+            let scale = 1;
+            if (this.transformData.k > 1) {
+                scale = this.transformData.k;
+            }
             // Calculate max visible range
-            this.visibleRangeX =
-                this.transformData.x + this.width * this.transformData.k;
-            this.visibleRangeY =
-                this.transformData.y - this.height * this.transformData.k;
+            this.visibleRangeX = this.transformData.x + this.width * scale;
+
+            this.visibleRangeY = this.transformData.y - this.height * scale;
             // Calculate real position of node with current scale
-            const realPositionX = node.y * this.transformData.k;
-            const realPositionY = -node.x * this.transformData.k;
+            let realPositionX = node.y * this.transformData.k;
+            let realPositionY = -node.x * this.transformData.k;
+            let combinePosition = this.transformData.x + realPositionX;
             if (
-                this.transformData.x < realPositionX &&
-                realPositionX < this.visibleRangeX &&
+                combinePosition > 0 &&
+                combinePosition < this.width &&
                 this.transformData.y > realPositionY &&
                 realPositionY > this.visibleRangeY
             ) {
+                this.nodeDrew += 1;
                 return true;
             }
             return false;
@@ -1271,8 +1276,8 @@ export default {
         <SliderControl ref="sliderControl" />
         <div id="sidepanel-backdrop"></div>
         <JoystickControl class="d-lg-none" />
-        <!-- <div class="debug-console">
-            <div class="d-flex">
+        <div class="debug-console">
+            <!-- <div class="d-flex">
                 <div>Translate X:</div>
                 <div>{{ transformData.x }}</div>
                 ||
@@ -1298,8 +1303,9 @@ export default {
                 <button type="button" @click="generatePath">
                     Click me !!!
                 </button>
-            </div>
-        </div> -->
+            </div> -->
+            <div class="d-flex">node drew: {{ nodeDrew }}</div>
+        </div>
     </div>
 </template>
 
