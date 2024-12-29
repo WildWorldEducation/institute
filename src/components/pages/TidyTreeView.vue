@@ -22,6 +22,7 @@ export default {
             lastChooseResult: '',
             showResult: false,
             showConfirmModal: false,
+            // Filters
             isGradeFilter: true,
             isSubjectFilter: true,
             isLanguage: false,
@@ -32,6 +33,10 @@ export default {
             isLife: false,
             isDangerousIdeas: false,
             showMobileFiltersModal: false,
+            // For guest mode only
+            gradeFilter: 'phd',
+            subjectFilters: [],
+            // Tutorial tooltips
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
@@ -55,33 +60,51 @@ export default {
             ) {
                 this.showTutorialTip1 = true;
             }
-        }
 
-        // Subject filters
-        for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
-            if (this.userDetailsStore.subjectFilters[i] == 'Language') {
-                this.isLanguage = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
-                this.isMathematics = true;
-            }
-            if (
-                this.userDetailsStore.subjectFilters[i] == 'Science & Invention'
+            // Subject filters
+            for (
+                let i = 0;
+                i < this.userDetailsStore.subjectFilters.length;
+                i++
             ) {
-                this.isScienceAndInvention = true;
+                if (this.userDetailsStore.subjectFilters[i] == 'Language') {
+                    this.isLanguage = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
+                    this.isMathematics = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] ==
+                    'Science & Invention'
+                ) {
+                    this.isScienceAndInvention = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] ==
+                    'Computer Science'
+                ) {
+                    this.isComputerScience = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'History') {
+                    this.isHistory = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'Life') {
+                    this.isLife = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas'
+                ) {
+                    this.isDangerousIdeas = true;
+                }
             }
-            if (this.userDetailsStore.subjectFilters[i] == 'Computer Science') {
-                this.isComputerScience = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'History') {
-                this.isHistory = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Life') {
-                this.isLife = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas') {
-                this.isDangerousIdeas = true;
-            }
+        } else {
+            this.isLanguage = true;
+            this.isMathematics = true;
+            this.isScienceAndInvention = true;
+            this.isComputerScience = true;
+            this.isHistory = true;
+            this.isLife = true;
+            this.isDangerousIdeas = true;
         }
     },
     mounted() {
@@ -118,23 +141,44 @@ export default {
             this.$refs.childComponent.resetPos();
         },
         updateSubjectFilters() {
-            this.userDetailsStore.subjectFilters = [];
-
-            if (this.isLanguage)
-                this.userDetailsStore.subjectFilters.push('Language');
-            if (this.isMathematics)
-                this.userDetailsStore.subjectFilters.push('Mathematics');
-            if (this.isScienceAndInvention)
-                this.userDetailsStore.subjectFilters.push(
-                    'Science & Invention'
-                );
-            if (this.isComputerScience)
-                this.userDetailsStore.subjectFilters.push('Computer Science');
-            if (this.isHistory)
-                this.userDetailsStore.subjectFilters.push('History');
-            if (this.isLife) this.userDetailsStore.subjectFilters.push('Life');
-            if (this.isDangerousIdeas)
-                this.userDetailsStore.subjectFilters.push('Dangerous Ideas');
+            // If user is logged in.
+            if (this.sessionDetailsStore.isLoggedIn) {
+                this.userDetailsStore.subjectFilters = [];
+                if (this.isLanguage)
+                    this.userDetailsStore.subjectFilters.push('Language');
+                if (this.isMathematics)
+                    this.userDetailsStore.subjectFilters.push('Mathematics');
+                if (this.isScienceAndInvention)
+                    this.userDetailsStore.subjectFilters.push(
+                        'Science & Invention'
+                    );
+                if (this.isComputerScience)
+                    this.userDetailsStore.subjectFilters.push(
+                        'Computer Science'
+                    );
+                if (this.isHistory)
+                    this.userDetailsStore.subjectFilters.push('History');
+                if (this.isLife)
+                    this.userDetailsStore.subjectFilters.push('Life');
+                if (this.isDangerousIdeas)
+                    this.userDetailsStore.subjectFilters.push(
+                        'Dangerous Ideas'
+                    );
+            }
+            // Not logged in
+            else {
+                this.subjectFilters = [];
+                if (this.isLanguage) this.subjectFilters.push('Language');
+                if (this.isMathematics) this.subjectFilters.push('Mathematics');
+                if (this.isScienceAndInvention)
+                    this.subjectFilters.push('Science & Invention');
+                if (this.isComputerScience)
+                    this.subjectFilters.push('Computer Science');
+                if (this.isHistory) this.subjectFilters.push('History');
+                if (this.isLife) this.subjectFilters.push('Life');
+                if (this.isDangerousIdeas)
+                    this.subjectFilters.push('Dangerous Ideas');
+            }
         },
         progressTutorial(step) {
             if (step == 1) {
@@ -191,7 +235,7 @@ export default {
 
 <template>
     <div class="container-fluid position-absolute legend-div">
-        <div v-if="sessionDetailsStore.isLoggedIn" class="mobile-legend">
+        <div class="mobile-legend">
             <div class="search-mobile-row">
                 <!-- Search feature -->
                 <SkillTreeSearchBar
@@ -211,7 +255,7 @@ export default {
                 </button>
             </div>
         </div>
-        <div v-if="sessionDetailsStore.isLoggedIn" class="tablet-and-up-legend">
+        <div class="tablet-and-up-legend">
             <div class="d-flex justify-content-between">
                 <!-- Search bar, reset, expand all, print buttons -->
                 <!-- Search Feature -->
@@ -257,9 +301,6 @@ export default {
                 </button>
             </div>
         </div>
-        <div v-else class="alert alert-warning" role="alert">
-            You cannot interact with the tree until signed in
-        </div>
     </div>
 
     <!-- Display loading screen while asynchronous call is made. -->
@@ -276,12 +317,9 @@ export default {
         </template>
     </Suspense>
 
-    <!-- Bottom grade level truncation filters
-        Not available on phone view -->
-    <div
-        v-if="sessionDetailsStore.isLoggedIn"
-        class="tablet-and-up-legend position-absolute bottom-legend-div"
-    >
+    <!-- Bottom grade level truncation filters -->
+    <div class="tablet-and-up-legend position-absolute bottom-legend-div">
+        <!-- Tooltip -->
         <div
             v-if="showTutorialTip5"
             class="info-panel bg-light rounded p-2 mb-2"
@@ -291,9 +329,10 @@ export default {
                 next
             </button>
         </div>
-        <div class="d-flex">
+        <!-- Grade buttons -->
+        <!-- If user is logged in -->
+        <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex">
             <div v-if="isGradeFilter" class="legend">
-                <!-- Grade buttons -->
                 <button
                     class="btn grade-school me-2"
                     :class="{
@@ -394,12 +433,124 @@ export default {
                 </svg>
             </button>
         </div>
+        <!-- If user is not logged in -->
+        <div v-else class="d-flex">
+            <div v-if="isGradeFilter" class="legend">
+                <button
+                    class="btn grade-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.gradeFilter == 'grade_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'grade_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.gradeFilter == 'middle_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'middle_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school me-2"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'high_school'
+                    }"
+                    @click="
+                        this.gradeFilter = 'high_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college me-2"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'college'
+                    }"
+                    @click="
+                        this.gradeFilter = 'college';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd me-2"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'phd'
+                    }"
+                    @click="
+                        this.gradeFilter = 'phd';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
+                    "
+                >
+                    PHD
+                </button>
+            </div>
+            <button
+                class="btn switch-btn me-2"
+                @click="isGradeFilter = !isGradeFilter"
+            >
+                <!-- Plus sign -->
+                <svg
+                    v-if="!isGradeFilter"
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                    />
+                </svg>
+                <!-- Minus sign -->
+                <svg
+                    v-else
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                    />
+                </svg>
+            </button>
+        </div>
     </div>
     <!-- Left root subject filters  -->
-    <div
-        v-if="sessionDetailsStore.isLoggedIn"
-        class="tablet-and-up-legend position-absolute left-legend-div"
-    >
+    <div class="tablet-and-up-legend position-absolute left-legend-div">
         <div>
             <div v-if="isSubjectFilter" class="d-flex flex-column">
                 <button
@@ -411,7 +562,10 @@ export default {
                     @click="
                         this.isLanguage = !this.isLanguage;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Language
@@ -425,7 +579,10 @@ export default {
                     @click="
                         this.isMathematics = !this.isMathematics;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Math
@@ -439,7 +596,10 @@ export default {
                     @click="
                         this.isHistory = !this.isHistory;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     History
@@ -453,7 +613,10 @@ export default {
                     @click="
                         this.isLife = !this.isLife;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Life
@@ -467,7 +630,10 @@ export default {
                     @click="
                         this.isComputerScience = !this.isComputerScience;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Computer Science
@@ -482,7 +648,10 @@ export default {
                         this.isScienceAndInvention =
                             !this.isScienceAndInvention;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Science & Invention
@@ -496,7 +665,10 @@ export default {
                     @click="
                         this.isDangerousIdeas = !this.isDangerousIdeas;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Dangerous Ideas
@@ -547,7 +719,6 @@ export default {
 
     <!-- Filters Modal for Mobile Phone View.-->
     <div v-if="showMobileFiltersModal" class="modal">
-        <!-- Confirm Modal -->
         <div class="modal-content">
             <div class="d-flex flex-column">
                 <button class="btn" @click="showMobileFiltersModal = false">
@@ -565,8 +736,8 @@ export default {
                     </svg>
                 </button>
             </div>
+            <!-- Subject buttons -->
             <div class="d-flex flex-column">
-                <!-- Subject buttons -->
                 <button
                     class="btn"
                     :class="{

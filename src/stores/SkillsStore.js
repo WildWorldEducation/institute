@@ -18,13 +18,23 @@ export const useSkillsStore = defineStore('skills', {
             this.nestedSkillsList = data;
         },
         // For 'Instructor' and 'Editor' role of Collapsible Tree/ For guest mode of Vertical Tree
-        async getFilteredNestedSkillsList() {
-            // API call for skill tree.
+        async getFilteredNestedSkillsList(level, subjects) {
+            // To deal with the "&" sign in "Science & Invention".
+            for (let i = 0; i < subjects.length; i++) {
+                subjects[i] = subjects[i].replace(/&/g, '%26');
+            }
+
+            // For instructors and editors
             const userDetailsStore = useUserDetailsStore();
-            let level = userDetailsStore.gradeFilter;
+            if (level == null) {
+                level = userDetailsStore.gradeFilter;
+            }
 
             const result = await fetch(
-                '/skills/filtered-nested-list?level=' + level
+                '/skills/filtered-nested-list?level=' +
+                    level +
+                    '&subjects=' +
+                    subjects
             );
             const data = await result.json();
 

@@ -66,8 +66,17 @@ export default {
         JoystickControl
     },
     async mounted() {
+        let subjects = [
+            'Language',
+            'Mathematics',
+            'Science & Invention',
+            'Computer Science',
+            'History',
+            'Life',
+            'Dangerous Ideas'
+        ];
         if (this.skillsStore.filteredNestedSkillsList.length == 0) {
-            await this.skillsStore.getFilteredNestedSkillsList();
+            await this.skillsStore.getFilteredNestedSkillsList('phd', subjects);
         }
 
         // Specify the chart’s dimensions.
@@ -627,23 +636,6 @@ export default {
                     break;
             }
         },
-        // We using a darker color for node border when it is mastered
-        hexBorderColor(skillLevel) {
-            switch (skillLevel) {
-                case 'college':
-                    return '#CC8400';
-                case 'grade_school':
-                    return '#33B3A6';
-                case 'high_school':
-                    return '#CCAC00';
-                case 'middle_school':
-                    return '#006400';
-                case 'phd':
-                    return '#CC0000';
-                default:
-                    break;
-            }
-        },
         // zoom and pan to a node
         goToLocation(node) {
             const skillTreeHeight = this.$refs.wrapper.clientHeight;
@@ -697,9 +689,17 @@ export default {
             });
             return results;
         },
-        async reloadTree() {
+        async reloadTree(gradeFilter, subjectFilters) {
+            // Close skill panel, if open.
             this.showSkillPanel = false;
 
+            // Query the API for the correct level
+            await this.skillsStore.getFilteredNestedSkillsList(
+                gradeFilter,
+                subjectFilters
+            );
+
+            // Get the updated data
             let skills = this.skillsStore.filteredNestedSkillsList;
 
             this.skill = {
@@ -753,6 +753,12 @@ export default {
                         .scale(this.scale)
                 );
             this.resetPos();
+        },
+        async filter(gradeFilter, subjectFilters) {
+            this.skill.children = await this.reloadTree(
+                gradeFilter,
+                subjectFilters
+            );
         }
     }
 };
