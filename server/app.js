@@ -152,8 +152,7 @@ app.get('/google-login-attempt', (req, res) => {
                 req.session.userId = results[0].id;
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
-                if (req.session.role == 'student')
-                    res.redirect('/vertical-tree');
+                if (req.session.role == 'student') res.redirect('/skill-tree');
                 else res.redirect('/');
             } else {
                 // Create account.
@@ -218,7 +217,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                 req.session.userName = results[0].username;
                 req.session.role = results[0].role;
                 googleLoginResult = 'new account';
-                res.redirect('/vertical-tree');
+                res.redirect('/skill-tree');
             }
             // If not.
             else {
@@ -257,7 +256,7 @@ app.get('/google-student-signup-attempt', (req, res, next) => {
                             // Unlock skills here
                             unlockInitialSkills(newStudentId);
                             googleLoginResult = 'new account';
-                            res.redirect('/vertical-tree');
+                            res.redirect('/skill-tree');
                         }
                     } catch (err) {
                         next(err);
@@ -499,24 +498,20 @@ app.get('/sitemap.xml', (req, res) => {
             priority: 1.0
         },
         {
-            path: '/vertical-tree',
-            priority: 0.8
-        },
-        {
-            path: '/radial-tree',
-            priority: 0.8
+            path: '/skill-tree',
+            priority: 1
         },
         {
             path: '/login',
-            priority: 0.9
+            priority: 0.6
         },
         {
             path: '/student-signup',
-            priority: 0.9
+            priority: 0.6
         },
         {
             path: '/editor-signup',
-            priority: 0.9
+            priority: 0.5
         },
         {
             path: '/skills',

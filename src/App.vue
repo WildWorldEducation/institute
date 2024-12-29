@@ -90,7 +90,7 @@ export default {
             class="navbar navbar-expand-sm nav-bar"
             :class="{
                 'fixed-top':
-                    $route.name == 'vertical-tree' ||
+                    $route.name == 'skill-tree' ||
                     $route.name == 'my-vertical-tree' ||
                     $route.name == 'radial-tree' ||
                     $route.name == 'student-vertical-tree'
@@ -173,14 +173,14 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' &&
-                                this.$route.name != 'vertical-tree'
+                                this.$route.name != 'skill-tree'
                             "
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/vertical-tree"
+                                to="/skill-tree"
                                 class="nav-link close-on-click"
-                                >Full Tree</RouterLink
+                                >Skill Tree</RouterLink
                             >
                         </li>
                         <li
@@ -201,14 +201,14 @@ export default {
                         <li
                             v-if="
                                 !sessionDetailsStore.isLoggedIn &&
-                                this.$route.name != 'vertical-tree'
+                                this.$route.name != 'skill-tree'
                             "
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/vertical-tree"
+                                to="/skill-tree"
                                 class="nav-link close-on-click"
-                                >Vertical Tree</RouterLink
+                                >Skill Tree</RouterLink
                             >
                         </li>
                         <li
