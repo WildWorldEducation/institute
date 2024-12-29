@@ -91,7 +91,7 @@ export default {
             :class="{
                 'fixed-top':
                     $route.name == 'skill-tree' ||
-                    $route.name == 'my-vertical-tree' ||
+                    $route.name == 'my-skill-tree' ||
                     $route.name == 'radial-tree' ||
                     $route.name == 'student-vertical-tree'
             }"
@@ -160,12 +160,12 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' &&
-                                this.$route.name != 'my-vertical-tree'
+                                this.$route.name != 'my-skill-tree'
                             "
                             class="nav-item"
                         >
                             <RouterLink
-                                to="/my-vertical-tree"
+                                to="/my-skill-tree"
                                 class="nav-link close-on-click"
                                 >My Tree</RouterLink
                             >
