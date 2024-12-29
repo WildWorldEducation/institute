@@ -681,6 +681,7 @@ export default {
             return results;
         },
         async reloadTree(gradeFilter) {
+            console.log(gradeFilter);
             // Close skill panel, if open.
             this.showSkillPanel = false;
 
@@ -742,8 +743,8 @@ export default {
                 );
             this.resetPos();
         },
-        async filter() {
-            this.skill.children = await this.reloadTree(null);
+        async filter(gradeFilter) {
+            this.skill.children = await this.reloadTree(gradeFilter);
         }
     }
 };
