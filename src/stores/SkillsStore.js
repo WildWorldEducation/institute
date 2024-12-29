@@ -18,7 +18,7 @@ export const useSkillsStore = defineStore('skills', {
             this.nestedSkillsList = data;
         },
         // For 'Instructor' and 'Editor' role of Collapsible Tree/ For guest mode of Vertical Tree
-        async getFilteredNestedSkillsList() {
+        async getFilteredNestedSkillsList(level) {
             // API call for skill tree.
             const userDetailsStore = useUserDetailsStore();
             let level = userDetailsStore.gradeFilter;

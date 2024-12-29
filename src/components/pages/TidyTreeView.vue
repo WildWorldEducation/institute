@@ -22,6 +22,7 @@ export default {
             lastChooseResult: '',
             showResult: false,
             showConfirmModal: false,
+            // Filters
             isGradeFilter: true,
             isSubjectFilter: true,
             isLanguage: false,
@@ -32,6 +33,9 @@ export default {
             isLife: false,
             isDangerousIdeas: false,
             showMobileFiltersModal: false,
+            // For guest mode only
+            gradeFilter: 'phd',
+            // Tutorial tooltips
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
@@ -191,7 +195,7 @@ export default {
 
 <template>
     <div class="container-fluid position-absolute legend-div">
-        <div v-if="sessionDetailsStore.isLoggedIn" class="mobile-legend">
+        <div class="mobile-legend">
             <div class="search-mobile-row">
                 <!-- Search feature -->
                 <SkillTreeSearchBar
@@ -211,7 +215,7 @@ export default {
                 </button>
             </div>
         </div>
-        <div v-if="sessionDetailsStore.isLoggedIn" class="tablet-and-up-legend">
+        <div class="tablet-and-up-legend">
             <div class="d-flex justify-content-between">
                 <!-- Search bar, reset, expand all, print buttons -->
                 <!-- Search Feature -->
@@ -257,9 +261,6 @@ export default {
                 </button>
             </div>
         </div>
-        <div v-else class="alert alert-warning" role="alert">
-            You cannot interact with the tree until signed in
-        </div>
     </div>
 
     <!-- Display loading screen while asynchronous call is made. -->
@@ -276,12 +277,9 @@ export default {
         </template>
     </Suspense>
 
-    <!-- Bottom grade level truncation filters
-        Not available on phone view -->
-    <div
-        v-if="sessionDetailsStore.isLoggedIn"
-        class="tablet-and-up-legend position-absolute bottom-legend-div"
-    >
+    <!-- Bottom grade level truncation filters -->
+    <div class="tablet-and-up-legend position-absolute bottom-legend-div">
+        <!-- Tooltip -->
         <div
             v-if="showTutorialTip5"
             class="info-panel bg-light rounded p-2 mb-2"
@@ -291,9 +289,9 @@ export default {
                 next
             </button>
         </div>
-        <div class="d-flex">
+        <!-- Grade buttons -->
+        <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex">
             <div v-if="isGradeFilter" class="legend">
-                <!-- Grade buttons -->
                 <button
                     class="btn grade-school me-2"
                     :class="{
@@ -394,12 +392,108 @@ export default {
                 </svg>
             </button>
         </div>
+        <div v-else class="d-flex">
+            <div v-if="isGradeFilter" class="legend">
+                <button
+                    class="btn grade-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.gradeFilter == 'grade_school'
+                    }"
+                    @click="
+                        $refs.childComponent.filter('grade_school');
+                        this.gradeFilter = 'grade_school';
+                    "
+                >
+                    Grade school
+                </button>
+                <button
+                    class="btn middle-school me-2"
+                    :class="{
+                        'active-grade-filter':
+                            this.gradeFilter == 'middle_school'
+                    }"
+                    @click="
+                        $refs.childComponent.filter('middle_school');
+                        this.gradeFilter = 'middle_school';
+                    "
+                >
+                    Middle school
+                </button>
+                <button
+                    class="btn high-school me-2"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'high_school'
+                    }"
+                    @click="
+                        $refs.childComponent.filter('high_school');
+                        this.gradeFilter = 'high_school';
+                    "
+                >
+                    High school
+                </button>
+                <button
+                    class="btn college me-2"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'college'
+                    }"
+                    @click="
+                        $refs.childComponent.filter('college');
+                        this.gradeFilter = 'college';
+                    "
+                >
+                    College
+                </button>
+                <button
+                    class="btn phd me-2"
+                    :class="{
+                        'active-grade-filter': this.gradeFilter == 'phd'
+                    }"
+                    @click="
+                        $refs.childComponent.filter('phd');
+                        this.gradeFilter = 'phd';
+                    "
+                >
+                    PHD
+                </button>
+            </div>
+            <button
+                class="btn switch-btn me-2"
+                @click="isGradeFilter = !isGradeFilter"
+            >
+                <!-- Plus sign -->
+                <svg
+                    v-if="!isGradeFilter"
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                    />
+                </svg>
+                <!-- Minus sign -->
+                <svg
+                    v-else
+                    width="18"
+                    height="18"
+                    fill="white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                >
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
+                    <path
+                        d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+                    />
+                </svg>
+            </button>
+        </div>
     </div>
     <!-- Left root subject filters  -->
-    <div
-        v-if="sessionDetailsStore.isLoggedIn"
-        class="tablet-and-up-legend position-absolute left-legend-div"
-    >
+    <div class="tablet-and-up-legend position-absolute left-legend-div">
         <div>
             <div v-if="isSubjectFilter" class="d-flex flex-column">
                 <button
@@ -547,7 +641,6 @@ export default {
 
     <!-- Filters Modal for Mobile Phone View.-->
     <div v-if="showMobileFiltersModal" class="modal">
-        <!-- Confirm Modal -->
         <div class="modal-content">
             <div class="d-flex flex-column">
                 <button class="btn" @click="showMobileFiltersModal = false">
@@ -565,8 +658,8 @@ export default {
                     </svg>
                 </button>
             </div>
+            <!-- Subject buttons -->
             <div class="d-flex flex-column">
-                <!-- Subject buttons -->
                 <button
                     class="btn"
                     :class="{
