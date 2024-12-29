@@ -412,8 +412,10 @@ router.get('/filtered-nested-list', (req, res, next) => {
     /*
      * Apply grade level and subject filters
      */
-    // Level will be sent in query param (eg: ?level='middle_school')
+    // Level and subjects will be sent in query param (eg: ?level='middle_school')
     const level = req.query.level;
+    let subjects = req.query.subjects;
+
     // Default is to show all.
     let levelsToShow =
         "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
@@ -474,34 +476,13 @@ router.get('/filtered-nested-list', (req, res, next) => {
             // Add first level of array.
             let filteredNestedSkills = [];
             for (var i = 0; i < results.length; i++) {
-                if (results[i].parent == null || results[i].parent == 0) {
+                if (
+                    (results[i].parent == null || results[i].parent == 0) && // Filter by subject.
+                    subjects.includes(results[i].name)
+                ) {
                     filteredNestedSkills.push(results[i]);
                 }
             }
-
-            // // Find the depth of nodes expanded, to determine width of Vertical Tree
-            // let depth = 0;
-            // let skillDepth;
-            // function determineDepth(parentChildren, depth) {
-            //     depth++;
-            //     skillDepth = depth;
-            //     var i = parentChildren.length;
-            //     while (i--) {
-            //         if (typeof parentChildren[i] !== 'undefined') {
-            //             /*
-            //              * Run the above function again recursively.
-            //              */
-            //             if (
-            //                 parentChildren[i].children &&
-            //                 Array.isArray(parentChildren[i].children) &&
-            //                 parentChildren[i].children.length > 0
-            //             )
-            //                 determineDepth(parentChildren[i].children, depth);
-            //         }
-            //     }
-            // }
-
-            // determineDepth(filteredNestedSkills, depth);
 
             res.json(filteredNestedSkills);
         } catch (err) {

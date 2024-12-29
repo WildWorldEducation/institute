@@ -35,6 +35,7 @@ export default {
             showMobileFiltersModal: false,
             // For guest mode only
             gradeFilter: 'phd',
+            subjectFilters: [],
             // Tutorial tooltips
             showTutorialTip1: false,
             showTutorialTip2: false,
@@ -59,33 +60,51 @@ export default {
             ) {
                 this.showTutorialTip1 = true;
             }
-        }
 
-        // Subject filters
-        for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
-            if (this.userDetailsStore.subjectFilters[i] == 'Language') {
-                this.isLanguage = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
-                this.isMathematics = true;
-            }
-            if (
-                this.userDetailsStore.subjectFilters[i] == 'Science & Invention'
+            // Subject filters
+            for (
+                let i = 0;
+                i < this.userDetailsStore.subjectFilters.length;
+                i++
             ) {
-                this.isScienceAndInvention = true;
+                if (this.userDetailsStore.subjectFilters[i] == 'Language') {
+                    this.isLanguage = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'Mathematics') {
+                    this.isMathematics = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] ==
+                    'Science & Invention'
+                ) {
+                    this.isScienceAndInvention = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] ==
+                    'Computer Science'
+                ) {
+                    this.isComputerScience = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'History') {
+                    this.isHistory = true;
+                }
+                if (this.userDetailsStore.subjectFilters[i] == 'Life') {
+                    this.isLife = true;
+                }
+                if (
+                    this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas'
+                ) {
+                    this.isDangerousIdeas = true;
+                }
             }
-            if (this.userDetailsStore.subjectFilters[i] == 'Computer Science') {
-                this.isComputerScience = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'History') {
-                this.isHistory = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Life') {
-                this.isLife = true;
-            }
-            if (this.userDetailsStore.subjectFilters[i] == 'Dangerous Ideas') {
-                this.isDangerousIdeas = true;
-            }
+        } else {
+            this.isLanguage = true;
+            this.isMathematics = true;
+            this.isScienceAndInvention = true;
+            this.isComputerScience = true;
+            this.isHistory = true;
+            this.isLife = true;
+            this.isDangerousIdeas = true;
         }
     },
     mounted() {
@@ -122,23 +141,44 @@ export default {
             this.$refs.childComponent.resetPos();
         },
         updateSubjectFilters() {
-            this.userDetailsStore.subjectFilters = [];
-
-            if (this.isLanguage)
-                this.userDetailsStore.subjectFilters.push('Language');
-            if (this.isMathematics)
-                this.userDetailsStore.subjectFilters.push('Mathematics');
-            if (this.isScienceAndInvention)
-                this.userDetailsStore.subjectFilters.push(
-                    'Science & Invention'
-                );
-            if (this.isComputerScience)
-                this.userDetailsStore.subjectFilters.push('Computer Science');
-            if (this.isHistory)
-                this.userDetailsStore.subjectFilters.push('History');
-            if (this.isLife) this.userDetailsStore.subjectFilters.push('Life');
-            if (this.isDangerousIdeas)
-                this.userDetailsStore.subjectFilters.push('Dangerous Ideas');
+            // If user is logged in.
+            if (this.sessionDetailsStore.isLoggedIn) {
+                this.userDetailsStore.subjectFilters = [];
+                if (this.isLanguage)
+                    this.userDetailsStore.subjectFilters.push('Language');
+                if (this.isMathematics)
+                    this.userDetailsStore.subjectFilters.push('Mathematics');
+                if (this.isScienceAndInvention)
+                    this.userDetailsStore.subjectFilters.push(
+                        'Science & Invention'
+                    );
+                if (this.isComputerScience)
+                    this.userDetailsStore.subjectFilters.push(
+                        'Computer Science'
+                    );
+                if (this.isHistory)
+                    this.userDetailsStore.subjectFilters.push('History');
+                if (this.isLife)
+                    this.userDetailsStore.subjectFilters.push('Life');
+                if (this.isDangerousIdeas)
+                    this.userDetailsStore.subjectFilters.push(
+                        'Dangerous Ideas'
+                    );
+            }
+            // Not logged in
+            else {
+                this.subjectFilters = [];
+                if (this.isLanguage) this.subjectFilters.push('Language');
+                if (this.isMathematics) this.subjectFilters.push('Mathematics');
+                if (this.isScienceAndInvention)
+                    this.subjectFilters.push('Science & Invention');
+                if (this.isComputerScience)
+                    this.subjectFilters.push('Computer Science');
+                if (this.isHistory) this.subjectFilters.push('History');
+                if (this.isLife) this.subjectFilters.push('Life');
+                if (this.isDangerousIdeas)
+                    this.subjectFilters.push('Dangerous Ideas');
+            }
         },
         progressTutorial(step) {
             if (step == 1) {
@@ -290,6 +330,7 @@ export default {
             </button>
         </div>
         <!-- Grade buttons -->
+        <!-- If user is logged in -->
         <div v-if="sessionDetailsStore.isLoggedIn" class="d-flex">
             <div v-if="isGradeFilter" class="legend">
                 <button
@@ -392,6 +433,7 @@ export default {
                 </svg>
             </button>
         </div>
+        <!-- If user is not logged in -->
         <div v-else class="d-flex">
             <div v-if="isGradeFilter" class="legend">
                 <button
@@ -401,8 +443,11 @@ export default {
                             this.gradeFilter == 'grade_school'
                     }"
                     @click="
-                        $refs.childComponent.filter('grade_school');
                         this.gradeFilter = 'grade_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Grade school
@@ -414,8 +459,11 @@ export default {
                             this.gradeFilter == 'middle_school'
                     }"
                     @click="
-                        $refs.childComponent.filter('middle_school');
                         this.gradeFilter = 'middle_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Middle school
@@ -426,8 +474,11 @@ export default {
                         'active-grade-filter': this.gradeFilter == 'high_school'
                     }"
                     @click="
-                        $refs.childComponent.filter('high_school');
                         this.gradeFilter = 'high_school';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     High school
@@ -438,8 +489,11 @@ export default {
                         'active-grade-filter': this.gradeFilter == 'college'
                     }"
                     @click="
-                        $refs.childComponent.filter('college');
                         this.gradeFilter = 'college';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     College
@@ -450,8 +504,11 @@ export default {
                         'active-grade-filter': this.gradeFilter == 'phd'
                     }"
                     @click="
-                        $refs.childComponent.filter('phd');
                         this.gradeFilter = 'phd';
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     PHD
@@ -505,7 +562,10 @@ export default {
                     @click="
                         this.isLanguage = !this.isLanguage;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Language
@@ -519,7 +579,10 @@ export default {
                     @click="
                         this.isMathematics = !this.isMathematics;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Math
@@ -533,7 +596,10 @@ export default {
                     @click="
                         this.isHistory = !this.isHistory;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     History
@@ -547,7 +613,10 @@ export default {
                     @click="
                         this.isLife = !this.isLife;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Life
@@ -561,7 +630,10 @@ export default {
                     @click="
                         this.isComputerScience = !this.isComputerScience;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Computer Science
@@ -576,7 +648,10 @@ export default {
                         this.isScienceAndInvention =
                             !this.isScienceAndInvention;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Science & Invention
@@ -590,7 +665,10 @@ export default {
                     @click="
                         this.isDangerousIdeas = !this.isDangerousIdeas;
                         this.updateSubjectFilters();
-                        $refs.childComponent.filter();
+                        $refs.childComponent.filter(
+                            this.gradeFilter,
+                            this.subjectFilters
+                        );
                     "
                 >
                     Dangerous Ideas

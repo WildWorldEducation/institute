@@ -66,8 +66,17 @@ export default {
         JoystickControl
     },
     async mounted() {
+        let subjects = [
+            'Language',
+            'Mathematics',
+            'Science & Invention',
+            'Computer Science',
+            'History',
+            'Life',
+            'Dangerous Ideas'
+        ];
         if (this.skillsStore.filteredNestedSkillsList.length == 0) {
-            await this.skillsStore.getFilteredNestedSkillsList();
+            await this.skillsStore.getFilteredNestedSkillsList('phd', subjects);
         }
 
         // Specify the chart’s dimensions.
@@ -680,13 +689,15 @@ export default {
             });
             return results;
         },
-        async reloadTree(gradeFilter) {
-            console.log(gradeFilter);
+        async reloadTree(gradeFilter, subjectFilters) {
             // Close skill panel, if open.
             this.showSkillPanel = false;
 
             // Query the API for the correct level
-            await this.skillsStore.getFilteredNestedSkillsList(gradeFilter);
+            await this.skillsStore.getFilteredNestedSkillsList(
+                gradeFilter,
+                subjectFilters
+            );
 
             // Get the updated data
             let skills = this.skillsStore.filteredNestedSkillsList;
@@ -743,8 +754,11 @@ export default {
                 );
             this.resetPos();
         },
-        async filter(gradeFilter) {
-            this.skill.children = await this.reloadTree(gradeFilter);
+        async filter(gradeFilter, subjectFilters) {
+            this.skill.children = await this.reloadTree(
+                gradeFilter,
+                subjectFilters
+            );
         }
     }
 };
