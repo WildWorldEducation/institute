@@ -105,6 +105,15 @@ export default {
             this.isHistory = true;
             this.isLife = true;
             this.isDangerousIdeas = true;
+            this.subjectFilters = [
+                'Language',
+                'Mathematics',
+                'Science & Invention',
+                'Computer Science',
+                'History',
+                'Life',
+                'Dangerous Ideas'
+            ];
         }
     },
     mounted() {
