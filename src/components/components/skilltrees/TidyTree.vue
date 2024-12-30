@@ -23,6 +23,8 @@ export default {
         return {
             width: null,
             height: null,
+            nodeWidth: 60,
+            nodeHeight: 200,
             skill: {
                 id: null,
                 children: [],
@@ -257,7 +259,7 @@ export default {
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             // THIS NEEDED TO BE REFACTOR LATER
-            this.tree = d3.tree().nodeSize([100, 300]);
+            this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
 
             // Sort the tree and apply the layout.
             this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
@@ -402,7 +404,7 @@ export default {
 
                 // If not, just an outline.
                 else {
-                    ctx1.lineWidth = 2;
+                    ctx1.lineWidth = 4;
                     ctx1.fillStyle = '#FFF';
                     ctx1.fill();
                     ctx1.strokeStyle = skillColor;
@@ -616,7 +618,7 @@ export default {
             const dx = 15;
             const dy = this.width / (root.height + 1);
             // Create a tree layout.
-            const tree = d3.tree().nodeSize([dx, dy]);
+            const tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
             // Sort the tree and apply the layout.
             tree(root);
 
@@ -1059,7 +1061,7 @@ export default {
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             // Create a tree layout.
-            this.tree = d3.tree().nodeSize([dx, dy]);
+            this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
 
             // Sort the tree and apply the layout.
             this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
@@ -1147,7 +1149,7 @@ export default {
             const dy = (this.width / (this.root.height + 1)) * multiplyBy;
 
             // Create a tree layout.
-            this.tree = d3.tree().nodeSize([dx, dy]);
+            this.tree = d3.tree().nodeSize([this.nodeWidth, this.nodeHeight]);
 
             // Sort the tree and apply the layout.
             this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
