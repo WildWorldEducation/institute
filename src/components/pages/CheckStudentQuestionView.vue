@@ -38,7 +38,7 @@ export default {
                 answer: false,
                 explanation: false
             },
-            isEditMode: true,
+            isEditMode: false,
             studentName: null,
             skillName: null,
             skillId: null,
