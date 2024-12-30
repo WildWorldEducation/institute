@@ -207,13 +207,13 @@ export default {
                         v-if="
                             !instructorMode && userDetailsStore.role != 'admin'
                         "
-                        class="col d-flex align-items-center"
+                        class="col d-flex align-items-center justify-content-center"
                     >
-                        <div class="d-flex">
+                        <div class="d-flex w-100 justify-content-md-between gap-3 custom-grade-buttons">
                             <button
                                 v-for="grade in gradeLevels"
                                 :key="grade.level"
-                                class="btn me-2 w-100"
+                                class="btn w-100"
                                 :class="{
                                     'primary-btn': true,
                                     'active-grade-filter':
@@ -728,6 +728,10 @@ export default {
     margin: 2px;
     border-radius: 50%;
 }
+.custom-grade-buttons .primary-btn {
+        width: 100% !important;
+        max-width: unset !important;
+    }
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
