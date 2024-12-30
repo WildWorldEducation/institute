@@ -36,6 +36,8 @@ export default {
             showMobileTutorialTip4: false,
             showTutorialTip5: false,
             showMobileTutorialTip5: false,
+            showInstructorModeTutorialTip1: false,
+            showInstructorModeTutorialTip2: false,
             isMobileCheck: window.innerWidth
         };
     },
@@ -44,11 +46,6 @@ export default {
         SkillTreeSearchBar
     },
     async created() {
-        // Tooltips
-        if (localStorage.getItem('isCollapsibleTreeCompleted') != 'true') {
-            this.showTutorialTip1 = true;
-        }
-
         // Check if regular or instructor mode.
         if (typeof this.studentId == 'string') {
             this.instructorMode = true;
@@ -61,6 +58,20 @@ export default {
                 }
             }
         }
+
+        // Tooltips
+        if (localStorage.getItem('isCollapsibleTreeCompleted') != 'true') {
+            this.showTutorialTip1 = true;
+        }
+
+        if (this.instructorMode) {
+            if (
+                localStorage.getItem('isStudentCollapsibleTreeCompleted') !=
+                'true'
+            ) {
+                this.showInstructorModeTutorialTip1 = true;
+            }
+        }
     },
     methods: {
         clearResults() {
@@ -71,19 +82,35 @@ export default {
         },
         progressTutorial(step) {
             if (step == 1) {
-                this.showTutorialTip1 = false;
-                if (this.isMobileCheck > 576) {
-                    this.showTutorialTip2 = true;
-                } else {
-                    this.showMobileTutorialTip2 = true;
+                // Only for instructors viewing their student's tree
+                if (this.instructorMode) {
+                    this.showInstructorModeTutorialTip1 = false;
+                    this.showInstructorModeTutorialTip2 = true;
+                    console.log(this.showInstructorModeTutorialTip2);
+                }
+                // For students and instructors
+                else {
+                    this.showTutorialTip1 = false;
+                    if (this.isMobileCheck > 576) {
+                        this.showTutorialTip2 = true;
+                    } else {
+                        this.showMobileTutorialTip2 = true;
+                    }
                 }
             } else if (step == 2) {
-                if (this.isMobileCheck > 576) {
-                    this.showTutorialTip2 = false;
-                    this.showTutorialTip3 = true;
-                } else {
-                    this.showMobileTutorialTip2 = false;
-                    this.showMobileTutorialTip3 = true;
+                // Only for instructors viewing their student's tree
+                if (this.instructorMode) {
+                    this.showInstructorModeTutorialTip2 = false;
+                }
+                // For students and instructors
+                else {
+                    if (this.isMobileCheck > 576) {
+                        this.showTutorialTip2 = false;
+                        this.showTutorialTip3 = true;
+                    } else {
+                        this.showMobileTutorialTip2 = false;
+                        this.showMobileTutorialTip3 = true;
+                    }
                 }
             } else if (step == 3) {
                 if (this.isMobileCheck > 576) {
@@ -523,6 +550,36 @@ export default {
                     skill will be unlocked.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(4)">
+                    close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructor Introduction modal for Students Collapsible Tree-->
+    <div
+        v-if="showInstructorModeTutorialTip1 || showInstructorModeTutorialTip2"
+        class="modal"
+    >
+        <div class="modal-content bg-light">
+            <div v-if="showInstructorModeTutorialTip1">
+                <p>This is a look at your student's Collapsible Skill Tree.</p>
+                <p>
+                    It is another way to see their progress, and also the place
+                    where you can set goals for your student.
+                </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showInstructorModeTutorialTip2">
+                <p>
+                    To create a goal for your student, click on the target icon
+                    on the relevant skill node.
+                </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(2)">
                     close
                 </button>
             </div>
