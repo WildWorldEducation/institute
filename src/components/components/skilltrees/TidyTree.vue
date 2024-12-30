@@ -60,7 +60,13 @@ export default {
             showAnimation: false,
             showSkillPanel: false,
             resultNode: null,
-            clickMode: 'showPanel'
+            clickMode: 'showPanel',
+            // transform object use to translate canvas context
+            transformData: {
+                x: 0,
+                y: 0,
+                k: 0
+            }
         };
     },
     components: {
@@ -300,7 +306,10 @@ export default {
                 // On the hidden canvas each rectangle gets a unique color.
                 this.hiddenCanvasContext.fillStyle = node.__pickColor;
                 // Draw the actual shape
-                this.drawNode(node);
+                const nodeInView = this.checkingIfNodeInView(node, transform);
+                if (nodeInView) {
+                    this.drawNode(node);
+                }
             }
 
             this.context.restore();
@@ -653,7 +662,7 @@ export default {
             // Append the SVG element.
             document.querySelector('#SVGskilltree').append(svg.node());
         },
-        resetPos() {          
+        resetPos() {
             d3.select(this.context.canvas)
                 .transition()
                 .duration(700)
@@ -977,6 +986,29 @@ export default {
                 this.userDetailsStore.userId +
                 '/skill-tree-filters';
             fetch(url, requestOptions);
+        },
+        checkingIfNodeInView(node, transformData) {
+            // Calculate max visible range
+            // Visible range is the rectangle with width and height equal to canvas context
+            // Every time context is translate the visible range is changing too
+
+            const visibleRangeY = transformData.y - this.height;
+            // Calculate real position of node with current scale
+            let realPositionX = node.y * transformData.k;
+            let realPositionY = -node.x * transformData.k;
+
+            // I acctually come up with this fomula base on obserse the changing of translate and node position when translate context
+            // It dosen`t make sense to me but some how woking correctly
+            let combinePosition = transformData.x + realPositionX;
+            if (
+                combinePosition > 0 &&
+                combinePosition < this.width &&
+                transformData.y > realPositionY &&
+                realPositionY > visibleRangeY
+            ) {
+                return true;
+            }
+            return false;
         }
     }
 };
