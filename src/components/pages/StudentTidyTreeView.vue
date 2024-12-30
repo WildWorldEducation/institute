@@ -35,6 +35,14 @@ export default {
                 this.studentName = this.usersStore.users[i].username;
             }
         }
+
+        // Check if tutorial has been seen.
+        if (
+            localStorage.getItem('isStudentVerticalTreeTutorialCompleted') !=
+            'true'
+        ) {
+            this.showTutorialTip1 = true;
+        }
     },
     components: {
         StudentTidyTree
@@ -48,7 +56,7 @@ export default {
                 this.showTutorialTip2 = false;
                 // Store
                 localStorage.setItem(
-                    'isFullVerticalTreeTutorialCompleted',
+                    'isStudentVerticalTreeTutorialCompleted',
                     'true'
                 );
             }
