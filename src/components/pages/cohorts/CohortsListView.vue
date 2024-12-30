@@ -21,18 +21,18 @@ export default {
     data() {
         return {
             showInformationModal: false,
-            selectedCohortId: null
+            selectedCohortId: null,
+            showTutorialTip1: false,
+            showTutorialTip2: false,
+            showTutorialTip3: false
         };
     },
     async created() {
         await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
         // Check if user has visited before
-        const hasVisited = localStorage.getItem('hasVisited');
-        if (!hasVisited) {
-            // Show the modal on the first visit
-            this.showInformationModal = true;
-            // Save a flag for local storage
-            localStorage.setItem('hasVisited', 'true');
+        // Tooltips
+        if (localStorage.getItem('isCohortsPageCompleted') != 'true') {
+            this.showTutorialTip1 = true;
         }
     },
     mounted() {
@@ -58,6 +58,19 @@ export default {
         },
         closeMobileDetail() {
             this.showDetails = false; // Hide the mobile cohort detail modal
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+                // Store
+                localStorage.setItem('isCohortsPageCompleted', 'true');
+            }
         }
     }
 };
@@ -120,54 +133,51 @@ export default {
         </div>
     </div>
 
-    <!-- The Info Modal -->
-    <div v-show="showInformationModal">
-        <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div id="modal-content" class="modal-content contact-modal-content">
-                <button
-                    type="button"
-                    @click="toggleInformationModal"
-                    class="close closeBtn"
-                    aria-label="Close"
-                >
-                    <span aria-hidden="true">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                            width="25"
-                            height="25"
-                        >
-                            <path
-                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                                fill="black"
-                            />
-                        </svg>
-                    </span>
+    <!-- Instructor Tutorial modal -->
+    <div
+        v-if="
+            userDetailsStore.role == 'instructor' &&
+            (showTutorialTip1 || showTutorialTip2 || showTutorialTip3)
+        "
+        class="modal"
+    >
+        <div class="modal-content bg-light">
+            <div v-if="showTutorialTip1">
+                <p>
+                    Cohorts allow you, as an instructor, to present the same
+                    filtered version of a skill tree to a selective group of
+                    handpicked students.
+                </p>
+                <p>
+                    For example, if you are guiding students through a math
+                    class, each student can create a math-specific account and
+                    you can add those accounts to your math class cohort,
+                    updating the nodes as your instruction progresses.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
                 </button>
-                <section>
-                    <p>
-                        Cohorts allow you, as an instructor, to present the same
-                        filtered version of a skill tree to a selective group of
-                        handpicked students. For example, if you are guiding
-                        students through a math class, each student can create a
-                        math-specific account and you can add those accounts to
-                        your math class cohort, updating the nodes as your
-                        instruction progresses.
-                    </p>
-                    <p>
-                        To leverage this feature, create a cohort, add relevant
-                        students, and filter the tree they are to see as
-                        desired. You can update the filtered skill tree nodes in
-                        your cohort, plus the cohort's members, whenever you
-                        please.
-                    </p>
-                    <p>
-                        Before adding a student to your cohort, make sure they
-                        are in no other cohorts; students can only be in one
-                        cohort at a time.
-                    </p>
-                </section>
+            </div>
+            <div v-if="showTutorialTip2">
+                <p>
+                    To leverage this feature, create a cohort, add relevant
+                    students, and filter the tree they are to see as desired.
+                    You can update the filtered skill tree nodes in your cohort,
+                    plus the cohort's members, whenever you please.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip3">
+                <p>
+                    Before adding a student to your cohort, make sure they are
+                    in no other cohorts; students can only be in one cohort at a
+                    time.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    close
+                </button>
             </div>
         </div>
     </div>
@@ -213,77 +223,20 @@ export default {
     align-items: center;
     justify-content: center;
 }
-.closeBtn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-}
-
-/* The Warning Modal */
-.modal {
-    display: block;
-    /* Hidden by default */
-    position: fixed;
-    /* Stay in place */
-    z-index: 1;
-    /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    /* Full width */
-    height: 100%;
-    /* Full height */
-    overflow: hidden;
-    /* Enable scroll if needed */
-    background-color: rgb(0, 0, 0);
-    /* Fallback color */
-    background-color: rgba(0, 0, 0, 0.4);
-    /* Black w/ opacity */
-}
 
 ul li {
     list-style: none;
 }
 
-/* Modal Content/Box */
-.contact-modal-content {
-    background-color: #fefefe;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 600px !important;
-    font-size: 18px;
-    /* Could be more or less, depending on screen size */
-}
-
 /* Mobile */
 @media (max-width: 480px) {
-    .contact-modal-content {
-        margin: 30% auto !important;
-        width: 90% !important;
-    }
-    .mobile-container {
-        display: flex;
-        flex-direction: column;
-        max-width: 100%;
-        justify-content: center;
-        align-items: center;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-    }
 }
 
 /* Tablets */
 @media (min-width: 481px) and (max-width: 1023px) {
-    .contact-modal-content {
-        margin: 15% auto !important;
-        width: 90% !important;
-    }
 }
 
 /* Desktops/laptops */
 @media (min-width: 1025px) {
-    .contact-modal-content {
-        margin: 10% auto;
-    }
 }
 </style>

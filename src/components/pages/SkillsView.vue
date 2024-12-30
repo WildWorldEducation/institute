@@ -265,7 +265,7 @@ export default {
                             showTutorialTip4 ||
                             showTutorialTip5)
                     "
-                    class="info-panel me-4 mt-1"
+                    class="info-panel me-4 mt-1 bg-light"
                 >
                     <div
                         v-if="showTutorialTip2"
@@ -345,7 +345,7 @@ export default {
                             showTutorialTip4 ||
                             showTutorialTip5)
                     "
-                    class="info-panel me-4 mt-1"
+                    class="info-panel me-4 mt-1 bg-light"
                 >
                     <div
                         v-if="showTutorialTip2"
@@ -416,8 +416,13 @@ export default {
     >
         <div class="modal-content">
             <div v-if="showTutorialTip1">
-                <p>This page is another view of your skill tree closed.</p>
-                <p>Click on the down arrows to expand the skills.</p>
+                <p>
+                    This page shows the skills in a drop-down hierarchical list.
+                </p>
+                <p>
+                    Click on the down arrows to expand them so as to access the
+                    descendant skills of the 7 subjects.
+                </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
@@ -478,12 +483,14 @@ export default {
         "
         class="modal"
     >
-        <div class="modal-content">
+        <div class="modal-content bg-light">
             <div v-if="showTutorialTip1">
-                <p>This page shows the 7 core subjects.</p>
                 <p>
-                    Click on the down arrows to expand them to access all the
-                    skills.
+                    This page shows the skills in a drop-down hierarchical list.
+                </p>
+                <p>
+                    Click on the down arrows to expand them so as to access the
+                    descendant skills of the 7 subjects.
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
