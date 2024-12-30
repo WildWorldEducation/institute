@@ -59,17 +59,17 @@ export default {
             }
         }
 
-        // Tooltips
-        if (localStorage.getItem('isCollapsibleTreeCompleted') != 'true') {
-            this.showTutorialTip1 = true;
-        }
-
         if (this.instructorMode) {
             if (
                 localStorage.getItem('isStudentCollapsibleTreeCompleted') !=
                 'true'
             ) {
                 this.showInstructorModeTutorialTip1 = true;
+            }
+        } else {
+            // Tooltips
+            if (localStorage.getItem('isCollapsibleTreeCompleted') != 'true') {
+                this.showTutorialTip1 = true;
             }
         }
     },
@@ -86,7 +86,6 @@ export default {
                 if (this.instructorMode) {
                     this.showInstructorModeTutorialTip1 = false;
                     this.showInstructorModeTutorialTip2 = true;
-                    console.log(this.showInstructorModeTutorialTip2);
                 }
                 // For students and instructors
                 else {
