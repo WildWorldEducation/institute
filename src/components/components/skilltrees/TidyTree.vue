@@ -222,7 +222,7 @@ export default {
             this.tree = d3.tree().nodeSize([dx, dy]);
 
             // Sort the tree and apply the layout.
-            this.root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
+            this.root.sort((a, b) => d3.ascending(a.x, b.x));
             this.tree(this.root);
 
             // Compute the extent of the tree. Note that x and y are swapped here
@@ -283,6 +283,11 @@ export default {
             // Draw nodes.
             this.context.beginPath();
             for (const node of this.nodes) {
+                const nodeInView = this.checkingIfNodeInView(node, transform);
+                if (!nodeInView) {
+                    continue;
+                }
+
                 if (node.renderCol) {
                     // Render clicked nodes in the color of their corresponding node
                     // on the hidden canvas.
@@ -306,10 +311,7 @@ export default {
                 // On the hidden canvas each rectangle gets a unique color.
                 this.hiddenCanvasContext.fillStyle = node.__pickColor;
                 // Draw the actual shape
-                const nodeInView = this.checkingIfNodeInView(node, transform);
-                if (nodeInView) {
-                    this.drawNode(node);
-                }
+                this.drawNode(node);
             }
 
             this.context.restore();
