@@ -38,7 +38,7 @@ export default {
                 answer: false,
                 explanation: false
             },
-            isEditMode: true,
+            isEditMode: false,
             studentName: null,
             skillName: null,
             skillId: null,
@@ -313,7 +313,7 @@ export default {
                     <div
                         v-if="
                             userDetailsStore.role == 'admin' ||
-                            userDetailsStore.role == 'editor'
+                            userDetailsStore.role == 'instructor'
                         "
                         class="d-flex justify-content-end gap-4"
                     >
