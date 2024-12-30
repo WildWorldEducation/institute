@@ -376,7 +376,7 @@ export default {
     </div>
 </template>
 
-<style>
+<style scoped>
 /* Tooltips */
 .info-panel {
     border-color: var(--primary-color);
