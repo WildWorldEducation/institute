@@ -1171,21 +1171,6 @@ export default {
 /* End of check box styling */
 
 /* Button Styling */
-.red-btn {
-    background-color: #dd2822;
-    color: white;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-.red-btn:hover {
-    background-color: rgb(201, 18, 18);
-}
 
 .flagging-icon:hover {
     scale: 1.2;

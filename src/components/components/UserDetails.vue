@@ -280,22 +280,7 @@ export default {
     font-weight: 600;
     font-family: 'Poppins' sans-serif;
 }
-.red-btn {
-    background-color: #da7033;
-    color: white;
-    border: 1px solid var(--primary-color);
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
 
-.red-btn:hover {
-    background-color: rgb(209, 96, 15);
-}
 .green-btn {
     background-color: #36c1af;
     color: white;

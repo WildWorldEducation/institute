@@ -367,23 +367,6 @@ export default {
     border-bottom-color: transparent;
 }
 
-:deep(.red-btn) {
-    background-color: #e24d4d;
-    color: white;
-    border: 1px solid #d33622;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-:deep(.red-btn:hover) {
-    background-color: #cc3535;
-    color: white;
-}
-
 :deep(.green-btn) {
     background-color: #36c1af;
     color: white;

@@ -82,26 +82,6 @@ h2 {
     font-weight: 700;
 }
 
-.red-btn,
-:deep(.red-btn) {
-    background-color: #e24d4d;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-    height: 44px;
-}
-.red-btn:hover,
-:deep(.red-btn:hover) {
-    background-color: #cc3535;
-    color: white;
-}
-
 :deep(.green-btn) {
     background-color: #36c1af;
     color: white;

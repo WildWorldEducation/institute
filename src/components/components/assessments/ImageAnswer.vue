@@ -101,21 +101,4 @@ export default {
     border-radius: 10px;
 }
 
-/* Button Styling */
-.red-btn {
-    background-color: #dd2822;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
-
-.red-btn:hover {
-    background-color: rgb(201, 18, 18);
-}
 </style>

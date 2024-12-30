@@ -543,18 +543,6 @@ export default {
     right: 5px;
 }
 
-.red-btn {
-    background-color: #da7033 !important;
-    color: white;
-    border: 1px solid #7f56d9;
-    align-items: center;
-    max-width: fit-content;
-    display: flex;
-}
-
-.red-btn:hover {
-    background-color: rgb(209, 96, 15);
-}
 
 /* The Warning Modal */
 .modal {

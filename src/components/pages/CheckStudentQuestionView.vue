@@ -428,23 +428,6 @@ export default {
     background-color: #46f7df;
 }
 
-.red-btn {
-    background-color: #e24d4d;
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-    height: 40px;
-}
-
-.red-btn:hover {
-    border: 1px solid black;
-}
-
 /* The Warning Modal */
 .modal {
     display: block;
