@@ -24,7 +24,8 @@ export default {
             selectedCohortId: null,
             showTutorialTip1: false,
             showTutorialTip2: false,
-            showTutorialTip3: false
+            showTutorialTip3: false,
+            showTutorialTip4: false
         };
     },
     async created() {
@@ -35,26 +36,13 @@ export default {
             this.showTutorialTip1 = true;
         }
     },
-    mounted() {
-        // Close modal by clicking outside it.
-        document.getElementById('myModal').addEventListener('click', (e) => {
-            if (!e.target.classList.contains('modal-content')) {
-                this.showInformationModal = false;
-            }
-        });
-        // The above should not work on the modal content.
-        document.getElementById('modal-content').addEventListener(
-            'click',
-            function (e) {
-                e.stopPropagation();
-            },
-            false
-        );
-    },
-    computed: {},
+
     methods: {
-        toggleInformationModal() {
-            this.showInformationModal = !this.showInformationModal;
+        restartTutorial() {
+            this.showTutorialTip2 = false;
+            this.showTutorialTip3 = false;
+            this.showTutorialTip4 = false;
+            this.showTutorialTip1 = true;
         },
         closeMobileDetail() {
             this.showDetails = false; // Hide the mobile cohort detail modal
@@ -68,6 +56,9 @@ export default {
                 this.showTutorialTip3 = true;
             } else if (step == 3) {
                 this.showTutorialTip3 = false;
+                this.showTutorialTip4 = true;
+            } else if (step == 4) {
+                this.showTutorialTip4 = false;
                 // Store
                 localStorage.setItem('isCohortsPageCompleted', 'true');
             }
@@ -95,10 +86,7 @@ export default {
                     />
                 </svg>
             </router-link>
-            <button
-                class="btn primary-btn me-1"
-                @click="toggleInformationModal"
-            >
+            <button class="btn primary-btn me-1" @click="restartTutorial">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 192 512"
@@ -137,12 +125,22 @@ export default {
     <div
         v-if="
             userDetailsStore.role == 'instructor' &&
-            (showTutorialTip1 || showTutorialTip2 || showTutorialTip3)
+            (showTutorialTip1 ||
+                showTutorialTip2 ||
+                showTutorialTip3 ||
+                showTutorialTip4)
         "
         class="modal"
     >
         <div class="modal-content bg-light">
             <div v-if="showTutorialTip1">
+                <p>This is your Cohorts page.</p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip2">
                 <p>
                     Cohorts allow you, as an instructor, to present the same
                     filtered version of a skill tree to a selective group of
@@ -154,28 +152,30 @@ export default {
                     you can add those accounts to your math class cohort,
                     updating the nodes as your instruction progresses.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(1)">
-                    next
-                </button>
-            </div>
-            <div v-if="showTutorialTip2">
-                <p>
-                    To leverage this feature, create a cohort, add relevant
-                    students, and filter the tree they are to see as desired.
-                    You can update the filtered skill tree nodes in your cohort,
-                    plus the cohort's members, whenever you please.
-                </p>
                 <button class="btn primary-btn" @click="progressTutorial(2)">
                     next
                 </button>
             </div>
             <div v-if="showTutorialTip3">
                 <p>
+                    To leverage this feature, create a cohort, add relevant
+                    students, and filter the tree they are to see as desired.
+                </p>
+                <p>
+                    You can update the filtered skill tree nodes in your cohort,
+                    plus the cohort's members, whenever you please.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip4">
+                <p>
                     Before adding a student to your cohort, make sure they are
                     in no other cohorts; students can only be in one cohort at a
                     time.
                 </p>
-                <button class="btn primary-btn" @click="progressTutorial(3)">
+                <button class="btn primary-btn" @click="progressTutorial(4)">
                     close
                 </button>
             </div>
@@ -238,5 +238,48 @@ ul li {
 
 /* Desktops/laptops */
 @media (min-width: 1025px) {
+}
+
+/* Modals */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 2000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 30%;
+    }
 }
 </style>
