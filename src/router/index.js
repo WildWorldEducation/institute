@@ -44,12 +44,6 @@ const router = createRouter({
             meta: { preventZoom: true, title: 'Radial skill tree' }
         },
         {
-            path: '/:id/skill-tree',
-            name: 'student-skill-tree',
-            component: () =>
-                import('../components/pages/SkillTreeStudentView.vue')
-        },
-        {
             path: '/login',
             name: 'login',
             component: () => import('../components/pages/LoginView.vue'),

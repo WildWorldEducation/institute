@@ -15,7 +15,8 @@ export default {
         return {
             studentId: this.$route.params.studentId,
             studentName: '',
-            goals: []
+            goals: [],
+            showTutorialTip1: false
         };
     },
     async created() {
@@ -31,6 +32,14 @@ export default {
         }
         await this.userSkillsStore.getFilteredUnnestedList(this.studentId);
         await this.getGoals();
+
+        // Check if tutorial has been seen.
+        if (
+            localStorage.getItem('isStudentGoalsPageTutorialCompleted') !=
+            'true'
+        ) {
+            this.showTutorialTip1 = true;
+        }
     },
     methods: {
         async getGoals() {
@@ -84,6 +93,15 @@ export default {
 
                 await this.getGoals();
             }
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                localStorage.setItem(
+                    'isStudentGoalsPageTutorialCompleted',
+                    'true'
+                );
+            }
         }
     }
 };
@@ -98,7 +116,6 @@ export default {
                 <div class="d-flex">
                     <h2 class="goal h4">
                         {{ goal.name }}
-
                         <!-- Expand/Collapse button -->
                         <button
                             class="btn"
@@ -195,6 +212,25 @@ export default {
                 </ul>
             </div>
         </div>
+
+        <!-- Tooltip modal -->
+        <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
+            <div class="modal-content">
+                <div v-if="showTutorialTip1">
+                    <p>
+                        On this page, you can see a list of any goals that
+                        either you have set for your student, or they have set
+                        for themselves.
+                    </p>
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        close
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -224,5 +260,49 @@ export default {
 .phd {
     background-color: #ff0000;
     color: white;
+}
+
+/* For tutorial */
+/* Modals */
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 2000;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 520px;
+    font-size: 18px;
+    /* Could be more or less, depending on screen size */
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 30%;
+    }
 }
 </style>
