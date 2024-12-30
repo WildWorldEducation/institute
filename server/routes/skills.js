@@ -416,8 +416,6 @@ router.get('/guest-mode/full-vertical-tree', (req, res, next) => {
     const level = req.query.level;
     let subjects = req.query.subjects;
 
-    console.log(subjects);
-
     // Default is to show all.
     let levelsToShow =
         "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";

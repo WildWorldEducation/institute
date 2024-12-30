@@ -224,8 +224,7 @@ export default {
                         <li
                             v-if="
                                 userDetailsStore.role == 'student' &&
-                                this.$route.name != 'radial-tree' &&
-                                isMobileCheck > 576
+                                this.$route.name != 'radial-tree'
                             "
                             class="nav-item"
                         >
