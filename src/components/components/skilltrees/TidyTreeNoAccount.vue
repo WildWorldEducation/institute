@@ -75,8 +75,8 @@ export default {
             'Life',
             'Dangerous Ideas'
         ];
-        if (this.skillsStore.filteredNestedSkillsList.length == 0) {
-            await this.skillsStore.getFilteredNestedSkillsList('phd', subjects);
+        if (this.skillsStore.guestModeVerticalTreeSkills.length == 0) {
+            await this.skillsStore.getGuestModeVerticalTreeSkills('phd', subjects);
         }
 
         // Specify the chart’s dimensions.
@@ -86,7 +86,7 @@ export default {
         this.skill = {
             name: 'SKILLS',
             sprite: null,
-            children: this.skillsStore.filteredNestedSkillsList
+            children: this.skillsStore.guestModeVerticalTreeSkills
         };
 
         this.getAlgorithm();
@@ -689,13 +689,13 @@ export default {
             this.showSkillPanel = false;
 
             // Query the API for the correct level
-            await this.skillsStore.getFilteredNestedSkillsList(
+            await this.skillsStore.getGuestModeVerticalTreeSkills(
                 gradeFilter,
                 subjectFilters
             );
 
             // Get the updated data
-            let skills = this.skillsStore.filteredNestedSkillsList;
+            let skills = this.skillsStore.guestModeVerticalTreeSkills;
 
             this.skill = {
                 name: 'SKILLS',
