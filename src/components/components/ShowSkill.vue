@@ -60,7 +60,13 @@ export default {
             isSkillLoaded: false,
             randomNum: 0,
             goalSteps: [],
-            goalExists: false
+            goalExists: false,
+            showTutorialTip1: false,
+            showTutorialTip2: false,
+            showTutorialTip3: false,
+            showTutorialTip4: false,
+            showTutorialTip5: false,
+            showTutorialTip6: false
         };
     },
     components: {
@@ -69,6 +75,15 @@ export default {
     },
 
     async created() {
+        // Turn this on only if user is logged in.
+        if (this.sessionDetailsStore.isLoggedIn == true) {
+            if (
+                localStorage.getItem('isSkillPageTutorialCompleted') != 'true'
+            ) {
+                this.showTutorialTip1 = true;
+            }
+        }
+
         await this.getSkill();
         this.isSkillLoaded = true;
         if (this.sessionDetailsStore.isLoggedIn) {
@@ -85,8 +100,6 @@ export default {
             // // Load the skill data
             await this.showSkillStore.findSkill(this.skillUrl);
             this.skill = this.showSkillStore.skill;
-            console.log('skill is: ');
-            console.log(this.skill);
             this.skillId = this.skill.id;
 
             // Meta title for SEO
@@ -302,6 +315,28 @@ export default {
             fetch(url, requestOptions).then(() => {
                 alert('A goal for this skill has been added on the Hub page.');
             });
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+                this.showTutorialTip4 = true;
+            } else if (step == 4) {
+                this.showTutorialTip4 = false;
+                this.showTutorialTip5 = true;
+            } else if (step == 5) {
+                this.showTutorialTip5 = false;
+                this.showTutorialTip6 = true;
+            } else if (step == 6) {
+                this.showTutorialTip6 = false;
+                // Store
+                localStorage.setItem('isSkillPageTutorialCompleted', 'true');
+            }
         }
     },
     /**
@@ -350,8 +385,9 @@ export default {
                             <!-- !Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                             <path
                                 d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"
-                            /></svg
-                        >&nbsp; Go to Nearest Unlocked Skill
+                            />
+                        </svg>
+                        &nbsp; Go to Nearest Unlocked Skill
                     </router-link>
                     <!-- Assessment -->
                     <router-link
@@ -424,6 +460,21 @@ export default {
                         </svg>
                     </router-link>
                 </div>
+                <!-- Tooltip -->
+                <div v-if="showTutorialTip2" class="d-flex justify-content-end">
+                    <div class="info-panel bg-light rounded p-2 mb-2">
+                        <p>
+                            This is where you can take the assessment for the
+                            skill.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(2)"
+                        >
+                            next
+                        </button>
+                    </div>
+                </div>
                 <!-- Description only seen by admins -->
                 <div
                     v-if="userDetailsStore.role == 'admin'"
@@ -447,7 +498,7 @@ export default {
                         <router-link
                             v-if="sessionDetailsStore.isLoggedIn"
                             :to="'/skills/edit/' + skillUrl"
-                            class="btn primary-btn me-1"
+                            class="edit-btn btn primary-btn me-1"
                             ><span v-if="isMobileCheck > 576">Edit &nbsp;</span>
                             <!-- Pencil icon -->
                             <svg
@@ -506,7 +557,7 @@ export default {
                                 width="20"
                                 heigth="20"
                             >
-                                <!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                                <!-- !Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
                                 <path
                                     d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
                                 />
@@ -549,6 +600,43 @@ export default {
                                     d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"
                                 />
                             </svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- Tooltip -->
+                <div v-if="showTutorialTip3" class="mt-2">
+                    <div
+                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                    >
+                        <p>
+                            Here you can suggest an edit to this skill page or
+                            quiz, or create a goal for this skill, so you can
+                            work your way towards it.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(3)"
+                        >
+                            next
+                        </button>
+                    </div>
+                </div>
+                <div
+                    v-if="showTutorialTip4"
+                    class="mt-2 d-flex justify-content-end"
+                >
+                    <div
+                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                    >
+                        <p>
+                            Here you can share a link to this skill with a
+                            friend, or flag this page as problematic.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(4)"
+                        >
+                            next
                         </button>
                     </div>
                 </div>
@@ -735,9 +823,62 @@ export default {
         contentType="skill"
         :contentId="skillId"
     />
+
+    <!-- Tooltip modal -->
+    <div
+        v-if="showTutorialTip1 || showTutorialTip5 || showTutorialTip6"
+        class="modal"
+    >
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>
+                    This page is where you can learn about, and take a test to
+                    try to master, this skill.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip5">
+                <p>
+                    The "Requirements for mastery" section explains everything
+                    one needs to learn to master the skill.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip6">
+                <p>
+                    At the bottom of the page, in the "Best Places To Learn
+                    This" section, you can find various sites and resources to
+                    learn about this topic.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(6)">
+                    close
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
+/* Tooltips */
+.info-panel {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    border-style: solid;
+    width: fit-content;
+}
+
+.narrow-info-panel {
+    max-width: 300px;
+}
+
+.edit-btn {
+    display: flex;
+}
+
 .assessment-btn {
     height: auto;
     max-height: 48px;
@@ -882,6 +1023,17 @@ export default {
 
     .modal-btn {
         width: fit-content;
+    }
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90% !important;
+
+        margin: auto;
+        margin-top: 30%;
     }
 }
 </style>

@@ -89,8 +89,6 @@ export default {
                     {{ student.username }}
                 </button>
             </div>
-            <!-- divide line for phone view specific -->
-            <hr class="border border-1 opacity-0 w-100 d-block d-md-none" />
         </div>
         <RouterLink
             v-if="userDetailsStore.role == 'instructor'"

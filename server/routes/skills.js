@@ -406,14 +406,16 @@ router.get('/nested-list', (req, res, next) => {
     }
 });
 
-// Filtered Nested List - for "Instructor Role" and for "Guest Access" (no account)
-router.get('/filtered-nested-list', (req, res, next) => {
+// For the vertical tree for guest mode.
+router.get('/guest-mode/full-vertical-tree', (req, res, next) => {
     // Not checking if user is logged in, as this is available for guest access.
     /*
      * Apply grade level and subject filters
      */
-    // Level will be sent in query param (eg: ?level='middle_school')
+    // Level and subjects will be sent in query param (eg: ?level='middle_school')
     const level = req.query.level;
+    let subjects = req.query.subjects;
+
     // Default is to show all.
     let levelsToShow =
         "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
@@ -474,40 +476,101 @@ router.get('/filtered-nested-list', (req, res, next) => {
             // Add first level of array.
             let filteredNestedSkills = [];
             for (var i = 0; i < results.length; i++) {
-                if (results[i].parent == null || results[i].parent == 0) {
+                if (
+                    (results[i].parent == null || results[i].parent == 0) && // Filter by subject.
+                    subjects.includes(results[i].name)
+                ) {
                     filteredNestedSkills.push(results[i]);
                 }
             }
-
-            // // Find the depth of nodes expanded, to determine width of Vertical Tree
-            // let depth = 0;
-            // let skillDepth;
-            // function determineDepth(parentChildren, depth) {
-            //     depth++;
-            //     skillDepth = depth;
-            //     var i = parentChildren.length;
-            //     while (i--) {
-            //         if (typeof parentChildren[i] !== 'undefined') {
-            //             /*
-            //              * Run the above function again recursively.
-            //              */
-            //             if (
-            //                 parentChildren[i].children &&
-            //                 Array.isArray(parentChildren[i].children) &&
-            //                 parentChildren[i].children.length > 0
-            //             )
-            //                 determineDepth(parentChildren[i].children, depth);
-            //         }
-            //     }
-            // }
-
-            // determineDepth(filteredNestedSkills, depth);
 
             res.json(filteredNestedSkills);
         } catch (err) {
             next(err);
         }
     });
+});
+
+// Filtered Nested List - for "Instructor" and "Editor" roles - Collapsable Tree.
+router.get('/filtered-nested-list', (req, res, next) => {
+    if (req.session.userName) {
+        /*
+         * Apply grade level filters
+         */
+        // Level will be sent in query param (eg: ?level='middle_school')
+        const level = req.query.level;
+
+        // Default is to show all.
+        let levelsToShow =
+            "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        if (level == 'grade_school') {
+            levelsToShow = "'domain', 'grade_school'";
+        } else if (level == 'middle_school') {
+            levelsToShow = "'domain', 'grade_school', 'middle_school'";
+        } else if (level == 'high_school') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school'";
+        } else if (level == 'college') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school', 'college'";
+        } else if (level == 'phd') {
+            levelsToShow =
+                "'domain', 'grade_school', 'middle_school', 'high_school', 'college', 'phd'";
+        }
+
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `
+    SELECT id, name, parent, type, level, skills.order as skillorder, display_name, url
+    FROM skills
+    WHERE is_filtered = 'available' AND is_deleted = 0
+    AND level IN (${levelsToShow})
+    ORDER BY skillorder;`;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+
+                // Create the 'children' array.
+                for (var i = 0; i < results.length; i++) {
+                    results[i].children = [];
+                }
+
+                // Deal with skills that have multiple parents.
+                // These skills have secret copies in the table.
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].display_name != null) {
+                        results[i].name = results[i].display_name;
+                    }
+                }
+
+                // First parent.
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].parent != null && results[i].parent != 0) {
+                        var parentId = results[i].parent;
+                        // go through all rows again, add children
+                        for (let j = 0; j < results.length; j++) {
+                            if (results[j].id == parentId) {
+                                results[j].children.push(results[i]);
+                            }
+                        }
+                    }
+                }
+
+                // Add first level of array.
+                let filteredNestedSkills = [];
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].parent == null || results[i].parent == 0) {
+                        filteredNestedSkills.push(results[i]);
+                    }
+                }
+
+                res.json(filteredNestedSkills);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
 });
 
 /**

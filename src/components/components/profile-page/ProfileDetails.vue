@@ -189,22 +189,6 @@ export default {
     padding: 10px;
 }
 
-.red-btn {
-    background-color: #e24d4d;
-    color: white;
-    border: 1px solid #d33622;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.red-btn:hover {
-    background-color: #cc3535;
-}
-
 #img-background {
     border-radius: 12px;
     width: 50%;

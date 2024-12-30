@@ -20,10 +20,16 @@ export default {
             searchText: '',
             lastChooseResult: '',
             showResult: false,
-            showConfirmModal: false
+            showConfirmModal: false,
+            showTutorialTip1: false
         };
     },
     created() {
+        // Tooltips
+        if (localStorage.getItem('isMyTreeTutorialCompleted') != 'true') {
+            this.showTutorialTip1 = true;
+        }
+
         for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
             if (this.userDetailsStore.subjectFilters[i] == 'Language') {
                 this.isLanguage = true;
@@ -70,7 +76,6 @@ export default {
             // go to the skill position
             this.$refs.childComponent.goToLocation(node);
         },
-
         GetGoogleLoginResult() {
             fetch('/google-login-result')
                 .then(function (response) {
@@ -83,6 +88,13 @@ export default {
         },
         clearResult() {
             this.$refs.childComponent.resetPos();
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                // Store
+                localStorage.setItem('isMyTreeTutorialCompleted', 'true');
+            }
         }
     }
 };
@@ -142,6 +154,24 @@ export default {
             <span>Loading...</span>
         </template>
     </Suspense>
+
+    <!-- Tooltips -->
+    <!-- Introduction modal -->
+    <div v-if="showTutorialTip1" class="modal">
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>This page shows your skill tree closed.</p>
+                <p>
+                    Click on the plus signs to open the side panel, then click
+                    on the "expand" button to expand the node.
+                </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -269,7 +299,7 @@ export default {
     /* Hidden by default */
     position: fixed;
     /* Stay in place */
-    z-index: 1;
+    z-index: 2000;
     /* Sit on top */
     left: 0;
     top: 0;

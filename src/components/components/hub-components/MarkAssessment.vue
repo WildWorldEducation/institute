@@ -61,10 +61,6 @@ export default {
     color: #8f7bd6;
 }
 
-#date {
-    color: #dbd0f9;
-}
-
 .assessment-link:hover #date {
     color: #7f56d9;
     cursor: pointer;

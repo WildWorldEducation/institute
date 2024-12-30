@@ -584,7 +584,12 @@ export default {
                 .duration(700)
                 .call(
                     this.d3Zoom.transform,
-                    d3.zoomIdentity.translate(0, 0).scale(0.3)
+                    d3.zoomIdentity
+                        .translate(
+                            this.context.canvas.width / 2,
+                            this.context.canvas.height / 2
+                        )
+                        .scale(0.3)
                 );
             this.$refs.sliderControl.showScaleLabel();
         },

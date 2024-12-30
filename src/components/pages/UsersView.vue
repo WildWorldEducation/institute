@@ -37,7 +37,9 @@ export default {
             // Flag to decide whether to show the details panel. Will be false if there are no users,
             showUserInfo: true,
             isLoading: true,
-            currentUserId: ''
+            currentUserId: '',
+            showTutorialTip1: false,
+            showTutorialTip2: false
         };
     },
     components: {
@@ -46,8 +48,12 @@ export default {
         SearchUserBar
     },
     async created() {
-        // Set up the first user in the array to be selected on the page initially.
+        // Tooltips
+        if (localStorage.getItem('isStudentsPageCompleted') != 'true') {
+            this.showTutorialTip1 = true;
+        }
 
+        // Set up the first user in the array to be selected on the page initially.
         if (
             this.userDetailsStore.role == 'admin' ||
             this.userDetailsStore.role == 'instructor'
@@ -172,10 +178,20 @@ export default {
         updateShowUserDetails(newUser) {
             this.showDetails = true;
             this.user = newUser;
-            console.log('new user: ');
-            console.log(newUser);
-        }
+        },
         // only for search bar to update the choose user id
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            }
+            if (step == 2) {
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            }
+            // Store
+            localStorage.setItem('isStudentsPageCompleted', 'true');
+        }
     }
 };
 </script>
@@ -241,7 +257,6 @@ export default {
                                 usersStore.editors.length > 0)
                         "
                         :userId="user.id"
-                        :userRole="user.role"
                     />
                     <div v-else>
                         <h1
@@ -266,8 +281,48 @@ export default {
                 id="user-detail-section"
             >
                 <div class="row">
-                    <UserDetails :userId="user.id" :userRole="user.role" />
+                    <UserDetails :userId="user.id" />
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructor Introduction modal -->
+    <div
+        v-if="
+            userDetailsStore.role == 'instructor' &&
+            (showTutorialTip1 || showTutorialTip2)
+        "
+        class="modal"
+    >
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>This page show a list of your students.</p>
+                <p>Click on the student's name to see their details.</p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip2">
+                <p>Under the heading "Progress" you will find 3 buttons:</p>
+                <p>
+                    "Vertical Tree" will provide a look at the student's
+                    progress in the full tree view.
+                </p>
+                <p>
+                    "Collapsable Tree" takes you to a page similar to your own
+                    collapsable tree. Here you can see the student's progress
+                    and set goals for students.
+                </p>
+                <p>
+                    "Goals" will navigate to a page that displays all the
+                    students goals and the progress they have made towards them.
+                </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    close
+                </button>
             </div>
         </div>
     </div>
