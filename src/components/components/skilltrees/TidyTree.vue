@@ -277,6 +277,17 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                const targetNodeInview = this.checkingIfNodeInView(
+                    link.target,
+                    transform
+                );
+                const sourceNodeInview = this.checkingIfNodeInView(
+                    link.source,
+                    transform
+                );
+                if (!targetNodeInview && !sourceNodeInview) {
+                    continue;
+                }
                 this.drawLink(link);
             }
 
