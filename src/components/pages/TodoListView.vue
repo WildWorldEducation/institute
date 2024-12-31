@@ -15,7 +15,11 @@ export default {
     },
     data() {
         return {
-            activeContent: 'editList'
+            activeContent: 'editList',
+            showTutorialTip1: false,
+            showTutorialTip2: false,
+            showTutorialTip3: false,
+            showTutorialTip4: false
         };
     },
 
@@ -72,6 +76,54 @@ export default {
                 <div v-if="activeContent === 'newSkillsList'">
                     <NewSkillsAwaitingApprovalList />
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor Introduction modal -->
+    <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>This is the Todo List page.</p>
+                <p>There are 3 tabs on the left.</p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip2">
+                <p>
+                    The "Approve Content Edits" tab shows edits to skill pages
+                    and quiz questions, made by students or instructors, that
+                    need to be approved, edited, or dismissed.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip3">
+                <p>
+                    The "Approve Student Added Questions" tab shows questions
+                    that students or instructors have submitted, that need to be
+                    approved, edited, or dismissed.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip4">
+                <p>
+                    The "Check Content Flags" tab shows all the things that
+                    users have flagged as problematic. This could include
+                    mistakes, bugs and incorrect information.
+                </p>
+                <p>
+                    These need to be checked up on, and if a problem is found,
+                    it should be fixed. Otherwise, the flag should be dismissed.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    close
+                </button>
             </div>
         </div>
     </div>
