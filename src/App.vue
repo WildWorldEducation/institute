@@ -156,7 +156,7 @@ export default {
                                 sessionDetailsStore.isLoggedIn &&
                                 (userDetailsStore.role == 'admin' ||
                                     userDetailsStore.role == 'editor') &&
-                                this.$route.name != 'todo'
+                                this.$route.name != 'todo-list'
                             "
                             class="nav-item"
                         >

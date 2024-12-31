@@ -166,9 +166,17 @@ export default {
                 this.showTutorialTip2 = true;
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
+                if (this.userDetailsStore.role == 'editor') {
+                    localStorage.setItem('isHubTutorialCompleted', 'true');
+                    return;
+                }
                 this.showTutorialTip3 = true;
             } else if (step == 3) {
                 this.showTutorialTip3 = false;
+                if (this.userDetailsStore.role == 'instructor') {
+                    localStorage.setItem('isHubTutorialCompleted', 'true');
+                    return;
+                }
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
@@ -315,12 +323,15 @@ export default {
         </div>
     </div>
 
-    <!-- Introduction modal -->
+    <!-- Tutorial introduction modals -->
+
     <div
         v-if="
             showTutorialTip1 ||
             showTutorialTip2 ||
-            showTutorialTip3 ||
+            (showTutorialTip3 &&
+                (userDetailsStore.role == 'student' ||
+                    userDetailsStore.role == 'instructor')) ||
             (showTutorialTip4 && userDetailsStore.role == 'student')
         "
         class="modal"
@@ -369,6 +380,30 @@ export default {
                     students have added to the question bank you need approve.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(3)">
+                    close
+                </button>
+            </div>
+            <!-- Editor -->
+            <div v-if="showTutorialTip1 && userDetailsStore.role == 'editor'">
+                <p>Welcome to the Collins Institute!</p>
+                <p>
+                    Click
+                    <button
+                        class="btn primary-btn"
+                        @click="progressTutorial(1)"
+                    >
+                        next
+                    </button>
+                    to start the tutorial.
+                </p>
+            </div>
+            <div v-if="showTutorialTip2 && userDetailsStore.role == 'editor'">
+                <p>This is the hub page.</p>
+                <p>
+                    On this page you can read any news and notifications from
+                    the institute.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(2)">
                     close
                 </button>
             </div>
