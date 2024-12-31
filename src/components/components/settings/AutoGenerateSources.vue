@@ -272,24 +272,6 @@ export default {
     background-color: #3eb3a3;
 }
 
-.red-btn {
-    background-color: #da7033;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-    height: auto;
-}
-
-.red-btn:hover {
-    background-color: rgb(209, 96, 15);
-}
-
 .red-mini-btn {
     height: 22px;
 }

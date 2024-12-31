@@ -153,20 +153,11 @@ export default {
             </div>
             <div class="col-12 col-md-7">
                 <div class="mb-3">
-                    <h2 class="secondary-heading h4">First name</h2>
+                    <h2 class="secondary-heading h4">Name</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
-                        v-model="this.$parent.user.firstName"
-                        disabled
-                    />
-                </div>
-                <div class="mb-3">
-                    <h2 class="secondary-heading h4">Last name</h2>
-                    <input
-                        class="form-control user-input-information"
-                        type="text"
-                        v-model="this.$parent.user.lastName"
+                        :value="`${this.$parent.user.firstName} ${this.$parent.user.lastName}`"
                         disabled
                     />
                 </div>
@@ -280,22 +271,7 @@ export default {
     font-weight: 600;
     font-family: 'Poppins' sans-serif;
 }
-.red-btn {
-    background-color: #da7033;
-    color: white;
-    border: 1px solid var(--primary-color);
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-}
 
-.red-btn:hover {
-    background-color: rgb(209, 96, 15);
-}
 .green-btn {
     background-color: #36c1af;
     color: white;
