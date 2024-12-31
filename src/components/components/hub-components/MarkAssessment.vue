@@ -93,18 +93,4 @@ export default {
     max-width: fit-content;
     height: 44px;
 }
-
-.red-btn {
-    background-color: #da7033;
-    color: white;
-    border: 1px solid #7f56d9;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-    max-width: fit-content;
-    height: 44px;
-}
 </style>

@@ -332,19 +332,6 @@ export default {
     color: white;
 }
 
-.red-btn {
-    background-color: #da7033 !important;
-    color: white;
-    align-items: center;
-    max-width: fit-content;
-    display: flex;
-    height: fit-content;
-}
-
-.red-btn:hover {
-    background-color: rgb(209, 96, 15);
-}
-
 /**-------------------------------------  */
 /* A lot of CSS to styling two check box */
 .control {
