@@ -1374,7 +1374,7 @@ router.get('/student-mc-questions/list', (req, res, next) => {
 router.get('/student-mc-questions/full-data-list', (req, res, next) => {
     if (req.session.userName) {
         // extra check for user role
-        if ((req.session.role = 'instructor')) {
+        if (req.session.role == 'instructor') {
             res.setHeader('Content-Type', 'application/json');
             let sqlQuery = `SELECT student_mc_questions.*, skills.name AS skillname, users.username AS student
                             FROM student_mc_questions JOIN users ON users.id = student_mc_questions.student_id 
