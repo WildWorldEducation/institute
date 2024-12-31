@@ -119,6 +119,10 @@ export default {
                     this.showMobileTutorialTip3 = false;
                     this.showMobileTutorialTip4 = true;
                 }
+                if (this.userDetailsStore.role == 'editor') {
+                    // Store
+                    localStorage.setItem('isCollapsibleTreeCompleted', 'true');
+                }
             } else if (step == 4) {
                 if (this.isMobileCheck > 576) {
                     this.showTutorialTip4 = false;
@@ -421,6 +425,45 @@ export default {
                         </button>
                     </div>
                 </div>
+                <!-- Editor Tooltips -->
+                <div
+                    v-if="
+                        userDetailsStore.role == 'editor' &&
+                        (showTutorialTip2 || showTutorialTip3)
+                    "
+                    class="info-panel me-4 mt-1 bg-light"
+                >
+                    <div
+                        v-if="showTutorialTip2"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>
+                            At the top, one can filter the skills by grade
+                            level, and search for a specific skill.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(2)"
+                        >
+                            next
+                        </button>
+                    </div>
+                    <div
+                        v-else-if="showTutorialTip3"
+                        class="info-text mt-1 rounded p-2"
+                    >
+                        <p>Some nodes have a plus or minus sign.</p>
+                        <p>
+                            This indicates that the skill contains mini-skills.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(3)"
+                        >
+                            close
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -579,6 +622,49 @@ export default {
                 </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">
+                    close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor Introduction modal -->
+    <div
+        v-if="
+            userDetailsStore.role == 'editor' &&
+            (showTutorialTip1 ||
+                showMobileTutorialTip2 ||
+                showMobileTutorialTip3)
+        "
+        class="modal"
+    >
+        <div class="modal-content bg-light">
+            <div v-if="showTutorialTip1">
+                <p>
+                    This page shows the skills in a drop-down hierarchical list.
+                </p>
+                <p>
+                    Click on the down arrows to expand them so as to access the
+                    descendant skills of the 7 subjects.
+                </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip2">
+                <p>
+                    At the top, one can filter the skills by grade level, and
+                    search for a specific skill.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    next
+                </button>
+            </div>
+            <div v-if="showMobileTutorialTip3">
+                <p>Some nodes have a plus or minus sign.</p>
+                <p>This indicates that the skill contains mini-skills.</p>
+                <button class="btn primary-btn" @click="progressTutorial(3)">
                     close
                 </button>
             </div>

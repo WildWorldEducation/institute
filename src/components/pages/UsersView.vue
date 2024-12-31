@@ -308,10 +308,16 @@ export default {
     </div>
 
     <!-- Instructor Introduction modal -->
-    <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
+    <div
+        v-if="
+            userDetailsStore.role == 'instructor' &&
+            (showTutorialTip1 || showTutorialTip2)
+        "
+        class="modal"
+    >
         <div class="modal-content">
             <div v-if="showTutorialTip1">
-                <p>This page show a list of your students.</p>
+                <p>This page shows a list of your students.</p>
                 <p>Click on the student's name to see their details.</p>
 
                 <button class="btn primary-btn" @click="progressTutorial(1)">
@@ -333,6 +339,33 @@ export default {
                     "Goals" will navigate to a page that displays all the
                     students goals and the progress they have made towards them.
                 </p>
+
+                <button class="btn primary-btn" @click="progressTutorial(2)">
+                    close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor Introduction modal -->
+    <div
+        v-if="
+            userDetailsStore.role == 'editor' &&
+            (showTutorialTip1 || showTutorialTip2)
+        "
+        class="modal"
+    >
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>This page shows a list of all the other editors.</p>
+                <p>Click on an editor's name to see their details.</p>
+
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-if="showTutorialTip2">
+                <p></p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">
                     close
