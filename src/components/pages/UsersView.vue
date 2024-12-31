@@ -365,7 +365,10 @@ export default {
                 </button>
             </div>
             <div v-if="showTutorialTip2">
-                <p></p>
+                <p>
+                    Click on the 'Activity Report' button to see what your
+                    fellow editor has been up to.
+                </p>
 
                 <button class="btn primary-btn" @click="progressTutorial(2)">
                     close

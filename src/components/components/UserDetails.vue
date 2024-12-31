@@ -107,11 +107,19 @@ export default {
                         </svg>
                     </button>
                 </div>
-                <h2 class="secondary-heading h4">Progress</h2>
-                <div class="d-flex flex-column">
+                <!-- Instructors -->
+                <h2
+                    v-if="this.userDetailsStore.role == 'instructor'"
+                    class="secondary-heading h4"
+                >
+                    Progress
+                </h2>
+                <div
+                    v-if="this.userDetailsStore.role == 'instructor'"
+                    class="d-flex flex-column"
+                >
                     <!-- Vertical Tree -->
                     <router-link
-                        v-if="this.userDetailsStore.role == 'instructor'"
                         :to="`/student/${this.$parent.user.id}/skill-tree`"
                         class="btn primary-btn mt-2"
                         target="_blank"
@@ -120,7 +128,6 @@ export default {
                     </router-link>
                     <!-- Collapsible skill tree -->
                     <router-link
-                        v-if="this.userDetailsStore.role == 'instructor'"
                         :to="'/student/' + this.$parent.user.id + '/skills'"
                         class="btn primary-btn mt-2"
                         target="_blank"
@@ -129,7 +136,6 @@ export default {
                     </router-link>
                     <!-- Goals -->
                     <router-link
-                        v-if="this.userDetailsStore.role == 'instructor'"
                         :to="'/student/' + this.$parent.user.id + '/goals'"
                         class="btn primary-btn mt-2"
                         target="_blank"
@@ -137,7 +143,8 @@ export default {
                         Goals
                     </router-link>
                 </div>
-                <div class="d-flex justify-content-center mt-2">
+                <!-- Editors -->
+                <div class="mt-2">
                     <router-link
                         v-if="
                             userDetailsStore.role == 'admin' ||
