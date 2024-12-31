@@ -138,9 +138,9 @@ export default {
                     class="skill-mastery-requirement"
                 >
                     <h2 class="h4">Subskills</h2>
-                    <ul>
+                    <ul class="list-container">
                         <li v-for="subskill in skill.subskills">
-                            <router-link :to="'/skills/' + subskill.url">{{
+                            <router-link class="btn mb-2" :to="'/skills/' + subskill.url">{{
                                 subskill.name
                             }}</router-link>
                         </li>
@@ -216,6 +216,15 @@ img {
 .skill-mastery-requirement {
     margin-left: 20px;
     margin-right: 5px;
+}
+.list-container{
+    list-style: none;
+    padding: 0;
+    text-align: start;
+}
+
+.list-container a{
+    text-decoration: none;
 }
 
 /* Slide left animation */
