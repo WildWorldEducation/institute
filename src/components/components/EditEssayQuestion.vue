@@ -243,21 +243,6 @@ export default {
     height: auto;
 }
 
-.red-btn {
-    background-color: #e24d4d;
-    color: white;
-    border: 1px solid #d33622;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
-}
-
-.red-btn:hover {
-    background-color: #cc3535;
-}
 
 #header-tile {
     color: #667085;
