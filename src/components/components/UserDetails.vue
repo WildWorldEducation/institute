@@ -153,20 +153,11 @@ export default {
             </div>
             <div class="col-12 col-md-7">
                 <div class="mb-3">
-                    <h2 class="secondary-heading h4">First name</h2>
+                    <h2 class="secondary-heading h4">Name</h2>
                     <input
                         class="form-control user-input-information"
                         type="text"
-                        v-model="this.$parent.user.firstName"
-                        disabled
-                    />
-                </div>
-                <div class="mb-3">
-                    <h2 class="secondary-heading h4">Last name</h2>
-                    <input
-                        class="form-control user-input-information"
-                        type="text"
-                        v-model="this.$parent.user.lastName"
+                        :value="`${this.$parent.user.firstName} ${this.$parent.user.lastName}`"
                         disabled
                     />
                 </div>
