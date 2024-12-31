@@ -35,129 +35,129 @@
     "file": "assets/WaitLoadingModal-4f46c622.css",
     "src": "WaitLoadingModal.css"
   },
-  "_AssessmentsStore-5e3e84e6.js": {
-    "file": "assets/AssessmentsStore-5e3e84e6.js",
+  "_AssessmentsStore-4aee5592.js": {
+    "file": "assets/AssessmentsStore-4aee5592.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_CheckPasswordComplexity-46fa902c.js": {
+  "_CheckPasswordComplexity-06eb11fb.js": {
     "css": [
       "assets/CheckPasswordComplexity-821789a1.css"
     ],
-    "file": "assets/CheckPasswordComplexity-46fa902c.js",
+    "file": "assets/CheckPasswordComplexity-06eb11fb.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_CohortView-5faa94bf.js": {
+  "_CohortView-aa437950.js": {
     "css": [
       "assets/CohortView-438fbf62.css"
     ],
-    "file": "assets/CohortView-5faa94bf.js",
+    "file": "assets/CohortView-aa437950.js",
     "imports": [
       "src/main.js"
     ],
     "isDynamicEntry": true
   },
-  "_ContentFlagsView-03eec1d9.js": {
+  "_ContentFlagsView-6d01f796.js": {
     "css": [
       "assets/ContentFlagsView-a84598a1.css"
     ],
-    "file": "assets/ContentFlagsView-03eec1d9.js",
+    "file": "assets/ContentFlagsView-6d01f796.js",
     "imports": [
       "src/main.js",
-      "_EssayQuestionsStore-884de1b6.js",
-      "_SettingsStore-0bda9cda.js"
+      "_EssayQuestionsStore-8cae1862.js",
+      "_SettingsStore-c689ffff.js"
     ],
     "isDynamicEntry": true
   },
-  "_EssayQuestionsStore-884de1b6.js": {
-    "file": "assets/EssayQuestionsStore-884de1b6.js",
+  "_EssayQuestionsStore-8cae1862.js": {
+    "file": "assets/EssayQuestionsStore-8cae1862.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_FailsModal-67c12028.js": {
+  "_FailsModal-fe3d9235.js": {
     "css": [
       "assets/FailsModal-6d8c96f7.css"
     ],
-    "file": "assets/FailsModal-67c12028.js",
+    "file": "assets/FailsModal-fe3d9235.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_FlagModals-6602d7ba.js": {
+  "_FlagModals-1018f86c.js": {
     "css": [
       "assets/FlagModals-612747ba.css"
     ],
-    "file": "assets/FlagModals-6602d7ba.js",
+    "file": "assets/FlagModals-1018f86c.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_InstructorStudentsStore-f3ccf82b.js": {
-    "file": "assets/InstructorStudentsStore-f3ccf82b.js",
+  "_InstructorStudentsStore-266dd57e.js": {
+    "file": "assets/InstructorStudentsStore-266dd57e.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_JoystickControl-60536d41.js": {
+  "_JoystickControl-0da6ddf3.js": {
     "css": [
       "assets/JoystickControl-7e39785f.css"
     ],
-    "file": "assets/JoystickControl-60536d41.js",
+    "file": "assets/JoystickControl-0da6ddf3.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_SettingsStore-0bda9cda.js": {
-    "file": "assets/SettingsStore-0bda9cda.js",
+  "_SettingsStore-c689ffff.js": {
+    "file": "assets/SettingsStore-c689ffff.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_ShowSkillStore-c297c5f6.js": {
-    "file": "assets/ShowSkillStore-c297c5f6.js",
+  "_ShowSkillStore-7711d37d.js": {
+    "file": "assets/ShowSkillStore-7711d37d.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_StudentMCQuestionsStore-c1252265.js": {
-    "file": "assets/StudentMCQuestionsStore-c1252265.js",
+  "_StudentMCQuestionsStore-57482db6.js": {
+    "file": "assets/StudentMCQuestionsStore-57482db6.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_SuccessModal-7fa7f62e.js": {
+  "_SuccessModal-32599deb.js": {
     "css": [
       "assets/SuccessModal-439746b6.css"
     ],
-    "file": "assets/SuccessModal-7fa7f62e.js",
+    "file": "assets/SuccessModal-32599deb.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_TagsStore-d49346fc.js": {
-    "file": "assets/TagsStore-d49346fc.js",
+  "_TagsStore-e159eb7c.js": {
+    "file": "assets/TagsStore-e159eb7c.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_TooltipBtn-0e2b0ff0.js": {
+  "_TooltipBtn-c3069e81.js": {
     "css": [
       "assets/TooltipBtn-184d5715.css"
     ],
-    "file": "assets/TooltipBtn-0e2b0ff0.js",
+    "file": "assets/TooltipBtn-c3069e81.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_WaitLoadingModal-e62102a1.js": {
+  "_WaitLoadingModal-52f17e11.js": {
     "css": [
       "assets/WaitLoadingModal-4f46c622.css"
     ],
-    "file": "assets/WaitLoadingModal-e62102a1.js",
+    "file": "assets/WaitLoadingModal-52f17e11.js",
     "imports": [
       "src/main.js"
     ]
@@ -177,20 +177,20 @@
   "_index.es6-593402c1.js": {
     "file": "assets/index.es6-593402c1.js"
   },
-  "_theme.compact-17d4a00a.js": {
+  "_theme.compact-c2ece574.js": {
     "css": [
       "assets/theme-73d48b15.css"
     ],
-    "file": "assets/theme.compact-17d4a00a.js",
+    "file": "assets/theme.compact-c2ece574.js",
     "imports": [
       "src/main.js"
     ]
   },
-  "_zoom-82e52f01.js": {
+  "_zoom-049d2df8.js": {
     "css": [
       "assets/zoom-57e703f4.css"
     ],
-    "file": "assets/zoom-82e52f01.js",
+    "file": "assets/zoom-049d2df8.js",
     "imports": [
       "src/main.js"
     ]
@@ -203,9 +203,9 @@
     "css": [
       "assets/AddEssayQuestionView-96b9ac76.css"
     ],
-    "file": "assets/AddEssayQuestionView-a1eb4291.js",
+    "file": "assets/AddEssayQuestionView-7be45264.js",
     "imports": [
-      "_TooltipBtn-0e2b0ff0.js",
+      "_TooltipBtn-c3069e81.js",
       "src/main.js"
     ],
     "isDynamicEntry": true,
@@ -219,9 +219,9 @@
     "css": [
       "assets/AddImageQuestionView-6e90df55.css"
     ],
-    "file": "assets/AddImageQuestionView-bb96cde6.js",
+    "file": "assets/AddImageQuestionView-41f927df.js",
     "imports": [
-      "_TooltipBtn-0e2b0ff0.js",
+      "_TooltipBtn-c3069e81.js",
       "src/main.js"
     ],
     "isDynamicEntry": true,
@@ -235,9 +235,9 @@
     "css": [
       "assets/AddMCQuestionView-8d3caa35.css"
     ],
-    "file": "assets/AddMCQuestionView-dbb6a7c2.js",
+    "file": "assets/AddMCQuestionView-914196d7.js",
     "imports": [
-      "_TooltipBtn-0e2b0ff0.js",
+      "_TooltipBtn-c3069e81.js",
       "src/main.js"
     ],
     "isDynamicEntry": true,
@@ -251,16 +251,16 @@
     "css": [
       "assets/AddQuestionView-50079b68.css"
     ],
-    "file": "assets/AddQuestionView-9e3a9809.js",
+    "file": "assets/AddQuestionView-9f6ffae3.js",
     "imports": [
       "src/main.js",
-      "_TooltipBtn-0e2b0ff0.js"
+      "_TooltipBtn-c3069e81.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/AddQuestionView.vue"
   },
   "src/components/pages/AddResourceView.vue": {
-    "file": "assets/AddResourceView-20c51718.js",
+    "file": "assets/AddResourceView-09f6c463.js",
     "imports": [
       "src/main.js"
     ],
@@ -275,12 +275,12 @@
     "css": [
       "assets/AddSkillView-a33aa404.css"
     ],
-    "file": "assets/AddSkillView-b4e9b31c.js",
+    "file": "assets/AddSkillView-e890400a.js",
     "imports": [
       "src/main.js",
-      "_WaitLoadingModal-e62102a1.js",
-      "_SuccessModal-7fa7f62e.js",
-      "_FailsModal-67c12028.js"
+      "_WaitLoadingModal-52f17e11.js",
+      "_SuccessModal-32599deb.js",
+      "_FailsModal-fe3d9235.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/AddSkillView.vue"
@@ -293,21 +293,21 @@
     "css": [
       "assets/AddStudentView-a91764ed.css"
     ],
-    "file": "assets/AddStudentView-22cae1d3.js",
+    "file": "assets/AddStudentView-f95fe2c7.js",
     "imports": [
       "src/main.js",
-      "_CheckPasswordComplexity-46fa902c.js",
-      "_InstructorStudentsStore-f3ccf82b.js",
-      "_theme.compact-17d4a00a.js"
+      "_CheckPasswordComplexity-06eb11fb.js",
+      "_InstructorStudentsStore-266dd57e.js",
+      "_theme.compact-c2ece574.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/AddStudentView.vue"
   },
   "src/components/pages/AddTagView.vue": {
-    "file": "assets/AddTagView-10b09ddc.js",
+    "file": "assets/AddTagView-1f82a2b5.js",
     "imports": [
       "src/main.js",
-      "_TagsStore-d49346fc.js"
+      "_TagsStore-e159eb7c.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/AddTagView.vue"
@@ -320,7 +320,7 @@
     "css": [
       "assets/AddTutorPostView-e9b9ab40.css"
     ],
-    "file": "assets/AddTutorPostView-1faa849c.js",
+    "file": "assets/AddTutorPostView-ae7596fb.js",
     "imports": [
       "src/main.js"
     ],
@@ -335,12 +335,12 @@
     "css": [
       "assets/AddUserView-2a6549da.css"
     ],
-    "file": "assets/AddUserView-edc3eaeb.js",
+    "file": "assets/AddUserView-534ccbc0.js",
     "imports": [
       "src/main.js",
-      "_CheckPasswordComplexity-46fa902c.js",
-      "_InstructorStudentsStore-f3ccf82b.js",
-      "_theme.compact-17d4a00a.js"
+      "_CheckPasswordComplexity-06eb11fb.js",
+      "_InstructorStudentsStore-266dd57e.js",
+      "_theme.compact-c2ece574.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/AddUserView.vue"
@@ -353,12 +353,12 @@
     "css": [
       "assets/AssessmentView-f80151bb.css"
     ],
-    "file": "assets/AssessmentView-6ed7533c.js",
+    "file": "assets/AssessmentView-ca463b4e.js",
     "imports": [
       "src/main.js",
-      "_SettingsStore-0bda9cda.js",
-      "_AssessmentsStore-5e3e84e6.js",
-      "_FlagModals-6602d7ba.js"
+      "_SettingsStore-c689ffff.js",
+      "_AssessmentsStore-4aee5592.js",
+      "_FlagModals-1018f86c.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/AssessmentView.vue"
@@ -371,10 +371,10 @@
     "css": [
       "assets/CheckStudentQuestionView-edcb6700.css"
     ],
-    "file": "assets/CheckStudentQuestionView-2d23f3f3.js",
+    "file": "assets/CheckStudentQuestionView-ff353309.js",
     "imports": [
       "src/main.js",
-      "_StudentMCQuestionsStore-c1252265.js"
+      "_StudentMCQuestionsStore-57482db6.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/CheckStudentQuestionView.vue"
@@ -387,7 +387,7 @@
     "css": [
       "assets/ContentEditComparisonView-9a4a4012.css"
     ],
-    "file": "assets/ContentEditComparisonView-9c144ff2.js",
+    "file": "assets/ContentEditComparisonView-28652657.js",
     "imports": [
       "_htmldiff.min-310ee87f.js",
       "src/main.js",
@@ -404,7 +404,7 @@
     "css": [
       "assets/EditEssayQuestionView-f9e3b1ed.css"
     ],
-    "file": "assets/EditEssayQuestionView-04c7eb7c.js",
+    "file": "assets/EditEssayQuestionView-3ee5290d.js",
     "imports": [
       "src/main.js"
     ],
@@ -419,7 +419,7 @@
     "css": [
       "assets/EditImageQuestionView-a283b01c.css"
     ],
-    "file": "assets/EditImageQuestionView-39e7dcac.js",
+    "file": "assets/EditImageQuestionView-411b14bc.js",
     "imports": [
       "src/main.js"
     ],
@@ -434,7 +434,7 @@
     "css": [
       "assets/EditMCQuestionView-af5e5db4.css"
     ],
-    "file": "assets/EditMCQuestionView-7a1d26da.js",
+    "file": "assets/EditMCQuestionView-46da9818.js",
     "imports": [
       "src/main.js"
     ],
@@ -449,12 +449,12 @@
     "css": [
       "assets/EditNewSkillAwaitingApprovalView-0fd519f4.css"
     ],
-    "file": "assets/EditNewSkillAwaitingApprovalView-f3f0fe66.js",
+    "file": "assets/EditNewSkillAwaitingApprovalView-79edbad1.js",
     "imports": [
       "src/main.js",
-      "_TagsStore-d49346fc.js",
-      "_SuccessModal-7fa7f62e.js",
-      "_FailsModal-67c12028.js"
+      "_TagsStore-e159eb7c.js",
+      "_SuccessModal-32599deb.js",
+      "_FailsModal-fe3d9235.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/EditNewSkillAwaitingApprovalView.vue"
@@ -467,17 +467,17 @@
     "css": [
       "assets/EditProfileView-aca1f75f.css"
     ],
-    "file": "assets/EditProfileView-07db9c35.js",
+    "file": "assets/EditProfileView-86eb9151.js",
     "imports": [
       "src/main.js",
-      "_theme.compact-17d4a00a.js",
-      "_CheckPasswordComplexity-46fa902c.js"
+      "_theme.compact-c2ece574.js",
+      "_CheckPasswordComplexity-06eb11fb.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/EditProfileView.vue"
   },
   "src/components/pages/EditResourceView.vue": {
-    "file": "assets/EditResourceView-edf7face.js",
+    "file": "assets/EditResourceView-9b766e62.js",
     "imports": [
       "src/main.js"
     ],
@@ -485,10 +485,10 @@
     "src": "src/components/pages/EditResourceView.vue"
   },
   "src/components/pages/EditSettingsView.vue": {
-    "file": "assets/EditSettingsView-0436ec4f.js",
+    "file": "assets/EditSettingsView-5c23e027.js",
     "imports": [
       "src/main.js",
-      "_SettingsStore-0bda9cda.js"
+      "_SettingsStore-c689ffff.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/EditSettingsView.vue"
@@ -501,10 +501,10 @@
     "css": [
       "assets/EditSkillView-0dd584dc.css"
     ],
-    "file": "assets/EditSkillView-f3f39205.js",
+    "file": "assets/EditSkillView-9d9da621.js",
     "imports": [
       "src/main.js",
-      "_TagsStore-d49346fc.js"
+      "_TagsStore-e159eb7c.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/EditSkillView.vue"
@@ -517,7 +517,7 @@
     "css": [
       "assets/EditTutorPostView-1ad05af8.css"
     ],
-    "file": "assets/EditTutorPostView-739d47de.js",
+    "file": "assets/EditTutorPostView-73652315.js",
     "imports": [
       "src/main.js"
     ],
@@ -532,28 +532,28 @@
     "css": [
       "assets/EditUserView-078272c4.css"
     ],
-    "file": "assets/EditUserView-29fb8d64.js",
+    "file": "assets/EditUserView-27e01abb.js",
     "imports": [
       "src/main.js",
-      "_InstructorStudentsStore-f3ccf82b.js",
-      "_theme.compact-17d4a00a.js"
+      "_InstructorStudentsStore-266dd57e.js",
+      "_theme.compact-c2ece574.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/EditUserView.vue"
   },
   "src/components/pages/HubView.css": {
-    "file": "assets/HubView-adf19c26.css",
+    "file": "assets/HubView-c71171d6.css",
     "src": "src/components/pages/HubView.css"
   },
   "src/components/pages/HubView.vue": {
     "css": [
-      "assets/HubView-adf19c26.css"
+      "assets/HubView-c71171d6.css"
     ],
-    "file": "assets/HubView-6f7865cc.js",
+    "file": "assets/HubView-4c454363.js",
     "imports": [
       "src/main.js",
-      "_AssessmentsStore-5e3e84e6.js",
-      "_InstructorStudentsStore-f3ccf82b.js"
+      "_AssessmentsStore-4aee5592.js",
+      "_InstructorStudentsStore-266dd57e.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/HubView.vue"
@@ -566,11 +566,11 @@
     "css": [
       "assets/ListUnmarkedAssessmentsView-75e9b249.css"
     ],
-    "file": "assets/ListUnmarkedAssessmentsView-f84995cc.js",
+    "file": "assets/ListUnmarkedAssessmentsView-1f72ec9f.js",
     "imports": [
-      "_AssessmentsStore-5e3e84e6.js",
+      "_AssessmentsStore-4aee5592.js",
       "src/main.js",
-      "_InstructorStudentsStore-f3ccf82b.js"
+      "_InstructorStudentsStore-266dd57e.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/ListUnmarkedAssessmentsView.vue"
@@ -583,7 +583,7 @@
     "css": [
       "assets/LoginView-1703bcf7.css"
     ],
-    "file": "assets/LoginView-1542f1bd.js",
+    "file": "assets/LoginView-d266770f.js",
     "imports": [
       "src/main.js"
     ],
@@ -598,10 +598,10 @@
     "css": [
       "assets/MarkAssessmentView-a6e4a669.css"
     ],
-    "file": "assets/MarkAssessmentView-4e528889.js",
+    "file": "assets/MarkAssessmentView-976645ad.js",
     "imports": [
       "src/main.js",
-      "_AssessmentsStore-5e3e84e6.js"
+      "_AssessmentsStore-4aee5592.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/MarkAssessmentView.vue"
@@ -614,11 +614,11 @@
     "css": [
       "assets/MyTidyTreeView-2a819256.css"
     ],
-    "file": "assets/MyTidyTreeView-d9d7b363.js",
+    "file": "assets/MyTidyTreeView-f03f025c.js",
     "imports": [
       "src/main.js",
-      "_zoom-82e52f01.js",
-      "_JoystickControl-60536d41.js"
+      "_zoom-049d2df8.js",
+      "_JoystickControl-0da6ddf3.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/MyTidyTreeView.vue"
@@ -631,12 +631,12 @@
     "css": [
       "assets/NewSkillAwaitingApprovalView-165957eb.css"
     ],
-    "file": "assets/NewSkillAwaitingApprovalView-9132c300.js",
+    "file": "assets/NewSkillAwaitingApprovalView-0297ad15.js",
     "imports": [
       "src/main.js",
-      "_WaitLoadingModal-e62102a1.js",
-      "_SuccessModal-7fa7f62e.js",
-      "_FailsModal-67c12028.js"
+      "_WaitLoadingModal-52f17e11.js",
+      "_SuccessModal-32599deb.js",
+      "_FailsModal-fe3d9235.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/NewSkillAwaitingApprovalView.vue"
@@ -649,7 +649,7 @@
     "css": [
       "assets/PageNotFoundView-556c1ee9.css"
     ],
-    "file": "assets/PageNotFoundView-d64e5647.js",
+    "file": "assets/PageNotFoundView-94612b0a.js",
     "imports": [
       "src/main.js"
     ],
@@ -664,11 +664,11 @@
     "css": [
       "assets/ProfileSettingsView-4487d1e2.css"
     ],
-    "file": "assets/ProfileSettingsView-37855995.js",
+    "file": "assets/ProfileSettingsView-3bb837f1.js",
     "imports": [
       "src/main.js",
-      "_SettingsStore-0bda9cda.js",
-      "_TagsStore-d49346fc.js"
+      "_SettingsStore-c689ffff.js",
+      "_TagsStore-e159eb7c.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/ProfileSettingsView.vue"
@@ -681,7 +681,7 @@
     "css": [
       "assets/QuestionBankView-53a7f6be.css"
     ],
-    "file": "assets/QuestionBankView-0290edbd.js",
+    "file": "assets/QuestionBankView-72b89243.js",
     "imports": [
       "src/main.js"
     ],
@@ -696,18 +696,18 @@
     "css": [
       "assets/RadialTreeView-e752f67e.css"
     ],
-    "file": "assets/RadialTreeView-925225ee.js",
+    "file": "assets/RadialTreeView-2cd854b4.js",
     "imports": [
       "src/main.js",
-      "_zoom-82e52f01.js"
+      "_zoom-049d2df8.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/RadialTreeView.vue"
   },
   "src/components/pages/SelectFiltersView.vue": {
-    "file": "assets/SelectFiltersView-2836c7da.js",
+    "file": "assets/SelectFiltersView-bcccbf49.js",
     "imports": [
-      "_TagsStore-d49346fc.js",
+      "_TagsStore-e159eb7c.js",
       "src/main.js"
     ],
     "isDynamicEntry": true,
@@ -721,13 +721,13 @@
     "css": [
       "assets/ShowSkillRevisionView-e5ccbc64.css"
     ],
-    "file": "assets/ShowSkillRevisionView-2501b977.js",
+    "file": "assets/ShowSkillRevisionView-76ce468a.js",
     "imports": [
       "src/main.js",
       "_index.es6-593402c1.js",
       "_dayjs.min-d6bc37a0.js",
       "_htmldiff.min-310ee87f.js",
-      "_ShowSkillStore-c297c5f6.js"
+      "_ShowSkillStore-7711d37d.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/ShowSkillRevisionView.vue"
@@ -740,12 +740,12 @@
     "css": [
       "assets/ShowSkillView-e57f7e2f.css"
     ],
-    "file": "assets/ShowSkillView-01443546.js",
+    "file": "assets/ShowSkillView-5e2c59ba.js",
     "imports": [
-      "_TagsStore-d49346fc.js",
+      "_TagsStore-e159eb7c.js",
       "src/main.js",
-      "_ShowSkillStore-c297c5f6.js",
-      "_FlagModals-6602d7ba.js"
+      "_ShowSkillStore-7711d37d.js",
+      "_FlagModals-1018f86c.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/ShowSkillView.vue"
@@ -758,10 +758,10 @@
     "css": [
       "assets/SignUpEditorAccountView-7b9f9304.css"
     ],
-    "file": "assets/SignUpEditorAccountView-66201355.js",
+    "file": "assets/SignUpEditorAccountView-e119f840.js",
     "imports": [
       "src/main.js",
-      "_CheckPasswordComplexity-46fa902c.js"
+      "_CheckPasswordComplexity-06eb11fb.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/SignUpEditorAccountView.vue"
@@ -774,10 +774,10 @@
     "css": [
       "assets/SignUpStudentAccountView-7812d0d0.css"
     ],
-    "file": "assets/SignUpStudentAccountView-4306ddf0.js",
+    "file": "assets/SignUpStudentAccountView-b39b48d2.js",
     "imports": [
       "src/main.js",
-      "_CheckPasswordComplexity-46fa902c.js"
+      "_CheckPasswordComplexity-06eb11fb.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/SignUpStudentAccountView.vue"
@@ -790,7 +790,7 @@
     "css": [
       "assets/SkillHistoryView-5fc3c020.css"
     ],
-    "file": "assets/SkillHistoryView-34da1d25.js",
+    "file": "assets/SkillHistoryView-2471f8af.js",
     "imports": [
       "src/main.js",
       "_dayjs.min-d6bc37a0.js",
@@ -807,19 +807,19 @@
     "css": [
       "assets/StudentTidyTreeView-9f0bac56.css"
     ],
-    "file": "assets/StudentTidyTreeView-159b74b6.js",
+    "file": "assets/StudentTidyTreeView-737fa2c9.js",
     "imports": [
       "src/main.js",
-      "_zoom-82e52f01.js",
-      "_JoystickControl-60536d41.js"
+      "_zoom-049d2df8.js",
+      "_JoystickControl-0da6ddf3.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/StudentTidyTreeView.vue"
   },
   "src/components/pages/TagsView.vue": {
-    "file": "assets/TagsView-81412977.js",
+    "file": "assets/TagsView-450e2707.js",
     "imports": [
-      "_TagsStore-d49346fc.js",
+      "_TagsStore-e159eb7c.js",
       "src/main.js"
     ],
     "isDynamicEntry": true,
@@ -833,31 +833,31 @@
     "css": [
       "assets/TidyTreeView-0a690d18.css"
     ],
-    "file": "assets/TidyTreeView-344db596.js",
+    "file": "assets/TidyTreeView-a72285cc.js",
     "imports": [
       "src/main.js",
-      "_zoom-82e52f01.js",
-      "_JoystickControl-60536d41.js"
+      "_zoom-049d2df8.js",
+      "_JoystickControl-0da6ddf3.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/TidyTreeView.vue"
   },
   "src/components/pages/TodoListView.css": {
-    "file": "assets/TodoListView-57ac0e9d.css",
+    "file": "assets/TodoListView-da463748.css",
     "src": "src/components/pages/TodoListView.css"
   },
   "src/components/pages/TodoListView.vue": {
     "css": [
-      "assets/TodoListView-57ac0e9d.css"
+      "assets/TodoListView-da463748.css"
     ],
-    "file": "assets/TodoListView-6dc736e9.js",
+    "file": "assets/TodoListView-3d45b9bb.js",
     "imports": [
       "src/main.js",
-      "_SettingsStore-0bda9cda.js",
-      "_StudentMCQuestionsStore-c1252265.js",
-      "_InstructorStudentsStore-f3ccf82b.js",
-      "_ContentFlagsView-03eec1d9.js",
-      "_EssayQuestionsStore-884de1b6.js"
+      "_SettingsStore-c689ffff.js",
+      "_StudentMCQuestionsStore-57482db6.js",
+      "_InstructorStudentsStore-266dd57e.js",
+      "_ContentFlagsView-6d01f796.js",
+      "_EssayQuestionsStore-8cae1862.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/TodoListView.vue"
@@ -870,10 +870,10 @@
     "css": [
       "assets/UserActivityReportPageView-6cf02058.css"
     ],
-    "file": "assets/UserActivityReportPageView-876d068e.js",
+    "file": "assets/UserActivityReportPageView-eaef5ae4.js",
     "imports": [
       "src/main.js",
-      "_EssayQuestionsStore-884de1b6.js"
+      "_EssayQuestionsStore-8cae1862.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/UserActivityReportPageView.vue"
@@ -886,7 +886,7 @@
     "css": [
       "assets/UserActivityReportSourceView-f8efa1c9.css"
     ],
-    "file": "assets/UserActivityReportSourceView-d77da7f1.js",
+    "file": "assets/UserActivityReportSourceView-a020ed84.js",
     "imports": [
       "src/main.js"
     ],
@@ -894,18 +894,18 @@
     "src": "src/components/pages/UserActivityReportSourceView.vue"
   },
   "src/components/pages/UsersView.css": {
-    "file": "assets/UsersView-66d9452d.css",
+    "file": "assets/UsersView-b99d0b81.css",
     "src": "src/components/pages/UsersView.css"
   },
   "src/components/pages/UsersView.vue": {
     "css": [
-      "assets/UsersView-66d9452d.css"
+      "assets/UsersView-b99d0b81.css"
     ],
-    "file": "assets/UsersView-0304f13d.js",
+    "file": "assets/UsersView-047dc3a7.js",
     "imports": [
       "src/main.js",
-      "_InstructorStudentsStore-f3ccf82b.js",
-      "_FailsModal-67c12028.js"
+      "_InstructorStudentsStore-266dd57e.js",
+      "_FailsModal-fe3d9235.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/UsersView.vue"
@@ -918,7 +918,7 @@
     "css": [
       "assets/AddCohortView-fe6651bd.css"
     ],
-    "file": "assets/AddCohortView-b431e333.js",
+    "file": "assets/AddCohortView-20a13226.js",
     "imports": [
       "src/main.js"
     ],
@@ -933,9 +933,9 @@
     "css": [
       "assets/CohortsListView-00578198.css"
     ],
-    "file": "assets/CohortsListView-630c8c20.js",
+    "file": "assets/CohortsListView-03b7598e.js",
     "imports": [
-      "_CohortView-5faa94bf.js",
+      "_CohortView-aa437950.js",
       "src/main.js"
     ],
     "isDynamicEntry": true,
@@ -949,7 +949,7 @@
     "css": [
       "assets/GoalView-32e457c7.css"
     ],
-    "file": "assets/GoalView-c0f2ea65.js",
+    "file": "assets/GoalView-0776ca33.js",
     "imports": [
       "src/main.js"
     ],
@@ -964,7 +964,7 @@
     "css": [
       "assets/ListStudentGoalsView-732279b6.css"
     ],
-    "file": "assets/ListStudentGoalsView-8ac52abe.js",
+    "file": "assets/ListStudentGoalsView-55f31126.js",
     "imports": [
       "src/main.js"
     ],
@@ -979,7 +979,7 @@
     "css": [
       "assets/PasswordResetView-42aca148.css"
     ],
-    "file": "assets/PasswordResetView-ce7d07ac.js",
+    "file": "assets/PasswordResetView-8416fc8a.js",
     "imports": [
       "src/main.js"
     ],
@@ -994,21 +994,21 @@
     "css": [
       "assets/ResetPasswordView-dcf1df7b.css"
     ],
-    "file": "assets/ResetPasswordView-ac5a65b4.js",
+    "file": "assets/ResetPasswordView-b254af53.js",
     "imports": [
-      "_CheckPasswordComplexity-46fa902c.js",
+      "_CheckPasswordComplexity-06eb11fb.js",
       "src/main.js"
     ],
     "isDynamicEntry": true,
     "src": "src/components/pages/password-reset/ResetPasswordView.vue"
   },
   "src/main.css": {
-    "file": "assets/main-953c07bb.css",
+    "file": "assets/main-256a9b4f.css",
     "src": "src/main.css"
   },
   "src/main.js": {
     "css": [
-      "assets/main-953c07bb.css"
+      "assets/main-256a9b4f.css"
     ],
     "dynamicImports": [
       "src/components/pages/TidyTreeView.vue",
@@ -1049,7 +1049,7 @@
       "src/components/pages/ProfileSettingsView.vue",
       "src/components/pages/EditProfileView.vue",
       "src/components/pages/EditSettingsView.vue",
-      "_ContentFlagsView-03eec1d9.js",
+      "_ContentFlagsView-6d01f796.js",
       "src/components/pages/CheckStudentQuestionView.vue",
       "src/components/pages/AddTutorPostView.vue",
       "src/components/pages/EditTutorPostView.vue",
@@ -1057,7 +1057,7 @@
       "src/components/pages/TodoListView.vue",
       "src/components/pages/cohorts/CohortsListView.vue",
       "src/components/pages/cohorts/AddCohortView.vue",
-      "_CohortView-5faa94bf.js",
+      "_CohortView-aa437950.js",
       "src/components/pages/password-reset/PasswordResetView.vue",
       "src/components/pages/password-reset/ResetPasswordView.vue",
       "src/components/pages/NewSkillAwaitingApprovalView.vue",
@@ -1066,7 +1066,7 @@
       "src/components/pages/goals/ListStudentGoalsView.vue",
       "src/components/pages/PageNotFoundView.vue"
     ],
-    "file": "assets/main-c7ae9181.js",
+    "file": "assets/main-8f06bbf7.js",
     "isEntry": true,
     "src": "src/main.js"
   },
