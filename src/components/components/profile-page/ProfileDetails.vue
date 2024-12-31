@@ -124,7 +124,7 @@ export default {
                                 href="/login"
                                 class="btn primary-btn"
                                 role="button"
-                                >Log in</a
+                                >Sign in</a
                             >
                         </div>
                     </div>
