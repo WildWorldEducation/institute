@@ -279,13 +279,13 @@ export default {
 <template>
     <!-- Search Feature -->
     <div :class="['search-bar', resultsSkills.length > 0 && 'have-results']">
-        <div class="d-flex align-items-center p-1">
+        <div class="d-flex align-items-center p-2">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
-                width="15"
-                height="15"
-                fill="#5f6368"
+                width="30"
+                height="30"
+                fill="#000000"
                 class="me-2"
             >
                 <path
@@ -359,7 +359,7 @@ export default {
     display: flex;
     flex-direction: column;
     /* border: 1px solid #dce2f2; */
-    border: 1px solid black;
+    border: 2px solid black;
     border-radius: 8px;
     background-color: white;
 }

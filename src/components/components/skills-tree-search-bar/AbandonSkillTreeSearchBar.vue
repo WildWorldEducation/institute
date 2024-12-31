@@ -214,7 +214,7 @@ export default {
 .search-bar {
     display: flex;
     flex-direction: column;
-    border: 1px solid #dce2f2;
+    border: 2px solid #dce2f2;
     border-radius: 8px;
     width: 450px;
     margin-right: 35px;

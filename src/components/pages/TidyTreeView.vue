@@ -1192,9 +1192,9 @@ export default {
 }
 
 .search-bar {
-    border: 1px solid #dce2f2;
+    border: 2px solid #000;
     border-radius: 8px;
-    height: 40px;
+    height: 50px;
 }
 
 .have-results {
