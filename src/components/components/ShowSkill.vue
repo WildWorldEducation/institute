@@ -367,7 +367,10 @@ export default {
             } else if (step == 5) {
                 this.showTutorialTip5 = false;
                 this.showTutorialTip6 = true;
-                if (this.userDetailsStore.role == 'editor')
+                if (
+                    this.userDetailsStore.role == 'editor' ||
+                    this.userDetailsStore.role == 'instructor'
+                )
                     this.markTutorialComplete();
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
@@ -737,6 +740,48 @@ export default {
                         </button>
                     </div>
                 </div>
+                <!-- Instructor tooltips -->
+                <div
+                    v-if="
+                        userDetailsStore.role == 'instructor' &&
+                        showTutorialTip2
+                    "
+                    class="mt-2"
+                >
+                    <div
+                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                    >
+                        <p>Here you can suggest an edit to this skill page.</p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(2)"
+                        >
+                            next
+                        </button>
+                    </div>
+                </div>
+                <div
+                    v-if="
+                        userDetailsStore.role == 'instructor' &&
+                        showTutorialTip3
+                    "
+                    class="mt-2 d-flex justify-content-end"
+                >
+                    <div
+                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                    >
+                        <p>
+                            Here you can share a link to this skill with a
+                            friend, or flag this page as problematic.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(3)"
+                        >
+                            next
+                        </button>
+                    </div>
+                </div>
 
                 <!-- A line divide -->
                 <hr class="border border-1 opacity-100 hr mt-2" />
@@ -996,6 +1041,47 @@ export default {
                     to learn about this topic.
                 </p>
                 <p>You can add more, vote on these, or edit them.</p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
+                    close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructor -->
+    <div
+        v-if="
+            userDetailsStore.role == 'instructor' &&
+            (showTutorialTip1 || showTutorialTip4 || showTutorialTip5)
+        "
+        class="modal"
+    >
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>
+                    This page is where students can learn about, and take a test
+                    to try to master, this skill.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip4">
+                <p>
+                    The "Requirements for mastery" section explains everything a
+                    student needs to learn to master the skill.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip5">
+                <p>
+                    At the bottom of the page, in the "Best Places To Learn
+                    This" section, students can find various sites and resources
+                    to learn about this topic.
+                </p>
+                <p>You can add more and vote on these.</p>
                 <button class="btn primary-btn" @click="progressTutorial(5)">
                     close
                 </button>
