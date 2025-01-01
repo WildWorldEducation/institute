@@ -367,6 +367,8 @@ export default {
             } else if (step == 5) {
                 this.showTutorialTip5 = false;
                 this.showTutorialTip6 = true;
+                if (this.userDetailsStore.role == 'editor')
+                    this.markTutorialComplete();
             } else if (step == 6) {
                 this.showTutorialTip6 = false;
                 this.markTutorialComplete();
@@ -504,8 +506,13 @@ export default {
                         </svg>
                     </router-link>
                 </div>
-                <!-- Tooltip -->
-                <div v-if="showTutorialTip2" class="d-flex justify-content-end">
+                <!-- Student tooltip -->
+                <div
+                    v-if="
+                        userDetailsStore.role == 'student' && showTutorialTip2
+                    "
+                    class="d-flex justify-content-end"
+                >
                     <div class="info-panel bg-light rounded p-2 mb-2">
                         <p>
                             This is where you can take the assessment for the
@@ -647,8 +654,13 @@ export default {
                         </button>
                     </div>
                 </div>
-                <!-- Tooltip -->
-                <div v-if="showTutorialTip3" class="mt-2">
+                <!-- Student tooltips -->
+                <div
+                    v-if="
+                        userDetailsStore.role == 'student' && showTutorialTip3
+                    "
+                    class="mt-2"
+                >
                     <div
                         class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
                     >
@@ -666,7 +678,9 @@ export default {
                     </div>
                 </div>
                 <div
-                    v-if="showTutorialTip4"
+                    v-if="
+                        userDetailsStore.role == 'student' && showTutorialTip4
+                    "
                     class="mt-2 d-flex justify-content-end"
                 >
                     <div
@@ -679,6 +693,45 @@ export default {
                         <button
                             class="btn primary-btn"
                             @click="progressTutorial(4)"
+                        >
+                            next
+                        </button>
+                    </div>
+                </div>
+                <!-- Editor tooltips -->
+                <div
+                    v-if="userDetailsStore.role == 'editor' && showTutorialTip2"
+                    class="mt-2"
+                >
+                    <div
+                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                    >
+                        <p>
+                            The "Edit" button allows you to edit this skill page
+                            or its assessment.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(2)"
+                        >
+                            next
+                        </button>
+                    </div>
+                </div>
+                <div
+                    v-if="userDetailsStore.role == 'editor' && showTutorialTip3"
+                    class="mt-2 d-flex justify-content-end"
+                >
+                    <div
+                        class="info-panel bg-light rounded p-2 mb-2 narrow-info-panel"
+                    >
+                        <p>
+                            Here you can share a link to this skill, or flag
+                            this page as problematic.
+                        </p>
+                        <button
+                            class="btn primary-btn"
+                            @click="progressTutorial(3)"
                         >
                             next
                         </button>
@@ -868,9 +921,13 @@ export default {
         :contentId="skillId"
     />
 
-    <!-- Tooltip modal -->
+    <!-- Tooltip modals -->
+    <!-- Student -->
     <div
-        v-if="showTutorialTip1 || showTutorialTip5 || showTutorialTip6"
+        v-if="
+            userDetailsStore.role == 'student' &&
+            (showTutorialTip1 || showTutorialTip5 || showTutorialTip6)
+        "
         class="modal"
     >
         <div class="modal-content">
@@ -899,6 +956,47 @@ export default {
                     learn about this topic.
                 </p>
                 <button class="btn primary-btn" @click="progressTutorial(6)">
+                    close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor -->
+    <div
+        v-if="
+            userDetailsStore.role == 'editor' &&
+            (showTutorialTip1 || showTutorialTip4 || showTutorialTip5)
+        "
+        class="modal"
+    >
+        <div class="modal-content">
+            <div v-if="showTutorialTip1">
+                <p>
+                    This page is where students can learn about, and take a test
+                    to try to master, this skill.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(1)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip4">
+                <p>
+                    The "Requirements for mastery" section explains everything a
+                    student needs to learn to master the skill.
+                </p>
+                <button class="btn primary-btn" @click="progressTutorial(4)">
+                    next
+                </button>
+            </div>
+            <div v-else-if="showTutorialTip5">
+                <p>
+                    At the bottom of the page, in the "Best Places To Learn
+                    This" section, students can find various sites and resources
+                    to learn about this topic.
+                </p>
+                <p>You can add more, vote on these, or edit them.</p>
+                <button class="btn primary-btn" @click="progressTutorial(5)">
                     close
                 </button>
             </div>
