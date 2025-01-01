@@ -1270,6 +1270,51 @@ router.put(
         });
     }
 );
+
+// Student Vertical Tree page.
+router.get(
+    '/check-tutorial-progress/student-vertical-tree/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT is_student_vertical_tree_tutorial_complete
+    FROM users
+    WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0].is_student_vertical_tree_tutorial_complete);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+router.put(
+    '/mark-tutorial-complete/student-vertical-tree/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        let sqlQuery = `
+    UPDATE users
+    SET is_student_vertical_tree_tutorial_complete = 1
+    WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });
