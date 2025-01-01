@@ -38,6 +38,8 @@ export default {
             showUserInfo: true,
             isLoading: true,
             currentUserId: '',
+            subjectFilters: [],
+            // Tutorial tooltips
             showTutorialTip1: false,
             showTutorialTip2: false
         };
@@ -48,10 +50,7 @@ export default {
         SearchUserBar
     },
     async created() {
-        // Tooltips
-        if (localStorage.getItem('isStudentsPageCompleted') != 'true') {
-            this.showTutorialTip1 = true;
-        }
+        this.checkIfTutorialComplete();
 
         // Set up the first user in the array to be selected on the page initially.
         if (
@@ -180,6 +179,21 @@ export default {
             this.user = newUser;
         },
         // only for search bar to update the choose user id
+
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/users/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
@@ -189,12 +203,21 @@ export default {
                 this.showTutorialTip2 = false;
                 this.showTutorialTip3 = true;
             }
-            // Store
-            localStorage.setItem('isStudentsPageCompleted', 'true');
+            this.markTutorialComplete();
         },
         restartTutorial() {
             this.showTutorialTip2 = false;
             this.showTutorialTip1 = true;
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/users/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };

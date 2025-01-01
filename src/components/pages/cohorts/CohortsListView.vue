@@ -22,6 +22,8 @@ export default {
         return {
             showInformationModal: false,
             selectedCohortId: null,
+            // Tutorial tooltips
+            isTutorialComplete: false,
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
@@ -31,10 +33,7 @@ export default {
     async created() {
         await this.cohortsStore.getCohorts(this.userDetailsStore.userId);
         // Check if user has visited before
-        // Tooltips
-        if (localStorage.getItem('isCohortsPageCompleted') != 'true') {
-            this.showTutorialTip1 = true;
-        }
+        this.checkIfTutorialComplete();
     },
 
     methods: {
@@ -46,6 +45,21 @@ export default {
         },
         closeMobileDetail() {
             this.showDetails = false; // Hide the mobile cohort detail modal
+        },
+
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/cohorts/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
         },
         progressTutorial(step) {
             if (step == 1) {
@@ -59,9 +73,18 @@ export default {
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
-                // Store
-                localStorage.setItem('isCohortsPageCompleted', 'true');
+                this.markTutorialComplete();
             }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/cohorts/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
