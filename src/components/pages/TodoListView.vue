@@ -2,6 +2,7 @@
 import PageNav from '../components/todo/PageNav.vue';
 // import store
 import { useSettingsStore } from '../../stores/SettingsStore';
+import { useUserDetailsStore } from '../../stores/UserDetailsStore.js';
 // import child component
 import CheckStudentQuestions from '../components/todo/student-question/CheckStudentQuestions.vue';
 import ContentEditsList from '../components/todo/content-edit/ContentEditsList.vue';
@@ -11,11 +12,14 @@ import NewSkillsAwaitingApprovalList from '../components/todo/new-skills-awaitin
 export default {
     setup() {
         const settingStore = useSettingsStore();
-        return { settingStore };
+        const userDetailsStore = useUserDetailsStore();
+        return { settingStore, userDetailsStore };
     },
     data() {
         return {
             activeContent: 'editList',
+            // Tutorial tooltips
+            isTutorialComplete: false,
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
@@ -32,10 +36,7 @@ export default {
     },
     computed: {},
     created() {
-        // Tooltips
-        if (localStorage.getItem('isTodoCompleted') != 'true') {
-            this.showTutorialTip1 = true;
-        }
+        this.checkIfTutorialComplete();
     },
     async mounted() {
         // fetch setting data if we dont have pagination data yet
@@ -59,6 +60,20 @@ export default {
         hideNavBar() {
             this.showNavBar = false;
         }, // only for search bar to update the choose user id
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/todo/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
@@ -71,9 +86,18 @@ export default {
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
-                // Store
-                localStorage.setItem('isTodoCompleted', 'true');
+                this.markTutorialComplete();
             }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/todo/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
