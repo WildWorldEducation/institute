@@ -241,7 +241,7 @@ export default {
                             showTutorialTip2 &&
                             userDetailsStore.role == 'student'
                         "
-                        class="info-panel modal-content bg-light rounded p-2 mb-2"
+                        class="info-panel bg-light rounded p-2 mb-2"
                     >
                         <p>
                             This section shows your available skills. These are
@@ -287,7 +287,7 @@ export default {
                             showTutorialTip3 &&
                             userDetailsStore.role == 'student'
                         "
-                        class="info-panel modal-content bg-light rounded p-2 mb-2"
+                        class="info-panel bg-light rounded p-2 mb-2"
                     >
                         <p>
                             This section shows your the last 5 skill pages you
@@ -315,7 +315,7 @@ export default {
                             showTutorialTip4 &&
                             userDetailsStore.role == 'student'
                         "
-                        class="info-panel modal-content bg-light rounded p-2 mb-2"
+                        class="info-panel bg-light rounded p-2 mb-2"
                     >
                         <p>This section shows any goals you might have made.</p>
                         <p>
@@ -351,13 +351,7 @@ export default {
     <!-- Tutorial introduction modals -->
     <!-- Student -->
     <div
-        v-if="
-            userDetailsStore.role == 'student' &&
-            (showTutorialTip1 ||
-                showTutorialTip2 ||
-                showTutorialTip3 ||
-                showTutorialTip4)
-        "
+        v-if="userDetailsStore.role == 'student' && showTutorialTip1"
         class="modal"
     >
         <div
