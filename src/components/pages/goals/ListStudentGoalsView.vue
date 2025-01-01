@@ -1,14 +1,17 @@
 <script>
 import { useUserSkillsStore } from '../../../stores/UserSkillsStore.js';
 import { useUsersStore } from '../../../stores/UsersStore.js';
+import { useUserDetailsStore } from '../../../stores/UserDetailsStore.js';
 
 export default {
     setup() {
         const userSkillsStore = useUserSkillsStore();
         const usersStore = useUsersStore();
+        const userDetailsStore = useUserDetailsStore();
         return {
             userSkillsStore,
-            usersStore
+            usersStore,
+            userDetailsStore
         };
     },
     data() {
@@ -16,6 +19,8 @@ export default {
             studentId: this.$route.params.studentId,
             studentName: '',
             goals: [],
+            // Tutorial tooltips
+            isTutorialComplete: false,
             showTutorialTip1: false
         };
     },
@@ -34,12 +39,7 @@ export default {
         await this.getGoals();
 
         // Check if tutorial has been seen.
-        if (
-            localStorage.getItem('isStudentGoalsPageTutorialCompleted') !=
-            'true'
-        ) {
-            this.showTutorialTip1 = true;
-        }
+        this.checkIfTutorialComplete();
     },
     methods: {
         async getGoals() {
@@ -94,14 +94,36 @@ export default {
                 await this.getGoals();
             }
         },
+
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/student-goals/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-                localStorage.setItem(
-                    'isStudentGoalsPageTutorialCompleted',
-                    'true'
-                );
+                this.markTutorialComplete();
             }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/student-goals/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
@@ -214,7 +236,7 @@ export default {
         </div>
 
         <!-- Tooltip modal -->
-        <div v-if="showTutorialTip1 || showTutorialTip2" class="modal">
+        <div v-if="showTutorialTip1" class="modal">
             <div class="modal-content">
                 <div v-if="showTutorialTip1">
                     <p>

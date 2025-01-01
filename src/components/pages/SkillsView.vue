@@ -57,6 +57,7 @@ export default {
             showMobileTutorialTip4: false,
             showTutorialTip5: false,
             showMobileTutorialTip5: false,
+            isInstructorModeTutorialComplete: false,
             showInstructorModeTutorialTip1: false,
             showInstructorModeTutorialTip2: false,
             isMobileCheck: window.innerWidth
@@ -81,12 +82,7 @@ export default {
         }
 
         if (this.instructorMode) {
-            if (
-                localStorage.getItem('isStudentCollapsibleTreeCompleted') !=
-                'true'
-            ) {
-                this.showInstructorModeTutorialTip1 = true;
-            }
+            this.checkIfInstructorModeTutorialComplete();
         } else {
             this.checkIfTutorialComplete();
         }
@@ -117,6 +113,19 @@ export default {
                 this.isTutorialComplete = true;
             }
         },
+        async checkIfInstructorModeTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/student-collapsible-tree/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isInstructorModeTutorialComplete = false;
+                this.showInstructorModeTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isInstructorModeTutorialComplete = true;
+            }
+        },
         progressTutorial(step) {
             if (step == 1) {
                 // Only for instructors viewing their student's tree
@@ -137,6 +146,7 @@ export default {
                 // Only for instructors viewing their student's tree
                 if (this.instructorMode) {
                     this.showInstructorModeTutorialTip2 = false;
+                    this.markInstructorModeTutorialComplete();
                 }
                 // For students and instructors
                 else {
@@ -182,6 +192,16 @@ export default {
         markTutorialComplete() {
             let url =
                 '/users/mark-tutorial-complete/collapsible-tree/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
+        },
+        markInstructorModeTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/student-collapsible-tree/' +
                 this.userDetailsStore.userId;
             const requestOptions = {
                 method: 'PUT',
