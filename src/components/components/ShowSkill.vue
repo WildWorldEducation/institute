@@ -61,6 +61,8 @@ export default {
             randomNum: 0,
             goalSteps: [],
             goalExists: false,
+            // Tutorial tooltips
+            isTutorialComplete: false,
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
@@ -77,11 +79,7 @@ export default {
     async created() {
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn == true) {
-            if (
-                localStorage.getItem('isSkillPageTutorialCompleted') != 'true'
-            ) {
-                this.showTutorialTip1 = true;
-            }
+            this.checkIfTutorialComplete();
         }
 
         await this.getSkill();
@@ -337,6 +335,52 @@ export default {
                 // Store
                 localStorage.setItem('isSkillPageTutorialCompleted', 'true');
             }
+        },
+
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/skill/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
+        progressTutorial(step) {
+            if (step == 1) {
+                this.showTutorialTip1 = false;
+                this.showTutorialTip2 = true;
+            } else if (step == 2) {
+                this.showTutorialTip2 = false;
+                this.showTutorialTip3 = true;
+            } else if (step == 3) {
+                this.showTutorialTip3 = false;
+                this.showTutorialTip4 = true;
+            } else if (step == 4) {
+                this.showTutorialTip4 = false;
+                this.showTutorialTip5 = true;
+            } else if (step == 5) {
+                this.showTutorialTip5 = false;
+                this.showTutorialTip6 = true;
+            } else if (step == 6) {
+                this.showTutorialTip6 = false;
+                this.markTutorialComplete();
+            }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/skill/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     },
     /**
@@ -928,7 +972,6 @@ export default {
     border-color: black;
     border-style: solid;
 }
-
 
 .flag-icon {
     height: 20px !important;
