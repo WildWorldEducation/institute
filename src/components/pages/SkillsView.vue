@@ -46,6 +46,8 @@ export default {
                 { level: 'college', text: 'College', class: 'college' },
                 { level: 'phd', text: 'PHD', class: 'phd' }
             ],
+            // Tutorial tooltips
+            isTutorialComplete: false,
             showTutorialTip1: false,
             showTutorialTip2: false,
             showMobileTutorialTip2: false,
@@ -86,10 +88,7 @@ export default {
                 this.showInstructorModeTutorialTip1 = true;
             }
         } else {
-            // Tooltips
-            if (localStorage.getItem('isCollapsibleTreeCompleted') != 'true') {
-                this.showTutorialTip1 = true;
-            }
+            this.checkIfTutorialComplete();
         }
     },
     methods: {
@@ -102,6 +101,21 @@ export default {
         setGradeFilter(level) {
             this.userDetailsStore.gradeFilter = level;
             this.$refs.skillList.filter();
+        },
+
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/collapsible-tree/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
         },
         progressTutorial(step) {
             if (step == 1) {
@@ -143,8 +157,7 @@ export default {
                     this.showMobileTutorialTip4 = true;
                 }
                 if (this.userDetailsStore.role == 'editor') {
-                    // Store
-                    localStorage.setItem('isCollapsibleTreeCompleted', 'true');
+                    this.markTutorialComplete();
                 }
             } else if (step == 4) {
                 if (this.isMobileCheck > 576) {
@@ -155,8 +168,7 @@ export default {
                     this.showMobileTutorialTip5 = true;
                 }
                 if (this.userDetailsStore.role == 'instructor') {
-                    // Store
-                    localStorage.setItem('isCollapsibleTreeCompleted', 'true');
+                    this.markTutorialComplete();
                 }
             } else if (step == 5) {
                 if (this.isMobileCheck > 576) {
@@ -164,9 +176,18 @@ export default {
                 } else {
                     this.showMobileTutorialTip5 = false;
                 }
-                // Store
-                localStorage.setItem('isCollapsibleTreeCompleted', 'true');
+                this.markTutorialComplete();
             }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/collapsible-tree/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
@@ -213,7 +234,9 @@ export default {
                         "
                         class="col d-flex align-items-center justify-content-center"
                     >
-                        <div class="d-flex w-100 justify-content-md-between gap-3 custom-grade-buttons">
+                        <div
+                            class="d-flex w-100 justify-content-md-between gap-3 custom-grade-buttons"
+                        >
                             <button
                                 v-for="grade in gradeLevels"
                                 :key="grade.level"
@@ -815,9 +838,9 @@ export default {
     border-radius: 50%;
 }
 .custom-grade-buttons .primary-btn {
-        width: 100% !important;
-        max-width: unset !important;
-    }
+    width: 100% !important;
+    max-width: unset !important;
+}
 
 /* Small devices (portrait phones) */
 @media (max-width: 480px) {
@@ -872,19 +895,19 @@ export default {
     .search-bar-container {
         flex-grow: 1;
     }
-    #skill-btn-search-bar-container{
-        margin-top:5px;
+    #skill-btn-search-bar-container {
+        margin-top: 5px;
     }
 }
 
 /* Bigger devices ( Laptop L ) */
-@media (min-width:1440px) {
-    #legend{
-        margin-left:auto;
+@media (min-width: 1440px) {
+    #legend {
+        margin-left: auto;
         margin-right: auto;
     }
     .search-bar-container {
-        padding-right:20px;
+        padding-right: 20px;
     }
 }
 

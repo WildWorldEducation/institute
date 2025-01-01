@@ -912,45 +912,54 @@ router.put('/:userId/skill-tree-filters', isAuthenticated, (req, res, next) => {
  * Tutorials
  */
 // Hub page.
-router.get('/check-tutorial-progress/hub/:userId', (req, res, next) => {
-    res.setHeader('Content-Type', 'application/json');
-    let sqlQuery = `SELECT is_hub_tutorial_complete
+router.get(
+    '/check-tutorial-progress/hub/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT is_hub_tutorial_complete
     FROM users
     WHERE id = ${conn.escape(req.params.userId)};`;
 
-    conn.query(sqlQuery, (err, results) => {
-        try {
-            if (err) {
-                throw err;
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0].is_hub_tutorial_complete);
+            } catch (err) {
+                next(err);
             }
-            res.json(results[0].is_hub_tutorial_complete);
-        } catch (err) {
-            next(err);
-        }
-    });
-});
+        });
+    }
+);
 
-router.put('/mark-tutorial-complete/hub/:userId', (req, res, next) => {
-    let sqlQuery = `
+router.put(
+    '/mark-tutorial-complete/hub/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        let sqlQuery = `
     UPDATE users
     SET is_hub_tutorial_complete = 1
     WHERE id = ${conn.escape(req.params.userId)};`;
 
-    conn.query(sqlQuery, (err) => {
-        try {
-            if (err) {
-                throw err;
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
             }
-            res.end();
-        } catch (err) {
-            next(err);
-        }
-    });
-});
+        });
+    }
+);
 
 // Vertical Tree page.
 router.get(
     '/check-tutorial-progress/vertical-tree/:userId',
+    isAuthenticated,
     (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         let sqlQuery = `SELECT is_vertical_tree_tutorial_complete
@@ -972,10 +981,146 @@ router.get(
 
 router.put(
     '/mark-tutorial-complete/vertical-tree/:userId',
+    isAuthenticated,
     (req, res, next) => {
         let sqlQuery = `
     UPDATE users
     SET is_vertical_tree_tutorial_complete = 1
+    WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+// My Tree page.
+router.get(
+    '/check-tutorial-progress/my-tree/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT is_my_tree_tutorial_complete
+    FROM users
+    WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0].is_my_tree_tutorial_complete);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+router.put(
+    '/mark-tutorial-complete/my-tree/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        let sqlQuery = `
+    UPDATE users
+    SET is_my_tree_tutorial_complete = 1
+    WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+// Collapsible Tree page.
+router.get(
+    '/check-tutorial-progress/collapsible-tree/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT is_collapsible_tree_tutorial_complete
+    FROM users
+    WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0].is_collapsible_tree_tutorial_complete);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+router.put(
+    '/mark-tutorial-complete/collapsible-tree/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        let sqlQuery = `
+    UPDATE users
+    SET is_collapsible_tree_tutorial_complete = 1
+    WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+// Radial Tree page.
+router.get(
+    '/check-tutorial-progress/radial-tree/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        res.setHeader('Content-Type', 'application/json');
+        let sqlQuery = `SELECT is_radial_tree_tutorial_complete
+    FROM users
+    WHERE id = ${conn.escape(req.params.userId)};`;
+
+        conn.query(sqlQuery, (err, results) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.json(results[0].is_radial_tree_tutorial_complete);
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
+router.put(
+    '/mark-tutorial-complete/radial-tree/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        let sqlQuery = `
+    UPDATE users
+    SET is_radial_tree_tutorial_complete = 1
     WHERE id = ${conn.escape(req.params.userId)};`;
 
         conn.query(sqlQuery, (err) => {
