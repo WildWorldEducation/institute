@@ -15,7 +15,9 @@ export default {
     data() {
         return {
             studentName: '',
-            showTutorialTip1: true,
+            // Tutorial tooltips
+            isTutorialComplete: false,
+            showTutorialTip1: false,
             showTutorialTip2: false
         };
     },
@@ -37,29 +39,44 @@ export default {
         }
 
         // Check if tutorial has been seen.
-        if (
-            localStorage.getItem('isStudentVerticalTreeTutorialCompleted') !=
-            'true'
-        ) {
-            this.showTutorialTip1 = true;
-        }
+        this.checkIfTutorialComplete();
     },
     components: {
         StudentTidyTree
     },
     methods: {
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/student-vertical-tree/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
                 this.showTutorialTip2 = true;
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
-                // Store
-                localStorage.setItem(
-                    'isStudentVerticalTreeTutorialCompleted',
-                    'true'
-                );
+                this.markTutorialComplete();
             }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/student-vertical-tree/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };

@@ -23,15 +23,12 @@ export default {
             isLife: false,
             isDangerousIdeas: false,
             showMobileFiltersModal: false,
+            // Tutorial tooltips
+            isTutorialComplete: false,
             showTutorialTip1: false
         };
     },
     created() {
-        // Tooltips
-        if (localStorage.getItem('isRadialTreeTutorialCompleted') != 'true') {
-            this.showTutorialTip1 = true;
-        }
-
         for (let i = 0; i < this.userDetailsStore.subjectFilters.length; i++) {
             if (this.userDetailsStore.subjectFilters[i] == 'Language') {
                 this.isLanguage = true;
@@ -57,6 +54,8 @@ export default {
                 this.isDangerousIdeas = true;
             }
         }
+
+        this.checkIfTutorialComplete();
     },
     components: { RadialTree, SkillTreeSearchBar },
     methods: {
@@ -94,13 +93,36 @@ export default {
             if (this.isDangerousIdeas)
                 this.userDetailsStore.subjectFilters.push('Dangerous Ideas');
         },
+
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/radial-tree/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
-
-                // Store
-                localStorage.setItem('isRadialTreeTutorialCompleted', 'true');
+                this.markTutorialComplete();
             }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/radial-tree/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };

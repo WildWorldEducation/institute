@@ -37,6 +37,7 @@ export default {
             assessments: [],
             questions: [],
             studentIds: [],
+            isTutorialComplete: false,
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
@@ -63,11 +64,12 @@ export default {
         }
     },
     async created() {
-        if (localStorage.getItem('isHubTutorialCompleted') != 'true') {
-            this.showTutorialTip1 = true;
+        if (this.userDetailsStore.role == 'instructor') {
+            await this.fetchAssessments();
+            await this.getStudentMCQuestions();
         }
-        await this.fetchAssessments();
-        await this.getStudentMCQuestions();
+
+        await this.checkIfTutorialComplete();
     },
     methods: {
         async fetchAssessments() {
@@ -160,6 +162,20 @@ export default {
             const data = await result.json();
             this.questions = data;
         },
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/hub/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
@@ -167,22 +183,31 @@ export default {
             } else if (step == 2) {
                 this.showTutorialTip2 = false;
                 if (this.userDetailsStore.role == 'editor') {
-                    localStorage.setItem('isHubTutorialCompleted', 'true');
+                    this.markTutorialComplete();
                     return;
                 }
                 this.showTutorialTip3 = true;
             } else if (step == 3) {
                 this.showTutorialTip3 = false;
                 if (this.userDetailsStore.role == 'instructor') {
-                    localStorage.setItem('isHubTutorialCompleted', 'true');
+                    this.markTutorialComplete();
                     return;
                 }
                 this.showTutorialTip4 = true;
             } else if (step == 4) {
                 this.showTutorialTip4 = false;
-                // Store
-                localStorage.setItem('isHubTutorialCompleted', 'true');
+                this.markTutorialComplete();
             }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/hub/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
@@ -324,30 +349,39 @@ export default {
     </div>
 
     <!-- Tutorial introduction modals -->
-
+    <!-- Student -->
     <div
         v-if="
-            showTutorialTip1 ||
-            showTutorialTip2 ||
-            (showTutorialTip3 &&
-                (userDetailsStore.role == 'student' ||
-                    userDetailsStore.role == 'instructor')) ||
-            (showTutorialTip4 && userDetailsStore.role == 'student')
+            userDetailsStore.role == 'student' &&
+            (showTutorialTip1 ||
+                showTutorialTip2 ||
+                showTutorialTip3 ||
+                showTutorialTip4)
         "
         class="modal"
     >
         <div
+            v-if="showTutorialTip1 && userDetailsStore.role == 'student'"
             class="modal-content"
-            v-if="showTutorialTip1 || showTutorialTip2 || showTutorialTip3"
         >
             <!-- Student -->
-            <div v-if="showTutorialTip1 && userDetailsStore.role == 'student'">
+            <div>
                 <p>This is your hub page.</p>
                 <button class="btn primary-btn" @click="progressTutorial(1)">
                     next
                 </button>
             </div>
-            <!-- Instructor -->
+        </div>
+    </div>
+    <!-- Instructor-->
+    <div
+        v-if="
+            userDetailsStore.role == 'instructor' &&
+            (showTutorialTip1 || showTutorialTip2 || showTutorialTip3)
+        "
+        class="modal"
+    >
+        <div class="modal-content">
             <div
                 v-if="showTutorialTip1 && userDetailsStore.role == 'instructor'"
             >
@@ -383,6 +417,17 @@ export default {
                     close
                 </button>
             </div>
+        </div>
+    </div>
+    <!-- Editor -->
+    <div
+        v-if="
+            userDetailsStore.role == 'editor' &&
+            (showTutorialTip1 || showTutorialTip2)
+        "
+        class="modal"
+    >
+        <div class="modal-content">
             <!-- Editor -->
             <div v-if="showTutorialTip1 && userDetailsStore.role == 'editor'">
                 <p>Welcome to the Collins Institute!</p>

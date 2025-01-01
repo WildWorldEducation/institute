@@ -37,6 +37,7 @@ export default {
             gradeFilter: 'phd',
             subjectFilters: [],
             // Tutorial tooltips
+            isTutorialComplete: false,
             showTutorialTip1: false,
             showTutorialTip2: false,
             showTutorialTip3: false,
@@ -54,13 +55,6 @@ export default {
     created() {
         // Turn this on only if user is logged in.
         if (this.sessionDetailsStore.isLoggedIn == true) {
-            if (
-                localStorage.getItem('isFullVerticalTreeTutorialCompleted') !=
-                'true'
-            ) {
-                this.showTutorialTip1 = true;
-            }
-
             // Subject filters
             for (
                 let i = 0;
@@ -115,6 +109,8 @@ export default {
                 'Dangerous Ideas'
             ];
         }
+
+        this.checkIfTutorialComplete();
     },
     mounted() {
         this.GetGoogleLoginResult();
@@ -189,6 +185,21 @@ export default {
                     this.subjectFilters.push('Dangerous Ideas');
             }
         },
+
+        // Tutorial
+        async checkIfTutorialComplete() {
+            const result = await fetch(
+                '/users/check-tutorial-progress/vertical-tree/' +
+                    this.userDetailsStore.userId
+            );
+            const data = await result.json();
+            if (data == 0) {
+                this.isTutorialComplete = false;
+                this.showTutorialTip1 = true;
+            } else if (data == 1) {
+                this.isTutorialComplete = true;
+            }
+        },
         progressTutorial(step) {
             if (step == 1) {
                 this.showTutorialTip1 = false;
@@ -231,12 +242,18 @@ export default {
                 this.showTutorialTip8 = true;
             } else if (step == 8) {
                 this.showTutorialTip8 = false;
-                // Store
-                localStorage.setItem(
-                    'isFullVerticalTreeTutorialCompleted',
-                    'true'
-                );
+                this.markTutorialComplete();
             }
+        },
+        markTutorialComplete() {
+            let url =
+                '/users/mark-tutorial-complete/vertical-tree/' +
+                this.userDetailsStore.userId;
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch(url, requestOptions);
         }
     }
 };
