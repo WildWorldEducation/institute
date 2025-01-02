@@ -171,34 +171,36 @@ export default {
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
             <button
-                :class="[activeList === 'skills' ? 'active-nav' : 'normal-nav']"
+                class="btn"
+                :class="[activeList === 'skills' ? 'primary-btn' : 'btn-dark']"
                 @click="handleDropDownNavChoose('skills')"
             >
                 Skills
             </button>
             <button
+                class="btn"
                 :class="[
-                    activeList === 'mcQuestions' ? 'active-nav' : 'normal-nav'
+                    activeList === 'mcQuestions' ? 'primary-btn' : 'btn-dark'
                 ]"
                 @click="handleDropDownNavChoose('mcQuestions')"
             >
                 Multiple Choice Questions
             </button>
             <button
+                class="btn"
                 :class="[
                     activeList === 'writtenQuestions'
-                        ? 'active-nav'
-                        : 'normal-nav'
+                        ? 'primary-btn'
+                        : 'btn-dark'
                 ]"
                 @click="handleDropDownNavChoose('writtenQuestions')"
             >
                 Essay Questions
             </button>
             <button
+                class="btn"
                 :class="[
-                    activeList === 'imageQuestions'
-                        ? 'active-nav'
-                        : 'normal-nav'
+                    activeList === 'imageQuestions' ? 'primary-btn' : 'btn-dark'
                 ]"
                 @click="handleDropDownNavChoose('imageQuestions')"
             >
@@ -305,34 +307,6 @@ export default {
     width: fit-content;
     border-radius: 5px;
     margin-left: 15px;
-}
-
-.normal-nav {
-    background-color: var(--primary-color);
-    color: var(--primary-contrast-color);
-    padding: 5px 20px;
-    cursor: pointer;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-}
-
-.normal-nav:focus {
-    outline: none;
-    border: 1px solid var(--primary-color);
-}
-
-.active-nav {
-    background-color: var(--secondary-color);
-    border: 1px solid grey;
-    border-radius: 5px;
-    color: var(--secondary-contrast-color);
-    font-weight: 600;
-    padding: 5px 20px;
-}
-
-.active-nav:focus {
-    outline: solid 2px var(--secondary-color);
 }
 
 /* Style For The Custom Select */

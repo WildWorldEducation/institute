@@ -14,7 +14,7 @@ export default {
             headers: [
                 { text: 'Student', value: 'studentName' },
                 { text: 'Question', value: 'question' },
-                { text: 'Skill Name', value: 'skillName' },
+                { text: 'Skill', value: 'skillName' },
                 { text: 'Date', value: 'date' }
             ],
             mobileHeaders: [

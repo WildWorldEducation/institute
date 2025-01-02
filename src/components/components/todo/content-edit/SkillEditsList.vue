@@ -15,8 +15,8 @@ export default {
         return {
             headers: [
                 { text: 'User', value: 'userName' },
-                { text: 'Skill Name', value: 'name' },
-                { text: 'Skill Level', value: 'level' },
+                { text: 'Name', value: 'name' },
+                { text: 'Level', value: 'level' },
                 { text: 'Comment', value: 'comment' },
                 { text: 'Date', value: 'date' }
             ],
