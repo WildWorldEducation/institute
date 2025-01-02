@@ -351,7 +351,7 @@ export default {
                 // On the hidden canvas each rectangle gets a unique color.
                 this.hiddenCanvasContext.fillStyle = node.__pickColor;
 
-                if (this.checkingIfNodeInView(node)) {
+                if (this.checkingIfNodeInView(node, transform)) {
                     this.drawNode(node);
                 }
                 // this.checkingIfNodeInView(node);
@@ -1233,26 +1233,25 @@ export default {
                 '/skill-tree-filters';
             fetch(url, requestOptions);
         },
-        checkingIfNodeInView(node) {
-            let scale = 1;
-            if (this.transformData.k > 1) {
-                scale = this.transformData.k;
-            }
+        checkingIfNodeInView(node, transformData) {
             // Calculate max visible range
-            this.visibleRangeX = this.transformData.x + this.width * scale;
+            // Visible range is the rectangle with width and height equal to canvas context
+            // Every time context is translate the visible range is changing too
 
-            this.visibleRangeY = this.transformData.y - this.height * scale;
+            const visibleRangeY = transformData.y - this.height;
             // Calculate real position of node with current scale
-            let realPositionX = node.y * this.transformData.k;
-            let realPositionY = -node.x * this.transformData.k;
-            let combinePosition = this.transformData.x + realPositionX;
+            let realPositionX = node.y * transformData.k;
+            let realPositionY = -node.x * transformData.k;
+
+            // I actually come up with this formula base on observe the changing of translate and node position when translate context
+            // It doesn`t make sense to me but some how working correctly
+            let combinePosition = transformData.x + realPositionX;
             if (
                 combinePosition > 0 &&
                 combinePosition < this.width &&
-                this.transformData.y > realPositionY &&
-                realPositionY > this.visibleRangeY
+                transformData.y > realPositionY &&
+                realPositionY > visibleRangeY
             ) {
-                this.nodeDrew += 1;
                 return true;
             }
             return false;
