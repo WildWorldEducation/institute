@@ -50,7 +50,7 @@ export default {
     <Transition name="navbar">
         <div v-if="showNavBar" class="nav-bar-container d-flex flex-column">
             <div class="d-flex justify-content-between pe-4">
-                <h1 class="todo-title heading ps-2 pt-2">Todo List</h1>
+                <h1 class="todo-heading ms-2 pt-2">Todo List</h1>
                 <!-- Open/close side panel button -->
                 <button
                     type="button"
@@ -171,6 +171,11 @@ export default {
 </template>
 
 <style scoped>
+.todo-heading {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+}
+
 /* Sidebar */
 .nav-bar-container {
     height: 100%;
