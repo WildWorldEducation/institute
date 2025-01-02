@@ -23,7 +23,7 @@ export default {
         return {
             width: null,
             height: null,
-            nodeWidth: 120,
+            nodeWidth: 80,
             nodeHeight: 200,
             skill: {
                 id: null,
@@ -123,7 +123,13 @@ export default {
         this.hiddenCanvasContext = hiddenCanvas.getContext('2d', {
             willReadFrequently: true
         });
+
         hiddenCanvas.style.display = 'none';
+
+        var canvas = document.getElementById('canvas');
+        this.context = canvas.getContext('2d', {
+            willReadFrequently: true
+        });
 
         // Listen for clicks on the main canvas
         canvas.addEventListener('click', async (e) => {
@@ -319,6 +325,17 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                const targetNodeInView = this.checkingIfNodeInView(
+                    link.target,
+                    transform
+                );
+                const sourceNodeInView = this.checkingIfNodeInView(
+                    link.source,
+                    transform
+                );
+                if (!targetNodeInView && !sourceNodeInView) {
+                    continue;
+                }
                 this.drawLink(link);
             }
 
@@ -527,6 +544,7 @@ export default {
                 ctx2.stroke();
             }
         },
+
         drawLink(link) {
             const linkGenerator = d3
                 .linkHorizontal()
@@ -822,6 +840,7 @@ export default {
                     break;
             }
         },
+
         // We using a darker color for node border when it is mastered
         hexBorderColor(skillLevel) {
             switch (skillLevel) {
