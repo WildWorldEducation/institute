@@ -775,7 +775,7 @@ export default {
 .chosen-subject:focus,
 .switch-btn:hover {
     color: var(--primary-contrast-color) !important;
-    opacity: 1;
+    opacity: 1 !important;
 }
 
 .btn:active,
