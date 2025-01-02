@@ -62,6 +62,7 @@ export default {
             resultNode: null,
             clickMode: 'showPanel',
             // transform object use to translate canvas context
+            // used to avoid rendering parts of tree not displayed on the canvas
             transformData: {
                 x: 0,
                 y: 0,
@@ -277,6 +278,8 @@ export default {
             const links = this.root.links();
             this.context.beginPath();
             for (const link of links) {
+                // Do not render parts of tree not in the canvas
+                // to improve performance.
                 const targetNodeInView = this.checkingIfNodeInView(
                     link.target,
                     transform
@@ -294,6 +297,8 @@ export default {
             // Draw nodes.
             this.context.beginPath();
             for (const node of this.nodes) {
+                // Do not render parts of tree not in the canvas
+                // to improve performance.
                 const nodeInView = this.checkingIfNodeInView(node, transform);
                 if (!nodeInView) {
                     continue;
