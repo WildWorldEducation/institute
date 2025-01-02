@@ -1010,8 +1010,8 @@ export default {
             let realPositionX = node.y * transformData.k;
             let realPositionY = -node.x * transformData.k;
 
-            // I acctually come up with this fomula base on obserse the changing of translate and node position when translate context
-            // It dosen`t make sense to me but some how woking correctly
+            // I actually come up with this formula base on observe the changing of translate and node position when translate context
+            // It doesn`t make sense to me but some how working correctly
             let combinePosition = transformData.x + realPositionX;
             if (
                 combinePosition > 0 &&
