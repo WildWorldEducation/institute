@@ -1331,13 +1331,14 @@ export default {
 .switch-btn {
     background-color: var(--primary-color) !important;
     color: var(--primary-contrast-color) !important;
+    opacity: 1;
 }
 
 .chosen-subject:active,
 .chosen-subject:focus,
 .switch-btn:hover {
     color: var(--primary-contrast-color) !important;
-    opacity: 1;
+    opacity: 1 !important;
 }
 
 .btn:active,
