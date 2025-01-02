@@ -23,7 +23,7 @@ export default {
         return {
             width: null,
             height: null,
-            nodeWidth: 60,
+            nodeWidth: 120,
             nodeHeight: 200,
             skill: {
                 id: null,
@@ -498,9 +498,7 @@ export default {
                         ? `${node.data.skill_name} ▶`
                         : node.data.skill_name;
                     let xPostion = node.y + 5;
-                    if (node.data.children.length > 0) {
-                        xPostion = xPostion - 185;
-                    }
+
                     ctx1.strokeText(showName, xPostion, node.x + 2);
                     ctx1.fillText(showName, xPostion, node.x + 2);
                 }
