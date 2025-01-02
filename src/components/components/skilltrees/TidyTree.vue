@@ -1333,7 +1333,7 @@ export default {
                     Click me !!!
                 </button>
             </div> -->
-            <div class="d-flex">node drew: {{ nodeDrew }}</div>
+            <!-- <div class="d-flex">node drew: {{ nodeDrew }}</div> -->
         </div>
     </div>
 </template>
