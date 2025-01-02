@@ -107,7 +107,7 @@ export default {
     <div class="container-fluid h-100 p-0 bg-light">
         <!-- In the pc view we display flex row -->
         <div class="h-100 d-flex">
-            <PageNav :activeContent="activeContent" />
+            <PageNav :activeContent="activeContent" />  
 
             <div id="contentDiv" class="d-flex flex-column">
                 <div v-if="activeContent === 'editList'">
