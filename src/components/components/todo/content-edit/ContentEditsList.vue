@@ -133,12 +133,9 @@ export default {
                 )
             );
             var options = {
-                weekday: 'long',
                 year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric'
+                month: 'numeric',
+                day: 'numeric'
             };
             finalDate = finalDate.toLocaleDateString('en-US', options);
             return finalDate;
@@ -167,7 +164,7 @@ export default {
 </script>
 
 <template>
-    <div class="w-100 bg-light p-2">
+    <div class="w-100 bg-light">
         <!-- ---- | Nav List On Desktop | ---- -->
         <div class="d-none d-lg-flex desktop-nav-bar gap-4 px-3">
             <button
