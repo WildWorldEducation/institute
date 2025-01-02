@@ -37,17 +37,17 @@ export default {
             flagId: '',
             headers: [
                 { text: 'Type', value: 'type' },
-                { text: 'Name', value: 'name' },
+                { text: 'Item', value: 'name' },
                 { text: 'User', value: 'user', width: 99 },
                 { text: 'Date', value: 'date' },
-                { text: 'Action', value: 'action' }
+                { text: '', value: 'action' }
             ],
             // In phone version we dont show some column
             headersPhone: [
                 { text: 'Type', value: 'type' },
-                { text: 'Name', value: 'name' },
+                { text: 'Item', value: 'name' },
                 { text: 'User', value: 'user', width: 99 },
-                { text: 'Action', value: 'action' }
+                { text: '', value: 'action' }
             ],
 
             rows: [],
@@ -83,7 +83,6 @@ export default {
     components: {
         Vue3EasyDataTable
     },
-    async created() {},
     async mounted() {
         // fetch data from sever
         await this.getContentFlags();
@@ -421,13 +420,11 @@ export default {
             // parse the content data because mysql library return it as a string
             const parseDate = new Date(dateString);
             const createDate = parseDate.toLocaleString('en-gb', {
-                weekday: 'long',
                 year: 'numeric',
-                month: 'long',
+                month: 'numeric',
                 day: 'numeric'
             });
-            const createTime = parseDate.toLocaleTimeString();
-            return `${createTime}-${createDate}`;
+            return `${createDate}`;
         },
         closeAllFilter(showFilter) {
             // Do not close the current open filter
@@ -546,7 +543,6 @@ export default {
     <div class="container-fluid p-1">
         <!-- Search Table Section -->
         <div>
-            <div class="expand-tile">Search:</div>
             <div class="d-flex search-bar">
                 <input type="text" v-model="searchText" />
                 <svg
@@ -564,7 +560,7 @@ export default {
             </div>
         </div>
         <!-- Vue Data Table Desktop  -->
-        <div class="mt-5 pb-3 d-none d-md-block table-div">
+        <div class="pb-3 d-none d-md-block table-div">
             <Vue3EasyDataTable
                 ref="dataTable"
                 :headers="headers"
@@ -888,12 +884,11 @@ export default {
                 <!-- --- User Column --- -->
                 <template #item-user="{ user }">
                     <div class="user-cell">
-                        <div class="user-name">
-                            {{ user.username }}
-                        </div>
-                        <div class="user-role">
+                        {{ user.username }}
+
+                        <span class="user-role">
                             {{ user.role }}
-                        </div>
+                        </span>
                     </div>
                 </template>
 
@@ -1684,13 +1679,11 @@ export default {
                 <!-- --- User Column --- -->
                 <template #item-user="{ user }">
                     <div class="user-cell">
-                        <div class="user-name">
-                            {{ user.username }}
-                        </div>
+                        {{ user.username }}
 
-                        <div class="user-role">
+                        <span class="user-role">
                             {{ user.role }}
-                        </div>
+                        </span>
                     </div>
                 </template>
 
@@ -2126,18 +2119,12 @@ div {
 }
 
 .flag-name {
-    text-decoration: none;
-    font-family: 'Poppins';
-    color: var(--primary-color);
     text-overflow: ellipsis;
     /* Needed to make the over flow work */
     overflow: hidden;
-    white-space: nowrap;
-    width: 200px;
 }
 
 .flag-name:hover {
-    color: var(--primary-color);
     text-decoration: underline;
 }
 
@@ -2285,14 +2272,6 @@ div {
     padding: 10px 0px;
     width: 60px;
     margin-left: 0px;
-}
-
-.user-name {
-    text-align: center;
-    color: var(--primary-color);
-    /* text-decoration: underline; */
-    /* cursor: pointer; */
-    width: 100%;
 }
 
 .user-role {
