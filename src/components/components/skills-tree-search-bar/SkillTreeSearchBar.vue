@@ -358,11 +358,28 @@ export default {
 .search-bar {
     display: flex;
     flex-direction: column;
-    /* border: 1px solid #dce2f2; */
-    border: 1px solid black;
-    border-radius: 8px;
+    border: 3px solid #8c6ce4;
     background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(140, 108, 228, 0.5);
+    animation: pulse 2s infinite;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
+
+@keyframes pulse {
+    0%,
+    100% {
+        box-shadow: 0 4px 15px rgba(140, 108, 228, 0.5);
+    }
+    50% {
+        box-shadow: 0 6px 20px rgba(140, 108, 228, 0.8);
+    }
+}
+
+/* .search-bar:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+} */
 
 .have-results {
     border-bottom: 0px !important ;
