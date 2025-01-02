@@ -216,6 +216,7 @@ export default {
 <template>
     <div id="legend" class="container-fluid">
         <div class="position-absolute legend-div">
+            <!-- Mobile -->
             <div id="mobile-legend">
                 <div v-if="instructorMode" class="col-lg-9">
                     <h1 class="heading h4">{{ studentName }}</h1>
@@ -245,6 +246,7 @@ export default {
                     />
                 </div>
             </div>
+            <!-- Tablet and up -->
             <div id="tablet-and-up-legend">
                 <div class="legend row d-flex align-items-center w-100">
                     <!-- Grade level filter -->
@@ -283,8 +285,9 @@ export default {
                             </div>
                         </div>
                     </div>
-                    <div v-else-if="instructorMode" class="col text-center">
-                        <h1 class="heading h5">Student: {{ studentName }}</h1>
+                    <!-- Student name -->
+                    <div v-else-if="instructorMode" class="col">
+                        <h1 class="heading h4">Student: {{ studentName }}</h1>
                     </div>
 
                     <div
@@ -320,9 +323,7 @@ export default {
                                 >Skill Filters</router-link
                             >
                         </div>
-                        <div v-else-if="instructorMode" class="col-lg-9">
-                            <h1 class="heading">{{ studentName }}</h1>
-                        </div>
+
                         <div class="search-bar-container">
                             <!-- Search Feature -->
                             <SkillTreeSearchBar
