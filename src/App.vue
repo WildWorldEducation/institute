@@ -190,7 +190,7 @@ export default {
                             <RouterLink
                                 to="/skill-tree"
                                 class="nav-link close-on-click"
-                                >Skill Tree</RouterLink
+                                >Full Tree</RouterLink
                             >
                         </li>
                         <li
