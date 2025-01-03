@@ -174,6 +174,7 @@ export default {
 .todo-heading {
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
+    color: var(--primary-color)
 }
 
 /* Sidebar */
