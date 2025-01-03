@@ -2133,7 +2133,7 @@ export default {
         <div class="d-none">{{ rowsPerPage }} {{ rowsPerPageM }}</div>
     </div>
 
-    <!-- Modal of dismiss flagging content -->
+    <!-- Warning modal for dismissing flagged content -->
     <div v-if="showDismissModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
@@ -2142,64 +2142,42 @@ export default {
                 <div class="d-flex justify-content-between">
                     <button
                         type="button"
-                        class="btn red-btn"
+                        class="btn primary-btn"
                         @click="showDismissModal = false"
                     >
                         <span class="me-2 d-none d-md-block"> No </span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="18"
-                            fill="white"
-                        >
-                            <path
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
-                            />
-                        </svg>
                     </button>
                     <button
                         type="button"
-                        class="btn green-btn"
+                        class="btn red-btn"
                         @click="dismissFlag(flagId)"
                     >
                         <span class="me-2 d-none d-md-block"> Yes </span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                            width="18"
-                            height="18"
-                            fill="white"
-                        >
-                            <path
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
-                            />
-                        </svg>
                     </button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- The Modal -->
+    <!-- Warning modal for deleting flagged content -->
     <div v-if="showModal">
         <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
                 <p>Are you sure you want to delete this {{ source.type }}?</p>
-                <div style="display: flex; gap: 10px">
+                <div class="d-flex justify-content-between">
                     <button
                         type="button"
-                        class="btn btn-danger"
-                        @click="deletePost(this.source)"
-                    >
-                        Yes
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-dark"
+                        class="btn primary-btn"
                         @click="showModal = false"
                     >
                         No
+                    </button>
+                    <button
+                        type="button"
+                        class="btn red-btn"
+                        @click="deletePost(this.source)"
+                    >
+                        Yes
                     </button>
                 </div>
             </div>

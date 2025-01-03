@@ -311,22 +311,19 @@ export default {
                     </div>
 
                     <div
-                        v-if="
-                            userDetailsStore.role == 'admin' ||
-                            userDetailsStore.role == 'instructor'
-                        "
+                        v-if="userDetailsStore.role != 'student'"
                         class="d-flex justify-content-end gap-4"
                     >
-                        <a class="btn red-btn" @click="editMode()">Edit</a>
-                        <a class="btn red-btn" @click="deleteStudentQuestion()"
-                            >Delete</a
-                        >
+                        <a class="btn primary-btn" @click="editMode()">Edit</a>
                         <button
                             class="btn primary-btn"
                             @click="saveToQuestionBank()"
                         >
                             Save
                         </button>
+                        <a class="btn red-btn" @click="deleteStudentQuestion()"
+                            >Delete</a
+                        >
                     </div>
                 </div>
             </div>
