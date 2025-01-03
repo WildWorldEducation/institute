@@ -1005,12 +1005,11 @@ export default {
                                 {{ header.text }}
                             </span>
                             <svg
-                                class="filter-icon"
+                                class="primary-icon"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 512 512"
                                 height="16"
                                 width="14"
-                                fill="#a48be6"
                             >
                                 <path
                                     d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"
@@ -1160,8 +1159,7 @@ export default {
                                 viewBox="0 0 512 512"
                                 width="16"
                                 height="14"
-                                class="mb-1 filter-icon"
-                                fill="#8f7bd6"
+                                class="mb-1 primary-icon"
                             >
                                 <path
                                     d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
@@ -1303,8 +1301,8 @@ export default {
                                 viewBox="0 0 448 512"
                                 width="16"
                                 height="14"
-                                class="mb-1 filter-icon"
-                                fill="#8f7bd6"
+                                class="mb-1 primary-icon"
+                                
                             >
                                 <path
                                     d="M128 0c17.7 0 32 14.3 32 32l0 32 128 0 0-32c0-17.7 14.3-32 32-32s32 14.3 32 32l0 32 48 0c26.5 0 48 21.5 48 48l0 48L0 160l0-48C0 85.5 21.5 64 48 64l48 0 0-32c0-17.7 14.3-32 32-32zM0 192l448 0 0 272c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 192zm80 64c-8.8 0-16 7.2-16 16l0 96c0 8.8 7.2 16 16 16l96 0c8.8 0 16-7.2 16-16l0-96c0-8.8-7.2-16-16-16l-96 0z"
@@ -1563,8 +1561,8 @@ export default {
                         >
                             <!-- Pencil icon -->
                             <svg
-                                width="10"
-                                height="12"
+                                width="14"
+                                height="16"
                                 viewBox="0 0 19 20"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1592,8 +1590,8 @@ export default {
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 576 512"
-                                width="10"
-                                height="12"
+                                width="16"
+                                height="17"
                                 fill="white"
                             >
                                 <path
@@ -2397,10 +2395,6 @@ export default {
 .user-role {
     color: #475569;
     font-size: 15px;
-}
-
-.filter-icon {
-    cursor: pointer;
 }
 
 .header-btn {
