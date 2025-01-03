@@ -40,6 +40,7 @@ export default {
             },
             isEditMode: false,
             studentName: null,
+            studentReputation: null,
             skillName: null,
             skillId: null,
             isMobileCheck: window.innerWidth
@@ -64,7 +65,7 @@ export default {
                     this.question = data.question;
                     this.answers = data.answers;
 
-                    // Get the student's name.
+                    // Get the student's details.
                     for (let i = 0; i < this.usersStore.users.length; i++) {
                         if (
                             this.question.student_id ==
@@ -72,6 +73,9 @@ export default {
                         ) {
                             this.studentName =
                                 this.usersStore.users[i].username;
+                            this.studentReputation =
+                                this.usersStore.users[i].reputation_score;
+                            console.log(this.usersStore.users[i]);
                         }
                     }
                     // Get the skill's name.
@@ -155,7 +159,8 @@ export default {
     <div class="container p-3 bg-light rounded">
         <h1 class="heading">Review Suggested Question</h1>
         <p>
-            {{ studentName }} suggested the following question, for the skill
+            {{ studentName }} (reputation score: {{ studentReputation }})
+            suggested the following question, for the skill
             {{ skillName }}
         </p>
 

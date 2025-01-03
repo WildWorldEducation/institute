@@ -476,7 +476,7 @@ router.get('/list', isAuthenticated, (req, res, next) => {
         res.setHeader('Content-Type', 'application/json');
         // Note: avatar has query param to deal with image caching by browser,
         // in case image is changed.
-        let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role 
+        let sqlQuery = `SELECT id, first_name, last_name, username, CONCAT('https://${userAvatarImagesBucketName}.s3.${bucketRegion}.amazonaws.com/', id, '?v=', UNIX_TIMESTAMP()) AS avatar, email, role, reputation_score
         FROM users
         WHERE is_deleted = 0;`;
 
