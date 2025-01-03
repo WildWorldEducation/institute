@@ -1677,7 +1677,7 @@ export default {
                             >
                                 <div class="col">
                                     <h6 class="secondary-heading">
-                                        Correct Answer:
+                                        Correct answer number:
                                     </h6>
                                 </div>
                                 <div class="col">
@@ -1687,41 +1687,51 @@ export default {
                             <div class="row mb-2 border-bottom pb-2">
                                 <div class="col">
                                     <h6 class="secondary-heading">
-                                        Incorrect Answer 1:
+                                        Answer option 1:
                                     </h6>
                                 </div>
                                 <div class="col">
-                                    {{ expandContent.incorrectAnswer1 }}
+                                    {{ expandContent.answer1 }}
                                 </div>
                             </div>
                             <div class="row mb-2 border-bottom pb-2">
                                 <div class="col">
                                     <h6 class="secondary-heading">
-                                        Incorrect Answer 2:
+                                        Answer option 2:
                                     </h6>
                                 </div>
                                 <div class="col">
-                                    {{ expandContent.incorrectAnswer2 }}
+                                    {{ expandContent.answer2 }}
                                 </div>
                             </div>
                             <div class="row mb-2 border-bottom pb-2">
                                 <div class="col">
                                     <h6 class="secondary-heading">
-                                        Incorrect Answer 3:
+                                        Answer option 3:
                                     </h6>
                                 </div>
                                 <div class="col">
-                                    {{ expandContent.incorrectAnswer3 }}
+                                    {{ expandContent.answer3 }}
                                 </div>
                             </div>
                             <div class="row mb-2 border-bottom pb-2">
                                 <div class="col">
                                     <h6 class="secondary-heading">
-                                        Incorrect Answer 4:
+                                        Answer option 4:
                                     </h6>
                                 </div>
                                 <div class="col">
-                                    {{ expandContent.incorrectAnswer4 }}
+                                    {{ expandContent.answer4 }}
+                                </div>
+                            </div>
+                            <div class="row mb-2 border-bottom pb-2">
+                                <div class="col">
+                                    <h6 class="secondary-heading">
+                                        Answer option 5:
+                                    </h6>
+                                </div>
+                                <div class="col">
+                                    {{ expandContent.answer5 }}
                                 </div>
                             </div>
 
