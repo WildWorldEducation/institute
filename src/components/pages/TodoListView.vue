@@ -104,24 +104,23 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid h-100 p-0 bg-light">
+    <div id="todo-page" class="bg-light d-flex h-100">
         <!-- In the pc view we display flex row -->
-        <div class="h-100 d-flex">
-            <PageNav :activeContent="activeContent" />  
 
-            <div id="contentDiv" class="d-flex flex-column">
-                <div v-if="activeContent === 'editList'">
-                    <ContentEditsList />
-                </div>
-                <div v-if="activeContent === 'studentQuestionList'">
-                    <CheckStudentQuestions />
-                </div>
-                <div v-if="activeContent === 'flagList'">
-                    <ContentFlagsView />
-                </div>
-                <div v-if="activeContent === 'newSkillsList'">
-                    <NewSkillsAwaitingApprovalList />
-                </div>
+        <PageNav :activeContent="activeContent" />
+
+        <div class="d-flex flex-column w-100">
+            <div v-if="activeContent === 'editList'">
+                <ContentEditsList />
+            </div>
+            <div v-if="activeContent === 'studentQuestionList'">
+                <CheckStudentQuestions />
+            </div>
+            <div v-if="activeContent === 'flagList'">
+                <ContentFlagsView />
+            </div>
+            <div v-if="activeContent === 'newSkillsList'">
+                <NewSkillsAwaitingApprovalList />
             </div>
         </div>
     </div>
@@ -184,23 +183,8 @@ export default {
 </template>
 
 <style>
-.page-title {
-    color: var(--primary-color);
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-}
-
-#contentDiv {
-    overflow-y: auto;
-    width: 100%;
-}
-
-/* View Specific On Phone */
-@media (min-width: 0px) and (max-width: 576px) {
-    #contentDiv {
-        width: fit-content;
-        overflow-y: auto;
-    }
+#todo-page {
+    border-top: 1px solid var(--primary-color);
 }
 
 /* Modals */

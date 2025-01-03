@@ -22,7 +22,7 @@ export default {
             ],
             mobileHeaders: [
                 { text: 'User', value: 'userName' },
-                { text: 'Skill Name', value: 'name' },
+                { text: 'Name', value: 'name' },
                 { text: 'Comment', value: 'comment' }
             ],
             dataTableRef: null,
@@ -117,12 +117,9 @@ export default {
                 )
             );
             var options = {
-                weekday: 'long',
                 year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric'
+                month: 'numeric',
+                day: 'numeric'
             };
             finalDate = finalDate.toLocaleDateString('en-US', options);
             return finalDate;
@@ -192,7 +189,7 @@ export default {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-    --easy-table-header-font-size: 16px;
+    --easy-table-header-font-size: 18px;
     --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;

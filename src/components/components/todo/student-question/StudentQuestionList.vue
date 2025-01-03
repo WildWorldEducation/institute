@@ -85,12 +85,9 @@ export default {
                 )
             );
             var options = {
-                weekday: 'long',
                 year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric'
+                month: 'numeric',
+                day: 'numeric'
             };
             finalDate = finalDate.toLocaleDateString('en-US', options);
             return finalDate;
@@ -128,7 +125,7 @@ export default {
 </script>
 
 <template>
-    <div class="mt-3 table-div h-100">
+    <div class="table-div h-100">
         <!-- Desktop table -->
         <Vue3EasyDataTable
             ref="dataTable"
@@ -199,7 +196,7 @@ export default {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-    --easy-table-header-font-size: 16px;
+    --easy-table-header-font-size: 18px;
     --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;

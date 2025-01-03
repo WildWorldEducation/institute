@@ -168,7 +168,7 @@ export default {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-    --easy-table-header-font-size: 16px;
+    --easy-table-header-font-size: 18px;
     --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;

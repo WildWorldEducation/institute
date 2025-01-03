@@ -177,8 +177,7 @@ export default {
 }
 
 /* Sidebar */
-.nav-bar-container {
-    height: 100%;
+.nav-bar-container {   
     background-color: #e8e2f9;
 }
 
@@ -285,6 +284,7 @@ export default {
     background-color: #e8e2f9;
     border: 2px solid var(--primary-color);
     padding: 2px 7px;
+    z-index: 20;
 }
 
 .minimize-navbar {

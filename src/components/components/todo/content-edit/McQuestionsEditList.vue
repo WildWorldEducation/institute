@@ -94,8 +94,8 @@ export default {
                     parseInt(this.settingStore.todoMcQuestionTableRows) !==
                     parseInt(this.dataTableRefM?.rowsPerPageActiveOption)
                 ) {
-                    console.log('MOBILE CALL');
-                    console.log(this.settingStore.todoMcQuestionTableRows);
+                    // console.log('MOBILE CALL');
+                    // console.log(this.settingStore.todoMcQuestionTableRows);
                     this.settingStore.todoMcQuestionTableRows =
                         this.dataTableRefM?.rowsPerPageActiveOption;
                     this.settingStore.saveSettings();
@@ -178,7 +178,7 @@ export default {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-    --easy-table-header-font-size: 16px;
+    --easy-table-header-font-size: 18px;
     --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;

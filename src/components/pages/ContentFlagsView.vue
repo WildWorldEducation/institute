@@ -540,7 +540,7 @@ export default {
 </script>
 
 <template>
-    <div class="container-fluid p-1">
+    <div>
         <!-- Search Table Section -->
         <div>
             <div class="d-flex search-bar">
@@ -2056,16 +2056,6 @@ export default {
 </template>
 
 <style scoped>
-div {
-    font-family: 'Poppins', sans-serif !important;
-}
-
-.page-title {
-    color: var(--primary-color);
-    font-size: 30px;
-    font-weight: 600;
-}
-
 .flag-container {
     background-color: #f2edff;
     border-radius: 12px;
@@ -2088,22 +2078,6 @@ div {
 
 .search-bar input {
     outline: none;
-}
-
-.green-btn {
-    background-color: #36c1af;
-    color: white;
-    border: 1px solid #2ca695;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-}
-
-.green-btn:hover {
-    background-color: #3eb3a3;
-    color: white;
 }
 
 .btn:focus {
@@ -2228,7 +2202,7 @@ div {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-    --easy-table-header-font-size: 16px;
+    --easy-table-header-font-size: 18px;
     --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
@@ -2270,14 +2244,12 @@ div {
     display: flex;
     flex-direction: column;
     padding: 10px 0px;
-    width: 60px;
     margin-left: 0px;
 }
 
 .user-role {
     color: #475569;
     font-size: 15px;
-    text-align: center;
 }
 
 .filter-icon {
