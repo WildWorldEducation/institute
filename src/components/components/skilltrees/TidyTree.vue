@@ -485,10 +485,10 @@ export default {
                     ctx1.strokeStyle = '#FFF';
                     ctx1.lineWidth = 4;
                     // Font size
-                    // ctx1.font = '12px Arial';
-                    // if (node.data.type == 'sub') {
-                    //     ctx1.font = '10px Arial';
-                    // }
+                    ctx1.font = '12px Arial';
+                    if (node.data.type == 'sub') {
+                        ctx1.font = '14px Verdana';
+                    }
 
                     // High light the text if user search for it
                     ctx1.fillStyle = isSearched ? '#ff0000' : '#000';
@@ -854,6 +854,23 @@ export default {
                     return '#006400';
                 case 'phd':
                     return '#CC0000';
+                default:
+                    break;
+            }
+        },
+        hexBackGroundColor(skilllevel) {
+            const opacity = 0.7;
+            switch (skillLevel) {
+                case 'college':
+                    return `rgba(204, 132, 0, ${opacity})`;
+                case 'grade_school':
+                    return `rgba(51, 1 79, 166, ${opacity})`;
+                case 'high_school':
+                    return `rgba(204, 172, 0, ${opacity})`;
+                case 'middle_school':
+                    return `rgba(0, 100, 0, ${opacity})`;
+                case 'phd':
+                    return `rgba(204, 0, 0, ${opacity})`;
                 default:
                     break;
             }
