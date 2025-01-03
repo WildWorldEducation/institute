@@ -50,7 +50,8 @@ export default {
     <Transition name="navbar">
         <div v-if="showNavBar" class="nav-bar-container d-flex flex-column">
             <div class="d-flex justify-content-between pe-4">
-                <h1 class="todo-title heading ps-2 pt-2">Todo List</h1>
+                <h1 class="todo-heading ms-2 pt-2">Todo List</h1>
+                <!-- Open/close side panel button -->
                 <button
                     type="button"
                     class="icon-div d-flex align-items-center px-3 py-2"
@@ -72,17 +73,13 @@ export default {
                 </button>
             </div>
             <hr />
-            <div class="d-flex flex-column gap-3">
+            <div class="d-flex flex-column gap-3 h-100">
                 <button
-                    :class="[
-                        'nav-item-tile',
-                        activeContent === 'editList'
-                            ? 'active-item'
-                            : 'nav-bar-item'
-                    ]"
+                    :class="{ 'active-item': activeContent === 'editList' }"
+                    class="nav-button p-2"
                     @click="changeActiveContent('editList')"
                 >
-                    Approve Content Edits
+                    <h2 class="nav-button-heading h5">Approve Content Edits</h2>
                     <span
                         class="badge bg-danger"
                         b-on-hover
@@ -91,15 +88,15 @@ export default {
                     >
                 </button>
                 <button
-                    :class="[
-                        'nav-item-tile',
-                        activeContent === 'studentQuestionList'
-                            ? 'active-item'
-                            : 'nav-bar-item'
-                    ]"
+                    :class="{
+                        'active-item': activeContent === 'studentQuestionList'
+                    }"
+                    class="nav-button p-2"
                     @click="changeActiveContent('studentQuestionList')"
                 >
-                    Approve Student Added Questions
+                    <h2 class="nav-button-heading h5">
+                        Approve Student Added Questions
+                    </h2>
                     <span
                         b-on-hover
                         title="number of student questions that needed to approved"
@@ -108,15 +105,13 @@ export default {
                     >
                 </button>
                 <button
-                    :class="[
-                        'nav-item-tile',
-                        activeContent === 'flagList'
-                            ? 'active-item'
-                            : 'nav-bar-item'
-                    ]"
+                    :class="{
+                        'active-item': activeContent === 'flagList'
+                    }"
+                    class="nav-button p-2"
                     @click="changeActiveContent('flagList')"
                 >
-                    Check Content Flags
+                    <h2 class="nav-button-heading h5">Check Content Flags</h2>
                     <span
                         class="badge bg-danger"
                         b-on-hover
@@ -130,15 +125,13 @@ export default {
                             userDetailsStore.role == 'admin') &&
                         todoCount?.new_skill_add_count
                     "
-                    :class="[
-                        'nav-item-tile',
-                        activeContent === 'newSkillsList'
-                            ? 'active-item'
-                            : 'nav-bar-item'
-                    ]"
+                    :class="{
+                        'active-item': activeContent === 'newSkillsList'
+                    }"
+                    class="nav-button p-2"
                     @click="changeActiveContent('newSkillsList')"
                 >
-                    Approve New Skills
+                    <h2 class="nav-button-heading h5">Approve New Skills</h2>
                     <span
                         b-on-hover
                         title="number of student suggested questions that needed to approved"
@@ -178,23 +171,41 @@ export default {
 </template>
 
 <style scoped>
+.todo-heading {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+}
+
+/* Sidebar */
 .nav-bar-container {
-    height: 100%;
     background-color: #e8e2f9;
 }
-.todo-title {
-    font-size: 30px;
-    font-weight: 600;
-    margin-bottom: 0px;
-}
-.nav-item-tile {
+
+.nav-button {
     font-size: 18px;
     border: none;
     text-align: start;
+    background-color: inherit;
+    color: var(--primary-color);
 }
 
-.nav-item-tile:focus {
-    outline: var(--primary-color);
+.nav-button:hover {
+    color: var(--primary-contrast-color);
+    background-color: var(--primary-color);
+}
+
+.nav-button:focus {
+    background-color: var(--primary-color);
+    border: none;
+}
+
+.nav-button-heading {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.badge {
+    font-weight: 400;
 }
 
 .icon-div {
@@ -212,33 +223,12 @@ export default {
     outline-color: var(--primary-color);
 }
 
-.nav-bar-item {
-    cursor: pointer;
-    padding: 5px 10px;
-    font-weight: 500;
-    color: #475569;
-    background-color: inherit;
-}
-
-.nav-bar-item:hover {
-    background-color: var(--primary-color);
-    color: #f8fafc;
-}
-
-.nav-bar-item:focus {
-    border: 2px solid var(--primary-contrast-color);
-    background-color: var(--primary-color);
-    border: none;
-}
-
 .active-item {
     background-color: var(--primary-color);
-    padding: 5px 10px;
     color: white;
 }
 
 .active-item:focus {
-    border: 2px solid var(--primary-contrast-color);
 }
 
 /* Navbar slide Animation */
@@ -292,6 +282,7 @@ export default {
     background-color: #e8e2f9;
     border: 2px solid var(--primary-color);
     padding: 2px 7px;
+    z-index: 20;
 }
 
 .minimize-navbar {

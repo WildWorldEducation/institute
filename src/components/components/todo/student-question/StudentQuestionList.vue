@@ -14,7 +14,7 @@ export default {
             headers: [
                 { text: 'Student', value: 'studentName' },
                 { text: 'Question', value: 'question' },
-                { text: 'Skill Name', value: 'skillName' },
+                { text: 'Skill', value: 'skillName' },
                 { text: 'Date', value: 'date' }
             ],
             mobileHeaders: [
@@ -85,12 +85,9 @@ export default {
                 )
             );
             var options = {
-                weekday: 'long',
                 year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric'
+                month: 'numeric',
+                day: 'numeric'
             };
             finalDate = finalDate.toLocaleDateString('en-US', options);
             return finalDate;
@@ -128,7 +125,7 @@ export default {
 </script>
 
 <template>
-    <div class="mt-3 table-div h-100">
+    <div class="table-div h-100">
         <!-- Desktop table -->
         <Vue3EasyDataTable
             ref="dataTable"
@@ -142,9 +139,13 @@ export default {
             @click-row="goToComparePage"
             class="d-none d-md-block"
         >
-            <!-- --- Loading Part --- -->
+            <!-- Loading animation -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <div
+                    class="d-flex justify-content-center align-items-center mt-5"
+                >
+                    <span class="loader"></span>
+                </div>
             </template>
             <!-- Format date -->
             <template #item-date="{ create_date }">
@@ -174,9 +175,13 @@ export default {
             @click-row="goToComparePage"
             class="d-md-none d-block"
         >
-            <!-- --- Loading Part --- -->
+            <!-- Loading animation -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <div
+                    class="d-flex justify-content-center align-items-center mt-5"
+                >
+                    <span class="loader"></span>
+                </div>
             </template>
             <!-- Format date -->
             <template #item-date="{ create_date }">
@@ -199,7 +204,7 @@ export default {
 /* +-+-+ Vue Easy Table Custom CSS +-+-+  */
 .customize-table {
     --easy-table-body-row-font-size: 16px;
-    --easy-table-header-font-size: 16px;
+    --easy-table-header-font-size: 18px;
     --easy-table-header-font-color: var(--primary-color);
     --easy-table-header-background-color: #fefefe;
     --easy-table-header-height: 50px;
@@ -240,4 +245,26 @@ export default {
         padding: 0px;
     }
 }
+
+/* Loading animation */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--primary-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+/* End of loading animation */
 </style>
