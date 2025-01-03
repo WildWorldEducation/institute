@@ -122,11 +122,14 @@ export default {
             @click-row="goToComparePage"
             class="d-none d-md-block"
         >
-            <!-- --- Loading Part --- -->
+            <!-- Loading animation -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <div
+                    class="d-flex justify-content-center align-items-center mt-5"
+                >
+                    <span class="loader"></span>
+                </div>
             </template>
-
             <!-- --- Name Router Column --- -->
             <template #item-name="{ name, mc_question_id, user_id }">
                 <RouterLink
@@ -153,9 +156,13 @@ export default {
             @click-row="goToComparePage"
             class="d-md-none"
         >
-            <!-- --- Loading Part --- -->
+            <!-- Loading animation -->
             <template #loading>
-                <img src="/images/loading.gif" alt="loading data" />
+                <div
+                    class="d-flex justify-content-center align-items-center mt-5"
+                >
+                    <span class="loader"></span>
+                </div>
             </template>
             <!-- --- Name Router Column --- -->
             <template #item-name="{ name, mc_question_id, user_id }">
