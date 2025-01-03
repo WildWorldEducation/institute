@@ -38,7 +38,7 @@ export default {
         <div
             v-if="showSkillPanel"
             :class="[
-                'skill-panel-container text-center',
+                'skill-panel-container text-center overflow-auto',
                 treeType === 'radial-tree' && 'radial-skill-panel'
             ]"
         >
