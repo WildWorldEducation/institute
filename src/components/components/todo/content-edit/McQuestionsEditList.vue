@@ -118,7 +118,6 @@ export default {
             :loading="mcQuestionEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
-            theme-color="#a48be6"
             @click-row="goToComparePage"
             class="d-none d-md-block"
         >
@@ -152,7 +151,6 @@ export default {
             :loading="mcQuestionEditsLoading"
             table-class-name="customize-table"
             buttons-pagination
-            theme-color="#a48be6"
             @click-row="goToComparePage"
             class="d-md-none"
         >
