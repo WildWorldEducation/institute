@@ -74,7 +74,7 @@ export default {
                     height="72"
                 />
             </div>
-            <h1 class="h3 mb-3 font-weight-normal">Student log in</h1>
+            <h1 class="h3 mb-3 font-weight-normal">Student sign in</h1>
 
             <div class="mt-3">
                 <label class="mb-4 welcome-message"
@@ -120,7 +120,7 @@ export default {
                     </div>
                 </div>
                 <button class="btn btn-dark mb-2" @click="Submit()">
-                    Log in
+                    Sign in
                 </button>
                 <div
                     id="g_id_onload"
@@ -142,7 +142,7 @@ export default {
                 ></div>
                 <div class="mt-4 signup text-center">
                     Don’t have an account?
-                    <a href="/student-signup" class="links">Sign up</a>
+                    <a href="/student-signup" class="links">Register</a>
                 </div>
             </div>
         </div>

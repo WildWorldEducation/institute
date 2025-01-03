@@ -164,7 +164,7 @@ export default {
                     <input
                         class="form-control user-input-information"
                         type="text"
-                        :value="`${this.$parent.user.firstName} ${this.$parent.user.lastName}`"
+                        :value="`${this.$parent.user.firstName || ''} ${this.$parent.user.lastName || ''}`.trim()"
                         disabled
                     />
                 </div>

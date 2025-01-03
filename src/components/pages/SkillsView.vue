@@ -68,6 +68,7 @@ export default {
         SkillTreeSearchBar
     },
     async created() {
+        console.log(this.userDetailsStore.gradeFilter);
         // Check if regular or instructor mode.
         if (typeof this.studentId == 'string') {
             this.instructorMode = true;
@@ -790,8 +791,8 @@ export default {
     color: black !important;
 }
 
-.high-school.active-grade-filter {
-    opacity: 1;
+.active-grade-filter.high-school {
+    opacity: 1 !important;
 }
 
 .college {
