@@ -41,9 +41,11 @@ export default {
             isEditMode: false,
             studentName: null,
             studentReputation: null,
+            studentId: null,
             skillName: null,
             skillId: null,
-            isMobileCheck: window.innerWidth
+            isMobileCheck: window.innerWidth,
+            showReputationModal: false
         };
     },
     async created() {
@@ -75,6 +77,7 @@ export default {
                                 this.usersStore.users[i].username;
                             this.studentReputation =
                                 this.usersStore.users[i].reputation_score;
+                            this.studentId = this.usersStore.users[i].id;
                             console.log(this.usersStore.users[i]);
                         }
                     }
@@ -150,6 +153,25 @@ export default {
                 if (this.question.correct_answer == 3)
                     this.question.correct_answer = 2;
             }
+        },
+        displayReputationModal() {
+            this.showReputationModal = true;
+        },
+        increaseUserReputation() {
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            };
+
+            var url =
+                '/users/increase-reputation/' +
+                this.userDetailsStore.userId +
+                '/' +
+                this.studentId;
+
+            fetch(url, requestOptions).then(() => {
+                this.saveToQuestionBank();
+            });
         }
     }
 };
@@ -317,19 +339,44 @@ export default {
 
                     <div
                         v-if="userDetailsStore.role != 'student'"
-                        class="d-flex justify-content-end gap-4"
+                        class="d-flex justify-content-end gap-2"
                     >
                         <a class="btn primary-btn" @click="editMode()">Edit</a>
+
                         <button
                             class="btn primary-btn"
-                            @click="saveToQuestionBank()"
+                            @click="displayReputationModal()"
                         >
                             Save
                         </button>
+
                         <a class="btn red-btn" @click="deleteStudentQuestion()"
                             >Delete</a
                         >
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reputation modal -->
+    <div v-if="showReputationModal" class="modal">
+        <div class="modal-content">
+            <div>
+                <p>Give {{ studentName }} a reputation point?</p>
+                <div class="d-flex justify-content-between">
+                    <button
+                        class="btn primary-btn"
+                        @click="increaseUserReputation()"
+                    >
+                        yes
+                    </button>
+                    <button
+                        class="btn primary-btn"
+                        @click="saveToQuestionBank()"
+                    >
+                        no
+                    </button>
                 </div>
             </div>
         </div>
@@ -466,6 +513,15 @@ export default {
     font-size: 20px;
     font-weight: 500;
     color: #667085;
+}
+
+/* Small devices (portrait phones) */
+@media (max-width: 480px) {
+    /* Modal Content/Box */
+    .modal-content {
+        width: 90%;
+        margin-top: 5%;
+    }
 }
 
 /* Styling for phone */

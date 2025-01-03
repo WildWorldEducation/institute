@@ -1498,6 +1498,35 @@ router.put(
     }
 );
 
+/*
+ * Reputation system
+ */
+// Increase reputation score.
+router.put(
+    '/increase-reputation/:editorId/:userId',
+    isAuthenticated,
+    (req, res, next) => {
+        let sqlQuery = `
+    UPDATE users
+    SET reputation_score = reputation_score + 1
+    WHERE id = ${conn.escape(req.params.userId)};`;
+
+        //TODO
+        // User activity report
+
+        conn.query(sqlQuery, (err) => {
+            try {
+                if (err) {
+                    throw err;
+                }
+                res.end();
+            } catch (err) {
+                next(err);
+            }
+        });
+    }
+);
+
 // router.get('*', (req, res) => {
 //     res.redirect('/');
 // });
